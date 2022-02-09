@@ -141,16 +141,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public Command SortNodeDescendantsByDeclarationOrderDescendingCommand { get; }
 		#endregion
 
-		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document) : this()
+		private CodeMapWindowViewModel(Workspace workspace, IWpfTextView wpfTextView, Document document) : this(workspace)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);	
 		}
 
 		/// <summary>
-		/// Empty constructor to create Code Map view model if no suitable active document is available, for example on solution opening
+		/// Constructor to create an empty Code Map view model if no suitable active document is available, for example on solution opening
 		/// </summary>
-		private CodeMapWindowViewModel()
+		private CodeMapWindowViewModel(Workspace workspace)
 		{
+			Workspace = workspace.CheckIfNull(nameof(workspace));
+
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
@@ -179,20 +181,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: true));
 			SortNodeDescendantsByDeclarationOrderDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: true));
-
-			Workspace = DocumentModel.Document.Project.Solution.Workspace;
+			
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
 			_dteEventsObserver = new CodeMapDteEventsObserver(this);
 		}
 
-		public static CodeMapWindowViewModel InitEmptyCodeMap() => InitCodeMap(wpfTextView: null, document: null);
-
-		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView? wpfTextView, Document? document)
+		public static CodeMapWindowViewModel InitCodeMap(Workspace workspace, IWpfTextView? wpfTextView, Document? document)
 		{
 			var codeMapViewModel = wpfTextView != null && document != null
-				? new CodeMapWindowViewModel(wpfTextView, document)
-				: new CodeMapWindowViewModel();
+				? new CodeMapWindowViewModel(workspace, wpfTextView, document)
+				: new CodeMapWindowViewModel(workspace);
 
 			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
 			{
