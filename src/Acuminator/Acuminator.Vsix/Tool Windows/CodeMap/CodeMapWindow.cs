@@ -1,9 +1,21 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows;
-using Microsoft.VisualStudio.Imaging;
+
+using Acuminator.Vsix.Utilities;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+
+using Community.VisualStudio.Toolkit;
+
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -40,13 +52,35 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// This is called after our control has been created and sited. 
 		/// This is a good place to initialize the control with data gathered from Visual Studio services.
 		/// </summary>
-		public override void OnToolWindowCreated()
+		[SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "The extension point has void type")]
+		public override async void OnToolWindowCreated()
 		{
 			base.OnToolWindowCreated();
 
 			// Set the text that will appear in the title bar of the tool window. Note that because we need access to the package for localization,
 			// we have to wait to do this here. If we used a constant string, we could do this in the constructor.
 			this.Caption = VSIXResource.CodeMap_WindowTitle;
+
+			if (CodeMapWPFControl == null)
+				return;
+
+			IAsyncServiceProvider serviceProvider = AcuminatorVSPackage.Instance ?? AsyncServiceProvider.GlobalProvider;
+
+			if (serviceProvider == null)
+				return;
+
+			Workspace? workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+
+			if (workspace == null)
+				return;
+
+			IWpfTextView? textView = await ThreadHelper.JoinableTaskFactory.RunAsync(serviceProvider.GetWpfTextViewAsync);
+			Document? document = textView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (CodeMapWPFControl.DataContext is CodeMapWindowViewModel codeMapViewModel)
+				await codeMapViewModel.RefreshCodeMapOnWindowOpeningAsync(textView, document);
+			else
+				CodeMapWPFControl.DataContext = CodeMapWindowViewModel.InitCodeMap(workspace, textView, document);
 		}
 
 		protected override void OnClose()
