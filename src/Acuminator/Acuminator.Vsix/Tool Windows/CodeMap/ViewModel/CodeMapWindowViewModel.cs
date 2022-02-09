@@ -186,9 +186,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_dteEventsObserver = new CodeMapDteEventsObserver(this);
 		}
 
-		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
+		public static CodeMapWindowViewModel InitEmptyCodeMap() => InitCodeMap(wpfTextView: null, document: null);
+
+		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView? wpfTextView, Document? document)
 		{
-			var codeMapViewModel = wpfTextView == null || document == null
+			var codeMapViewModel = wpfTextView != null && document != null
 				? new CodeMapWindowViewModel(wpfTextView, document)
 				: new CodeMapWindowViewModel();
 
