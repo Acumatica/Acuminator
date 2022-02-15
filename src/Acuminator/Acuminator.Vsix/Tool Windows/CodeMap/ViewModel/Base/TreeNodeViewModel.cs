@@ -22,11 +22,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public abstract bool DisplayNodeWithoutChildren { get; }
 
 		/// <summary>
-		/// The tooltip displayed for node.
-		/// </summary>
-		public virtual string Tooltip => null;
-
-		/// <summary>
 		/// The main icon for a node.
 		/// </summary>
 		public abstract Icon NodeIcon { get; }

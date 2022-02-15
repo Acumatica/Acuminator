@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Vsix.ToolWindows.Common;
+using Acuminator.Vsix.Utilities;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using System.Threading;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class ViewNodeViewModel : GraphMemberNodeViewModel
+	public class ViewNodeViewModel : GraphMemberNodeViewModel, IElementWithTooltip
 	{
 		public DataViewInfo ViewInfo => MemberInfo as DataViewInfo;
-
-		public override string Tooltip => GetTooltip();
 
 		public override Icon NodeIcon { get; } 
 
@@ -81,6 +80,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		TooltipInfo IElementWithTooltip.CalculateTooltip()
+		{
+			string tooltip = GetTooltip();
+			return tooltip.IsNullOrWhiteSpace()
+				? null
+				: new TooltipInfo(tooltip) { TrimExcess = true };
+		}
+
 		private string GetTooltip()
 		{
 			if (ViewInfo.Symbol?.Locations.Length != 1 || ViewInfo.Symbol.Locations[0].IsInMetadata || Tree.CodeMapViewModel.Workspace == null)
@@ -95,28 +102,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				case PropertyDeclarationSyntax propertyDeclaration:
 					{
-						int prependLength = GetPrependLength(propertyDeclaration.Modifiers);
+						int prependLength = IndentUtils.GetPrependLength(propertyDeclaration.Modifiers);
 						return propertyDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
 				case VariableDeclarationSyntax variableDeclaration:
 					{
-						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
+						int prependLength = IndentUtils.GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
 						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
-				case VariableDeclaratorSyntax variableDeclarator 
+				case VariableDeclaratorSyntax variableDeclarator
 				when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration:
 					{
-						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
+						int prependLength = IndentUtils.GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
 						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
 				default:
 					return ViewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 			}
 		}
-
-		private static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
-			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
-			: 0;
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 

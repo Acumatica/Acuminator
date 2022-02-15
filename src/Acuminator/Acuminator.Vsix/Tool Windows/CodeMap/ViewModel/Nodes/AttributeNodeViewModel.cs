@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Vsix.ToolWindows.Common;
+using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.Utilities.Navigation;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utilities.Navigation;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class AttributeNodeViewModel : TreeNodeViewModel
+	public class AttributeNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		private const string AttributeSuffix = nameof(System.Attribute);
 		public AttributeData Attribute { get; }
@@ -26,11 +27,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public override string Tooltip => GetAttributeTooltip();
-
 		public override bool DisplayNodeWithoutChildren => true;
 
 		public override Icon NodeIcon => Icon.None;
+
+		private readonly Lazy<TooltipInfo> _tooltipLazy;
 
 		public AttributeNodeViewModel(TreeNodeViewModel nodeVM, AttributeData attribute, bool isExpanded = false) :
 								 base(nodeVM?.Tree, nodeVM, isExpanded)
@@ -52,6 +53,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			Name = $"[{attributeName}]";
+
+			_tooltipLazy = new Lazy<TooltipInfo>(CalculateAttributeTooltip);
 		}
 
 		public async override Task NavigateToItemAsync()
@@ -75,18 +78,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 
-		private string GetAttributeTooltip()
+		public TooltipInfo CalculateTooltip() => _tooltipLazy.Value;
+
+		private TooltipInfo CalculateAttributeTooltip()
 		{
 			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
 			var attributeListNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
+			string tooltip;
 
 			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
-				return $"[{Attribute.ToString()}]";
+			{
+				tooltip = $"[{Attribute.ToString()}]";
+			}
+			else
+			{
+				int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
+				tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
+										   .RemoveCommonAcumaticaNamespacePrefixes();
+				tooltip = tooltip.NullIfWhiteSpace() ?? $"[{Attribute.ToString()}]";
+			}
 
-			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
-			string tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
-											  .RemoveCommonAcumaticaNamespacePrefixes();
-			return tooltip ?? $"[{Attribute.ToString()}]";
+			return new TooltipInfo(tooltip);
 		}
 	}
 }

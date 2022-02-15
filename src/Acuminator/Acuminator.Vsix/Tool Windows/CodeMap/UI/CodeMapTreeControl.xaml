@@ -22,7 +22,7 @@
 					<converters:ColorToBrushConverter x:Key="colorToBrushConverter"/>
 
 					<codeMap:TreeViewLineConverter x:Key="lineConverter"/>
-					<codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
+					<codeMap:ElementWithTooltipToTooltipConverter x:Key="elementToTooltipConverter"/>
 					<codeMap:TreeIconTooltipConverter x:Key="iconTooltipConverter"/>
 					<codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
 
@@ -560,7 +560,7 @@
 
 								<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
 											Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-											Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToTooltipConverter}}">
+											Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource elementToTooltipConverter}}">
 									<TextBlock.Style>
 										<Style TargetType="TextBlock">
 											<Setter Property="ToolTip" >

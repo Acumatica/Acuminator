@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utilities.Navigation;
 
-
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.Utilities
 {
 	public static class IndentUtils
 	{
 		private const string PxDataNamespacePrefix = "PX.Data.";
 		private const string PxObjectsNamespacePrefix = "PX.Objects.";
+
+		public static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
+			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
+			: 0;
 
 		public static string GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize, int prependLength = 0)
 		{
@@ -39,6 +39,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var sb = new System.Text.StringBuilder(string.Empty, capacity: syntaxNodeString.Length);
 			int counter = 0;
 			bool isInsideString = false;
+			bool codeStarted = false;
 			char prevChar = default;
 
 			foreach (char c in syntaxNodeString)
@@ -62,20 +63,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					case '\n':
 						counter = 0;
+						codeStarted = false;
 						sb.Append(c);
 						return;
 
-					case ' ' when counter < indentLength && !isInsideString: //-V3063
+					case ' ' when counter < indentLength && !isInsideString && !codeStarted: //-V3063
 						counter++;
 						return;
 
-					case '\t' when counter < indentLength && !isInsideString: //-V3063
+					case '\t' when counter < indentLength && !isInsideString && !codeStarted: //-V3063
 						counter += tabSize;
 						return;
 
-					case ' ' when counter >= indentLength || isInsideString:
-					case '\t' when counter >= indentLength || isInsideString:
+					case ' ' when counter >= indentLength || isInsideString || codeStarted:
+					case '\t' when counter >= indentLength || isInsideString || codeStarted:
+						sb.Append(c);
+						return;
+
 					default:
+						codeStarted = true;
 						sb.Append(c);
 						return;
 				}
@@ -110,7 +116,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (node == null)
 				return 0;
 
-			int indentLength = 0;
 			SyntaxNode currentNode = node;
 
 			while (currentNode != null)
@@ -119,14 +124,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				
 				if (leadingTrivia.Count > 0)
 				{
-					indentLength += leadingTrivia.LastWhitespaceTrivia()
-												?.GetIndentLengthFromWhitespaceTrivia(tabSize) ?? 0;										 
+					int indentLength = leadingTrivia.LastWhitespaceTrivia()
+												   ?.GetIndentLengthFromWhitespaceTrivia(tabSize) ?? 0;
+					if (indentLength > 0)
+						return indentLength;
 				}
 
 				currentNode = currentNode.Parent;
 			}
 
-			return indentLength;
+			return 0;
 		}
 
 		private static SyntaxTrivia? LastWhitespaceTrivia(this SyntaxTriviaList syntaxTrivias)

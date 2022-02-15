@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 using Acuminator.Vsix.Utilities;
 
 
@@ -36,9 +37,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual IEnumerable<GraphMemberType> GetGraphMemberTypesInOrder()
 		{
+			yield return GraphMemberType.InitializationAndActivation;
 			yield return GraphMemberType.View;
 			yield return GraphMemberType.Action;
 			yield return GraphMemberType.PXOverride;
+			yield return GraphMemberType.BaseMemberOverride;
 			yield return GraphMemberType.CacheAttached;
 			yield return GraphMemberType.RowEvent;
 			yield return GraphMemberType.FieldEvent;
@@ -49,14 +52,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType) =>
 			graphMemberType switch
 			{
-				GraphMemberType.View          => new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.Action        => new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.CacheAttached => new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.RowEvent      => new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.FieldEvent    => new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.PXOverride    => new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				_                             => null,
+				GraphMemberType.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.View                        => new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.Action                      => new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.CacheAttached               => new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.RowEvent                    => new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.FieldEvent                  => new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.PXOverride                  => new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				_                                           => null,
 			};
+
+		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphInitializationAndActivationCategoryNodeViewModel specialGraphMembersCategory)
+		{
+			return CreateGraphCategoryChildren<IsActiveMethodInfo>(specialGraphMembersCategory,
+						constructor: isActiveMethodInfo => new IsActiveGraphMethodNodeViewModel(specialGraphMembersCategory, 
+																								isActiveMethodInfo, ExpandCreatedNodes));
+		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(ActionCategoryNodeViewModel actionCategory)
 		{

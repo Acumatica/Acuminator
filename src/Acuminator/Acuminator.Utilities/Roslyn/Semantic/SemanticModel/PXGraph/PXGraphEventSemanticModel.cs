@@ -1,12 +1,14 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
@@ -53,6 +55,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames => BaseGraphModel.ActionHandlersByNames;
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => BaseGraphModel.ActionHandlers;
+
+		/// <summary>
+		/// Gets the info about IsActive method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
+		/// </summary>
+		/// <value>
+		/// The info about IsActive method.
+		/// </value>
+		public IsActiveMethodInfo IsActiveMethod => BaseGraphModel.IsActiveMethodInfo;
 		#endregion
 
 		#region Events

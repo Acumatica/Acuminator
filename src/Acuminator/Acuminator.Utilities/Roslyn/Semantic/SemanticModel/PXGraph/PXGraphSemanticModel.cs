@@ -1,13 +1,14 @@
-﻿using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -61,12 +62,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			ActionHandlers.Where(h => h?.Symbol?.ContainingType?.Equals(Symbol) ?? false);
 
 		/// <summary>
-		/// Gets the IsActive method symbol for graph extension. Can be <c>null</c>. Always <c>null</c> for graphs.
+		/// Gets the info about IsActive method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
 		/// </summary>
 		/// <value>
-		/// The is active method symbol.
+		/// The info about IsActive method.
 		/// </value>
-		public IMethodSymbol IsActiveMethod { get; }
+		public IsActiveMethodInfo IsActiveMethodInfo { get; }
 
 
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
@@ -95,7 +96,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			ActionHandlersByNames = GetActionHandlers();
 			InitProcessingDelegatesInfo();
 			Initializers = GetDeclaredInitializers().ToImmutableArray();
-			IsActiveMethod = GetIsActiveMethod();
+			IsActiveMethodInfo = GetIsActiveMethodInfo();
 		}
 
 		private void InitProcessingDelegatesInfo()
@@ -305,21 +306,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return walker.GraphInitDelegates;
 		}
 
-		private IMethodSymbol GetIsActiveMethod()
+		private IsActiveMethodInfo GetIsActiveMethodInfo()
 		{
 			if (Type != GraphType.PXGraphExtension)
 				return null;
 
 			_cancellation.ThrowIfCancellationRequested();
-			ImmutableArray<ISymbol> isActiveCandidates = Symbol.GetMembers(DelegateNames.IsActive);
-
-			if (isActiveCandidates.IsDefaultOrEmpty)
-				return null;
-
-			return isActiveCandidates.OfType<IMethodSymbol>()
-									 .FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
-															   method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
-															   method.ReturnType.SpecialType == SpecialType.System_Boolean);
+			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol);
 		}
 	}
 }

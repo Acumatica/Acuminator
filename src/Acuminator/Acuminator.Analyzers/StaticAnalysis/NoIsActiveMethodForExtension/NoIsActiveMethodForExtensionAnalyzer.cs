@@ -28,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 		public bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dacExtension) =>
 			dacExtension?.DacType == DacType.DacExtension && 
-			dacExtension.IsActiveMethod == null &&
+			dacExtension.IsActiveMethodInfo == null &&
 			!dacExtension.IsMappedCacheExtension && !dacExtension.Symbol.IsAbstract && !dacExtension.Symbol.IsStatic;
 
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacExtension)
@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 		public bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension) =>
 			graphExtension?.Type == GraphType.PXGraphExtension &&
-			graphExtension.IsActiveMethod == null &&
+			graphExtension.IsActiveMethodInfo == null &&
 			!graphExtension.Symbol.IsAbstract && !graphExtension.Symbol.IsStatic && !graphExtension.Symbol.IsGenericType;
 
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel graphExtension)

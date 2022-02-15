@@ -197,6 +197,12 @@
     <Resource Include="Resources\CodeMap\ProcessSmall.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\CodeMap\IsActiveMethod.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\InitializationAndActivationCategory.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -269,6 +275,8 @@
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
+    <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor.cs" />
@@ -280,7 +288,10 @@
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
+    <Compile Include="Tool Windows\Common\IElementWithTooltip.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphInitializationAndActivationCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActiveGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\EventsMappingInfoVS2022.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapter.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\VSEventsAdapterVS2022.cs" />
@@ -292,7 +303,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\CodeMapSortContext.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapTreeInitialSorter.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Tooltips\ElementWithTooltipToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
@@ -350,7 +361,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapRefreshMode.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\IndentUtils.cs" />
+    <Compile Include="Utils\Text\IndentUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\Converters\TreeViewLineConverter .cs" />
     <Compile Include="Tool Windows\Converters\ColorToBrushConverter.cs" />
@@ -365,11 +376,10 @@
     <Compile Include="Tool Windows\ViewModel\Command.cs" />
     <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
     <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
-    <Compile Include="Utils\Constants\CommonConstants.cs" />
+    <Compile Include="Utils\Constants\Constants.cs" />
     <Compile Include="Utils\Logger\LogMode.cs" />
     <Compile Include="Utils\Logger\AcuminatorLogger.cs" />
     <Compile Include="Utils\ChangesClassification\DocumentChangesClassifier.cs" />
-    <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
