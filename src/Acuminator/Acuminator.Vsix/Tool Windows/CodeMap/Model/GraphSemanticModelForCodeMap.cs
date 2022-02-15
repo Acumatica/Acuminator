@@ -19,9 +19,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public PXGraphEventSemanticModel GraphModel { get; }
 
-		public ImmutableArray<PXOverrideInfoForCodeMap> PXOverrides { get; }
+		public ImmutableArray<PXOverrideInfo> PXOverrides { get; }
 
-		public ImmutableArray<InstanceConstructorInfoForCodeMap> InstanceConstructors { get; }
+		public ImmutableArray<InstanceConstructorInfo> InstanceConstructors { get; }
+
+		public ImmutableArray<BaseMemberOverrideInfo> BaseMemberOverrides { get; }
 
 		public INamedTypeSymbol Symbol => GraphModel.Symbol;
 
@@ -33,9 +35,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphModel = graphEventSemanticModel;
 			PXOverrides = GetPXOverrides(graphEventSemanticModel.Symbol, context).ToImmutableArray();
 			InstanceConstructors = GetInstanceConstructors(graphEventSemanticModel.Symbol, context).ToImmutableArray();
+			BaseMemberOverrides = GetBaseMemberOverrides(graphEventSemanticModel.Symbol, context).ToImmutableArray();
 		}
 
-		protected virtual IEnumerable<PXOverrideInfoForCodeMap> GetPXOverrides(INamedTypeSymbol graphOrExtension, PXContext context)
+		protected virtual IEnumerable<PXOverrideInfo> GetPXOverrides(INamedTypeSymbol graphOrExtension, PXContext context)
 		{
 			var pxOverrideAttribute = context.AttributeTypes.PXOverrideAttribute;
 
@@ -53,25 +56,42 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				if (!attributes.IsEmpty && attributes.Any(a => a.AttributeClass.Equals(pxOverrideAttribute)))
 				{
-					yield return new PXOverrideInfoForCodeMap(method, declarationOrder);
+					yield return new PXOverrideInfo(method, declarationOrder);
 					declarationOrder++;
 				}
 			}
 		}
 
-		protected virtual IEnumerable<InstanceConstructorInfoForCodeMap> GetInstanceConstructors(INamedTypeSymbol graphOrExtension, PXContext context)
+		protected virtual IEnumerable<InstanceConstructorInfo> GetInstanceConstructors(INamedTypeSymbol graphOrExtension, PXContext context)
 		{
 			if (graphOrExtension.InstanceConstructors.IsDefaultOrEmpty)
 				yield break;
 
-			var declaredConstructors = graphOrExtension.InstanceConstructors
-													   .Where(constructor => constructor.ContainingType.Equals(graphOrExtension) &&
-																			!constructor.IsImplicitlyDeclared);
+			var declaredConstructors = from constructor in graphOrExtension.InstanceConstructors
+									   where !constructor.IsImplicitlyDeclared && 
+											  constructor.ContainingType.Equals(graphOrExtension)
+									   select constructor;
 			int declarationOrder = 0;
 
 			foreach (IMethodSymbol constructor in declaredConstructors)
 			{
-				yield return new InstanceConstructorInfoForCodeMap(constructor, declarationOrder);
+				yield return new InstanceConstructorInfo(constructor, declarationOrder);
+				declarationOrder++;
+			}
+		}
+
+		protected virtual IEnumerable<BaseMemberOverrideInfo> GetBaseMemberOverrides(INamedTypeSymbol graphOrExtension, PXContext context)
+		{
+			var baseMemberOverrides = from member in graphOrExtension.GetMembers()
+									  where !member.IsImplicitlyDeclared && member.IsOverride && 
+											 member.CanBeReferencedByName &&
+											 member.ContainingType.Equals(graphOrExtension)
+									  select member;
+			int declarationOrder = 0;
+
+			foreach (ISymbol baseMemberOverride in baseMemberOverrides)
+			{
+				yield return new BaseMemberOverrideInfo(baseMemberOverride, declarationOrder);
 				declarationOrder++;
 			}
 		}

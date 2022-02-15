@@ -78,5 +78,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 
 		public static readonly string PrimaryKeyFindMethod = "Find";
 		public static readonly string PrimaryKeyFindByMethod = "FindBy";
+
+		public static readonly string Persist = "Persist";
 	}
 }

@@ -14,7 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public override Icon NodeIcon => Icon.InstanceGraphConstructor;
 
-		public InstanceConstructorInfoForCodeMap InstanceConstructorInfo => (InstanceConstructorInfoForCodeMap)MemberInfo;
+		public InstanceConstructorInfo InstanceConstructorInfo => (InstanceConstructorInfo)MemberInfo;
 
 		public override string Name
 		{
@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public GraphInstanceConstructorNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
-													 InstanceConstructorInfoForCodeMap instanceConstructorInfo, bool isExpanded = false) :
+													 InstanceConstructorInfo instanceConstructorInfo, bool isExpanded = false) :
 												base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM,
 													 instanceConstructorInfo, isExpanded)
 		{		

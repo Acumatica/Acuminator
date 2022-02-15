@@ -13,9 +13,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// A simple information for code map about the px override method in graph. 
 	/// Do not store extra info about a method being overriden or info about other overrides 
 	/// </summary>
-	public class PXOverrideInfoForCodeMap : SymbolItem<IMethodSymbol>
+	public class PXOverrideInfo : SymbolItem<IMethodSymbol>
 	{
-		public PXOverrideInfoForCodeMap(IMethodSymbol symbol, int declarationOrder) : base(symbol, declarationOrder)
+		public PXOverrideInfo(IMethodSymbol symbol, int declarationOrder) : base(symbol, declarationOrder)
 		{
 		}
 	}

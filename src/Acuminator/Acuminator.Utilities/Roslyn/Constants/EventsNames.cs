@@ -2,6 +2,11 @@
 {
 	public static class EventsNames
 	{
+		/// <summary>
+		/// Commonly accepted name of the graph event handler with generic signature.
+		/// </summary>
+		public const string CommonEventHandlerWithGenericSignatureName = "_";
+
 		public static readonly string CacheAttached = "PX.Data.Events+CacheAttached`1";
 		public static readonly string RowSelecting = "PX.Data.Events+RowSelecting`1";
 		public static readonly string RowSelected = "PX.Data.Events+RowSelected`1";

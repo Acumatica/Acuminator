@@ -7,6 +7,8 @@ namespace PX.Objects.HackathonDemo
 {
 	public partial class APInvoiceEntry : PXGraph<APInvoiceEntry>
 	{
+		public virtual string Module => "AP";
+
 		#region Views
 		public PXSelect<ListEntryPoint> Items;
 
@@ -95,7 +97,7 @@ namespace PX.Objects.HackathonDemo
 			}
 		}
 
-        protected virtual void APInvoice_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
+        protected virtual void _(Events.RowInserting<APInvoice> e)
         {
         }
 

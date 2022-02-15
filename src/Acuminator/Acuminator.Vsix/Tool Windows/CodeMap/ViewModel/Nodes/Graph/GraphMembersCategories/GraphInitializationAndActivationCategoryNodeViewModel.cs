@@ -34,7 +34,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					yield return staticConstructor;
 			}
 
-			foreach (InstanceConstructorInfoForCodeMap constructor in CodeMapGraphModel.InstanceConstructors)
+			foreach (InstanceConstructorInfo constructor in CodeMapGraphModel.InstanceConstructors)
 			{
 				yield return constructor;
 			}
