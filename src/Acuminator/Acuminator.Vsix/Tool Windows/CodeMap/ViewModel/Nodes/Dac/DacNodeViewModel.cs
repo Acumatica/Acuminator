@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.Utilities;
@@ -25,11 +27,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => true;
 
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
+
 		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : 
 						   base(tree, parent: null, isExpanded)
 		{
 			dacModel.ThrowOnNull(nameof(dacModel));
 			DacModel = dacModel;
+			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos());
+		}
+
+		private IEnumerable<ExtraInfoViewModel> GetDacExtraInfos()
+		{
+			Color color = Color.FromRgb(38, 155, 199);
+			string dacType = DacModel.DacType == DacType.Dac
+				? VSIXResource.CodeMap_ExtraInfo_IsDac
+				: VSIXResource.CodeMap_ExtraInfo_IsDacExtension;
+			yield return new TextViewModel(this, dacType, darkThemeForeground: color, lightThemeForeground: color);
 		}
 
 		public override Task NavigateToItemAsync() => DacModel.Symbol.NavigateToAsync();

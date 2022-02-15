@@ -22,11 +22,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			return icon switch
 			{
-				Icon.DacKeyProperty                             => VSIXResource.DacKeyIconTooltip,
-				Icon.Settings                                   => VSIXResource.PXSetupViewIconTooltip,
-				Icon.Filter                                     => VSIXResource.PXFilterViewIconTooltip,
-				Icon.Processing when node is ViewNodeViewModel  => VSIXResource.ProcessingViewIconTooltip,
-				Icon.Processing when node is GraphNodeViewModel => VSIXResource.ProcessingGraphIconTooltip,
+				Icon.DacKeyProperty                             => VSIXResource.CodeMap_ExtraInfo_DacKeyIconTooltip,
+				Icon.Settings                                   => VSIXResource.CodeMap_ExtraInfo_PXSetupViewIconTooltip,
+				Icon.Filter                                     => VSIXResource.CodeMap_ExtraInfo_PXFilterViewIconTooltip,
+				Icon.Processing when node is ViewNodeViewModel  => VSIXResource.CodeMap_ExtraInfo_ProcessingViewIconTooltip,
+				Icon.Processing when node is GraphNodeViewModel => VSIXResource.CodeMap_ExtraInfo_ProcessingGraphIconTooltip,
 				_                                               => Binding.DoNothing
 			};
 		}
