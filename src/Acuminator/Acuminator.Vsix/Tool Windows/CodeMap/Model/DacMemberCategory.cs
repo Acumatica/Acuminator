@@ -11,7 +11,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		Keys,
 		Property,		
-		FieldsWithoutProperty
+		FieldsWithoutProperty,
+		InitializationAndActivation
 	}
 
 	internal static class DacMemberTypeTypeUtils
@@ -21,6 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{ DacMemberCategory.Keys, "Keys" },
 			{ DacMemberCategory.Property, "DAC Fields" },
 			{ DacMemberCategory.FieldsWithoutProperty, "Fields without property" },
+			{ DacMemberCategory.InitializationAndActivation, "Initialization & Activation" }
 		};
 
 		public static string Description(this DacMemberCategory dacMemberCategory) =>

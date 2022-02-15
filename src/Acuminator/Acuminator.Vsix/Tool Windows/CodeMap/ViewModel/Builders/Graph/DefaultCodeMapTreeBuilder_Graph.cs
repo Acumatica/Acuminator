@@ -62,10 +62,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_                                           => null,
 			};
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphInitializationAndActivationCategoryNodeViewModel specialGraphMembersCategory)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory)
 		{
-			return CreateGraphCategoryChildren<IsActiveMethodInfo>(specialGraphMembersCategory,
-						constructor: isActiveMethodInfo => new IsActiveGraphMethodNodeViewModel(specialGraphMembersCategory, 
+			return CreateGraphCategoryChildren<IsActiveMethodInfo>(graphInitializationAndActivationCategory,
+						constructor: isActiveMethodInfo => new IsActiveGraphMethodNodeViewModel(graphInitializationAndActivationCategory, 
 																								isActiveMethodInfo, ExpandCreatedNodes));
 		}
 

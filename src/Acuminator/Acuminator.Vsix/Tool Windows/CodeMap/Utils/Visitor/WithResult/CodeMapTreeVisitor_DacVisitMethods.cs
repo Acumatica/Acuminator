@@ -19,10 +19,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual TResult VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory) => DefaultVisit(dacPropertiesCategory);
 
 		public virtual TResult VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory) => DefaultVisit(dacKeysCategory);
+
+		public virtual TResult VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory) =>
+			DefaultVisit(dacInitializationAndActivationCategory);
 		#endregion
 
 		#region Leaf Nodes
 		public virtual TResult VisitNode(PropertyNodeViewModel property) => DefaultVisit(property);
+
+		public virtual TResult VisitNode(IsActiveDacMethodNodeViewModel isActiveDacMethodNode) =>
+			DefaultVisit(isActiveDacMethodNode);
 		#endregion
 	}
 }

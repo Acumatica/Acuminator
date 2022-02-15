@@ -24,7 +24,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() =>
-			GraphSemanticModel.IsActiveMethod?.ToEnumerable() ?? Enumerable.Empty<SymbolItem>();
+			GraphSemanticModel.IsActiveMethodInfo?.ToEnumerable() ?? Enumerable.Empty<SymbolItem>();
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 
