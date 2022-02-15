@@ -91,6 +91,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				var n when n is DacMemberCategoryNodeViewModel ||
 						   n is GraphMemberCategoryNodeViewModel _ => false,
 
+				IsActiveGraphMethodNodeViewModel _ => false,
+				GraphInstanceConstructorNodeViewModel _ => false,
+				GraphStaticConstructorNodeViewModel _ => false,
+
 				var n when n is DacGroupingNodeBaseViewModel ||
 						   n is DacFieldGroupingNodeBaseViewModel => sortType == SortType.Alphabet,
 

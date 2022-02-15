@@ -43,6 +43,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		InitializationAndActivationGraphCategory,
 		IsActiveMethodGraph,
+		StaticGraphConstructor,
+		InstanceGraphConstructor,
 
 		InitializationAndActivationDacCategory,
 		IsActiveMethodDac
