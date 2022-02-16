@@ -1,11 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 
@@ -46,7 +49,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			return workspace.Options.GetOption(FormattingOptions.IndentationSize, LanguageNames.CSharp);
 		}		
 
-		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument) =>
+		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument) =>
 			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
 			{
 				var kind when kind == WorkspaceChangeKind.SolutionRemoved ||
@@ -61,7 +64,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			};
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
+		public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
 
@@ -72,7 +75,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDocumentTextChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
+		public static bool IsDocumentTextChanged(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
 
@@ -85,7 +88,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			return !HaveDocumentIdOrProjectIdChanged(changeEventArgs, oldDocument);
 		}
 
-		private static bool HaveDocumentIdOrProjectIdChanged(WorkspaceChangeEventArgs changeEventArgs, Document oldDocument) =>
+		private static bool HaveDocumentIdOrProjectIdChanged(WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument) =>
 			oldDocument?.Id != changeEventArgs.DocumentId || oldDocument?.Project.Id != changeEventArgs.ProjectId;
 	}
 }
