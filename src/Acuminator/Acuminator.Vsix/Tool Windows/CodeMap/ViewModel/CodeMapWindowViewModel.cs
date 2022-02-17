@@ -312,11 +312,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			else if (e.IsDocumentTextChanged(Document))
 			{
-				await HandleDocumentTextChangesAsync(newWorkspace, e).ConfigureAwait(false);
-			}		
+				await HandleWorkspaceChangesAsync(newWorkspace, e, onlyActiveDocumentWasChanged: true)
+						.ConfigureAwait(false);
+			}
+			else if (Document?.Project != null && 
+					(Document.Project.Id == e.ProjectId || !Document.Project.IsFullyLoadedProject()) && 
+					(e.IsProjectStatusInSolutionChanged() || e.IsProjectMetadataChanged()))
+			{
+				await HandleWorkspaceChangesAsync(newWorkspace, e, onlyActiveDocumentWasChanged: false)
+						.ConfigureAwait(false);
+			}
 		}
 
-		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
+		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e, 
+													   bool onlyActiveDocumentWasChanged)
 		{
 			Workspace = newWorkspace;
 			Document? changedDocument = e.NewSolution.GetDocument(e.DocumentId);
@@ -329,23 +338,30 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
-			CodeMapRefreshMode recalculateCodeMap = newRoot == null
-				? CodeMapRefreshMode.Clear
-				: CodeMapRefreshMode.Recalculate;
+			CodeMapRefreshMode recalculateCodeMapMode;
 
-			if (newRoot != null && Tree != null)
+			if (onlyActiveDocumentWasChanged)
 			{
-				recalculateCodeMap = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot, 
-																						  changedDocument, CancellationToken ?? default);
-			}
+				var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
+				recalculateCodeMapMode = newRoot == null
+					? CodeMapRefreshMode.Clear
+					: CodeMapRefreshMode.Recalculate;
 
-			if (recalculateCodeMap == CodeMapRefreshMode.NoRefresh)
+				if (newRoot != null && Tree != null)
+				{
+					recalculateCodeMapMode = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot,
+																							  changedDocument, CancellationToken ?? default);
+				}
+			}
+			else
+				recalculateCodeMapMode = CodeMapRefreshMode.Recalculate;
+
+			if (recalculateCodeMapMode == CodeMapRefreshMode.NoRefresh)
 				return;
 
 			ClearCodeMap();
 
-			if (recalculateCodeMap == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
+			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
 			{
 				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
