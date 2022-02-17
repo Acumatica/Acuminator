@@ -92,6 +92,15 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			oldDocument?.Id != changeEventArgs.DocumentId || oldDocument?.Project.Id != changeEventArgs.ProjectId;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsProjectStatusInSolutionChanged(this WorkspaceChangeEventArgs changeEventArgs) =>
+			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
+			{
+				WorkspaceChangeKind.ProjectAdded => true,
+				WorkspaceChangeKind.ProjectRemoved => true,
+				_ => false
+			};
+
+
 		public static bool IsProjectMetadataChanged(this WorkspaceChangeEventArgs changeEventArgs)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
