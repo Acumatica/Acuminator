@@ -312,23 +312,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			else if (e.IsDocumentTextChanged(Document))
 			{
-				await HandleWorkspaceChangesAsync(newWorkspace, e, onlyActiveDocumentWasChanged: true)
+				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, e.DocumentId, onlyActiveDocumentWasChanged: true)
 						.ConfigureAwait(false);
 			}
 			else if (Document?.Project != null && 
 					(Document.Project.Id == e.ProjectId || !Document.Project.IsFullyLoadedProject()) && 
 					(e.IsProjectStatusInSolutionChanged() || e.IsProjectMetadataChanged()))
 			{
-				await HandleWorkspaceChangesAsync(newWorkspace, e, onlyActiveDocumentWasChanged: false)
+				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, Document.Id, onlyActiveDocumentWasChanged: false)
 						.ConfigureAwait(false);
 			}
 		}
 
-		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e, 
-													   bool onlyActiveDocumentWasChanged)
+		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, Microsoft.CodeAnalysis.Solution newSolution, 
+													   DocumentId activeDocumentID, bool onlyActiveDocumentWasChanged)
 		{
 			Workspace = newWorkspace;
-			Document? changedDocument = e.NewSolution.GetDocument(e.DocumentId);
+			Document? changedDocument = newSolution.GetDocument(activeDocumentID);
 			Document? oldDocument = Document;
 			SyntaxNode? oldRoot = DocumentModel?.Root;
 
