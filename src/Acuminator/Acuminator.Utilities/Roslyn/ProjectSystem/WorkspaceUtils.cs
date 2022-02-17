@@ -91,6 +91,9 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 		private static bool HaveDocumentIdOrProjectIdChanged(WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument) =>
 			oldDocument?.Id != changeEventArgs.DocumentId || oldDocument?.Project.Id != changeEventArgs.ProjectId;
 
+		public static bool IsFullyLoadedProject(this Project project) =>
+			project.CheckIfNull(nameof(project)).FilePath.NullIfWhiteSpace() != null;
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsProjectStatusInSolutionChanged(this WorkspaceChangeEventArgs changeEventArgs) =>
 			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
@@ -118,12 +121,12 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			if (oldProject == null || newProject == null)
 				return false;
 
-			// For simplicity and performance only the counts of metadata references are checked.
+			// For simplicity and performance only total counts of metadata references are checked.
 			// This does not cover a very rare case of one project metadata reference being replaced by another reference in a single operation.
 			// For example it can be a manual edit of a project file. However, such operations are rare and are highly unlikely to affect Acuminator.
 			// Thus for simplicity and performance reasons set equality is not checked for project metadata references
-			return oldProject.MetadataReferences.Count == newProject.MetadataReferences.Count &&
-				   oldProject.AllProjectReferences.Count == newProject.AllProjectReferences.Count;
+			return oldProject.MetadataReferences.Count != newProject.MetadataReferences.Count ||
+				   oldProject.AllProjectReferences.Count != newProject.AllProjectReferences.Count;
 		}
 	}
 }
