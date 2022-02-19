@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,7 +14,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 {
 	public static class RoslynSyntaxUtils
 	{
-		public static bool IsLocalVariable(this SemanticModel semanticModel, MethodDeclarationSyntax containingMethod, string variableName)
+		public static bool IsLocalVariable(this SemanticModel semanticModel, MethodDeclarationSyntax containingMethod, string? variableName)
 		{
 			semanticModel.ThrowOnNull(nameof(semanticModel));
 			containingMethod.ThrowOnNull(nameof(containingMethod));
@@ -41,7 +43,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// 							simple case don't work.</param>
 		/// <param name="cancellationToken">(Optional) The cancellation token.</param>
 		/// <returns/>
-		public static int? TryGetSizeOfSingleDimensionalNonJaggedArray(ExpressionSyntax arrayCreationExpression, SemanticModel semanticModel = null,
+		public static int? TryGetSizeOfSingleDimensionalNonJaggedArray(ExpressionSyntax? arrayCreationExpression, SemanticModel? semanticModel = null,
 																	   CancellationToken cancellationToken = default)
 		{
 			return arrayCreationExpression switch
@@ -72,7 +74,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// 							Can be passed to try to fallback to its constant evaluation if simple case don't work.</param>
 		/// <param name="cancellationToken">(Optional) The cancellation token.</param>
 		/// <returns/>
-		public static int? TryGetSizeOfSingleDimensionalNonJaggedArray(ArrayTypeSyntax arrayType, SemanticModel semanticModel = null,
+		public static int? TryGetSizeOfSingleDimensionalNonJaggedArray(ArrayTypeSyntax? arrayType, SemanticModel? semanticModel = null,
 																	   CancellationToken cancellationToken = default)
 		{
 			if (arrayType == null)
@@ -110,20 +112,20 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// <returns>
 		/// An asynchronous task that yields the syntax.
 		/// </returns>
-		public static Task<SyntaxNode> GetSyntaxAsync(this ISymbol symbol, CancellationToken cancellationToken = default)
+		public static Task<SyntaxNode?> GetSyntaxAsync(this ISymbol? symbol, CancellationToken cancellationToken = default)
 		{
 			if (symbol == null)
-				return Task.FromResult<SyntaxNode>(null);
+				return Task.FromResult<SyntaxNode?>(null);
 
 			var declarations = symbol.DeclaringSyntaxReferences;
 
 			if (declarations.Length == 0)
-				return Task.FromResult<SyntaxNode>(null);
+				return Task.FromResult<SyntaxNode?>(null);
 
 			return declarations[0].GetSyntaxAsync(cancellationToken);
 		}
 
-		public static SyntaxNode GetSyntax(this ISymbol symbol, CancellationToken cancellationToken = default)
+		public static SyntaxNode? GetSyntax(this ISymbol? symbol, CancellationToken cancellationToken = default)
 		{
 			if (symbol == null)
 				return null;
@@ -136,12 +138,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return declarations[0].GetSyntax(cancellationToken);
 		}
 
-		public static Location GetLocation(this AttributeData attribute, CancellationToken cancellationToken = default) =>
+		public static Location? GetLocation(this AttributeData? attribute, CancellationToken cancellationToken = default) =>
 			attribute?.ApplicationSyntaxReference
 					 ?.GetSyntax(cancellationToken)
 					 ?.GetLocation();
 
-		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax member) =>
+		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax? member) =>
 			member switch
 			{
 				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.Identifier.ToEnumerable(),
@@ -181,7 +183,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			}
 		}
 
-		public static bool IsPublic(this MemberDeclarationSyntax member)
+		public static bool IsPublic(this MemberDeclarationSyntax? member)
 		{
 			SyntaxTokenList modifiers = member.GetModifiers();
 			return modifiers.Any(SyntaxKind.PublicKeyword);
@@ -200,7 +202,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return modifiers.Any(SyntaxKind.InternalKeyword) && !modifiers.Any(SyntaxKind.PrivateKeyword);  
 		}
 
-		public static SyntaxTokenList GetModifiers(this MemberDeclarationSyntax member) =>
+		public static SyntaxTokenList GetModifiers(this MemberDeclarationSyntax? member) =>
 			member.CheckIfNull(nameof(member)) switch
 			{
 				BasePropertyDeclarationSyntax basePropertyDeclaration => basePropertyDeclaration.Modifiers,
@@ -217,11 +219,11 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// </summary>
 		/// <param name="node">Syntax node</param>
 		/// <returns>Syntax node for the body, if any</returns>
-		public static CSharpSyntaxNode GetBody(this SyntaxNode node) =>
+		public static CSharpSyntaxNode? GetBody(this SyntaxNode? node) =>
 			node switch
 			{
 				AccessorDeclarationSyntax accessorSyntax => accessorSyntax.Body,
-				MethodDeclarationSyntax methodSyntax => methodSyntax.Body ?? (CSharpSyntaxNode)methodSyntax.ExpressionBody?.Expression,
+				MethodDeclarationSyntax methodSyntax => methodSyntax.Body ?? (methodSyntax.ExpressionBody?.Expression as CSharpSyntaxNode),
 				ConstructorDeclarationSyntax constructorSyntax => constructorSyntax.Body,
 				_ => null,
 			};
@@ -247,7 +249,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			}
 		}
 
-		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax member) =>
+		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax? member) =>
 			member switch
 			{
 				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.AttributeLists,
@@ -264,12 +266,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				_                                                   => new SyntaxList<AttributeListSyntax>()
 			};
 
-		public static SyntaxTrivia ToSingleLineComment(this string commentContent)
+		public static SyntaxTrivia ToSingleLineComment(this string? commentContent)
 		{
 			const string commentPrefix = "//";
 			string comment = commentContent.IsNullOrWhiteSpace()
 				? commentPrefix
-				: commentPrefix + " " + commentContent.Trim();
+				: commentPrefix + " " + commentContent!.Trim();
 
 			return SyntaxFactory.Comment(comment);
 		}
