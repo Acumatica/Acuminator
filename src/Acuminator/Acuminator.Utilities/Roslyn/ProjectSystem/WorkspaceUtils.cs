@@ -1,11 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 
@@ -46,7 +49,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			return workspace.Options.GetOption(FormattingOptions.IndentationSize, LanguageNames.CSharp);
 		}		
 
-		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument) =>
+		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument) =>
 			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
 			{
 				var kind when kind == WorkspaceChangeKind.SolutionRemoved ||
@@ -61,7 +64,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			};
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
+		public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
 
@@ -72,7 +75,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDocumentTextChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
+		public static bool IsDocumentTextChanged(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
 
@@ -85,7 +88,45 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			return !HaveDocumentIdOrProjectIdChanged(changeEventArgs, oldDocument);
 		}
 
-		private static bool HaveDocumentIdOrProjectIdChanged(WorkspaceChangeEventArgs changeEventArgs, Document oldDocument) =>
+		private static bool HaveDocumentIdOrProjectIdChanged(WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument) =>
 			oldDocument?.Id != changeEventArgs.DocumentId || oldDocument?.Project.Id != changeEventArgs.ProjectId;
+
+		public static bool IsFullyLoadedProject(this Project project) =>
+			project.CheckIfNull(nameof(project)).FilePath.NullIfWhiteSpace() != null;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsProjectStatusInSolutionChanged(this WorkspaceChangeEventArgs changeEventArgs) =>
+			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
+			{
+				WorkspaceChangeKind.ProjectAdded => true,
+				WorkspaceChangeKind.ProjectRemoved => true,
+				_ => false
+			};
+
+
+		public static bool IsProjectMetadataChanged(this WorkspaceChangeEventArgs changeEventArgs)
+		{
+			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
+
+			if ((changeEventArgs.Kind != WorkspaceChangeKind.ProjectChanged && 
+				changeEventArgs.Kind != WorkspaceChangeKind.ProjectReloaded) || 
+				changeEventArgs.ProjectId == null)
+			{
+				return false;
+			}
+
+			Project? oldProject = changeEventArgs.OldSolution.GetProject(changeEventArgs.ProjectId);
+			Project? newProject = changeEventArgs.NewSolution.GetProject(changeEventArgs.ProjectId);
+
+			if (oldProject == null || newProject == null)
+				return false;
+
+			// For simplicity and performance only total counts of metadata references are checked.
+			// This does not cover a very rare case of one project metadata reference being replaced by another reference in a single operation.
+			// For example it can be a manual edit of a project file. However, such operations are rare and are highly unlikely to affect Acuminator.
+			// Thus for simplicity and performance reasons set equality is not checked for project metadata references
+			return oldProject.MetadataReferences.Count != newProject.MetadataReferences.Count ||
+				   oldProject.AllProjectReferences.Count != newProject.AllProjectReferences.Count;
+		}
 	}
 }

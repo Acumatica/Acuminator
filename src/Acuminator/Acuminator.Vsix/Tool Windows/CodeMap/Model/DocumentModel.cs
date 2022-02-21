@@ -1,16 +1,20 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -28,13 +32,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			private set;
 		}
 
-		public SyntaxNode Root
+		public SyntaxNode? Root
 		{
 			get;
 			private set;
 		}
 
-		public SemanticModel SemanticModel { get; private set; }
+		public SemanticModel? SemanticModel { get; private set; }
 
 		private readonly List<ISemanticModel> _codeMapSemanticModels = new List<ISemanticModel>(capacity: 4);
 

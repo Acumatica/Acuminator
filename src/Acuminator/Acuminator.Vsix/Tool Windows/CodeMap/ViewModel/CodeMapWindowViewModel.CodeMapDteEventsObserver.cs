@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
 
 using Acuminator.Utilities;
-using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 

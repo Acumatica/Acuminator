@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,13 +21,14 @@ using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public partial class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
 		private readonly CodeMapDteEventsObserver _dteEventsObserver;
-		private CancellationTokenSource _cancellationTokenSource;
+		private CancellationTokenSource? _cancellationTokenSource;
 
 		public TreeBuilderBase TreeBuilder
 		{
@@ -47,9 +50,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			internal set;
 		}
 
-		private DocumentModel _documentModel;
+		private DocumentModel? _documentModel;
 
-		public DocumentModel DocumentModel
+		public DocumentModel? DocumentModel
 		{
 			get => _documentModel;
 			private set
@@ -63,7 +66,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public Document Document => DocumentModel?.Document;
+		public Document? Document => DocumentModel?.Document;
 
 		public Workspace Workspace
 		{
@@ -82,9 +85,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		private TreeViewModel _tree;
+		private TreeViewModel? _tree;
 
-		public TreeViewModel Tree
+		public TreeViewModel? Tree
 		{
 			get => _tree;
 			private set
@@ -138,50 +141,57 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public Command SortNodeDescendantsByDeclarationOrderDescendingCommand { get; }
 		#endregion
 
-		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
+		private CodeMapWindowViewModel(Workspace workspace, IWpfTextView wpfTextView, Document document) : this(workspace)
 		{
-			DocumentModel = new DocumentModel(wpfTextView, document);
+			DocumentModel = new DocumentModel(wpfTextView, document);	
+		}
+
+		/// <summary>
+		/// Constructor to create an empty Code Map view model if no suitable active document is available, for example on solution opening
+		/// </summary>
+		private CodeMapWindowViewModel(Workspace workspace)
+		{
+			Workspace = workspace.CheckIfNull(nameof(workspace));
 
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
 			DocChangesClassifier = new CodeMapDocChangesClassifier(this);
+
 			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
-			
+
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
 
-			SortNodeChildrenByNameAscendingCommand = 
+			SortNodeChildrenByNameAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Ascending, sortDescendants: false));
 			SortNodeChildrenByNameDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Descending, sortDescendants: false));
-			SortNodeChildrenByDeclarationOrderAscendingCommand = 
+			SortNodeChildrenByDeclarationOrderAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: false));
 			SortNodeChildrenByDeclarationOrderDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: false));
 
-			SortNodeDescendantsByNameAscendingCommand = 
+			SortNodeDescendantsByNameAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Ascending, sortDescendants: true));
 			SortNodeDescendantsByNameDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Descending, sortDescendants: true));
-			SortNodeDescendantsByDeclarationOrderAscendingCommand = 
+			SortNodeDescendantsByDeclarationOrderAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: true));
 			SortNodeDescendantsByDeclarationOrderDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: true));
-
-			Workspace = DocumentModel.Document.Project.Solution.Workspace;
+			
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
 			_dteEventsObserver = new CodeMapDteEventsObserver(this);
 		}
 
-		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
+		public static CodeMapWindowViewModel InitCodeMap(Workspace workspace, IWpfTextView? wpfTextView, Document? document)
 		{
-			if (wpfTextView == null || document == null)
-				return null;
-
-			var codeMapViewModel = new CodeMapWindowViewModel(wpfTextView, document);
+			var codeMapViewModel = wpfTextView != null && document != null
+				? new CodeMapWindowViewModel(workspace, wpfTextView, document)
+				: new CodeMapWindowViewModel(workspace);
 
 			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
 			{
@@ -190,11 +200,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								   buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK);
 			}
 
-			codeMapViewModel.BuildCodeMapAsync().Forget();
+			if (codeMapViewModel.DocumentModel != null)
+				codeMapViewModel.BuildCodeMapAsync().Forget();
+
 			return codeMapViewModel;
 		}
 
-		public void SortNodes(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
+		public void SortNodes(TreeNodeViewModel? node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
 		{
 			if (node == null)
 				return;
@@ -224,7 +236,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_dteEventsObserver.UnsubscribeEvents();
 		}
 
-		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
+		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView? activeWpfTextView = null, Document? activeDocument = null)
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
@@ -235,7 +247,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
-		private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
+		private async Task RefreshCodeMapAsync(IWpfTextView? activeWpfTextView = null, Document? activeDocument = null)
 		{
 			if (IsCalculating)
 				return;
@@ -252,7 +264,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument);
 		}
 
-		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView> activeWpfTextViewTask, Document activeDocument = null)
+		[SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks", Justification = "Task is part of implementation")]
+		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView>? activeWpfTextViewTask, Document? activeDocument = null)
 		{
 			ClearCodeMap();
 			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
@@ -261,10 +274,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = activeWpfTextViewTask != null
+			IWpfTextView? activeWpfTextView = activeWpfTextViewTask != null
 				? await activeWpfTextViewTask
 				: null;
-			activeDocument = activeDocument ?? activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeWpfTextView == null)
+				return;
+
+			activeDocument = activeDocument ?? activeWpfTextView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (activeDocument == null)
 				return;
@@ -273,6 +290,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await BuildCodeMapAsync();
 		}
 
+		[SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Method is event handler")]
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
 			if (e == null || !(sender is Workspace newWorkspace) || Document == null)
@@ -294,16 +312,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			else if (e.IsDocumentTextChanged(Document))
 			{
-				await HandleDocumentTextChangesAsync(newWorkspace, e).ConfigureAwait(false);
-			}		
+				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, e.DocumentId, onlyActiveDocumentWasChanged: true)
+						.ConfigureAwait(false);
+			}
+			else if (Document?.Project != null && 
+					(Document.Project.Id == e.ProjectId || !Document.Project.IsFullyLoadedProject()) && 
+					(e.IsProjectStatusInSolutionChanged() || e.IsProjectMetadataChanged()))
+			{
+				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, Document.Id, onlyActiveDocumentWasChanged: false)
+						.ConfigureAwait(false);
+			}
 		}
 
-		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
+		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, Microsoft.CodeAnalysis.Solution newSolution, 
+													   DocumentId activeDocumentID, bool onlyActiveDocumentWasChanged)
 		{
 			Workspace = newWorkspace;
-			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
-			Document oldDocument = Document;
-			SyntaxNode oldRoot = DocumentModel?.Root;
+			Document? changedDocument = newSolution.GetDocument(activeDocumentID);
+			Document? oldDocument = Document;
+			SyntaxNode? oldRoot = DocumentModel?.Root;
 
 			if (changedDocument == null || oldDocument == null || oldRoot == null)
 			{
@@ -311,23 +338,30 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
-			CodeMapRefreshMode recalculateCodeMap = newRoot == null
-				? CodeMapRefreshMode.Clear
-				: CodeMapRefreshMode.Recalculate;
+			CodeMapRefreshMode recalculateCodeMapMode;
 
-			if (newRoot != null && Tree != null)
+			if (onlyActiveDocumentWasChanged)
 			{
-				recalculateCodeMap = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot, 
-																						  changedDocument, CancellationToken ?? default);
-			}
+				var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
+				recalculateCodeMapMode = newRoot == null
+					? CodeMapRefreshMode.Clear
+					: CodeMapRefreshMode.Recalculate;
 
-			if (recalculateCodeMap == CodeMapRefreshMode.NoRefresh)
+				if (newRoot != null && Tree != null)
+				{
+					recalculateCodeMapMode = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot,
+																							  changedDocument, CancellationToken ?? default);
+				}
+			}
+			else
+				recalculateCodeMapMode = CodeMapRefreshMode.Recalculate;
+
+			if (recalculateCodeMapMode == CodeMapRefreshMode.NoRefresh)
 				return;
 
 			ClearCodeMap();
 
-			if (recalculateCodeMap == CodeMapRefreshMode.Recalculate)
+			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
 			{
 				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
@@ -343,6 +377,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private async Task BuildCodeMapAsync()
 		{
+			if (DocumentModel == null)
+				return;
+
 			try
 			{
 				using (_cancellationTokenSource = new CancellationTokenSource())
@@ -363,7 +400,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (!isSuccess || cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
 						return;
 
-					TreeViewModel newTreeVM = TreeBuilder?.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
+					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
 
 					if (newTreeVM == null)
 						return;
@@ -384,7 +421,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel node)
+		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel? node)
 		{
 			if (node != null)
 			{
