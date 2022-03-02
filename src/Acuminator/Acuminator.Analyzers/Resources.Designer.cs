@@ -286,7 +286,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reference of @this graph in this delegate will cause synchronous delegate execution. It may lead to random bugs and data consistency issues..
+        ///   Looks up a localized string similar to Reference of @this graph in this delegate will cause synchronous delegate execution. It may lead to random bugs and data consistency issues.
         /// </summary>
         public static string PX1008Title {
             get {
