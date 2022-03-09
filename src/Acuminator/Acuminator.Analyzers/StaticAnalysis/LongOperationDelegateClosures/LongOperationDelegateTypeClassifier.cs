@@ -18,9 +18,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 	internal class LongOperationDelegateTypeClassifier
 	{
 		public LongOperationDelegateType? GetLongOperationDelegateType(InvocationExpressionSyntax? longOperationSetupMethodInvocationNode,
-																	   SemanticModel semanticModel, PXContext pxContext, 
+																	   SemanticModel? semanticModel, PXContext pxContext, 
 																	   CancellationToken cancellationToken)
 		{
+			if (semanticModel == null)
+				return null;
+
 			cancellationToken.ThrowIfCancellationRequested();
 			string? methodName = null;
 
