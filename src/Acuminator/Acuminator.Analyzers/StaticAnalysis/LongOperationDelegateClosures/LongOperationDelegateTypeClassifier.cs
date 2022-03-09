@@ -61,8 +61,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				case DelegateNames.StartOperation:
 					var longRunDelegate = semanticModel.GetSymbolInfo(methodAccessNode, cancellationToken).Symbol as IMethodSymbol;
 
-					if (longRunDelegate != null && longRunDelegate.IsStatic && pxContext.PXLongOperation.Equals(longRunDelegate.ContainingType))
+					if (longRunDelegate != null && longRunDelegate.IsStatic && longRunDelegate.DeclaredAccessibility == Accessibility.Public &&
+						pxContext.PXLongOperation.Equals(longRunDelegate.ContainingType))
+					{
 						return LongOperationDelegateType.LongRunDelegate;
+					}
 
 					return null;
 

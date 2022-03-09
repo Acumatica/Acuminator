@@ -49,6 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					break;
 
 				case LongOperationDelegateType.LongRunDelegate:
+					AnalyzeStartOperationDelegateMethod(syntaxContext, pxContext, longOperationSetupMethodInvocationNode!);
 					break;
 			}
 		}
@@ -56,6 +57,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 		private static void AnalyzeSetProcessDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
 															InvocationExpressionSyntax setDelegateInvocation)
 		{
+			if (setDelegateInvocation.ArgumentList.Arguments.Count == 0)
+				return;
+
 			ExpressionSyntax processingDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[0].Expression;
 			AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, processingDelegateParameter);	
 
@@ -66,10 +70,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			}
 		}
 
+		private static void AnalyzeStartOperationDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
+																InvocationExpressionSyntax startOperationInvocation)
+		{
+			if (startOperationInvocation.ArgumentList.Arguments.Count < 2)
+				return;
+
+			ExpressionSyntax longRunDelegateParameter = startOperationInvocation.ArgumentList.Arguments[1].Expression;
+			AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, startOperationInvocation, longRunDelegateParameter);
+		}
+
 		private static void AnalyzeDataFlowForDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
 															 InvocationExpressionSyntax longOperationSetupMethodInvocationNode,
 															 ExpressionSyntax longOperationDelegateNode)
 		{
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
 			switch (longOperationDelegateNode)
 			{
 				case IdentifierNameSyntax graphMemberName:
