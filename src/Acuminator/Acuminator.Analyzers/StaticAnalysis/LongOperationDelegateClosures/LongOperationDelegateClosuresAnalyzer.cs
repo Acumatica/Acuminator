@@ -56,8 +56,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 		private static void AnalyzeSetProcessDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
 															InvocationExpressionSyntax setDelegateInvocation)
 		{
-			ExpressionSyntax processDelegateParameterExpression = setDelegateInvocation.ArgumentList.Arguments[0].Expression;
-			AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, processDelegateParameterExpression);	
+			ExpressionSyntax processingDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[0].Expression;
+			AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, processingDelegateParameter);	
+
+			if (setDelegateInvocation.ArgumentList.Arguments.Count > 1)
+			{
+				ExpressionSyntax finallyHandlerDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[1].Expression;
+				AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, finallyHandlerDelegateParameter);
+			}
 		}
 
 		private static void AnalyzeDataFlowForDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
