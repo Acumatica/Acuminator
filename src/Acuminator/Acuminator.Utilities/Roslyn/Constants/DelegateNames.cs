@@ -39,7 +39,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public const string SetList = "SetList";
 
 		public const string SetParameters = "SetParametersDelegate";
-		public const string SetProcess = "SetProcessDelegate";
+		public const string SetProcessDelegate = "SetProcessDelegate";
 
 		public const string View = "View";
 
