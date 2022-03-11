@@ -31,12 +31,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				case MemberAccessExpressionSyntax memberAccessNode
 				when memberAccessNode.OperatorToken.IsKind(SyntaxKind.DotToken):
-					methodName = memberAccessNode.Name?.ToString();
+					methodName = memberAccessNode.Name?.Identifier.ValueText;
 					return GetLongOperationDelegateTypeFromMethodAccessNode(semanticModel, pxContext, memberAccessNode, methodName, cancellationToken);
 
 				case MemberBindingExpressionSyntax memberBindingNode
 				when memberBindingNode.OperatorToken.IsKind(SyntaxKind.DotToken):
-					methodName = memberBindingNode.Name?.ToString();
+					methodName = memberBindingNode.Name?.Identifier.ValueText;
 					return GetLongOperationDelegateTypeFromMethodAccessNode(semanticModel, pxContext, memberBindingNode, methodName, cancellationToken);
 
 				default:
