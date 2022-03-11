@@ -21,14 +21,25 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 
 		[Theory]
         [EmbeddedFileData("SetProcessDelegateClosures.cs")]
-        public Task TestDiagnostic(string actual) =>
+        public Task SetProcessDelegates_GraphCapturedInClosures(string actual) =>
 			VerifyCSharpDiagnosticAsync(actual,
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 23, column: 3),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 34, column: 3),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 37, column: 3),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 44, column: 3),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 45, column: 3),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 49, column: 3),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 50, column: 3));
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 25, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 36, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 39, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 46, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 47, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 51, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 52, column: 4));
+
+		[Theory]
+		[EmbeddedFileData("LongRunDelegateClosures.cs")]
+		public Task LongRunDelegates_GraphCapturedInClosures(string actual) =>
+			VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 36, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 39, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 40, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 51, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 58, column: 4),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 59, column: 4));
 	}
 }
