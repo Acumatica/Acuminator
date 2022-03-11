@@ -61,12 +61,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return;
 
 			ExpressionSyntax processingDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[0].Expression;
-			AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, processingDelegateParameter);	
+			bool isMainProcessingDelegateCorrect = CheckDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, processingDelegateParameter);
 
-			if (setDelegateInvocation.ArgumentList.Arguments.Count > 1)
+			if (isMainProcessingDelegateCorrect && setDelegateInvocation.ArgumentList.Arguments.Count > 1)
 			{
 				ExpressionSyntax finallyHandlerDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[1].Expression;
-				AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, finallyHandlerDelegateParameter);
+				CheckDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, finallyHandlerDelegateParameter);
 			}
 		}
 
@@ -77,12 +77,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return;
 
 			ExpressionSyntax longRunDelegateParameter = startOperationInvocation.ArgumentList.Arguments[1].Expression;
-			AnalyzeDataFlowForDelegateMethod(syntaxContext, pxContext, startOperationInvocation, longRunDelegateParameter);
+			CheckDataFlowForDelegateMethod(syntaxContext, pxContext, startOperationInvocation, longRunDelegateParameter);
 		}
 
-		private static void AnalyzeDataFlowForDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
-															 InvocationExpressionSyntax longOperationSetupMethodInvocationNode,
-															 ExpressionSyntax longOperationDelegateNode)
+		private static bool CheckDataFlowForDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
+														   InvocationExpressionSyntax longOperationSetupMethodInvocationNode,
+														   ExpressionSyntax longOperationDelegateNode)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -98,27 +98,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 							Diagnostic.Create(
 								Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
 								pxContext.CodeAnalysisSettings);
+						return false;
 					}
 
-					return;
+					return true;
 
 				case MemberAccessExpressionSyntax memberAccess
-				when memberAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
-					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
-					return;
+				when memberAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:			
+					return CheckMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
 
 				case MemberAccessExpressionSyntax memberAccess:
-					AnalyzeMemberAccessExpressions(memberAccess.Expression, syntaxContext, pxContext);
-					return;
+					return CheckMemberAccessExpressions(memberAccess.Expression, syntaxContext, pxContext);
 
 				case ConditionalAccessExpressionSyntax conditionalAccess
 				when conditionalAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
-					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
-					return;
+					return CheckMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
 
-				case ConditionalAccessExpressionSyntax conditionalAccess:
-					AnalyzeMemberAccessExpressions(conditionalAccess.Expression, syntaxContext, pxContext);
-					return;
+				case ConditionalAccessExpressionSyntax conditionalAccess:			
+					return CheckMemberAccessExpressions(conditionalAccess.Expression, syntaxContext, pxContext);
 
 				case AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode:
 					DataFlowAnalysis? dfa = syntaxContext.SemanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
@@ -129,23 +126,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 							Diagnostic.Create(
 								Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
 								pxContext.CodeAnalysisSettings);
+						return false;
 					}
 
-					return;	
+					return true;
+
+				default:
+					return true;
 			}	
 		}
 
 
-		private static void AnalyzeMemberAccessExpressions(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext, 
-														   PXContext pxContext)
+		private static bool CheckMemberAccessExpressions(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			if (!(expression is IdentifierNameSyntax identifier))
-				return;
+				return true;
 
 			ISymbol identifierSymbol = syntaxContext.SemanticModel.GetSymbolInfo(identifier, syntaxContext.CancellationToken).Symbol;
 
 			if (identifierSymbol == null || identifierSymbol.IsStatic)
-				return;
+				return true;
 
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -157,7 +157,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					Diagnostic.Create(
 						Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
 						pxContext.CodeAnalysisSettings);
+				return false;
 			}
+
+			return true;
 		}
 	}
 }
