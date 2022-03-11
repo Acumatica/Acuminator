@@ -534,7 +534,7 @@
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldWithDefinedAttributes.cs" />
     <Compile Include="Verification\DiagnosticResultExtensions.cs" />
     <Compile Include="Verification\FluentAssertionsExtensions.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongOperationDelegateClosures.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\SetProcessDelegateClosures.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\PXUpdateCall.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\InheritanceCall.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\FieldInstanceCall.cs" />

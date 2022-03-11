@@ -44,6 +44,10 @@ public class SomeGraph : PXGraph<SomeGraph>
 		Processing.SetProcessDelegate(processor.MemberFunc);          //Should be diagnostic
 		Processing.SetProcessDelegate(ProcessorProperty.MemberFunc);  //Should be diagnostic
 		Processing.SetProcessDelegate(processorStatic.MemberFunc);    //No diagnostic
+
+		Processing.SetProcessDelegate<SomeGraph>((graph, dac) => StaticFuncWithNoInput(), graph => graph.FinallyHandler());				//No diagnostic
+		Processing.SetProcessDelegate<SomeGraph>((graph, dac) => MainProcessingHandler(dac), graph => FinallyHandler());				//Should be diagnostic
+		Processing.SetProcessDelegate<SomeGraph>((graph, dac) => graph.MainProcessingHandler(dac), graph => FinallyHandler());			//Should be diagnostic
 	}
 
     public static void StaticFunc(object filter, List<SomeDAC> list, bool markOnly)
@@ -54,6 +58,19 @@ public class SomeGraph : PXGraph<SomeGraph>
 
     public void MemberFunc(List<SomeDAC> list)
     { }
+
+	public static void StaticFuncWithNoInput()
+	{
+
+	}
+
+	public void MainProcessingHandler(SomeDAC dac)
+	{
+	}
+
+	public void FinallyHandler()
+	{	
+	}
 
 	private class Processor
 	{
