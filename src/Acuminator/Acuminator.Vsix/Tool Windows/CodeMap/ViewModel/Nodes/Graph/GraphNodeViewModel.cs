@@ -26,7 +26,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override Icon NodeIcon => Icon.Graph;
+		public override Icon NodeIcon => GraphSemanticModel.Type switch
+		{
+			GraphType.PXGraph          => Icon.Graph,
+			GraphType.PXGraphExtension => Icon.GraphExtension,
+			_						   => Icon.None
+		};
 
 		public override bool DisplayNodeWithoutChildren => true;
 

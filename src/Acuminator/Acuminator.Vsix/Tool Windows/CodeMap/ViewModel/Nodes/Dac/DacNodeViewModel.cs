@@ -23,7 +23,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override Icon NodeIcon => Icon.Dac;
+		public override Icon NodeIcon => DacModel.DacType == DacType.Dac
+			? Icon.Dac
+			: Icon.DacExtension;
 
 		public override bool DisplayNodeWithoutChildren => true;
 
