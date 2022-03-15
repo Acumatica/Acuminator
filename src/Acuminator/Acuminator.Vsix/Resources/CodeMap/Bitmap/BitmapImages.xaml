@@ -5,6 +5,9 @@
 	<BitmapImage x:Key="Graph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Graph.ico"/>
 
+	<BitmapImage x:Key="GraphExtension" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GraphExtension.png"/>
+	
 	<!--#region Graph Category Images-->
 	<BitmapImage x:Key="GraphEventCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GraphEventCategory.ico"/>
@@ -70,7 +73,10 @@
 	<!--#region DAC Images-->
 	<BitmapImage x:Key="Dac" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DAC.ico"/>
-	
+
+	<BitmapImage x:Key="DacExtension" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacExtension.png"/>
+
 	<BitmapImage x:Key="DacProperty" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacField.ico"/>
 

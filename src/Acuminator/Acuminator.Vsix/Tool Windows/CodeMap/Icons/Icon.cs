@@ -9,8 +9,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		None,
 		Graph,
+		GraphExtension,
 		GraphEventCategory,
 		Dac,
+		DacExtension,
 
 		DacProperty,	
 		DacKeyProperty,
