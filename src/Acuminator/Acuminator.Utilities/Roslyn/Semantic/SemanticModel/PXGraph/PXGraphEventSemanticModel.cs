@@ -124,7 +124,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public IEnumerable<GraphFieldEventInfo> ExceptionHandlingEvents => ExceptionHandlingByName.Values;
 		#endregion
 
-
 		private PXGraphEventSemanticModel(PXGraphSemanticModel baseGraphModel, CancellationToken cancellation = default)
 		{
 			_cancellation = cancellation;
@@ -197,6 +196,46 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(graph, cancellation))
 												   .ToList();
 			return eventsGraphModels;
+		}
+
+		public IEnumerable<GraphEventInfoBase> GetAllEvents()
+		{
+			IEnumerable<GraphEventInfoBase>? allEvents = RowSelectingByName.Values;
+
+			AppendRowEvents(RowSelectedByName);
+			AppendRowEvents(RowInsertingByName);
+			AppendRowEvents(RowInsertedByName);
+			AppendRowEvents(RowUpdatingByName);
+			AppendRowEvents(RowUpdatedByName);
+			AppendRowEvents(RowDeletingByName);
+			AppendRowEvents(RowDeletedByName);
+			AppendRowEvents(RowPersistingByName);
+			AppendRowEvents(RowPersistedByName);
+
+			AppendFieldEvents(FieldSelectingByName);
+			AppendFieldEvents(FieldDefaultingByName);
+			AppendFieldEvents(FieldVerifyingByName);
+			AppendFieldEvents(FieldUpdatingByName);
+			AppendFieldEvents(FieldUpdatedByName);
+
+			AppendFieldEvents(CacheAttachedByName);
+			AppendFieldEvents(CommandPreparingByName);
+			AppendFieldEvents(ExceptionHandlingByName);
+
+			return allEvents;
+
+			//------------------------------------Local Function----------------------------------------------
+			void AppendRowEvents(ImmutableDictionary<string, GraphRowEventInfo> rowEvents)
+			{
+				if (rowEvents.Count > 0)
+					allEvents = allEvents.Concat(rowEvents.Values);
+			}
+
+			void AppendFieldEvents(ImmutableDictionary<string, GraphFieldEventInfo> fieldEvents)
+			{
+				if (fieldEvents.Count > 0)
+					allEvents = allEvents.Concat(fieldEvents.Values);
+			}
 		}
 
 		private EventsCollector InitializeEvents()
