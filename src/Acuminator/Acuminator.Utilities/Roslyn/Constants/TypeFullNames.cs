@@ -123,10 +123,6 @@
 		internal const string PXViewOf = "PX.Data.BQL.Fluent.PXViewOf`1";
 		internal const string FbqlCommand = "PX.Data.BQL.Fluent.FbqlCommand";
 
-		internal const string PXException = "PX.Data.PXException";
-		internal const string PXBaseRedirectException = "PX.Data.PXBaseRedirectException";
-		internal const string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
-
 		internal const string PXAction = "PX.Data.PXAction";
 
 		internal const string PXCache = "PX.Data.PXCache";
@@ -194,5 +190,15 @@
 
 		public const string CompositeKey2 = "PX.Data.ReferentialIntegrity.Attributes.CompositeKey`2";
 		#endregion
+
+
+		public static class Exceptions
+		{
+			internal const string PXException = "PX.Data.PXException";
+			internal const string PXBaseRedirectException = "PX.Data.PXBaseRedirectException";
+			internal const string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
+			internal const string PXRowPersistedException = "PX.Data.PXRowPersistedException";
+			internal const string PXLockViolationException = "PX.Data.PXLockViolationException";
+		}
 	}
 }
