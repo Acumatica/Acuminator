@@ -4,10 +4,8 @@ using System.Collections.Immutable;
 
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
