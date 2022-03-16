@@ -25,7 +25,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		};
 
 		private readonly CancellationToken _cancellation;
-		private readonly PXContext _pxContext;
+
+		private PXContext PXContext => BaseGraphModel.PXContext;
 
 		public PXGraphSemanticModel BaseGraphModel { get; }
 
@@ -124,10 +125,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		#endregion
 
 
-		private PXGraphEventSemanticModel(PXContext pxContext, PXGraphSemanticModel baseGraphModel,
-									      CancellationToken cancellation = default)
+		private PXGraphEventSemanticModel(PXGraphSemanticModel baseGraphModel, CancellationToken cancellation = default)
 		{
-			_pxContext = pxContext;
 			_cancellation = cancellation;
 			BaseGraphModel = baseGraphModel;
 
@@ -190,7 +189,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																		 CancellationToken cancellation = default)
 		{	
 			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, modelCreationOptions, cancellation);
-			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(pxContext, graph, cancellation))
+			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(graph, cancellation))
 												   .ToList();
 			return eventsGraphModels;
 		}
@@ -200,14 +199,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_cancellation.ThrowIfCancellationRequested();
 			var methods = GetAllGraphMethodsFromBaseToDerived();
 
-			var eventsCollector = new EventsCollector(this, _pxContext);
+			var eventsCollector = new EventsCollector(this, PXContext);
 			int declarationOrder = 0;
 
 			foreach (IMethodSymbol method in methods)
 			{
 				_cancellation.ThrowIfCancellationRequested();
 
-				var eventInfo = method.GetEventHandlerInfo(_pxContext);
+				var eventInfo = method.GetEventHandlerInfo(PXContext);
 
 				if (eventInfo.SignatureType == EventHandlerSignatureType.None || eventInfo.Type == EventType.None)
 					continue;
@@ -241,7 +240,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (BaseGraphModel.Type == GraphType.PXGraphExtension)
 			{
 				baseTypes = baseTypes.Concat(
-										BaseGraphModel.Symbol.GetGraphExtensionWithBaseExtensions(_pxContext, 
+										BaseGraphModel.Symbol.GetGraphExtensionWithBaseExtensions(PXContext, 
 																								  SortDirection.Ascending,
 																								  includeGraph: false));
 			}
