@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -157,6 +159,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				CacheAttachedByName = GetFieldEvents(eventsCollector, EventType.CacheAttached);
 				CommandPreparingByName = GetFieldEvents(eventsCollector, EventType.CommandPreparing);
 				ExceptionHandlingByName = GetFieldEvents(eventsCollector, EventType.ExceptionHandling);
+			}
+			else
+			{
+				RowSelectingByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowSelectedByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowInsertingByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowInsertedByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowUpdatingByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowUpdatedByName        = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowDeletingByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowDeletedByName        = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowPersistingByName     = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowPersistedByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+
+				FieldSelectingByName    = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldDefaultingByName   = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldVerifyingByName    = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldUpdatingByName     = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldUpdatedByName      = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+
+				CacheAttachedByName     = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				CommandPreparingByName  = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				ExceptionHandlingByName = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
 			}
 		}
 
