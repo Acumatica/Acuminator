@@ -198,6 +198,31 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return eventsGraphModels;
 		}
 
+		public IEnumerable<GraphEventInfoBase> GetEventsByEventType(EventType eventType) => eventType switch
+		{
+			EventType.RowSelecting      => RowSelectingEvents,
+			EventType.RowSelected       => RowSelectedEvents,
+			EventType.RowInserting      => RowInsertingEvents,
+			EventType.RowInserted       => RowInsertedEvents,
+			EventType.RowUpdating       => RowUpdatingEvents,
+			EventType.RowUpdated        => RowUpdatedEvents,
+			EventType.RowDeleting       => RowDeletingEvents,
+			EventType.RowDeleted        => RowDeletedEvents,
+			EventType.RowPersisting     => RowPersistingEvents,
+			EventType.RowPersisted      => RowPersistedEvents,
+
+			EventType.FieldSelecting    => FieldSelectingEvents,
+			EventType.FieldDefaulting   => FieldDefaultingEvents,
+			EventType.FieldVerifying    => FieldVerifyingEvents,
+			EventType.FieldUpdating     => FieldUpdatingEvents,
+			EventType.FieldUpdated      => FieldUpdatedEvents,
+
+			EventType.CacheAttached     => CacheAttachedEvents,
+			EventType.CommandPreparing  => CommandPreparingEvents,
+			EventType.ExceptionHandling => ExceptionHandlingEvents,
+			_                           => Enumerable.Empty<GraphEventInfoBase>()
+		};
+
 		public IEnumerable<GraphEventInfoBase> GetAllEvents()
 		{
 			IEnumerable<GraphEventInfoBase>? allEvents = RowSelectingByName.Values;
