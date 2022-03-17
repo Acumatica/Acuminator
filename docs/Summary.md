@@ -40,7 +40,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1028](diagnostics/PX1028.md) | Constructors in DACs are prohibited. | Error | Available |
 | [PX1029](diagnostics/PX1029.md) | `PXGraph` instances cannot be used inside DAC properties. | Error | Unavailable |
 | [PX1030](diagnostics/PX1030.md) | The `PXDefault` attribute of the field is used incorrectly. | Warning (ISV Level 1: Significant) or Error | Available |
-| [PX1031](diagnostics/PX1031.md) | DACs cannot contain instance methods. | Error | Unavailable |
+| [PX1031](diagnostics/PX1031.md) | DACs and DAC extensions cannot contain instance methods. | Error | Unavailable |
 | [PX1032](diagnostics/PX1032.md) | DAC properties cannot contain method invocations. | Error | Unavailable |
 | [PX1033](diagnostics/PX1033.md) | The DAC does not have an explicit primary key declaration | Warning (ISV Level 3: Informational) | Available | 
 | [PX1034](diagnostics/PX1034.md) | The DAC does not have an explicit foreign key declaration | Warning (ISV Level 3: Informational) | Available |
