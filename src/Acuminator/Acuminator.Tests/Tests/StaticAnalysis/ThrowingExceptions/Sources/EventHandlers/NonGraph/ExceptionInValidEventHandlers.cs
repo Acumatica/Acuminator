@@ -7,59 +7,65 @@ using PX.Data;
 
 namespace PX.Objects
 {
-	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
+	public class SOSomeAttribute : PXEventSubscriberAttribute, 
+								   IPXRowDeletingSubscriber, IPXRowDeletedSubscriber, 
+								   IPXRowInsertingSubscriber, IPXRowInsertedSubscriber,
+								   IPXRowUpdatingSubscriber, IPXRowUpdatedSubscriber,
+								   IPXRowSelectingSubscriber, IPXRowSelectedSubscriber,
+								   IPXRowPersistingSubscriber, 
+								   IPXFieldDefaultingSubscriber, IPXFieldVerifyingSubscriber
 	{
-		protected virtual void _(Events.FieldDefaulting<SOInvoice, SOInvoice.refNbr> e)
+		public void FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
 		{
 			throw new PXException("Something bad happened");
 		}
 
-		protected virtual void _(Events.FieldVerifying<SOInvoice.refNbr> e)
+		public void FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
 		{
 			throw new PXException("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowSelecting<SOInvoice> e)
+		public void RowSelecting(PXCache sender, PXRowSelectingEventArgs e)
 		{
 			throw new PXException("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowInserting<SOInvoice> e)
+		public void RowInserting(PXCache sender, PXRowInsertingEventArgs e)
 		{
 			throw new PXException("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowUpdating<SOInvoice> e)
+		public void RowUpdating(PXCache sender, PXRowUpdatingEventArgs e)
 		{
 			throw new PXException("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowDeleting<SOInvoice> e)
+		public void RowDeleting(PXCache sender, PXRowDeletingEventArgs e)
 		{
 			throw new PXException("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowInserted<SOInvoice> e)
+		public void RowInserted(PXCache sender, PXRowInsertedEventArgs e)
 		{
 			throw new NotSupportedException();
 		}
 
-		protected virtual void _(Events.RowUpdated<SOInvoice> e)
+		public void RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
 		{
 			throw new ArgumentException("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowDeleted<SOInvoice> e)
+		public void RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
 		{
 			throw new Exception("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowPersisting<SOInvoice> e)
+		public void RowPersisting(PXCache sender, PXRowPersistingEventArgs e)
 		{
 			throw new ArgumentNullException();
 		}
 
-		protected virtual void _(Events.RowSelected<SOInvoice> e)
+		public void RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
 			throw new InvalidOperationException("Something bad happened");
 		}

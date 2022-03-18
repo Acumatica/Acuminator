@@ -7,16 +7,11 @@ using PX.Data;
 
 namespace PX.Objects
 {
-	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
+	public class SOSomeAttribute : PXEventSubscriberAttribute, IPXRowSelectedSubscriber
 	{
-		protected virtual void _(Events.RowSelected<SOInvoice> e)
+		public void RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
-			throw new PXSetupNotEnteredException("Setup is not entered");
-		}
-
-		protected virtual void _(Events.RowSelected<ARInvoice> e)
-		{
-			var ex = new PXSetupNotEnteredException("Setup is not entered");
+			var ex = new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 			throw ex;
 		}
 	}
