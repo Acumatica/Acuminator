@@ -1,6 +1,8 @@
 ﻿#nullable enable
-
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
@@ -37,11 +39,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 		private class ThrowInEventsWalker : WalkerBase
 		{
 			private readonly EventType _eventType;
+			private readonly List<ITypeSymbol> _exceptionTypesAllowedInRowPersisted;
 
 			public ThrowInEventsWalker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType) : 
-									 base(context, pxContext)
+								  base(context, pxContext)
 			{
 				_eventType = eventType;
+				_exceptionTypesAllowedInRowPersisted = GetExceptionTypesAllowdInRowPersisted(pxContext);
 			}
 
 			public override void VisitThrowExpression(ThrowExpressionSyntax throwExpression)
@@ -87,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 									 throwNodeToReport, _eventType);
 					isReported = true;
 				}
-
+				
 				return isReported;
 			}
 
@@ -100,10 +104,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				ITypeSymbol? exceptiontype = semanticModel?.GetTypeInfo(expressionAfterThrowkeyword).Type;
 
 				bool isAllowed = exceptiontype != null &&             // It's better to be conservative here and report thrown exception if we can't verify its type
-								(exceptiontype.InheritsFromOrEquals(_pxContext.Exceptions.PXRowPersistedException) ||
-								 exceptiontype.InheritsFromOrEquals(_pxContext.Exceptions.PXLockViolationException));
+								 _exceptionTypesAllowedInRowPersisted.Any(allowedExceptionType => exceptiontype.InheritsFromOrEquals(allowedExceptionType));
 				return isAllowed;
 			}
+
+			private List<ITypeSymbol> GetExceptionTypesAllowdInRowPersisted(PXContext pxContext) =>
+				new List<ITypeSymbol>
+				{
+					// Acumatica exceptions
+					_pxContext.Exceptions.PXRowPersistedException,
+					_pxContext.Exceptions.PXLockViolationException,
+
+					// .Net exceptions
+					_pxContext.Exceptions.ArgumentException,
+					_pxContext.Exceptions.NotImplementedException,
+					_pxContext.Exceptions.NotSupportedException		
+				};
 		}
 	}
 }
