@@ -64,6 +64,21 @@ namespace PX.Objects
 			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 		}
 
+		public void SOInvoice_ExceptionHandling(PXCache sender, PXExceptionHandlingEventArgs e) =>
+			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
+
+		public void SOInvoice_CommandPreparing(PXCache sender, PXCommandPreparingEventArgs e) =>
+			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
+
+		public void SOInvoice_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e) =>
+			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
+
+		public void SOInvoice_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e) =>
+			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
+
+		public void SOInvoice_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e) =>
+			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
+
 		public PXSelect<SOInvoice> Invoices;
 	}
 
