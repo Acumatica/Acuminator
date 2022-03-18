@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using System;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
@@ -16,5 +16,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXRowPersistedException => Compilation.GetTypeByMetadataName(TypeFullNames.Exceptions.PXRowPersistedException);
 
 		public INamedTypeSymbol PXLockViolationException => Compilation.GetTypeByMetadataName(TypeFullNames.Exceptions.PXLockViolationException);
+
+
+		public INamedTypeSymbol ArgumentException => Compilation.GetTypeByMetadataName($"{nameof(System)}.{nameof(System.ArgumentException)}");
+		public INamedTypeSymbol NotSupportedException => Compilation.GetTypeByMetadataName($"{nameof(System)}.{nameof(System.NotSupportedException)}");
+		public INamedTypeSymbol NotImplementedException => Compilation.GetTypeByMetadataName($"{nameof(System)}.{nameof(System.NotImplementedException)}");
 	}
 }
