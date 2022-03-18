@@ -31,7 +31,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInRowPersisted_ProcessingGraph.cs")]
-		public async Task ExceptionInRowPersisted_ProcessingGraph(string actual) => await VerifyCSharpDiagnosticAsync(actual);
+		public async Task ExceptionInRowPersisted_ProcessingGraph_ShouldNotReportDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInValidEventHandlers.cs")]
