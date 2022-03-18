@@ -10,26 +10,40 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
     {
         private readonly DiagnosticDescriptor _descriptor;
 
-        public WalkerForGraphAnalyzer(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
-                : base(context, pxContext)
+        public WalkerForGraphAnalyzer(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor) : 
+								 base(context, pxContext)
         {
             descriptor.ThrowOnNull(nameof(descriptor));
 
             _descriptor = descriptor;
         }
 
-        public override void VisitThrowStatement(ThrowStatementSyntax node)
+		public override void VisitThrowExpression(ThrowExpressionSyntax throwExpression)
+		{
+			ThrowIfCancellationRequested();
+
+			if (IsPXSetupNotEnteredException(throwExpression.Expression))
+			{
+				ReportDiagnostic(_context.ReportDiagnostic, _descriptor, throwExpression);
+			}
+			else
+			{
+				base.VisitThrowExpression(throwExpression);
+			}
+		}
+
+		public override void VisitThrowStatement(ThrowStatementSyntax throwStatement)
         {
             ThrowIfCancellationRequested();
 
-            if (IsPXSetupNotEnteredException(node))
+            if (IsPXSetupNotEnteredException(throwStatement.Expression))
             {
-                ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
+                ReportDiagnostic(_context.ReportDiagnostic, _descriptor, throwStatement);
             }
             else
             {
-                base.VisitThrowStatement(node);
+                base.VisitThrowStatement(throwStatement);
             }
-        }
+        } 
     }
 }
