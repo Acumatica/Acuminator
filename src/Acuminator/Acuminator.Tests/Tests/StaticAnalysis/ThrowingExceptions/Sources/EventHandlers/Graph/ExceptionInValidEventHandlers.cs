@@ -54,15 +54,10 @@ namespace PX.Objects
 			throw new Exception("Something bad happened");
 		}
 
-		protected virtual void _(Events.RowPersisting<SOInvoice> e)
-		{
-			throw new ArgumentNullException();
-		}
+		protected virtual void _(Events.RowPersisting<SOInvoice> e) => throw new ArgumentNullException();
 
-		protected virtual void _(Events.RowSelected<SOInvoice> e)
-		{
+		protected virtual void _(Events.RowSelected<SOInvoice> e) =>
 			throw new InvalidOperationException("Something bad happened");
-		}
 	}
 
 	public class SOInvoice : IBqlTable
