@@ -39,12 +39,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
             await VerifyCSharpDiagnosticAsync(source,
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(29, 17),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(33, 17),
-                // With the current version of Roslyn packages 1.x we cannot analyze this construction
-                //Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(35, 57),
+                Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(35, 57),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(40, 17),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(44, 17),
-                // With the current version of Roslyn packages 1.x we cannot analyze this construction
-                //Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(46, 67),
+                Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(46, 67),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(51, 13),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(56, 13));
 
@@ -56,10 +54,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(34, 21),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(40, 21),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(44, 21),
-                // With the current version of Roslyn packages 1.x we cannot analyze this construction
-                //Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(47, 53),
-                // With the current version of Roslyn packages 1.x we cannot analyze this construction
-                //Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(48, 41),
+                Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(47, 53),
+                Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(48, 41),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(53, 13),
                 Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation.CreateFor(58, 13));
 
