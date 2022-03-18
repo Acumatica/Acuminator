@@ -21,8 +21,18 @@ namespace PX.Objects
 					throw new PXRowPersistedException(typeof(SOInvoice.refNbr).Name, e.Row.RefNbr, "Persist error");			   //No diagnostic
 				case 1:
 					throw new PXLockViolationException(typeof(SOInvoice), PXDBOperation.Insert, new object[] { e.Row.RefNbr });    //No diagnostic
-				default:
+				case 2:
 					throw new PXException("Something bad happened");        //Should report diagnostic
+				case 3:
+					throw new ArgumentOutOfRangeException(nameof(Mode));    //No diagnostic
+				case 4:
+					throw new ArgumentNullException(nameof(Mode));			//No diagnostic
+				case 5:
+					throw new ArgumentException("Something bad happened");  //No diagnostic
+				case 6:
+					throw new NotImplementedException();                    //No diagnostic
+				default:
+					throw new NotSupportedException();                      //No diagnostic
 			}	
 		}
 
@@ -36,8 +46,18 @@ namespace PX.Objects
 					throw new PXRowPersistedException(typeof(SOLine.refNbr).Name, invoiceLine.RefNbr, "Persist error");									  //No diagnostic
 				case 1:
 					throw new PXLockViolationException(typeof(SOLine), PXDBOperation.Insert, new object[] { invoiceLine.RefNbr, invoiceLine.LineNbr });   //No diagnostic
-				default:
+				case 2:
 					throw new PXException("Something bad happened");        //Should report diagnostic
+				case 3:
+					throw new ArgumentOutOfRangeException(nameof(Mode));    //No diagnostic
+				case 4:
+					throw new ArgumentNullException(nameof(Mode));          //No diagnostic
+				case 5:
+					throw new ArgumentException("Something bad happened");  //No diagnostic
+				case 6:
+					throw new NotImplementedException();                    //No diagnostic
+				default:
+					throw new NotSupportedException();                      //No diagnostic
 			}
 		}
 	}

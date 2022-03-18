@@ -7,17 +7,33 @@ using PX.Data;
 
 namespace PX.Objects
 {
-	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
+	public class SOSomeAttribute : PXEventSubscriberAttribute, IPXRowPersistedSubscriber
 	{
-		protected virtual void _(Events.RowPersisted<SOInvoice> e)
-		{
-			throw new PXException("Something bad happened");
-		}
+		public int Mode { get; set; }
 
-		protected virtual void _(Events.RowPersisted<ARInvoice> e)
+		public void RowPersisted(PXCache sender, PXRowPersistedEventArgs e)
 		{
-			var ex = new PXException("Something bad happened");
-			throw ex;
+			SOInvoice invoice = e.Row as SOInvoice;
+
+			switch (Mode)
+			{
+				case 0:
+					throw new PXRowPersistedException(typeof(SOInvoice.refNbr).Name, invoice.RefNbr, "Persist error");              //No diagnostic
+				case 1:
+					throw new PXLockViolationException(typeof(SOInvoice), PXDBOperation.Insert, new object[] { invoice.RefNbr });   //No diagnostic
+				case 2:
+					throw new PXException("Something bad happened");        //Should report diagnostic
+				case 3:
+					throw new ArgumentOutOfRangeException(nameof(Mode));    //No diagnostic
+				case 4:
+					throw new ArgumentNullException(nameof(Mode));          //No diagnostic
+				case 5:
+					throw new ArgumentException("Something bad happened");  //No diagnostic
+				case 6:
+					throw new NotImplementedException();                    //No diagnostic
+				default:
+					throw new NotSupportedException();                      //No diagnostic
+			}
 		}
 	}
 
@@ -26,8 +42,9 @@ namespace PX.Objects
 		#region RefNbr
 		[PXDBString(8, IsKey = true, InputMask = "")]
 		public string RefNbr { get; set; }
-		public abstract class refNbr : IBqlField { }
-		#endregion	
+
+		public abstract class refNbr : PX.Data.BQL.BqlString.Field<refNbr> { }
+		#endregion
 	}
 
 	public class ARInvoice : IBqlTable
