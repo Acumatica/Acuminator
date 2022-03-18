@@ -1,4 +1,6 @@
-﻿using Acuminator.Utilities.Common;
+﻿#nullable enable
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
@@ -21,28 +23,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
             _pxContext = pxContext;
         }
 
-        protected bool IsPXSetupNotEnteredException(ThrowStatementSyntax node)
+        protected bool IsPXSetupNotEnteredException(ExpressionSyntax? expressionAfterThrowkeyword)
         {
             ThrowIfCancellationRequested();
 
-            if (node?.Expression?.SyntaxTree == null)
+            if (expressionAfterThrowkeyword?.SyntaxTree == null)
             {
                 return false;
             }
 
-            var semanticModel = GetSemanticModel(node.Expression.SyntaxTree);
-            if (semanticModel == null)
+			SemanticModel? semanticModel = GetSemanticModel(expressionAfterThrowkeyword.SyntaxTree);
+			ITypeSymbol? exceptionType = semanticModel?.GetTypeInfo(expressionAfterThrowkeyword).Type;
+
+            if (exceptionType == null)
             {
                 return false;
             }
 
-            var typeInfo = semanticModel.GetTypeInfo(node.Expression);
-            if (typeInfo.Type == null)
-            {
-                return false;
-            }
-
-            var isSetupNotEntered = typeInfo.Type.InheritsFromOrEquals(_pxContext.Exceptions.PXSetupNotEnteredException);
+            bool isSetupNotEntered = exceptionType.InheritsFromOrEquals(_pxContext.Exceptions.PXSetupNotEnteredException);
             return isSetupNotEntered;
         }
     }

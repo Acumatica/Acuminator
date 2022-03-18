@@ -27,11 +27,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				_graphOrGraphExtension = graphOrGraphExtension;
 			}
 
-			protected override bool IsThrowingOfThisExceptionInRowPersistedAllowed(ThrowStatementSyntax throwStatement) =>
+			protected override bool IsThrowingOfThisExceptionInRowPersistedAllowed(ExpressionSyntax? expressionAfterThrowkeyword) =>
 				//For processing graphs throwing exceptions in row persisted event is allowed because we don't care about PXCache state in this case
 				_graphOrGraphExtension.IsProcessing        
 					? true
-					: base.IsThrowingOfThisExceptionInRowPersistedAllowed(throwStatement);
+					: base.IsThrowingOfThisExceptionInRowPersistedAllowed(expressionAfterThrowkeyword);
 		}
 
 		private class ThrowInEventsWalker : WalkerBase
@@ -44,30 +44,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				_eventType = eventType;
 			}
 
+			public override void VisitThrowExpression(ThrowExpressionSyntax throwExpression)
+			{
+				bool isReported = CheckThrowExpression(throwExpression.Expression, throwExpression);
+
+				if (!isReported)
+				{
+					base.VisitThrowExpression(throwExpression);
+				}
+			}
+
 			public override void VisitThrowStatement(ThrowStatementSyntax throwStatement)
 			{
-				ThrowIfCancellationRequested();
-
-				var isReported = false;
-
-				if (_eventType == EventType.RowPersisted && !IsThrowingOfThisExceptionInRowPersistedAllowed(throwStatement))
-				{
-					ReportDiagnostic(
-						_context.ReportDiagnostic,
-						_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
-							? Descriptors.PX1073_ThrowingExceptionsInRowPersisted
-							: Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV,
-						throwStatement);
-					isReported = true;
-				}
-
-				if (_eventType != EventType.RowSelected && IsPXSetupNotEnteredException(throwStatement))
-				{
-					ReportDiagnostic(_context.ReportDiagnostic,
-						Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers,
-						throwStatement, _eventType);
-					isReported = true;
-				}
+				bool isReported = CheckThrowExpression(throwStatement.Expression, throwStatement);
 
 				if (!isReported)
 				{
@@ -75,10 +64,40 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				}
 			}
 
-			protected virtual bool IsThrowingOfThisExceptionInRowPersistedAllowed(ThrowStatementSyntax throwStatement)
+			private bool CheckThrowExpression(ExpressionSyntax expressionAfterThrowkeyword, SyntaxNode throwNodeToReport)
 			{
-				SemanticModel? semanticModel = GetSemanticModel(throwStatement.SyntaxTree);
-				ITypeSymbol? exceptiontype = semanticModel?.GetTypeInfo(throwStatement.Expression).Type;
+				ThrowIfCancellationRequested();
+
+				bool isReported = false;
+
+				if (_eventType == EventType.RowPersisted && !IsThrowingOfThisExceptionInRowPersistedAllowed(expressionAfterThrowkeyword))
+				{
+					ReportDiagnostic(_context.ReportDiagnostic,
+									 _pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+										? Descriptors.PX1073_ThrowingExceptionsInRowPersisted
+										: Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV,
+									 throwNodeToReport);
+					isReported = true;
+				}
+
+				if (_eventType != EventType.RowSelected && IsPXSetupNotEnteredException(expressionAfterThrowkeyword))
+				{
+					ReportDiagnostic(_context.ReportDiagnostic,
+									 Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers,
+									 throwNodeToReport, _eventType);
+					isReported = true;
+				}
+
+				return isReported;
+			}
+
+			protected virtual bool IsThrowingOfThisExceptionInRowPersistedAllowed(ExpressionSyntax? expressionAfterThrowkeyword)
+			{
+				if (expressionAfterThrowkeyword?.SyntaxTree == null)
+					return false;                                     // It's better to be conservative here and report thrown exception if we can't verify its type
+
+				SemanticModel? semanticModel = GetSemanticModel(expressionAfterThrowkeyword.SyntaxTree);
+				ITypeSymbol? exceptiontype = semanticModel?.GetTypeInfo(expressionAfterThrowkeyword).Type;
 
 				bool isAllowed = exceptiontype != null &&             // It's better to be conservative here and report thrown exception if we can't verify its type
 								(exceptiontype.InheritsFromOrEquals(_pxContext.Exceptions.PXRowPersistedException) ||
