@@ -62,9 +62,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 					EventType.RowDeleted),
 				Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers.CreateFor(59, 4,
 					EventType.RowPersisting),
+
 				Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV.CreateFor(64, 4),
 				Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers.CreateFor(64, 4,
-					EventType.RowPersisted));
+					EventType.RowPersisted),
+
+				Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers.CreateFor(69, 4, EventType.ExceptionHandling),
+				Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers.CreateFor(72, 4, EventType.CommandPreparing),
+				Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers.CreateFor(75, 4, EventType.FieldSelecting),
+				Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers.CreateFor(78, 4, EventType.FieldUpdating),
+				Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers.CreateFor(81, 4, EventType.FieldUpdated));
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Graph\SetupNotEnteredExceptionInRowSelected.cs")]

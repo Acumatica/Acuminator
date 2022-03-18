@@ -64,19 +64,20 @@ namespace PX.Objects
 			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 		}
 
-		public void SOInvoice_ExceptionHandling(PXCache sender, PXExceptionHandlingEventArgs e) =>
+		// Check expressions thrown as throw expression here
+		public void SOInvoice_RefNbr_ExceptionHandling(PXCache sender, PXExceptionHandlingEventArgs e) =>
 			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 
-		public void SOInvoice_CommandPreparing(PXCache sender, PXCommandPreparingEventArgs e) =>
+		public void SOInvoice_RefNbr_CommandPreparing(PXCache sender, PXCommandPreparingEventArgs e) =>
 			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 
-		public void SOInvoice_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e) =>
+		public void SOInvoice_RefNbr_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e) =>
 			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 
-		public void SOInvoice_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e) =>
+		public void SOInvoice_RefNbr_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e) =>
 			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 
-		public void SOInvoice_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e) =>
+		public void SOInvoice_RefNbr_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e) =>
 			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 
 		public PXSelect<SOInvoice> Invoices;
