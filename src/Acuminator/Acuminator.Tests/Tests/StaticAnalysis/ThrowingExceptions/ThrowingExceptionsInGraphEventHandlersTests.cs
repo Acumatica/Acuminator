@@ -34,6 +34,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted.CreateFor(20, 4));
 
 		[Theory]
+		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInRowPersisted_ProcessingGraph.cs")]
+		public async Task ExceptionInRowPersisted_ProcessingGraph(string actual) => await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInValidEventHandlers.cs")]
 		public async Task ExceptionInValidEventHandlers_ShouldNotReportDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);

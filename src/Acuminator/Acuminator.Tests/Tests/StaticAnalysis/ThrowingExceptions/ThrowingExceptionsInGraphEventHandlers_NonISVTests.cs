@@ -18,7 +18,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PXGraphAnalyzer(CodeAnalysisSettings.Default
-													.WithIsvSpecificAnalyzersEnabled()
+													.WithIsvSpecificAnalyzersDisabled()
 													.WithRecursiveAnalysisEnabled()
 													.WithSuppressionMechanismDisabled(),
 				new ThrowingExceptionsInEventHandlersAnalyzer());
@@ -28,6 +28,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 		public async Task ExceptionInRowPersisted(string actual) => await VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV.CreateFor(14, 4),
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV.CreateFor(20, 4));
+
+		[Theory]
+		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInRowPersisted_ProcessingGraph.cs")]
+		public async Task ExceptionInRowPersisted_ProcessingGraph(string actual) => await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInValidEventHandlers.cs")]
