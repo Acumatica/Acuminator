@@ -11,16 +11,19 @@ namespace PX.Objects
 	{
 		protected virtual void _(Events.RowSelected<SOInvoice> e)
 		{
-			throw new PXSetupNotEnteredException("Setup is not entered");
+			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 		}
 
 		protected virtual void _(Events.RowSelected<ARInvoice> e)
 		{
-			var ex = new PXSetupNotEnteredException("Setup is not entered");
+			var ex = new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 			throw ex;
 		}
+
+		public PXSelect<SOInvoice> Invoices;
 	}
 
+	[PXHidden]
 	public class SOInvoice : IBqlTable
 	{
 		#region RefNbr
@@ -30,6 +33,7 @@ namespace PX.Objects
 		#endregion	
 	}
 
+	[PXHidden]
 	public class ARInvoice : IBqlTable
 	{
 	}
