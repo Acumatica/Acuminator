@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			GraphType.PXGraph          => Icon.Graph,
 			GraphType.PXGraphExtension => Icon.GraphExtension,
-			_						   => Icon.None
+			_                          => Icon.None
 		};
 
 		public override bool DisplayNodeWithoutChildren => true;
