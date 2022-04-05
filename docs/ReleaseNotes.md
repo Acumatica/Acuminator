@@ -1,6 +1,45 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 3.0
+Acuminator 3.0 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 3.0, the following enhancements have been implemented:
+ - Visual Studio 2022 is now supported by Acuminator. 
+ - The [PX1007](diagnostics/PX1007.md) diagnostic now checks only DACs and DAC extensions.
+ - The [PX1008](diagnostics/PX1008.md) diagnostic now validates delegates passed to the `PXLongOperation.StartOperation()` method. A developer can now capture references to the graph instance in delegate closures.
+ - The [PX1026](diagnostics/PX1026.md) diagnostic now allows underscores in names of DAC extensions. 
+ 
+ #### Improvements in the Code Map
+ The Code Map has been improved in the following ways:
+ - Different icons are now displayed for DACs, DAC extensions, graphs, and graph extensions.
+ - A DAC node now indicates whether the node stands for a DAC or a DAC extension.
+ - Overrides of virtual type members are now displayed for a graph or a graph extension under the new **Base Overrides** tree node. The Persist method overrides are indicated with a special diskette icon.
+ - The new **Initialization and Activation** tree node has been introduces that displays the following information:
+	- Graph instance and static constructors for graphs, DACs and their extensions
+	- The `IsActive` method is now shown for a graph extension and a DAC extension. 
+ 
+ 
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.
+ - The [PX1088](diagnostics/PX1088.md) diagnostic has been removed because its function is covered by the [PX1008](diagnostics/PX1008.md) diagnostic.
+ - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error if the following exceptions and their descendants thrown in the `RowPersisted`		 event handler of a processing graph:
+	- `PX.Data.PXRowPersistedException`
+	- `PX.Data.PXLockViolationException`
+	- .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` and its descendants (`ArgumentNullException` and `ArgumentOutOfRangeException`)
+ 
+ #### Disabling of Locally Suppressed Diagnostics
+ Acuminator provides two different suppression mechanisms to suppress diagnostic alerts in a particular place,- a global suppression file and a local suppression with a special comment. The suppression mechanism can be disabled in Acuminator settings in Visual Studio by assigning False to the following setting: **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics**. This way, a developer can see all suppressed errors in their legacy code and perform refactoring.
+ 
+ Previously, a developer could disable suppression of only globally suppressed diagnostic alerts, alerts suppressed locally via suppression comments could not be displayed to the developer even when suppression mechanism was turned off. Now Acuminator diagnostics suppressed locally can also be displayed when supporession is disabled so that a developer can see all errors including the ones that were suppressed with a comment in the code editor or in the **Error List** tool window. 
+ 
+ For details on diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
+ 
+## Other Changes 
+ - The [PX1088](diagnostics/PX1088.md) diagnostic has been removed because its function is covered by the [PX1008](diagnostics/PX1008.md) diagnostic.
+
 ## Acuminator 2.3.2
 Acuminator 2.3.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
