@@ -6,7 +6,7 @@ Acuminator 3.0 includes the bug fixes and enhancements described in this section
 
 ### Enhancements
 In Acuminator 3.0, the following enhancements have been implemented:
- - Visual Studio 2022 is now supported by Acuminator. 
+ - Acuminator now supports Visual Studio 2022 alongside the two previous versions of Visual Studio, 2017 and 2019. 
  - The [PX1007](diagnostics/PX1007.md) diagnostic now checks only DACs and DAC extensions.
  - The [PX1008](diagnostics/PX1008.md) diagnostic now validates delegates passed to the `PXLongOperation.StartOperation()` method. A developer can now capture references to the graph instance in delegate closures.
  - The [PX1026](diagnostics/PX1026.md) diagnostic now allows underscores in names of DAC extensions. 
@@ -15,7 +15,7 @@ In Acuminator 3.0, the following enhancements have been implemented:
  The Code Map has been improved in the following ways:
  - Different icons are now displayed for DACs, DAC extensions, graphs, and graph extensions.
  - A DAC node now indicates whether the node stands for a DAC or a DAC extension.
- - Overrides of virtual type members are now displayed for a graph or a graph extension under the new **Base Overrides** tree node. The Persist method overrides are indicated with a special diskette icon.
+ - Overrides of virtual type members are now displayed for a graph or a graph extension under the new **Base Overrides** tree node. The `Persist` method overrides are indicated with a special diskette icon.
  - The new **Initialization and Activation** tree node has been introduces that displays the following information:
 	- Graph instance and static constructors for graphs, DACs and their extensions
 	- The `IsActive` method is now shown for a graph extension and a DAC extension. 
