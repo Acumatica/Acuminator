@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
 			public ThrowInGraphEventsWalker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType,
 											PXGraphEventSemanticModel graphOrGraphExtension) :
-									   base(context, pxContext, eventType)
+				base(context, pxContext, eventType)
 			{
 				_graphOrGraphExtension = graphOrGraphExtension;
 			}
@@ -41,8 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 			private readonly EventType _eventType;
 			private readonly List<ITypeSymbol> _exceptionTypesAllowedInRowPersisted;
 
-			public ThrowInEventsWalker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType) : 
-								  base(context, pxContext)
+			public ThrowInEventsWalker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType) : base(context, pxContext)
 			{
 				_eventType = eventType;
 				_exceptionTypesAllowedInRowPersisted = GetExceptionTypesAllowdInRowPersisted(pxContext);

@@ -10,8 +10,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
     {
         private readonly DiagnosticDescriptor _descriptor;
 
-        public WalkerForGraphAnalyzer(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor) : 
-								 base(context, pxContext)
+        public WalkerForGraphAnalyzer(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor) : base(context, pxContext)
         {
             descriptor.ThrowOnNull(nameof(descriptor));
 
