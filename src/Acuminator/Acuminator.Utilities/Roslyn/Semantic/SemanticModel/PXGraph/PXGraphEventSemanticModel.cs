@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -23,7 +25,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		};
 
 		private readonly CancellationToken _cancellation;
-		private readonly PXContext _pxContext;
+
+		private PXContext PXContext => BaseGraphModel.PXContext;
 
 		public PXGraphSemanticModel BaseGraphModel { get; }
 
@@ -121,11 +124,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public IEnumerable<GraphFieldEventInfo> ExceptionHandlingEvents => ExceptionHandlingByName.Values;
 		#endregion
 
-
-		private PXGraphEventSemanticModel(PXContext pxContext, PXGraphSemanticModel baseGraphModel,
-									      CancellationToken cancellation = default)
+		private PXGraphEventSemanticModel(PXGraphSemanticModel baseGraphModel, CancellationToken cancellation = default)
 		{
-			_pxContext = pxContext;
 			_cancellation = cancellation;
 			BaseGraphModel = baseGraphModel;
 
@@ -158,16 +158,110 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				CommandPreparingByName = GetFieldEvents(eventsCollector, EventType.CommandPreparing);
 				ExceptionHandlingByName = GetFieldEvents(eventsCollector, EventType.ExceptionHandling);
 			}
+			else
+			{
+				RowSelectingByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowSelectedByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowInsertingByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowInsertedByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowUpdatingByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowUpdatedByName        = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowDeletingByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowDeletedByName        = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowPersistingByName     = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+				RowPersistedByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+
+				FieldSelectingByName    = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldDefaultingByName   = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldVerifyingByName    = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldUpdatingByName     = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				FieldUpdatedByName      = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+
+				CacheAttachedByName     = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				CommandPreparingByName  = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+				ExceptionHandlingByName = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
+			}
 		}
+
+		public static PXGraphEventSemanticModel EnrichGraphModelWithEvents(PXGraphSemanticModel baseGraphModel, 
+																		   CancellationToken cancellationToken = default) =>
+			new PXGraphEventSemanticModel(baseGraphModel.CheckIfNull(nameof(baseGraphModel)), 
+										  cancellationToken);
 
 		public static IEnumerable<PXGraphEventSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, 
 																		 GraphSemanticModelCreationOptions modelCreationOptions,
 																		 CancellationToken cancellation = default)
 		{	
 			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, modelCreationOptions, cancellation);
-			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(pxContext, graph, cancellation))
+			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(graph, cancellation))
 												   .ToList();
 			return eventsGraphModels;
+		}
+
+		public IEnumerable<GraphEventInfoBase> GetEventsByEventType(EventType eventType) => eventType switch
+		{
+			EventType.RowSelecting      => RowSelectingEvents,
+			EventType.RowSelected       => RowSelectedEvents,
+			EventType.RowInserting      => RowInsertingEvents,
+			EventType.RowInserted       => RowInsertedEvents,
+			EventType.RowUpdating       => RowUpdatingEvents,
+			EventType.RowUpdated        => RowUpdatedEvents,
+			EventType.RowDeleting       => RowDeletingEvents,
+			EventType.RowDeleted        => RowDeletedEvents,
+			EventType.RowPersisting     => RowPersistingEvents,
+			EventType.RowPersisted      => RowPersistedEvents,
+
+			EventType.FieldSelecting    => FieldSelectingEvents,
+			EventType.FieldDefaulting   => FieldDefaultingEvents,
+			EventType.FieldVerifying    => FieldVerifyingEvents,
+			EventType.FieldUpdating     => FieldUpdatingEvents,
+			EventType.FieldUpdated      => FieldUpdatedEvents,
+
+			EventType.CacheAttached     => CacheAttachedEvents,
+			EventType.CommandPreparing  => CommandPreparingEvents,
+			EventType.ExceptionHandling => ExceptionHandlingEvents,
+			EventType.None              => Enumerable.Empty<GraphEventInfoBase>(),
+			_                           => throw new NotSupportedException($"Event type { eventType } is not supported")
+		};
+
+		public IEnumerable<GraphEventInfoBase> GetAllEvents()
+		{
+			IEnumerable<GraphEventInfoBase>? allEvents = RowSelectingByName.Values;
+
+			AppendRowEvents(RowSelectedByName);
+			AppendRowEvents(RowInsertingByName);
+			AppendRowEvents(RowInsertedByName);
+			AppendRowEvents(RowUpdatingByName);
+			AppendRowEvents(RowUpdatedByName);
+			AppendRowEvents(RowDeletingByName);
+			AppendRowEvents(RowDeletedByName);
+			AppendRowEvents(RowPersistingByName);
+			AppendRowEvents(RowPersistedByName);
+
+			AppendFieldEvents(FieldSelectingByName);
+			AppendFieldEvents(FieldDefaultingByName);
+			AppendFieldEvents(FieldVerifyingByName);
+			AppendFieldEvents(FieldUpdatingByName);
+			AppendFieldEvents(FieldUpdatedByName);
+
+			AppendFieldEvents(CacheAttachedByName);
+			AppendFieldEvents(CommandPreparingByName);
+			AppendFieldEvents(ExceptionHandlingByName);
+
+			return allEvents;
+
+			//------------------------------------Local Function----------------------------------------------
+			void AppendRowEvents(ImmutableDictionary<string, GraphRowEventInfo> rowEvents)
+			{
+				if (rowEvents.Count > 0)
+					allEvents = allEvents.Concat(rowEvents.Values);
+			}
+
+			void AppendFieldEvents(ImmutableDictionary<string, GraphFieldEventInfo> fieldEvents)
+			{
+				if (fieldEvents.Count > 0)
+					allEvents = allEvents.Concat(fieldEvents.Values);
+			}
 		}
 
 		private EventsCollector InitializeEvents()
@@ -175,14 +269,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_cancellation.ThrowIfCancellationRequested();
 			var methods = GetAllGraphMethodsFromBaseToDerived();
 
-			var eventsCollector = new EventsCollector(this, _pxContext);
+			var eventsCollector = new EventsCollector(this, PXContext);
 			int declarationOrder = 0;
 
 			foreach (IMethodSymbol method in methods)
 			{
 				_cancellation.ThrowIfCancellationRequested();
 
-				var eventInfo = method.GetEventHandlerInfo(_pxContext);
+				var eventInfo = method.GetEventHandlerInfo(PXContext);
 
 				if (eventInfo.SignatureType == EventHandlerSignatureType.None || eventInfo.Type == EventType.None)
 					continue;
@@ -216,7 +310,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (BaseGraphModel.Type == GraphType.PXGraphExtension)
 			{
 				baseTypes = baseTypes.Concat(
-										BaseGraphModel.Symbol.GetGraphExtensionWithBaseExtensions(_pxContext, 
+										BaseGraphModel.Symbol.GetGraphExtensionWithBaseExtensions(PXContext, 
 																								  SortDirection.Ascending,
 																								  includeGraph: false));
 			}

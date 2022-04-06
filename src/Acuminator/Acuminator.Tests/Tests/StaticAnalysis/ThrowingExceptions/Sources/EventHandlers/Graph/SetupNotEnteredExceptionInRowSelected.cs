@@ -9,18 +9,21 @@ namespace PX.Objects
 {
 	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
 	{
-		protected virtual void _(Events.RowPersisted<SOInvoice> e)
+		protected virtual void _(Events.RowSelected<SOInvoice> e)
 		{
-			throw new PXException("Something bad happened");
+			throw new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 		}
 
-		protected virtual void _(Events.RowPersisted<ARInvoice> e)
+		protected virtual void _(Events.RowSelected<ARInvoice> e)
 		{
-			var ex = new PXException("Something bad happened");
+			var ex = new PXSetupNotEnteredException("Setup is not entered", typeof(SOInvoice));
 			throw ex;
 		}
+
+		public PXSelect<SOInvoice> Invoices;
 	}
 
+	[PXHidden]
 	public class SOInvoice : IBqlTable
 	{
 		#region RefNbr
@@ -30,6 +33,7 @@ namespace PX.Objects
 		#endregion	
 	}
 
+	[PXHidden]
 	public class ARInvoice : IBqlTable
 	{
 	}

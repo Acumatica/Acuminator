@@ -15,7 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	public class PXGraphSemanticModel : ISemanticModel
 	{
 		private readonly CancellationToken _cancellation;
-		private readonly PXContext _pxContext;
+
+		internal PXContext PXContext { get; }
 
 		public GraphSemanticModelCreationOptions ModelCreationOptions { get; }
 
@@ -75,7 +76,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			_pxContext = pxContext;
+			PXContext = pxContext;
 			Type = type;
 			Symbol = symbol;
 			_cancellation = cancellation;
@@ -84,7 +85,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			GraphSymbol = Type switch
 			{
 				GraphType.PXGraph => Symbol,
-				GraphType.PXGraphExtension => Symbol.GetGraphFromGraphExtension(_pxContext),
+				GraphType.PXGraphExtension => Symbol.GetGraphFromGraphExtension(PXContext),
 				_ => null,
 			};
 
@@ -120,7 +121,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_cancellation.ThrowIfCancellationRequested();
 			var declaringNodes = Symbol.DeclaringSyntaxReferences
 									   .Select(r => r.GetSyntax(_cancellation));
-			var walker = new ProcessingDelegatesWalker(_pxContext, processingViewSymbols, _cancellation);
+			var walker = new ProcessingDelegatesWalker(PXContext, processingViewSymbols, _cancellation);
 
 			foreach (var node in declaringNodes)
 			{
@@ -148,20 +149,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		private ImmutableDictionary<string, DataViewInfo> GetDataViews() =>
-			GetInfos(() => Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext),
-					 () => Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext));
+			GetInfos(() => Symbol.GetViewsWithSymbolsFromPXGraph(PXContext),
+					 () => Symbol.GetViewsFromGraphExtensionAndBaseGraph(PXContext));
 		
 		private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates() =>
-			GetInfos(() => Symbol.GetViewDelegatesFromGraph(ViewsByNames, _pxContext, cancellation: _cancellation),
-					 () => Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, _pxContext, _cancellation));
+			GetInfos(() => Symbol.GetViewDelegatesFromGraph(ViewsByNames, PXContext, cancellation: _cancellation),
+					 () => Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, PXContext, _cancellation));
 
 		private ImmutableDictionary<string, ActionInfo> GetActions() =>
-			GetInfos(() => Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext),
-					 () => Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext));
+			GetInfos(() => Symbol.GetActionSymbolsWithTypesFromGraph(PXContext),
+					 () => Symbol.GetActionsFromGraphExtensionAndBaseGraph(PXContext));
 		
 		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers() => 
-			GetInfos(() => Symbol.GetActionHandlersFromGraph(ActionsByNames, _pxContext, cancellation: _cancellation),
-					 () => Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, _pxContext, _cancellation));
+			GetInfos(() => Symbol.GetActionHandlersFromGraph(ActionsByNames, PXContext, cancellation: _cancellation),
+					 () => Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, PXContext, _cancellation));
 		
 		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> graphInfosSelector,
 																   Func<OverridableItemsCollection<TInfo>> graphExtInfosSelector)
@@ -188,7 +189,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 			else if (Type == GraphType.PXGraphExtension)
 			{
-				(MethodDeclarationSyntax node, IMethodSymbol symbol) = Symbol.GetGraphExtensionInitialization(_pxContext, _cancellation);
+				(MethodDeclarationSyntax node, IMethodSymbol symbol) = Symbol.GetGraphExtensionInitialization(PXContext, _cancellation);
 
 				if (node != null && symbol != null)
 				{

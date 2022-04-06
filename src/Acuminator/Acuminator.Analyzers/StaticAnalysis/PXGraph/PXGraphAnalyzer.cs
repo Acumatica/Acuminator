@@ -45,6 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new DatabaseQueriesInPXGraphInitializationAnalyzer(),
             new ThrowingExceptionsInLongRunningOperationAnalyzer(),
             new ThrowingExceptionsInActionHandlersAnalyzer(),
+            new ThrowingExceptionsInEventHandlersAnalyzer(),
             new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
             new CallingBaseActionHandlerFromOverrideHandlerAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
