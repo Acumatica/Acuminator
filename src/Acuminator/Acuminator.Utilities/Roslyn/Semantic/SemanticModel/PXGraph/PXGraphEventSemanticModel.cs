@@ -220,7 +220,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			EventType.CacheAttached     => CacheAttachedEvents,
 			EventType.CommandPreparing  => CommandPreparingEvents,
 			EventType.ExceptionHandling => ExceptionHandlingEvents,
-			_                           => Enumerable.Empty<GraphEventInfoBase>()
+			EventType.None              => Enumerable.Empty<GraphEventInfoBase>(),
+			_                           => throw new NotSupportedException($"Event type { eventType } is not supported")
 		};
 
 		public IEnumerable<GraphEventInfoBase> GetAllEvents()
