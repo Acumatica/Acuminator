@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -286,7 +286,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reference of @this graph in this delegate will cause synchronous delegate execution.
+        ///   Looks up a localized string similar to Reference of @this graph in this delegate will cause synchronous delegate execution. It may lead to random bugs and data consistency issues.
         /// </summary>
         public static string PX1008Title {
             get {
@@ -1325,7 +1325,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Calls to Acumatica internal API marked with PXInternalUseOnlyAttribute are forbidden.
+        ///   Looks up a localized string similar to This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use.
         /// </summary>
         public static string PX1076Title {
             get {

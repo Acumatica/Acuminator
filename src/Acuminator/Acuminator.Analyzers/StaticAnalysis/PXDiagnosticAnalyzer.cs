@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -16,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	{
 		private readonly bool _settingsProvidedExternally;
 
-		protected CodeAnalysisSettings CodeAnalysisSettings 
+		protected CodeAnalysisSettings? CodeAnalysisSettings 
 		{ 
 			get;
 			private set;
@@ -26,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// Constructor.
 		/// </summary>
 		/// <param name="codeAnalysisSettings">(Optional) The code analysis settings for unit tests.</param>
-		protected PXDiagnosticAnalyzer(CodeAnalysisSettings codeAnalysisSettings = null)
+		protected PXDiagnosticAnalyzer(CodeAnalysisSettings? codeAnalysisSettings = null)
 		{
 			CodeAnalysisSettings = codeAnalysisSettings;
 			_settingsProvidedExternally = codeAnalysisSettings != null;
@@ -39,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (!_settingsProvidedExternally)
 				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values after potential package load
 
-			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
+			if (!CodeAnalysisSettings!.StaticAnalysisEnabled)
 				return;
 
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
