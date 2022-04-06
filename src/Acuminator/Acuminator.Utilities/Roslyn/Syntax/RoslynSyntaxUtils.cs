@@ -223,7 +223,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			node switch
 			{
 				AccessorDeclarationSyntax accessorSyntax => accessorSyntax.Body,
-				MethodDeclarationSyntax methodSyntax => methodSyntax.Body ?? (methodSyntax.ExpressionBody?.Expression as CSharpSyntaxNode),
+				MethodDeclarationSyntax methodSyntax => methodSyntax.Body ?? methodSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
 				ConstructorDeclarationSyntax constructorSyntax => constructorSyntax.Body,
 				_ => null,
 			};
