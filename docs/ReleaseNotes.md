@@ -14,19 +14,20 @@ In Acuminator 3.0, the following enhancements have been implemented:
  #### Improvements in the Code Map
  The Code Map has been improved in the following ways:
  - Different icons are now displayed for DACs, DAC extensions, graphs, and graph extensions. 
- Example is shown in the following screenshots.
- ![Icons for a DAC and DAC extension](images/CodeMap_DACExtension_Icon.png)
- ![Icons for a graph and graph extensions](images/CodeMap_GraphExtension_Icon.png)
+   Example is shown in the following screenshots.
+   ![Icons for a DAC and DAC extension](images/CodeMap_DACExtension_Icon.png)
+   ![Icons for a graph and graph extensions](images/CodeMap_GraphExtension_Icon.png)
  - A DAC node now indicates whether the node stands for a DAC or a DAC extension as shown in the previous screenshot.
  - Overrides of virtual type members are now displayed for a graph or a graph extension under the new **Base Overrides** node. The `Persist` method overrides are indicated with a special diskette icon. 
- Example is shown in the following screenshot.
- ![The Base Overrides node](images/CodeMap_BaseOverrides.png)
+   Example is shown in the following screenshot.
+   ![The Base Overrides node](images/CodeMap_BaseOverrides.png)
  - The new **Initialization and Activation** node has been introduces that displays the following information:
 	- Graph instance and static constructors for graphs, DACs and their extensions
 	- The `IsActive` method is now shown for a graph extension and a DAC extension. 
- Examples of the **Initialization and Activation** node are shown in the following screenshot.
- ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)
- ![The Initialization and Activation node for DACs and DAC extensions](images/CodeMap_DACExtension_InitAndActive.png)
+	
+   Examples of the **Initialization and Activation** node are shown in the following screenshot.
+   ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)
+   ![The Initialization and Activation node for DACs and DAC extensions](images/CodeMap_DACExtension_InitAndActive.png)
  
  
 ### Fixed Bugs
