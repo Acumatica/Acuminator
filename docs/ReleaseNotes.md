@@ -14,18 +14,18 @@ In Acuminator 3.0, the following enhancements have been implemented:
  #### Improvements in the Code Map
  The Code Map has been improved in the following ways:
  - Different icons are now displayed for DACs, DAC extensions, graphs, and graph extensions. 
-   See the following screenshots for examples of these icons.
-   ![Icons for a DAC and DAC extension](images/CodeMap_DACExtension_Icon.png)
+   See the following screenshots for examples of these icons.<br/>
+   ![Icons for a DAC and DAC extension](images/CodeMap_DACExtension_Icon.png)<br/>
    ![Icons for a graph and graph extensions](images/CodeMap_GraphExtension_Icon.png)
  - Each DAC node now indicates whether the node represents a DAC or a DAC extension as shown in the previous screenshot.
  - For each graph or a graph extension, overrides of virtual type members are now displayed under the new **Base Overrides** node. The `Persist` method overrides are indicated with a special diskette icon. 
-   See the following screenshots for an example of this node.
+   See the following screenshots for an example of this node.<br/>
    ![The Base Overrides node](images/CodeMap_BaseOverrides.png)
  - The **Initialization and Activation** node has been introduced. It displays the following information:
 	- Graph instance and static constructors for graphs and graph extensions
 	- The `IsActive` method for a graph extension and a DAC extension 
-   See the following screenshots for examples of the **Initialization and Activation** node.
-   ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)
+   See the following screenshots for examples of the **Initialization and Activation** node.<br/>
+   ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)<br/>
    ![The Initialization and Activation node for DACs and DAC extensions](images/CodeMap_DACExtension_InitAndActive.png)
  - The Code Map windows is automatically reopened at Visual Studio startup if the Code Map was opened at the last Visual Studio closure.s
  
