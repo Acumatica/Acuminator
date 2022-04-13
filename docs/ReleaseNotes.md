@@ -8,7 +8,7 @@ Acuminator 3.0 includes the bug fixes and enhancements described in this section
 In Acuminator 3.0, the following enhancements have been implemented:
  - Acuminator now supports Visual Studio 2022 alongside the two previous versions of Visual Studio, 2017 and 2019. 
  - The [PX1007](diagnostics/PX1007.md) diagnostic now checks only DACs and DAC extensions.
- - The [PX1008](diagnostics/PX1008.md) diagnostic now validates delegates passed to the `PXLongOperation.StartOperation()` method. A developer can now capture references to the graph instance in delegate closures.
+ - The [PX1008](diagnostics/PX1008.md) diagnostic now validates delegates passed to the `PXLongOperation.StartOperation()` method. A developer now can find captured references to the graph instance in delegate closures.
  - The [PX1026](diagnostics/PX1026.md) diagnostic now allows underscores in names of DAC extensions. 
  
  #### Improvements in the Code Map
