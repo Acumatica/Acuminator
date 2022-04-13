@@ -22,18 +22,16 @@ In Acuminator 3.0, the following enhancements have been implemented:
    Example is shown in the following screenshot.
    ![The Base Overrides node](images/CodeMap_BaseOverrides.png)
  - The new **Initialization and Activation** node has been introduces that displays the following information:
-	- Graph instance and static constructors for graphs, DACs and their extensions
+	- Graph instance and static constructors for graphs and graph extensions
 	- The `IsActive` method is now shown for a graph extension and a DAC extension. 
-	
    Examples of the **Initialization and Activation** node are shown in the following screenshot.
    ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)
    ![The Initialization and Activation node for DACs and DAC extensions](images/CodeMap_DACExtension_InitAndActive.png)
- 
+ - The Code Map windows is automatically reopened at Visual Studio startup if the Code Map was opened at the last Visual Studio closure.s
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
- - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.
- - The [PX1088](diagnostics/PX1088.md) diagnostic has been removed because its function is covered by the [PX1008](diagnostics/PX1008.md) diagnostic.
+ - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.s
  - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error if the following exceptions and their descendants thrown in the `RowPersisted`		 event handler of a processing graph:
 	- `PX.Data.PXRowPersistedException`
 	- `PX.Data.PXLockViolationException`
@@ -48,6 +46,9 @@ In this version of Acuminator, the following bugs have been fixed:
  
 ## Other Changes 
  - The [PX1088](diagnostics/PX1088.md) diagnostic has been removed because its function is covered by the [PX1008](diagnostics/PX1008.md) diagnostic.
+ 
+## Gratitudes 
+The Acuminator team would like to thank our open source contributors: @ShadowFiendZX and @shawnburt. We are grateful for your input and hope you stay with us.
 
 ## Acuminator 2.3.2
 Acuminator 2.3.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.

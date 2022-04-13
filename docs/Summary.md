@@ -18,7 +18,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1004](diagnostics/PX1004.md) | The order of view declarations will cause the creation of two cache instances. | Message | Unavailable |
 | [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate name. | Warning (ISV Level 3: Informational) | Available |
 | [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs | Message | Unavailable |
-| [PX1007](diagnostics/PX1007.md) | A DAC or DAC extension should have a description in the `summary` XML tag. | Warning | Available |
+| [PX1007](diagnostics/PX1007.md) | A DAC, a DAC extension, and public DAC properties should have a description in the `summary` XML tag. | Warning | Available |
 | [PX1008](diagnostics/PX1008.md) | The reference of `@this` graph in the delegate will cause synchronous delegate execution. | Warning (ISV Level 1: Significant) | Unavailable |
 | [PX1009](diagnostics/PX1009.md) | Multiple levels of inheritance are not supported for `PXCacheExtension`. | Error | Available |
 | [PX1010](diagnostics/PX1010.md) | If a delegate applies paging in an inner select, `StartRow` must be reset. (If `StartRow` is not reset, paging will be applied twice.) | Warning (ISV Level 1: Significant) | Available |
