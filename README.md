@@ -54,10 +54,13 @@ Acuminator provides the Code Map tool which displays to the user a structure of 
    by the DAC type and the DAC field
    - Row events grouped by the DAC type
    - Field events grouped by the DAC type and the DAC field
-   - Members overridden using the `PXOverride` attribute
+   - Members overridden using the `PXOverride` attribute 
+   - Overrides of virtual type members including the `Persist` method in the **Base Overrides** node 
+   - Constructors and the `IsActive` method in the **Initialization and Activation** node 
 * DACs and DAC extensions. For these elements, the Code Map displays:
    - Key DAC fields with attributes declared on them
    - All DAC fields with attributes declared on them
+   - The `IsActive` method for a DAC extension in the **Initialization and Activation** node 
    
    For each DAC field, the Code Map displays the following additional information:
    - The field data type

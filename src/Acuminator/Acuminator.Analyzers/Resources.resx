@@ -163,7 +163,7 @@
     <value>Exclude the class from the API Reference</value>
   </data>
   <data name="PX1007Title" xml:space="preserve">
-    <value>A public {0} should have a description in the summary XML tag</value>
+    <value>The {0} DAC, DAC extension, or DAC property should have a description in the summary XML tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
     <value>Reference of @this graph in this delegate will cause synchronous delegate execution. It may lead to random bugs and data consistency issues</value>

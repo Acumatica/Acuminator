@@ -1,6 +1,53 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 3.0
+Acuminator 3.0 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 3.0, the following enhancements have been implemented:
+ - Acuminator now supports Visual Studio 2022 in addition to the two previous versions of Visual Studio, 2017 and 2019. Also, Acuminator now supports preview versions of Visual Studio. 
+ - The [PX1007](diagnostics/PX1007.md) diagnostic now checks only DACs and DAC extensions.
+ - The [PX1008](diagnostics/PX1008.md) diagnostic now validates delegates passed to the `PXLongOperation.StartOperation()` method. You can now find captured references to the graph instance in delegate closures.
+ - The [PX1026](diagnostics/PX1026.md) diagnostic now allows underscores in the names of DAC extensions. 
+ 
+ #### Improvements in the Code Map
+ The Code Map has been improved in the following ways:
+ - Different icons are now displayed for DACs, DAC extensions, graphs, and graph extensions. 
+   See the following screenshots for examples of these icons.<br/>
+   ![Icons for a DAC and DAC extension](images/CodeMap_DACExtension_Icon.png)<br/>
+   ![Icons for a graph and graph extensions](images/CodeMap_GraphExtension_Icon.png)
+ - Each DAC node now indicates whether the node represents a DAC or a DAC extension as shown in the previous screenshot.
+ - For each graph or a graph extension, overrides of virtual type members are now displayed under the new **Base Overrides** node. The `Persist` method overrides are indicated with a special diskette icon. 
+   See the following screenshots for an example of this node.<br/>
+   ![The Base Overrides node](images/CodeMap_BaseOverrides.png)
+ - The **Initialization and Activation** node has been introduced. It displays the following information:
+	- Graph instance and static constructors for graphs and graph extensions
+	- The `IsActive` method for a graph extension and a DAC extension 
+   See the following screenshots for examples of the **Initialization and Activation** node.<br/>
+   ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)<br/>
+   ![The Initialization and Activation node for DACs and DAC extensions](images/CodeMap_DACExtension_InitAndActive.png)
+ - The Code Map windows is automatically reopened at Visual Studio startup if the Code Map was opened at the last Visual Studio closure.
+ 
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.
+ - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error if the following exceptions and their descendants are thrown in the `RowPersisted` event handler of a processing graph:
+	- `PX.Data.PXRowPersistedException`
+	- `PX.Data.PXLockViolationException`
+	- .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` (including its descendants `ArgumentNullException` and `ArgumentOutOfRangeException`)
+ 
+ #### Disabling of Locally Suppressed Diagnostics
+ Acuminator provides two different suppression mechanisms to suppress diagnostic alerts in a particular place: a global suppression file and a local suppression with a special comment. The suppression mechanism can be disabled in the Acuminator settings in Visual Studio by specifying False for the following setting: **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics**. With this mechanism disabled, you can see all suppressed errors in their legacy code and perform refactoring.
+ Previously, you could disable suppression of only globally suppressed diagnostic alerts. Alerts that have been suppressed locally via suppression comments could not be displayed even when the suppression mechanism was turned off. Now Acuminator diagnostics that have been suppressed locally can also be displayed when suppression is disabled. Thus, you can see all errors, including the ones that were suppressed with a comment in the code editor or in the **Error List** tool window. 
+ For details on diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
+ 
+## Other Changes 
+ - The [PX1088](diagnostics/PX1088.md) diagnostic has been removed because its function is covered by the [PX1008](diagnostics/PX1008.md) diagnostic.
+ 
+## Gratitudes 
+The Acuminator team would like to thank our open source contributors: @ShadowFiendZX and @shawnburt. We are grateful for your input and hope you stay with us.
+
 ## Acuminator 2.3.2
 Acuminator 2.3.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
