@@ -31,7 +31,7 @@ In Acuminator 3.0, the following enhancements have been implemented:
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
- - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.s
+ - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.
  - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error if the following exceptions and their descendants are thrown in the `RowPersisted` event handler of a processing graph:
 	- `PX.Data.PXRowPersistedException`
 	- `PX.Data.PXLockViolationException`
