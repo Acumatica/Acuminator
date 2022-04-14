@@ -27,7 +27,7 @@ In Acuminator 3.0, the following enhancements have been implemented:
    See the following screenshots for examples of the **Initialization and Activation** node.<br/>
    ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)<br/>
    ![The Initialization and Activation node for DACs and DAC extensions](images/CodeMap_DACExtension_InitAndActive.png)
- - The Code Map windows is automatically reopened at Visual Studio startup if the Code Map was opened at the last Visual Studio closure.s
+ - The Code Map windows is automatically reopened at Visual Studio startup if the Code Map was opened at the last Visual Studio closure.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
