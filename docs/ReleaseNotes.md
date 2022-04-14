@@ -35,7 +35,7 @@ In this version of Acuminator, the following bugs have been fixed:
  - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error if the following exceptions and their descendants are thrown in the `RowPersisted` event handler of a processing graph:
 	- `PX.Data.PXRowPersistedException`
 	- `PX.Data.PXLockViolationException`
-	- .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException`, and its descendants (`ArgumentNullException` and `ArgumentOutOfRangeException`)
+	- .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` (including its descendants `ArgumentNullException` and `ArgumentOutOfRangeException`)
  
  #### Disabling of Locally Suppressed Diagnostics
  Acuminator provides two different suppression mechanisms to suppress diagnostic alerts in a particular place: a global suppression file and a local suppression with a special comment. The suppression mechanism can be disabled in the Acuminator settings in Visual Studio by specifying False for the following setting: **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics**. With this mechanism disabled, you can see all suppressed errors in their legacy code and perform refactoring.
