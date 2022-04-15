@@ -50,7 +50,7 @@ namespace Acuminator.Vsix
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-	[InstalledProductRegistration(productName: "#110", productDetails: "#112", productId: "2.3.1", IconResourceID = 400)] // Info on this package for Help/About
+	[InstalledProductRegistration(productName: "#110", productDetails: "#112", productId: PackageVersion, IconResourceID = 400)] // Info on this package for Help/About
 	[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -68,6 +68,7 @@ namespace Acuminator.Vsix
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
+		private const string PackageVersion = "3.0.0";
 
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.
