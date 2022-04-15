@@ -32,10 +32,12 @@ In Acuminator 3.0, the following enhancements have been implemented:
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.
- - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error if the following exceptions and their descendants are thrown in the `RowPersisted` event handler of a processing graph:
-	- `PX.Data.PXRowPersistedException`
-	- `PX.Data.PXLockViolationException`
-	- .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` (including its descendants `ArgumentNullException` and `ArgumentOutOfRangeException`)
+ - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error for the exception thrown in the `RowPersisted` event handler of a graph if at least one of the following conditions is met:
+      - the graph declaring the `RowPersisted` event handler is a processing graph. For processing graphs all exception types are allowed.
+      - the graph declaring the `RowPersisted` event handler is a non-processing graph and the type of the exception is among one of the following exception types or is derived from them:
+         - `PX.Data.PXRowPersistedException`
+         - `PX.Data.PXLockViolationException`
+         - .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` (including its descendants `ArgumentNullException` and `ArgumentOutOfRangeException`)
  
  #### Disabling of Locally Suppressed Diagnostics
  Acuminator provides two different suppression mechanisms to suppress diagnostic alerts in a particular place: a global suppression file and a local suppression with a special comment. The suppression mechanism can be disabled in the Acuminator settings in Visual Studio by specifying False for the following setting: **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics**. With this mechanism disabled, you can see all suppressed errors in their legacy code and perform refactoring.
