@@ -9,9 +9,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Acuminator.Tests")]
-[assembly: AssemblyCopyright("Copyright © 2017-2019 Acumatica Ltd.")]
+[assembly: AssemblyCopyright("Copyright © 2017-2022 Acumatica Ltd.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("3.0.0")]
+[assembly: AssemblyFileVersion("3.0.0")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
