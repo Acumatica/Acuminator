@@ -33,8 +33,8 @@ In Acuminator 3.0, the following enhancements have been implemented:
 In this version of Acuminator, the following bugs have been fixed:
  - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.
  - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error for the exception thrown in the `RowPersisted` event handler of a graph if at least one of the following conditions is met:
-      - the graph declaring the `RowPersisted` event handler is a processing graph. For processing graphs all exception types are allowed.
-      - the graph declaring the `RowPersisted` event handler is a non-processing graph and the type of the exception is among one of the following exception types or is derived from them:
+      - The graph declaring the `RowPersisted` event handler is a processing graph. For processing graphs all exception types are allowed.
+      - The graph declaring the `RowPersisted` event handler is a non-processing graph and the type of the exception is among one of the following exception types or is derived from them:
          - `PX.Data.PXRowPersistedException`
          - `PX.Data.PXLockViolationException`
          - .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` (including its descendants `ArgumentNullException` and `ArgumentOutOfRangeException`)
