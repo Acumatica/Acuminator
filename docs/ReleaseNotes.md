@@ -7,7 +7,7 @@ Acuminator 3.0 includes the bug fixes and enhancements described in this section
 ### Enhancements
 In Acuminator 3.0, the following enhancements have been implemented:
  - Acuminator now supports Visual Studio 2022 in addition to the two previous versions of Visual Studio, 2017 and 2019. Also, Acuminator now supports preview versions of Visual Studio. 
- - The [PX1007](diagnostics/PX1007.md) diagnostic now checks only DACs and DAC extensions.
+ - The [PX1007](diagnostics/PX1007.md) diagnostic now checks only DACs, DAC extensions, and public field properties for these classes.
  - The [PX1008](diagnostics/PX1008.md) diagnostic now validates delegates passed to the `PXLongOperation.StartOperation()` method. You can now find captured references to the graph instance in delegate closures.
  - The [PX1026](diagnostics/PX1026.md) diagnostic now allows underscores in the names of DAC extensions. 
  
@@ -27,18 +27,20 @@ In Acuminator 3.0, the following enhancements have been implemented:
    See the following screenshots for examples of the **Initialization and Activation** node.<br/>
    ![The Initialization and Activation node for graphs and graph extensions](images/CodeMap_InitAndActive.png)<br/>
    ![The Initialization and Activation node for DACs and DAC extensions](images/CodeMap_DACExtension_InitAndActive.png)
- - The Code Map windows is automatically reopened at Visual Studio startup if the Code Map was opened at the last Visual Studio closure.
+ - The Code Map window is automatically reopened at Visual Studio startup if the Code Map was opened at the last Visual Studio closure.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - Acuminator refactorings did not work when Visual Studio was configured to perform static code analysis in a separate process.
- - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error if the following exceptions and their descendants are thrown in the `RowPersisted` event handler of a processing graph:
-	- `PX.Data.PXRowPersistedException`
-	- `PX.Data.PXLockViolationException`
-	- .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` (including its descendants `ArgumentNullException` and `ArgumentOutOfRangeException`)
+ - The [PX1073](diagnostics/PX1073.md) diagnostic now does not show an error for the exception thrown in the `RowPersisted` event handler of a graph if at least one of the following conditions is met:
+      - The graph declaring the `RowPersisted` event handler is a processing graph. For processing graphs all exception types are allowed.
+      - The graph declaring the `RowPersisted` event handler is a non-processing graph and the type of the exception is among one of the following exception types or is derived from them:
+         - `PX.Data.PXRowPersistedException`
+         - `PX.Data.PXLockViolationException`
+         - .NET exceptions from the System namespace: `NotImplementedException`, `NotSupportedException`, `ArgumentException` (including its descendants `ArgumentNullException` and `ArgumentOutOfRangeException`)
  
  #### Disabling of Locally Suppressed Diagnostics
- Acuminator provides two different suppression mechanisms to suppress diagnostic alerts in a particular place: a global suppression file and a local suppression with a special comment. The suppression mechanism can be disabled in the Acuminator settings in Visual Studio by specifying False for the following setting: **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics**. With this mechanism disabled, you can see all suppressed errors in their legacy code and perform refactoring.
+ Acuminator provides two different suppression mechanisms to suppress diagnostic alerts in a particular place: a global suppression file and a local suppression with a special comment. The suppression mechanism can be disabled in the Acuminator settings in Visual Studio by specifying False for the following setting: **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics**. With this mechanism disabled, you can see all suppressed errors in the legacy code and perform refactoring.
  Previously, you could disable suppression of only globally suppressed diagnostic alerts. Alerts that have been suppressed locally via suppression comments could not be displayed even when the suppression mechanism was turned off. Now Acuminator diagnostics that have been suppressed locally can also be displayed when suppression is disabled. Thus, you can see all errors, including the ones that were suppressed with a comment in the code editor or in the **Error List** tool window. 
  For details on diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
  
