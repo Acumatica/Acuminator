@@ -14,7 +14,7 @@ using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
 using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
-using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName;

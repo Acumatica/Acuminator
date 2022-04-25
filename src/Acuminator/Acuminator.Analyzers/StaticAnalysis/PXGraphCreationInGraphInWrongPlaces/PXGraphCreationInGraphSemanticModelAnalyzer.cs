@@ -1,4 +1,6 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿#nullable enable
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -8,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization
+namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces
 {
 	public class PXGraphCreationInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
@@ -22,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
 				Descriptors.PX1084_GraphCreationInDataViewDelegate);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphOrGraphExtension)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -33,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 					? Descriptors.PX1057_PXGraphCreationDuringInitialization
 					: Descriptors.PX1057_PXGraphCreationDuringInitialization_NonISV);
 
-			foreach (GraphInitializerInfo initializer in pxGraph.Initializers)
+			foreach (GraphInitializerInfo initializer in graphOrGraphExtension.Initializers)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 				graphInitializerWalker.Visit(initializer.Node);
@@ -42,11 +44,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 			var graphViewDelegateWalker = new PXGraphCreateInstanceWalker(context, pxContext,
 				Descriptors.PX1084_GraphCreationInDataViewDelegate);
 
-			foreach (DataViewDelegateInfo del in pxGraph.ViewDelegates)
+			foreach (DataViewDelegateInfo del in graphOrGraphExtension.ViewDelegates)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 				graphViewDelegateWalker.Visit(del.Node);
-			}
+			}	
 		}
 
 		private class PXGraphCreateInstanceWalker : NestedInvocationWalker

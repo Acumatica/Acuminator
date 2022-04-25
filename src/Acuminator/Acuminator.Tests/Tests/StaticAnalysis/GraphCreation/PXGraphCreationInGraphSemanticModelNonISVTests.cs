@@ -1,6 +1,6 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
