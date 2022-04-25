@@ -286,7 +286,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
         public static DiagnosticDescriptor PX1054_PXGraphLongRunOperationDuringInitialization { get; } =
             Rule("PX1054", nameof(Resources.PX1054Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1054);
 
-        public static DiagnosticDescriptor PX1057_PXGraphCreationDuringInitialization { get; } =
+		public static DiagnosticDescriptor PX1055_DacKeyFieldsWithIdentityKeyField { get; } =
+			Rule("PX1055", nameof(Resources.PX1055Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1055);
+
+		public static DiagnosticDescriptor PX1057_PXGraphCreationDuringInitialization { get; } =
             Rule("PX1057", nameof(Resources.PX1057Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1057);
 
         public static DiagnosticDescriptor PX1057_PXGraphCreationDuringInitialization_NonISV { get; } =
@@ -294,9 +297,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1058_PXGraphSavingChangesDuringInitialization { get; } =
             Rule("PX1058", nameof(Resources.PX1058Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1058);
-
-		public static DiagnosticDescriptor PX1055_DacKeyFieldsWithIdentityKeyField { get; } =
-			Rule("PX1055", nameof(Resources.PX1055Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1055);
 
         public static DiagnosticDescriptor PX1059_ChangesInPXCacheDuringPXGraphInitialization { get; } =
             Rule("PX1059", nameof(Resources.PX1059Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1059);
