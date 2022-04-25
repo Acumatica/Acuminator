@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.GraphCreation
 {
-	public class PXGraphCreationInWrongPlacesTests : DiagnosticVerifier
+	public class PXGraphCreationInWrongPlaces_ISVTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PXGraphAnalyzer(
