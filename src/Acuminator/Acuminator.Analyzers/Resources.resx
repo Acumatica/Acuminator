@@ -619,7 +619,10 @@
   <data name="PX1076Title" xml:space="preserve">
     <value>This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use</value>
   </data>
-  <data name="PX1056Title" xml:space="preserve">
-    <value>A PXGraph instance cannot be initialized inside {0} method</value>
+  <data name="PX1056TitleIsActive" xml:space="preserve">
+    <value>A PXGraph instance cannot be initialized inside IsActive method</value>
+  </data>
+  <data name="PX1056TitleIsActiveForGraph" xml:space="preserve">
+    <value>A PXGraph instance cannot be initialized inside IsActiveForGraph&lt;TGraph&gt; method</value>
   </data>
 </root>

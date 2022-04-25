@@ -1181,11 +1181,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside {0} method.
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActive method.
         /// </summary>
-        public static string PX1056Title {
+        public static string PX1056TitleIsActive {
             get {
-                return ResourceManager.GetString("PX1056Title", resourceCulture);
+                return ResourceManager.GetString("PX1056TitleIsActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActiveForGraph&lt;TGraph&gt; method.
+        /// </summary>
+        public static string PX1056TitleIsActiveForGraph {
+            get {
+                return ResourceManager.GetString("PX1056TitleIsActiveForGraph", resourceCulture);
             }
         }
         
