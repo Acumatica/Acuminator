@@ -34,7 +34,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.GraphCreation
 				Descriptors.PX1057_PXGraphCreationDuringInitialization_NonISV.CreateFor(14, 41));
 
 		[Theory]
-		[EmbeddedFileData("PXGrapWithCreateInstanceInInitDelegate.cs")]
+		[EmbeddedFileData("PXGraphWithCreateInstanceInInitDelegate.cs")]
 		public async Task PXGraphCreationDuringInitialization_GraphInitDelegate_CreateInstanceUsage(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1057_PXGraphCreationDuringInitialization_NonISV.CreateFor(20, 14));
