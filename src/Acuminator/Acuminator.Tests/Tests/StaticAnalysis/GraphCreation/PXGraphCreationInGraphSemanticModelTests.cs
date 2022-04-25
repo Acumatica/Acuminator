@@ -1,4 +1,6 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿#nullable enable
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Tests.Helpers;
@@ -15,6 +17,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.GraphCreation
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default
+					.WithStaticAnalysisEnabled()
+					.WithSuppressionMechanismDisabled()
 					.WithRecursiveAnalysisEnabled()
 					.WithIsvSpecificAnalyzersEnabled(),
 				new PXGraphCreationInGraphInWrongPlacesAnalyzer());

@@ -4,6 +4,8 @@ using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+#nullable enable
+
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,7 +17,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.GraphCreation
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default
-					.WithRecursiveAnalysisEnabled()
+					.WithStaticAnalysisEnabled()
+					.WithSuppressionMechanismDisabled()
+					.WithRecursiveAnalysisEnabled()					
 					.WithIsvSpecificAnalyzersDisabled(),
 				new PXGraphCreationInGraphInWrongPlacesAnalyzer());
 
