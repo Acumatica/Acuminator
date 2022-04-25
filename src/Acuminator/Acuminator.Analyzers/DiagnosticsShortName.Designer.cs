@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class DiagnosticsShortName {
@@ -552,6 +552,24 @@ namespace Acuminator.Analyzers {
         public static string PX1055 {
             get {
                 return ResourceManager.GetString("PX1055", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraphCreationInIsActiveForGraphMethod.
+        /// </summary>
+        public static string PX1056IsActiveForGraphMethod {
+            get {
+                return ResourceManager.GetString("PX1056IsActiveForGraphMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraphCreationInIsActiveMethod.
+        /// </summary>
+        public static string PX1056IsActiveMethod {
+            get {
+                return ResourceManager.GetString("PX1056IsActiveMethod", resourceCulture);
             }
         }
         
