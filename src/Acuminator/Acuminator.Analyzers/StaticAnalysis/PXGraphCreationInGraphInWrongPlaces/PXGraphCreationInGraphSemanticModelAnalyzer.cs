@@ -48,7 +48,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlace
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 				graphViewDelegateWalker.Visit(del.Node);
-			}	
+			}
+
+			if (graphOrGraphExtension.Type == GraphType.PXGraphExtension)
+			{
+				CheckIsActiveMethod(context, pxContext, Descriptors.PX1056_PXGraphCreationInIsActiveMethod, graphOrGraphExtension.IsActiveMethodInfo);
+				CheckIsActiveMethod(context, pxContext, Descriptors.PX1056_PXGraphCreationInIsActiveForGraphMethod, 
+									graphOrGraphExtension.IsActiveForGraphMethodInfo);
+			}
+		}
+
+		private void CheckIsActiveMethod(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor,
+										 NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>? IsActiveMethodInfo)
+		{
+			if (IsActiveMethodInfo != null)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
+
+				var graphIsActiveMethodWalker = new PXGraphCreateInstanceWalker(context, pxContext, descriptor);
+				graphIsActiveMethodWalker.Visit(IsActiveMethodInfo.Node);
+			}
 		}
 
 		private class PXGraphCreateInstanceWalker : NestedInvocationWalker
