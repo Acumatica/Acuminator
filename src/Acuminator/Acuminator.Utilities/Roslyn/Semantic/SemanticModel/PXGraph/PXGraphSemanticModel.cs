@@ -316,22 +316,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return walker.GraphInitDelegates;
 		}
 
-		private IsActiveMethodInfo GetIsActiveMethodInfo()
-		{
-			if (Type != GraphType.PXGraphExtension)
-				return null;
+		private IsActiveMethodInfo GetIsActiveMethodInfo() =>
+			Type == GraphType.PXGraphExtension
+				? IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation)
+				: null;
 
-			_cancellation.ThrowIfCancellationRequested();
-			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol);
-		}
-
-		private IsActiveForGraphMethodInfo GetIsActiveForGraphMethodInfo()
-		{
-			if (Type != GraphType.PXGraphExtension)
-				return null;
-
-			_cancellation.ThrowIfCancellationRequested();
-			return IsActiveForGraphMethodInfo.GetIsActiveForGraphMethodInfo(Symbol);
-		}
+		private IsActiveForGraphMethodInfo GetIsActiveForGraphMethodInfo() =>
+			Type == GraphType.PXGraphExtension
+				? IsActiveForGraphMethodInfo.GetIsActiveForGraphMethodInfo(Symbol, _cancellation)
+				: null;
 	}
 }
