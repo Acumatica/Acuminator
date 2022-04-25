@@ -20,7 +20,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 		private const int IsActiveDeclarationOrderToPlaceItFirst= -1;
 
 		public IsActiveMethodInfo(MethodDeclarationSyntax node, IMethodSymbol isActiveMethod, int? declarationOrder = null) :
-							 base(node, isActiveMethod, declarationOrder: declarationOrder ?? IsActiveDeclarationOrderToPlaceItFirst)
+							 base(node, isActiveMethod, declarationOrder ?? IsActiveDeclarationOrderToPlaceItFirst)
 		{
 		}
 
@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 			if (isActiveCandidates.IsDefaultOrEmpty)
 				return null;
 		
-			IMethodSymbol isActiveMethod =
+			IMethodSymbol? isActiveMethod =
 				isActiveCandidates.OfType<IMethodSymbol>()
 								  .FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
 															method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
