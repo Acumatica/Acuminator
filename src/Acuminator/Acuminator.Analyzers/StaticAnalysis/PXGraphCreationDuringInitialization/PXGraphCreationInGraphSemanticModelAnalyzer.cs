@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(
+			var graphInitializerWalker = new PXGraphCreateInstanceWalker(
 				context,
 				pxContext,
 				pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
@@ -36,16 +36,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 			foreach (GraphInitializerInfo initializer in pxGraph.Initializers)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				walker.Visit(initializer.Node);
+				graphInitializerWalker.Visit(initializer.Node);
 			}
 
-			walker = new PXGraphCreateInstanceWalker(context, pxContext,
+			var graphViewDelegateWalker = new PXGraphCreateInstanceWalker(context, pxContext,
 				Descriptors.PX1084_GraphCreationInDataViewDelegate);
 
 			foreach (DataViewDelegateInfo del in pxGraph.ViewDelegates)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				walker.Visit(del.Node);
+				graphViewDelegateWalker.Visit(del.Node);
 			}
 		}
 
