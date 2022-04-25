@@ -35,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         protected override SymbolKind SymbolKind => SymbolKind.NamedType;
 
         public PXGraphAnalyzer() : this(null,
-            new PXGraphCreationInGraphSemanticModelAnalyzer(),
+            new PXGraphCreationInGraphInWrongPlacesAnalyzer(),
             new ConstructorInGraphExtensionAnalyzer(),
             new SavingChangesInGraphSemanticModelAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),

@@ -17,7 +17,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.GraphCreation
 				CodeAnalysisSettings.Default
 					.WithRecursiveAnalysisEnabled()
 					.WithIsvSpecificAnalyzersEnabled(),
-				new PXGraphCreationInGraphSemanticModelAnalyzer());
+				new PXGraphCreationInGraphInWrongPlacesAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("PXGraphWithCreateInstanceInInstanceConstructor.cs")]
