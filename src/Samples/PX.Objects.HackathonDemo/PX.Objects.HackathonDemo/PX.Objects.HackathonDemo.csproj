@@ -117,7 +117,7 @@
     <Compile Include="Graph\Graph saving changes and invoking actions with UI presentation logic\SMUserMaint.cs" />
     <Compile Include="Graph\Graph extension with recursion in action handler\UserEntry.cs" />
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
-    <Compile Include="Graph\Graph with creation of other graphs\ARTranEntry.cs" />
+    <Compile Include="Graph\Graph creation in wrong places of graph and graph extension\ARTranEntry.cs" />
     <Compile Include="Graph\Graph Reusing\SOOrdersInqExt.cs" />
     <Compile Include="Graph\Graph with no primary view and actions not on primary DAC\StudentsFBQLMaint.cs" />
     <Compile Include="Graph\Graph with processing delegate uses incorrect view and throws setup exceptions\UsersProcess.cs" />
