@@ -112,6 +112,7 @@
     <Compile Include="Graph\GoTo Test\SOInvoiceEntry.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntryExt.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntryExtProcessPrices.cs" />
+    <Compile Include="Graph\Graph creation in wrong places of graph and graph extension\PXGraphExtensionWithCreateInstanceInIsActiveMethods.cs" />
     <Compile Include="Graph\Graph extension calling non-overriden view via delegate\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph extension with action call\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph saving changes and invoking actions with UI presentation logic\SMUserMaint.cs" />
