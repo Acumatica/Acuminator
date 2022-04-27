@@ -100,6 +100,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlace
 					base.VisitMemberAccessExpression(node);
 				}
 			}
+
+			/// <summary>
+			/// Called when the visitor visits a ObjectCreationExpressionSyntax node (a constructor call via new).
+			/// We need to check that graphs are not created via "<see langword="new"/> PXGraph()" constructor call.
+			/// </summary>
+			/// <param name="node">The node.</param>
+			public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+			{
+				_context.CancellationToken.ThrowIfCancellationRequested();
+
+				ITypeSymbol createdObjectType = GetSymbol<ITypeSymbol>(node.Type);
+
+				if (createdObjectType != null && createdObjectType.IsPXGraph(_pxContext))
+				{
+					ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
+				}
+				else
+				{
+					base.VisitObjectCreationExpression(node);
+				}
+			}
 		}
 	}
 }
