@@ -18,13 +18,14 @@ using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
+using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Dac
 {
@@ -52,7 +53,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new NonNullableTypeForBqlFieldAnalyzer(),
 			new MissingTypeListAttributeAnalyzer(),
 			new PXGraphUsageInDacAnalyzer(),
-			new NoIsActiveMethodForExtensionAnalyzer())
+			new NoIsActiveMethodForExtensionAnalyzer(),
+			new PXGraphCreationInGraphInWrongPlacesDacAnalyzer())
 		{
         }
 
