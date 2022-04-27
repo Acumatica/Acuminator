@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces
 {
-	public class PXGraphCreationInGraphInWrongPlacesAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class PXGraphCreationInGraphInWrongPlacesGraphAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(
