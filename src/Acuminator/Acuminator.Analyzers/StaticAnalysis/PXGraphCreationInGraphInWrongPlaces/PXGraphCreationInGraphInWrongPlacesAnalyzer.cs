@@ -1,14 +1,16 @@
 ﻿#nullable enable
 
+using System.Collections.Immutable;
+
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Walkers;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces
 {
@@ -67,59 +69,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlace
 
 				var graphIsActiveMethodWalker = new PXGraphCreateInstanceWalker(context, pxContext, descriptor);
 				graphIsActiveMethodWalker.Visit(IsActiveMethodInfo.Node);
-			}
-		}
-
-		private class PXGraphCreateInstanceWalker : NestedInvocationWalker
-		{
-			private readonly SymbolAnalysisContext _context;
-			private readonly PXContext _pxContext;
-			private readonly DiagnosticDescriptor _descriptor;
-
-			public PXGraphCreateInstanceWalker(SymbolAnalysisContext context, PXContext pxContext,
-				DiagnosticDescriptor descriptor)
-				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
-			{
-				_context = context;
-				_pxContext = pxContext;
-				_descriptor = descriptor;
-			}
-
-			public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
-			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
-
-				IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
-
-				if (symbol != null && _pxContext.PXGraph.CreateInstance.Contains(symbol.ConstructedFrom))
-				{
-					ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
-				}
-				else
-				{
-					base.VisitMemberAccessExpression(node);
-				}
-			}
-
-			/// <summary>
-			/// Called when the visitor visits a ObjectCreationExpressionSyntax node (a constructor call via new).
-			/// We need to check that graphs are not created via "<see langword="new"/> PXGraph()" constructor call.
-			/// </summary>
-			/// <param name="node">The node.</param>
-			public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
-			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
-
-				ITypeSymbol createdObjectType = GetSymbol<ITypeSymbol>(node.Type);
-
-				if (createdObjectType != null && createdObjectType.IsPXGraph(_pxContext))
-				{
-					ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
-				}
-				else
-				{
-					base.VisitObjectCreationExpression(node);
-				}
 			}
 		}
 	}
