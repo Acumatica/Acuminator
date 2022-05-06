@@ -366,4 +366,10 @@
   <data name="PX1076" xml:space="preserve">
     <value>CallToInternalApi</value>
   </data>
+  <data name="PX1056IsActiveMethod" xml:space="preserve">
+    <value>PXGraphCreationInIsActiveMethod</value>
+  </data>
+  <data name="PX1056IsActiveForGraphMethod" xml:space="preserve">
+    <value>PXGraphCreationInIsActiveForGraphMethod</value>
+  </data>
 </root>

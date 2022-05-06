@@ -70,6 +70,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </value>
 		public IsActiveMethodInfo IsActiveMethodInfo { get; }
 
+		/// <summary>
+		/// Gets the info about IsActiveForGraph&lt;TGraph&gt; method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
+		/// </summary>
+		/// <value>
+		/// The info about IsActiveForGraph&lt;TGraph&gt; method.
+		/// </value>
+		public IsActiveForGraphMethodInfo IsActiveForGraphMethodInfo { get; }
+
 
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
 									 CancellationToken cancellation = default)
@@ -98,6 +106,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			InitProcessingDelegatesInfo();
 			Initializers = GetDeclaredInitializers().ToImmutableArray();
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
+			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
 		}
 
 		private void InitProcessingDelegatesInfo()
@@ -307,13 +316,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return walker.GraphInitDelegates;
 		}
 
-		private IsActiveMethodInfo GetIsActiveMethodInfo()
-		{
-			if (Type != GraphType.PXGraphExtension)
-				return null;
+		private IsActiveMethodInfo GetIsActiveMethodInfo() =>
+			Type == GraphType.PXGraphExtension
+				? IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation)
+				: null;
 
-			_cancellation.ThrowIfCancellationRequested();
-			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol);
-		}
+		private IsActiveForGraphMethodInfo GetIsActiveForGraphMethodInfo() =>
+			Type == GraphType.PXGraphExtension
+				? IsActiveForGraphMethodInfo.GetIsActiveForGraphMethodInfo(Symbol, _cancellation)
+				: null;
 	}
 }

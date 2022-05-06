@@ -6,6 +6,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 	{
 		public const string IsKey = "IsKey";
 		public const string IsActive = "IsActive";
+		public const string IsActiveForGraph = "IsActiveForGraph";
 
 		public const string SetVisible = "SetVisible";
 		public const string SetVisibility = "SetVisibility";

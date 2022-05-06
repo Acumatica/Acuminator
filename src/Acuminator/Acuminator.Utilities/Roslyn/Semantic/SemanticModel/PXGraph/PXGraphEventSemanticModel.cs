@@ -31,41 +31,58 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public PXGraphSemanticModel BaseGraphModel { get; }
 
 		#region Base Model
+		/// <inheritdoc cref="PXGraphSemanticModel.ModelCreationOptions"/>
 		public GraphSemanticModelCreationOptions ModelCreationOptions => BaseGraphModel.ModelCreationOptions;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.IsProcessing"/>
 		public bool IsProcessing => BaseGraphModel.IsProcessing;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.Type"/>
 		public GraphType Type => BaseGraphModel.Type;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.Symbol"/>
 		public INamedTypeSymbol Symbol => BaseGraphModel.Symbol;
 
-		/// <summary>
-		/// The graph symbol. For the graph is the same as <see cref="Symbol"/>. For graph extensions is the extension's base graph.
-		/// </summary>
+
+		/// <inheritdoc cref="PXGraphSemanticModel.GraphSymbol"/>
 		public ITypeSymbol GraphSymbol => BaseGraphModel.GraphSymbol;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.StaticConstructors"/>
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors => BaseGraphModel.StaticConstructors;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.Initializers"/>
 		public ImmutableArray<GraphInitializerInfo> Initializers => BaseGraphModel.Initializers;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.ViewsByNames"/>
 		public ImmutableDictionary<string, DataViewInfo> ViewsByNames => BaseGraphModel.ViewsByNames;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.Views"/>
 		public IEnumerable<DataViewInfo> Views => BaseGraphModel.Views;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.ViewDelegatesByNames"/>
 		public ImmutableDictionary<string, DataViewDelegateInfo> ViewDelegatesByNames => BaseGraphModel.ViewDelegatesByNames;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.ViewDelegates"/>
 		public IEnumerable<DataViewDelegateInfo> ViewDelegates => BaseGraphModel.ViewDelegates;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.ActionsByNames"/>
 		public ImmutableDictionary<string, ActionInfo> ActionsByNames => BaseGraphModel.ActionsByNames;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.Actions"/>
 		public IEnumerable<ActionInfo> Actions => BaseGraphModel.Actions;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.ActionHandlersByNames"/>
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames => BaseGraphModel.ActionHandlersByNames;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.ActionHandlers"/>
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => BaseGraphModel.ActionHandlers;
 
-		/// <summary>
-		/// Gets the info about IsActive method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
-		/// </summary>
-		/// <value>
-		/// The info about IsActive method.
-		/// </value>
+
+		/// <inheritdoc cref="PXGraphSemanticModel.IsActiveMethodInfo"/>
 		public IsActiveMethodInfo IsActiveMethodInfo => BaseGraphModel.IsActiveMethodInfo;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.IsActiveForGraphMethodInfo"/>
+		public IsActiveForGraphMethodInfo IsActiveForGraphMethodInfo => BaseGraphModel.IsActiveForGraphMethodInfo;
 		#endregion
 
 		#region Events

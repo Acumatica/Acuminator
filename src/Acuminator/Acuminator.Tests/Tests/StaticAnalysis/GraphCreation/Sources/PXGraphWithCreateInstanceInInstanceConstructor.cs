@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using PX.Data;
 using PX.Common;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitialization.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces.Sources
 {
     public class SWKMapadocCustomerExtensionMaint : PXGraph<SWKMapadocCustomerExtensionMaint>
     {

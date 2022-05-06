@@ -94,6 +94,8 @@
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_WrongPrimaryKeyName.cs" />
     <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\SOOrderWronglyNamedUniqueKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\SOOrderWithoutPrimaryKey.cs" />
+    <Compile Include="DAC\Referential Integrity\Misc\OAuthClient.cs" />
+    <Compile Include="DAC\Referential Integrity\Misc\OAuthClientClaim.cs" />
     <Compile Include="DAC\TaxTran.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrder.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrderEntryExt.cs" />
@@ -110,12 +112,13 @@
     <Compile Include="Graph\GoTo Test\SOInvoiceEntry.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntryExt.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntryExtProcessPrices.cs" />
+    <Compile Include="Graph\Graph creation in wrong places of graph and graph extension\PXGraphExtensionWithCreateInstanceInIsActiveMethods.cs" />
     <Compile Include="Graph\Graph extension calling non-overriden view via delegate\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph extension with action call\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph saving changes and invoking actions with UI presentation logic\SMUserMaint.cs" />
     <Compile Include="Graph\Graph extension with recursion in action handler\UserEntry.cs" />
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
-    <Compile Include="Graph\Graph with creation of other graphs\ARTranEntry.cs" />
+    <Compile Include="Graph\Graph creation in wrong places of graph and graph extension\ARTranEntry.cs" />
     <Compile Include="Graph\Graph Reusing\SOOrdersInqExt.cs" />
     <Compile Include="Graph\Graph with no primary view and actions not on primary DAC\StudentsFBQLMaint.cs" />
     <Compile Include="Graph\Graph with processing delegate uses incorrect view and throws setup exceptions\UsersProcess.cs" />

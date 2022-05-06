@@ -277,7 +277,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A public {0} should have a description in the summary XML tag.
+        ///   Looks up a localized string similar to The {0} DAC, DAC extension, or DAC property should have a description in the summary XML tag.
         /// </summary>
         public static string PX1007Title {
             get {
@@ -727,7 +727,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DACs cannot contain instance methods.
+        ///   Looks up a localized string similar to DACs and DAC extensions cannot contain instance methods.
         /// </summary>
         public static string PX1031Title {
             get {
@@ -1177,6 +1177,24 @@ namespace Acuminator.Analyzers {
         public static string PX1055Title {
             get {
                 return ResourceManager.GetString("PX1055Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActive method.
+        /// </summary>
+        public static string PX1056TitleIsActive {
+            get {
+                return ResourceManager.GetString("PX1056TitleIsActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActiveForGraph&lt;TGraph&gt; method.
+        /// </summary>
+        public static string PX1056TitleIsActiveForGraph {
+            get {
+                return ResourceManager.GetString("PX1056TitleIsActiveForGraph", resourceCulture);
             }
         }
         

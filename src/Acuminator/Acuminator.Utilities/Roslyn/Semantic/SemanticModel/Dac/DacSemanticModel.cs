@@ -150,7 +150,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return null;
 
 			_cancellation.ThrowIfCancellationRequested();
-			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol);
+			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation);
 		}
 	}
 }
