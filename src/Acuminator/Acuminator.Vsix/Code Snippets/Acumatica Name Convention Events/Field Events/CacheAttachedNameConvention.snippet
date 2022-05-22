@@ -3,22 +3,23 @@
 	<CodeSnippet Format="1.0.0">
 		<Header>
 			<Keywords>
-				<Keyword>acFieldDef</Keyword>
+				<Keyword>acCacheAtt</Keyword>
 			</Keywords>
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Defaulting Event Handler with classic Name Convention Signature. 
-			Field defaulting event handlers are used to generate and assign the default value to a DAC field</Title>
+			<Title>Cache Attached Event with Name Convention Signature</Title>
 			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
 			<Description>
-				Acumatica Field Defaulting graph event handler declared with classic naming convention signature:
-				protected virtual void DacName_FieldName_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+				Acumatica Cache Attached graph event handler declared with classic naming convention signature:
+protected virtual void DacName_FieldName_CacheAttached(PXCache sender)
+
+The CacheAttached event handler is used to override DAC field attributes declared directly within the DAC.
 			</Description>
-			<HelpUrl>
-				https://help.acumatica.com/Help?ScreenId=ShowWiki&pageid=6db70fe7-3fc3-4e05-d3a6-5ecb93bea6a9
-			</HelpUrl>
-			<Shortcut>acFieldDef</Shortcut>
+			<!--<HelpUrl>
+				https://help.acumatica.com/Help?ScreenId=ShowWiki&#38;pageid=3af81acb-d7a6-3ebe-2f7d-38cc8abd302d
+			</HelpUrl>-->
+			<Shortcut>acCacheAtt</Shortcut>
 		</Header>
 		<Snippet>
 			<Imports>
@@ -43,9 +44,8 @@
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_$FieldName$_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+				<![CDATA[		protected virtual void $DacName$_$FieldName$_CacheAttached(PXCache sender)
 		{
-			var row = ($DacName$)e.Row;
 			$end$
 		}]]>
 			</Code>
