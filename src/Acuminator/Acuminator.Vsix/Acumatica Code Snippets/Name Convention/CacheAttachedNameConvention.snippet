@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acCacheAtt</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Cache Attached Event Handler with classic Name Convention Signature</Title>
+			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Description>
+				Acumatica Cache Attached graph event handler declared with classic naming convention signature:
+				protected virtual void DacName_FieldName_CacheAttached(PXCache sender)
+			</Description>
+			<HelpUrl>
+				https://help.acumatica.com/Help?ScreenId=ShowWiki&pageid=3af81acb-d7a6-3ebe-2f7d-38cc8abd302d
+			</HelpUrl>
+			<Shortcut>acCacheAtt</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DacName</ID>
+					<ToolTip>DAC Name</ToolTip>
+					<Default>DacName</Default>
+					<Function>
+					</Function>
+				</Literal>
+				<Literal Editable="true">
+					<ID>FieldName</ID>
+					<ToolTip>DAC Field Name</ToolTip>
+					<Default>FieldName</Default>
+					<Function>
+					</Function>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DacName$_$FieldName$_CacheAttached(PXCache sender)
+		{
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

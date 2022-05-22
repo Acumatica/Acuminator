@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acFieldDef</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Defaulting Event Handler with classic Name Convention Signature. 
+			Field defaulting event handlers are used to generate and assign the default value to a DAC field</Title>
+			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Description>
+				Acumatica Field Defaulting graph event handler declared with classic naming convention signature:
+				protected virtual void DacName_FieldName_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+			</Description>
+			<HelpUrl>
+				https://help.acumatica.com/Help?ScreenId=ShowWiki&pageid=6db70fe7-3fc3-4e05-d3a6-5ecb93bea6a9
+			</HelpUrl>
+			<Shortcut>acFieldDef</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DacName</ID>
+					<ToolTip>DAC Name</ToolTip>
+					<Default>DacName</Default>
+					<Function>
+					</Function>
+				</Literal>
+				<Literal Editable="true">
+					<ID>FieldName</ID>
+					<ToolTip>DAC Field Name</ToolTip>
+					<Default>FieldName</Default>
+					<Function>
+					</Function>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DacName$_$FieldName$_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+		{
+			var row = ($DacName$)e.Row;
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
