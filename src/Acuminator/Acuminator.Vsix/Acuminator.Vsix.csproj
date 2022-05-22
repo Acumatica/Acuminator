@@ -68,11 +68,11 @@
     <StartArguments>/rootsuffix Roslyn</StartArguments>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Acumatica Code Snippets\Name Convention\FieldDefaultingNameConvention.snippet">
+    <Content Include="Code Snippets\Name Convention\FieldDefaultingNameConvention.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Acumatica Code Snippets\Name Convention\CacheAttachedNameConvention.snippet">
+    <Content Include="Code Snippets\Name Convention\CacheAttachedNameConvention.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -113,7 +113,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Acumatica Code Snippets\Snippets.pkgdef">
+    <Content Include="Code Snippets\Snippets.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
