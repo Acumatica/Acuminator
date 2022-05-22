@@ -1,43 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Keywords>
-        <Keyword>fieldverg</Keyword>
-      </Keywords>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-      <Title>AC_FieldVerifying</Title>
-      <Author>Lesin Stanislav</Author>
-      <Description>
-      </Description>
-      <HelpUrl>
-      </HelpUrl>
-      <Shortcut>fieldverg</Shortcut>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal Editable="true">
-          <ID>FieldName</ID>
-          <ToolTip>FieldName</ToolTip>
-          <Default>FieldName</Default>
-          <Function>
-          </Function>
-        </Literal>
-        <Literal Editable="true">
-          <ID>DACName</ID>
-          <ToolTip>DACName</ToolTip>
-          <Default>DACName</Default>
-          <Function>
-          </Function>
-        </Literal>
-      </Declarations>
-      <Code Language="csharp" Delimiter="$" Kind="method decl"><![CDATA[		protected virtual void $DACName$_$FieldName$_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acFieldVer</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Verifying Event with Name Convention Signature</Title>
+			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Description>
+Acumatica Field Verifying graph event handler declared with classic naming convention signature:
+protected virtual void DACName_FieldName_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
+
+The FieldVerifying event handler is used to perform the following actions:
+
+- Implementation of the business logic associated with the validation of the DAC field value before the value is assigned to the DAC field.
+- Cancellation of the assigning of a value by throwing an exception of the PXSetPropertyException type if the value does not meet the requirements.
+			</Description>
+			<Shortcut>acFieldVer</Shortcut>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DacName</ID>
+					<ToolTip>DAC Name</ToolTip>
+					<Default>DacName</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>FieldName</ID>
+					<ToolTip>DAC Field Name</ToolTip>
+					<Default>FieldName</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DACName$_$FieldName$_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
 		{
 			var row = ($DACName$)e.Row;
 			$end$
-		}]]></Code>
-    </Snippet>
-  </CodeSnippet>
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>

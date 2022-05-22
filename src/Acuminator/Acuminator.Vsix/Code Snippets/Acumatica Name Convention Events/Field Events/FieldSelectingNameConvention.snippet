@@ -1,43 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Keywords>
-        <Keyword>fieldselg</Keyword>
-      </Keywords>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-      <Title>AC_FieldSelecting</Title>
-      <Author>Lesin Stanislav</Author>
-      <Description>
-      </Description>
-      <HelpUrl>
-      </HelpUrl>
-      <Shortcut>fieldselg</Shortcut>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal Editable="true">
-          <ID>FieldName</ID>
-          <ToolTip>FieldName</ToolTip>
-          <Default>FieldName</Default>
-          <Function>
-          </Function>
-        </Literal>
-        <Literal Editable="true">
-          <ID>DACName</ID>
-          <ToolTip>DACName</ToolTip>
-          <Default>DACName</Default>
-          <Function>
-          </Function>
-        </Literal>
-      </Declarations>
-      <Code Language="csharp" Delimiter="$" Kind="method decl"><![CDATA[		protected virtual void $DACName$_$FieldName$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acFieldSel</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Selecting Event with Name Convention Signature</Title>
+			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Description>
+Acumatica Field Selecting graph event handler declared with classic naming convention signature:
+protected virtual void DACName_FieldName_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+
+FieldSelecting event handlers are used to perform the following actions:
+
+- Conversion of the internal presentation of a DAC field (the data field value of a DAC instance) to the external presentation (the value displayed in the UI)
+- Conversion of the values of multiple DAC fields to a single external presentation
+- Provision of additional information to set up a DAC field input control or cell presentation
+			</Description>
+			<Shortcut>acFieldSel</Shortcut>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DacName</ID>
+					<ToolTip>DAC Name</ToolTip>
+					<Default>DacName</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>FieldName</ID>
+					<ToolTip>DAC Field Name</ToolTip>
+					<Default>FieldName</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DACName$_$FieldName$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 		{
 			var row = ($DACName$)e.Row;
 			$end$
-		}]]></Code>
-    </Snippet>
-  </CodeSnippet>
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>

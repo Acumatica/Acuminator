@@ -1,43 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Keywords>
-        <Keyword>fieldupd</Keyword>
-      </Keywords>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-      <Title>AC_FieldUpdated</Title>
-      <Author>Lesin Stanislav</Author>
-      <Description>
-      </Description>
-      <HelpUrl>
-      </HelpUrl>
-      <Shortcut>fieldupd</Shortcut>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal Editable="true">
-          <ID>FieldName</ID>
-          <ToolTip>FieldName</ToolTip>
-          <Default>FieldName</Default>
-          <Function>
-          </Function>
-        </Literal>
-        <Literal Editable="true">
-          <ID>DACName</ID>
-          <ToolTip>DACName</ToolTip>
-          <Default>DACName</Default>
-          <Function>
-          </Function>
-        </Literal>
-      </Declarations>
-      <Code Language="csharp" Delimiter="$"><![CDATA[		protected virtual void $DACName$_$FieldName$_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acFieldUpd</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Updated Event with Name Convention Signatur</Title>
+			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Description>
+Acumatica Field Updated graph event handler declared with classic naming convention signature:
+protected virtual void DACName_FieldName_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+
+FieldUpdated event handlers are used to modify the data record when its field is updated. It should be used to modify only the data record itself.
+			</Description>
+			<Shortcut>acFieldUpd</Shortcut>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DacName</ID>
+					<ToolTip>DAC Name</ToolTip>
+					<Default>DacName</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>FieldName</ID>
+					<ToolTip>DAC Field Name</ToolTip>
+					<Default>FieldName</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$">
+				<![CDATA[		protected virtual void $DACName$_$FieldName$_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
 		{
 			var row = ($DACName$)e.Row;
 			$end$
-		}]]></Code>
-    </Snippet>
-  </CodeSnippet>
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>
