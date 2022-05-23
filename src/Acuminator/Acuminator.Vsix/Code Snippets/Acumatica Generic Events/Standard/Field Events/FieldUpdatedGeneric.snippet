@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acFieldUpd</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Updated Event with Name Convention Signatur</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Acumatica Field Updated graph event handler declared with classic naming convention signature:
+protected virtual void [DAC]_[Field]_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+
+FieldUpdated event handlers are used to modify the data record when its field is updated. It should be used to modify only the data record itself.
+			</Description>
+			<Shortcut>acFieldUpd</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>Field</ID>
+					<ToolTip>Replace with a DAC Field Name</ToolTip>
+					<Default>Field</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$">
+				<![CDATA[		protected virtual void $DAC$_$Field$_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+		{
+			if (!(e.Row is $DAC$ row))
+				return;
+				
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

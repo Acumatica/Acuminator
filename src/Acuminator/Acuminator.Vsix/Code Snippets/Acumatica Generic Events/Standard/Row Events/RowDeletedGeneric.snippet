@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acRowDeld</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Row Deleted Event with Name Convention Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Acumatica Row Deleted graph event handler declared with classic naming convention signature:
+protected virtual void [DAC]_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
+
+The RowDeleted event handler is used to implement the business logic of the following actions:
+
+- Deletion of the detail data records in a one-to-many relationship
+- Update of the master data record in a many-to-one relationship
+- Deletion or update of the related data record in a one-to-one relationship
+			</Description>
+			<Shortcut>acRowDeld</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DAC$_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
+		{
+			if (!(e.Row is $DAC$ row))
+				return;
+				
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
