@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acFieldUpg</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Updating Event with Full Generic Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Acumatica Field Updating graph event handler declared with full generic signature:
+protected virtual void _(Events.FieldUpdating&gt;[DAC], [DAC].[Field]&lt; e)
+
+Field Updating event handler is used when either or both of the following occur:
+
+- The external presentation of a DAC field (the value displayed in the UI) differs from the value stored in the DAC.
+- The storage of values is spread among multiple DAC fields (database columns).
+			</Description>
+			<Shortcut>acFieldUpg</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void _(Events.FieldUpdating<$DAC$, $DAC$.$field$> e)
+		{
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

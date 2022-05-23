@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acRowInsg</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Row Inserting Event with Generic Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Acumatica Row Inserting graph event handler declared with generic signature:
+protected virtual void _(Events.RowInserting&gt;[DAC]&lt; e)
+
+Row Inserting event handler is used to perform the following actions:
+
+- Evaluation of the data record that is being inserted
+- Cancellation of the insertion by throwing an exception
+- Assignment of the default values to the fields of the data record that is being inserted
+			</Description>
+			<Shortcut>acRowInsg</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void _(Events.RowInserting<$DAC$> e)
+		{
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

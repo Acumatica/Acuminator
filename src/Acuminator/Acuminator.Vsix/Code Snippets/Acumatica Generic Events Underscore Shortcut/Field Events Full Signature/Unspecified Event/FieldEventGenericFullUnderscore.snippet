@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acFieldEvent</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Unspecified Field Event with Full Generic Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Acumatica graph field event handler declared with full generic signature:
+protected virtual void _(Events.Field[Event]&gt;[DAC], [DAC].[field]&lt; e)
+		</Description>
+			<Shortcut>acFieldEvent</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>Event</ID>
+					<ToolTip>Replace with a Graph Field Event Name</ToolTip>
+					<Default>Event</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void _(Events.Field$Event$<$DAC$, $DAC$.$field$> e)
+		{
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

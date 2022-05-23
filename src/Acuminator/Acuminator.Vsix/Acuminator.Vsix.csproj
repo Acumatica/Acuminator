@@ -200,6 +200,29 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Full Signature\FieldDefaultingGenericFullUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Full Signature\FieldSelectingGenericFullUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Full Signature\FieldUpdatedGenericFullUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Full Signature\FieldUpdatingGenericFullUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Full Signature\FieldVerifyingGenericFullUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Full Signature\Unspecified Event\FieldEventGenericFullUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Short Signature\CacheAttachedGenericShortUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Short Signature\FieldDefaultingGenericShortUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Short Signature\FieldSelectingGenericShortUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Short Signature\FieldUpdatedGenericShortUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Short Signature\FieldUpdatingGenericShortUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Short Signature\FieldVerifyingGenericShortUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Field Events Short Signature\Unspecified Event\FieldEventGenericShortUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowDeletedGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowDeletingGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowInsertedGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowInsertingGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowPersistedGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowPersistingGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowSelectedGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowUpdatedGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\RowUpdatingGenericUnderscore.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events Underscore Shortcut\Row Events\Unspecified Event\RowEventGenericUnderscore.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldDefaultingGenericFull.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldSelectingGenericFull.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatedGenericFull.snippet" />
@@ -680,9 +703,7 @@
       <Version>1.1.2</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Code Snippets\Acumatica Generic Events\UnderscoreShortcut\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup>

@@ -1,5 +1,6 @@
 ﻿[$RootKey$\Languages\CodeExpansions\CSharp\Paths]
 "Acumatica Name Convention Events"="$PackageFolder$\Acumatica Name Convention Events"
 "Acumatica Generic Events"="$PackageFolder$\Acumatica Generic Events"
+"Acumatica Generic Events Underscore Shortcut"="$PackageFolder$\Acumatica Generic Events Underscore Shortcut"
 
 "Acumatica DAC Snippets"="$PackageFolder$\Acumatica DAC Snippets"
