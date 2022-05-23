@@ -156,30 +156,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\CacheAttachedGeneric.snippet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldDefaultingGeneric.snippet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldSelectingGeneric.snippet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatedGeneric.snippet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatingGeneric.snippet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldVerifyingGeneric.snippet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowDeletedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -216,7 +192,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\Unspecified Event\FieldEventGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\Unspecified Event\FieldEventGenericFull.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -224,6 +200,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\CacheAttachedGenericFull.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldDefaultingGenericFull.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldSelectingGenericFull.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatedGenericFull.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatingGenericFull.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldVerifyingGenericFull.snippet" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

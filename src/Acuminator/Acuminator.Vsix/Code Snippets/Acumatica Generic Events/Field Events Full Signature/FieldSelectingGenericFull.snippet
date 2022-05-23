@@ -8,10 +8,10 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Selecting Event with Generic Signature</Title>
+			<Title>Field Selecting Event with Full Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Selecting graph event handler declared with generic signature:
+Acumatica Field Selecting graph event handler declared with full generic signature:
 protected virtual void [DAC]_[Field]_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 
 FieldSelecting event handlers are used to perform the following actions:
@@ -41,11 +41,8 @@ FieldSelecting event handlers are used to perform the following actions:
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_$field$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.FieldSelecting<$DAC$, $DAC$.$field$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>
