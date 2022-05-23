@@ -8,13 +8,13 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Updated Event with Name Convention Signatur</Title>
+			<Title>Field Updated Event with Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Field Updated graph event handler declared with generic signature:
-protected virtual void [DAC]_[Field]_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+protected virtual void _(Events.FieldUpdated&gt;[DAC], [DAC].[field]&lt; e)
 
-FieldUpdated event handlers are used to modify the data record when its field is updated. It should be used to modify only the data record itself.
+Field Updated event handlers are used to modify the data record when its field is updated. It should be used to modify only the data record itself.
 			</Description>
 			<Shortcut>acFieldUpd</Shortcut>
 		</Header>
@@ -31,17 +31,14 @@ FieldUpdated event handlers are used to modify the data record when its field is
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
-					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
-					<Default>Field</Default>
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$">
-				<![CDATA[		protected virtual void $DAC$_$Field$_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+				<![CDATA[		protected virtual void _(Events.FieldUpdated<$DAC$, $DAC$.$field$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

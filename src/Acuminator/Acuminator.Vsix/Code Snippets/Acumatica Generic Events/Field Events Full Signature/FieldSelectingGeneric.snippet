@@ -35,13 +35,13 @@ FieldSelecting event handlers are used to perform the following actions:
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
-					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
-					<Default>Field</Default>
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_$Field$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_$field$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 		{
 			if (!(e.Row is $DAC$ row))
 				return;

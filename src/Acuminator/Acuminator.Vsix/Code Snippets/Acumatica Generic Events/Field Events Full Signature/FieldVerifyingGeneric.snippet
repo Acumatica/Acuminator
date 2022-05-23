@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Field Verifying graph event handler declared with full generic signature:
-protected virtual void _(Events.FieldVerifying&gt;[DAC], [DAC].[Field]&lt; e)
+protected virtual void _(Events.FieldVerifying&gt;[DAC], [DAC].[field]&lt; e)
 
-The FieldVerifying event handler is used to perform the following actions:
+Field Verifying event handler is used to perform the following actions:
 
 - Implementation of the business logic associated with the validation of the DAC field value before the value is assigned to the DAC field.
 - Cancellation of the assigning of a value by throwing an exception of the PXSetPropertyException type if the value does not meet the requirements.
@@ -34,13 +34,13 @@ The FieldVerifying event handler is used to perform the following actions:
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
-					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
-					<Default>Field</Default>
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void _(Events.FieldVerifying<$DAC$, $DAC$.$Field$> e)
+				<![CDATA[		protected virtual void _(Events.FieldVerifying<$DAC$, $DAC$.$field$> e)
 		{
 			$end$
 		}]]>

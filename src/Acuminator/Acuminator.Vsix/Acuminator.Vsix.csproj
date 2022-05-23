@@ -156,71 +156,71 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Field Events\CacheAttachedGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\CacheAttachedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Field Events\FieldDefaultingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldDefaultingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Field Events\FieldSelectingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldSelectingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Field Events\FieldUpdatedGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Field Events\FieldUpdatingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Field Events\FieldVerifyingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldVerifyingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowDeletedGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowDeletedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowDeletingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowDeletingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowInsertedGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowInsertedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowInsertingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowInsertingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowPersistedGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowPersistedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowPersistingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowPersistingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowSelectedGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowSelectedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowUpdatedGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowUpdatedGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Row Events\RowUpdatingGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\RowUpdatingGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Unspecified Event\FieldEventGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\Unspecified Event\FieldEventGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica Generic Events\Standard\Unspecified Event\RowEventGeneric.snippet">
+    <Content Include="Code Snippets\Acumatica Generic Events\Row Events\Unspecified Event\RowEventGeneric.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -691,7 +691,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Code Snippets\Acumatica Generic Events\Short\" />
+    <Folder Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\" />
     <Folder Include="Code Snippets\Acumatica Generic Events\UnderscoreShortcut\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

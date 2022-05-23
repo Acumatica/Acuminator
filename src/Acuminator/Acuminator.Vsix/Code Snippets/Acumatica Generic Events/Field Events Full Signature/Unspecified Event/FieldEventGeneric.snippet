@@ -8,12 +8,12 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Unspecified Field Event with Generic Signature</Title>
+			<Title>Unspecified Field Event with Full Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica graph field event handler declared with generic signature:
-protected virtual void [DAC]_[Field]_Field[Event](PXCache sender, PXField[Event]EventArgs e)
-			</Description>
+Acumatica graph field event handler declared with full generic signature:
+protected virtual void _(Events.Field[Event]&gt;[DAC], [DAC].[field]&lt; e)
+		</Description>
 			<Shortcut>acFieldEvent</Shortcut>
 		</Header>
 		<Snippet>
@@ -29,9 +29,9 @@ protected virtual void [DAC]_[Field]_Field[Event](PXCache sender, PXField[Event]
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
-					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
-					<Default>Field</Default>
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>Event</ID>
@@ -40,11 +40,8 @@ protected virtual void [DAC]_[Field]_Field[Event](PXCache sender, PXField[Event]
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_$Field$_Field$Event$(PXCache sender, PXField$Event$EventArgs e)
+				<![CDATA[		protected virtual void _(Events.Field$Event$<$DAC$, $DAC$.$field$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

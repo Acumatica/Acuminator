@@ -3,20 +3,23 @@
 	<CodeSnippet Format="1.0.0">
 		<Header>
 			<Keywords>
-				<Keyword>acFieldDef</Keyword>
+				<Keyword>acFieldUpg</Keyword>
 			</Keywords>
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Defaulting Event with Generic Signature</Title>
+			<Title>Field Updating Event with Full Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Defaulting graph event handler declared with generic signature:
-protected virtual void [DAC]_[Field]_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+Acumatica Field Updating graph event handler declared with full generic signature:
+protected virtual void _(Events.FieldUpdating&gt;[DAC], [DAC].[Field]&lt; e)
 
-Field defaulting event handlers are used to generate and assign the default value to a DAC field.
+Field Updating event handler is used when either or both of the following occur:
+
+- The external presentation of a DAC field (the value displayed in the UI) differs from the value stored in the DAC.
+- The storage of values is spread among multiple DAC fields (database columns).
 			</Description>
-			<Shortcut>acFieldDef</Shortcut>
+			<Shortcut>acFieldUpg</Shortcut>
 		</Header>
 		<Snippet>
 			<Imports>
@@ -31,17 +34,14 @@ Field defaulting event handlers are used to generate and assign the default valu
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
-					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
-					<Default>Field</Default>
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_$Field$_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.FieldUpdating<$DAC$, $DAC$.$field$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>
