@@ -9,10 +9,10 @@
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 			<Title>Row Updated Event with Name Convention Signature</Title>
-			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Updated graph event handler declared with classic naming convention signature:
-protected virtual void DacName_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+protected virtual void DAC_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
 
 Row Updated event handlers contain business logic executed on update of a data record.
 			</Description>
@@ -26,15 +26,15 @@ Row Updated event handlers contain business logic executed on update of a data r
 			</Imports>
 			<Declarations>
 				<Literal Editable="true">
-					<ID>DacName</ID>
-					<ToolTip>DAC Name</ToolTip>
-					<Default>DacName</Default>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
 		{
-			if (!(e.Row is $DacName$ row))
+			if (!(e.Row is $DAC$ row))
 				return;
 				
 			$end$

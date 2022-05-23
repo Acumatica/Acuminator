@@ -9,10 +9,10 @@
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 			<Title>Row Deleted Event with Name Convention Signature</Title>
-			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Deleted graph event handler declared with classic naming convention signature:
-protected virtual void DacName_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
+protected virtual void DAC_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
 
 The RowDeleted event handler is used to implement the business logic of the following actions:
 
@@ -30,15 +30,15 @@ The RowDeleted event handler is used to implement the business logic of the foll
 			</Imports>
 			<Declarations>
 				<Literal Editable="true">
-					<ID>DacName</ID>
-					<ToolTip>DAC Name</ToolTip>
-					<Default>DacName</Default>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
 		{
-			if (!(e.Row is $DacName$ row))
+			if (!(e.Row is $DAC$ row))
 				return;
 				
 			$end$

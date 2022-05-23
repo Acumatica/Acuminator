@@ -104,6 +104,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DAC.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldSelectingNameConvention.snippet" />
     <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldUpdatedNameConvention.snippet" />
     <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldUpdatingNameConvention.snippet" />
@@ -583,7 +586,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Code Snippets\Acumatica DAC Snippets\" />
     <Folder Include="Code Snippets\Acumatica Generic Events\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

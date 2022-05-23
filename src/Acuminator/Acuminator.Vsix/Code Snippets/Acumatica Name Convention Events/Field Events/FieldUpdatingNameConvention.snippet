@@ -9,10 +9,10 @@
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 			<Title>Field Updating Event with Name Convention Signature</Title>
-			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Author>Acumatica</Author>
 			<Description>
 Acumatica Field Updating graph event handler declared with classic naming convention signature:
-protected virtual void DacName_FieldName_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
+protected virtual void DAC_Field_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
 
 The FieldUpdating event handler is used when either or both of the following occur:
 
@@ -29,20 +29,20 @@ The FieldUpdating event handler is used when either or both of the following occ
 			</Imports>
 			<Declarations>
 				<Literal Editable="true">
-					<ID>DacName</ID>
-					<ToolTip>DAC Name</ToolTip>
-					<Default>DacName</Default>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
-					<ID>FieldName</ID>
-					<ToolTip>DAC Field Name</ToolTip>
-					<Default>FieldName</Default>
+					<ID>Field</ID>
+					<ToolTip>Replace with a DAC Field Name</ToolTip>
+					<Default>Field</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_$FieldName$_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_$Field$_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
 		{
-			if (!(e.Row is $DacName$ row))
+			if (!(e.Row is $DAC$ row))
 				return;
 				
 			$end$

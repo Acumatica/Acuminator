@@ -9,10 +9,10 @@
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 			<Title>Row Persisted Event with Name Convention Signature</Title>
-			<Author>Nikomarov Sergey</Author>
+			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Persisted graph event handler declared with classic naming convention signature:
-protected virtual void DacName_RowPersisted(PXCache sender, PXRowPersistedEventArgs e)
+protected virtual void DAC_RowPersisted(PXCache sender, PXRowPersistedEventArgs e)
 
 The Row Persisted event handler is used to perform the following actions:
 
@@ -31,15 +31,15 @@ The Row Persisted event handler is used to perform the following actions:
 			</Imports>
 			<Declarations>
 				<Literal Editable="true">
-					<ID>DacName</ID>
-					<ToolTip>DAC Name</ToolTip>
-					<Default>DacName</Default>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_RowPersisted(PXCache sender, PXRowPersistedEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_RowPersisted(PXCache sender, PXRowPersistedEventArgs e)
 		{
-			if (!(e.Row is $DacName$ row))
+			if (!(e.Row is $DAC$ row))
 				return;
 				
 			$end$

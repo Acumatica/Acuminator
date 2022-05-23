@@ -9,10 +9,10 @@
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 			<Title>Row Inserting Event with Name Convention Signature</Title>
-			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Inserting graph event handler declared with classic naming convention signature:
-protected virtual void DacName_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
+protected virtual void DAC_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
 
 The RowInserting event handler is used to perform the following actions:
 
@@ -30,15 +30,15 @@ The RowInserting event handler is used to perform the following actions:
 			</Imports>
 			<Declarations>
 				<Literal Editable="true">
-					<ID>DacName</ID>
-					<ToolTip>DAC Name</ToolTip>
-					<Default>DacName</Default>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
 		{
-			if (!(e.Row is $DacName$ row))
+			if (!(e.Row is $DAC$ row))
 				return;
 				
 			$end$

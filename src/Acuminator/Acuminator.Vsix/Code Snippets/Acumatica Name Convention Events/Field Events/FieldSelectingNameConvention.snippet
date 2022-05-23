@@ -9,10 +9,10 @@
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 			<Title>Field Selecting Event with Name Convention Signature</Title>
-			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Author>Acumatica</Author>
 			<Description>
 Acumatica Field Selecting graph event handler declared with classic naming convention signature:
-protected virtual void DacName_FieldName_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+protected virtual void DAC_Field_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 
 FieldSelecting event handlers are used to perform the following actions:
 
@@ -30,20 +30,20 @@ FieldSelecting event handlers are used to perform the following actions:
 			</Imports>
 			<Declarations>
 				<Literal Editable="true">
-					<ID>DacName</ID>
-					<ToolTip>DAC Name</ToolTip>
-					<Default>DacName</Default>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
-					<ID>FieldName</ID>
-					<ToolTip>DAC Field Name</ToolTip>
-					<Default>FieldName</Default>
+					<ID>Field</ID>
+					<ToolTip>Replace with a DAC Field Name</ToolTip>
+					<Default>Field</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_$FieldName$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_$Field$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 		{
-			if (!(e.Row is $DacName$ row))
+			if (!(e.Row is $DAC$ row))
 				return;
 				
 			$end$

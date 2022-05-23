@@ -9,10 +9,10 @@
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 			<Title>Row Selected Event with Name Convention Signature</Title>
-			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Selected graph event handler declared with classic naming convention signature:
-protected virtual void DacName_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
+protected virtual void DAC_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 
 The RowSelected event handler is used to do the following:
 
@@ -29,15 +29,15 @@ The RowSelected event handler is used to do the following:
 			</Imports>
 			<Declarations>
 				<Literal Editable="true">
-					<ID>DacName</ID>
-					<ToolTip>DAC Name</ToolTip>
-					<Default>DacName</Default>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DacName$_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
+				<![CDATA[		protected virtual void $DAC$_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
-			if (!(e.Row is $DacName$ row))
+			if (!(e.Row is $DAC$ row))
 				return;
 				
 			$end$
