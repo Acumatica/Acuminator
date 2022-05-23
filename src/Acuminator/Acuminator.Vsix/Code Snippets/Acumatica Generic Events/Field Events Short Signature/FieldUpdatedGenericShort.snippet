@@ -9,11 +9,11 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Updated Event with Full Generic Signature</Title>
+			<Title>Field Updated Event with Short Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Updated graph event handler declared with full generic signature:
-protected virtual void _(Events.FieldUpdated&gt;[DAC], [DAC].[field]&lt; e)
+Acumatica Field Updated graph event handler declared with short generic signature:
+protected virtual void _(Events.FieldUpdated&gt;[DAC].[field]&lt; e)
 
 Field Updated event handler is used to modify the data record when its field is updated. It should be used to modify only the data record itself.
 			</Description>
@@ -37,7 +37,7 @@ Field Updated event handler is used to modify the data record when its field is 
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$">
-				<![CDATA[		protected virtual void _(Events.FieldUpdated<$DAC$, $DAC$.$field$> e)
+				<![CDATA[		protected virtual void _(Events.FieldUpdated<$DAC$.$field$> e)
 		{
 			$end$
 		}]]>

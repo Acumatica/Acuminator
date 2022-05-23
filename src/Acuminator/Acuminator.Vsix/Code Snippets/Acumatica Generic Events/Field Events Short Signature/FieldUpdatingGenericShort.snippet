@@ -8,11 +8,11 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Updating Event with Full Generic Signature</Title>
+			<Title>Field Updating Event with Short Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Updating graph event handler declared with full generic signature:
-protected virtual void _(Events.FieldUpdating&gt;[DAC], [DAC].[Field]&lt; e)
+Acumatica Field Updating graph event handler declared with short generic signature:
+protected virtual void _(Events.FieldUpdating&gt;[DAC].[Field]&lt; e)
 
 Field Updating event handler is used when either or both of the following occur:
 
@@ -40,7 +40,7 @@ Field Updating event handler is used when either or both of the following occur:
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void _(Events.FieldUpdating<$DAC$, $DAC$.$field$> e)
+				<![CDATA[		protected virtual void _(Events.FieldUpdating<$DAC$.$field$> e)
 		{
 			$end$
 		}]]>
