@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Updating graph event handler declared with generic signature:
-protected virtual void [DAC]_RowUpdating(PXCache sender, PXRowUpdatingEventArgs e)
+protected virtual void _(Events.RowUpdating&gt;[DAC]&lt; e)
 
-The Row Updating event handler is used to evaluate a data record that is being updated and to cancel the update operation if the data record does not fit the business logic requirements.
+Row Updating event handler is used to evaluate a data record that is being updated and to cancel the update operation if the data record does not fit the business logic requirements.
 			</Description>
 			<Shortcut>acRowUpg</Shortcut>
 		</Header>
@@ -32,11 +32,8 @@ The Row Updating event handler is used to evaluate a data record that is being u
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowUpdating(PXCache sender, PXRowUpdatingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowUpdating<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

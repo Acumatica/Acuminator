@@ -12,7 +12,7 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica graph row event handler declared with generic signature:
-protected virtual void [DAC]_Row[Event](PXCache sender, PXRow[Event]EventArgs e)
+protected virtual void _(Events.Row[Event]&gt;[DAC]&lt; e)
 			</Description>
 			<Shortcut>acRowEvent</Shortcut>
 		</Header>
@@ -30,16 +30,13 @@ protected virtual void [DAC]_Row[Event](PXCache sender, PXRow[Event]EventArgs e)
 				</Literal>
 				<Literal Editable="true">
 					<ID>Event</ID>
-					<ToolTip>Replace with a Graph Field Event Name</ToolTip>
+					<ToolTip>Replace with a Graph Row Event Name</ToolTip>
 					<Default>Event</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_Row$Event$(PXCache sender, PXRow$Event$EventArgs e)
+				<![CDATA[		protected virtual void _(Events.Row$Event$<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

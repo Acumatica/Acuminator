@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Selected graph event handler declared with generic signature:
-protected virtual void [DAC]_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
+protected virtual void _(Events.RowSelected&gt;[DAC]&lt; e)
 
-The RowSelected event handler is used to do the following:
+Row Selected event handler is used to do the following:
 
 - Implement the UI presentation logic
 - Set up the processing operation on a processing screen (which is a type of UI screen that allows the execution of a long-running operation on multiple data records at once)
@@ -35,11 +35,8 @@ The RowSelected event handler is used to do the following:
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowSelected<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Inserting graph event handler declared with generic signature:
-protected virtual void [DAC]_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
+protected virtual void _(Events.RowInserting&gt;[DAC]&lt; e)
 
-The RowInserting event handler is used to perform the following actions:
+Row Inserting event handler is used to perform the following actions:
 
 - Evaluation of the data record that is being inserted
 - Cancellation of the insertion by throwing an exception
@@ -36,11 +36,8 @@ The RowInserting event handler is used to perform the following actions:
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowInserting<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Deleting graph event handler declared with generic signature:
-protected virtual void [DAC]_RowDeleting(PXCache sender, PXRowDeletingEventArgs e)
+protected virtual void _(Events.RowDeleting&gt;[DAC]&lt; e)
 
-The Row Deleting event handler is used to evaluate the data record that is marked as Deleted or InsertedDeleted and cancel the deletion if it is required by the business logic.
+Row Deleting event handler is used to evaluate the data record that is marked as Deleted or InsertedDeleted and cancel the deletion if it is required by the business logic.
 			</Description>
 			<Shortcut>acRowDelg</Shortcut>
 		</Header>
@@ -32,11 +32,8 @@ The Row Deleting event handler is used to evaluate the data record that is marke
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowDeleting(PXCache sender, PXRowDeletingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowDeleting<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

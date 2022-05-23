@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Persisting graph event handler declared with generic signature:
-protected virtual void [DAC]_RowPersisting(PXCache sender, PXRowPersistingEventArgs e)
+protected virtual void _(Events.RowPersisting&gt;[DAC]&lt; e)
 
-The Row Persisting event handler is used to do the following:
+Row Persisting event handler is used to do the following:
 
 - Validate the data record before it has been committed to the database
 - Cancel the committing of the data record by throwing an exception
@@ -35,11 +35,8 @@ The Row Persisting event handler is used to do the following:
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowPersisting(PXCache sender, PXRowPersistingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowPersisting<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

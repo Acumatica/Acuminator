@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Updated graph event handler declared with generic signature:
-protected virtual void [DAC]_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+protected virtual void _(Events.RowUpdated&gt;[DAC]&lt; e)
 
-Row Updated event handlers contain business logic executed on update of a data record.
+Row Updated event handler contains business logic executed on update of a data record.
 			</Description>
 			<Shortcut>acRowUpd</Shortcut>
 		</Header>
@@ -32,11 +32,8 @@ Row Updated event handlers contain business logic executed on update of a data r
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowUpdated<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

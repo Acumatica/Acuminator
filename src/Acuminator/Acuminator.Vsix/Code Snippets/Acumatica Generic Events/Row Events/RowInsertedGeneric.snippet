@@ -12,9 +12,9 @@
 			<Author>Acumatica</Author>
 			<Description>
 Acumatica Row Inserted graph event handler declared with generic signature:
-protected virtual void [DAC]_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
+protected virtual void _(Events.RowInserted&gt;[DAC]&lt; e)
 
-The RowInserted event handler is used to implement the business logic for the following actions:
+Row Inserted event handler is used to implement the business logic for the following actions:
 
 - Insertion of the detail data records in a one-to-many relationship
 - Update of the master data record in a many-to-one relationship
@@ -36,11 +36,8 @@ The RowInserted event handler is used to implement the business logic for the fo
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowInserted<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>
