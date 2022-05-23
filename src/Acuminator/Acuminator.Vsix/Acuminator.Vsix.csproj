@@ -110,6 +110,12 @@
     <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldVerifyingNameConvention.snippet" />
     <None Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowDeletedNameConvention.snippet" />
     <None Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowDeletingNameConvention.snippet" />
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowPersistedNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowPersistingNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

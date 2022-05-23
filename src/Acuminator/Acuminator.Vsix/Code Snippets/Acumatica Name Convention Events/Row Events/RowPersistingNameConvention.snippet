@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acRowPerg</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Row Persisting Event with Name Convention Signature</Title>
+			<Author>Nikomarov Sergey</Author>
+			<Description>
+Acumatica Row Persisting graph event handler declared with classic naming convention signature:
+protected virtual void DacName_RowPersisting(PXCache sender, PXRowPersistingEventArgs e)
+
+The Row Persisting event handler is used to do the following:
+
+- Validate the data record before it has been committed to the database
+- Cancel the committing of the data record by throwing an exception
+			</Description>
+			<Shortcut>acRowPerg</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DacName</ID>
+					<ToolTip>DAC Name</ToolTip>
+					<Default>DacName</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DacName$_RowPersisting(PXCache sender, PXRowPersistingEventArgs e)
+		{
+			if (!(e.Row is $DacName$ row))
+				return;
+				
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
