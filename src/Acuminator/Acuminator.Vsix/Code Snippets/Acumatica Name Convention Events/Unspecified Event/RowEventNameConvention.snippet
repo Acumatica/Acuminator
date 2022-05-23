@@ -12,7 +12,7 @@
 			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
 			<Description>
 Acumatica graph row event handler declared with classic naming convention signature:
-protected virtual void DACName_Row[EventName](PXCache sender, PXRow[EventName]EventArgs e)
+protected virtual void DacName_Row[EventName](PXCache sender, PXRow[EventName]EventArgs e)
 			</Description>
 			<Shortcut>acRowEvent</Shortcut>
 		</Header>
@@ -35,9 +35,9 @@ protected virtual void DACName_Row[EventName](PXCache sender, PXRow[EventName]Ev
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DACName$_Row$EventName$(PXCache sender, PXRow$EventName$EventArgs e)
+				<![CDATA[		protected virtual void $DacName$_Row$EventName$(PXCache sender, PXRow$EventName$EventArgs e)
 		{
-			var row = ($DACName$)e.Row;
+			var row = ($DacName$)e.Row;
 			$end$
 		}]]>
 			</Code>

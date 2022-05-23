@@ -39,7 +39,9 @@ Field defaulting event handlers are used to generate and assign the default valu
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DacName$_$FieldName$_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
 		{
-			var row = ($DacName$)e.Row;
+			if (!(e.Row is $DacName$ row))
+				return;
+				
 			$end$
 		}]]>
 			</Code>

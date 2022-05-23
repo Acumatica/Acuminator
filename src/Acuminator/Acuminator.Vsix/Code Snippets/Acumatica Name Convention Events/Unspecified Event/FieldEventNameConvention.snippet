@@ -12,7 +12,7 @@
 			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
 			<Description>
 Acumatica graph field event handler declared with classic naming convention signature:
-protected virtual void DACName_FieldName_Field[EventName](PXCache sender, PXField[EventName]EventArgs e)
+protected virtual void DacName_FieldName_Field[EventName](PXCache sender, PXField[EventName]EventArgs e)
 			</Description>
 			<Shortcut>acFieldEvent</Shortcut>
 		</Header>
@@ -40,9 +40,9 @@ protected virtual void DACName_FieldName_Field[EventName](PXCache sender, PXFiel
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DACName$_$FieldName$_Field$EventName$(PXCache sender, PXField$EventName$EventArgs e)
+				<![CDATA[		protected virtual void $DacName$_$FieldName$_Field$EventName$(PXCache sender, PXField$EventName$EventArgs e)
 		{
-			var row = ($DACName$)e.Row;
+			var row = ($DacName$)e.Row;
 			$end$
 		}]]>
 			</Code>

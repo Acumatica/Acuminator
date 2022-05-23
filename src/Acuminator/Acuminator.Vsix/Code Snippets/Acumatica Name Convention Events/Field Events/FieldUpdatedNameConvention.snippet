@@ -12,7 +12,7 @@
 			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
 			<Description>
 Acumatica Field Updated graph event handler declared with classic naming convention signature:
-protected virtual void DACName_FieldName_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+protected virtual void DacName_FieldName_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
 
 FieldUpdated event handlers are used to modify the data record when its field is updated. It should be used to modify only the data record itself.
 			</Description>
@@ -37,9 +37,11 @@ FieldUpdated event handlers are used to modify the data record when its field is
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$">
-				<![CDATA[		protected virtual void $DACName$_$FieldName$_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
+				<![CDATA[		protected virtual void $DacName$_$FieldName$_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
 		{
-			var row = ($DACName$)e.Row;
+			if (!(e.Row is $DacName$ row))
+				return;
+				
 			$end$
 		}]]>
 			</Code>

@@ -12,7 +12,7 @@
 			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
 			<Description>
 Acumatica Field Selecting graph event handler declared with classic naming convention signature:
-protected virtual void DACName_FieldName_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+protected virtual void DacName_FieldName_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 
 FieldSelecting event handlers are used to perform the following actions:
 
@@ -41,9 +41,11 @@ FieldSelecting event handlers are used to perform the following actions:
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DACName$_$FieldName$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+				<![CDATA[		protected virtual void $DacName$_$FieldName$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 		{
-			var row = ($DACName$)e.Row;
+			if (!(e.Row is $DacName$ row))
+				return;
+				
 			$end$
 		}]]>
 			</Code>
