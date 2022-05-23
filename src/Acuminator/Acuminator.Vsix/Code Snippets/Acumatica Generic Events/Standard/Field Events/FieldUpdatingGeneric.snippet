@@ -8,11 +8,11 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Updating Event with Name Convention Signature</Title>
+			<Title>Field Updating Event with Full Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Updating graph event handler declared with classic naming convention signature:
-protected virtual void [DAC]_[Field]_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
+Acumatica Field Updating graph event handler declared with full generic signature:
+protected virtual void _(Events.FieldUpdating&gt;[DAC], [DAC].[Field]&lt; e)
 
 The FieldUpdating event handler is used when either or both of the following occur:
 
@@ -40,11 +40,8 @@ The FieldUpdating event handler is used when either or both of the following occ
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_$Field$_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.FieldUpdating<$DAC$, $DAC$.$Field$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>

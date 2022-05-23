@@ -8,13 +8,14 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Cache Attached Event with Name Convention Signature</Title>
+			<Title>Cache Attached Event with Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-				Acumatica Cache Attached graph event handler declared with classic naming convention signature:
-protected virtual void [DAC]_[Field]_CacheAttached(PXCache sender)
+				Acumatica Cache Attached graph event handler declared with generic signature:
+				[PXMergeAttributes(Method = MergeMethod.[Merge])]
+				protected virtual void _(Events.CacheAttached&gt;[DAC].[Field]&lt; e) { }
 
-The CacheAttached event handler is used to override DAC field attributes declared directly within the DAC.
+				The CacheAttached event handler is used to override DAC field attributes declared directly within the DAC.
 			</Description>
 			<Shortcut>acCacheAtt</Shortcut>
 		</Header>
@@ -25,6 +26,11 @@ The CacheAttached event handler is used to override DAC field attributes declare
 				</Import>
 			</Imports>
 			<Declarations>
+				<Literal Editable="true">
+					<ID>Merge</ID>
+					<ToolTip>Specify attributes Merge method</ToolTip>
+					<Default>Merge</Default>
+				</Literal>
 				<Literal Editable="true">
 					<ID>DAC</ID>
 					<ToolTip>Replace with a DAC Name</ToolTip>
@@ -37,9 +43,8 @@ The CacheAttached event handler is used to override DAC field attributes declare
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_$Field$_CacheAttached(PXCache sender)
-		{		
-		}
+				<![CDATA[		[PXMergeAttributes(Method = MergeMethod.$Merge$)]
+		protected virtual void _(Events.CacheAttached<$DAC$.$Field$> e) { }
 		$end$]]>
 			</Code>
 		</Snippet>

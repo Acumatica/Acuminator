@@ -8,11 +8,11 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Row Deleted Event with Name Convention Signature</Title>
+			<Title>Row Deleted Event with Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Row Deleted graph event handler declared with classic naming convention signature:
-protected virtual void [DAC]_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
+Acumatica Row Deleted graph event handler declared with generic signature:
+protected virtual void _(Events.RowDeleted&gt;[DAC]&lt; e)
 
 The RowDeleted event handler is used to implement the business logic of the following actions:
 
@@ -36,11 +36,8 @@ The RowDeleted event handler is used to implement the business logic of the foll
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
+				<![CDATA[		protected virtual void _(Events.RowDeleted<$DAC$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>
