@@ -8,13 +8,13 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Defaulting Event with Generic Signature</Title>
+			<Title>Field Defaulting Event with Full Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Defaulting graph event handler declared with generic signature:
-protected virtual void [DAC]_[Field]_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+Acumatica Field Defaulting graph event handler declared with full generic signature:
+protected virtual void _(Events.FieldDefaulting&gt;[DAC], [DAC].[field]&lt; e)
 
-Field defaulting event handlers are used to generate and assign the default value to a DAC field.
+Field defaulting event handler is used to generate and assign the default value to a DAC field.
 			</Description>
 			<Shortcut>acFieldDef</Shortcut>
 		</Header>
@@ -37,11 +37,8 @@ Field defaulting event handlers are used to generate and assign the default valu
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
-				<![CDATA[		protected virtual void $DAC$_$field$_FieldDefaulting(PXCache sender, PXFieldDefaultingEventArgs e)
+				<![CDATA[		protected virtual void _(Events.FieldDefaulting<$DAC$, $DAC$.$field$> e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
 			$end$
 		}]]>
 			</Code>
