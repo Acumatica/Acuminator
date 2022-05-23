@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets
+    xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<Title>DAC</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Template of Acumatic Data Access Controller (DAC) class
+
+[PXCacheName(Messages.[DAC])]
+public class [DAC] : IBqlTable
+{
+
+}
+			</Description>
+			<Shortcut>dac</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal>
+					<ID>DAC</ID>
+					<ToolTip>Replace with a name of DAC</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="CSharp" Kind="type decl">
+				<![CDATA[		[PXCacheName(Messages.$DAC$)]
+		public class $DAC$ : IBqlTable
+		{
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
