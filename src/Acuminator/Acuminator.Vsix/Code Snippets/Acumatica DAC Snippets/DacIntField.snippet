@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets
+    xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acDacFldInt</Keyword>
+			</Keywords>
+			<Title>DAC Integer Field</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Template of Acumatica integer DAC Field
+
+#region [Field]
+public abstract class [bqlField] : BqlInt.Field&lt;[bqlField]&gt; {}
+				
+[PX[DB]Int]
+[PXUIField(DisplayName = "[Field]")]
+public virtual int? [Field] 
+{ 
+	get;
+	set;
+}			
+#endregion
+			</Description>
+			<Shortcut>acDacFldInt</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+				<Import>
+					<Namespace>PX.Data.BQL</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal>
+					<ID>Field</ID>
+					<ToolTip>Replace with a name of DAC Field. Should be in PascalCase</ToolTip>
+					<Default>Field</Default>
+				</Literal>
+				<Literal>
+					<ID>bqlField</ID>
+					<ToolTip>Replace with a DAC BQL Field name. Should be the same as [Field] but in camelCase</ToolTip>
+					<Default>bqlField</Default>
+				</Literal>
+				<Literal>
+					<ID>DB</ID>
+					<ToolTip>Remove if DAC Field is not bound to the database</ToolTip>
+					<Default>DB</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="CSharp" Kind="method body">
+				<![CDATA[#region $Field$
+		public abstract class $bqlField$ : BqlInt.Field<$bqlField$> {}
+				
+		[PX$DB$Int]
+		[PXUIField(DisplayName = "$Field$")]
+		public virtual int? $Field$ 
+		{ 
+			get;
+			set;
+		}			
+		#endregion
+		$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

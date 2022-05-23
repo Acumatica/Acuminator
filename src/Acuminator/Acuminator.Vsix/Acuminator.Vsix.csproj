@@ -104,7 +104,19 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica DAC Snippets\DAC.snippet">
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DacField.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DacStringField.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DacBoolField.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DacDecimalField.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DacIntField.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldSelectingNameConvention.snippet" />
