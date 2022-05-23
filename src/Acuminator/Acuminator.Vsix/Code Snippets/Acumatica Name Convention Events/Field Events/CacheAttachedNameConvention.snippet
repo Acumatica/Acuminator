@@ -16,9 +16,6 @@ protected virtual void DacName_FieldName_CacheAttached(PXCache sender)
 
 The CacheAttached event handler is used to override DAC field attributes declared directly within the DAC.
 			</Description>
-			<!--<HelpUrl>
-				https://help.acumatica.com/Help?ScreenId=ShowWiki&#38;pageid=3af81acb-d7a6-3ebe-2f7d-38cc8abd302d
-			</HelpUrl>-->
 			<Shortcut>acCacheAtt</Shortcut>
 		</Header>
 		<Snippet>
@@ -32,15 +29,11 @@ The CacheAttached event handler is used to override DAC field attributes declare
 					<ID>DacName</ID>
 					<ToolTip>DAC Name</ToolTip>
 					<Default>DacName</Default>
-					<Function>
-					</Function>
 				</Literal>
 				<Literal Editable="true">
 					<ID>FieldName</ID>
 					<ToolTip>DAC Field Name</ToolTip>
 					<Default>FieldName</Default>
-					<Function>
-					</Function>
 				</Literal>
 			</Declarations>
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
