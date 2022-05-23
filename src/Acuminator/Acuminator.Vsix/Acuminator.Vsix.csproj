@@ -206,6 +206,15 @@
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatedGenericFull.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatingGenericFull.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldVerifyingGenericFull.snippet" />
+    <Content Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\Unspecified Event\FieldEventGenericShort.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\CacheAttachedGenericShort.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\FieldDefaultingGenericShort.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\FieldSelectingGenericShort.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\FieldUpdatedGenericShort.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\FieldUpdatingGenericShort.snippet" />
+    <None Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\FieldVerifyingGenericShort.snippet" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -673,7 +682,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Code Snippets\Acumatica Generic Events\Field Events Short Signature\" />
     <Folder Include="Code Snippets\Acumatica Generic Events\UnderscoreShortcut\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acCacheAtt</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Cache Attached Event with Generic Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Acumatica Cache Attached graph event handler declared with generic signature:
+[PXMergeAttributes(Method = MergeMethod.[Merge])]
+protected virtual void _(Events.CacheAttached&gt;[DAC].[field]&lt; e)
+
+Cache Attached event handler is used to override DAC field attributes declared directly within the DAC.
+			</Description>
+			<Shortcut>acCacheAtt</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>Merge</ID>
+					<ToolTip>Specify attributes Merge method</ToolTip>
+					<Default>Merge</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>field</ID>
+					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<Default>field</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		[PXMergeAttributes(Method = MergeMethod.$Merge$)]
+		protected virtual void _(Events.CacheAttached<$DAC$.$field$> e) { }
+		$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
