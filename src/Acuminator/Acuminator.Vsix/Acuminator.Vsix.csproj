@@ -200,7 +200,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\CacheAttachedGenericFull.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldDefaultingGenericFull.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldSelectingGenericFull.snippet" />
     <None Include="Code Snippets\Acumatica Generic Events\Field Events Full Signature\FieldUpdatedGenericFull.snippet" />
