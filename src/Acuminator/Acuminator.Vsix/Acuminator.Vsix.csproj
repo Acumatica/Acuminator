@@ -104,32 +104,57 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica DAC Snippets\DacField.snippet">
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DAC Field\DacField.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica DAC Snippets\DacStringField.snippet">
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DAC Field\DacStringField.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica DAC Snippets\DacBoolField.snippet">
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DAC Field\DacBoolField.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica DAC Snippets\DacDecimalField.snippet">
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DAC Field\DacDecimalField.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Code Snippets\Acumatica DAC Snippets\DacIntField.snippet">
+    <Content Include="Code Snippets\Acumatica DAC Snippets\DAC Field\DacIntField.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldSelectingNameConvention.snippet" />
-    <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldUpdatedNameConvention.snippet" />
-    <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldUpdatingNameConvention.snippet" />
-    <None Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldVerifyingNameConvention.snippet" />
-    <None Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowDeletedNameConvention.snippet" />
-    <None Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowDeletingNameConvention.snippet" />
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldSelectingNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldUpdatedNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldUpdatingNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldVerifyingNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowDeletedNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowDeletingNameConvention.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowPersistedNameConvention.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Code Snippets\Acumatica Name Convention Events\Row Events\RowPersistingNameConvention.snippet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
