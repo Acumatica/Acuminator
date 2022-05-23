@@ -1,36 +1,49 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Keywords>
-        <Keyword>rowinsd</Keyword>
-      </Keywords>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-      <Title>AC_RowInserted</Title>
-      <Author>Lesin Stanislav</Author>
-      <Description>
-      </Description>
-      <HelpUrl>
-      </HelpUrl>
-      <Shortcut>rowinsd</Shortcut>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal Editable="true">
-          <ID>DACName</ID>
-          <ToolTip>DACName</ToolTip>
-          <Default>DACName</Default>
-          <Function>
-          </Function>
-        </Literal>
-      </Declarations>
-      <Code Language="csharp" Delimiter="$" Kind="method decl"><![CDATA[		protected virtual void $DACName$_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acRowInsd</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Row Inserted Event with Name Convention Signature</Title>
+			<Author>Lesin Stanislav, Nikomarov Sergey</Author>
+			<Description>
+Acumatica Row Inserted graph event handler declared with classic naming convention signature:
+protected virtual void DacName_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
+
+The RowInserted event handler is used to implement the business logic for the following actions:
+
+- Insertion of the detail data records in a one-to-many relationship
+- Update of the master data record in a many-to-one relationship
+- Insertion or update of the related data record in a one-to-one relationship
+			</Description>
+			<Shortcut>acRowInsd</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DacName</ID>
+					<ToolTip>DAC Name</ToolTip>
+					<Default>DacName</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DacName$_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
 		{
-			var row = ($DACName$)e.Row;
+			if (!(e.Row is $DacName$ row))
+				return;
+				
 			$end$
-		}]]></Code>
-    </Snippet>
-  </CodeSnippet>
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>
