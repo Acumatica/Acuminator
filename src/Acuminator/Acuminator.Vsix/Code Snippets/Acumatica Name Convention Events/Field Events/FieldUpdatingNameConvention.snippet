@@ -42,9 +42,7 @@ The Field Updating event handler is used when either or both of the following oc
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_$Field$_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

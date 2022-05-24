@@ -34,9 +34,7 @@ Row Updating event handler is used to evaluate a data record that is being updat
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_RowUpdating(PXCache sender, PXRowUpdatingEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

@@ -37,9 +37,7 @@ protected virtual void [DAC]_Row[Event](PXCache sender, PXRow[Event]EventArgs e)
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_Row$Event$(PXCache sender, PXRow$Event$EventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

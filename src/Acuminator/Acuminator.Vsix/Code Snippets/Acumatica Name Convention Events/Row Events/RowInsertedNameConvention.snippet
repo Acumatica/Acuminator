@@ -38,9 +38,7 @@ Row Inserted event handler is used to implement the business logic for the follo
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

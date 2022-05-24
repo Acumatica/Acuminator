@@ -38,9 +38,7 @@ Row Deleted event handler is used to implement the business logic of the followi
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_RowDeleted(PXCache sender, PXRowDeletedEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

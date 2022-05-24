@@ -43,9 +43,7 @@ Field Selecting event handlers are used to perform the following actions:
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_$Field$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

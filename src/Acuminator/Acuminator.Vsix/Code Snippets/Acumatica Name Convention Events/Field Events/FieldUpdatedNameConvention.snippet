@@ -39,9 +39,7 @@ Field Updated event handler is used to modify the data record when its field is 
 			<Code Language="csharp" Delimiter="$">
 				<![CDATA[		protected virtual void $DAC$_$Field$_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

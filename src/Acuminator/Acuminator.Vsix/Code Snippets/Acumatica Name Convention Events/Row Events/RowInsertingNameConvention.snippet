@@ -38,9 +38,7 @@ Row Inserting event handler is used to perform the following actions:
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

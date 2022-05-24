@@ -34,9 +34,7 @@ Row Deleting event handler is used to evaluate the data record that is marked as
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_RowDeleting(PXCache sender, PXRowDeletingEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

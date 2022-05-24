@@ -34,9 +34,7 @@ Row Updated event handler contains business logic executed on update of a data r
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void $DAC$_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
 		{
-			if (!(e.Row is $DAC$ row))
-				return;
-				
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>
