@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Exception Handling Event with Name Convention Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Acumatica Exception Handling graph event handler declared with classic naming convention signature:
+protected virtual void [DAC]_[Field]_ExceptionHandling(PXCache cache, PXExceptionHandlingEventArgs e)
+
+The ExceptionHandling event is generated in the following cases:
+
+- The PXSetPropertyException exception is thrown while the system is processing a data access class (DAC) field value received from the UI or through the Web Service API 
+when a data record is being inserted or updated in the PXCache object.
+- The PXSetPropertyException exception is thrown while the system is processing DAC key field values 
+when the deletion of a data record from the PXCache object is initiated in the UI or through the Web Service API.
+- The PXSetPropertyException exception is thrown when the system is assigning the default value to a field or updating the value 
+when the assignment or update is initiated by any of the following methods of the PXCache class:
+	* Insert(IDictionary)
+	* SetDefaultExt(object, string)
+	* SetDefaultExt&gt;Field&lt;(object)
+	* Update(IDictionary, IDictionary)
+	* SetValueExt(object, string, object)
+	* SetValueExt&gt;Field&lt;(object, object
+- The PXSetPropertyException exception is thrown while the system is converting the external DAC key field presentation to the internal field value initiated by any of the following methods of the PXCache class:
+	* Locate(IDictionary)
+	* Update(IDictionary, IDictionary)
+	* Delete(IDictionary, IDictionary)
+- The PXCommandPreparingException, PXRowPersistingException, or PXRowPersistedException exception is thrown when an inserted, updated, or deleted data record is saved in the database.
+
+The ExceptionHandling event handler is used to do the following:
+
+- Catch and handle the exceptions mentioned above (the platform rethrows all unhandled exceptions)
+- Implement non-standard handling of the exceptions mentioned above
+			</Description>
+			<Shortcut>_excHndlg</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC Name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>Field</ID>
+					<ToolTip>Replace with a DAC Field Name</ToolTip>
+					<Default>Field</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DAC$_$Field$_ExceptionHandling(PXCache cache, PXExceptionHandlingEventArgs e)
+		{
+			var row = ($DAC$)e.Row;
+			
+			if (row != null)
+			{
+				$end$
+			}
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
