@@ -42,6 +42,7 @@ Field Verifying event handler is used to perform the following actions:
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void _(Events.FieldVerifying<$DAC$.$field$> e)
 		{
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

@@ -42,6 +42,7 @@ Field Updating event handler is used when either or both of the following occur:
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void _(Events.FieldUpdating<$DAC$.$field$> e)
 		{
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

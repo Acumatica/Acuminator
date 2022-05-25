@@ -39,6 +39,7 @@ Field Updated event handler is used to modify the data record when its field is 
 			<Code Language="csharp" Delimiter="$">
 				<![CDATA[		protected virtual void _(Events.FieldUpdated<$DAC$.$field$> e)
 		{
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>

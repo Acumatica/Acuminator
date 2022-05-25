@@ -39,6 +39,7 @@ Field defaulting event handler is used to generate and assign the default value 
 			<Code Language="csharp" Delimiter="$" Kind="method decl">
 				<![CDATA[		protected virtual void _(Events.FieldDefaulting<$DAC$.$field$> e)
 		{
+			var row = ($DAC$)e.Row;
 			$end$
 		}]]>
 			</Code>
