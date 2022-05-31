@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Row Updating Event with the Generic Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+The row updating graph event handler declared with the generic signature in Acumatica Framework:
+protected virtual void _(Events.RowUpdating&gt;[DAC]&lt; e)
+
+The row updating event handler should be used to do the following:
+ * To evaluate a data record that is being updated
+ * To cancel the update operation if the data record does not fit the business logic requirements
+			</Description>
+			<Shortcut>_rowUpg</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void _(Events.RowUpdating<$DAC$> e)
+		{
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Row Updated Event with the Name Convention Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+The row updated graph event handler declared with the classic naming convention signature in Acumatica Framework:
+protected virtual void [DAC]_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+
+The row updated event handler should contain the business logic that is executed during an update of a data record.
+			</Description>
+			<Shortcut>_rowUpd</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DAC$_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+		{
+			var row = ($DAC$)e.Row;
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

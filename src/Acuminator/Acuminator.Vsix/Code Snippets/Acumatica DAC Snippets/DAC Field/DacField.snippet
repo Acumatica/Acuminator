@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets
+    xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<Title>DAC Field</Title>
+			<Author>Acumatica</Author>
+			<Description>
+Template of the DAC field in Acumatica Framework
+
+#region [Field]
+public abstract class [bqlField] : Bql[FieldType].Field&lt;[bqlField]&gt; {}
+				
+[PX[DB][FieldType]()]
+[PXUIField(DisplayName = "[Field]")]
+public virtual [FieldType]? [Field] 
+{ 
+	get;
+	set;
+}			
+#endregion
+			</Description>
+			<Shortcut>dacFld</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+				<Import>
+					<Namespace>PX.Data.BQL</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal>
+					<ID>Field</ID>
+					<ToolTip>Replace with a name of a DAC field. The name should follow the PascalCase convention.</ToolTip>
+					<Default>Field</Default>
+				</Literal>
+				<Literal>
+					<ID>bqlField</ID>
+					<ToolTip>Replace with a name of a DAC BQL field. The name should be the same as specified in [Field] but follow the camelCase convention.</ToolTip>
+					<Default>bqlField</Default>
+				</Literal>
+				<Literal>
+					<ID>DB</ID>
+					<ToolTip>Remove if DAC Field is not bound to the database.</ToolTip>
+					<Default>DB</Default>
+				</Literal>
+				<Literal>
+					<ID>FieldType</ID>
+					<ToolTip>Replace with the type name.</ToolTip>
+					<Default>FieldType</Default>
+				</Literal>		
+			</Declarations>
+			<Code Language="CSharp" Kind="method decl">
+				<![CDATA[#region $Field$
+		public abstract class $bqlField$ : Bql$FieldType$.Field<$bqlField$> { }
+				
+		[PX$DB$$FieldType$()]
+		[PXUIField(DisplayName = "$Field$")]
+		public virtual $FieldType$? $Field$ 
+		{ 
+			get;
+			set;
+		}			
+		#endregion
+		$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

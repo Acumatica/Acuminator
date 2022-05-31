@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<Shortcut>_fieldUpd</Shortcut>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Updated Event with the Short Generic Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+The field updated graph event handler declared with the short generic signature:
+protected virtual void _(Events.FieldUpdated&gt;[DAC].[field]&lt; e)
+
+The field updated event handler should be used to modify a data record when its field is updated. The event handler should be used to modify only the data record itself.
+			</Description>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>field</ID>
+					<ToolTip>Replace with a name of the DAC BQL field</ToolTip>
+					<Default>field</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$">
+				<![CDATA[		protected virtual void _(Events.FieldUpdated<$DAC$.$field$> e)
+		{
+			var row = ($DAC$)e.Row;
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

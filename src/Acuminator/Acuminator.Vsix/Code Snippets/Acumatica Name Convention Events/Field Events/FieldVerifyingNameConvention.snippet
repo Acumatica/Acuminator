@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Verifying Event with the Name Convention Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+The field verifying graph event handler declared with the classic naming convention signature in Acumatica Framework:
+protected virtual void [DAC]_[Field]_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
+
+The field verifying event handler should be used to do the following:
+
+- To implement the business logic associated with the validation of the DAC field value before the value is assigned to the DAC field.
+- To cancel the assignment of a value by throwing an exception of the PXSetPropertyException type if the value does not meet the requirements.
+			</Description>
+			<Shortcut>_fieldVer</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>Field</ID>
+					<ToolTip>Replace with a name of the DAC field</ToolTip>
+					<Default>Field</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DAC$_$Field$_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
+		{
+			var row = ($DAC$)e.Row;
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

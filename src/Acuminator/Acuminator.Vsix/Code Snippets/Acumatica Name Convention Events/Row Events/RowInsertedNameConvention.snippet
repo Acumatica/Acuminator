@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Row Inserted Event with the Name Convention Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+The row inserted graph event handler declared with the classic naming convention signature in Acumatica Framework:
+protected virtual void [DAC]_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
+
+The row inserted event handler should be used to implement the business logic for the following actions:
+
+- Insertion of a detail data records in a one-to-many relationship
+- Update of a master data record in a many-to-one relationship
+- Insertion or update of a related data record in a one-to-one relationship
+			</Description>
+			<Shortcut>_rowInsd</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DAC$_RowInserted(PXCache sender, PXRowInsertedEventArgs e)
+		{
+			var row = ($DAC$)e.Row;
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

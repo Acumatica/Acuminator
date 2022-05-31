@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Keywords>
+				<Keyword>acumatica</Keyword>
+			</Keywords>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+			<Title>Field Selecting Event with the Name Convention Signature</Title>
+			<Author>Acumatica</Author>
+			<Description>
+The field selecting graph event handler declared with the classic naming convention signature in Acumatica Framework:
+protected virtual void [DAC]_[Field]_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+
+The field selecting event handlers should be used to do the following:
+
+- To convert the internal presentation of a DAC field (the data field value of a DAC instance) to the external presentation (the value displayed in the UI)
+- To convert the values of multiple DAC fields to a single external presentation
+- To provide additional information to set up a DAC field input control or the cell presentation
+			</Description>
+			<Shortcut>_fieldSel</Shortcut>
+		</Header>
+		<Snippet>
+			<Imports>
+				<Import>
+					<Namespace>PX.Data</Namespace>
+				</Import>
+			</Imports>
+			<Declarations>
+				<Literal Editable="true">
+					<ID>DAC</ID>
+					<ToolTip>Replace with a DAC name</ToolTip>
+					<Default>DAC</Default>
+				</Literal>
+				<Literal Editable="true">
+					<ID>Field</ID>
+					<ToolTip>Replace with a name of the DAC field</ToolTip>
+					<Default>Field</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp" Delimiter="$" Kind="method decl">
+				<![CDATA[		protected virtual void $DAC$_$Field$_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
+		{
+			var row = ($DAC$)e.Row;
+			$end$
+		}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
