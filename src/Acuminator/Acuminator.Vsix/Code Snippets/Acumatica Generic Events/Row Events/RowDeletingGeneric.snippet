@@ -8,13 +8,15 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Row Deleting Event with Generic Signature</Title>
+			<Title>Row Deleting Event with the Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Row Deleting graph event handler declared with generic signature:
+The row deleting graph event handler declared with the generic signature in Acumatica Framework:
 protected virtual void _(Events.RowDeleting&gt;[DAC]&lt; e)
 
-Row Deleting event handler is used to evaluate the data record that is marked as Deleted or InsertedDeleted and cancel the deletion if it is required by the business logic.
+The row deleting event handler should be used to do the following:
+ * To evaluate the data record that is marked as Deleted or InsertedDeleted
+ * To cancel the deletion of the data record if it is required by the business logic
 			</Description>
 			<Shortcut>_rowDelg</Shortcut>
 		</Header>
@@ -27,7 +29,7 @@ Row Deleting event handler is used to evaluate the data record that is marked as
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 			</Declarations>

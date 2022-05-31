@@ -8,17 +8,17 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Row Inserting Event with Generic Signature</Title>
+			<Title>Row Inserting Event with the Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Row Inserting graph event handler declared with generic signature:
+The row inserting graph event handler declared with the generic signature in Acumatica Framework:
 protected virtual void _(Events.RowInserting&gt;[DAC]&lt; e)
 
-Row Inserting event handler is used to perform the following actions:
+The row inserting event handler should be used to do the following:
 
-- Evaluation of the data record that is being inserted
-- Cancellation of the insertion by throwing an exception
-- Assignment of the default values to the fields of the data record that is being inserted
+- To evaluate the data record that is being inserted
+- To cancel the insertion of the data record by throwing an exception
+- To assign default values to the fields of the data record that is being inserted
 			</Description>
 			<Shortcut>_rowInsg</Shortcut>
 		</Header>
@@ -31,7 +31,7 @@ Row Inserting event handler is used to perform the following actions:
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 			</Declarations>

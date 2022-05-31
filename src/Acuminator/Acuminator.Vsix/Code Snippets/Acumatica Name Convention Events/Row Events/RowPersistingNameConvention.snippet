@@ -8,16 +8,16 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Row Persisting Event with Name Convention Signature</Title>
+			<Title>Row Persisting Event with the Name Convention Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Row Persisting graph event handler declared with classic naming convention signature:
+The row persisting graph event handler declared with the classic naming convention signature in Acumatica Framework:
 protected virtual void [DAC]_RowPersisting(PXCache sender, PXRowPersistingEventArgs e)
 
-Row Persisting event handler is used to do the following:
+The row persisting event handler should be used to do the following:
 
-- Validate the data record before it has been committed to the database
-- Cancel the committing of the data record by throwing an exception
+- To validate the data record before it is saved to the database
+- To cancel saving of the data record by throwing an exception
 			</Description>
 			<Shortcut>_rowPerg</Shortcut>
 		</Header>
@@ -30,7 +30,7 @@ Row Persisting event handler is used to do the following:
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 			</Declarations>

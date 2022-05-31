@@ -8,16 +8,16 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Verifying Event with Generic Short Signature</Title>
+			<Title>Field Verifying Event with the Short Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Verifying graph event handler declared with short generic signature:
+The field verifying graph event handler declared with short generic signature in Acumatica Framework:
 protected virtual void _(Events.FieldVerifying&gt;[DAC].[field]&lt; e)
 
-Field Verifying event handler is used to perform the following actions:
+The field verifying event handler should be used to do the following:
 
-- Implementation of the business logic associated with the validation of the DAC field value before the value is assigned to the DAC field.
-- Cancellation of the assigning of a value by throwing an exception of the PXSetPropertyException type if the value does not meet the requirements.
+- To implement the business logic associated with the validation of a DAC field value before the value is assigned to the DAC field
+- To cancel the assignment of a value by throwing an exception of the PXSetPropertyException type if the value does not meet the requirements
 		</Description>
 			<Shortcut>_fieldVer</Shortcut>
 		</Header>
@@ -30,12 +30,12 @@ Field Verifying event handler is used to perform the following actions:
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>field</ID>
-					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<ToolTip>Replace with a name of the DAC BQL field</ToolTip>
 					<Default>field</Default>
 				</Literal>
 			</Declarations>

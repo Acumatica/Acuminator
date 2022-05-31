@@ -8,14 +8,14 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Cache Attached Event with Name Convention Signature</Title>
+			<Title>Cache Attached Event with the Name Convention Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Cache Attached graph event handler declared with classic naming convention signature:
+The cache attached graph event handler declared with the classic naming convention signature:
 [PXMergeAttributes(Method = MergeMethod.[Merge])]
 protected virtual void [DAC]_[Field]_CacheAttached(PXCache sender)
 
-Cache Attached event handler is used to override DAC field attributes declared directly within the DAC.
+The cache attached event handler should be used to override attributes of a DAC field that are declared directly within the DAC.
 			</Description>
 			<Shortcut>_cacheAtt</Shortcut>
 		</Header>
@@ -28,17 +28,17 @@ Cache Attached event handler is used to override DAC field attributes declared d
 			<Declarations>
 				<Literal Editable="true">
 					<ID>Merge</ID>
-					<ToolTip>Specify attributes Merge method</ToolTip>
+					<ToolTip>Specify attributes of the Merge method</ToolTip>
 					<Default>Merge</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
+					<ToolTip>Replace with a name of the DAC field</ToolTip>
 					<Default>Field</Default>
 				</Literal>
 			</Declarations>

@@ -8,13 +8,13 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Updating Event with Name Convention Signature</Title>
+			<Title>Field Updating Event with the Name Convention Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Updating graph event handler declared with classic naming convention signature:
+The field updating graph event handler declared with the classic naming convention signature in Acumatica Framework:
 protected virtual void [DAC]_[Field]_FieldUpdating(PXCache sender, PXFieldUpdatingEventArgs e)
 
-The Field Updating event handler is used when either or both of the following occur:
+The field updating event handler should be used when either or both of the following conditions are met:
 
 - The external presentation of a DAC field (the value displayed in the UI) differs from the value stored in the DAC.
 - The storage of values is spread among multiple DAC fields (database columns).
@@ -30,12 +30,12 @@ The Field Updating event handler is used when either or both of the following oc
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
+					<ToolTip>Replace with a name of the DAC field</ToolTip>
 					<Default>Field</Default>
 				</Literal>
 			</Declarations>

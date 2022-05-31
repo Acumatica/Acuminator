@@ -8,13 +8,15 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Row Updating Event with Name Convention Signature</Title>
+			<Title>Row Updating Event with the Name Convention Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Row Updating graph event handler declared with classic naming convention signature:
+The row updating graph event handler declared with the classic naming convention signature in Acumatica Framework:
 protected virtual void [DAC]_RowUpdating(PXCache sender, PXRowUpdatingEventArgs e)
 
-Row Updating event handler is used to evaluate a data record that is being updated and to cancel the update operation if the data record does not fit the business logic requirements.
+The row updating event handler should be used to do the following:
+ * To evaluate a data record that is being updated
+ * To cancel the update operation if the data record does not fit the business logic requirements
 			</Description>
 			<Shortcut>_rowUpg</Shortcut>
 		</Header>
@@ -27,7 +29,7 @@ Row Updating event handler is used to evaluate a data record that is being updat
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 			</Declarations>

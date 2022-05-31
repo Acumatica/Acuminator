@@ -8,16 +8,16 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Updating Event with Generic Full Signature</Title>
+			<Title>Field Updating Event with the Full Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Updating graph event handler declared with full generic signature:
+The field updating graph event handler declared with the full generic signature in Acumatica Framework:
 protected virtual void _(Events.FieldUpdating&gt;[DAC], [DAC].[Field]&lt; e)
 
-Field Updating event handler is used when either or both of the following occur:
+The field updating event handler is used when either or both of the following conditions are met:
 
 - The external presentation of a DAC field (the value displayed in the UI) differs from the value stored in the DAC.
-- The storage of values is spread among multiple DAC fields (database columns).
+- The processed values are stored in multiple DAC fields (database columns).
 			</Description>
 			<Shortcut>_fieldUpg</Shortcut>
 		</Header>
@@ -30,12 +30,12 @@ Field Updating event handler is used when either or both of the following occur:
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>field</ID>
-					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<ToolTip>Replace with a name of the DAC BQL field.</ToolTip>
 					<Default>field</Default>
 				</Literal>
 			</Declarations>

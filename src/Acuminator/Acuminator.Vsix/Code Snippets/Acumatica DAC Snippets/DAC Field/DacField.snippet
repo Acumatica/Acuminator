@@ -9,7 +9,7 @@
 			<Title>DAC Field</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Template of Acumatica DAC Field
+Template of the DAC field in Acumatica Framework
 
 #region [Field]
 public abstract class [bqlField] : Bql[FieldType].Field&lt;[bqlField]&gt; {}
@@ -37,22 +37,22 @@ public virtual [FieldType]? [Field]
 			<Declarations>
 				<Literal>
 					<ID>Field</ID>
-					<ToolTip>Replace with a name of DAC Field. Should be in PascalCase</ToolTip>
+					<ToolTip>Replace with a name of a DAC field. The name should follow the PascalCase convention.</ToolTip>
 					<Default>Field</Default>
 				</Literal>
 				<Literal>
 					<ID>bqlField</ID>
-					<ToolTip>Replace with a DAC BQL Field name. Should be the same as [Field] but in camelCase</ToolTip>
+					<ToolTip>Replace with a name of a DAC BQL field. The name should be the same as specified in [Field] but follow the camelCase convention.</ToolTip>
 					<Default>bqlField</Default>
 				</Literal>
 				<Literal>
 					<ID>DB</ID>
-					<ToolTip>Remove if DAC Field is not bound to the database</ToolTip>
+					<ToolTip>Remove if DAC Field is not bound to the database.</ToolTip>
 					<Default>DB</Default>
 				</Literal>
 				<Literal>
 					<ID>FieldType</ID>
-					<ToolTip>Replace with a type name</ToolTip>
+					<ToolTip>Replace with the type name.</ToolTip>
 					<Default>FieldType</Default>
 				</Literal>		
 			</Declarations>

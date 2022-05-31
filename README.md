@@ -7,7 +7,7 @@ Acuminator provides the following functionality to boost developer productivity:
 * BQL formatting and outlining
 * Navigation between related code elements
 * The Code Map tool which displays the structure of graphs, DACs, and their extensions
-* Acumatica Code Snippets with templates for DACs, DAC fields and graph events
+* Acumatica Code Snippets which contain templates for DACs, DAC fields, and graph events
 
 ## Diagnostics and Code Fixes
 Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework.
@@ -73,17 +73,17 @@ The Code Map shows the elements in a tree view. You can collapse a tree node to 
 
 You can navigate to every code element displayed in the Code Map by double clicking on the corresponding tree node. Some category nodes support cycling navigation. You can double click them sequentially and navigate through the list of its children code elements.
 
-## Code Snippets
-Code snippets are small blocks of reusable code that can be inserted in a code file.
-Acuminator contains a collection of Visual Studio code snippets designed for Acumatica.
-It provides templates for:
+## Acumatica Code Snippets
+A code snippet is a small block of reusable code that a developer can paste in a code file.
+Acuminator provides Acumatica Code Snippets which represent a collection of C# code snippets designed for customizations of Acumatica ERP. 
+Acumatica Code Snippets provide templates for the following:
 * DACs and DAC fields
-* Graph event handlers with different signature styles:
+* Graph event handlers with the following signature styles:
    * Classic Name Convention signature
    * Generic signature
    * Short generic signature for graph field events
 
-All code snippets are taken from Acumatica [Code Snippets](https://github.com/Acumatica/CodeSnippets) repository and can be downloaded separately.
+All code snippets are located in the Acumatica [Code Snippets](https://github.com/Acumatica/CodeSnippets) repository and can be downloaded separately.
 
 ## The Process of Building the Solution
 To build the solution, do the following:

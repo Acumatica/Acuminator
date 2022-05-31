@@ -8,36 +8,45 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Exception Handling Event with Generic Short Signature</Title>
+			<Title>Exception Handling Event with the the Short Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Exception Handling graph event handler declared with short generic signature:
+The exception handling graph event handler declared with the short generic signature:
 protected virtual void _(Events.ExceptionHandling&gt;[DAC].[field]&lt; e)
 
-The ExceptionHandling event is generated in the following cases:
+The system provides the following exceptions:
+	* PXSetPropertyException
+	* PXCommandPreparingException
+	* PXRowPersistingException
+	* PXRowPersistedException
 
-- The PXSetPropertyException exception is thrown while the system is processing a data access class (DAC) field value received from the UI or through the Web Service API 
-when a data record is being inserted or updated in the PXCache object.
-- The PXSetPropertyException exception is thrown while the system is processing DAC key field values 
-when the deletion of a data record from the PXCache object is initiated in the UI or through the Web Service API.
-- The PXSetPropertyException exception is thrown when the system is assigning the default value to a field or updating the value 
-when the assignment or update is initiated by any of the following methods of the PXCache class:
+The PXSetProperty exception can be generated in the following cases:
+
+- When the system is processing value of a data access class (DAC) field that is received from the UI or through the Web Service API 
+and the data record is being inserted or updated in the PXCache object.
+- When the system is processing DAC key field values 
+and the deletion of a data record from the PXCache object is initiated in the UI or through the Web Service API.
+- When the system is assigning the default value to a field or updating the value 
+and the assignment or update is initiated by any of the following methods of the PXCache class:
 	* Insert(IDictionary)
 	* SetDefaultExt(object, string)
 	* SetDefaultExt&gt;Field&lt;(object)
 	* Update(IDictionary, IDictionary)
 	* SetValueExt(object, string, object)
 	* SetValueExt&gt;Field&lt;(object, object
-- The PXSetPropertyException exception is thrown while the system is converting the external DAC key field presentation to the internal field value initiated by any of the following methods of the PXCache class:
+- When the system is converting the external presentation of a DAC key field to the internal field value 
+and the operation is initiated by any of the following methods of the PXCache class:
 	* Locate(IDictionary)
 	* Update(IDictionary, IDictionary)
 	* Delete(IDictionary, IDictionary)
-- The PXCommandPreparingException, PXRowPersistingException, or PXRowPersistedException exception is thrown when an inserted, updated, or deleted data record is saved in the database.
 
-The ExceptionHandling event handler is used to do the following:
+The PXCommandPreparingException, PXRowPersistingException, or PXRowPersistedException exceptions can be thrown thrown 
+when an inserted, updated, or deleted data record is saved in the database.
 
-- Catch and handle the exceptions mentioned above (the platform rethrows all unhandled exceptions)
-- Implement non-standard handling of the exceptions mentioned above
+The exception handling event handler should be used to do the following:
+
+- To catch and handle the exceptions mentioned above (the platform rethrows all unhandled exceptions)
+- To implement non-standard handling of the exceptions mentioned above
 			</Description>
 			<Shortcut>_excHndlg</Shortcut>
 		</Header>
@@ -50,12 +59,12 @@ The ExceptionHandling event handler is used to do the following:
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>field</ID>
-					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<ToolTip>Replace with a name of the DAC BQL field</ToolTip>
 					<Default>field</Default>
 				</Literal>
 			</Declarations>

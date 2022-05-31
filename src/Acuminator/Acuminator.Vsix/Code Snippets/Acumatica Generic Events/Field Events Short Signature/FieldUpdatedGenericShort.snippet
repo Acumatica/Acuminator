@@ -9,13 +9,13 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Updated Event with Generic Short Signature</Title>
+			<Title>Field Updated Event with the Short Generic Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Updated graph event handler declared with short generic signature:
+The field updated graph event handler declared with the short generic signature:
 protected virtual void _(Events.FieldUpdated&gt;[DAC].[field]&lt; e)
 
-Field Updated event handler is used to modify the data record when its field is updated. It should be used to modify only the data record itself.
+The field updated event handler should be used to modify a data record when its field is updated. The event handler should be used to modify only the data record itself.
 			</Description>
 		</Header>
 		<Snippet>
@@ -27,12 +27,12 @@ Field Updated event handler is used to modify the data record when its field is 
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>field</ID>
-					<ToolTip>Replace with a DAC BQL Field Name</ToolTip>
+					<ToolTip>Replace with a name of the DAC BQL field</ToolTip>
 					<Default>field</Default>
 				</Literal>
 			</Declarations>

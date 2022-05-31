@@ -8,17 +8,17 @@
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
-			<Title>Field Selecting Event with Name Convention Signature</Title>
+			<Title>Field Selecting Event with the Name Convention Signature</Title>
 			<Author>Acumatica</Author>
 			<Description>
-Acumatica Field Selecting graph event handler declared with classic naming convention signature:
+The field selecting graph event handler declared with the classic naming convention signature in Acumatica Framework:
 protected virtual void [DAC]_[Field]_FieldSelecting(PXCache sender, PXFieldSelectingEventArgs e)
 
-Field Selecting event handlers are used to perform the following actions:
+The field selecting event handlers should be used to do the following:
 
-- Conversion of the internal presentation of a DAC field (the data field value of a DAC instance) to the external presentation (the value displayed in the UI)
-- Conversion of the values of multiple DAC fields to a single external presentation
-- Provision of additional information to set up a DAC field input control or cell presentation
+- To convert the internal presentation of a DAC field (the data field value of a DAC instance) to the external presentation (the value displayed in the UI)
+- To convert the values of multiple DAC fields to a single external presentation
+- To provide additional information to set up a DAC field input control or the cell presentation
 			</Description>
 			<Shortcut>_fieldSel</Shortcut>
 		</Header>
@@ -31,12 +31,12 @@ Field Selecting event handlers are used to perform the following actions:
 			<Declarations>
 				<Literal Editable="true">
 					<ID>DAC</ID>
-					<ToolTip>Replace with a DAC Name</ToolTip>
+					<ToolTip>Replace with a DAC name</ToolTip>
 					<Default>DAC</Default>
 				</Literal>
 				<Literal Editable="true">
 					<ID>Field</ID>
-					<ToolTip>Replace with a DAC Field Name</ToolTip>
+					<ToolTip>Replace with a name of the DAC field</ToolTip>
 					<Default>Field</Default>
 				</Literal>
 			</Declarations>
