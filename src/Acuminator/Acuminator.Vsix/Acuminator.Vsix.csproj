@@ -402,6 +402,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
+    <Compile Include="Code Snippets\SnippetsVersionFile.cs" />
+    <Compile Include="Code Snippets\SnippetsDistribution.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
     <Compile Include="Coloriser\Constants\VSColors.cs" />
