@@ -502,6 +502,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Initializing Acumatica Code Snippets shipped with Acuminator.
+        /// </summary>
+        public static string PackageLoad_InitCodeSnippets {
+            get {
+                return ResourceManager.GetString("PackageLoad_InitCodeSnippets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing Acuminator commands.
         /// </summary>
         public static string PackageLoad_InitCommands {
