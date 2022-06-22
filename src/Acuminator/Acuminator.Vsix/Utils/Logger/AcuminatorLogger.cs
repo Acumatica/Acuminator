@@ -121,6 +121,16 @@ namespace Acuminator.Vsix.Logger
 			LogMessageToActivityLog(logMessage, logMode);
 		}
 
+		public static void LogException(Exception? exception, LogMode logMode = LogMode.Error, bool addErrorPrefix = false,
+										[CallerMemberName] string? reportedFrom = null)
+		{
+			if (exception == null || logMode == LogMode.None)
+				return;
+
+			string logMessage = CreateLogMessageFromException(exception, currentDocumentPath: null, logMode, reportedFrom, addErrorPrefix);
+			LogMessageToActivityLog(logMessage, logMode);
+		}
+
 		private IWpfTextView? GetActiveTextViewWithTimeout(double timeoutSeconds)
 		{
 			try
