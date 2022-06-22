@@ -1,18 +1,23 @@
-﻿using System;
-using System.Text;
+﻿#nullable enable
+
+using System;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Utilities;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
+
 using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
 
 
@@ -41,12 +46,12 @@ namespace Acuminator.Vsix.Logger
 			TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 		}
 
-		private void Acuminator_FirstChanceException(object sender, FirstChanceExceptionEventArgs e)
+		private void Acuminator_FirstChanceException(object? sender, FirstChanceExceptionEventArgs e)
 		{
 			LogException(e.Exception, logOnlyFromAcuminatorAssemblies: true, LogMode.Warning);
 		}
 
-		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		private void CurrentDomain_UnhandledException(object? sender, UnhandledExceptionEventArgs e)
 		{
 			if (e.ExceptionObject is Exception exception)
 			{
@@ -58,7 +63,7 @@ namespace Acuminator.Vsix.Logger
 			}
 		}
 
-		private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+		private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
 		{
 			LogMode logMode = LogMode.Error;
 
@@ -74,7 +79,7 @@ namespace Acuminator.Vsix.Logger
 			} 
 		}
 
-		public void LogMessage(string message, LogMode logMode, [CallerMemberName] string reportedFrom = null)
+		public void LogMessage(string? message, LogMode logMode, [CallerMemberName] string? reportedFrom = null)
 		{
 			if (message.IsNullOrWhiteSpace() || logMode == LogMode.None)
 				return;
@@ -89,8 +94,8 @@ namespace Acuminator.Vsix.Logger
 			LogMessageToActivityLog(message, logMode);
 		}
 
-		public void LogException(Exception exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode, 
-								 [CallerMemberName]string reportedFrom = null)
+		public void LogException(Exception? exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode, 
+								 [CallerMemberName]string? reportedFrom = null)
 		{
 			if (exception == null || logMode == LogMode.None)
 			{
@@ -102,21 +107,21 @@ namespace Acuminator.Vsix.Logger
 				return;
 			}
 
-			IWpfTextView activeTextView = GetActiveTextViewWithTimeout(timeoutSeconds: 20);
+			IWpfTextView? activeTextView = GetActiveTextViewWithTimeout(timeoutSeconds: 20);
 
 			if (activeTextView == null)
 				return;
 
-			Document currentDocument = activeTextView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document? currentDocument = activeTextView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (currentDocument == null)
 				return;
 
-			string logMessage = CreateLogMessageFromException(exception, currentDocument, logMode, reportedFrom);
+			string logMessage = CreateLogMessageFromException(exception, currentDocument.FilePath, logMode, reportedFrom, addErrorPrefix: true);
 			LogMessageToActivityLog(logMessage, logMode);
 		}
 
-		private IWpfTextView GetActiveTextViewWithTimeout(double timeoutSeconds)
+		private IWpfTextView? GetActiveTextViewWithTimeout(double timeoutSeconds)
 		{
 			try
 			{
@@ -132,28 +137,35 @@ namespace Acuminator.Vsix.Logger
 			}
 		}
 
-		private string CreateLogMessageFromException(Exception exception, Document currentDocument, LogMode logMode, string reportedFrom)
+		private static string CreateLogMessageFromException(Exception exception, string? currentDocumentPath, LogMode logMode, string? reportedFrom, 
+															bool addErrorPrefix)
 		{
 
 			StringBuilder messageBuilder = new StringBuilder(capacity: 256);
 
-			if (logMode == LogMode.Error)
+			if (logMode == LogMode.Error && addErrorPrefix)
 			{
 				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} OBSERVED AN UNHANDLED VISUAL STUDIO ERROR|");
 			}
 
-			messageBuilder.AppendLine($"EXCEPTION TYPE: {exception.GetType().Name}")
-						  .AppendLine($"|FILE PATH: {currentDocument.FilePath}")
-						  .AppendLine($"|MESSAGE: {exception.Message}")
-						  .AppendLine($"|STACK TRACE: {exception.StackTrace}")
-						  .AppendLine($"|TARGET SITE: {exception.TargetSite}")
-						  .AppendLine($"|SOURCE: {exception.Source}")
-						  .AppendLine($"|REPORTED FROM: {reportedFrom}");
+			messageBuilder = messageBuilder.AppendLine($"EXCEPTION TYPE: {exception.GetType().Name}");
+
+			if (!currentDocumentPath.IsNullOrWhiteSpace())
+				messageBuilder = messageBuilder.AppendLine($"|FILE PATH: {currentDocumentPath}");
+
+			messageBuilder = messageBuilder
+										.AppendLine($"|MESSAGE: {exception.Message}")
+										.AppendLine($"|STACK TRACE: {exception.StackTrace}")
+										.AppendLine($"|TARGET SITE: {exception.TargetSite}")
+										.AppendLine($"|SOURCE: {exception.Source}");
+
+			if (!reportedFrom.IsNullOrWhiteSpace())
+				messageBuilder = messageBuilder.AppendLine($"|REPORTED FROM: {reportedFrom}");
 
 			return messageBuilder.ToString();
 		}
 
-		private void LogMessageToActivityLog(string logMessage, LogMode logMode)
+		private static void LogMessageToActivityLog(string logMessage, LogMode logMode)
 		{
 			switch (logMode)
 			{
@@ -174,6 +186,6 @@ namespace Acuminator.Vsix.Logger
 			AppDomain.CurrentDomain.FirstChanceException -= Acuminator_FirstChanceException;
 			AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
 			TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
-		}		
+		}
 	}
 }
