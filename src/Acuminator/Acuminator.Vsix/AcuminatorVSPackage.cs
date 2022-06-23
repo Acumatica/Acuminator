@@ -18,6 +18,7 @@ using Community.VisualStudio.Toolkit;
 using System.ComponentModel.Design;
 
 using Acuminator.Vsix.Coloriser;
+using Acuminator.Vsix.CodeSnippets;
 using Acuminator.Vsix.GoToDeclaration;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
@@ -68,7 +69,7 @@ namespace Acuminator.Vsix
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
-		private const string PackageVersion = "3.1.0";
+		public const string PackageVersion = "3.1.0";
 
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.
@@ -87,8 +88,9 @@ namespace Acuminator.Vsix
         private static int _instanceInitialized;
 
 		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
+		private CodeSnippetsInitializer _codeSnippetsInitializer = new CodeSnippetsInitializer();
 
-        public static AcuminatorVSPackage Instance { get; private set; }
+		public static AcuminatorVSPackage Instance { get; private set; }
 
 		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
 			new Lazy<GeneralOptionsPage>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
@@ -184,7 +186,7 @@ namespace Acuminator.Vsix
 												   currentStep: 3, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			await InitializeCodeSnippetsAsync();
+			InitializeCodeSnippets();
 			#endregion
 
 			#region Initialize Commands and SubscribeOnEvents	
@@ -382,9 +384,14 @@ namespace Acuminator.Vsix
 			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
 		}
 
-		private async System.Threading.Tasks.Task InitializeCodeSnippetsAsync()
+		private void InitializeCodeSnippets()
 		{
+			var packageVersion = new Version(PackageVersion);
 
+			if (!_codeSnippetsInitializer.InitializeCodeSnippets(packageVersion))
+			{
+				AcuminatorLogger?.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
+			}
 		}
 
 		#region Package Settings         
