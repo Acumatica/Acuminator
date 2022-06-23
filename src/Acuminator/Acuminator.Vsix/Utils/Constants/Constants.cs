@@ -26,6 +26,8 @@ namespace Acuminator.Vsix.Utilities
 		/// </summary>
 		public static class CodeSnippets
 		{
+			public const string FileExtension = ".snippet";
+
 			public const string CodeSnippetsFolder = "Acumatica Code Snippets";
 
 			public const string DacSnippetsFolder = "Acumatica DAC Snippets";
