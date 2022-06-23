@@ -20,12 +20,12 @@ namespace Acuminator.Vsix.CodeSnippets
 	/// Version file example:
 	/// &lt;version &gt;3.0.0&lt;/version &gt;
 	/// </remarks>
-	internal static class SnippetsVersionFile
+	internal class SnippetsVersionFile
 	{
 		private const string VersionFileName = "SnippetsVersion.xml";
 		private const string RootNode = "version";
 
-		public static bool WriteVersionFile(string snippetsRootFolder, Version version)
+		public bool WriteVersionFile(string snippetsRootFolder, Version version)
 		{
 			version.ThrowOnNull(nameof(version));
 			snippetsRootFolder.ThrowOnNullOrWhiteSpace(nameof(snippetsRootFolder));
@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.CodeSnippets
 			}
 		}
 
-		public static Version? TryGetExistingSnippetsVersion(string? snippetsRootFolder)
+		public Version? TryGetExistingSnippetsVersion(string? snippetsRootFolder)
 		{
 			if (snippetsRootFolder.IsNullOrWhiteSpace())
 				return null;
@@ -63,7 +63,7 @@ namespace Acuminator.Vsix.CodeSnippets
 				: null;
 		}
 
-		private static XDocument? LoadVersionFile(string snippetsVersionFilePath)
+		private XDocument? LoadVersionFile(string snippetsVersionFilePath)
 		{
 			try
 			{
