@@ -10,14 +10,13 @@ using System.Reflection;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
-using System.Runtime.CompilerServices;
 
 namespace Acuminator.Vsix.CodeSnippets
 {
     /// <summary>
     /// Code Snippets initializing logic
     /// </summary>
-    internal class CodeSnippetsInitializer
+    public class CodeSnippetsInitializer
 	{
 		private readonly SnippetsVersionFile _snippetsVersionFile = new SnippetsVersionFile();
 
@@ -27,11 +26,11 @@ namespace Acuminator.Vsix.CodeSnippets
 
 		public CodeSnippetsInitializer()
 		{
-			string? snippetsRootFolder;
+			string? myDocumentsFolder;
 
 			try
 			{
-				snippetsRootFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.Create);
+				myDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.Create);
 			}
 			catch (Exception e)
 			{
@@ -39,9 +38,20 @@ namespace Acuminator.Vsix.CodeSnippets
 				return;
 			}
 
-			if (!snippetsRootFolder.IsNullOrWhiteSpace() && Directory.Exists(snippetsRootFolder))
+			if (myDocumentsFolder.IsNullOrWhiteSpace() || !Directory.Exists(myDocumentsFolder))
 			{
-				SnippetsFolder = $@"{snippetsRootFolder}\Acuminator\Acumatica Code Snippets";
+				AcuminatorLogger.LogException(new Exception("User \"Documents\" folder was not found on the machine"));
+				return;
+			}
+
+			try
+			{
+				SnippetsFolder = Path.Combine(myDocumentsFolder, AcuminatorVSPackage.PackageName, Constants.CodeSnippets.CodeSnippetsFolder);
+			}
+			catch (Exception e)
+			{
+				AcuminatorLogger.LogException(e);
+				return;
 			}
 		}
 
@@ -72,10 +82,10 @@ namespace Acuminator.Vsix.CodeSnippets
 			if (!EnsureDirectoryExists(SnippetsFolder!))
 				return false;
 
-			if (!_snippetsVersionFile.WriteVersionFile(SnippetsFolder!, version))
+			if (!DeployCodeSnippetsFromAssemblyResources())
 				return false;
 
-			return DeployCodeSnippetsFromAssemblyResources();
+			return _snippetsVersionFile.WriteVersionFile(SnippetsFolder!, version); 
 		}
 
 		private bool DeployCodeSnippetsFromAssemblyResources()
@@ -143,9 +153,16 @@ namespace Acuminator.Vsix.CodeSnippets
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static string TransformAssemblyResourceNameToFilePath(string resourceName) =>
-			resourceName.Replace('_', ' ')
-						.Replace('.', Path.DirectorySeparatorChar);
+		internal string TransformAssemblyResourceNameToFilePath(string resourceName)
+		{
+			const string namespaceResourcePrefix = "Acuminator.Vsix.Code_Snippets.";
+
+			string relativeFilePathWithoutExtension = resourceName.Remove(resourceName.Length - Constants.CodeSnippets.FileExtension.Length)
+																  .Remove(0, namespaceResourcePrefix.Length)
+																  .Replace('_', ' ')
+																  .Replace('.', Path.DirectorySeparatorChar);
+			string relativeFilePath = Path.ChangeExtension(relativeFilePathWithoutExtension, Constants.CodeSnippets.FileExtension);
+			return Path.Combine(SnippetsFolder, relativeFilePath);
+		}
 	}
 }
