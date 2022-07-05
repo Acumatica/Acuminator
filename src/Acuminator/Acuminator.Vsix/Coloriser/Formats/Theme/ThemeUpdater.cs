@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
 
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
@@ -60,7 +61,6 @@ namespace Acuminator.Vsix.Coloriser
             if (_classificationFormatMapService == null || _classificationRegistry == null)
                 return;
 
-            var logger = AcuminatorVSPackage.Instance?.AcuminatorLogger;
              _fontAndColorStorage ??= _serviceProvider.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
              _fontAndColorCacheManager ??= _serviceProvider.GetService<SVsFontAndColorCacheManager, IVsFontAndColorCacheManager>();
             IClassificationFormatMap formatMap = _classificationFormatMapService.GetClassificationFormatMap(category: TextCategory);
@@ -73,7 +73,8 @@ namespace Acuminator.Vsix.Coloriser
 
             if (openCategoryResult != VSConstants.S_OK)
             {
-                logger?.LogMessage($"Error on opening category in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);             
+                AcuminatorLogger.LogMessage($"Error on opening category in the registry during the theme change. The error code is {openCategoryResult}",
+											LogMode.Error);             
             }
 
             try
@@ -85,7 +86,7 @@ namespace Acuminator.Vsix.Coloriser
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false, Logger.LogMode.Error);
+				AcuminatorLogger.LogException(exception, LogMode.Error, addErrorPrefix: true);
             }
             finally
             {
@@ -94,7 +95,8 @@ namespace Acuminator.Vsix.Coloriser
 
                 if (refreshCacheResult != VSConstants.S_OK)
 				{
-                    logger?.LogMessage($"Error on the refresh of MEF Items cache in the registry during the theme change. The error code is {refreshCacheResult}", Logger.LogMode.Error);
+					AcuminatorLogger.LogMessage($"Error on the refresh of MEF Items cache in the registry during the theme change. The error code is {refreshCacheResult}",
+												LogMode.Error);
                 }
 
                 _fontAndColorStorage.CloseCategory();

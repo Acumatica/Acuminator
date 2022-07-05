@@ -79,7 +79,7 @@ namespace Acuminator.Vsix.Logger
 			} 
 		}
 
-		public void LogMessage(string? message, LogMode logMode, [CallerMemberName] string? reportedFrom = null)
+		public static void LogMessage(string? message, LogMode logMode, [CallerMemberName] string? reportedFrom = null)
 		{
 			if (message.IsNullOrWhiteSpace() || logMode == LogMode.None)
 				return;
