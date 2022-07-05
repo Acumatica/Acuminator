@@ -180,6 +180,8 @@ namespace Acuminator.Vsix
 			InitializeLogger();
 			#endregion
 
+			
+
 			#region Initialize CodeSnippets		
 			cancellationToken.ThrowIfCancellationRequested();
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeSnippets,
@@ -390,7 +392,7 @@ namespace Acuminator.Vsix
 
 			if (!_codeSnippetsInitializer.InitializeCodeSnippets(packageVersion))
 			{
-				AcuminatorLogger?.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
+				AcuminatorLogger.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
 			}
 		}
 

@@ -76,7 +76,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				string errorMsg = VSIXResource.CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage + Environment.NewLine +
 								  VSIXResource.CreateIssue_Message;
-				AcuminatorVSPackage.Instance.AcuminatorLogger.LogMessage(errorMsg, LogMode.Error);
+				AcuminatorLogger.LogMessage(errorMsg, LogMode.Error);
 			}
 		}
 
