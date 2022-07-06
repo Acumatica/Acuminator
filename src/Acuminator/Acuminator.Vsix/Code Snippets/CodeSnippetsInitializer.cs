@@ -77,9 +77,10 @@ namespace Acuminator.Vsix.CodeSnippets
 				return false;
 
 			Version? existingVersion = _snippetsVersionFile.TryGetExistingSnippetsVersion(SnippetsFolder);
+			bool areSnippetsDeployed = existingVersion != null && packageVersion <= existingVersion;
 
-			if (existingVersion != null && packageVersion <= existingVersion)
-				return true;
+			if (areSnippetsDeployed)
+				return RegisterCodeSnippetsInVsSettings();
 
 			if (!DeployCodeSnippets(packageVersion))
 				return false;
