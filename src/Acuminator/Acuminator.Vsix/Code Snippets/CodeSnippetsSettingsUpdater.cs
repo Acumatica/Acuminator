@@ -19,22 +19,18 @@ using SnippetConstants = Acuminator.Vsix.Utilities.Constants.CodeSnippets;
 
 namespace Acuminator.Vsix.CodeSnippets
 {
-    /// <summary>
-    /// Code Snippets logic to update User section of VS settings store
-    /// </summary>
-    internal class CodeSnippetsSettingsUpdater
+	/// <summary>
+	/// Code Snippets logic to update User section of VS settings store
+	/// </summary>
+	internal class CodeSnippetsSettingsUpdater
 	{
 		private const string CSharpSnippetsRegistrationStorage = @"Languages\CodeExpansions\CSharp\Paths";
 
-		public async ValueTask<bool> UpdateSnippetsInUserSectionAsync(string snippetsRootFolder, IServiceProvider serviceProvider)
+		public bool UpdateSnippetsInUserSection(string snippetsRootFolder, IServiceProvider serviceProvider)
 		{
 			snippetsRootFolder.ThrowOnNullOrWhiteSpace(nameof(snippetsRootFolder));
 			serviceProvider.ThrowOnNull(nameof(serviceProvider));
-
-			if (!ThreadHelper.CheckAccess())
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			}
+			ThreadHelper.ThrowIfNotOnUIThread();
 
 			try
 			{
@@ -64,10 +60,10 @@ namespace Acuminator.Vsix.CodeSnippets
 			RegisterSnippetFolderInUserSettings(snippetsRootFolder, writableStore, SnippetConstants.DacSnippetsFolder);
 			RegisterSnippetFolderInUserSettings(snippetsRootFolder, writableStore, SnippetConstants.GenericGraphEventsFolder);
 			RegisterSnippetFolderInUserSettings(snippetsRootFolder, writableStore, SnippetConstants.NCGraphEventsFolder);
-			
+
 			return true;
 		}
-		
+
 		private void RegisterSnippetFolderInUserSettings(string snippetsRootFolder, WritableSettingsStore writableStore, string snippetFolderName)
 		{
 			string fullFolderPath = Path.Combine(snippetsRootFolder, snippetFolderName);
