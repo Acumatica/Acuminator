@@ -121,10 +121,13 @@
     <value>Acuminator Code Analysis and Developer Productivity Tool</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>Acuminator provides diagnostics and code fixes for common developer pitfalls related to Acumatica Framework. It also enhances developer productivity with: 
-	- Syntax highlighting of Acumatica code;
-	- Quick overview of Acumatica code structure and navigation between code parts with Code Map;  
-	- Format of BQL statements;</value>
+    <value>Acuminator is a Visual Studio extension that simplifies development with Acumatica Framework.  Acuminator provides the following functionality to boost developer productivity:
+- Static code analysis diagnostics, code fixes, and refactorings
+- Syntax highlighting of Acumatica-specific code elements
+- BQL formatting and outlining
+- Navigation between related code elements
+- The Code Map tool which displays the structure of graphs, DACs, and their extensions
+- Acumatica Code Snippets</value>
   </data>
   <data name="201" xml:space="preserve">
     <value>Acuminator</value>

@@ -18,6 +18,7 @@ using Community.VisualStudio.Toolkit;
 using System.ComponentModel.Design;
 
 using Acuminator.Vsix.Coloriser;
+using Acuminator.Vsix.CodeSnippets;
 using Acuminator.Vsix.GoToDeclaration;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
@@ -64,11 +65,11 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
-		private const int TotalLoadSteps = 4;
+		private const int TotalLoadSteps = 6;
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
-		private const string PackageVersion = "3.1.0";
+		public const string PackageVersion = "3.1.0";
 
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.
@@ -88,7 +89,7 @@ namespace Acuminator.Vsix
 
 		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
 
-        public static AcuminatorVSPackage Instance { get; private set; }
+		public static AcuminatorVSPackage Instance { get; private set; }
 
 		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
 			new Lazy<GeneralOptionsPage>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
@@ -161,28 +162,45 @@ namespace Acuminator.Vsix
 
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
+			#region Initialize Settings		
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
 													   currentStep: 1, TotalLoadSteps);
 			progress?.Report(progressData);
 
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
 			await InitializeCodeAnalysisSettingsAsync();
+			#endregion
 
+			#region Initialize Logger
+			cancellationToken.ThrowIfCancellationRequested();
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
 												   currentStep: 2, TotalLoadSteps);
 			progress?.Report(progressData);
 			InitializeLogger();
+			#endregion	
 
+			#region Initialize CodeSnippets		
 			cancellationToken.ThrowIfCancellationRequested();
-
-			await InitializeCommandsAsync();
-
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeSnippets,
 												   currentStep: 3, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			SubscribeOnEvents();
+			InitializeCodeSnippets();
+			#endregion
 
+			#region Initialize Commands and SubscribeOnEvents	
+			cancellationToken.ThrowIfCancellationRequested();
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
+												   currentStep: 4, TotalLoadSteps);
+			progress?.Report(progressData);
+			await InitializeCommandsAsync();
+			SubscribeOnEvents();
+			#endregion
+
+			#region Suppression Manager Load
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitSuppressionManager,
+												   currentStep: 5, TotalLoadSteps);
+			progress?.Report(progressData);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			bool isSolutionOpen = await IsSolutionLoadedAsync();
@@ -191,9 +209,10 @@ namespace Acuminator.Vsix
 			{
 				SetupSuppressionManager();
 			}
-		
+			#endregion
+
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done, 
-												   currentStep: 4, TotalLoadSteps);
+												   currentStep: 6, TotalLoadSteps);
 			progress?.Report(progressData);
 		}
 
@@ -362,6 +381,17 @@ namespace Acuminator.Vsix
 				return;
 
 			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
+		}
+
+		private void InitializeCodeSnippets()
+		{
+			var packageVersion = new Version(PackageVersion);
+			var codeSnippetsInitializer = new CodeSnippetsInitializer();
+
+			if (!codeSnippetsInitializer.InitializeCodeSnippets(packageVersion))
+			{
+				AcuminatorLogger.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
+			}
 		}
 
 		#region Package Settings         

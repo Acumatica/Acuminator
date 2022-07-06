@@ -354,4 +354,7 @@
   <data name="CodeMap_StaticConstructorNodeName" xml:space="preserve">
     <value>Static Constructor</value>
   </data>
+  <data name="PackageLoad_InitCodeSnippets" xml:space="preserve">
+    <value>Initializing Acumatica Code Snippets shipped with Acuminator</value>
+  </data>
 </root>
