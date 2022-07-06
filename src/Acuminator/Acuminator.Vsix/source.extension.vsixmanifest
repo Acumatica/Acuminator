@@ -34,7 +34,6 @@
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
         <Asset d:Source="Project" Type="Microsoft.VisualStudio.Assembly" d:ProjectName="Acuminator.Utilities" Path="|Acuminator.Utilities|" AssemblyName="|Acuminator.Utilities;AssemblyName|" />
-        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="Acumatica Code Snippets\Snippets.pkgdef" />
     </Assets>
     <Prerequisites>
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.8.27729.1,)" DisplayName="Visual Studio core editor" />
