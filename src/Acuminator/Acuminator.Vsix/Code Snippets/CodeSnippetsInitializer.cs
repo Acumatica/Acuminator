@@ -20,19 +20,13 @@ namespace Acuminator.Vsix.CodeSnippets
     /// </summary>
     public class CodeSnippetsInitializer
 	{
-		private readonly Package _package;	
 		private readonly SnippetsVersionFile _snippetsVersionFile = new SnippetsVersionFile();
-		private readonly CodeSnippetsSettingsUpdater _codeSnippetsSettingsUpdater = new CodeSnippetsSettingsUpdater();
-		private readonly CodeSnippetsRegistryUpdater _codeSnippetsRegistryUpdater = new CodeSnippetsRegistryUpdater();
-
 		public string? SnippetsFolder { get; }
 
 		public bool IsSnippetsFolderInitialized => SnippetsFolder != null;
 
-		public CodeSnippetsInitializer(Package package)
+		public CodeSnippetsInitializer()
 		{
-			_package = package.CheckIfNull(nameof(package));
-
 			string? myDocumentsFolder;
 
 			try
@@ -77,20 +71,12 @@ namespace Acuminator.Vsix.CodeSnippets
 				return false;
 
 			Version? existingVersion = _snippetsVersionFile.TryGetExistingSnippetsVersion(SnippetsFolder);
-			bool areSnippetsDeployed = existingVersion != null && packageVersion <= existingVersion;
 
-			if (areSnippetsDeployed)
-				return RegisterCodeSnippetsInVsSettings();
+			if (existingVersion != null && packageVersion <= existingVersion)
+				return true;
 
-			if (!DeployCodeSnippets(packageVersion))
-				return false;
-
-			return RegisterCodeSnippetsInVsSettings();
+			return DeployCodeSnippets(packageVersion);
 		}
-
-		private bool RegisterCodeSnippetsInVsSettings() =>
-			_codeSnippetsSettingsUpdater.UpdateSnippetsInUserSection(SnippetsFolder!, _package) &&
-			_codeSnippetsRegistryUpdater.UpdateSnippetsInRegistry(_package, SnippetsFolder!);
 
 		private bool DeployCodeSnippets(Version version)
 		{

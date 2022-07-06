@@ -177,9 +177,7 @@ namespace Acuminator.Vsix
 												   currentStep: 2, TotalLoadSteps);
 			progress?.Report(progressData);
 			InitializeLogger();
-			#endregion
-
-			
+			#endregion	
 
 			#region Initialize CodeSnippets		
 			cancellationToken.ThrowIfCancellationRequested();
@@ -388,8 +386,8 @@ namespace Acuminator.Vsix
 		private void InitializeCodeSnippets()
 		{
 			var packageVersion = new Version(PackageVersion);
-			var codeSnippetsInitializer = new CodeSnippetsInitializer(this);
-			
+			var codeSnippetsInitializer = new CodeSnippetsInitializer();
+
 			if (!codeSnippetsInitializer.InitializeCodeSnippets(packageVersion))
 			{
 				AcuminatorLogger.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
