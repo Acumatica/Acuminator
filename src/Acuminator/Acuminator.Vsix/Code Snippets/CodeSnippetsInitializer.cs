@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
@@ -18,14 +19,18 @@ namespace Acuminator.Vsix.CodeSnippets
     /// </summary>
     public class CodeSnippetsInitializer
 	{
+		private readonly IServiceProvider _serviceProvider;	
 		private readonly SnippetsVersionFile _snippetsVersionFile = new SnippetsVersionFile();
+		private readonly CodeSnippetsSettingsUpdater _codeSnippetsSettingsUpdater = new CodeSnippetsSettingsUpdater();
 
 		public string? SnippetsFolder { get; }
 
 		public bool IsSnippetsFolderInitialized => SnippetsFolder != null;
 
-		public CodeSnippetsInitializer()
+		public CodeSnippetsInitializer(IServiceProvider serviceProvider)
 		{
+			_serviceProvider = serviceProvider.CheckIfNull(nameof(serviceProvider));
+
 			string? myDocumentsFolder;
 
 			try
@@ -62,19 +67,22 @@ namespace Acuminator.Vsix.CodeSnippets
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
-		public bool InitializeCodeSnippets(Version packageVersion)
+		public ValueTask<bool> InitializeCodeSnippetsAsync(Version packageVersion)
 		{
 			packageVersion.ThrowOnNull(nameof(packageVersion));
-
+			
 			if (!IsSnippetsFolderInitialized)
-				return false;
+				return new ValueTask<bool>(false);
 
 			Version? existingVersion = _snippetsVersionFile.TryGetExistingSnippetsVersion(SnippetsFolder);
 
 			if (existingVersion != null && packageVersion <= existingVersion)
-				return true;
+				return new ValueTask<bool>(true);
 
-			return DeployCodeSnippets(packageVersion);
+			if (!DeployCodeSnippets(packageVersion))
+				return new ValueTask<bool>(false);
+
+			return _codeSnippetsSettingsUpdater.UpdateSnippetsInUserSectionAsync(SnippetsFolder!, _serviceProvider);
 		}
 
 		private bool DeployCodeSnippets(Version version)
