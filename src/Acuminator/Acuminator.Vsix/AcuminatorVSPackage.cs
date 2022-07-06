@@ -88,7 +88,6 @@ namespace Acuminator.Vsix
         private static int _instanceInitialized;
 
 		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
-		private CodeSnippetsInitializer _codeSnippetsInitializer = new CodeSnippetsInitializer();
 
 		public static AcuminatorVSPackage Instance { get; private set; }
 
@@ -389,8 +388,9 @@ namespace Acuminator.Vsix
 		private void InitializeCodeSnippets()
 		{
 			var packageVersion = new Version(PackageVersion);
-
-			if (!_codeSnippetsInitializer.InitializeCodeSnippets(packageVersion))
+			var codeSnippetsInitializer = new CodeSnippetsInitializer(this);
+			
+			if (!codeSnippetsInitializer.InitializeCodeSnippets(packageVersion))
 			{
 				AcuminatorLogger.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
 			}
