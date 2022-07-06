@@ -80,7 +80,7 @@ namespace Acuminator.Vsix.CodeSnippets
 
 		private bool DeployCodeSnippets(Version version)
 		{
-			if (!EnsureDirectoryExists(SnippetsFolder!))
+			if (!ReCreateDirectory(SnippetsFolder!))
 				return false;
 
 			if (!DeployCodeSnippetsFromAssemblyResources())
@@ -114,7 +114,7 @@ namespace Acuminator.Vsix.CodeSnippets
 			string snippetFilePath = TransformAssemblyResourceNameToFilePath(snippetResourceName);
 			string snippetDirectory = Path.GetDirectoryName(snippetFilePath);
 
-			if (!EnsureDirectoryExists(snippetDirectory))
+			if (!CreateDirectory(snippetDirectory))
 				return false;
 
 			try
@@ -138,7 +138,24 @@ namespace Acuminator.Vsix.CodeSnippets
 			}	
 		}
 
-		private bool EnsureDirectoryExists(string directory)
+		private bool ReCreateDirectory(string directory)
+		{
+			try
+			{
+				if (Directory.Exists(directory))
+					Directory.Delete(directory, recursive: true);
+
+				Directory.CreateDirectory(directory);
+				return true;
+			}
+			catch (Exception e)
+			{
+				AcuminatorLogger.LogException(e);
+				return false;
+			}
+		}
+
+		private bool CreateDirectory(string directory)
 		{
 			try
 			{
