@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
+
+using Microsoft.VisualStudio.Shell;
 
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
@@ -19,17 +20,18 @@ namespace Acuminator.Vsix.CodeSnippets
     /// </summary>
     public class CodeSnippetsInitializer
 	{
-		private readonly IServiceProvider _serviceProvider;	
+		private readonly Package _package;	
 		private readonly SnippetsVersionFile _snippetsVersionFile = new SnippetsVersionFile();
 		private readonly CodeSnippetsSettingsUpdater _codeSnippetsSettingsUpdater = new CodeSnippetsSettingsUpdater();
+		private readonly CodeSnippetsRegistryUpdater _codeSnippetsRegistryUpdater = new CodeSnippetsRegistryUpdater();
 
 		public string? SnippetsFolder { get; }
 
 		public bool IsSnippetsFolderInitialized => SnippetsFolder != null;
 
-		public CodeSnippetsInitializer(IServiceProvider serviceProvider)
+		public CodeSnippetsInitializer(Package package)
 		{
-			_serviceProvider = serviceProvider.CheckIfNull(nameof(serviceProvider));
+			_package = package.CheckIfNull(nameof(package));
 
 			string? myDocumentsFolder;
 
@@ -67,23 +69,27 @@ namespace Acuminator.Vsix.CodeSnippets
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
-		public ValueTask<bool> InitializeCodeSnippetsAsync(Version packageVersion)
+		public bool InitializeCodeSnippets(Version packageVersion)
 		{
 			packageVersion.ThrowOnNull(nameof(packageVersion));
 			
 			if (!IsSnippetsFolderInitialized)
-				return new ValueTask<bool>(false);
+				return false;
 
 			Version? existingVersion = _snippetsVersionFile.TryGetExistingSnippetsVersion(SnippetsFolder);
 
 			if (existingVersion != null && packageVersion <= existingVersion)
-				return new ValueTask<bool>(true);
+				return true;
 
 			if (!DeployCodeSnippets(packageVersion))
-				return new ValueTask<bool>(false);
+				return false;
 
-			return _codeSnippetsSettingsUpdater.UpdateSnippetsInUserSectionAsync(SnippetsFolder!, _serviceProvider);
+			return RegisterCodeSnippetsInVsSettings();
 		}
+
+		private bool RegisterCodeSnippetsInVsSettings() =>
+			_codeSnippetsSettingsUpdater.UpdateSnippetsInUserSection(SnippetsFolder!, _package) &&
+			_codeSnippetsRegistryUpdater.UpdateSnippetsInRegistry(_package, SnippetsFolder!);
 
 		private bool DeployCodeSnippets(Version version)
 		{
