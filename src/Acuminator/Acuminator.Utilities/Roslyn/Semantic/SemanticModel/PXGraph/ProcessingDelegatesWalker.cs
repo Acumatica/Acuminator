@@ -1,11 +1,17 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -76,7 +82,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			base.VisitInvocationExpression(node);
 		}
 
-		private void AnalyzeSetParametersDelegate(string viewName, ArgumentListSyntax argumentList)
+		private void AnalyzeSetParametersDelegate(string viewName, ArgumentListSyntax? argumentList)
 		{
 			ThrowIfCancellationRequested();
 
@@ -91,14 +97,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				ParametersDelegateListByView.Add(viewName, new List<ProcessingDelegateInfo>());
 			}
 
-			ParametersDelegateListByView[viewName].Add(GetDelegateInfo(handlerNode));
+			var parametersDelegateInfo = GetDelegateInfo(handlerNode);
+
+			if (parametersDelegateInfo != null)
+				ParametersDelegateListByView[viewName].Add(parametersDelegateInfo);
 		}
 
-		private void AnalyzeSetProcessDelegate(string viewName, ArgumentListSyntax argumentList)
+		private void AnalyzeSetProcessDelegate(string viewName, ArgumentListSyntax? argumentList)
 		{
 			ThrowIfCancellationRequested();
 
-			var handlerNode = argumentList?.Arguments.First()?.Expression;
+			ExpressionSyntax? handlerNode = argumentList?.Arguments.First()?.Expression;
 			if (handlerNode == null)
 			{
 				return;
@@ -109,50 +118,75 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				ProcessDelegateListByView.Add(viewName, new List<ProcessingDelegateInfo>());
 			}
 
-			ProcessDelegateListByView[viewName].Add(GetDelegateInfo(handlerNode));
+			var processDelegateInfo = GetDelegateInfo(handlerNode);
 
-			if (argumentList.Arguments.Count == 1)
-			{
+			if (processDelegateInfo != null)
+				ProcessDelegateListByView[viewName].Add(processDelegateInfo);
+
+			if (argumentList!.Arguments.Count == 1)
 				return;
-			}
 
 			var finallyHandlerNode = argumentList.Arguments[1]?.Expression;
+
 			if (finallyHandlerNode == null)
-			{
 				return;
-			}
 
 			if (!FinallyProcessDelegateListByView.ContainsKey(viewName))
 			{
 				FinallyProcessDelegateListByView.Add(viewName, new List<ProcessingDelegateInfo>());
 			}
 
-			FinallyProcessDelegateListByView[viewName].Add(GetDelegateInfo(finallyHandlerNode));
+			var finallyHandlerInfo = GetDelegateInfo(finallyHandlerNode);
+
+			if (finallyHandlerInfo != null)
+				FinallyProcessDelegateListByView[viewName].Add(finallyHandlerInfo);
 		}
 
-		private ProcessingDelegateInfo GetDelegateInfo(ExpressionSyntax handlerNode)
+		private ProcessingDelegateInfo? GetDelegateInfo(ExpressionSyntax handlerNode)
 		{
 			ThrowIfCancellationRequested();
 
-			ISymbol delegateSymbol;
-			SyntaxNode delegateNode;
+			var (delegateSymbol, delegateNode) = GetDelegateSymbolAndNode(handlerNode);
 
-			if (handlerNode is AnonymousFunctionExpressionSyntax anonymousFunction)
+			if (delegateSymbol == null || delegateNode == null)
 			{
-				delegateNode = anonymousFunction.Body;
-				delegateSymbol = GetSemanticModel(delegateNode.SyntaxTree)
-									?.GetSymbolInfo(anonymousFunction, CancellationToken).Symbol;
-			}
-			else
-			{
-				delegateSymbol = GetSymbol<ISymbol>(handlerNode);
-				delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()
-																	  ?.GetSyntax(CancellationToken);
+				if (handlerNode.Root().ContainsDiagnostics)
+					return null;
+
+				throw new InvalidOperationException(
+					$"Failed to recognize syntax node passed to SetProcessDelegate/SetParametersDelegate method:{Environment.NewLine} {handlerNode}");
 			}
 
 			var processingDelegateInfo = new ProcessingDelegateInfo(delegateNode, delegateSymbol, _currentDeclarationOrder);
+
 			_currentDeclarationOrder++;
 			return processingDelegateInfo;
+		}
+
+		private (ISymbol? DelegateSymbol, SyntaxNode? DelegateNode) GetDelegateSymbolAndNode(ExpressionSyntax handlerNode)
+		{
+			switch (handlerNode)
+			{
+				case CastExpressionSyntax castExpression:
+					return GetDelegateSymbolAndNode(castExpression.Expression);
+
+				case AnonymousFunctionExpressionSyntax anonymousFunction:
+					{
+						var delegateNode = anonymousFunction.Body;
+						var delegateSymbol = GetSemanticModel(delegateNode.SyntaxTree)
+												?.GetSymbolInfo(anonymousFunction, CancellationToken).Symbol;
+
+						return (delegateSymbol, delegateNode);
+					}
+				default:
+					{
+						var delegateSymbol = GetSymbol<ISymbol>(handlerNode);
+						var delegateNode = delegateSymbol?.DeclaringSyntaxReferences
+														  .FirstOrDefault()
+														 ?.GetSyntax(CancellationToken);
+						return (delegateSymbol, delegateNode);
+					}
+			}
 		}
 	}
 }
