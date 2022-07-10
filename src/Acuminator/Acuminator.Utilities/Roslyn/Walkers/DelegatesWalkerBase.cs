@@ -40,9 +40,6 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 			switch (delegateExpression)
 			{
-				case CastExpressionSyntax castExpression:
-					return GetDelegateSymbolAndNode(castExpression.Expression);
-
 				case AnonymousFunctionExpressionSyntax anonymousFunction:
 					{
 						var delegateNode = anonymousFunction.Body;
@@ -50,6 +47,18 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 												?.GetSymbolInfo(anonymousFunction, CancellationToken).Symbol;
 
 						return (delegateSymbol, delegateNode);
+					}
+				case CastExpressionSyntax castExpression:
+					{
+						return GetDelegateSymbolAndNode(castExpression.Expression);
+					}
+				case ObjectCreationExpressionSyntax objectCreationExpression:
+					{
+						if (objectCreationExpression.ArgumentList.Arguments.Count != 1)
+							return default;
+
+						ArgumentSyntax delegateCreationArg = objectCreationExpression.ArgumentList.Arguments[0];
+						return GetDelegateSymbolAndNode(delegateCreationArg.Expression);
 					}
 				default:
 					{
@@ -76,11 +85,18 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 			switch (delegateExpression)
 			{
+				case AnonymousFunctionExpressionSyntax anonymousFunction:
+					return anonymousFunction.Body;
+
 				case CastExpressionSyntax castExpression:
 					return GetDelegateNode(castExpression.Expression);
 
-				case AnonymousFunctionExpressionSyntax anonymousFunction:
-					return anonymousFunction.Body;
+				case ObjectCreationExpressionSyntax objectCreationExpression:
+					if (objectCreationExpression.ArgumentList.Arguments.Count != 1)
+						return null;
+
+					ArgumentSyntax delegateCreationArg = objectCreationExpression.ArgumentList.Arguments[0];
+					return GetDelegateNode(delegateCreationArg.Expression);
 
 				default:
 					var delegateSymbol = GetSymbol<ISymbol>(delegateExpression);
