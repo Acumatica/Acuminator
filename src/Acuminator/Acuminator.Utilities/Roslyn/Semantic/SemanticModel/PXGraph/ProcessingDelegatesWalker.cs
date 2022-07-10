@@ -153,14 +153,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var (delegateSymbol, delegateNode) = GetDelegateSymbolAndNode(handlerNode);
 
-			if (delegateSymbol == null || delegateNode == null)
-			{
-				if (handlerNode.Root().ContainsDiagnostics)
-					return null;
-
-				throw new InvalidOperationException(
-					$"Failed to recognize syntax node passed to SetProcessDelegate/SetParametersDelegate method:{Environment.NewLine} {handlerNode}");
-			}
+			if (delegateSymbol == null || delegateNode == null)  // Skip analysis for unrecognized arguments
+				return null;
 
 			var processingDelegateInfo = new ProcessingDelegateInfo(delegateNode, delegateSymbol, _currentDeclarationOrder);
 
