@@ -8,6 +8,7 @@ using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Utilities.Roslyn.Walkers;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,7 +16,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	internal class ProcessingDelegatesWalker : NestedInvocationWalker
+	internal class ProcessingDelegatesWalker : DelegatesWalkerBase
 	{
 		private readonly PXContext _pxContext;
 		private int _currentDeclarationOrder;
@@ -48,6 +49,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 
 			var viewSymbol = GetSymbol<ISymbol>(memberAccess.Expression);
+
+			if (viewSymbol == null)
+				return;
+
 			var isProcessingView = _processingViewSymbols.Contains(viewSymbol);
 
 			if (!isProcessingView)
@@ -161,32 +166,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			_currentDeclarationOrder++;
 			return processingDelegateInfo;
-		}
-
-		private (ISymbol? DelegateSymbol, SyntaxNode? DelegateNode) GetDelegateSymbolAndNode(ExpressionSyntax handlerNode)
-		{
-			switch (handlerNode)
-			{
-				case CastExpressionSyntax castExpression:
-					return GetDelegateSymbolAndNode(castExpression.Expression);
-
-				case AnonymousFunctionExpressionSyntax anonymousFunction:
-					{
-						var delegateNode = anonymousFunction.Body;
-						var delegateSymbol = GetSemanticModel(delegateNode.SyntaxTree)
-												?.GetSymbolInfo(anonymousFunction, CancellationToken).Symbol;
-
-						return (delegateSymbol, delegateNode);
-					}
-				default:
-					{
-						var delegateSymbol = GetSymbol<ISymbol>(handlerNode);
-						var delegateNode = delegateSymbol?.DeclaringSyntaxReferences
-														  .FirstOrDefault()
-														 ?.GetSyntax(CancellationToken);
-						return (delegateSymbol, delegateNode);
-					}
-			}
 		}
 	}
 }
