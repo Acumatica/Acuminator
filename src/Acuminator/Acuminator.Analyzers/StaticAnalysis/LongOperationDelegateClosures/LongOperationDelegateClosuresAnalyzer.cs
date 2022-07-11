@@ -86,81 +86,91 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			switch (longOperationDelegateNode)
+			if (DelegateNodeHoldsClosure(syntaxContext, pxContext, longOperationDelegateNode))
 			{
-				case IdentifierNameSyntax graphMemberName:
-					ISymbol? graphMemberSymbol = syntaxContext.SemanticModel.GetSymbolInfo(graphMemberName, syntaxContext.CancellationToken).Symbol;
-
-					if (graphMemberSymbol?.ContainingType != null && !graphMemberSymbol.IsStatic && 
-						graphMemberSymbol.ContainingType.IsPXGraphOrExtension(pxContext))
-					{
-						syntaxContext.ReportDiagnosticWithSuppressionCheck(
-							Diagnostic.Create(
-								Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
-								pxContext.CodeAnalysisSettings);
-						return false;
-					}
-
-					return true;
-
-				case MemberAccessExpressionSyntax memberAccess
-				when memberAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:			
-					return CheckMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
-
-				case MemberAccessExpressionSyntax memberAccess:
-					return CheckMemberAccessExpressions(memberAccess.Expression, syntaxContext, pxContext);
-
-				case ConditionalAccessExpressionSyntax conditionalAccess
-				when conditionalAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
-					return CheckMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
-
-				case ConditionalAccessExpressionSyntax conditionalAccess:			
-					return CheckMemberAccessExpressions(conditionalAccess.Expression, syntaxContext, pxContext);
-
-				case AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode:
-					DataFlowAnalysis? dfa = syntaxContext.SemanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
-
-					if (dfa != null && dfa.Succeeded && dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis))
-					{
-						syntaxContext.ReportDiagnosticWithSuppressionCheck(
-							Diagnostic.Create(
-								Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
-								pxContext.CodeAnalysisSettings);
-						return false;
-					}
-
-					return true;
-
-				default:
-					return true;
-			}	
-		}
-
-
-		private static bool CheckMemberAccessExpressions(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-		{
-			if (!(expression is IdentifierNameSyntax identifier))
-				return true;
-
-			ISymbol identifierSymbol = syntaxContext.SemanticModel.GetSymbolInfo(identifier, syntaxContext.CancellationToken).Symbol;
-
-			if (identifierSymbol == null || identifierSymbol.IsStatic)
-				return true;
-
-			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			if (identifierSymbol.Kind == SymbolKind.Field || identifierSymbol.Kind == SymbolKind.Property)
-			{
-				var longOperationSetupMethodInvocationNode = (InvocationExpressionSyntax)syntaxContext.Node;
-
 				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
 						pxContext.CodeAnalysisSettings);
+
 				return false;
 			}
 
 			return true;
+		}
+
+		private static bool DelegateNodeHoldsClosure(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, ExpressionSyntax longOperationDelegateNode)
+		{
+			switch (longOperationDelegateNode)
+			{
+				case AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode:
+
+					DataFlowAnalysis? dfa = syntaxContext.SemanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
+					return dfa != null && dfa.Succeeded && dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis);
+
+				case IdentifierNameSyntax identifierName:
+					return IdentifierHoldsClosure(syntaxContext, pxContext, identifierName);
+
+				case MemberAccessExpressionSyntax memberAccess
+				when memberAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
+					return MemberAccessExpressionHoldsClosure(syntaxContext, pxContext, arrayIndexAccess.Expression);
+
+				case MemberAccessExpressionSyntax memberAccess:
+					return MemberAccessExpressionHoldsClosure(syntaxContext, pxContext, memberAccess.Expression);
+
+				case ConditionalAccessExpressionSyntax conditionalAccess
+				when conditionalAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
+					return MemberAccessExpressionHoldsClosure(syntaxContext, pxContext, arrayIndexAccess.Expression);
+
+				case ConditionalAccessExpressionSyntax conditionalAccess:
+					return MemberAccessExpressionHoldsClosure(syntaxContext, pxContext, conditionalAccess.Expression);
+
+				default:
+					return false;
+			}
+		}
+
+		private static bool MemberAccessExpressionHoldsClosure(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, ExpressionSyntax expression)
+		{
+			if (!(expression is IdentifierNameSyntax identifier))
+				return false;
+
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			return IdentifierHoldsClosure(syntaxContext, pxContext, identifier);
+		}
+
+		private static bool IdentifierHoldsClosure(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, IdentifierNameSyntax identifierName)
+		{
+			ISymbol? identifierSymbol = syntaxContext.SemanticModel.GetSymbolInfo(identifierName, syntaxContext.CancellationToken).Symbol;
+
+			if (identifierSymbol?.ContainingType == null || identifierSymbol.IsStatic || !identifierSymbol.ContainingType.IsPXGraphOrExtension(pxContext))
+				return false;
+
+			switch (identifierSymbol.Kind)
+			{
+				case SymbolKind.Local:
+					if (!(identifierSymbol is ILocalSymbol))
+						return false;
+
+					var localVariableDeclarator = identifierSymbol.DeclaringSyntaxReferences
+																  .FirstOrDefault()
+																 ?.GetSyntax(syntaxContext.CancellationToken) as VariableDeclaratorSyntax;
+					if (localVariableDeclarator?.Initializer?.Value == null)
+						return false;
+
+					return DelegateNodeHoldsClosure(syntaxContext, pxContext, localVariableDeclarator.Initializer.Value);
+
+				case SymbolKind.Method:
+				case SymbolKind.Property:
+				case SymbolKind.Event:
+				case SymbolKind.Field:
+					return true;             // Instance methods, properties, fields and events hold closure
+
+				case SymbolKind.Parameter:    // We can't analyze parameter, so assume that they don't contains delegate with incorrect closures 
+				default:
+					return false;
+			}
 		}
 	}
 }
