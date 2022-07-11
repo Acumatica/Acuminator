@@ -114,7 +114,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 													 ?.GetSyntax(CancellationToken);
 
 					// Method is the most simple and frequent case for identifiers passed as expressions for delegates.
-					// It is very difficult to analyze local variables, properties and fields in a general case and they are rarely used
+					// It is difficult to analyze local variables, parameters, properties and fields in a general case and they are rarely used
 					// for identifiers passed as expressions for delegates. 
 					// Therefore, they are deemed as non recognized.
 					return delegateNode != null && delegateSymbol?.Kind == SymbolKind.Method
