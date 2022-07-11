@@ -125,6 +125,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				case ConditionalAccessExpressionSyntax conditionalAccess:
 					return MemberAccessExpressionHoldsClosure(syntaxContext, pxContext, conditionalAccess.Expression);
 
+				case CastExpressionSyntax castExpression:
+					return DelegateNodeHoldsClosure(syntaxContext, pxContext, castExpression.Expression);
+
+				case ObjectCreationExpressionSyntax objectCreationExpression:
+					if (objectCreationExpression.ArgumentList.Arguments.Count != 1)
+						return false;
+
+					ArgumentSyntax delegateCreationArg = objectCreationExpression.ArgumentList.Arguments[0];
+					return DelegateNodeHoldsClosure(syntaxContext, pxContext, delegateCreationArg.Expression);
+
 				default:
 					return false;
 			}
