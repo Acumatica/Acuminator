@@ -1,14 +1,18 @@
-﻿using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn
 {
@@ -54,7 +58,7 @@ namespace Acuminator.Utilities.Roslyn
         /// Syntax node in the original tree that is being analyzed.
         /// Typically it is the node on which a diagnostic should be reported.
         /// </summary>
-        protected SyntaxNode OriginalNode { get; private set; }
+        protected SyntaxNode? OriginalNode { get; private set; }
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
         private readonly HashSet<IMethodSymbol> _methodsInStack = new HashSet<IMethodSymbol>();
@@ -70,8 +74,8 @@ namespace Acuminator.Utilities.Roslyn
 		/// (Optional) Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. 
 		/// If not supplied, default implementation is used to bypass some core types from PX.Data namespace.
 		/// </param>
-		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken, CodeAnalysisSettings codeAnalysisSettings,
-										 Func<IMethodSymbol, bool> bypassMethod = null)
+		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken, CodeAnalysisSettings? codeAnalysisSettings,
+										 Func<IMethodSymbol, bool>? bypassMethod = null)
 		{
 			compilation.ThrowOnNull(nameof (compilation));
 
@@ -102,16 +106,13 @@ namespace Acuminator.Utilities.Roslyn
 			};
 		}
 
-		protected void ThrowIfCancellationRequested()
-		{
-            CancellationToken.ThrowIfCancellationRequested();
-		}
+		protected void ThrowIfCancellationRequested() => CancellationToken.ThrowIfCancellationRequested();
 
 		/// <summary>
 		/// Returns a symbol for an invocation expression, or, 
 		/// if the exact symbol cannot be found, returns the first candidate.
 		/// </summary>
-		protected virtual T GetSymbol<T>(ExpressionSyntax node)
+		protected virtual T? GetSymbol<T>(ExpressionSyntax node)
 			where T : class, ISymbol
 		{
 			var semanticModel = GetSemanticModel(node.SyntaxTree);
@@ -134,7 +135,7 @@ namespace Acuminator.Utilities.Roslyn
 			return null;
 		}
 
-		protected virtual SemanticModel GetSemanticModel(SyntaxTree syntaxTree)
+		protected virtual SemanticModel? GetSemanticModel(SyntaxTree syntaxTree)
 		{
 			if (!_compilation.ContainsSyntaxTree(syntaxTree))
 				return null;
@@ -192,10 +193,7 @@ namespace Acuminator.Utilities.Roslyn
 				OriginalNode = null;
 		}
 
-		private bool RecursiveAnalysisEnabled()
-		{
-			return _settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
-		}
+		private bool RecursiveAnalysisEnabled() => _settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
 
 		#region Visit
 
@@ -282,7 +280,7 @@ namespace Acuminator.Utilities.Roslyn
 		{
 		}
 
-		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
+		private void VisitMethodSymbol(IMethodSymbol? symbol, SyntaxNode originalNode)
 		{
 			if (symbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode &&
                 !IsMethodInStack(symbol) && !_bypassMethod(symbol))

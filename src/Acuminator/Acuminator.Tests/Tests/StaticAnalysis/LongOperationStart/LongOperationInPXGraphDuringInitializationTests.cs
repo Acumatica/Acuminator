@@ -31,7 +31,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
             VerifyCSharpDiagnostic(source, Descriptors.PX1054_PXGraphLongRunOperationDuringInitialization.CreateFor(17, 17));
         }
 
-        [Theory(Skip = "Temporarily skip to fix the build on Bamboo")]
+        [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphExtensionStartsLongOperationInInitializationMethod.cs")]
         public void GraphExtensionInitializationMethod_ReportsDiagnostic(string source)
         {
