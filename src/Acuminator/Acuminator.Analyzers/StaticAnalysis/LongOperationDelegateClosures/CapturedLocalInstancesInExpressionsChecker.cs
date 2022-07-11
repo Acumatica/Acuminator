@@ -1,21 +1,16 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
@@ -56,11 +51,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return;
 
 			_cancellation.ThrowIfCancellationRequested();
+			bool shouldVisitChildren = true;
 
 			if (node is ExpressionSyntax expression)
-				_capturedLocalInstance = ExpressionCapturesLocalInstance(expression);
+				(_capturedLocalInstance, shouldVisitChildren) = ExpressionCapturesLocalInstance(expression);
 
-			if (!_capturedLocalInstance && _recursionDepth <= MaxRecursionDepth)
+			if (!_capturedLocalInstance && shouldVisitChildren && _recursionDepth <= MaxRecursionDepth)
 			{
 				try
 				{
@@ -74,18 +70,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			}
 		}
 
-		private bool ExpressionCapturesLocalInstance(ExpressionSyntax expression)
+		private (bool CapturedLocalInstance, bool ShouldVisitChildren) ExpressionCapturesLocalInstance(ExpressionSyntax expression)
 		{
 			switch (expression)
 			{
 				case AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode:
-					DataFlowAnalysis? dfa = _semanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
-					return dfa != null && dfa.Succeeded && dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis);
-
+					{
+						DataFlowAnalysis? dfa = _semanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
+						bool capturedLocalInstance = dfa != null && dfa.Succeeded && dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis);
+						return (capturedLocalInstance, ShouldVisitChildren: false);
+					}
 				case IdentifierNameSyntax identifierName:
-					return IdentifierCapturesLocalInstance(identifierName);
+					{
+						bool capturedLocalInstance = IdentifierCapturesLocalInstance(identifierName);
+						return (capturedLocalInstance, ShouldVisitChildren: false);
+					}
 				default:
-					return false;
+					return (CapturedLocalInstance: false, ShouldVisitChildren: true);
 			}
 		}
 
