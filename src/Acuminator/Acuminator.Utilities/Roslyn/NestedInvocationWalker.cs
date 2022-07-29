@@ -42,9 +42,15 @@ namespace Acuminator.Utilities.Roslyn
 	{
 		private const int MaxDepth = 100; // to avoid circular dependencies
 
-		private readonly Compilation _compilation;
-		
-		protected readonly CodeAnalysisSettings _settings;
+		/// <summary>
+		/// Acumatica specific context with compilation, settings and Acumatica-specific symbol collections.
+		/// </summary>
+		protected PXContext PxContext { get; }
+
+		private Compilation Compilation => PxContext.Compilation;
+
+		protected CodeAnalysisSettings Settings => PxContext.CodeAnalysisSettings;
+
 		private readonly Dictionary<SyntaxTree, SemanticModel> _semanticModels = new Dictionary<SyntaxTree, SemanticModel>();
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
@@ -67,21 +73,16 @@ namespace Acuminator.Utilities.Roslyn
 		/// <summary>
 		/// Constructor of the class.
 		/// </summary>
-		/// <param name="compilation">Compilation.</param>
+		/// <param name="pxContext">Acumatica specific context with compilation, settings and Acumatica-specific symbol collections.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
-		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
-		/// <param name="bypassMethod">
-		/// (Optional) Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. 
-		/// If not supplied, default implementation is used to bypass some core types from PX.Data namespace.
-		/// </param>
-		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken, CodeAnalysisSettings? codeAnalysisSettings,
-										 Func<IMethodSymbol, bool>? bypassMethod = null)
+		/// <param name="bypassMethod">(Optional) Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. If not supplied, default implementation is
+		/// used to bypass some core types from PX.Data namespace.</param>
+		protected NestedInvocationWalker(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? bypassMethod = null)
 		{
-			compilation.ThrowOnNull(nameof (compilation));
+			pxContext.ThrowOnNull(nameof (pxContext));
 
-			_compilation = compilation;
+			PxContext = pxContext;
             CancellationToken = cancellationToken;
-			_settings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
 
 			if (bypassMethod != null)
 			{
@@ -89,8 +90,7 @@ namespace Acuminator.Utilities.Roslyn
 			}
 			else
 			{
-				var pxContext = new PXContext(_compilation, _settings);
-				var typesToBypass = GetTypesToBypass(pxContext).ToHashSet();
+				var typesToBypass = GetTypesToBypass(PxContext).ToHashSet();
 
 				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
 			}		
@@ -137,13 +137,13 @@ namespace Acuminator.Utilities.Roslyn
 
 		protected virtual SemanticModel? GetSemanticModel(SyntaxTree syntaxTree)
 		{
-			if (!_compilation.ContainsSyntaxTree(syntaxTree))
+			if (!Compilation.ContainsSyntaxTree(syntaxTree))
 				return null;
 
 			if (_semanticModels.TryGetValue(syntaxTree, out var semanticModel))
 				return semanticModel;
 
-			semanticModel = _compilation.GetSemanticModel(syntaxTree);
+			semanticModel = Compilation.GetSemanticModel(syntaxTree);
 			_semanticModels[syntaxTree] = semanticModel;
 			return semanticModel;
 		}
@@ -170,7 +170,7 @@ namespace Acuminator.Utilities.Roslyn
 				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
 				var semanticModel = GetSemanticModel(nodeToReport.SyntaxTree);
 
-				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, _settings, CancellationToken);
+				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, Settings, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}
@@ -193,7 +193,7 @@ namespace Acuminator.Utilities.Roslyn
 				OriginalNode = null;
 		}
 
-		private bool RecursiveAnalysisEnabled() => _settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
+		private bool RecursiveAnalysisEnabled() => Settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
 
 		#region Visit
 

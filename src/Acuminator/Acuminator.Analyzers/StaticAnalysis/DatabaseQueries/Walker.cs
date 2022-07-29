@@ -19,28 +19,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 		private const string SearchMethodName = "Search";
 
 		private readonly SymbolAnalysisContext _context;
-		private readonly PXContext _pxContext;
 		private readonly DiagnosticDescriptor _diagnosticDescriptor;
 		private readonly ImmutableHashSet<IMethodSymbol> _databaseQueryMethods;
 
 		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor)
-			: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+			: base(pxContext, context.CancellationToken)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
 			diagnosticDescriptor.ThrowOnNull(nameof(diagnosticDescriptor));
 
 			_context = context;
-			_pxContext = pxContext;
 			_diagnosticDescriptor = diagnosticDescriptor;
 
-			_databaseQueryMethods = _pxContext.PXDatabase.Select
-				.Concat(_pxContext.PXDatabase.Insert)
-				.Concat(_pxContext.PXDatabase.Update)
-				.Concat(_pxContext.PXDatabase.Delete)
-				.Concat(_pxContext.PXDatabase.Ensure)
-				.Concat(_pxContext.AttributeTypes.PXSelectorAttribute.Select)
-				.Concat(_pxContext.AttributeTypes.PXSelectorAttribute.GetItem)
-				.Concat(_pxContext.PXView.Select)
+			_databaseQueryMethods = PxContext.PXDatabase.Select
+				.Concat(PxContext.PXDatabase.Insert)
+				.Concat(PxContext.PXDatabase.Update)
+				.Concat(PxContext.PXDatabase.Delete)
+				.Concat(PxContext.PXDatabase.Ensure)
+				.Concat(PxContext.AttributeTypes.PXSelectorAttribute.Select)
+				.Concat(PxContext.AttributeTypes.PXSelectorAttribute.GetItem)
+				.Concat(PxContext.PXView.Select)
 				.ToImmutableHashSet();
 		}
 
@@ -71,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			// variations of these methods are declared in different PXSelectBase-derived classes
 			var declaringType = candidate.ContainingType?.OriginalDefinition;
 
-			if (declaringType != null && declaringType.IsBqlCommand(_pxContext) &&
+			if (declaringType != null && declaringType.IsBqlCommand(PxContext) &&
 			    (candidate.Name.StartsWith(SelectMethodName, StringComparison.Ordinal) ||
 			     candidate.Name.StartsWith(SearchMethodName, StringComparison.Ordinal)))
 			{

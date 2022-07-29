@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -20,9 +21,8 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 	/// </summary>
 	public abstract class DelegatesWalkerBase : NestedInvocationWalker
 	{
-		protected DelegatesWalkerBase(Compilation compilation, CancellationToken cancellationToken, CodeAnalysisSettings? codeAnalysisSettings,
-									  Func<IMethodSymbol, bool>? bypassMethod = null) :
-								 base(compilation, cancellationToken, codeAnalysisSettings, bypassMethod)
+		protected DelegatesWalkerBase(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? bypassMethod = null) :
+								 base(pxContext, cancellationToken, bypassMethod)
 		{
 		}
 

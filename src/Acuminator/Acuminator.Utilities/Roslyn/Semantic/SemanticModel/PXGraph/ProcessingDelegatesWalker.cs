@@ -18,7 +18,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	internal class ProcessingDelegatesWalker : DelegatesWalkerBase
 	{
-		private readonly PXContext _pxContext;
 		private int _currentDeclarationOrder;
 		private readonly ImmutableHashSet<ISymbol> _processingViewSymbols;
 
@@ -30,13 +29,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			new Dictionary<string, List<ProcessingDelegateInfo>>();
 
 		public ProcessingDelegatesWalker(PXContext pxContext, ImmutableHashSet<ISymbol> processingViewSymbols, CancellationToken cancellation)
-			: base(pxContext.Compilation, cancellation, pxContext.CodeAnalysisSettings)
+			: base(pxContext, cancellation)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-			processingViewSymbols.ThrowOnNull(nameof(processingViewSymbols));
-
-			_pxContext = pxContext;
-			_processingViewSymbols = processingViewSymbols;
+			_processingViewSymbols = processingViewSymbols.CheckIfNull(nameof(processingViewSymbols));
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -68,7 +63,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return;
 			}
 
-			var isSetParametersDelegate = _pxContext.PXProcessingBase.SetParametersDelegate.Equals(methodSymbol.OriginalDefinition);
+			var isSetParametersDelegate = PxContext.PXProcessingBase.SetParametersDelegate.Equals(methodSymbol.OriginalDefinition);
 
 			if (isSetParametersDelegate)
 			{
@@ -76,7 +71,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 			else
 			{
-				var isSetProcessDelegate = _pxContext.PXProcessingBase.SetProcessDelegate.Contains(methodSymbol.OriginalDefinition);
+				var isSetProcessDelegate = PxContext.PXProcessingBase.SetProcessDelegate.Contains(methodSymbol.OriginalDefinition);
 
 				if (isSetProcessDelegate)
 				{

@@ -41,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
                 return;
             }
 
-            if (!StartsLongOperation(pxContext, context.Compilation, node, context.CancellationToken))
+            if (!StartsLongOperation(pxContext, node, context.CancellationToken))
             {
                 return;
             }
@@ -53,9 +53,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
             context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
-        private bool StartsLongOperation(PXContext pxContext, Compilation compilation, SyntaxNode node, CancellationToken cancellation)
+        private bool StartsLongOperation(PXContext pxContext, SyntaxNode node, CancellationToken cancellation)
         {
-            var walker = new StartLongOperationDelegateWalker(pxContext, compilation, cancellation);
+            var walker = new StartLongOperationDelegateWalker(pxContext, cancellation);
 
             walker.Visit(node);
 

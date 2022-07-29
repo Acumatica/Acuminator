@@ -31,7 +31,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 		private class Walker : NestedInvocationWalker
 		{
 			private SymbolAnalysisContext _context;
-			private readonly PXContext _pxContext;
 			private readonly EventType _eventType;
 			private bool IsTransactionOpened = false;
 
@@ -39,12 +38,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			private readonly BinaryExpressionSyntax tranStatus;
 			
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
-				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+				: base(pxContext, context.CancellationToken)
 			{
-				pxContext.ThrowOnNull(nameof(pxContext));
-
 				_context = context;
-				_pxContext = pxContext;
 				_eventType = eventType;
 
 				leftExpression = SyntaxFactory.MemberAccessExpression(
@@ -94,9 +90,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			{
 				var semanticModel = GetSemanticModel(node.SyntaxTree);
 				SaveOperationKind saveOperationKind = SaveOperationHelper.GetSaveOperationKind(
-					symbol, node, semanticModel, _pxContext);
+					symbol, node, semanticModel, PxContext);
 
-				PXDBOperationKind saveDatabaseKind = SaveOperationHelper.GetPXDatabaseSaveOperationKind(symbol, _pxContext);
+				PXDBOperationKind saveDatabaseKind = SaveOperationHelper.GetPXDatabaseSaveOperationKind(symbol, PxContext);
 
 				if (saveOperationKind != SaveOperationKind.None || 
 				    saveDatabaseKind != PXDBOperationKind.None)
@@ -115,7 +111,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 							return false;
 
 						ReportDiagnostic(_context.ReportDiagnostic, 
-							_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+							Settings.IsvSpecificAnalyzersEnabled
 								? Descriptors.PX1043_SavingChangesInEventHandlers
 								: Descriptors.PX1043_SavingChangesInRowPerstistedNonISV, node);
 						return true;

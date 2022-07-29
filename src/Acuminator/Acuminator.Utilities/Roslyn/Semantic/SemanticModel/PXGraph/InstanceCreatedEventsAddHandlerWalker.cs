@@ -1,39 +1,39 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public class InstanceCreatedEventsAddHandlerWalker : NestedInvocationWalker
 	{
-		private readonly PXContext _pxContext;
 		private int _currentDeclarationOrder;
 
 		public List<InitDelegateInfo> GraphInitDelegates { get; private set; } = new List<InitDelegateInfo>();
 
 		public InstanceCreatedEventsAddHandlerWalker(PXContext pxContext, CancellationToken cancellation)
-			: base(pxContext.Compilation, cancellation, pxContext.CodeAnalysisSettings)
+			: base(pxContext, cancellation)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			_pxContext = pxContext;
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 		{
 			ThrowIfCancellationRequested();
 
-			SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
-			IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
+			SemanticModel? semanticModel = GetSemanticModel(node.SyntaxTree);
+			IMethodSymbol? symbol = GetSymbol<IMethodSymbol>(node);
 
 			if (semanticModel == null || symbol == null)
 				return;
 
-			bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
+			bool isCreationDelegateAddition = PxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
 
 			if (isCreationDelegateAddition)
 			{

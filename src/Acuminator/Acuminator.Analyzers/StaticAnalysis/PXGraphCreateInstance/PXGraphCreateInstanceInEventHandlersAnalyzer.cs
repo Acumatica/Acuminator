@@ -1,13 +1,17 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
+using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 {
@@ -36,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 			private readonly SymbolAnalysisContext _context;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext)
-				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+				: base(pxContext, context.CancellationToken)
 			{
 				_context = context;
 			}
@@ -53,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				{
 					ReportDiagnostic(
 						_context.ReportDiagnostic,
-						_settings.IsvSpecificAnalyzersEnabled
+						Settings.IsvSpecificAnalyzersEnabled
 							? Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers
 							: Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers_NonISV, node);
 				}
@@ -73,7 +77,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 					{
 						ReportDiagnostic(
 							_context.ReportDiagnostic,
-							_settings.IsvSpecificAnalyzersEnabled
+							Settings.IsvSpecificAnalyzersEnabled
 								? Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers
 								: Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers_NonISV,
 							node);

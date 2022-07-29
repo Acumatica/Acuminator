@@ -10,17 +10,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
 	public class StartLongOperationWalker : NestedInvocationWalker
     {
-        private readonly PXContext _pxContext;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly DiagnosticDescriptor _descriptor;
 
         public StartLongOperationWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
-            : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+            : base(pxContext, context.CancellationToken)
         {
-            pxContext.ThrowOnNull(nameof(pxContext));
             descriptor.ThrowOnNull(nameof(descriptor));
 
-            _pxContext = pxContext;
             _reportDiagnostic = context.ReportDiagnostic;
             _descriptor = descriptor;
         }
@@ -31,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 
             IMethodSymbol methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-            if (_pxContext.StartOperation.Contains(methodSymbol))
+            if (PxContext.StartOperation.Contains(methodSymbol))
             {
                 ReportDiagnostic(_reportDiagnostic, _descriptor, node);
             }

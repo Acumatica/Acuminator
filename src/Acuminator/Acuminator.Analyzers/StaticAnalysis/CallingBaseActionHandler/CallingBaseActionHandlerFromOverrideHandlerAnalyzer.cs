@@ -57,18 +57,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
         private class Walker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
-            private readonly PXContext _pxContext;
             private readonly ImmutableHashSet<ISymbol> _baseActions;
             private readonly ImmutableHashSet<IMethodSymbol> _baseHandlers;
 
             public Walker(SymbolAnalysisContext context, PXContext pxContext, ImmutableHashSet<ISymbol> baseActions, ImmutableHashSet<IMethodSymbol> baseHandlers)
-                : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+                : base(pxContext, context.CancellationToken)
             {
-                pxContext.ThrowOnNull(nameof(pxContext));
                 baseActions.ThrowOnNull(nameof(baseActions));
                 baseHandlers.ThrowOnNull(nameof(baseHandlers));
 
-                _pxContext = pxContext;
                 _baseActions = baseActions;
                 _baseHandlers = baseHandlers;
                 _context = context;
@@ -97,7 +94,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
                 var originalMethodSymbol = methodSymbol.OriginalDefinition?.OverriddenMethod ?? methodSymbol.OriginalDefinition;
 
                 // Case Base.SomeAction.Press(adapter)
-                if (_pxContext.PXAction.Press.Contains(originalMethodSymbol) &&
+                if (PxContext.PXAction.Press.Contains(originalMethodSymbol) &&
                     node.Expression is MemberAccessExpressionSyntax memberAccess && memberAccess.Expression != null)
                 {
                     var expressionSymbol = GetSymbol<ISymbol>(memberAccess.Expression);

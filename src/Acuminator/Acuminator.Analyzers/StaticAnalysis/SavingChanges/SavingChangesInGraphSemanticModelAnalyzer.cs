@@ -41,14 +41,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
         private class SaveChangesWalker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
-            private readonly PXContext _pxContext;
             private readonly DiagnosticDescriptor _descriptor;
 
             public SaveChangesWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
-                : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+                : base(pxContext, context.CancellationToken)
             {
                 _context = context;
-                _pxContext = pxContext;
                 _descriptor = descriptor;
             }
 
@@ -59,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
                 IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
                 SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
 
-                if (symbol != null && SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, _pxContext) != SaveOperationKind.None)
+                if (symbol != null && SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, PxContext) != SaveOperationKind.None)
                 {
                     ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
                 }
