@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 			}
 			catch (AggregateException e)
 			{
-				var operationCanceledException = e.InnerExceptions
+				var operationCanceledException = e.Flatten().InnerExceptions
 					.OfType<OperationCanceledException>()
 					.FirstOrDefault();
 
