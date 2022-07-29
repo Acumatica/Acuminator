@@ -1,10 +1,15 @@
-﻿using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿#nullable enable
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 {
@@ -17,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-        protected SymbolAnalyzersAggregator(CodeAnalysisSettings settings, params T[] innerAnalyzers) : base(settings)
+        protected SymbolAnalyzersAggregator(CodeAnalysisSettings? settings, params T[] innerAnalyzers) : base(settings)
         {
             _innerAnalyzers = ImmutableArray.CreateRange(innerAnalyzers);
             SupportedDiagnostics = ImmutableArray.CreateRange(innerAnalyzers.SelectMany(a => a.SupportedDiagnostics));
@@ -52,5 +57,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 		}
 
 		protected abstract void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext);
+
+		protected virtual void RunAggregatedAnalyzersInParallel(SymbolAnalysisContext context, Action<int> aggregatedAnalyserAction, ParallelOptions? parallelOptions = null)
+		{
+			parallelOptions = parallelOptions ?? new ParallelOptions
+			{
+				CancellationToken = context.CancellationToken
+			};
+
+			Parallel.For(0, _innerAnalyzers.Length, parallelOptions, aggregatedAnalyserAction);
+		}
 	}
 }

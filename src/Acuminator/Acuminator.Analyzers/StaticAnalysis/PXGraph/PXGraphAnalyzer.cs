@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿#nullable enable
+
+using System;
+using System.Threading.Tasks;
 
 using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
 using Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType;
@@ -63,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         /// <summary>
         /// Constructor for the unit tests.
         /// </summary>
-        public PXGraphAnalyzer(CodeAnalysisSettings settings, params IPXGraphAnalyzer[] innerAnalyzers) : base(settings, innerAnalyzers)
+        public PXGraphAnalyzer(CodeAnalysisSettings? settings, params IPXGraphAnalyzer[] innerAnalyzers) : base(settings, innerAnalyzers)
         {
         }
 
@@ -85,15 +88,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			
 			foreach (var graph in inferredGraphs)
 			{
-				Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
+				RunAggregatedAnalyzersInParallel(context, aggregatedAnalyserAction: innerAnalyzerIndex =>
 				{
 					context.CancellationToken.ThrowIfCancellationRequested();
+					var innerAnalyzer = _innerAnalyzers[innerAnalyzerIndex];
 
 					if (innerAnalyzer.ShouldAnalyze(pxContext, graph))
 					{
 						innerAnalyzer.Analyze(context, pxContext, graph);
 					}
-				});
+				},
+				parallelOptions);
 			}
 		}
     }
