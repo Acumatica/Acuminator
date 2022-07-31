@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 
 using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -15,9 +16,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
     public class LongOperationDelegateClosuresTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
-			new LongOperationDelegateClosuresAnalyzer(
+			new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
-											.WithSuppressionMechanismDisabled());
+											.WithSuppressionMechanismDisabled()
+											.WithRecursiveAnalysisEnabled(),
+				new LongOperationDelegateClosuresAnalyzer());
 
 		[Theory]
         [EmbeddedFileData("SetProcessDelegateClosures.cs")]

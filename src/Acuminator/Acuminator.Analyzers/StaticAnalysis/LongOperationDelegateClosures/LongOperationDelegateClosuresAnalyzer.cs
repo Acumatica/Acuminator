@@ -1,13 +1,18 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -17,89 +22,134 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer
-    {
-		private readonly LongOperationDelegateTypeClassifier _longOperationDelegateTypeClassifier = new LongOperationDelegateTypeClassifier();
-
+	public partial class LongOperationDelegateClosuresAnalyzer : PXGraphAggregatedAnalyzerBase
+	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1008_LongOperationDelegateClosures);
+			ImmutableArray.Create(Descriptors.PX1008_LongOperationDelegateClosures);
 
-		public LongOperationDelegateClosuresAnalyzer() : this(null)
-		{ }
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None &&
+			!graph.Symbol.DeclaringSyntaxReferences.IsDefaultOrEmpty;
 
-		public LongOperationDelegateClosuresAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
-		{ }
-
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph)
 		{
-            compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeLongOperationDelegate(c, pxContext), SyntaxKind.InvocationExpression);
-		}
+			var longOperationsChecker = new LongOperationsChecker(context, pxContext, graph);
 
-		private void AnalyzeLongOperationDelegate(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-		{
-			var longOperationSetupMethodInvocationNode = syntaxContext.Node as InvocationExpressionSyntax;
-			var longOperationDelegateType = _longOperationDelegateTypeClassifier.GetLongOperationDelegateType(longOperationSetupMethodInvocationNode, 
-																											  syntaxContext.SemanticModel, pxContext,
-																											  syntaxContext.CancellationToken);
-			switch (longOperationDelegateType)
+			foreach (SyntaxReference graphSyntaxReference in graph.Symbol.DeclaringSyntaxReferences)
 			{
-				case LongOperationDelegateType.ProcessingDelegate:
-					AnalyzeSetProcessDelegateMethod(syntaxContext, pxContext, longOperationSetupMethodInvocationNode!);
-					break;
+				var graphNode = graphSyntaxReference.GetSyntax(context.CancellationToken) as ClassDeclarationSyntax;
 
-				case LongOperationDelegateType.LongRunDelegate:
-					AnalyzeStartOperationDelegateMethod(syntaxContext, pxContext, longOperationSetupMethodInvocationNode!);
-					break;
-			}
+				if (graphNode != null)
+					longOperationsChecker.CheckForCapturedGraphReferencesInDelegateClosures(graphNode);
+			}			
 		}
 
-		private static void AnalyzeSetProcessDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
-															InvocationExpressionSyntax setDelegateInvocation)
+
+		//---------------------------------------Walker-------------------------------------------------------------------
+		private class LongOperationsChecker : NestedInvocationWalker
 		{
-			if (setDelegateInvocation.ArgumentList.Arguments.Count == 0)
-				return;
+			private readonly SymbolAnalysisContext _context;
+			private readonly PXGraphSemanticModel _graph;
 
-			ExpressionSyntax processingDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[0].Expression;
-			bool isMainProcessingDelegateCorrect = CheckDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, processingDelegateParameter);
-
-			if (isMainProcessingDelegateCorrect && setDelegateInvocation.ArgumentList.Arguments.Count > 1)
+			public LongOperationsChecker(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph) : 
+									base(pxContext, context.CancellationToken)
 			{
-				ExpressionSyntax finallyHandlerDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[1].Expression;
-				CheckDataFlowForDelegateMethod(syntaxContext, pxContext, setDelegateInvocation, finallyHandlerDelegateParameter);
-			}
-		}
-
-		private static void AnalyzeStartOperationDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
-																InvocationExpressionSyntax startOperationInvocation)
-		{
-			if (startOperationInvocation.ArgumentList.Arguments.Count < 2)
-				return;
-
-			ExpressionSyntax longRunDelegateParameter = startOperationInvocation.ArgumentList.Arguments[1].Expression;
-			CheckDataFlowForDelegateMethod(syntaxContext, pxContext, startOperationInvocation, longRunDelegateParameter);
-		}
-
-		private static bool CheckDataFlowForDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
-														   InvocationExpressionSyntax longOperationSetupMethodInvocationNode,
-														   ExpressionSyntax longOperationDelegateNode)
-		{
-			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			var capturedLocalInstancesInExpressionsChecker = 
-				new CapturedLocalInstancesInExpressionsChecker(syntaxContext.SemanticModel, pxContext, syntaxContext.CancellationToken);
-
-			if (capturedLocalInstancesInExpressionsChecker.ExpressionCapturesLocalIntanceInClosure(longOperationDelegateNode))
-			{
-				syntaxContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(
-						Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
-						pxContext.CodeAnalysisSettings);
-
-				return false;
+				_context = context;
+				_graph = graph;
 			}
 
-			return true;
+			public void CheckForCapturedGraphReferencesInDelegateClosures(ClassDeclarationSyntax graphNode)
+			{
+				ThrowIfCancellationRequested();
+
+				graphNode.Accept(this);
+			}
+
+			public override void VisitMethodDeclaration(MethodDeclarationSyntax methodNode)
+			{
+				ThrowIfCancellationRequested();
+
+				if (!methodNode.IsStatic())
+					base.VisitMethodDeclaration(methodNode);
+			}
+
+			public override void VisitInvocationExpression(InvocationExpressionSyntax longOperationSetupMethodInvocationNode) =>
+				AnalyzeLongOperationDelegate(longOperationSetupMethodInvocationNode);
+
+			private void AnalyzeLongOperationDelegate(InvocationExpressionSyntax longOperationSetupMethodInvocationNode)
+			{
+				ThrowIfCancellationRequested();
+
+				SemanticModel? semanticModel = GetSemanticModel(longOperationSetupMethodInvocationNode.SyntaxTree);
+
+				if (semanticModel == null)
+				{
+					base.VisitInvocationExpression(longOperationSetupMethodInvocationNode);
+					return;
+				}
+
+				var longOperationDelegateType = LongOperationDelegateTypeClassifier.GetLongOperationDelegateType(longOperationSetupMethodInvocationNode,
+																												 semanticModel, PxContext, CancellationToken);
+				switch (longOperationDelegateType)
+				{
+					case LongOperationDelegateType.ProcessingDelegate:
+						AnalyzeSetProcessDelegateMethod(semanticModel, longOperationSetupMethodInvocationNode);
+						return;
+
+					case LongOperationDelegateType.LongRunDelegate:
+						AnalyzeStartOperationDelegateMethod(semanticModel, longOperationSetupMethodInvocationNode);
+						return;
+
+					default:
+						base.VisitInvocationExpression(longOperationSetupMethodInvocationNode);
+						return;
+				}
+			}
+
+			private void AnalyzeSetProcessDelegateMethod(SemanticModel semanticModel, InvocationExpressionSyntax setDelegateInvocation)
+			{
+				if (setDelegateInvocation.ArgumentList.Arguments.Count == 0)
+					return;
+
+				ExpressionSyntax processingDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[0].Expression;
+				bool isMainProcessingDelegateCorrect = CheckDataFlowForDelegateMethod(semanticModel, setDelegateInvocation, processingDelegateParameter);
+
+				if (isMainProcessingDelegateCorrect && setDelegateInvocation.ArgumentList.Arguments.Count > 1)
+				{
+					ExpressionSyntax finallyHandlerDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[1].Expression;
+					CheckDataFlowForDelegateMethod(semanticModel, setDelegateInvocation, finallyHandlerDelegateParameter);
+				}
+			}
+
+			private void AnalyzeStartOperationDelegateMethod(SemanticModel semanticModel, InvocationExpressionSyntax startOperationInvocation)
+			{
+				if (startOperationInvocation.ArgumentList.Arguments.Count < 2)
+					return;
+
+				ExpressionSyntax longRunDelegateParameter = startOperationInvocation.ArgumentList.Arguments[1].Expression;
+				CheckDataFlowForDelegateMethod(semanticModel, startOperationInvocation, longRunDelegateParameter);
+			}
+
+			private bool CheckDataFlowForDelegateMethod(SemanticModel semanticModel, InvocationExpressionSyntax longOperationSetupMethodInvocationNode,
+														ExpressionSyntax longOperationDelegateNode)
+			{
+				ThrowIfCancellationRequested();
+
+				var capturedLocalInstancesInExpressionsChecker =
+					new CapturedLocalInstancesInExpressionsChecker(semanticModel, PxContext, CancellationToken);
+
+				if (capturedLocalInstancesInExpressionsChecker.ExpressionCapturesLocalIntanceInClosure(longOperationDelegateNode))
+				{
+					_context.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(
+							Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
+							Settings);
+
+					return false;
+				}
+
+				return true;
+			}
 		}
 	}
 }
