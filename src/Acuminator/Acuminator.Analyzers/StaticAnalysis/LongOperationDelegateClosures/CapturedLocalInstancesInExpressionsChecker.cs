@@ -77,8 +77,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				case AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode:
 					{
 						DataFlowAnalysis? dfa = _semanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
-						bool capturedLocalInstance = dfa != null && dfa.Succeeded && dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis);
-						return (capturedLocalInstance, ShouldVisitChildren: false);
+						bool capturedLocalGraphInstance = dfa != null && dfa.Succeeded && 
+														  dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(IsCapturedLocalGraphSymbol);
+						return (capturedLocalGraphInstance, ShouldVisitChildren: false);
 					}
 				case IdentifierNameSyntax identifierName:
 					{
@@ -89,6 +90,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					return (CapturedLocalInstance: false, ShouldVisitChildren: true);
 			}
 		}
+
+		private bool IsCapturedLocalGraphSymbol(IParameterSymbol symbol) => 
+			symbol.IsThis && symbol.Type.IsPXGraphOrExtension(_pxContext);
 
 		private bool IdentifierCapturesLocalInstance(IdentifierNameSyntax identifierName)
 		{
