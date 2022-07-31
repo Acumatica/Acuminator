@@ -23,6 +23,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 				new LongOperationDelegateClosuresAnalyzer());
 
 		[Theory]
+		[EmbeddedFileData("ClosuresInNonGraph.cs")]
+		public Task NonGraph_ThisReference_Captured_NoDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
         [EmbeddedFileData("SetProcessDelegateClosures.cs")]
         public Task SetProcessDelegates_GraphCapturedInClosures(string actual) =>
 			VerifyCSharpDiagnosticAsync(actual,
