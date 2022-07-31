@@ -128,6 +128,11 @@ namespace Acuminator.Utilities.Roslyn
 				PxContext.PXGraph.Type,
 				PxContext.PXView.Type,
 				PxContext.PXCache.Type,
+				PxContext.PXCache.GenericType,
+				PxContext.PXAction.Type,
+				PxContext.PXSelectBaseGeneric.Type,
+				PxContext.PXAdapterType,
+				PxContext.PXDatabase.Type
 			};
 
 		protected void ThrowIfCancellationRequested() => CancellationToken.ThrowIfCancellationRequested();
