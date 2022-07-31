@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				if (_eventType == EventType.RowPersisted && !IsThrowingOfThisExceptionInRowPersistedAllowed(expressionAfterThrowkeyword))
 				{
 					ReportDiagnostic(_context.ReportDiagnostic,
-									 _pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+									 Settings.IsvSpecificAnalyzersEnabled
 										? Descriptors.PX1073_ThrowingExceptionsInRowPersisted
 										: Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV,
 									 throwNodeToReport);
@@ -111,13 +111,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				new List<ITypeSymbol>
 				{
 					// Acumatica exceptions
-					_pxContext.Exceptions.PXRowPersistedException,
-					_pxContext.Exceptions.PXLockViolationException,
+					PxContext.Exceptions.PXRowPersistedException,
+					PxContext.Exceptions.PXLockViolationException,
 
 					// .Net exceptions
-					_pxContext.Exceptions.ArgumentException,
-					_pxContext.Exceptions.NotImplementedException,
-					_pxContext.Exceptions.NotSupportedException		
+					PxContext.Exceptions.ArgumentException,
+					PxContext.Exceptions.NotImplementedException,
+					PxContext.Exceptions.NotSupportedException		
 				};
 		}
 	}
