@@ -65,6 +65,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				graphNode.Accept(this);
 			}
 
+			protected override bool BypassMethod(IMethodSymbol methodSymbol) => 
+				base.BypassMethod(methodSymbol) || methodSymbol.IsStatic;
+
 			public override void VisitInvocationExpression(InvocationExpressionSyntax longOperationSetupMethodInvocationNode) =>
 				AnalyzeLongOperationDelegate(longOperationSetupMethodInvocationNode);
 
