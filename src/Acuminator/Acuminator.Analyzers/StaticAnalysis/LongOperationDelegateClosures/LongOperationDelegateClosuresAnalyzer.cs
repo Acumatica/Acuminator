@@ -65,14 +65,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				graphNode.Accept(this);
 			}
 
-			public override void VisitMethodDeclaration(MethodDeclarationSyntax methodNode)
-			{
-				ThrowIfCancellationRequested();
-
-				if (!methodNode.IsStatic())
-					base.VisitMethodDeclaration(methodNode);
-			}
-
 			public override void VisitInvocationExpression(InvocationExpressionSyntax longOperationSetupMethodInvocationNode) =>
 				AnalyzeLongOperationDelegate(longOperationSetupMethodInvocationNode);
 
@@ -140,11 +132,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				if (capturedLocalInstancesInExpressionsChecker.ExpressionCapturesLocalIntanceInClosure(longOperationDelegateNode))
 				{
-					_context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(
-							Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode.GetLocation()),
-							Settings);
-
+					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode);
 					return false;
 				}
 
