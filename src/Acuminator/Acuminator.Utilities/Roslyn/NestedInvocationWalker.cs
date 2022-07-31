@@ -68,43 +68,67 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
         private readonly HashSet<IMethodSymbol> _methodsInStack = new HashSet<IMethodSymbol>();
-		private readonly Func<IMethodSymbol, bool> _bypassMethod;
+
+		private readonly Lazy<HashSet<INamedTypeSymbol>> _typesToBypass;
+		private readonly Func<IMethodSymbol, bool>? _extraBypassCheck;
 
 		/// <summary>
 		/// Constructor of the class.
 		/// </summary>
 		/// <param name="pxContext">Acumatica specific context with compilation, settings and Acumatica-specific symbol collections.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
-		/// <param name="bypassMethod">(Optional) Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. If not supplied, default implementation is
-		/// used to bypass some core types from PX.Data namespace.</param>
-		protected NestedInvocationWalker(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? bypassMethod = null)
+		/// <param name="bypassMethod">(Optional) An optional delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. </param>
+		protected NestedInvocationWalker(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? extraBypassCheck = null)
 		{
 			pxContext.ThrowOnNull(nameof (pxContext));
 
 			PxContext = pxContext;
             CancellationToken = cancellationToken;
+			_extraBypassCheck = extraBypassCheck;
 
-			if (bypassMethod != null)
-			{
-				_bypassMethod = bypassMethod;
-			}
-			else
-			{
-				var typesToBypass = GetTypesToBypass(PxContext).ToHashSet();
-
-				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
-			}		
+			//Use lazy to avoid calling virtual methods inside the constructor
+			_typesToBypass = new Lazy<HashSet<INamedTypeSymbol>>(valueFactory: GetTypesToBypass, isThreadSafe: false);
 		}
 
-		protected virtual IEnumerable<INamedTypeSymbol> GetTypesToBypass(PXContext pxContext)
+		/// <summary>
+		/// An analysis that checks if walker should skip going into <paramref name="methodSymbol"/>.
+		/// </summary>
+		/// <param name="methodSymbol">The method symbol to check.</param>
+		/// <returns>
+		/// <see langword="true"/> if the <paramref name="methodSymbol"/> should be skipped, <see langword="false"/> if the walker should go into it.
+		/// </returns>
+		/// <remarks>
+		/// The default implementation will check <paramref name="methodSymbol"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
+		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="methodSymbol"/> will be bypassed.
+		/// If custom extraBypassCheck delegate was specified in the <see cref=" NestedInvocationWalker"/> constructor then it will be called after the check for bypassed types.<br/>
+		/// The method be overriden for custom skip logic.
+		/// </remarks>
+		protected virtual bool BypassMethod(IMethodSymbol methodSymbol)
 		{
-			return new[]
-			{
-				pxContext.PXGraph.Type,
-				pxContext.PXView.Type,
-				pxContext.PXCache.Type
-			};
+			var typesToBypass = _typesToBypass.Value;
+
+			if (typesToBypass != null && typesToBypass.Contains(methodSymbol.ContainingType))
+				return true;
+
+			return _extraBypassCheck?.Invoke(methodSymbol) ?? false;
 		}
+
+		/// <summary>
+		/// Gets types to bypass. The alker won't go into their type members.
+		/// </summary>
+		/// <returns>
+		/// The types to bypass.
+		/// </returns>
+		/// <remarks>
+		/// some core types from PX.Data namespace
+		/// </remarks>
+		protected virtual HashSet<INamedTypeSymbol> GetTypesToBypass() =>
+			new HashSet<INamedTypeSymbol>()
+			{
+				PxContext.PXGraph.Type,
+				PxContext.PXView.Type,
+				PxContext.PXCache.Type,
+			};
 
 		protected void ThrowIfCancellationRequested() => CancellationToken.ThrowIfCancellationRequested();
 
@@ -280,14 +304,14 @@ namespace Acuminator.Utilities.Roslyn
 		{
 		}
 
-		private void VisitMethodSymbol(IMethodSymbol? symbol, SyntaxNode originalNode)
+		private void VisitMethodSymbol(IMethodSymbol? methodSymbol, SyntaxNode originalNode)
 		{
-			if (symbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode &&
-                !IsMethodInStack(symbol) && !_bypassMethod(symbol))
+			if (methodSymbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode &&
+                !IsMethodInStack(methodSymbol) && !BypassMethod(methodSymbol))
 			{
-				Push(originalNode, symbol);
+				Push(originalNode, methodSymbol);
 				methodNode.Accept(this);
-				Pop(symbol);
+				Pop(methodSymbol);
 			}
 		}
 
