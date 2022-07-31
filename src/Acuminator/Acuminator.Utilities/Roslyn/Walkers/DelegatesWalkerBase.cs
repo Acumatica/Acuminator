@@ -21,8 +21,8 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 	/// </summary>
 	public abstract class DelegatesWalkerBase : NestedInvocationWalker
 	{
-		protected DelegatesWalkerBase(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? bypassMethod = null) :
-								 base(pxContext, cancellationToken, bypassMethod)
+		protected DelegatesWalkerBase(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? extraBypassCheck = null) :
+								 base(pxContext, cancellationToken, extraBypassCheck)
 		{
 		}
 

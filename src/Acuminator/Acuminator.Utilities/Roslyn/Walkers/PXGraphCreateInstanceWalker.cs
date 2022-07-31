@@ -33,7 +33,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
-			_context.CancellationToken.ThrowIfCancellationRequested();
+			ThrowIfCancellationRequested();
 
 			IMethodSymbol? symbol = GetSymbol<IMethodSymbol>(node);
 
@@ -54,7 +54,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 		/// <param name="node">The node.</param>
 		public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 		{
-			_context.CancellationToken.ThrowIfCancellationRequested();
+			ThrowIfCancellationRequested();
 
 			ITypeSymbol? createdObjectType = GetSymbol<ITypeSymbol>(node.Type);
 
