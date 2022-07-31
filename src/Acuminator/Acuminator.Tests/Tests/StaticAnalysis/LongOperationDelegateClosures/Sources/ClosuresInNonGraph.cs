@@ -11,6 +11,21 @@ namespace Acuminator.Tests.Sources
 	{
 	}
 
+	public class SomeGraph : PXGraph<SomeGraph>
+	{
+		PXProcessing<SomeDAC> _processing;
+
+		PXAction<SomeDAC> SomeAction;
+
+		public IEnumerable someAction(PXAdapter adapter)
+		{
+			var helper = new NonGraph();
+			helper.RunLongRun(_processing);
+
+			return adapter.Get();
+		}
+	}
+
 
 	public class NonGraph
 	{
