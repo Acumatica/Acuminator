@@ -126,6 +126,7 @@
 		internal const string PXAction = "PX.Data.PXAction";
 
 		internal const string PXCache = "PX.Data.PXCache";
+		internal const string PXCache1 = "PX.Data.PXCache`1";
 
 		internal const string PXDatabase = "PX.Data.PXDatabase";
 
