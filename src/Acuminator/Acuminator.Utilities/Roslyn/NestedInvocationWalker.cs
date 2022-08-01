@@ -200,17 +200,17 @@ namespace Acuminator.Utilities.Roslyn
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
-			VisitPropertyAccessExpression(node);
+			VisitPropertyOrIndexerAccessExpression(node);
 			base.VisitMemberAccessExpression(node);
 		}
 
 		public override void VisitElementAccessExpression(ElementAccessExpressionSyntax node)
 		{
-			VisitPropertyAccessExpression(node);
+			VisitPropertyOrIndexerAccessExpression(node);
 			base.VisitElementAccessExpression(node);
 		}
 
-		private void VisitPropertyAccessExpression(ExpressionSyntax node)
+		private void VisitPropertyOrIndexerAccessExpression(ExpressionSyntax node)
 		{
 			ThrowIfCancellationRequested();
 
