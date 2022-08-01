@@ -200,17 +200,27 @@ namespace Acuminator.Utilities.Roslyn
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
+			VisitPropertyAccessExpression(node);
+			base.VisitMemberAccessExpression(node);
+		}
+
+		public override void VisitElementAccessExpression(ElementAccessExpressionSyntax node)
+		{
+			VisitPropertyAccessExpression(node);
+			base.VisitElementAccessExpression(node);
+		}
+
+		private void VisitPropertyAccessExpression(ExpressionSyntax node)
+		{
 			ThrowIfCancellationRequested();
 
 			if (RecursiveAnalysisEnabled() && node.Parent != null
 				&& !node.Parent.IsKind(SyntaxKind.ObjectInitializerExpression)
-			    && !(node.Parent is AssignmentExpressionSyntax))
+				&& !(node.Parent is AssignmentExpressionSyntax))
 			{
 				var propertySymbol = GetSymbol<IPropertySymbol>(node);
 				VisitMethodSymbol(propertySymbol?.GetMethod, node);
 			}
-
-			base.VisitMemberAccessExpression(node);
 		}
 
 		public override void VisitAssignmentExpression(AssignmentExpressionSyntax node)
@@ -276,7 +286,7 @@ namespace Acuminator.Utilities.Roslyn
 			bool wasVisited = false;
 			BeforeBypassCheck(methodSymbol, methodNode, originalNode);
 
-			if (!BypassMethod(methodSymbol))
+			if (!BypassMethod(methodSymbol, methodNode, originalNode))
 			{
 				BeforeRecursiveVisit(methodSymbol, methodNode, originalNode);
 
@@ -330,17 +340,19 @@ namespace Acuminator.Utilities.Roslyn
 		/// <summary>
 		/// An analysis that checks if walker should skip going into <paramref name="methodSymbol"/>.
 		/// </summary>
+		/// <remarks>
+		/// The default implementation will check <paramref name="methodSymbol"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
+		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="methodSymbol"/> will be bypassed. If custom
+		/// extraBypassCheck delegate was specified in the <see cref=" NestedInvocationWalker"/> constructor then it will be called after the check for bypassed types.<br/>
+		/// The method be overriden for custom skip logic.
+		/// </remarks>
 		/// <param name="methodSymbol">The method symbol to check.</param>
+		/// <param name="methodNode">The method node.</param>
+		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
 		/// <returns>
 		/// <see langword="true"/> if the <paramref name="methodSymbol"/> should be skipped, <see langword="false"/> if the walker should go into it.
 		/// </returns>
-		/// <remarks>
-		/// The default implementation will check <paramref name="methodSymbol"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
-		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="methodSymbol"/> will be bypassed.
-		/// If custom extraBypassCheck delegate was specified in the <see cref=" NestedInvocationWalker"/> constructor then it will be called after the check for bypassed types.<br/>
-		/// The method be overriden for custom skip logic.
-		/// </remarks>
-		protected virtual bool BypassMethod(IMethodSymbol methodSymbol)
+		protected virtual bool BypassMethod(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode)
 		{
 			var typesToBypass = _typesToBypass.Value;
 
