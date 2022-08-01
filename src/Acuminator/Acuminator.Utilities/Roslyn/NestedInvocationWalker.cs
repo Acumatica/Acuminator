@@ -91,29 +91,6 @@ namespace Acuminator.Utilities.Roslyn
 		}
 
 		/// <summary>
-		/// An analysis that checks if walker should skip going into <paramref name="methodSymbol"/>.
-		/// </summary>
-		/// <param name="methodSymbol">The method symbol to check.</param>
-		/// <returns>
-		/// <see langword="true"/> if the <paramref name="methodSymbol"/> should be skipped, <see langword="false"/> if the walker should go into it.
-		/// </returns>
-		/// <remarks>
-		/// The default implementation will check <paramref name="methodSymbol"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
-		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="methodSymbol"/> will be bypassed.
-		/// If custom extraBypassCheck delegate was specified in the <see cref=" NestedInvocationWalker"/> constructor then it will be called after the check for bypassed types.<br/>
-		/// The method be overriden for custom skip logic.
-		/// </remarks>
-		protected virtual bool BypassMethod(IMethodSymbol methodSymbol)
-		{
-			var typesToBypass = _typesToBypass.Value;
-
-			if (typesToBypass != null && typesToBypass.Contains(methodSymbol.ContainingType))
-				return true;
-
-			return _extraBypassCheck?.Invoke(methodSymbol) ?? false;
-		}
-
-		/// <summary>
 		/// Gets types to bypass. The alker won't go into their type members.
 		/// </summary>
 		/// <returns>
@@ -202,24 +179,6 @@ namespace Acuminator.Utilities.Roslyn
 				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, Settings, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
-		}
-
-		private void Push(SyntaxNode node, IMethodSymbol symbol)
-		{
-			if (_nodesStack.Count == 0)
-				OriginalNode = node;
-
-			_nodesStack.Push(node);
-            _methodsInStack.Add(symbol);
-		}
-
-		private void Pop(IMethodSymbol symbol)
-		{
-			_nodesStack.Pop();
-            _methodsInStack.Remove(symbol);
-
-			if (_nodesStack.Count == 0)
-				OriginalNode = null;
 		}
 
 		private bool RecursiveAnalysisEnabled() => Settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
@@ -311,20 +270,103 @@ namespace Acuminator.Utilities.Roslyn
 
 		private void VisitMethodSymbol(IMethodSymbol? methodSymbol, SyntaxNode originalNode)
 		{
-			if (methodSymbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode &&
-                !IsMethodInStack(methodSymbol) && !BypassMethod(methodSymbol))
+			if (methodSymbol == null || IsMethodInStack(methodSymbol) || !(methodSymbol.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode))
+				return;
+
+			bool wasVisited = false;
+			BeforeBypassCheck(methodSymbol, methodNode, originalNode);
+
+			if (!BypassMethod(methodSymbol))
 			{
+				BeforeRecursiveVisit(methodSymbol, methodNode, originalNode);
+
 				Push(originalNode, methodSymbol);
 				methodNode.Accept(this);
 				Pop(methodSymbol);
+
+				wasVisited = true;
 			}
+
+			AfterRecursiveVisit(methodSymbol, methodNode, originalNode, wasVisited);
 		}
 
-        private bool IsMethodInStack(IMethodSymbol symbol)
-        {
-            return _methodsInStack.Contains(symbol);
-        }
+        private bool IsMethodInStack(IMethodSymbol methodSymbol) =>
+			_methodsInStack.Contains(methodSymbol);
 
-        #endregion
-    }
+		/// <summary>
+		/// Extensibility point that allows to add some logic executed before <paramref name="methodSymbol"/> is checked by the bypass check <see cref="BypassMethod(IMethodSymbol)"/>.
+		/// </summary>
+		/// <param name="methodSymbol">The method symbol.</param>
+		/// <param name="methodNode">The method node.</param>
+		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
+		protected virtual void BeforeBypassCheck(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode)
+		{
+		}
+
+		/// <summary>
+		/// Extensibility point that allows to add some logic executed after the bypass check on a <paramref name="methodSymbol"/> that passed it and 
+		/// just before the visit of the <paramref name="methodNode"/>.
+		/// </summary>
+		/// <param name="methodSymbol">The method symbol to be visited.</param>
+		/// <param name="methodNode">The method node.</param>
+		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
+		protected virtual void BeforeRecursiveVisit(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode)
+		{
+		}
+
+		/// <summary>
+		/// Extensibility point that allows to add some logic executed after the recursive visit of a <paramref name="methodSymbol"/>.
+		/// The logic is executed both for methods that passed bypass check and were visited and for methods that didn't pass it. <br/>
+		/// The flag <paramref name="wasVisited"/> allows to distinguish between the methods that were really visited and those that were bypassed.
+		/// </summary>
+		/// <param name="methodSymbol">The method symbol.</param>
+		/// <param name="methodNode">The method node.</param>
+		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
+		/// <param name="wasVisited">True if the <paramref name="methodSymbol"/> was really visited.</param>
+		protected virtual void AfterRecursiveVisit(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode, bool wasVisited)
+		{
+		}
+
+		/// <summary>
+		/// An analysis that checks if walker should skip going into <paramref name="methodSymbol"/>.
+		/// </summary>
+		/// <param name="methodSymbol">The method symbol to check.</param>
+		/// <returns>
+		/// <see langword="true"/> if the <paramref name="methodSymbol"/> should be skipped, <see langword="false"/> if the walker should go into it.
+		/// </returns>
+		/// <remarks>
+		/// The default implementation will check <paramref name="methodSymbol"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
+		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="methodSymbol"/> will be bypassed.
+		/// If custom extraBypassCheck delegate was specified in the <see cref=" NestedInvocationWalker"/> constructor then it will be called after the check for bypassed types.<br/>
+		/// The method be overriden for custom skip logic.
+		/// </remarks>
+		protected virtual bool BypassMethod(IMethodSymbol methodSymbol)
+		{
+			var typesToBypass = _typesToBypass.Value;
+
+			if (typesToBypass != null && typesToBypass.Contains(methodSymbol.ContainingType))
+				return true;
+
+			return _extraBypassCheck?.Invoke(methodSymbol) ?? false;
+		}
+
+		private void Push(SyntaxNode node, IMethodSymbol symbol)
+		{
+			if (_nodesStack.Count == 0)
+				OriginalNode = node;
+
+			_nodesStack.Push(node);
+			_methodsInStack.Add(symbol);
+		}
+
+		private void Pop(IMethodSymbol symbol)
+		{
+			_nodesStack.Pop();
+			_methodsInStack.Remove(symbol);
+
+			if (_nodesStack.Count == 0)
+				OriginalNode = null;
+		}
+		#endregion
+	}
 }
