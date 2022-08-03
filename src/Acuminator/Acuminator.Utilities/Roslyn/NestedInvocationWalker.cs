@@ -192,7 +192,7 @@ namespace Acuminator.Utilities.Roslyn
 			if (RecursiveAnalysisEnabled() && node.Parent?.Kind() != SyntaxKind.ConditionalAccessExpression)
 			{
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
-				VisitMethodSymbol(methodSymbol, node);
+				VisitCalledMethod(methodSymbol, node);
 			}
 
 			base.VisitInvocationExpression(node);
@@ -219,7 +219,7 @@ namespace Acuminator.Utilities.Roslyn
 				&& !(node.Parent is AssignmentExpressionSyntax))
 			{
 				var propertySymbol = GetSymbol<IPropertySymbol>(node);
-				VisitMethodSymbol(propertySymbol?.GetMethod, node);
+				VisitCalledMethod(propertySymbol?.GetMethod, node);
 			}
 		}
 
@@ -230,7 +230,7 @@ namespace Acuminator.Utilities.Roslyn
 			if (RecursiveAnalysisEnabled())
 			{
 				var propertySymbol = GetSymbol<IPropertySymbol>(node.Left);
-				VisitMethodSymbol(propertySymbol?.SetMethod, node);
+				VisitCalledMethod(propertySymbol?.SetMethod, node);
 			}
 
 			base.VisitAssignmentExpression(node);
@@ -243,7 +243,7 @@ namespace Acuminator.Utilities.Roslyn
 			if (RecursiveAnalysisEnabled())
 			{
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
-				VisitMethodSymbol(methodSymbol, node);
+				VisitCalledMethod(methodSymbol, node);
 			}
 
 			base.VisitObjectCreationExpression(node);
@@ -260,7 +260,7 @@ namespace Acuminator.Utilities.Roslyn
 					? propertySymbol.GetMethod 
 					: GetSymbol<IMethodSymbol>(node.WhenNotNull);
 
-				VisitMethodSymbol(methodSymbol, node);
+				VisitCalledMethod(methodSymbol, node);
 			}
 
 			base.VisitConditionalAccessExpression(node);
@@ -278,103 +278,103 @@ namespace Acuminator.Utilities.Roslyn
 		{
 		}
 
-		private void VisitMethodSymbol(IMethodSymbol? methodSymbol, SyntaxNode originalNode)
+		private void VisitCalledMethod(IMethodSymbol? calledMethod, SyntaxNode callSite)
 		{
-			if (methodSymbol == null || IsMethodInStack(methodSymbol) || !(methodSymbol.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode))
+			if (calledMethod == null || IsMethodInStack(calledMethod) || !(calledMethod.GetSyntax(CancellationToken) is CSharpSyntaxNode calledMethodNode))
 				return;
 
 			bool wasVisited = false;
-			BeforeBypassCheck(methodSymbol, methodNode, originalNode);
+			BeforeBypassCheck(calledMethod, calledMethodNode, callSite);
 
-			if (!BypassMethod(methodSymbol, methodNode, originalNode))
+			if (!BypassMethod(calledMethod, calledMethodNode, callSite))
 			{
-				BeforeRecursiveVisit(methodSymbol, methodNode, originalNode);
+				BeforeRecursiveVisit(calledMethod, calledMethodNode, callSite);
 
-				Push(originalNode, methodSymbol);
-				methodNode.Accept(this);
-				Pop(methodSymbol);
+				Push(callSite, calledMethod);
+				calledMethodNode.Accept(this);
+				Pop(calledMethod);
 
 				wasVisited = true;
 			}
 
-			AfterRecursiveVisit(methodSymbol, methodNode, originalNode, wasVisited);
+			AfterRecursiveVisit(calledMethod, calledMethodNode, callSite, wasVisited);
 		}
 
-        private bool IsMethodInStack(IMethodSymbol methodSymbol) =>
-			_methodsInStack.Contains(methodSymbol);
+        private bool IsMethodInStack(IMethodSymbol calledMethod) =>
+			_methodsInStack.Contains(calledMethod);
 
 		/// <summary>
-		/// Extensibility point that allows to add some logic executed before <paramref name="methodSymbol"/> is checked by the bypass check <see cref="BypassMethod(IMethodSymbol)"/>.
+		/// Extensibility point that allows to add some logic executed before <paramref name="calledMethod"/> is checked by the bypass check <see cref="BypassMethod(IMethodSymbol)"/>.
 		/// </summary>
-		/// <param name="methodSymbol">The method symbol.</param>
-		/// <param name="methodNode">The method node.</param>
-		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
-		protected virtual void BeforeBypassCheck(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode)
+		/// <param name="calledMethod">The called method symbol.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
+		protected virtual void BeforeBypassCheck(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite)
 		{
 		}
 
 		/// <summary>
-		/// Extensibility point that allows to add some logic executed after the bypass check on a <paramref name="methodSymbol"/> that passed it and 
-		/// just before the visit of the <paramref name="methodNode"/>.
+		/// Extensibility point that allows to add some logic executed after the bypass check on a <paramref name="calledMethod"/> that passed it and 
+		/// just before the visit of the <paramref name="calledMethodNode"/>.
 		/// </summary>
-		/// <param name="methodSymbol">The method symbol to be visited.</param>
-		/// <param name="methodNode">The method node.</param>
-		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
-		protected virtual void BeforeRecursiveVisit(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode)
+		/// <param name="calledMethod">The called method symbol.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
+		protected virtual void BeforeRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite)
 		{
 		}
 
 		/// <summary>
-		/// Extensibility point that allows to add some logic executed after the recursive visit of a <paramref name="methodSymbol"/>.
+		/// Extensibility point that allows to add some logic executed after the recursive visit of a <paramref name="calledMethod"/>.
 		/// The logic is executed both for methods that passed bypass check and were visited and for methods that didn't pass it. <br/>
 		/// The flag <paramref name="wasVisited"/> allows to distinguish between the methods that were really visited and those that were bypassed.
 		/// </summary>
-		/// <param name="methodSymbol">The method symbol.</param>
-		/// <param name="methodNode">The method node.</param>
-		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
-		/// <param name="wasVisited">True if the <paramref name="methodSymbol"/> was really visited.</param>
-		protected virtual void AfterRecursiveVisit(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode, bool wasVisited)
+		/// <param name="calledMethod">The called method symbol.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
+		/// <param name="wasVisited">True if the <paramref name="calledMethod"/> was really visited.</param>
+		protected virtual void AfterRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite, bool wasVisited)
 		{
 		}
 
 		/// <summary>
-		/// An analysis that checks if walker should skip going into <paramref name="methodSymbol"/>.
+		/// An analysis that checks if walker should skip going into <paramref name="calledMethod"/>.
 		/// </summary>
 		/// <remarks>
-		/// The default implementation will check <paramref name="methodSymbol"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
-		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="methodSymbol"/> will be bypassed. If custom
+		/// The default implementation will check <paramref name="calledMethod"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
+		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="calledMethod"/> will be bypassed. If custom
 		/// extraBypassCheck delegate was specified in the <see cref=" NestedInvocationWalker"/> constructor then it will be called after the check for bypassed types.<br/>
 		/// The method be overriden for custom skip logic.
 		/// </remarks>
-		/// <param name="methodSymbol">The method symbol to check.</param>
-		/// <param name="methodNode">The method node.</param>
-		/// <param name="originalNode">Syntax node in the original tree that is being analyzed. Typically it is the node on which a diagnostic should be reported.</param>
+		/// <param name="calledMethod">The called method symbol to check.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
 		/// <returns>
-		/// <see langword="true"/> if the <paramref name="methodSymbol"/> should be skipped, <see langword="false"/> if the walker should go into it.
+		/// <see langword="true"/> if the <paramref name="calledMethod"/> should be skipped, <see langword="false"/> if the walker should go into it.
 		/// </returns>
-		protected virtual bool BypassMethod(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, SyntaxNode originalNode)
+		protected virtual bool BypassMethod(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite)
 		{
 			var typesToBypass = _typesToBypass.Value;
 
-			if (typesToBypass != null && typesToBypass.Contains(methodSymbol.ContainingType))
+			if (typesToBypass != null && typesToBypass.Contains(calledMethod.ContainingType))
 				return true;
 
-			return _extraBypassCheck?.Invoke(methodSymbol) ?? false;
+			return _extraBypassCheck?.Invoke(calledMethod) ?? false;
 		}
 
-		private void Push(SyntaxNode node, IMethodSymbol symbol)
+		private void Push(SyntaxNode callSite, IMethodSymbol calledMethod)
 		{
 			if (_nodesStack.Count == 0)
-				OriginalNode = node;
+				OriginalNode = callSite;
 
-			_nodesStack.Push(node);
-			_methodsInStack.Add(symbol);
+			_nodesStack.Push(callSite);
+			_methodsInStack.Add(calledMethod);
 		}
 
-		private void Pop(IMethodSymbol symbol)
+		private void Pop(IMethodSymbol calledMethod)
 		{
 			_nodesStack.Pop();
-			_methodsInStack.Remove(symbol);
+			_methodsInStack.Remove(calledMethod);
 
 			if (_nodesStack.Count == 0)
 				OriginalNode = null;
