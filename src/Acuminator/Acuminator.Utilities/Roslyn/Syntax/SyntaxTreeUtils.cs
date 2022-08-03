@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿#nullable enable
+
+using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 
@@ -12,7 +14,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// <param name="node">The node to act on.</param>
 		/// <returns/>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SyntaxNode Root(this SyntaxNode node)
+		public static SyntaxNode? Root(this SyntaxNode node)
 		{
 			if (node == null)
 				return null;
@@ -34,7 +36,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// <param name="node">The node to act on.</param>
 		/// <returns/>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static TParent Parent<TParent>(this SyntaxNode node)
+		public static TParent? Parent<TParent>(this SyntaxNode node)
 		where TParent : SyntaxNode
 		{
 			if (node == null)
@@ -123,7 +125,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				return 0;
 
 			int depth = 0;
-			TNode curNode = node.Parent<TNode>();
+			TNode? curNode = node.Parent<TNode>();
 
 			while (curNode != null && !(curNode is TRoot))
 			{
