@@ -317,5 +317,19 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsNullOrEmpty<T>(this T[] array) => array == null || array.Length == 0;
+
+		[DebuggerStepThrough]
+		public static int FindIndex<T>(this ImmutableArray<T> source, Func<T, bool> condition)
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			for (int i = 0; i < source.Length; i++)
+			{
+				if (condition(source[i]))
+					return i;
+			}
+
+			return -1;
+		}
 	}
 }
