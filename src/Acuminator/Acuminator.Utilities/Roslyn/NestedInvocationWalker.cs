@@ -278,7 +278,7 @@ namespace Acuminator.Utilities.Roslyn
 		{
 		}
 
-		private void VisitCalledMethod(IMethodSymbol? calledMethod, SyntaxNode callSite)
+		private void VisitCalledMethod(IMethodSymbol? calledMethod, ExpressionSyntax callSite)
 		{
 			if (calledMethod == null || IsMethodInStack(calledMethod) || !(calledMethod.GetSyntax(CancellationToken) is CSharpSyntaxNode calledMethodNode))
 				return;
@@ -309,7 +309,7 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="calledMethod">The called method symbol.</param>
 		/// <param name="calledMethodNode">The called method node.</param>
 		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
-		protected virtual void BeforeBypassCheck(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite)
+		protected virtual void BeforeBypassCheck(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
 		{
 		}
 
@@ -320,7 +320,7 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="calledMethod">The called method symbol.</param>
 		/// <param name="calledMethodNode">The called method node.</param>
 		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
-		protected virtual void BeforeRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite)
+		protected virtual void BeforeRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
 		{
 		}
 
@@ -333,7 +333,7 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="calledMethodNode">The called method node.</param>
 		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
 		/// <param name="wasVisited">True if the <paramref name="calledMethod"/> was really visited.</param>
-		protected virtual void AfterRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite, bool wasVisited)
+		protected virtual void AfterRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite, bool wasVisited)
 		{
 		}
 
@@ -352,7 +352,7 @@ namespace Acuminator.Utilities.Roslyn
 		/// <returns>
 		/// <see langword="true"/> if the <paramref name="calledMethod"/> should be skipped, <see langword="false"/> if the walker should go into it.
 		/// </returns>
-		protected virtual bool BypassMethod(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, SyntaxNode callSite)
+		protected virtual bool BypassMethod(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
 		{
 			var typesToBypass = _typesToBypass.Value;
 
