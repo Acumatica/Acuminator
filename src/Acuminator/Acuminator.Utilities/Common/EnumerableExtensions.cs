@@ -1,9 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
@@ -13,7 +16,7 @@ namespace Acuminator.Utilities.Common
 	public static class EnumerableExtensions
 	{
 		[DebuggerStepThrough]
-		public static IEnumerable<T> ToEnumerable<T>(this T item)
+		public static IEnumerable<T> ToEnumerable<T>(this T? item)
 		{
 			if (item != null)
 				yield return item;
@@ -27,7 +30,7 @@ namespace Acuminator.Utilities.Common
 		/// <param name="action">The action.</param>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+		public static void ForEach<T>(this IEnumerable<T?> source, Action<T?> action)
 		{
 			source.ThrowOnNull(nameof(source));
 			action.ThrowOnNull(nameof(action));
@@ -35,7 +38,7 @@ namespace Acuminator.Utilities.Common
 			// perf optimization. try to not use enumerator if possible
 			switch (source)
 			{
-				case IList<T> iList:
+				case IList<T?> iList:
 					for (int i = 0; i < iList.Count; i++)
 					{
 						action(iList[i]);
@@ -54,42 +57,42 @@ namespace Acuminator.Utilities.Common
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[DebuggerStepThrough]
-		public static List<T> ToList<T>(this IEnumerable<T> source, int capacity)
+		public static List<T?> ToList<T>(this IEnumerable<T?> source, int capacity)
 		{
-			var list = new List<T>(capacity);
+			var list = new List<T?>(capacity);
 			list.AddRange(source);
 			return list;
 		}
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> source) => source != null
-			? new ReadOnlyCollection<T>(source.ToList())
+		public static ReadOnlyCollection<T?> ToReadOnlyCollection<T>(this IEnumerable<T?> source) => source != null
+			? new ReadOnlyCollection<T?>(source.ToList())
 			: throw new ArgumentNullException(nameof(source));
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ReadOnlyCollection<T> ToReadOnlyCollectionShallow<T>(this IList<T> list) => list != null
-			? new ReadOnlyCollection<T>(list)
+		public static ReadOnlyCollection<T?> ToReadOnlyCollectionShallow<T>(this IList<T?> list) => list != null
+			? new ReadOnlyCollection<T?>(list)
 			: throw new ArgumentNullException(nameof(list));
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer = null)
+		public static HashSet<T?> ToHashSet<T>(this IEnumerable<T?> source, IEqualityComparer<T?>? comparer = null)
 		{
 			source.ThrowOnNull(nameof(source));
 			return comparer != null
-				? new HashSet<T>(source, comparer)
-				: new HashSet<T>(source);
+				? new HashSet<T?>(source, comparer)
+				: new HashSet<T?>(source);
 		}
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Stack<T> ToStack<T>(this IEnumerable<T> source) => source != null
-			? new Stack<T>(source)
+		public static Stack<T?> ToStack<T>(this IEnumerable<T?> source) => source != null
+			? new Stack<T?>(source)
 			: throw new ArgumentNullException(nameof(source));
 
-		private static IEnumerable<T> ConcatIterator<T>(T extraElement, IEnumerable<T> source, bool insertAtStart)
+		private static IEnumerable<T?> ConcatIterator<T>(T? extraElement, IEnumerable<T?> source, bool insertAtStart)
 		{
 			if (insertAtStart)
 				yield return extraElement;
@@ -118,12 +121,12 @@ namespace Acuminator.Utilities.Common
 		/// </returns>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TItem> ConcatStructList<TItem, TStructList>(this IEnumerable<TItem> source, TStructList structList)
-		where TStructList : struct, IReadOnlyCollection<TItem>
+		public static IEnumerable<TItem?> ConcatStructList<TItem, TStructList>(this IEnumerable<TItem?> source, TStructList structList)
+		where TStructList : struct, IReadOnlyCollection<TItem?>
 		{
 			if (source != null)
 			{
-				foreach (TItem item in source)
+				foreach (TItem? item in source)
 				{
 					yield return item;
 				}
@@ -131,7 +134,7 @@ namespace Acuminator.Utilities.Common
 
 			if (structList.Count > 0)
 			{
-				foreach (TItem item in structList)
+				foreach (TItem? item in structList)
 				{
 					yield return item;
 				}
@@ -203,12 +206,12 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TResult> Select<TResult>(this SyntaxTriviaList triviaList, Func<SyntaxTrivia, TResult> selector)
+		public static IEnumerable<TResult?> Select<TResult>(this SyntaxTriviaList triviaList, Func<SyntaxTrivia, TResult?> selector)
 		{
 			selector.ThrowOnNull(nameof(selector));
 			return SelectForStructListImplementation();
 
-			IEnumerable<TResult> SelectForStructListImplementation()
+			IEnumerable<TResult?> SelectForStructListImplementation()
 			{
 				for (int i = 0; i < triviaList.Count; i++)
 				{
@@ -227,18 +230,18 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TCollectionItem> SelectMany<TCollectionHolder, TCollectionItem>(this ImmutableArray<TCollectionHolder> array, 
-																								  Func<TCollectionHolder, IEnumerable<TCollectionItem>> selector)
+		public static IEnumerable<TCollectionItem?> SelectMany<TCollectionHolder, TCollectionItem>(this ImmutableArray<TCollectionHolder> array, 
+																								  Func<TCollectionHolder, IEnumerable<TCollectionItem?>> selector)
 		{
 			selector.ThrowOnNull(nameof(selector));
 			return GeneratorMethod();
 
 
-			IEnumerable<TCollectionItem> GeneratorMethod()
+			IEnumerable<TCollectionItem?> GeneratorMethod()
 			{
 				foreach (TCollectionHolder collectionHolder in array)
 				{
-					foreach (TCollectionItem item in selector(collectionHolder))
+					foreach (TCollectionItem? item in selector(collectionHolder))
 					{
 						yield return item;
 					}
@@ -253,12 +256,12 @@ namespace Acuminator.Utilities.Common
 		/// <param name="source">The source to act on.</param>
 		/// <returns/>
 		[DebuggerStepThrough]
-		public static ImmutableArray<TItem> Reverse<TItem>(this ImmutableArray<TItem> source)
+		public static ImmutableArray<TItem?> Reverse<TItem>(this ImmutableArray<TItem?> source)
 		{
 			if (source.Length == 0)
 				return source;
 
-			ImmutableArray<TItem>.Builder builder = ImmutableArray.CreateBuilder<TItem>(source.Length);
+			ImmutableArray<TItem?>.Builder builder = ImmutableArray.CreateBuilder<TItem?>(source.Length);
 
 			for (int i = source.Length - 1; i >= 0; i--)
 			{		
@@ -298,7 +301,7 @@ namespace Acuminator.Utilities.Common
 			? source.Count == 0
 			: throw new ArgumentNullException(nameof(source));
 
-		public static bool Contains<T>(this IEnumerable<T> sequence, Func<T, bool> predicate)
+		public static bool Contains<T>(this IEnumerable<T?> sequence, Func<T?, bool> predicate)
 		{
 			sequence.ThrowOnNull(nameof(sequence));
 			predicate.ThrowOnNull(nameof(predicate));
@@ -308,18 +311,20 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Contains<T>(this T[] array, T item) => Array.IndexOf(array, item) >= 0;
+		public static bool Contains<T>(this T?[] array, T? item) => Array.IndexOf(array, item) >= 0;
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) => source?.IsEmpty() ?? true;
+		public static bool IsNullOrEmpty<T>([NotNullWhen(returnValue: false)] this IEnumerable<T>? source) => 
+			source?.IsEmpty() ?? true;
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullOrEmpty<T>(this T[] array) => array == null || array.Length == 0;
+		public static bool IsNullOrEmpty<T>([NotNullWhen(returnValue: false)] this T[]? array) => 
+			array == null || array.Length == 0;
 
 		[DebuggerStepThrough]
-		public static int FindIndex<T>(this ImmutableArray<T> source, Func<T, bool> condition)
+		public static int FindIndex<T>(this ImmutableArray<T?> source, Func<T?, bool> condition)
 		{
 			condition.ThrowOnNull(nameof(condition));
 
