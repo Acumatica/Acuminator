@@ -182,5 +182,11 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			node.CheckIfNull(nameof(node))
 				.Modifiers
 				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsStatic(this LocalFunctionStatementSyntax node) =>
+			node.CheckIfNull(nameof(node))
+				.Modifiers
+				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
 	}
 }
