@@ -271,7 +271,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			const string commentPrefix = "//";
 			string comment = commentContent.IsNullOrWhiteSpace()
 				? commentPrefix
-				: commentPrefix + " " + commentContent!.Trim();
+				: commentPrefix + " " + commentContent.Trim();
 
 			return SyntaxFactory.Comment(comment);
 		}
