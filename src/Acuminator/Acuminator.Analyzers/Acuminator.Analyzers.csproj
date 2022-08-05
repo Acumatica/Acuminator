@@ -6,7 +6,7 @@
     <Version>3.1.0</Version>
     <RepositoryUrl>https://github.com/Acumatica/Acuminator</RepositoryUrl>
     <Copyright>Copyright © 2017-2022 Acumatica Ltd.</Copyright>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
     <Company>Acumatica</Company>
