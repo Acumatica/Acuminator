@@ -222,9 +222,17 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static CSharpSyntaxNode? GetBody(this SyntaxNode? node) =>
 			node switch
 			{
-				AccessorDeclarationSyntax accessorSyntax => accessorSyntax.Body,
-				MethodDeclarationSyntax methodSyntax => methodSyntax.Body ?? methodSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
-				ConstructorDeclarationSyntax constructorSyntax => constructorSyntax.Body,
+				AccessorDeclarationSyntax accessorSyntax         => accessorSyntax.Body ?? 
+																	accessorSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
+
+				MethodDeclarationSyntax methodSyntax             => methodSyntax.Body ?? 
+																	methodSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
+
+				ConstructorDeclarationSyntax constructorSyntax   => constructorSyntax.Body ?? 
+																	constructorSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
+
+				LocalFunctionStatementSyntax localFunctionSyntax => localFunctionSyntax.Body ??
+																	localFunctionSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
 				_ => null,
 			};
 
