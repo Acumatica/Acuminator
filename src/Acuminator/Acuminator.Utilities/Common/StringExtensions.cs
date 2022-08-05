@@ -1,6 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Acuminator.Utilities.Common
@@ -14,18 +17,18 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static string NullIfWhiteSpace(this string str) =>
+		public static string? NullIfWhiteSpace(this string? str) =>
 			string.IsNullOrWhiteSpace(str)
 				? null
 				: str;
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullOrWhiteSpace(this string str) => string.IsNullOrWhiteSpace(str);
+		public static bool IsNullOrWhiteSpace([NotNullWhen(returnValue: false)] this string? str) => string.IsNullOrWhiteSpace(str);
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullOrEmpty(this string str) => string.IsNullOrEmpty(str);
+		public static bool IsNullOrEmpty([NotNullWhen(returnValue: false)] this string? str) => string.IsNullOrEmpty(str);
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -41,7 +44,7 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		/// <param name="s">The string to act on.</param>
 		/// <returns/>
-		public static string ToPascalCase(this string s)
+		public static string? ToPascalCase(this string? s)
 		{
 			if (s.IsNullOrWhiteSpace() || char.IsUpper(s[0]))
 				return s;
@@ -69,8 +72,8 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		public static int LevenshteinDistance(string s, string t)
 		{
-			int n = s.Length;
-			int m = t.Length;
+			int n = s.CheckIfNull(nameof(s)).Length;
+			int m = t.CheckIfNull(nameof(t)).Length;
 			int[,] d = new int[n + 1, m + 1];
 
 			// Step 1
