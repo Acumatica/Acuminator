@@ -351,5 +351,41 @@ namespace Acuminator.Utilities.Common
 
 			return -1;
 		}
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			return FindIndex(source, startInclusive: 0, endExclusive: source.Count, condition);
+		}
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<TNode>(this SeparatedSyntaxList<TNode> source, int startInclusive, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			return FindIndex(source, startInclusive, endExclusive: source.Count, condition);
+		}
+
+		[DebuggerStepThrough]
+		public static int FindIndex<TNode>(this SeparatedSyntaxList<TNode> source, int startInclusive, int endExclusive, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			if (startInclusive < 0 || startInclusive >= source.Count)
+				throw new ArgumentOutOfRangeException(nameof(startInclusive));
+			else if (endExclusive <= 0 || endExclusive > source.Count)
+				throw new ArgumentOutOfRangeException(nameof(endExclusive));
+
+			for (int i = startInclusive; i < endExclusive; i++)
+			{
+				if (condition(source[i]))
+					return i;
+			}
+
+			return -1;
+		}
 	}
 }
