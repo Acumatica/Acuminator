@@ -324,11 +324,26 @@ namespace Acuminator.Utilities.Common
 			array == null || array.Length == 0;
 
 		[DebuggerStepThrough]
-		public static int FindIndex<T>(this ImmutableArray<T?> source, Func<T?, bool> condition)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<T>(this ImmutableArray<T?> source, Func<T?, bool> condition) =>
+			FindIndex(source, startInclusive: 0, endExclusive: source.Length, condition);
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<T>(this ImmutableArray<T?> source, int startInclusive, Func<T?, bool> condition) =>
+			FindIndex(source, startInclusive, endExclusive: source.Length, condition);
+
+		[DebuggerStepThrough]
+		public static int FindIndex<T>(this ImmutableArray<T?> source, int startInclusive, int endExclusive, Func<T?, bool> condition)
 		{
 			condition.ThrowOnNull(nameof(condition));
 
-			for (int i = 0; i < source.Length; i++)
+			if (startInclusive < 0 || startInclusive >= source.Length)
+				throw new ArgumentOutOfRangeException(nameof(startInclusive));
+			else if (endExclusive <= 0 || endExclusive > source.Length)
+				throw new ArgumentOutOfRangeException(nameof(endExclusive));
+
+			for (int i = startInclusive; i < endExclusive; i++)
 			{
 				if (condition(source[i]))
 					return i;
