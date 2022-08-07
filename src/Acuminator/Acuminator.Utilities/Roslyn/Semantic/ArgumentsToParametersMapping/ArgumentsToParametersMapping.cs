@@ -8,6 +8,8 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 
+using Microsoft.CodeAnalysis;
+
 namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 {
 	/// <summary>
@@ -41,7 +43,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 		[MemberNotNullWhen(returnValue: false, nameof(_parametersMapping))]
 		public bool IsTrivial => _parametersMapping == null;
 
-		public int this[int argPosition] => GetMappedParameterPosition(argPosition);
+		public int this[int argIndex] => GetMappedParameterPosition(argIndex);
 
 		public ArgumentsToParametersMapping(int length)
 		{
@@ -55,16 +57,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 			_length = parametersMapping.Length;
 		}
 
-		public int GetMappedParameterPosition(int argPosition)
+		public IParameterSymbol GetMappedParameter(IMethodSymbol methodSymbol, int argIndex)
+		{
+			methodSymbol.ThrowOnNull(nameof(methodSymbol));
+			int parameterIndex = GetMappedParameterPosition(argIndex);
+			return methodSymbol.Parameters[parameterIndex];
+		}
+
+		public int GetMappedParameterPosition(int argIndex)
 		{
 			if (IsTrivial)
 			{
-				return argPosition >= 0 && argPosition < _length
-					? argPosition
-					: throw new ArgumentOutOfRangeException(nameof(argPosition), $"Argument position can't be negative and must be less than {_length}");
+				return argIndex >= 0 && argIndex < _length
+					? argIndex
+					: throw new ArgumentOutOfRangeException(nameof(argIndex), $"Argument index can't be negative and must be less than {_length}");
 			}
 
-			return _parametersMapping[argPosition];
+			return _parametersMapping[argIndex];
 		}
 
 		public static ArgumentsToParametersMapping Trivial(int length) => new ArgumentsToParametersMapping(length);
