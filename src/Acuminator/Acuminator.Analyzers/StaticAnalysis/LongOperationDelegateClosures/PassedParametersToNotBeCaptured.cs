@@ -13,13 +13,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 	/// </summary>
 	internal class PassedParametersToNotBeCaptured
 	{
-		public ImmutableArray<PassedParameter> PassedInstances { get; }
+		public HashSet<string> PassedInstances { get; }
 
-		public int PassedInstancesCount => PassedInstances.Length;
+		public int PassedInstancesCount => PassedInstances.Count;
 
-		public PassedParametersToNotBeCaptured(IEnumerable<PassedParameter> passedParameters)
+		public PassedParametersToNotBeCaptured(HashSet<string>? passedParameters)
 		{
-			PassedInstances = passedParameters?.ToImmutableArray() ?? ImmutableArray<PassedParameter>.Empty;
+			PassedInstances = passedParameters ?? new HashSet<string>();
 		}
 	}
 }

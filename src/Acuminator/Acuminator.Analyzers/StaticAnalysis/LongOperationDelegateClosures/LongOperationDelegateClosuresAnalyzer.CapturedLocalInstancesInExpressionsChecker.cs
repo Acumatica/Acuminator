@@ -102,13 +102,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (symbol.IsThis)
 					return symbol.Type.IsPXGraphOrExtension(_pxContext);
 
-				bool isCapturedCallingMethodParameter = _outerMethodParametersToNotBeCaptured?.PassedInstances.Length > 0
-					? _outerMethodParametersToNotBeCaptured.PassedInstances.Any(p => p.Name == symbol.Name)
+				bool isCapturedNonCapturableParameter = _outerMethodParametersToNotBeCaptured?.PassedInstancesCount > 0
+					? _outerMethodParametersToNotBeCaptured.PassedInstances.Contains(symbol.Name)
 					: false; 
 
 				// We add to PassedInstances only graphs and adapters that should not be captured.
 				// Therefore, we don't need to check the symbol type here again to see if it is adapter or graph
-				return isCapturedCallingMethodParameter;
+				return isCapturedNonCapturableParameter;
 			}
 
 			private bool IdentifierCapturesLocalInstance(IdentifierNameSyntax identifierName)
