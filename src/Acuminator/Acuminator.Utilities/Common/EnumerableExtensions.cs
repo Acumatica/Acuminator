@@ -387,5 +387,35 @@ namespace Acuminator.Utilities.Common
 
 			return -1;
 		}
+
+		[DebuggerStepThrough]
+		public static bool All<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			for (int i = 0; i < source.Count; i++)
+			{
+				if (!condition(source[i]))
+					return false;
+			}
+
+			return true;
+		}
+
+		[DebuggerStepThrough]
+		public static bool Any<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			for (int i = 0; i < source.Count; i++)
+			{
+				if (condition(source[i]))
+					return true;
+			}
+
+			return false;
+		}
 	}
 }
