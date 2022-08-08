@@ -12,7 +12,6 @@ using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
-using Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
@@ -40,7 +39,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         public PXGraphAnalyzer() : this(null,
             new PXGraphCreationInGraphInWrongPlacesGraphAnalyzer(),
-			new LongOperationDelegateClosuresAnalyzer(),
 			new ConstructorInGraphExtensionAnalyzer(),
             new SavingChangesInGraphSemanticModelAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),

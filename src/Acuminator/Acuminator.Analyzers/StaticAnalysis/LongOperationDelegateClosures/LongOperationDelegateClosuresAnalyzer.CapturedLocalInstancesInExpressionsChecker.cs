@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
-	public partial class LongOperationDelegateClosuresAnalyzer : PXGraphAggregatedAnalyzerBase
+	public partial class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer
 	{
 		/// <summary>
 		/// An expression nodes checker that looks for closures that capture local instance.

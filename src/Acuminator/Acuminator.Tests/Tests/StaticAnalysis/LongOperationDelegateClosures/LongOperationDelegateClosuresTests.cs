@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 
 using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -13,15 +12,12 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 {
-    public class LongOperationDelegateClosuresTests : CodeFixVerifier
+    public class LongOperationDelegateClosuresTests : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
-			new PXGraphAnalyzer(
-				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
-											.WithSuppressionMechanismDisabled()
-											.WithRecursiveAnalysisEnabled(),
-				new LongOperationDelegateClosuresAnalyzer());
-
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new LongOperationDelegateClosuresAnalyzer(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+																				  .WithSuppressionMechanismDisabled()
+																				  .WithRecursiveAnalysisEnabled());
 		[Theory]
 		[EmbeddedFileData("ClosuresInNonGraph.cs")]
 		public Task NonGraph_ThisReference_Captured_NoDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);

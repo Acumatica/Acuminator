@@ -23,26 +23,33 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
-	public partial class LongOperationDelegateClosuresAnalyzer : PXGraphAggregatedAnalyzerBase
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+	public partial class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1008_LongOperationDelegateClosures);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None &&
-			!graph.Symbol.DeclaringSyntaxReferences.IsDefaultOrEmpty;
+		public LongOperationDelegateClosuresAnalyzer() : this(null)
+		{ }
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph)
+		public LongOperationDelegateClosuresAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
+		{ }
+
+		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			var longOperationsChecker = new LongOperationsChecker(context, pxContext, graph);
+			compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeLongOperationDelegates(c, pxContext), 
+															 SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.InterfaceDeclaration);
+		}
 
-			foreach (SyntaxReference graphSyntaxReference in graph.Symbol.DeclaringSyntaxReferences)
-			{
-				var graphNode = graphSyntaxReference.GetSyntax(context.CancellationToken) as ClassDeclarationSyntax;
+		private static void AnalyzeLongOperationDelegates(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-				if (graphNode != null)
-					longOperationsChecker.CheckForCapturedGraphReferencesInDelegateClosures(graphNode);
-			}			
+			if (syntaxContext.Node is not TypeDeclarationSyntax typeDeclaration)
+				return;
+
+			var longOperationsChecker = new LongOperationsChecker(syntaxContext, pxContext);
+			longOperationsChecker.CheckForCapturedGraphReferencesInDelegateClosures(typeDeclaration);
 		}
 	}
 }

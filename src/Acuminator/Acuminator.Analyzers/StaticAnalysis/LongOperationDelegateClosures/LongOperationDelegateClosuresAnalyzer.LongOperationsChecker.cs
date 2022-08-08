@@ -20,26 +20,24 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
-	public partial class LongOperationDelegateClosuresAnalyzer : PXGraphAggregatedAnalyzerBase
+	public partial class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer
 	{
 		private class LongOperationsChecker : NestedInvocationWalker
 		{
-			private readonly SymbolAnalysisContext _context;
-			private readonly PXGraphSemanticModel _graph;
+			private readonly SyntaxNodeAnalysisContext _context;
 			private readonly Stack<PassedParametersToNotBeCaptured?> _nonCapturablePassedParameters = new Stack<PassedParametersToNotBeCaptured?>();
 
-			public LongOperationsChecker(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph) :
+			public LongOperationsChecker(SyntaxNodeAnalysisContext context, PXContext pxContext) :
 									base(pxContext, context.CancellationToken)
 			{
 				_context = context;
-				_graph = graph;
 			}
 
-			public void CheckForCapturedGraphReferencesInDelegateClosures(ClassDeclarationSyntax graphNode)
+			public void CheckForCapturedGraphReferencesInDelegateClosures(TypeDeclarationSyntax typeDeclarationNode)
 			{
 				ThrowIfCancellationRequested();
 
-				graphNode.Accept(this);
+				typeDeclarationNode.Accept(this);
 			}
 
 			#region Visitor Optimization - do not visit some subtrees
@@ -275,16 +273,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				bool isInsideGraph              = containingType.IsPXGraph(PxContext);
 				bool isInsideGraphExtension     = containingType.IsPXGraphExtension(PxContext);
 
-				// If method is outside graph or graph extension then consider that it's not an action handler
+				// If method is outside graph or graph extension then assume that it's not an action handler
 				if (!isInsideGraph && !isInsideGraphExtension)
 					return null;
-
-				// Check if method is inside the graph being checked. If yes then look for it in the list of action handlers
-				bool isInsideCheckedGraph = (isInsideGraph && containingType.Equals(_graph.GraphSymbol)) ||
-											(isInsideGraphExtension && _graph.Type == GraphType.PXGraphExtension && containingType.Equals(_graph.Symbol));
-
-				if (isInsideCheckedGraph && _graph.ActionHandlersByNames.ContainsKey(callingMethod.Name))
-					return adapterIndexes;
 
 				// Finally check if the method is a PXOverride of the action handler and has a corresponding action.
 				if (!callingMethod.HasAttribute(PxContext.AttributeTypes.PXOverrideAttribute, checkOverrides: true))
