@@ -49,6 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			public override void VisitXmlComment(XmlCommentSyntax node) { }
 			#endregion
 
+			#region Visiting invocations and checking long run delegates 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax longOperationSetupMethodInvocationNode) =>
 				AnalyzeLongOperationDelegate(longOperationSetupMethodInvocationNode);
 
@@ -88,12 +89,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					return;
 
 				ExpressionSyntax processingDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[0].Expression;
-				bool isMainProcessingDelegateCorrect = CheckDataFlowForDelegateMethod(semanticModel, setDelegateInvocation, processingDelegateParameter);
+				bool isMainProcessingDelegateCorrect = CheckDataFlowForDelegateMethod(semanticModel, setDelegateInvocation, processingDelegateParameter,
+																					  LongOperationDelegateType.ProcessingDelegate);
 
 				if (isMainProcessingDelegateCorrect && setDelegateInvocation.ArgumentList.Arguments.Count > 1)
 				{
 					ExpressionSyntax finallyHandlerDelegateParameter = setDelegateInvocation.ArgumentList.Arguments[1].Expression;
-					CheckDataFlowForDelegateMethod(semanticModel, setDelegateInvocation, finallyHandlerDelegateParameter);
+					CheckDataFlowForDelegateMethod(semanticModel, setDelegateInvocation, finallyHandlerDelegateParameter,
+												   LongOperationDelegateType.ProcessingDelegate);
 				}
 			}
 
@@ -103,11 +106,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					return;
 
 				ExpressionSyntax longRunDelegateParameter = startOperationInvocation.ArgumentList.Arguments[1].Expression;
-				CheckDataFlowForDelegateMethod(semanticModel, startOperationInvocation, longRunDelegateParameter);
+				CheckDataFlowForDelegateMethod(semanticModel, startOperationInvocation, longRunDelegateParameter,
+											   LongOperationDelegateType.LongRunDelegate);
 			}
 
 			private bool CheckDataFlowForDelegateMethod(SemanticModel semanticModel, InvocationExpressionSyntax longOperationSetupMethodInvocationNode,
-														ExpressionSyntax longOperationDelegateNode)
+														ExpressionSyntax longOperationDelegateNode, LongOperationDelegateType delegateType)
 			{
 				ThrowIfCancellationRequested();
 
@@ -116,15 +120,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					new CapturedLocalInstancesInExpressionsChecker(nonCapturableParametersOfMethodContainingCallSite, semanticModel, PxContext,
 																   CancellationToken);
 
-				if (capturedLocalInstancesInExpressionsChecker.ExpressionCapturesLocalIntanceInClosure(longOperationDelegateNode))
+				var capturedInstanceType = capturedLocalInstancesInExpressionsChecker.ExpressionCapturesLocalIntanceInClosure(longOperationDelegateNode);
+
+				if (capturedInstanceType.HasValue)
 				{
-					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode);
+					string capturedInstanceTypeName = capturedInstanceType == CapturedInstanceType.PXGraph
+						? Resources.PX1008Title_CapturedGraphFormatArg
+						: Resources.PX1008Title_CapturedPXAdapterFormatArg;
+
+					string delegateTypeName = delegateType == LongOperationDelegateType.ProcessingDelegate
+						? Resources.PX1008Title_ProcessingDelegateFormatArg
+						: Resources.PX1008Title_LongRunDelegateFormatArg;
+
+					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1008_LongOperationDelegateClosures, longOperationSetupMethodInvocationNode,
+									 capturedInstanceTypeName, delegateTypeName);
 					return false;
 				}
 
 				return true;
 			}
+			#endregion
 
+			#region Recursive method calls visiting - filtering visited methods and perform data flow analysis
 			protected override void BeforeBypassCheck(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
 			{
 				base.BeforeBypassCheck(calledMethod, calledMethodNode, callSite);
@@ -134,18 +151,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				_nonCapturablePassedParameters.Push(nonCapturableParameters);
 			}
 
-			protected override bool BypassMethod(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, ExpressionSyntax callSite)
+			protected override bool BypassMethod(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
 			{
-				if (base.BypassMethod(methodSymbol, methodNode, callSite) || methodSymbol.IsStatic || _nonCapturablePassedParameters.Count == 0)
+				if (base.BypassMethod(calledMethod, calledMethodNode, callSite))
 					return true;
 
-				PassedParametersToNotBeCaptured? currentNonCapturableParameters = _nonCapturablePassedParameters.Peek();
-				return currentNonCapturableParameters?.PassedInstancesCount > 0;
+				PassedParametersToNotBeCaptured? calledMethodNonCapturableParameters = _nonCapturablePassedParameters.Count > 0
+					? _nonCapturablePassedParameters.Peek()
+					: null;
+
+				// If the called method has some non-capturable method parameters then we need to step into it
+				if (calledMethodNonCapturableParameters?.PassedInstancesCount > 0)
+					return true;
+
+				// Otherwise, we need to step only into non-static methods of graphs/graph extensions since they can capture "this" reference
+				return !calledMethod.IsStatic && 
+						(calledMethod.ContainingType?.IsPXGraphOrExtension(PxContext) == true);
 			}
 
-			protected override void AfterRecursiveVisit(IMethodSymbol methodSymbol, CSharpSyntaxNode methodNode, ExpressionSyntax callSite, bool wasVisited)
+			protected override void AfterRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite, bool wasVisited)
 			{
-				base.AfterRecursiveVisit(methodSymbol, methodNode, callSite, wasVisited);
+				base.AfterRecursiveVisit(calledMethod, calledMethodNode, callSite, wasVisited);
 
 				_nonCapturablePassedParameters.Pop();
 			}
@@ -407,6 +433,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 						return false;
 				}
 			}
+			#endregion
 		}
 	}
 }
