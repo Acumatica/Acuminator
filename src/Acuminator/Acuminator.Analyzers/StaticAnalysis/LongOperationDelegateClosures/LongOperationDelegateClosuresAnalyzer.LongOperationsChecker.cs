@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Common;
@@ -159,7 +158,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (calledMethod.Parameters.IsDefaultOrEmpty)
 					return null;                                //Method does not have any parameters so we can't pass anything to it that can be captured later
 
-				var argumentsList = GetArgumentsList(callSite);
+				var argumentsList = callSite.GetArgumentsList();
 
 				if (argumentsList == null || argumentsList.Arguments.Count == 0)
 					return null;
@@ -182,15 +181,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				return new PassedParametersToNotBeCaptured(nonCapturableParameters);
 			}
-
-			private BaseArgumentListSyntax? GetArgumentsList(SyntaxNode callSite) =>
-				callSite switch
-				{
-					InvocationExpressionSyntax invocation => invocation.ArgumentList,
-					ElementAccessExpressionSyntax elementAccess => elementAccess.ArgumentList,
-					ObjectCreationExpressionSyntax objectCreation => objectCreation.ArgumentList,
-					_ => null
-				};
 
 			private HashSet<string>? GetNonCapturableParameterNames(ISymbol callingTypeMember, BaseArgumentListSyntax argumentsList,
 																	SemanticModel semanticModel, IMethodSymbol calledMethod)
