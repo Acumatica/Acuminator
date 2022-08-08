@@ -271,30 +271,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					return adapterIndexes;
 
 				// Check for action handlers that are declared inside the current graph but are not marked with attribute
-				if (!callingMethod.ContainingType.IsPXGraphOrExtension(PxContext))
+				INamedTypeSymbol containingType = callingMethod.ContainingType;
+				bool isInsideGraph              = containingType.IsPXGraph(PxContext);
+				bool isInsideGraphExtension     = containingType.IsPXGraphExtension(PxContext);
+
+				// If method is outside graph or graph extension then consider that it's not an action handler
+				if (!isInsideGraph && !isInsideGraphExtension)
 					return null;
-				else if (callingMethod.ContainingType.Equals(_graph.Symbol) || callingMethod.ContainingType.Equals(_graph.GraphSymbol))
-				{
-					return _graph.ActionHandlersByNames.ContainsKey(callingMethod.Name)
-						? adapterIndexes
-						: null;
-				}
 
-				// Check if the method is an PXOverride of the action handler and has a corrsponding action.
-				// The check doesn't account for higher level graph extensions, but this should be a very rare case
-				if (callingMethod.HasAttribute(PxContext.AttributeTypes.PXOverrideAttribute, checkOverrides: true))
-				{
-					bool hasCorrespondingAction = callingMethod.ContainingType
-															   .GetBaseTypesAndThis()
-															   .SelectMany(type => type.GetMembers().OfType<IFieldSymbol>())
-															   .Any(field => field.Name.Equals(callingMethod.Name, StringComparison.OrdinalIgnoreCase) &&
-																			 field.Type.InheritsFrom(PxContext.PXAction.Type));
-					return hasCorrespondingAction
-						? adapterIndexes
-						: null;
-				}
+				// Check if method is inside the graph being checked. If yes then look for it in the list of action handlers
+				bool isInsideCheckedGraph = (isInsideGraph && containingType.Equals(_graph.GraphSymbol)) ||
+											(isInsideGraphExtension && _graph.Type == GraphType.PXGraphExtension && containingType.Equals(_graph.Symbol));
 
-				return null;
+				if (isInsideCheckedGraph && _graph.ActionHandlersByNames.ContainsKey(callingMethod.Name))
+					return adapterIndexes;
+
+				// Finally check if the method is a PXOverride of the action handler and has a corresponding action.
+				if (!callingMethod.HasAttribute(PxContext.AttributeTypes.PXOverrideAttribute, checkOverrides: true))
+					return null;
+
+				IEnumerable<ITypeSymbol> typesToCheck = isInsideGraph
+					? containingType.GetGraphWithBaseTypes()
+					: containingType.GetGraphExtensionWithBaseExtensions(PxContext, SortDirection.Descending, includeGraph: true);
+
+				bool hasCorrespondingAction = typesToCheck.SelectMany(type => type.GetMembers().OfType<IFieldSymbol>())
+														  .Any(field => field.Name.Equals(callingMethod.Name, StringComparison.OrdinalIgnoreCase) &&
+																		field.Type.IsPXAction(PxContext));	
+				return hasCorrespondingAction
+					? adapterIndexes
+					: null;
 			}
 
 			private List<int>? GetAdapterIndexesInCallArguments(string adapterParameterName, SeparatedSyntaxList<ArgumentSyntax> callArguments)
