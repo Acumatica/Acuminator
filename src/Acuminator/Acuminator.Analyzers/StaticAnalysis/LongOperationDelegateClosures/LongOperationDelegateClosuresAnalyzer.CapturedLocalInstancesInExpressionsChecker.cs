@@ -103,7 +103,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					return symbol.Type.IsPXGraphOrExtension(_pxContext);
 
 				bool isCapturedNonCapturableParameter = _outerMethodParametersToNotBeCaptured?.PassedInstancesCount > 0
-					? _outerMethodParametersToNotBeCaptured.PassedInstances.Contains(symbol.Name)
+					? _outerMethodParametersToNotBeCaptured.Contains(symbol.Name)
 					: false; 
 
 				// We add to PassedInstances only graphs and adapters that should not be captured.

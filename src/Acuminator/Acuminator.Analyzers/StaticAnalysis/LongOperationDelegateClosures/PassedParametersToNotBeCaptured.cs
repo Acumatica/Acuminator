@@ -1,9 +1,7 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
@@ -13,13 +11,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 	/// </summary>
 	internal class PassedParametersToNotBeCaptured
 	{
-		public HashSet<string> PassedInstances { get; }
+		private readonly HashSet<string> _passedInstances;
 
-		public int PassedInstancesCount => PassedInstances.Count;
+		public int PassedInstancesCount => _passedInstances.Count;
 
 		public PassedParametersToNotBeCaptured(HashSet<string>? passedParameters)
 		{
-			PassedInstances = passedParameters ?? new HashSet<string>();
+			_passedInstances = passedParameters ?? new HashSet<string>();
 		}
+
+		public bool Contains(string parameterName) => _passedInstances.Contains(parameterName);
 	}
 }
