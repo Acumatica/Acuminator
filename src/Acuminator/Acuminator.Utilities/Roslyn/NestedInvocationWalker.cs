@@ -216,7 +216,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (RecursiveAnalysisEnabled() && node.Parent != null
 				&& !node.Parent.IsKind(SyntaxKind.ObjectInitializerExpression)
-				&& !(node.Parent is AssignmentExpressionSyntax))
+				&& node.Parent is not AssignmentExpressionSyntax)
 			{
 				var propertySymbol = GetSymbol<IPropertySymbol>(node);
 				VisitCalledMethod(propertySymbol?.GetMethod, node);
@@ -280,7 +280,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private void VisitCalledMethod(IMethodSymbol? calledMethod, ExpressionSyntax callSite)
 		{
-			if (calledMethod == null || IsMethodInStack(calledMethod) || !(calledMethod.GetSyntax(CancellationToken) is CSharpSyntaxNode calledMethodNode))
+			if (calledMethod == null || IsMethodInStack(calledMethod) || calledMethod.GetSyntax(CancellationToken) is not CSharpSyntaxNode calledMethodNode)
 				return;
 
 			bool wasVisited = false;

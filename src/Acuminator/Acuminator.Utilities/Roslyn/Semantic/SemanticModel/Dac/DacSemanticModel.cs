@@ -96,7 +96,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 					: (DacType?)null;
 
 			if (dacType == null ||
-				!(typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is ClassDeclarationSyntax node))
+				typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is not ClassDeclarationSyntax node)
 			{
 				return null;
 			}
