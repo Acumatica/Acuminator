@@ -166,7 +166,7 @@
     <value>The {0} DAC, DAC extension, or DAC property should have a description in the summary XML tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
-    <value>Reference of @this graph in this delegate will cause synchronous delegate execution. It may lead to random bugs and data consistency issues</value>
+    <value>The reference to {0} is captured in the {1} delegate closure and will cause synchronous delegate execution. It may lead to random bugs and data consistency issues</value>
   </data>
   <data name="PX1009Fix" xml:space="preserve">
     <value>Change the base type to a PXCacheExtension overload</value>
@@ -624,5 +624,17 @@
   </data>
   <data name="PX1056TitleIsActiveForGraph" xml:space="preserve">
     <value>A PXGraph instance cannot be initialized inside the IsActiveForGraph&lt;TGraph&gt; method</value>
+  </data>
+  <data name="PX1008Title_CapturedGraphFormatArg" xml:space="preserve">
+    <value>the screen graph</value>
+  </data>
+  <data name="PX1008Title_CapturedPXAdapterFormatArg" xml:space="preserve">
+    <value>the action delegate adapter</value>
+  </data>
+  <data name="PX1008Title_ProcessingDelegateFormatArg" xml:space="preserve">
+    <value>processing</value>
+  </data>
+  <data name="PX1008Title_LongRunDelegateFormatArg" xml:space="preserve">
+    <value>long run operation</value>
   </data>
 </root>

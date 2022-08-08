@@ -286,11 +286,47 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reference of @this graph in this delegate will cause synchronous delegate execution. It may lead to random bugs and data consistency issues.
+        ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate closure and will cause synchronous delegate execution. It may lead to random bugs and data consistency issues.
         /// </summary>
         public static string PX1008Title {
             get {
                 return ResourceManager.GetString("PX1008Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the screen graph.
+        /// </summary>
+        public static string PX1008Title_CapturedGraphFormatArg {
+            get {
+                return ResourceManager.GetString("PX1008Title_CapturedGraphFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the action delegate adapter.
+        /// </summary>
+        public static string PX1008Title_CapturedPXAdapterFormatArg {
+            get {
+                return ResourceManager.GetString("PX1008Title_CapturedPXAdapterFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to long run operation.
+        /// </summary>
+        public static string PX1008Title_LongRunDelegateFormatArg {
+            get {
+                return ResourceManager.GetString("PX1008Title_LongRunDelegateFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to processing.
+        /// </summary>
+        public static string PX1008Title_ProcessingDelegateFormatArg {
+            get {
+                return ResourceManager.GetString("PX1008Title_ProcessingDelegateFormatArg", resourceCulture);
             }
         }
         
@@ -1181,7 +1217,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActive method.
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside the IsActive method.
         /// </summary>
         public static string PX1056TitleIsActive {
             get {
@@ -1190,7 +1226,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActiveForGraph&lt;TGraph&gt; method.
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside the IsActiveForGraph&lt;TGraph&gt; method.
         /// </summary>
         public static string PX1056TitleIsActiveForGraph {
             get {
