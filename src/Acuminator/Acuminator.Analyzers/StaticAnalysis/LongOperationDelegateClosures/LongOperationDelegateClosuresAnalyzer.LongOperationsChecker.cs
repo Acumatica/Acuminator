@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -379,21 +378,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 							   ExpressionContainsNonCapturableElement(binaryExpression.Right, callingTypeMember, parametersPassedBefore, recursionDepth + 1);
 
 					case InvocationExpressionSyntax invocationExpression:
+					case MemberAccessExpressionSyntax memberAccessExpression:
+					case ConditionalAccessExpressionSyntax conditionalAccessExpression:
 					case BinaryExpressionSyntax binaryExpression:
 					case PostfixUnaryExpressionSyntax postfixUnaryExpression:
 					case PrefixUnaryExpressionSyntax prefixUnaryExpression:
 					case TypeOfExpressionSyntax typeOfExpression:
-					case MemberAccessExpressionSyntax memberAccessExpression:
-					case MemberBindingExpressionSyntax memberBindingExpression:
-					case ConditionalAccessExpressionSyntax conditionalAccessExpression:
 						return false;
 
 					default:
-						var innerExpression = expression.DescendantNodes()
-														.OfType<ExpressionSyntax>()
-														.FirstOrDefault();
-						return innerExpression != null &&
-							   ExpressionContainsNonCapturableElement(innerExpression, callingTypeMember, parametersPassedBefore, recursionDepth + 1);
+						foreach (SyntaxNode childNode in expression.ChildNodes())
+						{
+							if (childNode is ExpressionSyntax childExpression &&
+								ExpressionContainsNonCapturableElement(childExpression, callingTypeMember, parametersPassedBefore, recursionDepth + 1))
+							{
+								return true;
+							}
+
+							var innerExpression = childNode.DescendantNodes().OfType<ExpressionSyntax>().FirstOrDefault();
+
+							if (innerExpression != null &&
+							    ExpressionContainsNonCapturableElement(innerExpression, callingTypeMember, parametersPassedBefore, recursionDepth + 1))
+							{
+								return true;
+							}	
+						}
+
+						return false;
 				}
 			}
 		}
