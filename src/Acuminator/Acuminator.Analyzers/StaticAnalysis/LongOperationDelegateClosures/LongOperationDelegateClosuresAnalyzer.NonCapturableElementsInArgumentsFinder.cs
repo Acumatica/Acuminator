@@ -2,14 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -24,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			private readonly CancellationToken _cancellation;
 			private readonly PXContext _pxContext;
 	
-			private IReadOnlyCollection<string>? _parametersToCheck;
+			private ICollection<string>? _parametersToCheck;
 			private ISymbol? _callingTypeMember;
 
 			private List<string>? _callingMethodParametersUsedInArgument;
@@ -38,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			public (bool CaptureLocalGraphInstance, List<string>? ParametersUsedInArgument) GetElementsUsedInArgumentExpression(
 																								ArgumentSyntax argument, ISymbol callingTypeMember,
-																								IReadOnlyCollection<string>? parametersToCheck)
+																								ICollection<string>? parametersToCheck)
 			{
 				_cancellation.ThrowIfCancellationRequested();
 
@@ -50,7 +47,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					InitializeState(callingTypeMember, parametersToCheck);
 					argument.Expression.Accept(this);
 
-					return (_captureLocalGraphInstance, _callingMethodParametersUsedInArgument);
+					var listWithoutDuplicates = _callingMethodParametersUsedInArgument?.Distinct()
+																					   .ToList(_callingMethodParametersUsedInArgument.Count);
+					return (_captureLocalGraphInstance, listWithoutDuplicates);
 				}
 				finally
 				{
@@ -94,14 +93,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			public override void VisitElementAccessExpression(ElementAccessExpressionSyntax elementAccessExpression)
 			{
-				if (_parametersToCheck.IsNullOrEmpty())
-					return;
-
-				if (elementAccessExpression.Expression is IdentifierNameSyntax elementAccessIdentifier)
-					VisitIdentifierName(elementAccessIdentifier);
-				else
+				if (_parametersToCheck?.Count > 0)
 				{
-					elementAccessExpression.Expression?.Accept(this);
+					if (elementAccessExpression.Expression is IdentifierNameSyntax elementAccessIdentifier)
+						VisitIdentifierName(elementAccessIdentifier);
+					else
+					{
+						elementAccessExpression.Expression?.Accept(this);
+					}
 				}
 			}
 
@@ -164,7 +163,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			#endregion
 
 			#region State Management
-			private void InitializeState(ISymbol callingTypeMember, IReadOnlyCollection<string>? parametersToCheck)
+			private void InitializeState(ISymbol callingTypeMember, ICollection<string>? parametersToCheck)
 			{
 				_callingTypeMember = callingTypeMember;
 				_parametersToCheck = parametersToCheck;
