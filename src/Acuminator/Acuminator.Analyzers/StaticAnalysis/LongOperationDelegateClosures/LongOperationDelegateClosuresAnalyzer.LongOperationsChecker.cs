@@ -119,7 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				ThrowIfCancellationRequested();
 
-				PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite = _nonCapturablePassedParameters.Peek();
+				PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite = PeekPassedParametersFromStack();
 				var capturedLocalInstancesInExpressionsChecker =
 					new CapturedLocalInstancesInExpressionsChecker(nonCapturableParametersOfMethodContainingCallSite, semanticModel, PxContext,
 																   CancellationToken);
@@ -160,9 +160,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (base.BypassMethod(calledMethod, calledMethodNode, callSite))
 					return true;
 
-				PassedParametersToNotBeCaptured? calledMethodNonCapturableParameters = _nonCapturablePassedParameters.Count > 0
-					? _nonCapturablePassedParameters.Peek()
-					: null;
+				PassedParametersToNotBeCaptured? calledMethodNonCapturableParameters = PeekPassedParametersFromStack();
 
 				// If the called method has some non-capturable method parameters then we need to step into it
 				if (calledMethodNonCapturableParameters?.PassedInstancesCount > 0)
@@ -333,9 +331,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			private ICollection<string>? GetAllPassedParameterNames(string? adapterParameterName)
 			{
-				PassedParametersToNotBeCaptured? parametersPassedBefore = _nonCapturablePassedParameters.Count > 0
-					? _nonCapturablePassedParameters.Peek()
-					: null;
+				PassedParametersToNotBeCaptured? parametersPassedBefore = PeekPassedParametersFromStack();
 
 				if (adapterParameterName == null)
 					return parametersPassedBefore;
@@ -369,6 +365,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				}
 			}
 			#endregion
+
+			private PassedParametersToNotBeCaptured? PeekPassedParametersFromStack() => _nonCapturablePassedParameters.Count > 0
+					? _nonCapturablePassedParameters.Peek()
+					: null;
 		}
 	}
 }
