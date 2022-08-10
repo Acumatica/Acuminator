@@ -88,11 +88,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 40, column: 4, formatArgs),
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 42, column: 4, formatArgs),
 
-
+				// Named parameters check - names out of position
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 47, column: 4, formatArgs),
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 48, column: 4, formatArgs),
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 49, column: 4, formatArgs),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 51, column: 4, formatArgs));
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 51, column: 4, formatArgs),
+
+				// Named parameters check - optional parameters
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 54, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 59, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 61, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 62, column: 4, formatArgs));
 		}
 	}
 }

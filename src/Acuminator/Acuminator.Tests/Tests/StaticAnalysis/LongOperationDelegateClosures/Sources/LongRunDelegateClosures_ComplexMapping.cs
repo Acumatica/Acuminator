@@ -50,6 +50,17 @@ namespace Acuminator.Tests.Sources
 			processor.TestGraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: new[] { localGraph });			//No diagnostic
 			processor.TestGraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: new[] { localGraph, this });		//Show diagnostic
 
+			// Named parameters check - optional parameters
+			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, this);						//Show diagnostic
+			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, localGraph);				//No diagnostic
+
+			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph);						//No diagnostic
+			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph, someFlag: true);		//No diagnostic
+			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph, args: this);			//Show diagnostic
+
+			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(graph: this, adapter: adapter, someFlag: true, args: localGraph);	//Show diagnostic
+			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter: adapter, this, count: 1, args: "asd");						//Show diagnostic
+
 			return adapter.Get();
 		}
 
