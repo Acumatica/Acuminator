@@ -149,7 +149,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 
 			int paramsParameterIndex = method.Parameters.Length - 1;
 
-			for (int argIndex = 0; argIndex < arguments.Count; argIndex++)
+			for (int argIndex = method.Parameters.Length; argIndex < arguments.Count; argIndex++)
 				parametersMapping[argIndex] = paramsParameterIndex;
 
 			return new ArgumentsToParametersMapping(parametersMapping);
