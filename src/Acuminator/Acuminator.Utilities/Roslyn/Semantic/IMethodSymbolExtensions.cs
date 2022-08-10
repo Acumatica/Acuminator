@@ -57,7 +57,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			bool HasDerivedAttribute(IMethodSymbol methodToCheck) =>
 				methodToCheck.GetAttributes()
-							 .Any(a => a.AttributeClass.InheritsFrom(attributeType));
+							 .Any(a => a.AttributeClass.InheritsFromOrEquals(attributeType));
 		}
 
 		/// <summary>
