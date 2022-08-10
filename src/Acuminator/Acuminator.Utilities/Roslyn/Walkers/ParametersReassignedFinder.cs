@@ -24,31 +24,36 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 		private readonly Walker _reassignSearchingWalker = new Walker();
 
 		/// <summary>
-		/// Searches for the method parameters reassigned before the <paramref name="callSite"/> node. 
-		/// The <paramref name="callSite"/> may be <see langword="null"/> to check the whole <paramref name="methodDeclaration"/>.
+		/// Searches for parameters from the <paramref name="parametersToCheck"/> set to be reassigned before the <paramref name="callSite"/> node. 
+		/// The <paramref name="callSite"/> may be <see langword="null"/> to check the whole <paramref name="declarationNode"/>.
 		/// </summary>
-		/// <param name="methodDeclaration">The method declaration.</param>
-		/// <param name="callSite">The call site node. May be <see langword="null"/> to check the whole <paramref name="methodDeclaration"/>.</param>
+		/// <param name="declarationNode">
+		/// The declaration node. Should be a syntax node which represent something that have parameters and have a body with code.
+		/// </param>
+		/// <param name="callSite">The call site node. May be <see langword="null"/> to check the whole <paramref name="declarationNode"/>.</param>
 		/// <param name="parametersToCheck">The parameter names to check.</param>
 		/// <param name="semanticModel">The semantic model.</param>
 		/// <param name="cancellation">Cancellation token.</param>
 		/// <returns>
 		/// The parameters reassigned before the <paramref name="callSite"/> node.
 		/// </returns>
-		public HashSet<string>? GetParametersReassignedBeforeCallsite(BaseMethodDeclarationSyntax methodDeclaration, ExpressionSyntax? callSite, 
+		public HashSet<string>? GetParametersReassignedBeforeCallsite(SyntaxNode declarationNode, ExpressionSyntax? callSite, 
 																	  IReadOnlyCollection<string> parametersToCheck, SemanticModel semanticModel,
 																	  CancellationToken cancellation)
 		{
-			methodDeclaration.ThrowOnNull(nameof(methodDeclaration));
+			declarationNode.ThrowOnNull(nameof(declarationNode));
 			parametersToCheck.ThrowOnNull(nameof(parametersToCheck));
 			semanticModel.ThrowOnNull(nameof(semanticModel));
+
+			if (callSite != null && !declarationNode.Contains(callSite))
+				throw new ArgumentOutOfRangeException(nameof(callSite), "The call site node must be a descendant of the declaration node");
 
 			cancellation.ThrowIfCancellationRequested();
 
 			if (parametersToCheck.Count == 0)
 				return null;
 
-			return _reassignSearchingWalker.GetParametersReassignedBeforeCallsite(methodDeclaration, callSite, parametersToCheck, 
+			return _reassignSearchingWalker.GetParametersReassignedBeforeCallsite(declarationNode, callSite, parametersToCheck, 
 																				  semanticModel, cancellation);
 		}
 
@@ -68,7 +73,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 			[MemberNotNullWhen(returnValue: true, nameof(_callSite))]
 			private bool HasCallSite => _callSite != null;
 
-			public HashSet<string>? GetParametersReassignedBeforeCallsite(BaseMethodDeclarationSyntax methodDeclaration, ExpressionSyntax? callSite,
+			public HashSet<string>? GetParametersReassignedBeforeCallsite(SyntaxNode declarationNode, ExpressionSyntax? callSite,
 																		  IReadOnlyCollection<string> parametersToCheck, SemanticModel semanticModel, 
 																		  CancellationToken cancellation)
 			{
@@ -76,10 +81,8 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				{
 					InitializeState(parametersToCheck, callSite, semanticModel, cancellation);
 
-					if (methodDeclaration.Body != null)
-						methodDeclaration.Body.Accept(this);
-					else if (methodDeclaration.ExpressionBody != null)
-						methodDeclaration.ExpressionBody.Accept(this);
+					var body = declarationNode.GetBody();
+					body?.Accept(this);
 
 					return _reassignedParameters;
 				}
