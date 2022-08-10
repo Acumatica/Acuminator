@@ -11,6 +11,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Utilities.Roslyn.Walkers;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -24,12 +25,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 		private class LongOperationsChecker : NestedInvocationWalker
 		{
 			private readonly SyntaxNodeAnalysisContext _context;
-			private readonly Stack<PassedParametersToNotBeCaptured?> _nonCapturablePassedParameters = new Stack<PassedParametersToNotBeCaptured?>();
+			private readonly Stack<PassedParametersToNotBeCaptured?> _nonCapturablePassedParameters = new();
+			private readonly ParametersReassignedFinder _parametersReassignedFinder = new();
+			private readonly NonCapturableElementsInArgumentsFinder _nonCapturableElementsInArgumentsFinder;
 
 			public LongOperationsChecker(SyntaxNodeAnalysisContext context, PXContext pxContext) :
 									base(pxContext, context.CancellationToken)
 			{
 				_context = context;
+				_nonCapturableElementsInArgumentsFinder = new NonCapturableElementsInArgumentsFinder(CancellationToken, PxContext);
 			}
 
 			public void CheckForCapturedGraphReferencesInDelegateClosures(TypeDeclarationSyntax typeDeclarationNode)
@@ -162,11 +166,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				// If the called method has some non-capturable method parameters then we need to step into it
 				if (calledMethodNonCapturableParameters?.PassedInstancesCount > 0)
-					return true;
+					return false;
 
 				// Otherwise, we need to step only into non-static methods of graphs/graph extensions since they can capture "this" reference
-				return !calledMethod.IsStatic && 
-						(calledMethod.ContainingType?.IsPXGraphOrExtension(PxContext) == true);
+				return calledMethod.IsStatic || calledMethod.ContainingType == null || !calledMethod.ContainingType.IsPXGraphOrExtension(PxContext);
 			}
 
 			protected override void AfterRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite, bool wasVisited)
@@ -197,15 +200,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (callingTypeMember?.ContainingType == null)
 					return null;
 
-				var nonCapturableParameters = GetNonCapturableParameterNames(callingTypeMember, argumentsList, semanticModel!, calledMethod);
-
-				if (nonCapturableParameters == null)
+				var nonCapturableParameters = GetNonCapturableParameterNames(callingTypeMember, callingTypeMemberNode, argumentsList, 
+																			 callSite, semanticModel!, calledMethod);
+				if (nonCapturableParameters.IsNullOrEmpty())
 					return null;
 
 				return new PassedParametersToNotBeCaptured(nonCapturableParameters);
 			}
 
-			private HashSet<string>? GetNonCapturableParameterNames(ISymbol callingTypeMember, BaseArgumentListSyntax argumentsList,
+			private HashSet<string>? GetNonCapturableParameterNames(ISymbol callingTypeMember, MemberDeclarationSyntax callingTypeMemberNode,
+																	BaseArgumentListSyntax argumentsList, ExpressionSyntax callSite, 
 																	SemanticModel semanticModel, IMethodSymbol calledMethod)
 			{
 				ThrowIfCancellationRequested();
@@ -214,50 +218,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				// 1. PXAdapter from action delegate
 				// 2. this reference if we are in a graph or graph extension
 				// 3. non capturable parameters passed to the calling methods from the previous method call
-				HashSet<string>? passedNonCapturableParameters = null;
-				var nonCapturableAdapterParameterIndexes =
-					TryGetNonCapturableAdapterParameterIndexesInCallArguments(callingTypeMember as IMethodSymbol, 
-																			  semanticModel, argumentsList.Arguments);
-				ArgumentsToParametersMapping? argumentsToParametersMapping = null;
+				
+				IParameterSymbol? adapterParameter = GetNonCapturableAdapterParameter(callingTypeMember as IMethodSymbol, argumentsList.Arguments);
 
-				// Add to non capturables the parameters from the called method that accepted the adapter from the action handler
-				if (!TryAddNonCapturableParameters(nonCapturableAdapterParameterIndexes))
+				NonCapturableArgumentsInfo? nonCapturableArguments = GetNonCapturableArgumentsInfo(argumentsList.Arguments, callingTypeMember, 
+																								   adapterParameter);
+				if (nonCapturableArguments.IsNullOrEmpty())
 					return null;
 
-				// Add to non capturables the parameters from the called method that accepted this reference 
-				// or non capturable parameters from the previous method call
-				var otherNonCapturableArgumentsIndexes = GetNonCapturableArgumentsIndexes(argumentsList.Arguments, callingTypeMember);
+				FilterReassignedParameters(nonCapturableArguments, callingTypeMemberNode, callSite, semanticModel);
 
-				if (!TryAddNonCapturableParameters(otherNonCapturableArgumentsIndexes))
+				if (nonCapturableArguments.Count == 0)
 					return null;
 
-				return passedNonCapturableParameters;
+				ArgumentsToParametersMapping? argumentsToParametersMapping = calledMethod.MapArgumentsToParameters(argumentsList);
 
-				//--------------------------------------------Local Function------------------------------------------------------
-				bool TryAddNonCapturableParameters(List<int>? nonCapturableArgumentsIndexesToAdd)
+				if (argumentsToParametersMapping == null)
+					return null;
+
+				var nonCapturableParametersOfCalledMethod = new HashSet<string>();
+
+				foreach (NonCapturableArgument argument in nonCapturableArguments)
 				{
-					if (nonCapturableArgumentsIndexesToAdd.IsNullOrEmpty())
-						return true;
-
-					argumentsToParametersMapping ??= calledMethod.MapArgumentsToParameters(argumentsList);
-
-					if (argumentsToParametersMapping == null)
-						return false;
-
-					passedNonCapturableParameters ??= new HashSet<string>();
-
-					foreach (int adapterArgumentIndex in nonCapturableArgumentsIndexesToAdd)
-					{
-						var mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(calledMethod, adapterArgumentIndex);
-						passedNonCapturableParameters.Add(mappedParameter.Name);
-					}
-
-					return true;
+					var mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(calledMethod, argument.Index);
+					nonCapturableParametersOfCalledMethod.Add(mappedParameter.Name);
 				}
+
+				return nonCapturableParametersOfCalledMethod;
 			}
 
 			/// <summary>
-			/// Attempts to get indexes in <paramref name="callArguments"/> of a non-capturable adapter parameter from the <paramref name="callingMethod"/>
+			/// Attempts to get a non-capturable adapter parameter from the <paramref name="callingMethod"/>
 			/// if the calling method is an action handler with an adapter parameter.
 			/// </summary>
 			/// <remarks>
@@ -270,28 +261,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			/// Therefore, we will consider a method to be an action handler if it has a proper signature and a PXButton attribute declared on it or on base methods in case of overrides.
 			/// </remarks>
 			/// <param name="callingMethod">The method containing the call.</param>
-			/// <param name="semanticModel">The semantic model.</param>
 			/// <param name="callArguments">The method call arguments</param>
 			/// <returns>
-			/// A list of call argument indexes that are using the adapter parameter.
-			/// Returns <see langword="null"/> if there is no such parameter in the calling method or it is not present in call arguments.
+			/// The adapter parameter or null.
 			/// </returns>
-			private List<int>? TryGetNonCapturableAdapterParameterIndexesInCallArguments(IMethodSymbol? callingMethod, SemanticModel semanticModel, 
-																						 SeparatedSyntaxList<ArgumentSyntax> callArguments)
+			private IParameterSymbol? GetNonCapturableAdapterParameter(IMethodSymbol? callingMethod, SeparatedSyntaxList<ArgumentSyntax> callArguments)
 			{
 				if (callingMethod?.ContainingType == null || callingMethod.Parameters.IsDefaultOrEmpty || !callingMethod.IsValidActionHandler(PxContext))
 					return null;
 
 				var adapterParameter = callingMethod.Parameters[0];
 
-				// Check that adapter is passed among the method call arguments
-				List<int>? adapterIndexes = GetAdapterIndexesInCallArguments(adapterParameter.Name, callArguments);
-
-				if (adapterIndexes.IsNullOrEmpty())
-					return null;
-
+				// Check for PXButton attribute
 				if (callingMethod.HasAttribute(PxContext.AttributeTypes.PXButtonAttribute, checkOverrides: true))
-					return adapterIndexes;
+					return adapterParameter;
 
 				// Check for action handlers that are declared inside the current graph but are not marked with attribute
 				INamedTypeSymbol containingType = callingMethod.ContainingType;
@@ -314,123 +297,75 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 														  .Any(field => field.Name.Equals(callingMethod.Name, StringComparison.OrdinalIgnoreCase) &&
 																		field.Type.IsPXAction(PxContext));	
 				return hasCorrespondingAction
-					? adapterIndexes
+					? adapterParameter
 					: null;
 			}
 
-			private List<int>? GetAdapterIndexesInCallArguments(string adapterParameterName, SeparatedSyntaxList<ArgumentSyntax> callArguments)
+			private NonCapturableArgumentsInfo? GetNonCapturableArgumentsInfo(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember, 
+																			  IParameterSymbol? adapterParameter)
 			{
-				List<int>? adapterIndexes = null;
+				var parametersPassedBefore = GetAllPassedParameterNames(adapterParameter?.Name);
+
+				if (parametersPassedBefore == null || parametersPassedBefore.Count == 0)
+					return default;
+
+				NonCapturableArgumentsInfo? nonCapturableArgumentsInfo = null;
 
 				for (int argIndex = 0; argIndex < callArguments.Count; argIndex++)
 				{
 					ArgumentSyntax argument = callArguments[argIndex];
 
-					if (argument.Expression is IdentifierNameSyntax identifier && identifier.Identifier.ValueText == adapterParameterName)
+					var (captureLocalGraphInstance, parametersUsedInArgument) = 
+						_nonCapturableElementsInArgumentsFinder.GetElementsUsedInArgumentExpression(argument, callingTypeMember, parametersPassedBefore);
+					bool captureNonCapturableElement = captureLocalGraphInstance || parametersUsedInArgument?.Count > 0;
+
+					if (captureNonCapturableElement)
 					{
-						adapterIndexes = adapterIndexes ?? new List<int>();
-						adapterIndexes.Add(argIndex);
+						nonCapturableArgumentsInfo ??= new NonCapturableArgumentsInfo();
+						var nonCapturableArgument = new NonCapturableArgument(argIndex, captureLocalGraphInstance, parametersUsedInArgument);
+
+						nonCapturableArgumentsInfo.Add(nonCapturableArgument);
 					}
 				}
 
-				return adapterIndexes;
+				return nonCapturableArgumentsInfo;				
 			}
 
-			private List<int>? GetNonCapturableArgumentsIndexes(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember)
+			private ICollection<string>? GetAllPassedParameterNames(string? adapterParameterName)
 			{
 				PassedParametersToNotBeCaptured? parametersPassedBefore = _nonCapturablePassedParameters.Count > 0
 					? _nonCapturablePassedParameters.Peek()
 					: null;
 
-				List<int>? nonCapturableArguments = null;
-
-				for (int argIndex = 0; argIndex < callArguments.Count; argIndex++)
+				if (adapterParameterName == null)
+					return parametersPassedBefore;
+				else if (parametersPassedBefore == null)
+					return new List<string> { adapterParameterName };
+				else
 				{
-					ArgumentSyntax argument = callArguments[argIndex];
+					var passedParametersNames = parametersPassedBefore.ToList(capacity: parametersPassedBefore.PassedInstancesCount + 1);
+					passedParametersNames.Add(adapterParameterName);
 
-					if (ExpressionContainsNonCapturableElement(argument.Expression, callingTypeMember, parametersPassedBefore, recursionDepth: 0))
-					{
-						nonCapturableArguments = nonCapturableArguments ?? new List<int>();
-						nonCapturableArguments.Add(argIndex);
-					}
+					return passedParametersNames;
 				}
-
-				return nonCapturableArguments;
 			}
 
-			private bool ExpressionContainsNonCapturableElement(ExpressionSyntax expression, ISymbol callingTypeMember,
-																PassedParametersToNotBeCaptured? parametersPassedBefore, int recursionDepth)
+			private void FilterReassignedParameters(NonCapturableArgumentsInfo nonCapturableArguments, MemberDeclarationSyntax callingTypeMemberNode,
+													ExpressionSyntax callSite, SemanticModel semanticModel)
 			{
-				const int maxDepth = 100;
+				if (!nonCapturableArguments.HasNonCapturableParameters)
+					return;
 
-				if (recursionDepth < maxDepth)
-					return false;
+				var reassignedParameters =
+					_parametersReassignedFinder.GetParametersReassignedBeforeCallsite(callingTypeMemberNode, callSite,
+																					  nonCapturableArguments.UsedParameters,
+																					  semanticModel, CancellationToken);
+				if (reassignedParameters.IsNullOrEmpty())
+					return;
 
-				switch (expression)
+				foreach (string reassignedParameter in reassignedParameters)
 				{
-					case IdentifierNameSyntax identifierName
-					when parametersPassedBefore != null && parametersPassedBefore.PassedInstancesCount > 0:
-						return parametersPassedBefore.Contains(identifierName.Identifier.ValueText);
-
-					case ThisExpressionSyntax thisExpression
-					when callingTypeMember.ContainingType.IsPXGraphExtension(PxContext):
-						return true;
-
-					case InitializerExpressionSyntax initializer:
-						return initializer.Expressions.Any(expr => ExpressionContainsNonCapturableElement(expr, callingTypeMember,
-																										  parametersPassedBefore, recursionDepth + 1));
-					case TupleExpressionSyntax tupleExpression:
-						return tupleExpression.Arguments.Any(argument => ExpressionContainsNonCapturableElement(argument.Expression, callingTypeMember,
-																												parametersPassedBefore, recursionDepth + 1));
-					case ElementAccessExpressionSyntax elementAccessExpression
-					when parametersPassedBefore != null && parametersPassedBefore.PassedInstancesCount > 0:
-						return elementAccessExpression.Expression is IdentifierNameSyntax elementAccessIdentifier
-							? parametersPassedBefore.Contains(elementAccessIdentifier.Identifier.ValueText)
-							: ExpressionContainsNonCapturableElement(elementAccessExpression.Expression, callingTypeMember, parametersPassedBefore, recursionDepth + 1);
-
-					case ConditionalExpressionSyntax conditionalExpressionSyntax:
-						return ExpressionContainsNonCapturableElement(conditionalExpressionSyntax.WhenTrue, callingTypeMember, parametersPassedBefore, recursionDepth + 1) ||
-							   ExpressionContainsNonCapturableElement(conditionalExpressionSyntax.WhenFalse, callingTypeMember, parametersPassedBefore, recursionDepth + 1);
-
-					case AssignmentExpressionSyntax assignmentExpression:
-						return ExpressionContainsNonCapturableElement(assignmentExpression.Right, callingTypeMember, parametersPassedBefore, recursionDepth + 1);
-
-					case ParenthesizedExpressionSyntax parenthesizedExpression:
-						return ExpressionContainsNonCapturableElement(parenthesizedExpression.Expression, callingTypeMember, parametersPassedBefore, recursionDepth + 1);
-
-					case BinaryExpressionSyntax binaryExpression
-					when binaryExpression.IsKind(SyntaxKind.CoalesceExpression):
-						return ExpressionContainsNonCapturableElement(binaryExpression.Left, callingTypeMember, parametersPassedBefore, recursionDepth + 1) ||
-							   ExpressionContainsNonCapturableElement(binaryExpression.Right, callingTypeMember, parametersPassedBefore, recursionDepth + 1);
-
-					case InvocationExpressionSyntax invocationExpression:
-					case MemberAccessExpressionSyntax memberAccessExpression:
-					case ConditionalAccessExpressionSyntax conditionalAccessExpression:
-					case BinaryExpressionSyntax binaryExpression:
-					case PostfixUnaryExpressionSyntax postfixUnaryExpression:
-					case PrefixUnaryExpressionSyntax prefixUnaryExpression:
-					case TypeOfExpressionSyntax typeOfExpression:
-						return false;
-
-					default:
-						foreach (SyntaxNode childNode in expression.ChildNodes())
-						{
-							if (childNode is ExpressionSyntax childExpression &&
-								ExpressionContainsNonCapturableElement(childExpression, callingTypeMember, parametersPassedBefore, recursionDepth + 1))
-							{
-								return true;
-							}
-
-							var innerExpression = childNode.DescendantNodes().OfType<ExpressionSyntax>().FirstOrDefault();
-
-							if (innerExpression != null &&
-							    ExpressionContainsNonCapturableElement(innerExpression, callingTypeMember, parametersPassedBefore, recursionDepth + 1))
-							{
-								return true;
-							}	
-						}
-
-						return false;
+					nonCapturableArguments.RemoveParameterUsageFromArguments(reassignedParameter);
 				}
 			}
 			#endregion
