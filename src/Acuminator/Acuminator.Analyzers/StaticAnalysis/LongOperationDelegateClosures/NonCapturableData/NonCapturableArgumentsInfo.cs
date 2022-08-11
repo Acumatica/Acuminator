@@ -33,12 +33,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				_usedParametersWithUsingArguments ??= new Dictionary<string, List<NonCapturableArgument>>();
 
-				foreach (string usedParameter in nonCapturableArgument.UsedParameters)
+				foreach (PassedParameter usedParameter in nonCapturableArgument.UsedParameters)
 				{
-					if (_usedParametersWithUsingArguments.TryGetValue(usedParameter, out List<NonCapturableArgument> parameterIndexes))
+					if (_usedParametersWithUsingArguments.TryGetValue(usedParameter.Name, out List<NonCapturableArgument> parameterIndexes))
 						parameterIndexes.Add(nonCapturableArgument);
 					else
-						_usedParametersWithUsingArguments.Add(usedParameter, new List<NonCapturableArgument> { nonCapturableArgument });
+						_usedParametersWithUsingArguments.Add(usedParameter.Name, new List<NonCapturableArgument> { nonCapturableArgument });
 				}
 			}
 		}
@@ -54,7 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				NonCapturableArgument argument = affectedArguments[i];
 
-				argument.UsedParameters?.Remove(parameterName);
+				argument.UsedParameters?.RemoveAll(p => p.Name == parameterName);
 
 				if (!argument.CapturesNonCapturableElement)
 				{
