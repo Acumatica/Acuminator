@@ -16,16 +16,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 		public bool UseThisReference { get; }
 
-		public CapturedInstancesTypes CapturedTypes { get; }
-
-		public List<string>? UsedParameters { get; }
+		public List<PassedParameter>? UsedParameters { get; }
 
 		[MemberNotNullWhen(returnValue: true, nameof(UsedParameters))]
 		public bool HasNonCapturableParameters => UsedParameters?.Count > 0;
 
 		public bool CapturesNonCapturableElement => UseThisReference || HasNonCapturableParameters;
 
-		public NonCapturableArgument(int argumentIndex, bool useThisReference, CapturedInstancesTypes capturedTypes, List<string>? usedParameters)
+		public NonCapturableArgument(int argumentIndex, bool useThisReference, List<PassedParameter>? usedParameters)
 		{
 			if (argumentIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(argumentIndex));
@@ -33,6 +31,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			Index = argumentIndex;
 			UseThisReference = useThisReference;
 			UsedParameters = usedParameters;
+		}
+
+		public CapturedInstancesTypes GetCapturedTypes()
+		{
+			CapturedInstancesTypes capturedTypes = UseThisReference
+				? CapturedInstancesTypes.PXGraph
+				: CapturedInstancesTypes.None;
+
+			if (!HasNonCapturableParameters)
+				return capturedTypes;
+
+			foreach (var parameter in UsedParameters)
+			{
+				capturedTypes = capturedTypes | parameter.CapturedTypes;
+			}
+
+			return capturedTypes;
 		}
 	}
 }
