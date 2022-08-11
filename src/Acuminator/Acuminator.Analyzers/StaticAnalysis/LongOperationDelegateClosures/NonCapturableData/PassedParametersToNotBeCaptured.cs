@@ -10,34 +10,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 	/// <summary>
 	/// Information about parameters passed into the method that shouldn't be captured in a delegate closure 
 	/// </summary>
-	internal class PassedParametersToNotBeCaptured : ICollection<string>
+	internal class PassedParametersToNotBeCaptured
 	{
-		private readonly HashSet<string> _passedInstances;
+		private readonly Dictionary<string, PassedParameter> _passedParametersByName;
 
-		public int PassedInstancesCount => _passedInstances.Count;
+		public int PassedParametersCount => _passedParametersByName.Count;
 
-		int ICollection<string>.Count => _passedInstances.Count;
+		public IReadOnlyCollection<string> PassedParametersNames => _passedParametersByName.Keys;
 
-		public bool IsReadOnly => true;
-
-		public PassedParametersToNotBeCaptured(HashSet<string>? passedParameters)
+		public PassedParametersToNotBeCaptured(IEnumerable<PassedParameter>? passedParameters)
 		{
-			_passedInstances = passedParameters ?? new HashSet<string>();
+			_passedParametersByName = passedParameters?.ToDictionary(parameter => parameter.Name) ?? new Dictionary<string, PassedParameter>();
 		}
 
-		public bool Contains(string parameterName) => _passedInstances.Contains(parameterName);
+		public bool Contains(string parameterName) => _passedParametersByName.ContainsKey(parameterName);
 
-		void ICollection<string>.Add(string item) => throw new NotSupportedException($"Changing {nameof(PassedParametersToNotBeCaptured)} is not supported");
-
-		void ICollection<string>.Clear() => throw new NotSupportedException($"Changing {nameof(PassedParametersToNotBeCaptured)} is not supported");
-
-		bool ICollection<string>.Remove(string item) => throw new NotSupportedException($"Changing {nameof(PassedParametersToNotBeCaptured)} is not supported");
-
-		void ICollection<string>.CopyTo(string[] array, int arrayIndex) => 
-			((ICollection<string>)_passedInstances).CopyTo(array, arrayIndex);
-
-		public IEnumerator<string> GetEnumerator() => _passedInstances.GetEnumerator();
-
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		public PassedParameter? GetPassedParameter(string parameterName) =>
+			_passedParametersByName.TryGetValue(parameterName, out PassedParameter passedParameter)
+				? passedParameter
+				: null;
 	}
 }
