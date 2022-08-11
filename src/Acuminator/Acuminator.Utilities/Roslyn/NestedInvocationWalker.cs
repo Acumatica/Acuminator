@@ -183,6 +183,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private bool RecursiveAnalysisEnabled() => Settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
 
+		protected bool IsInsideRecursiveCall => _nodesStack.Count > 0;
 		#region Visit
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
