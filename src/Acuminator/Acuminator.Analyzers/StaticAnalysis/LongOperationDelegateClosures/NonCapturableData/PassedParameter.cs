@@ -65,5 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			return hash;
 		}
+
+		public override string ToString() => $"{Name} {CapturedTypes}";
 	}
 }
