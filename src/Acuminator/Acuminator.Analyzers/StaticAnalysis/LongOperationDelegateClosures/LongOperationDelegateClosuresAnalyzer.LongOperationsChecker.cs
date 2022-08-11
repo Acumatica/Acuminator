@@ -119,11 +119,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				ThrowIfCancellationRequested();
 
-				PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite = PeekPassedParametersFromStack();
+				PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite =
+					GetNonCaptureableParametersForDelegateMethodDataFlowCheck(semanticModel, longOperationSetupMethodInvocationNode);
+
 				var capturedLocalInstancesInExpressionsChecker =
 					new CapturedLocalInstancesInExpressionsChecker(nonCapturableParametersOfMethodContainingCallSite, semanticModel, PxContext,
 																   CancellationToken);
-
 				var capturedInstanceType = capturedLocalInstancesInExpressionsChecker.ExpressionCapturesLocalIntanceInClosure(longOperationDelegateNode);
 
 				if (capturedInstanceType != CapturedInstancesTypes.None)
@@ -142,6 +143,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				}
 
 				return true;
+			}
+
+			private PassedParametersToNotBeCaptured? GetNonCaptureableParametersForDelegateMethodDataFlowCheck(SemanticModel semanticModel,
+																							InvocationExpressionSyntax longOperationSetupMethodInvocationNode)
+			{
+				PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite = PeekPassedParametersFromStack();
+
+				if (nonCapturableParametersOfMethodContainingCallSite != null || IsInsideRecursiveCall)
+					return nonCapturableParametersOfMethodContainingCallSite;
+
+				// In case of an action handler that is the first in the call stack we need to make extra check for the adapter parameter
+				var callingMethodNode = longOperationSetupMethodInvocationNode.Parent<MethodDeclarationSyntax>();
+
+				if (callingMethodNode == null)
+					return null;
+
+				var callingMethod = semanticModel.GetDeclaredSymbol(callingMethodNode, CancellationToken);
+				var adapterParameter = GetNonCapturableAdapterParameter(callingMethod);
+
+				if (adapterParameter == null)
+					return null;
+
+				return new PassedParametersToNotBeCaptured
+				(
+					new List<PassedParameter>(capacity: 1)
+					{
+						new PassedParameter(adapterParameter.Name, CapturedInstancesTypes.PXAdapter)
+					}
+				);
 			}
 			#endregion
 
@@ -217,7 +247,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				// 2. this reference if we are in a graph or graph extension
 				// 3. non capturable parameters passed to the calling methods from the previous method call
 				
-				IParameterSymbol? adapterParameter = GetNonCapturableAdapterParameter(callingTypeMember as IMethodSymbol, argumentsList.Arguments);
+				IParameterSymbol? adapterParameter = GetNonCapturableAdapterParameter(callingTypeMember as IMethodSymbol);
 
 				NonCapturableArgumentsInfo? nonCapturableArguments = GetNonCapturableArgumentsInfo(argumentsList.Arguments, callingTypeMember, 
 																								   adapterParameter);
@@ -264,11 +294,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			/// Therefore, we will consider a method to be an action handler if it has a proper signature and a PXButton attribute declared on it or on base methods in case of overrides.
 			/// </remarks>
 			/// <param name="callingMethod">The method containing the call.</param>
-			/// <param name="callArguments">The method call arguments</param>
 			/// <returns>
 			/// The adapter parameter or null.
 			/// </returns>
-			private IParameterSymbol? GetNonCapturableAdapterParameter(IMethodSymbol? callingMethod, SeparatedSyntaxList<ArgumentSyntax> callArguments)
+			private IParameterSymbol? GetNonCapturableAdapterParameter(IMethodSymbol? callingMethod)
 			{
 				if (callingMethod?.ContainingType == null || callingMethod.Parameters.IsDefaultOrEmpty || !callingMethod.IsValidActionHandler(PxContext))
 					return null;
