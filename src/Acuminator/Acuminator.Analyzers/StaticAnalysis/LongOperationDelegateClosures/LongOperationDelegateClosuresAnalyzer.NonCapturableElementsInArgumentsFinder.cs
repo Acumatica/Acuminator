@@ -21,10 +21,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			private readonly CancellationToken _cancellation;
 			private readonly PXContext _pxContext;
 	
-			private ICollection<string>? _parametersToCheck;
+			private IReadOnlyDictionary<string, PassedParameter>? _parametersToCheck;
 			private ISymbol? _callingTypeMember;
 
-			private List<string>? _callingMethodParametersUsedInArgument;
+			private List<PassedParameter>? _callingMethodParametersUsedInArgument;
 			private bool _captureLocalGraphInstance;
 
 			public NonCapturableElementsInArgumentsFinder(CancellationToken cancellation, PXContext pxContext)
@@ -33,9 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				_pxContext = pxContext;
 			}
 
-			public (bool CaptureLocalGraphInstance, List<string>? ParametersUsedInArgument) GetElementsUsedInArgumentExpression(
-																								ArgumentSyntax argument, ISymbol callingTypeMember,
-																								ICollection<string>? parametersToCheck)
+			public (bool CaptureLocalGraphInstance, List<PassedParameter>? ParametersUsedInArgument) GetElementsUsedInArgumentExpression(
+																							 ArgumentSyntax argument, ISymbol callingTypeMember,
+																							 IReadOnlyDictionary<string, PassedParameter>? parametersToCheck)
 			{
 				_cancellation.ThrowIfCancellationRequested();
 
@@ -86,8 +86,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				{
 					string identifierName = identifier.Identifier.ValueText;
 
-					if (_parametersToCheck.Contains(identifierName))
-						AddToUsedParameters(identifierName);
+					if (_parametersToCheck.TryGetValue(identifierName, out var passedParameter))
+						AddToUsedParameters(passedParameter);
 				}
 			}
 
@@ -160,10 +160,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			public override void VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax prefixUnaryExpression) { }
 
 			public override void VisitTypeOfExpression(TypeOfExpressionSyntax typeOfExpression) { }
+
+			public override void VisitLiteralExpression(LiteralExpressionSyntax node) { }
 			#endregion
 
 			#region State Management
-			private void InitializeState(ISymbol callingTypeMember, ICollection<string>? parametersToCheck)
+			private void InitializeState(ISymbol callingTypeMember, IReadOnlyDictionary<string, PassedParameter>? parametersToCheck)
 			{
 				_callingTypeMember = callingTypeMember;
 				_parametersToCheck = parametersToCheck;
@@ -177,10 +179,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				_captureLocalGraphInstance = false;
 			}
 
-			private void AddToUsedParameters(string parameterName)
+			private void AddToUsedParameters(PassedParameter parameter)
 			{
-				_callingMethodParametersUsedInArgument = _callingMethodParametersUsedInArgument ?? new List<string>();
-				_callingMethodParametersUsedInArgument.Add(parameterName);
+				_callingMethodParametersUsedInArgument = _callingMethodParametersUsedInArgument ?? new List<PassedParameter>();
+				_callingMethodParametersUsedInArgument.Add(parameter);
 			}
 			#endregion
 		}
