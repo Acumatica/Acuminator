@@ -126,9 +126,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				var capturedInstanceType = capturedLocalInstancesInExpressionsChecker.ExpressionCapturesLocalIntanceInClosure(longOperationDelegateNode);
 
-				if (capturedInstanceType.HasValue)
+				if (capturedInstanceType != CapturedInstancesTypes.None)
 				{
-					string capturedInstanceTypeName = capturedInstanceType == CapturedInstanceType.PXGraph
+					string capturedInstanceTypeName = (capturedInstanceType & CapturedInstancesTypes.PXGraph) == CapturedInstancesTypes.PXGraph
 						? Resources.PX1008Title_CapturedGraphFormatArg
 						: Resources.PX1008Title_CapturedPXAdapterFormatArg;
 
@@ -163,7 +163,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				PassedParametersToNotBeCaptured? calledMethodNonCapturableParameters = PeekPassedParametersFromStack();
 
 				// If the called method has some non-capturable method parameters then we need to step into it
-				if (calledMethodNonCapturableParameters?.PassedInstancesCount > 0)
+				if (calledMethodNonCapturableParameters?.Count > 0)
 					return false;
 
 				// Otherwise, we need to step only into non-static methods of graphs/graph extensions since they can capture "this" reference
@@ -198,17 +198,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (callingTypeMember?.ContainingType == null)
 					return null;
 
-				var nonCapturableParameters = GetNonCapturableParameterNames(callingTypeMember, callingTypeMemberNode, argumentsList, 
-																			 callSite, semanticModel!, calledMethod);
+				var nonCapturableParameters = GetNonCapturableParameters(callingTypeMember, callingTypeMemberNode, argumentsList, 
+																		 callSite, semanticModel!, calledMethod);
 				if (nonCapturableParameters.IsNullOrEmpty())
 					return null;
 
 				return new PassedParametersToNotBeCaptured(nonCapturableParameters);
 			}
 
-			private HashSet<string>? GetNonCapturableParameterNames(ISymbol callingTypeMember, MemberDeclarationSyntax callingTypeMemberNode,
-																	BaseArgumentListSyntax argumentsList, ExpressionSyntax callSite, 
-																	SemanticModel semanticModel, IMethodSymbol calledMethod)
+			private IReadOnlyCollection<PassedParameter>? GetNonCapturableParameters(ISymbol callingTypeMember, MemberDeclarationSyntax callingTypeMemberNode,
+																					 BaseArgumentListSyntax argumentsList, ExpressionSyntax callSite, 
+																					 SemanticModel semanticModel, IMethodSymbol calledMethod)
 			{
 				ThrowIfCancellationRequested();
 
@@ -234,12 +234,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (argumentsToParametersMapping == null)
 					return null;
 
-				var nonCapturableParametersOfCalledMethod = new HashSet<string>();
+				var nonCapturableParametersOfCalledMethod = new List<PassedParameter>(capacity: nonCapturableArguments.Count);
 
 				foreach (NonCapturableArgument argument in nonCapturableArguments)
 				{
+					CapturedInstancesTypes capturedTypes = argument.GetCapturedTypes();
+
+					if (capturedTypes == CapturedInstancesTypes.None)
+						continue;
+
 					var mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(calledMethod, argument.Index);
-					nonCapturableParametersOfCalledMethod.Add(mappedParameter.Name);
+					nonCapturableParametersOfCalledMethod.Add(new PassedParameter(mappedParameter.Name, capturedTypes));
 				}
 
 				return nonCapturableParametersOfCalledMethod;
@@ -302,7 +307,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			private NonCapturableArgumentsInfo? GetNonCapturableArgumentsInfo(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember, 
 																			  IParameterSymbol? adapterParameter)
 			{
-				var parametersPassedBefore = GetAllPassedParameterNames(adapterParameter?.Name);
+				var parametersPassedBefore = GetAllPassedParametersByNames(adapterParameter?.Name);
 
 				if (parametersPassedBefore == null || parametersPassedBefore.Count == 0)
 					return default;
@@ -329,20 +334,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return nonCapturableArgumentsInfo;				
 			}
 
-			private ICollection<string>? GetAllPassedParameterNames(string? adapterParameterName)
+			private IReadOnlyDictionary<string, PassedParameter>? GetAllPassedParametersByNames(string? adapterParameterName)
 			{
 				PassedParametersToNotBeCaptured? parametersPassedBefore = PeekPassedParametersFromStack();
 
 				if (adapterParameterName == null)
 					return parametersPassedBefore;
-				else if (parametersPassedBefore == null)
-					return new List<string> { adapterParameterName };
+
+				var passedAdapterParameter = new PassedParameter(adapterParameterName, CapturedInstancesTypes.PXAdapter);
+
+				if (parametersPassedBefore.IsNullOrEmpty())
+				{
+					return new Dictionary<string, PassedParameter>(capacity: 1) 
+					{ 
+						{ passedAdapterParameter.Name, passedAdapterParameter } 
+					};
+				}
 				else
 				{
-					var passedParametersNames = parametersPassedBefore.ToList(capacity: parametersPassedBefore.PassedInstancesCount + 1);
-					passedParametersNames.Add(adapterParameterName);
+					var parametersByNames = new Dictionary<string, PassedParameter>(capacity: parametersPassedBefore.Count + 1)
+					{
+						{ passedAdapterParameter.Name, passedAdapterParameter }
+					};
 
-					return passedParametersNames;
+					foreach (var (parameterName, parameter) in parametersPassedBefore)
+						parametersByNames[parameterName] = parameter; 
+
+					return parametersByNames;
 				}
 			}
 

@@ -17,23 +17,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 	public partial class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer
 	{
 		/// <summary>
-		/// Values that represent captured instance types.
-		/// </summary>
-		private enum CapturedInstanceType
-		{
-			/// <summary>
-			/// Captured instance is PXGraph.
-			/// </summary>
-			PXGraph,
-
-			/// <summary>
-			/// Captured instance is PXAdapter.
-			/// </summary>
-			PXAdapter
-		}
-
-
-		/// <summary>
 		/// An expression nodes checker that looks for closures that capture local instance.
 		/// </summary>
 		private class CapturedLocalInstancesInExpressionsChecker : CSharpSyntaxWalker
@@ -47,9 +30,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			private readonly PassedParametersToNotBeCaptured? _outerMethodParametersToNotBeCaptured;
 
-			private CapturedInstanceType? _capturedInstanceType;
+			private CapturedInstancesTypes _capturedInstanceType = CapturedInstancesTypes.None;
 
-			private bool CapturedLocalInstanceFound => _capturedInstanceType.HasValue;
+			private bool CapturedLocalInstanceFound => _capturedInstanceType != CapturedInstancesTypes.None;
 			
 			public CapturedLocalInstancesInExpressionsChecker(PassedParametersToNotBeCaptured? outerMethodParametersToNotBeCaptured,
 															  SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
@@ -60,10 +43,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				_cancellation = cancellation;
 			}
 
-			public CapturedInstanceType? ExpressionCapturesLocalIntanceInClosure(ExpressionSyntax? expression)
+			public CapturedInstancesTypes ExpressionCapturesLocalIntanceInClosure(ExpressionSyntax? expression)
 			{
 				if (expression == null)
-					return null;
+					return CapturedInstancesTypes.None;
 
 				if (!CapturedLocalInstanceFound)
 					expression.Accept(this);
@@ -96,78 +79,73 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				}
 			}
 
-			private (CapturedInstanceType? CapturedInstanceType, bool ShouldVisitChildren) ExpressionCapturesLocalInstance(ExpressionSyntax expression)
+			private (CapturedInstancesTypes CapturedInstanceType, bool ShouldVisitChildren) ExpressionCapturesLocalInstance(ExpressionSyntax expression)
 			{
 				switch (expression)
 				{
 					case AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode:
 						{
-							CapturedInstanceType? capturedInstanceType = AnonymousFunctionCapturesSymbol(anonMethodOrLambdaNode);
+							CapturedInstancesTypes capturedInstanceType = AnonymousFunctionCapturesSymbol(anonMethodOrLambdaNode);
 							return (capturedInstanceType, ShouldVisitChildren: false);
 						}
 					case IdentifierNameSyntax identifierName:
 						{
-							CapturedInstanceType? capturedInstanceType = IdentifierCapturesLocalInstance(identifierName);
+							CapturedInstancesTypes capturedInstanceType = IdentifierCapturesLocalInstance(identifierName);
 							return (capturedInstanceType, ShouldVisitChildren: false);
 						}
 					default:
-						return (CapturedInstanceType: null, ShouldVisitChildren: true);
+						return (CapturedInstanceType: CapturedInstancesTypes.None, ShouldVisitChildren: true);
 				}
 			}
 
-			private CapturedInstanceType? AnonymousFunctionCapturesSymbol(AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode)
+			private CapturedInstancesTypes AnonymousFunctionCapturesSymbol(AnonymousFunctionExpressionSyntax anonMethodOrLambdaNode)
 			{
 				DataFlowAnalysis? dfa = _semanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
 
 				if (dfa == null || !dfa.Succeeded || dfa.DataFlowsIn.IsDefaultOrEmpty)
-					return null;
+					return CapturedInstancesTypes.None;
 
 				foreach (IParameterSymbol symbol in dfa.DataFlowsIn.OfType<IParameterSymbol>())
 				{
-					CapturedInstanceType? capturedInstanceType = GetCapturedSymbolType(symbol);
+					CapturedInstancesTypes capturedInstanceType = GetCapturedSymbolType(symbol);
 
-					if (capturedInstanceType.HasValue)
+					if (capturedInstanceType != CapturedInstancesTypes.None)
 						return capturedInstanceType;
 				}
 
-				return null;
+				return CapturedInstancesTypes.None;
 			}
 
-			private CapturedInstanceType? GetCapturedSymbolType(IParameterSymbol symbol)
+			private CapturedInstancesTypes GetCapturedSymbolType(IParameterSymbol symbol)
 			{
 				if (symbol.IsThis)
 				{
 					return symbol.Type.IsPXGraphOrExtension(_pxContext)
-						? CapturedInstanceType.PXGraph
-						: null;
+						? CapturedInstancesTypes.PXGraph
+						: CapturedInstancesTypes.None;
 				}
 
-				bool isCapturedNonCapturableParameter = _outerMethodParametersToNotBeCaptured?.PassedInstancesCount > 0
-					? _outerMethodParametersToNotBeCaptured.Contains(symbol.Name)
-					: false;
+				if (_outerMethodParametersToNotBeCaptured?.Count > 0 && 
+					_outerMethodParametersToNotBeCaptured.GetPassedParameter(symbol.Name) is PassedParameter passedParameter)
+				{
+					return passedParameter.CapturedTypes;
+				}
 
-				if (!isCapturedNonCapturableParameter)
-					return null;
-
-				// We add to PassedInstances only graphs and adapters that should not be captured.
-				// Therefore, we can only check if the symbol type here is PXAdapter to understand what CapturedInstanceType should be returned
-				return symbol.Type.InheritsFrom(_pxContext.PXAdapterType)
-					? CapturedInstanceType.PXAdapter
-					: CapturedInstanceType.PXGraph;
+				return CapturedInstancesTypes.None;
 			}
 
-			private CapturedInstanceType? IdentifierCapturesLocalInstance(IdentifierNameSyntax identifierName)
+			private CapturedInstancesTypes IdentifierCapturesLocalInstance(IdentifierNameSyntax identifierName)
 			{
 				ISymbol? identifierSymbol = _semanticModel.GetSymbolInfo(identifierName, _cancellation).Symbol;
 
 				if (identifierSymbol?.ContainingType == null || identifierSymbol.IsStatic || !identifierSymbol.ContainingType.IsPXGraphOrExtension(_pxContext))
-					return null;
+					return CapturedInstancesTypes.None;
 
 				switch (identifierSymbol.Kind)
 				{
 					case SymbolKind.Local:
 						if (!(identifierSymbol is ILocalSymbol))
-							return null;
+							return CapturedInstancesTypes.None;
 
 						var localVariableDeclarator = identifierSymbol.DeclaringSyntaxReferences
 																	  .FirstOrDefault()
@@ -181,13 +159,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					case SymbolKind.Property:
 					case SymbolKind.Event:
 					case SymbolKind.Field:
-						return CapturedInstanceType.PXGraph;      // Instance methods, properties, fields and events hold closure
+						return CapturedInstancesTypes.PXGraph;      // Instance methods, properties, fields and events hold closure
 
 					case SymbolKind.Parameter:    
 						// Parameter here is a parameter of the outer method passed to the StartLongOperation or SetProcessDelegate which means its a delegate
 						// We can't analyze arbitrary delegates, so assume that they don't contain delegate with incorrect closures 
 					default:
-						return null;
+						return CapturedInstancesTypes.None;
 				}
 			}
 		}
