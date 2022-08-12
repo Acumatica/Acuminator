@@ -60,6 +60,28 @@ namespace Acuminator.Tests.Sources
 			});
 		}
 
+		public void CaptureInLongRun(PXGraph graph)
+		{
+			PXLongOperation.StartOperation(graph, () =>
+			{
+				if (graph.IsMobile)
+				{
+					MemberFunc();
+				}
+			});
+		}
+
+		public void CaptureInLongRunArray(PXGraph graph, params object[] args)
+		{
+			PXLongOperation.StartOperation(graph, () =>
+			{
+				if (args[0] != null)
+				{
+					MemberFunc();
+				}
+			});
+		}
+
 		public void MemberFunc()
 		{ }
 	}

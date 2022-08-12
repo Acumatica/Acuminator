@@ -22,7 +22,31 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 																				  .WithRecursiveAnalysisEnabled());
 		[Theory]
 		[EmbeddedFileData("ClosuresInNonGraph.cs")]
-		public Task NonGraph_ThisReference_Captured_NoDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
+		public Task SetProcessDelegate_ReportOnlyCapturedPassedParameters_NonGraphHelper(string actual)
+		{
+			string[] formatArgsGraph = new[] { AnalyzerResources.PX1008Title_CapturedGraphFormatArg, AnalyzerResources.PX1008Title_ProcessingDelegateFormatArg };
+			string[] formatArgsAdapter = new[] { AnalyzerResources.PX1008Title_CapturedPXAdapterFormatArg, AnalyzerResources.PX1008Title_ProcessingDelegateFormatArg };
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 24, column: 4, formatArgsGraph),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 25, column: 4, formatArgsAdapter));
+		}
+
+		[Theory]
+		[EmbeddedFileData("HelperCallsToAnotherFile.cs", "ClosuresInNonGraph.cs")]
+		public Task RecursiveAnalysis_CallsTo_NonGraphHelper_FromOtherFile(string actual, string helper)
+		{
+			string[] formatArgsGraphAndProcDelegate = 
+				new[] { AnalyzerResources.PX1008Title_CapturedGraphFormatArg, AnalyzerResources.PX1008Title_ProcessingDelegateFormatArg };
+			string[] formatArgsGraphAndLongRunDelegate =
+				new[] { AnalyzerResources.PX1008Title_CapturedGraphFormatArg, AnalyzerResources.PX1008Title_LongRunDelegateFormatArg };
+			string[] formatArgsAdapterAndProcDelegate =
+				new[] { AnalyzerResources.PX1008Title_CapturedPXAdapterFormatArg, AnalyzerResources.PX1008Title_ProcessingDelegateFormatArg };
+			return VerifyCSharpDiagnosticAsync(actual, helper,
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 19, column: 4, formatArgsGraphAndProcDelegate),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 20, column: 4, formatArgsAdapterAndProcDelegate),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 22, column: 4, formatArgsGraphAndLongRunDelegate),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 24, column: 4, formatArgsGraphAndLongRunDelegate));
+		}
 
 		[Theory]
 		[EmbeddedFileData("SetProcessDelegateClosures.cs")]

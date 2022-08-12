@@ -238,12 +238,13 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithComment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithExcludeComment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithBadComment.cs" />
-    <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_NormalCases.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_ComplexMapping.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_NormalCases.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphExtensionWithCreateInstanceInIsActiveMethods.cs" />
     <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInDacIsActiveTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\DacExtensionWithGraphCreationInIsActiveMethods.cs" />
-    <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\ClosuresInNonGraph.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\HelperCallsFromGraph_LongRun.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\ClosuresInNonGraph.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\HelperCallsToAnotherFile.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
