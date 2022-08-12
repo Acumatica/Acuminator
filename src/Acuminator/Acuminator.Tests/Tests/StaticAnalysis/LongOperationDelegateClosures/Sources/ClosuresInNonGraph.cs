@@ -20,7 +20,9 @@ namespace Acuminator.Tests.Sources
 		public IEnumerable someAction(PXAdapter adapter)
 		{
 			var helper = new NonGraph();
-			helper.RunLongRun(_processing);
+			helper.RunLongRunWithoutCapture(_processing);					 // No diagnostic					
+			helper.SetProcessingWithGraphCapture(_processing, this);		 // Show diagnostic
+			helper.SetProcessingWithAdapterCapture(_processing, adapter);	 // Show diagnostic
 
 			return adapter.Get();
 		}
@@ -31,11 +33,31 @@ namespace Acuminator.Tests.Sources
 	{
 		private static readonly Guid ID = Guid.NewGuid();
 
-		public virtual void RunLongRun(PXProcessing<SomeDAC> processingView)
+		public virtual void RunLongRunWithoutCapture(PXProcessing<SomeDAC> processingView)
 		{
-			processingView.SetProcessDelegate((SomeDAC item) => MemberFunc());
+			processingView.SetProcessDelegate((SomeDAC item) => MemberFunc());      // No diagnostic
 
-			PXLongOperation.StartOperation(ID, () => MemberFunc());
+			PXLongOperation.StartOperation(ID, () => MemberFunc());					// No diagnostic
+		}
+
+		public virtual void SetProcessingWithGraphCapture(PXProcessing<SomeDAC> processingView, PXGraph graph)
+		{
+			processingView.SetProcessDelegate((SomeDAC item) =>                         // No diagnostic
+			{
+				if (graph.IsMobile)
+				{
+					MemberFunc();
+				} 		
+			});
+		}
+
+		public virtual void SetProcessingWithAdapterCapture(PXProcessing<SomeDAC> processingView, PXAdapter adapterToCapture)
+		{
+			processingView.SetProcessDelegate((SomeDAC item) =>                         // No diagnostic
+			{
+				if (adapterToCapture != null)
+					MemberFunc();
+			});
 		}
 
 		public void MemberFunc()
