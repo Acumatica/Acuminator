@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
@@ -163,6 +164,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				var adapterParameter = GetNonCapturableAdapterParameter(callingMethod);
 
 				if (adapterParameter == null)
+					return null;
+
+				// Check if adapter was reassigned
+				var reassignedParameters = _parametersReassignedFinder.GetParametersReassignedBeforeCallsite(callingMethodNode, longOperationSetupMethodInvocationNode,
+																											 new List<string>(capacity: 1) { adapterParameter.Name }, 
+																											 semanticModel, CancellationToken);
+				if (reassignedParameters?.Count > 0)
 					return null;
 
 				return new PassedParametersToNotBeCaptured
