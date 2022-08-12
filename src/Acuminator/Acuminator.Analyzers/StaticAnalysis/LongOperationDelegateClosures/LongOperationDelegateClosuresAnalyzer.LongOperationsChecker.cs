@@ -325,10 +325,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (!isInsideGraph && !isInsideGraphExtension)
 					return null;
 
-				// Finally check if the method is a PXOverride of the action handler and has a corresponding action.
-				if (!callingMethod.HasAttribute(PxContext.AttributeTypes.PXOverrideAttribute, checkOverrides: true))
-					return null;
-
 				IEnumerable<ITypeSymbol> typesToCheck = isInsideGraph
 					? containingType.GetGraphWithBaseTypes()
 					: containingType.GetGraphExtensionWithBaseExtensions(PxContext, SortDirection.Descending, includeGraph: true);
