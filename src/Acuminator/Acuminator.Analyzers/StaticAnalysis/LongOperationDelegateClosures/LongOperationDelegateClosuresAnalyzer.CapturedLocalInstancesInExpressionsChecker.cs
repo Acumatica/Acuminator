@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 
 using Acuminator.Utilities;
@@ -93,6 +94,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 							CapturedInstancesTypes capturedInstanceType = IdentifierCapturesLocalInstance(identifierName);
 							return (capturedInstanceType, ShouldVisitChildren: false);
 						}
+					case MemberAccessExpressionSyntax memberAccessExpression:
+						// Visit element which member is accessed
+						memberAccessExpression.Expression.Accept(this);
+
+						// Return the _capturedInstanceType field itself. 
+						// It will be result of what visit of memberAccessExpression.Expression subtree found
+						return (_capturedInstanceType, ShouldVisitChildren: false);
+
+					case MemberBindingExpressionSyntax:
+						// Member binding expression represents type members accessed through conditional access - when accessed instance is not null
+						// We always have member binding expression in the conditial access syntax subtree like this: graph?.processor?.MemberFunc
+						// We don't need to analyze accessed members, we need only the element being accessed which nodes will be analyzed by other cases of this switch
+
+					case InvocationExpressionSyntax:
+						// In case of an invocation expression we have a method call that should return a delegate passed to the method starting long run.
+						// Such call itself does not capture graph reference and such cases should be non existant in the codebase
+						// Therefore, we won't step in to make a recursive analysis which will be difficult to implement
+					
+					case LiteralExpressionSyntax:	
+						// Case for null passed as argument
+						return (CapturedInstanceType: CapturedInstancesTypes.None, ShouldVisitChildren: false);
+
 					default:
 						return (CapturedInstanceType: CapturedInstancesTypes.None, ShouldVisitChildren: true);
 				}
