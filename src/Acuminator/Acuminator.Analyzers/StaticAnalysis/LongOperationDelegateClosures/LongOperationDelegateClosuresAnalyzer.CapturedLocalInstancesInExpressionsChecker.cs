@@ -148,20 +148,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 						: CapturedInstancesTypes.None;
 				}
 
-				if (_outerMethodParametersToNotBeCaptured?.Count > 0 && 
-					_outerMethodParametersToNotBeCaptured.GetPassedParameter(symbol.Name) is PassedParameter passedParameter)
-				{
-					return passedParameter.CapturedTypes;
-				}
-
-				return CapturedInstancesTypes.None;
+				var nonCapturableParameter = FindNonCapturableParameterPassedToMethod(symbol.Name);
+				return nonCapturableParameter?.CapturedTypes ?? CapturedInstancesTypes.None;
 			}
 
 			private CapturedInstancesTypes IdentifierCapturesLocalInstance(IdentifierNameSyntax identifierName)
 			{
 				ISymbol? identifierSymbol = _semanticModel.GetSymbolInfo(identifierName, _cancellation).Symbol;
 
-				if (identifierSymbol?.ContainingType == null || identifierSymbol.IsStatic || !identifierSymbol.ContainingType.IsPXGraphOrExtension(_pxContext))
+				if (identifierSymbol == null || identifierSymbol.IsStatic)
 					return CapturedInstancesTypes.None;
 
 				switch (identifierSymbol.Kind)
@@ -182,15 +177,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					case SymbolKind.Property:
 					case SymbolKind.Event:
 					case SymbolKind.Field:
-						return CapturedInstancesTypes.PXGraph;      // Instance methods, properties, fields and events hold closure
+						// Instance methods, properties, fields and events hold closure
+						return identifierSymbol?.ContainingType.IsPXGraphOrExtension(_pxContext) == true
+									? CapturedInstancesTypes.PXGraph
+									: CapturedInstancesTypes.None;      
 
-					case SymbolKind.Parameter:    
-						// Parameter here is a parameter of the outer method passed to the StartLongOperation or SetProcessDelegate which means its a delegate
-						// We can't analyze arbitrary delegates, so assume that they don't contain delegate with incorrect closures 
+					case SymbolKind.Parameter:
+						var nonCapturableParameter = FindNonCapturableParameterPassedToMethod(identifierSymbol.Name);
+						return nonCapturableParameter?.CapturedTypes ?? CapturedInstancesTypes.None;
+
 					default:
 						return CapturedInstancesTypes.None;
 				}
 			}
+
+			private PassedParameter? FindNonCapturableParameterPassedToMethod(string parameterName) =>
+				_outerMethodParametersToNotBeCaptured?.Count > 0
+					? _outerMethodParametersToNotBeCaptured.GetPassedParameter(parameterName)
+					: null;
 		}
 	}
 }
