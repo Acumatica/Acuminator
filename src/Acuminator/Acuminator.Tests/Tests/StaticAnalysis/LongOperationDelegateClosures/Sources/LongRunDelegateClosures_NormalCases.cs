@@ -61,16 +61,38 @@ namespace Acuminator.Tests.Sources
 			PXLongOperation.StartOperation(this, processorStatic.MemberFunc);       //No diagnostic
 
 			//Recursive analysis test
-			//Test recursive analyis		
+			//Test recursive analyis	
+			RunLongRunWithGraph(this);                                              //Should be diagnostic
+
+			var localGraph = PXGraph.CreateInstance<ProcessingGraph>();
+			RunLongRunWithGraph(localGraph);                                        //No diagnostic
+
 			processor.TestGraphCaptured(someFlag: true, this);										//Should be diagnostic
 			ProcessorProperty.TestGraphCapturedInHelper(someFlag: true, this);						//Should be diagnostic
 			processor.TestGraphCapturedInArray(someFlag: true, this, new[] { this });				//Should be diagnostic
 			processorStatic.TestGraphNotCaptured(someFlag: true, this);								//No diagnostic
 
+			processor.TestGraphCaptured(someFlag: true, localGraph);								//No diagnostic
+			ProcessorProperty.TestGraphCapturedInHelper(someFlag: true, localGraph);				//No diagnostic
+			processor.TestGraphCapturedInArray(someFlag: true, this, new[] { localGraph });			//No diagnostic
+
+			// Test capturing graph via member access
+			AnotherProcessor.RunConditional(this);								//Should be diagnostic
+			AnotherProcessor.RunConditional(localGraph);						//No diagnostic
+
+			AnotherProcessor.RunNull(this);										//No diagnostic
+			AnotherProcessor.RunNull(localGraph);								//No diagnostic
+
+			AnotherProcessor.RunProcessor(this);								//Should be diagnostic
+			AnotherProcessor.RunProcessor(localGraph);							//No diagnostic
+
+			AnotherProcessor.RunDelegate(this);									//Should be diagnostic
+			AnotherProcessor.RunDelegate(localGraph);							//No diagnostic
+
 			return adapter.Get();
 		}
 
-		public static void RunLongRunWithAdapter(ProcessingGraph graph)
+		public static void RunLongRunWithGraph(ProcessingGraph graph)
 		{
 			PXLongOperation.StartOperation(graph, () => graph.MemberFunc());
 		}
@@ -115,20 +137,14 @@ namespace Acuminator.Tests.Sources
 				typeof(PXAdapter).Name.ToString();
 			});
 
-			RunLongRunWithAdapter(adapter);															//Should be diagnostic
+			//Test recursive analyis
+			RunLongRunWithAdapter(adapter);                                                         //Should be diagnostic
 
-			//Test recursive analyis		
 			processor.TestAdapterCapture(adapter);													//Should be diagnostic
 			ProcessorProperty.TestAdapterCapturedInHelper(someFlag: true, adapter);					//Should be diagnostic
 			processor.TestAdapterCapturedInList(someFlag: true, new List<object> { adapter });		//Should be diagnostic
 
 			return adapter.Get();
-		}
-
-		private void TestAdapterReassignedNotCaptured(PXAdapter adapter)
-		{
-			adapter = null;
-			PXLongOperation.StartOperation(this, () => UseAdapter(adapter));
 		}
 
 		private static void UseAdapter(PXAdapter adapter) { }
@@ -140,6 +156,13 @@ namespace Acuminator.Tests.Sources
 
 		private class Processor
 		{
+			public PXToggleAsyncDelegate MemberFuncDelegate { get; }
+
+			public Processor()
+			{
+				MemberFuncDelegate = MemberFunc;
+			}
+
 			public void MemberFunc()
 			{ }
 
@@ -197,35 +220,28 @@ namespace Acuminator.Tests.Sources
 				if (someFlag)
 					PXLongOperation.StartOperation(new Guid(), () => adapters[0]?.ToString());
 			}
-
-			public void TestAdapterReassignCaptured(bool someFlag, PXAdapter a)
-			{
-				if (someFlag)
-				{
-					a = new PXAdapter(view: null);
-				}
-
-				AnotherProcessor.Run(a);
-			}
-
-			public void TestAdapterReassignNotCaptured(bool someFlag, PXAdapter a)
-			{
-				a = new PXAdapter(view: null);
-
-				if (someFlag)
-				{
-					AnotherProcessor.Run(a);
-				}	
-			}
 		}
 
 
 		private static class AnotherProcessor
 		{
-			public static void Run(ProcessingGraph graph)
-			{
+			public static void Run(ProcessingGraph graph) =>
 				PXLongOperation.StartOperation(graph, graph.MemberFunc);
+
+			public static void RunProcessor(ProcessingGraph graph) =>
+				PXLongOperation.StartOperation(graph, graph.ProcessorProperty.MemberFunc);
+
+			public static void RunDelegate(ProcessingGraph graph) =>
+				PXLongOperation.StartOperation(graph, graph.processor.MemberFuncDelegate);
+
+			public static void RunConditional(ProcessingGraph graph)
+			{
+				PXLongOperation.StartOperation(graph, graph.processor?.MemberFuncDelegate);
+				PXLongOperation.StartOperation(graph, graph?.processor?.MemberFuncDelegate);
 			}
+
+			public static void RunNull(ProcessingGraph graph) => PXLongOperation.StartOperation(graph, null);
+
 
 			public static void Run(PXAdapter adapterToTest)
 			{

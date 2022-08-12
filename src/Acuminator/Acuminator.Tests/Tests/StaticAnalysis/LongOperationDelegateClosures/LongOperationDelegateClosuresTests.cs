@@ -57,19 +57,25 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 
 				//recursive analysis graph capture
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 65, column: 4, formatArgsGraph),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 66, column: 4, formatArgsGraph),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 67, column: 4, formatArgsGraph),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 70, column: 4, formatArgsGraph),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 71, column: 4, formatArgsGraph),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 72, column: 4, formatArgsGraph),
+
+				// Test capturing graph via member access
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 80, column: 4, formatArgsGraph),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 86, column: 4, formatArgsGraph),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 89, column: 4, formatArgsGraph),
 
 				// adapter capture
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 103, column: 4, formatArgsAdapter),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 106, column: 4, formatArgsAdapter),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 107, column: 4, formatArgsAdapter),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 118, column: 4, formatArgsAdapter),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 125, column: 4, formatArgsAdapter),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 128, column: 4, formatArgsAdapter),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 129, column: 4, formatArgsAdapter),
 
 				//recursive analysis adapter capture
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 121, column: 4, formatArgsAdapter),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 122, column: 4, formatArgsAdapter),
-				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 123, column: 4, formatArgsAdapter));
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 141, column: 4, formatArgsAdapter),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 143, column: 4, formatArgsAdapter),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 144, column: 4, formatArgsAdapter),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 145, column: 4, formatArgsAdapter));
 		}
 
 		[Theory]
