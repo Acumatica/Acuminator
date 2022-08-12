@@ -143,7 +143,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				if (symbol.IsThis)
 				{
-					return symbol.Type.IsPXGraphOrExtension(_pxContext)
+					return TypeMemberAccessCapturesGraph(symbol.Type)
 						? CapturedInstancesTypes.PXGraph
 						: CapturedInstancesTypes.None;
 				}
@@ -178,9 +178,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					case SymbolKind.Event:
 					case SymbolKind.Field:
 						// Instance methods, properties, fields and events hold closure
-						return identifierSymbol?.ContainingType.IsPXGraphOrExtension(_pxContext) == true
-									? CapturedInstancesTypes.PXGraph
-									: CapturedInstancesTypes.None;      
+						return TypeMemberAccessCapturesGraph(identifierSymbol.ContainingType)
+							? CapturedInstancesTypes.PXGraph
+							: CapturedInstancesTypes.None;      
 
 					case SymbolKind.Parameter:
 						var nonCapturableParameter = FindNonCapturableParameterPassedToMethod(identifierSymbol.Name);
@@ -195,6 +195,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				_outerMethodParametersToNotBeCaptured?.Count > 0
 					? _outerMethodParametersToNotBeCaptured.GetPassedParameter(parameterName)
 					: null;
+
+			private bool TypeMemberAccessCapturesGraph(ITypeSymbol? type)
+			{
+				if (type == null)
+					return false;
+
+				return type.IsPXGraphOrExtension(_pxContext) || type.IsCustomBqlCommand(_pxContext);
+			}
 		}
 	}
 }
