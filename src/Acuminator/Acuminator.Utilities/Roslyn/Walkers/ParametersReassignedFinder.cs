@@ -77,6 +77,9 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 																		  IReadOnlyCollection<string> parametersToCheck, SemanticModel semanticModel, 
 																		  CancellationToken cancellation)
 			{
+				if (callSite != null && (callSite.IsMissing || callSite.ContainsDiagnostics))	// Can't analyze syntax with errors
+					return null;
+
 				try
 				{
 					InitializeState(parametersToCheck, callSite, semanticModel, cancellation);
