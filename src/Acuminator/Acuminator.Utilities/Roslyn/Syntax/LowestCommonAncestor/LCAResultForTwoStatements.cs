@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,13 +12,13 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 	[StructLayout(LayoutKind.Auto)]
 	public readonly struct LCAResultForTwoStatements : IEquatable<LCAResultForTwoStatements>
 	{
-		public StatementSyntax Ancestor { get; }
+		public StatementSyntax? Ancestor { get; }
 
-		public StatementSyntax ScopedX { get; }
+		public StatementSyntax? ScopedX { get; }
 
-		public StatementSyntax ScopedY { get; }
+		public StatementSyntax? ScopedY { get; }
 
-		public LCAResultForTwoStatements(StatementSyntax ancestor, StatementSyntax scopedX, StatementSyntax scopedY)
+		public LCAResultForTwoStatements(StatementSyntax? ancestor, StatementSyntax? scopedX, StatementSyntax? scopedY)
 		{
 			Ancestor = ancestor;
 			ScopedX = scopedX;

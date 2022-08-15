@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -20,21 +24,21 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			int depthX = x.Depth<BaseMethodDeclarationSyntax, StatementSyntax>();
 			int depthY = y.Depth<BaseMethodDeclarationSyntax, StatementSyntax>();
 
-			StatementSyntax currentX = x, prevX = null;
-			StatementSyntax currentY = y, prevY = null;
+			StatementSyntax? currentX = x, prevX = null;
+			StatementSyntax? currentY = y, prevY = null;
 
 			while (depthX != depthY)                //First get nodes on the equal levels of depth
 			{
 				if (depthX > depthY)
 				{
 					prevX = currentX;
-					currentX = currentX.Parent<StatementSyntax>();
+					currentX = currentX!.Parent<StatementSyntax>();
 					depthX--;
 				}
 				else
 				{
 					prevY = currentY;
-					currentY = currentY.Parent<StatementSyntax>();
+					currentY = currentY!.Parent<StatementSyntax>();
 					depthY--;
 				}
 			}
@@ -43,8 +47,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			{
 				prevX = currentX;
 				prevY = currentY;
-				currentX = currentX.Parent<StatementSyntax>();
-				currentY = currentY.Parent<StatementSyntax>();
+				currentX = currentX?.Parent<StatementSyntax>();
+				currentY = currentY?.Parent<StatementSyntax>();
 			}
 
 			return new LCAResultForTwoStatements(currentX, prevX, prevY);
@@ -60,8 +64,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			int depthX = x.Depth<BaseMethodDeclarationSyntax>();
 			int depthY = y.Depth<BaseMethodDeclarationSyntax>();
 
-			SyntaxNode currentX = x, prevX = null;
-			SyntaxNode currentY = y, prevY = null;
+			SyntaxNode? currentX = x, prevX = null;
+			SyntaxNode? currentY = y, prevY = null;
 
 			while (depthX != depthY)                //First get nodes on the equal levels of depth
 			{
