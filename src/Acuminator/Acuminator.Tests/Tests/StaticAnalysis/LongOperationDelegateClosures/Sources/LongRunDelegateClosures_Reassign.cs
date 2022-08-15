@@ -134,7 +134,7 @@ namespace Acuminator.Tests.Sources
 			}
 		}
 
-		private PXAdapter NewAdapter() => 
+		private static PXAdapter NewAdapter() => 
 			new PXAdapter(new PXView(this, isReadOnly: true, PXSelect<SomeDAC>.GetCommand()));
 
 		private void Reassign(out PXAdapter adapter)
