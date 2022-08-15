@@ -56,35 +56,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			#endregion
 
 			#region Visiting invocations and checking long run delegates 
-			public override void VisitInvocationExpression(InvocationExpressionSyntax longOperationSetupMethodInvocationNode) =>
-				AnalyzeLongOperationDelegate(longOperationSetupMethodInvocationNode);
-
-			private void AnalyzeLongOperationDelegate(InvocationExpressionSyntax longOperationSetupMethodInvocationNode)
+			public override void VisitInvocationExpression(InvocationExpressionSyntax invocationExpression)
 			{
 				ThrowIfCancellationRequested();
 
-				SemanticModel? semanticModel = GetSemanticModel(longOperationSetupMethodInvocationNode.SyntaxTree);
+				SemanticModel? semanticModel = GetSemanticModel(invocationExpression.SyntaxTree);
 
 				if (semanticModel == null)
 				{
-					base.VisitInvocationExpression(longOperationSetupMethodInvocationNode);
+					base.VisitInvocationExpression(invocationExpression);
 					return;
 				}
 
-				var longOperationDelegateType = LongOperationDelegateTypeClassifier.GetLongOperationDelegateType(longOperationSetupMethodInvocationNode,
+				var longOperationDelegateType = LongOperationDelegateTypeClassifier.GetLongOperationDelegateType(invocationExpression,
 																												 semanticModel, PxContext, CancellationToken);
 				switch (longOperationDelegateType)
 				{
 					case LongOperationDelegateType.ProcessingDelegate:
-						AnalyzeSetProcessDelegateMethod(semanticModel, longOperationSetupMethodInvocationNode);
+						AnalyzeSetProcessDelegateMethod(semanticModel, invocationExpression);
 						return;
 
 					case LongOperationDelegateType.LongRunDelegate:
-						AnalyzeStartOperationDelegateMethod(semanticModel, longOperationSetupMethodInvocationNode);
+						AnalyzeStartOperationDelegateMethod(semanticModel, invocationExpression);
 						return;
 
 					default:
-						base.VisitInvocationExpression(longOperationSetupMethodInvocationNode);
+						base.VisitInvocationExpression(invocationExpression);
 						return;
 				}
 			}
@@ -275,11 +272,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				ThrowIfCancellationRequested();
 
 				// There can be three types of non capturable parameters that can be passed to other methods:
-				// 1. PXAdapter from action delegate
+				// 1. PXAdapter from action delegate if we are at the top of call stack.
 				// 2. this reference if we are in a graph or graph extension
-				// 3. non capturable parameters passed to the calling methods from the previous method call
-				
-				IParameterSymbol? adapterParameter = GetNonCapturableAdapterParameter(callingTypeMember as IMethodSymbol);
+				// 3. non capturable parameters passed to the calling methods from the previous method call		
+				IParameterSymbol? adapterParameter = IsInsideRecursiveCall
+					? null
+					: GetNonCapturableAdapterParameter(callingTypeMember as IMethodSymbol);
 
 				NonCapturableArgumentsInfo? nonCapturableArguments = GetNonCapturableArgumentsInfo(argumentsList.Arguments, callingTypeMember, 
 																								   adapterParameter);
