@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -121,7 +122,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				ThrowIfCancellationRequested();
 
 				PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite =
-					GetNonCaptureableParametersForDelegateMethodDataFlowCheck(semanticModel, longOperationSetupMethodInvocationNode);
+					GetNonCapturableParametersForDelegateMethodWithReassignmentCheck(semanticModel, longOperationSetupMethodInvocationNode);
 
 				var capturedLocalInstancesInExpressionsChecker =
 					new CapturedLocalInstancesInExpressionsChecker(nonCapturableParametersOfMethodContainingCallSite, semanticModel, PxContext,
@@ -146,41 +147,64 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return true;
 			}
 
-			private PassedParametersToNotBeCaptured? GetNonCaptureableParametersForDelegateMethodDataFlowCheck(SemanticModel semanticModel,
+			private PassedParametersToNotBeCaptured? GetNonCapturableParametersForDelegateMethodWithReassignmentCheck(SemanticModel semanticModel,
 																							InvocationExpressionSyntax longOperationSetupMethodInvocationNode)
-			{
-				PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite = PeekPassedParametersFromStack();
+			{			
+				if (IsInsideRecursiveCall)     // if we inside the call stack then we need to check captured elements for reassignment
+				{
+					PassedParametersToNotBeCaptured? nonCapturableParametersOfMethodContainingCallSite = PeekPassedParametersFromStack();
 
-				if (nonCapturableParametersOfMethodContainingCallSite != null || IsInsideRecursiveCall)
-					return nonCapturableParametersOfMethodContainingCallSite;
+					if (nonCapturableParametersOfMethodContainingCallSite == null)
+						return null;
 
-				// In case of an action handler that is the first in the call stack we need to make extra check for the adapter parameter
-				var callingMethodNode = longOperationSetupMethodInvocationNode.Parent<MethodDeclarationSyntax>();
+					var callingMemberNode = longOperationSetupMethodInvocationNode.Parent<MemberDeclarationSyntax>();
 
-				if (callingMethodNode == null)
-					return null;
+					if (callingMemberNode == null)
+						return null;
 
-				var callingMethod = semanticModel.GetDeclaredSymbol(callingMethodNode, CancellationToken);
-				var adapterParameter = GetNonCapturableAdapterParameter(callingMethod);
+					// Check if captured parameters were reassigned
+					var reassignedParameters = GetReassignedParametersNames(callingMemberNode, nonCapturableParametersOfMethodContainingCallSite.PassedParametersNames);
 
-				if (adapterParameter == null)
-					return null;
+					if (reassignedParameters.IsNullOrEmpty())
+						return nonCapturableParametersOfMethodContainingCallSite;
 
-				// Check if adapter was reassigned
-				var reassignedParameters = _parametersReassignedFinder.GetParametersReassignedBeforeCallsite(callingMethodNode, longOperationSetupMethodInvocationNode,
-																											 new List<string>(capacity: 1) { adapterParameter.Name }, 
-																											 semanticModel, CancellationToken);
-				if (reassignedParameters?.Count > 0)
-					return null;
+					var notReassignedParameters = nonCapturableParametersOfMethodContainingCallSite.PassedParameters
+																								   .Where(p => !reassignedParameters.Contains(p.Name));
+					return new PassedParametersToNotBeCaptured(notReassignedParameters);
+				}
+				else                           // if we are at the top of call stack then we need to look for adapter parameter in case we are in action handler
+				{
+					var callingMethodNode = longOperationSetupMethodInvocationNode.Parent<MethodDeclarationSyntax>();
 
-				return new PassedParametersToNotBeCaptured
-				(
-					new List<PassedParameter>(capacity: 1)
-					{
-						new PassedParameter(adapterParameter.Name, CapturedInstancesTypes.PXAdapter)
-					}
-				);
-			}
+					if (callingMethodNode == null)
+						return null;
+
+					var callingMethod = semanticModel.GetDeclaredSymbol(callingMethodNode, CancellationToken);
+					var adapterParameter = GetNonCapturableAdapterParameter(callingMethod);
+
+					if (adapterParameter == null)
+						return null;
+
+					// Check if adapter was reassigned
+					var reassignedParameters = GetReassignedParametersNames(callingMethodNode, new List<string>(capacity: 1) { adapterParameter.Name });
+
+					if (reassignedParameters?.Count > 0)
+						return null;
+
+					return new PassedParametersToNotBeCaptured
+					(
+						new List<PassedParameter>(capacity: 1)
+						{
+							new PassedParameter(adapterParameter.Name, CapturedInstancesTypes.PXAdapter)
+						}
+					);
+				}
+
+				//---------------------------------------Local Function-----------------------------------------------------------------------
+				HashSet<string>? GetReassignedParametersNames(MemberDeclarationSyntax callingMemberName, IReadOnlyCollection<string> parametersNames) =>
+					_parametersReassignedFinder.GetParametersReassignedBeforeCallsite(callingMemberName, longOperationSetupMethodInvocationNode,
+																					  parametersNames, semanticModel, CancellationToken);
+			} 
 			#endregion
 
 			#region Recursive method calls visiting - filtering visited methods and perform data flow analysis
@@ -307,13 +331,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			/// </returns>
 			private IParameterSymbol? GetNonCapturableAdapterParameter(IMethodSymbol? callingMethod)
 			{
-				if (callingMethod?.ContainingType == null || callingMethod.Parameters.IsDefaultOrEmpty || !callingMethod.IsValidActionHandler(PxContext))
+				if (callingMethod?.ContainingType == null || callingMethod.Parameters.IsDefaultOrEmpty)
 					return null;
 
-				var adapterParameter = callingMethod.Parameters[0];
-
-				// Check for PXButton attribute
-				if (callingMethod.HasAttribute(PxContext.AttributeTypes.PXButtonAttribute, checkOverrides: true))
+				// Obtain adapter parameter
+				var (adapterParameter, hasPXButtonAttribute) = FindAdapterParameterInMethod(callingMethod);
+				
+				// Check for PXButton attribute - if method has it then it is an action handler
+				if (adapterParameter == null || hasPXButtonAttribute)
 					return adapterParameter;
 
 				// Check for action handlers that are declared inside the current graph but are not marked with attribute
@@ -335,6 +360,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return hasCorrespondingAction
 					? adapterParameter
 					: null;
+			}
+
+			private (IParameterSymbol? AdapterParameter, bool HasPXButtonAttribute) FindAdapterParameterInMethod(IMethodSymbol callingMethod)
+			{
+				// Check if method is valid graph action handler
+				if (callingMethod.IsValidActionHandler(PxContext))
+					return (callingMethod.Parameters[0], HasPXButtonAttribute(callingMethod));
+
+				// if method is not valid graph action handler then check for PXButton attribute. 
+				// Sometimes it is declared on action handlers with custom signatures that are used by dynamically added actions
+				if (!HasPXButtonAttribute(callingMethod))
+					return (AdapterParameter: null, HasPXButtonAttribute: false);   // If there is no PXButton attribute then it's not an action handler
+
+				// If the method has PXButton attribute then do more flexible search for adapter parameter.
+				// Check if the method has a single adapter parameter and if yes then return it
+				var adapterParameters = callingMethod.Parameters.Where(parameter => parameter.Type.Equals(PxContext.PXAdapterType))
+																.ToList(capacity: 1);
+				return adapterParameters.Count == 1
+					? (AdapterParameter: adapterParameters[0], HasPXButtonAttribute: true)
+					: (AdapterParameter: null, HasPXButtonAttribute: true);
+			}
+
+			private bool HasPXButtonAttribute(IMethodSymbol method) => 
+				method.HasAttribute(PxContext.AttributeTypes.PXButtonAttribute, checkOverrides: true);
+
+			private string LastSegmentOfTypeName(ITypeSymbol type)
+			{
+				int dotIndex = type.Name.LastIndexOf('.');
+				return dotIndex < 0
+					? type.Name
+					: type.Name.Substring(dotIndex + 1);
 			}
 
 			private NonCapturableArgumentsInfo? GetNonCapturableArgumentsInfo(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember, 
