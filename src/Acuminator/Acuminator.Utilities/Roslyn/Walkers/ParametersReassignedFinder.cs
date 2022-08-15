@@ -254,6 +254,24 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				// If there are local function invocations we'll visit its body from the invocation node.
 			}
 
+			#region Skip visiting anonymous functions and lambdas
+			// Lambdas and amomymous functions can be declared in the middle of the code. 
+			// We don't visit them from the normal tree walking since their declaration is not a running code that can reassign something
+			// Also, currently analysis of invocations of lambdas is not supported
+			public override void VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax anonymousMethodExpression)
+			{
+
+			}
+
+			public override void VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax simpleLambdaExpression)
+			{
+
+			}
+			public override void VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax  parenthesizedLambdaExpression)
+			{
+
+			}
+			#endregion
 			#region State Management
 			[MemberNotNull(nameof(_parametersToCheck), nameof(_semanticModel))]
 			private void InitializeState(IReadOnlyCollection<string> parametersToCheck, ExpressionSyntax? callSite, SemanticModel semanticModel,
