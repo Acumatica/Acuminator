@@ -154,5 +154,18 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 33, column: 4, formatArgsAdapter),
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 35, column: 4, formatArgsAdapter));
 		}
+
+		[Theory]
+		[EmbeddedFileData("LongRunDelegateClosures_Reassign.cs")]
+		public Task Check_Adapter_ReassignedCases_InLongRun(string actual)
+		{
+			string[] formatArgs = new[] { AnalyzerResources.PX1008Title_CapturedPXAdapterFormatArg, AnalyzerResources.PX1008Title_LongRunDelegateFormatArg };
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 39, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 40, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 41, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 42, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 43, column: 4, formatArgs));
+		}
 	}
 }
