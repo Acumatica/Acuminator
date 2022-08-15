@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Utilities.Roslyn.Syntax
 {
 	[StructLayout(LayoutKind.Auto)]
-	public struct LCAResultForTwoStatements : IEquatable<LCAResultForTwoStatements>
+	public readonly struct LCAResultForTwoStatements : IEquatable<LCAResultForTwoStatements>
 	{
 		public StatementSyntax Ancestor { get; }
 
