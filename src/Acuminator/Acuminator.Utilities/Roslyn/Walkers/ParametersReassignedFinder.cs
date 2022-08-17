@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
@@ -50,11 +51,75 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 			cancellation.ThrowIfCancellationRequested();
 
+			if (callSite != null && (callSite.IsMissing || callSite.ContainsDiagnostics))   // Can't analyze syntax with errors
+				return null;
+
 			if (parametersToCheck.Count == 0)
 				return null;
 
-			return _reassignSearchingWalker.GetParametersReassignedBeforeCallsite(declarationNode, callSite, parametersToCheck, 
-																				  semanticModel, cancellation);
+			CSharpSyntaxNode? body = declarationNode.GetBody();
+
+			if (body == null)
+				return null;
+			
+			var dataFlowAnalysis = AnalyseDataFlow(semanticModel, body);
+
+			// If there is no call site then rely only on data flow analysis AlwaysAssigned results, assume that we check the whole containing type member
+			if (callSite == null)
+			{
+				return dataFlowAnalysis != null
+					? GetCheckedParametersPresentInDataFlowReassignedSymbols(dataFlowAnalysis.AlwaysAssigned, parametersToCheck)
+					: null;
+		}
+
+			// If there is a call site we still can't use AlwaysAssigned since assignment may happen after call site
+			// But we still can make additional filtering in case dataflow analysis succeeded
+			var filteredParametersToCheck = dataFlowAnalysis != null
+				? GetCheckedParametersPresentInDataFlowReassignedSymbols(dataFlowAnalysis.WrittenInside, parametersToCheck)
+				: parametersToCheck;
+
+			if (filteredParametersToCheck == null)
+				return null;
+
+			return _reassignSearchingWalker.GetParametersReassignedBeforeCallsite(body, callSite, parametersToCheck, semanticModel, cancellation);
+		}
+
+		private DataFlowAnalysis? AnalyseDataFlow(SemanticModel semanticModel, CSharpSyntaxNode body)
+		{
+			DataFlowAnalysis? dataFlowAnalysis;
+
+			try
+			{
+				dataFlowAnalysis = semanticModel.AnalyzeDataFlow(body);
+			}
+			catch (Exception)
+			{
+				return default;
+			}
+
+			return dataFlowAnalysis?.Succeeded == true
+				? dataFlowAnalysis
+				: null;
+		}
+
+		private HashSet<string>? GetCheckedParametersPresentInDataFlowReassignedSymbols(ImmutableArray<ISymbol> dataFlowReassigned, 
+																						IReadOnlyCollection<string> parametersToCheck)
+		{
+			if (dataFlowReassigned.IsDefaultOrEmpty)
+				return null;
+
+			HashSet<string>? reassignedParameters = null;
+
+			foreach (var parameterName in parametersToCheck)
+			{
+				if (dataFlowReassigned.Any(symbol => symbol.Name == parameterName))
+				{
+					reassignedParameters ??= new HashSet<string>();
+					reassignedParameters.Add(parameterName);
+				}
+			}
+
+			return reassignedParameters;
 		}
 
 		//----------------------------------------Walker----------------------------------------------
