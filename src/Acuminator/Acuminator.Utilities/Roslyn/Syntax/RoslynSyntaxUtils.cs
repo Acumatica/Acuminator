@@ -287,10 +287,11 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static BaseArgumentListSyntax? GetArgumentsList(this SyntaxNode callSite) =>
 			callSite switch
 			{
-				InvocationExpressionSyntax invocation         => invocation.ArgumentList,
-				ElementAccessExpressionSyntax elementAccess   => elementAccess.ArgumentList,
-				ObjectCreationExpressionSyntax objectCreation => objectCreation.ArgumentList,
-				_                                             => null
+				InvocationExpressionSyntax invocation                           => invocation.ArgumentList,
+				ElementAccessExpressionSyntax elementAccess                     => elementAccess.ArgumentList,
+				ObjectCreationExpressionSyntax objectCreation                   => objectCreation.ArgumentList,
+				ElementBindingExpressionSyntax elementBinding                   => elementBinding.ArgumentList,
+				_                                                               => null
 			};
 	}
 }

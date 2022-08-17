@@ -102,7 +102,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 			SyntaxNode current = node;
 
-			while (current != null && !(current is StatementSyntax))
+			while (current != null && current is not StatementSyntax)
 			{
 				current = current.Parent;
 			}
