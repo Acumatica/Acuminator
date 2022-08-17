@@ -417,5 +417,18 @@ namespace Acuminator.Utilities.Common
 
 			return false;
 		}
+
+		[DebuggerStepThrough]
+		public static bool Contains<TNode>(this SyntaxList<TNode> source, TNode node)
+		where TNode : SyntaxNode
+		{
+			for (int i = 0; i < source.Count; i++)
+			{
+				if (Equals(node, source[i]))
+					return true;
+			}
+
+			return false;
+		}
 	}
 }
