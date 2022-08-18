@@ -1181,7 +1181,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActive method.
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside the IsActive method.
         /// </summary>
         public static string PX1056TitleIsActive {
             get {
@@ -1190,7 +1190,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside IsActiveForGraph&lt;TGraph&gt; method.
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized inside the IsActiveForGraph&lt;TGraph&gt; method.
         /// </summary>
         public static string PX1056TitleIsActiveForGraph {
             get {
@@ -1487,7 +1487,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
+        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type parameter.
         /// </summary>
         public static string PX1093Title {
             get {
