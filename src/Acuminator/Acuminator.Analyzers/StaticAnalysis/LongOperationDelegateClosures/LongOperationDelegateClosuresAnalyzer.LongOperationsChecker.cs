@@ -55,6 +55,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			public override void VisitXmlComment(XmlCommentSyntax node) { }
 			#endregion
 
+			public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+			{
+				// When we visit local function declaration it is like we start visiting another method at the top of call stack
+				// No previous recursive context applies to the local function declaration itself because it is a declaration, not a call.
+				// Thus, we need to save previous recursive context, reset it, visit local function and then restore saved context
+				var oldNonCapturablePassedParameters = NonCapturablePassedParameters;
+
+				try
+				{
+					NonCapturablePassedParameters = new Stack<PassedParametersToNotBeCaptured?>();
+					base.VisitLocalFunctionStatement(node);
+				}
+				finally
+				{
+					NonCapturablePassedParameters = oldNonCapturablePassedParameters;
+				}
+			}
+
 			#region Visiting invocations and checking long run delegates 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax invocationExpression)
 			{
