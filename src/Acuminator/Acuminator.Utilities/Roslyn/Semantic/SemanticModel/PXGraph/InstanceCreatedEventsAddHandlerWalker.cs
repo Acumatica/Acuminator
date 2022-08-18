@@ -1,10 +1,14 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -23,22 +27,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_pxContext = pxContext;
 		}
 
-		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+		public override void VisitInvocationExpression(InvocationExpressionSyntax invocationNode)
 		{
 			ThrowIfCancellationRequested();
 
-			SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
-			IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
+			SemanticModel? semanticModel = GetSemanticModel(invocationNode.SyntaxTree);
+			IMethodSymbol? methodSymbol = GetSymbol<IMethodSymbol>(invocationNode);
 
-			if (semanticModel == null || symbol == null)
+			if (semanticModel == null || methodSymbol == null)
 				return;
 
-			bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
+			bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(methodSymbol.ConstructedFrom);
 
 			if (isCreationDelegateAddition)
 			{
-				var graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
-				var expressionNode = node.ArgumentList.Arguments.First().Expression;
+				var graphSymbol = methodSymbol.TypeArguments[0] as INamedTypeSymbol;
+				var expressionNode = invocationNode.ArgumentList.Arguments.First().Expression;
 				var delegateSymbol = semanticModel.GetSymbolInfo(expressionNode, CancellationToken).Symbol;
 				var delegateNode = expressionNode is LambdaExpressionSyntax lambdaNode ?
 					lambdaNode.Body :
@@ -51,7 +55,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				}
 			}
 
-			base.VisitInvocationExpression(node);
+			base.VisitInvocationExpression(invocationNode);
 		}
 	}
 }
