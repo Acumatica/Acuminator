@@ -31,10 +31,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			ThrowIfCancellationRequested();
 
+			if (invocationNode.ArgumentList.Arguments.Count == 0)
+				return;
+
 			SemanticModel? semanticModel = GetSemanticModel(invocationNode.SyntaxTree);
 			IMethodSymbol? methodSymbol = GetSymbol<IMethodSymbol>(invocationNode);
 
-			if (semanticModel == null || methodSymbol == null)
+			if (semanticModel == null || methodSymbol == null || methodSymbol.TypeParameters.IsDefaultOrEmpty)
 				return;
 
 			bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(methodSymbol.ConstructedFrom);
