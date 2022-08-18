@@ -1,4 +1,6 @@
-﻿using Acuminator.Utilities.Common;
+﻿#nullable enable
+
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
@@ -20,8 +22,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public NodeSymbolItem(N node, S symbol, int declarationOrder)
 			: base(symbol, declarationOrder)
 		{
-			node.ThrowOnNull(nameof(node));
-			Node = node;
+			Node = node.CheckIfNull(nameof(node));
 		}
 	}
 }
