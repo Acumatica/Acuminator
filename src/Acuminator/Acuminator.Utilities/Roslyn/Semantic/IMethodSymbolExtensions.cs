@@ -105,64 +105,65 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <summary>
 		/// Gets the topmost non-local method containing the local function declaration. In case of a non-local method returns itself.
 		/// </summary>
-		/// <param name="localMethod">The method that can be local function.</param>
+		/// <param name="localFunction">The method that can be local function.</param>
 		/// <returns>
 		/// The non-local method containing the local function.
 		/// </returns>
-		public static IMethodSymbol? GetContainingNonLocalMethod(this IMethodSymbol localMethod) =>
-			GetStaticOrNonLocalContainingMethod(localMethod, stopOnStaticMethod: false);
+		public static IMethodSymbol? GetContainingNonLocalMethod(this IMethodSymbol localFunction) =>
+			GetStaticOrNonLocalContainingMethod(localFunction, stopOnStaticMethod: false);
 
 		/// <summary>
-		/// Gets the topmost static or non-local method containing the <paramref name="localMethod"/>. In case of a non-local method returns itself.
+		/// Gets the topmost static or non-local method containing the <paramref name="localFunction"/>. In case of a non-local method returns itself.
 		/// </summary>
-		/// <param name="localMethod">The method that can be local function.</param>
+		/// <param name="localFunction">The method that can be local function.</param>
 		/// <returns>
-		/// the topmost static or non-local method containing the <paramref name="localMethod"/>.
+		/// the topmost static or non-local method containing the <paramref name="localFunction"/>.
 		/// </returns>
-		public static IMethodSymbol? GetStaticOrNonLocalContainingMethod(this IMethodSymbol localMethod) =>
-			GetStaticOrNonLocalContainingMethod(localMethod, stopOnStaticMethod: true);
+		public static IMethodSymbol? GetStaticOrNonLocalContainingMethod(this IMethodSymbol localFunction) =>
+			GetStaticOrNonLocalContainingMethod(localFunction, stopOnStaticMethod: true);
 
-		private static IMethodSymbol? GetStaticOrNonLocalContainingMethod(IMethodSymbol localMethod, bool stopOnStaticMethod)
+		private static IMethodSymbol? GetStaticOrNonLocalContainingMethod(IMethodSymbol localFunction, bool stopOnStaticMethod)
 		{
-			localMethod.ThrowOnNull(nameof(localMethod));
+			localFunction.ThrowOnNull(nameof(localFunction));
 
-			if (localMethod.MethodKind != MethodKind.LocalFunction)
-				return localMethod;
+			if (localFunction.MethodKind != MethodKind.LocalFunction)
+				return localFunction;
 
-			IMethodSymbol? current = localMethod;
+			IMethodSymbol? current = localFunction;
 
-			while (current != null && current.MethodKind == MethodKind.LocalFunction && (!stopOnStaticMethod || !localMethod.IsStatic))
+			while (current != null && current.MethodKind == MethodKind.LocalFunction && (!stopOnStaticMethod || !localFunction.IsStatic))
 				current = current.ContainingSymbol as IMethodSymbol;
 
 			return current;
 		}
 
 		/// <summary>
-		/// Gets all parameters available for local method including parameters from containing methods.
+		/// Gets all parameters available for local function including parameters from containing methods.
 		/// </summary>
-		/// <param name="localMethod">The method that can be a local function.</param>
+		/// <param name="localFunction">The method that can be a local function.</param>
+		/// <param name="includeOwnParameters">True to include, false to exclude <paramref name="localFunction"/>'s own parameters.</param>
 		/// <returns>
-		/// all parameters available for the local method from containing methods.
+		/// All parameters available for the local function including parameters from containing methods.
 		/// </returns>
-		public static ImmutableArray<IParameterSymbol> GetAllParametersAvailableForLocalMethod(this IMethodSymbol localMethod)
+		public static ImmutableArray<IParameterSymbol> GetAllParametersAvailableForLocalFunction(this IMethodSymbol localFunction, bool includeOwnParameters)
 		{
-			if (localMethod.CheckIfNull(nameof(localMethod)).MethodKind != MethodKind.LocalFunction)
-				return localMethod.Parameters;
+			if (localFunction.CheckIfNull(nameof(localFunction)).MethodKind != MethodKind.LocalFunction)
+				return localFunction.Parameters;
 
 			ImmutableArray<IParameterSymbol>.Builder parametersBuilder;
 
-			if (localMethod.Parameters.IsDefaultOrEmpty)
+			if (localFunction.Parameters.IsDefaultOrEmpty || !includeOwnParameters)
 				parametersBuilder = ImmutableArray.CreateBuilder<IParameterSymbol>();
 			else
 			{
-				parametersBuilder = ImmutableArray.CreateBuilder<IParameterSymbol>(initialCapacity: localMethod.Parameters.Length);
-				parametersBuilder.AddRange(localMethod.Parameters);
+				parametersBuilder = ImmutableArray.CreateBuilder<IParameterSymbol>(initialCapacity: localFunction.Parameters.Length);
+				parametersBuilder.AddRange(localFunction.Parameters);
 			}
 
-			if (localMethod.IsStatic)
+			if (localFunction.IsStatic)
 				return parametersBuilder.ToImmutable();
 
-			IMethodSymbol? current = localMethod;
+			IMethodSymbol? current = localFunction;
 
 			do
 			{
@@ -172,7 +173,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				// But we must stop after that and won't take parameters from the methods containing static local function
 				if (containingMethod != null && !containingMethod.Parameters.IsDefaultOrEmpty)
 				{
-					var notReassignedParameters = containingMethod.Parameters.Where(p => !parametersBuilder.Contains(p));
+					// If we do not include parameters from the local function then check if the outer parameters are redefined by the local function parameters.
+					// Redefined parameters won't be available to the local function
+					var notReassignedParameters = from parameter in containingMethod.Parameters
+												  where !parametersBuilder.Contains(parameter) && 												
+														(includeOwnParameters || !localFunction.Parameters.Any(localParameter => localParameter.Name == parameter.Name))
+												  select parameter;
 					parametersBuilder.AddRange(notReassignedParameters);
 				}
 
