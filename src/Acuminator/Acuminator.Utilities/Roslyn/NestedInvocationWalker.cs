@@ -66,8 +66,9 @@ namespace Acuminator.Utilities.Roslyn
         /// </summary>
         protected SyntaxNode? OriginalNode { get; private set; }
 
-		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
-        private readonly HashSet<IMethodSymbol> _methodsInStack = new HashSet<IMethodSymbol>();
+		private Stack<SyntaxNode> NodesStack { get; set; } = new Stack<SyntaxNode>();
+
+        private HashSet<IMethodSymbol> MethodsInStack { get; set; } = new HashSet<IMethodSymbol>();
 
 		private readonly Lazy<HashSet<INamedTypeSymbol>> _typesToBypass;
 		private readonly Func<IMethodSymbol, bool>? _extraBypassCheck;
@@ -181,9 +182,9 @@ namespace Acuminator.Utilities.Roslyn
 			}
 		}
 
-		private bool RecursiveAnalysisEnabled() => Settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
+		private bool RecursiveAnalysisEnabled() => Settings.RecursiveAnalysisEnabled && NodesStack.Count <= MaxDepth;
 
-		protected bool IsInsideRecursiveCall => _nodesStack.Count > 0;
+		protected bool IsInsideRecursiveCall => NodesStack.Count > 0;
 		#region Visit
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -279,6 +280,31 @@ namespace Acuminator.Utilities.Roslyn
 		{
 		}
 
+		public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+		{
+			// When we visit local function declaration it is like we start visiting another method at the top of call stack
+			// No previous recursive context applies to the local function declaration itself because it is a declaration, not a call.
+			// Thus, we need to save previous recursive context, reset it, visit local function and then restore saved context
+			var oldNodesStack = NodesStack;
+			var oldMethodsInStack = MethodsInStack;
+			var oldOriginalNode = OriginalNode;
+
+			try
+			{
+				NodesStack = new Stack<SyntaxNode>();
+				MethodsInStack = new HashSet<IMethodSymbol>();
+				OriginalNode = null;
+
+				base.VisitLocalFunctionStatement(node);
+			}
+			finally
+			{
+				NodesStack = oldNodesStack;
+				MethodsInStack = oldMethodsInStack;
+				OriginalNode = oldOriginalNode;
+			}
+		}
+
 		private void VisitCalledMethod(IMethodSymbol? calledMethod, ExpressionSyntax callSite)
 		{
 			if (calledMethod == null || IsMethodInStack(calledMethod) || calledMethod.GetSyntax(CancellationToken) is not CSharpSyntaxNode calledMethodNode)
@@ -302,7 +328,7 @@ namespace Acuminator.Utilities.Roslyn
 		}
 
         private bool IsMethodInStack(IMethodSymbol calledMethod) =>
-			_methodsInStack.Contains(calledMethod);
+			MethodsInStack.Contains(calledMethod);
 
 		/// <summary>
 		/// Extensibility point that allows to add some logic executed before <paramref name="calledMethod"/> is checked by the bypass check <see cref="BypassMethod(IMethodSymbol)"/>.
@@ -365,19 +391,19 @@ namespace Acuminator.Utilities.Roslyn
 
 		private void Push(SyntaxNode callSite, IMethodSymbol calledMethod)
 		{
-			if (_nodesStack.Count == 0)
+			if (NodesStack.Count == 0)
 				OriginalNode = callSite;
 
-			_nodesStack.Push(callSite);
-			_methodsInStack.Add(calledMethod);
+			NodesStack.Push(callSite);
+			MethodsInStack.Add(calledMethod);
 		}
 
 		private void Pop(IMethodSymbol calledMethod)
 		{
-			_nodesStack.Pop();
-			_methodsInStack.Remove(calledMethod);
+			NodesStack.Pop();
+			MethodsInStack.Remove(calledMethod);
 
-			if (_nodesStack.Count == 0)
+			if (NodesStack.Count == 0)
 				OriginalNode = null;
 		}
 		#endregion
