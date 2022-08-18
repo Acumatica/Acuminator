@@ -329,18 +329,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			/// </returns>
 			private IParameterSymbol? GetNonCapturableAdapterParameter(IMethodSymbol? callingMethod)
 			{
-				if (callingMethod?.ContainingType == null || callingMethod.Parameters.IsDefaultOrEmpty)
+				if (callingMethod?.ContainingType == null)
+					return null;
+
+				var actionHandlerMethod = callingMethod.MethodKind != MethodKind.LocalFunction
+					? callingMethod
+					: callingMethod.GetStaticOrNonLocalContainingMethod();
+
+				// When we check local function declared we try to get the non local containing method OR first containing static local function
+				// If we obtain the former than our local function can potentially use adapter parameter from the action handler.
+				// Otherwise, in case of a static local function it will be unavailable and we can return
+				if (actionHandlerMethod == null || actionHandlerMethod.MethodKind == MethodKind.LocalFunction)
+					return null;
+
+				if (actionHandlerMethod.Parameters.IsDefaultOrEmpty)
 					return null;
 
 				// Obtain adapter parameter
-				var (adapterParameter, hasPXButtonAttribute) = FindAdapterParameterInMethod(callingMethod);
+				var (adapterParameter, hasPXButtonAttribute) = FindAdapterParameterInMethod(actionHandlerMethod);
 				
 				// Check for PXButton attribute - if method has it then it is an action handler
 				if (adapterParameter == null || hasPXButtonAttribute)
 					return adapterParameter;
 
 				// Check for action handlers that are declared inside the current graph but are not marked with attribute
-				INamedTypeSymbol containingType = callingMethod.ContainingType;
+				INamedTypeSymbol containingType = actionHandlerMethod.ContainingType;
 				bool isInsideGraph              = containingType.IsPXGraph(PxContext);
 				bool isInsideGraphExtension     = containingType.IsPXGraphExtension(PxContext);
 
@@ -353,27 +366,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					: containingType.GetGraphExtensionWithBaseExtensions(PxContext, SortDirection.Descending, includeGraph: true);
 
 				bool hasCorrespondingAction = typesToCheck.SelectMany(type => type.GetMembers().OfType<IFieldSymbol>())
-														  .Any(field => field.Name.Equals(callingMethod.Name, StringComparison.OrdinalIgnoreCase) &&
+														  .Any(field => field.Name.Equals(actionHandlerMethod.Name, StringComparison.OrdinalIgnoreCase) &&
 																		field.Type.IsPXAction(PxContext));	
 				return hasCorrespondingAction
 					? adapterParameter
 					: null;
 			}
 
-			private (IParameterSymbol? AdapterParameter, bool HasPXButtonAttribute) FindAdapterParameterInMethod(IMethodSymbol callingMethod)
+			private (IParameterSymbol? AdapterParameter, bool HasPXButtonAttribute) FindAdapterParameterInMethod(IMethodSymbol actionHandlerMethod)
 			{
 				// Check if method is valid graph action handler
-				if (callingMethod.IsValidActionHandler(PxContext))
-					return (callingMethod.Parameters[0], HasPXButtonAttribute(callingMethod));
+				if (actionHandlerMethod.IsValidActionHandler(PxContext))
+					return (actionHandlerMethod.Parameters[0], HasPXButtonAttribute(actionHandlerMethod));
 
 				// if method is not valid graph action handler then check for PXButton attribute. 
 				// Sometimes it is declared on action handlers with custom signatures that are used by dynamically added actions
-				if (!HasPXButtonAttribute(callingMethod))
+				if (!HasPXButtonAttribute(actionHandlerMethod))
 					return (AdapterParameter: null, HasPXButtonAttribute: false);   // If there is no PXButton attribute then it's not an action handler
 
 				// If the method has PXButton attribute then do more flexible search for adapter parameter.
 				// Check if the method has a single adapter parameter and if yes then return it
-				var adapterParameters = callingMethod.Parameters.Where(parameter => parameter.Type.Equals(PxContext.PXAdapterType))
+				var adapterParameters = actionHandlerMethod.Parameters.Where(parameter => parameter.Type.Equals(PxContext.PXAdapterType))
 																.ToList(capacity: 1);
 				return adapterParameters.Count == 1
 					? (AdapterParameter: adapterParameters[0], HasPXButtonAttribute: true)
@@ -382,14 +395,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			private bool HasPXButtonAttribute(IMethodSymbol method) => 
 				method.HasAttribute(PxContext.AttributeTypes.PXButtonAttribute, checkOverrides: true);
-
-			private string LastSegmentOfTypeName(ITypeSymbol type)
-			{
-				int dotIndex = type.Name.LastIndexOf('.');
-				return dotIndex < 0
-					? type.Name
-					: type.Name.Substring(dotIndex + 1);
-			}
 
 			private NonCapturableArgumentsInfo? GetNonCapturableArgumentsInfo(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember, 
 																			  IParameterSymbol? adapterParameter)
