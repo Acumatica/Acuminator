@@ -182,5 +182,35 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			return parametersBuilder.ToImmutable();
 		}
+
+		/// <summary>
+		/// Check if  the parameter <paramref name="parameterName"/> from the non local method is redefined.
+		/// </summary>
+		/// <param name="localMethod">The method that can be local function.</param>
+		/// <param name="parameterName">Name of the parameter.</param>
+		/// <returns>
+		/// True if non local method parameter is redefined in a local method, false if not.
+		/// </returns>
+		public static bool IsNonLocalMethodParameterRedefined(this IMethodSymbol localMethod, string parameterName)
+		{
+			localMethod.ThrowOnNull(nameof(localMethod));
+
+			if (parameterName.IsNullOrWhiteSpace() || localMethod.MethodKind != MethodKind.LocalFunction)
+				return false;
+
+			IMethodSymbol? current = localMethod;
+
+			while (current?.MethodKind == MethodKind.LocalFunction)
+			{
+				if (current.IsStatic || (!current.Parameters.IsDefaultOrEmpty && current.Parameters.Any(p => p.Name == parameterName)))
+				{
+					return true;
+				}
+
+				current = current.ContainingSymbol as IMethodSymbol;
+			}
+
+			return false;
+		}
 	}
 }

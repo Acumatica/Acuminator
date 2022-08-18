@@ -366,8 +366,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				// Obtain adapter parameter
 				var (adapterParameter, hasPXButtonAttribute) = FindAdapterParameterInMethod(actionHandlerMethod);
 				
+				if (adapterParameter == null)
+					return null;
+				
+				// Check if parameter is redefined by local functions
+				if (callingMethod.MethodKind == MethodKind.LocalFunction && callingMethod.IsNonLocalMethodParameterRedefined(adapterParameter.Name))
+					return null;
+
 				// Check for PXButton attribute - if method has it then it is an action handler
-				if (adapterParameter == null || hasPXButtonAttribute)
+				if (hasPXButtonAttribute)
 					return adapterParameter;
 
 				// Check for action handlers that are declared inside the current graph but are not marked with attribute
