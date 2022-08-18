@@ -53,9 +53,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private void AddGraphInitDelegate(InvocationExpressionSyntax invocationNode, IMethodSymbol methodSymbol, SemanticModel semanticModel)
 		{
-			ITypeSymbol graphSymbol = methodSymbol.TypeArguments[0];
-
-			if (graphSymbol == null)
+			if (!(methodSymbol.TypeArguments[0] is INamedTypeSymbol graphSymbol))
 				return;
 
 			var expressionNode = invocationNode.ArgumentList.Arguments.FirstOrDefault()?.Expression;
