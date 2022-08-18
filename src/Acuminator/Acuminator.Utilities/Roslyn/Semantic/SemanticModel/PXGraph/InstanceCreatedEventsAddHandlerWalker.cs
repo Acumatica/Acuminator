@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,9 +16,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	public class InstanceCreatedEventsAddHandlerWalker : NestedInvocationWalker
 	{
 		private readonly PXContext _pxContext;
-		private int _currentDeclarationOrder;
+		private int _currentDeclarationOrder = 0;
 
-		public List<InitDelegateInfo> GraphInitDelegates { get; private set; } = new List<InitDelegateInfo>();
+		public List<InitDelegateInfo> GraphInitDelegates { get; } = new List<InitDelegateInfo>();
 
 		public InstanceCreatedEventsAddHandlerWalker(PXContext pxContext, CancellationToken cancellation)
 			: base(pxContext.Compilation, cancellation, pxContext.CodeAnalysisSettings)
@@ -44,21 +45,40 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (isCreationDelegateAddition)
 			{
-				var graphSymbol = methodSymbol.TypeArguments[0] as INamedTypeSymbol;
-				var expressionNode = invocationNode.ArgumentList.Arguments.First().Expression;
-				var delegateSymbol = semanticModel.GetSymbolInfo(expressionNode, CancellationToken).Symbol;
-				var delegateNode = expressionNode is LambdaExpressionSyntax lambdaNode ?
-					lambdaNode.Body :
-					delegateSymbol?.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(CancellationToken);
-
-				if (delegateNode != null)
-				{
-					GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode, _currentDeclarationOrder));
-					_currentDeclarationOrder++;
-				}
+				AddGraphInitDelegate(invocationNode, methodSymbol, semanticModel);
 			}
 
 			base.VisitInvocationExpression(invocationNode);
+		}
+
+		private void AddGraphInitDelegate(InvocationExpressionSyntax invocationNode, IMethodSymbol methodSymbol, SemanticModel semanticModel)
+		{
+			ITypeSymbol graphSymbol = methodSymbol.TypeArguments[0];
+
+			if (graphSymbol == null)
+				return;
+
+			var expressionNode = invocationNode.ArgumentList.Arguments.FirstOrDefault()?.Expression;
+
+			if (expressionNode == null)
+				return;
+
+			SymbolInfo delegateSymbolInfo = semanticModel.GetSymbolInfo(expressionNode, CancellationToken);
+			var delegateSymbol = delegateSymbolInfo.Symbol ?? delegateSymbolInfo.CandidateSymbols.FirstOrDefault();
+
+			if (delegateSymbol == null)
+				return;
+
+			var delegateNode = expressionNode is AnonymousFunctionExpressionSyntax anonymousMethodOrLambdaNode
+				? anonymousMethodOrLambdaNode.Body 
+				: delegateSymbol.GetSyntax(CancellationToken);
+
+			if (delegateNode != null)
+			{
+				var initDelegateInfo = new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode, _currentDeclarationOrder);
+				GraphInitDelegates.Add(initDelegateInfo);
+				_currentDeclarationOrder++;
+			}
 		}
 	}
 }
