@@ -30,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			private readonly ParametersReassignedFinder _parametersReassignedFinder = new();
 			private readonly NonCapturableElementsInArgumentsFinder _nonCapturableElementsInArgumentsFinder;
 
-			private Stack<PassedParametersToNotBeCaptured?> NonCapturablePassedParameters { get; set; } = new();
+			private Stack<PassedParametersToNotBeCaptured?> NonCapturablePassedParameters { get; set;  } = new();
 
 			public LongOperationsChecker(SyntaxNodeAnalysisContext context, PXContext pxContext) :
 									base(pxContext, context.CancellationToken)
@@ -56,17 +56,34 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			public override void VisitXmlComment(XmlCommentSyntax node) { }
 			#endregion
 
-			public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+			public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax localFunctionDeclaration)
 			{
-				// When we visit local function declaration it is like we start visiting another method at the top of call stack
+				// There are two ways to get into local function statement with the nested invocation walker:
+				// 1. Visit it during the recursive visit of a local function call. In such case it can be processesd as usual
+				// 2. Visit the declaration during the normal syntax walking.
+				
+				if (localFunctionDeclaration.Equals(NodeCurrentlyVisitedRecursively))
+				{
+					base.VisitLocalFunctionStatement(localFunctionDeclaration);
+					return;
+				}
+
+				// When we visit local function declaration during the syntax walking it is like we start visiting another method at the top of call stack
 				// No previous recursive context applies to the local function declaration itself because it is a declaration, not a call.
-				// Thus, we need to save previous recursive context, reset it, visit local function and then restore saved context
+				// Thus, we need to save the NonCapturablePassedParameters stack, reset it and then restore.
+				// 
+				// Also, we use dynamic programming approach to calculate all parameters available to a local function from containing methods recurrently.
+				// This means that we usually need the parameters in the NonCapturablePassedParameters stack.
+				// But in this case it is OK because all containing methods' parameters available to the local function in this case should be considered capturable 
+				// since we don't have any recursive analysis context.
+				// There is only one exception - the PXAdapter parameter from action delegates. It is obtained through an independent calculation.
+				// The analysis can check for the capturing of the adapter and also for capturing this reference in graphs and graph extensions. 
 				var oldNonCapturablePassedParameters = NonCapturablePassedParameters;
 
 				try
 				{
 					NonCapturablePassedParameters = new Stack<PassedParametersToNotBeCaptured?>();
-					base.VisitLocalFunctionStatement(node);
+					base.VisitLocalFunctionStatement(localFunctionDeclaration);
 				}
 				finally
 				{
