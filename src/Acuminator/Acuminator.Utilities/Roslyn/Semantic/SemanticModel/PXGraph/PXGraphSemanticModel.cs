@@ -250,11 +250,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(pxContext, typeSymbol, cancellation);
 
-			foreach (InitDelegateInfo d in delegates)
+			foreach (InitDelegateInfo initDelegateInfo in delegates)
 			{
-				GraphInitializerInfo info = new GraphInitializerInfo(GraphInitializerType.InstanceCreatedDelegate, d.Node,
-																	 d.Symbol, d.DeclarationOrder);
-				PXGraphSemanticModel existingModel = models.FirstOrDefault(m => m.Symbol.Equals(d.GraphTypeSymbol));
+				GraphInitializerInfo info = new GraphInitializerInfo(GraphInitializerType.InstanceCreatedDelegate, initDelegateInfo.Node,
+																	 initDelegateInfo.Symbol, initDelegateInfo.DeclarationOrder);
+				PXGraphSemanticModel existingModel = models.FirstOrDefault(m => m.Symbol.Equals(initDelegateInfo.GraphTypeSymbol));
 				PXGraphSemanticModel implicitModel;
 
 				if (existingModel != null)
@@ -263,7 +263,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				}
 				else
 				{
-					implicitModel = new PXGraphSemanticModel(pxContext, d.GraphType, d.GraphTypeSymbol, modelCreationOptions, cancellation);
+					implicitModel = new PXGraphSemanticModel(pxContext, initDelegateInfo.GraphType, initDelegateInfo.GraphTypeSymbol, modelCreationOptions, cancellation);
 					models.Add(implicitModel);
 				}
 

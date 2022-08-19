@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
+
+using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 

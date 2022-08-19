@@ -1,4 +1,6 @@
-﻿using Acuminator.Utilities.Common;
+﻿#nullable enable
+
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
@@ -11,8 +13,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, SyntaxNode delegateNode, int declarationOrder)
 			: base(delegateNode, delegateSymbol, declarationOrder)
 		{
-			graphSymbol.ThrowOnNull(nameof(graphSymbol));
-			GraphTypeSymbol = graphSymbol;
+			GraphTypeSymbol = graphSymbol.CheckIfNull(nameof(graphSymbol));
 		}
 	}
 }
