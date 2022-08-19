@@ -125,10 +125,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				DataFlowAnalysis? dfa = _semanticModel.AnalyzeDataFlow(anonMethodOrLambdaNode);
 
-				if (dfa == null || !dfa.Succeeded || dfa.DataFlowsIn.IsDefaultOrEmpty)
+				if (dfa == null || !dfa.Succeeded ||
+					(dfa.DataFlowsIn.IsDefaultOrEmpty && dfa.CapturedInside.IsDefaultOrEmpty && dfa.ReadInside.IsDefaultOrEmpty))
+				{
 					return CapturedInstancesTypes.None;
+				}
 
-				foreach (IParameterSymbol symbol in dfa.DataFlowsIn.OfType<IParameterSymbol>())
+				var capturedSymbols = dfa.DataFlowsIn
+										 .Concat(dfa.CapturedInside)
+										 .ConcatStructList(dfa.ReadInside)
+										 .OfType<IParameterSymbol>()
+										 .Distinct();
+
+				foreach (IParameterSymbol symbol in capturedSymbols)
 				{
 					CapturedInstancesTypes capturedInstanceType = GetCapturedSymbolType(symbol);
 
