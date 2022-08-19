@@ -70,7 +70,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				return dataFlowAnalysis != null
 					? GetCheckedParametersPresentInDataFlowReassignedSymbols(dataFlowAnalysis.AlwaysAssigned, parametersToCheck)
 					: null;
-		}
+			}
 
 			// If there is a call site we still can't use AlwaysAssigned since assignment may happen after call site
 			// But we still can make additional filtering in case dataflow analysis succeeded
@@ -84,7 +84,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 			return _reassignSearchingWalker.GetParametersReassignedBeforeCallsite(body, callSite, parametersToCheck, semanticModel, cancellation);
 		}
 
-		private DataFlowAnalysis? AnalyseDataFlow(SemanticModel semanticModel, CSharpSyntaxNode body)
+		private static DataFlowAnalysis? AnalyseDataFlow(SemanticModel semanticModel, CSharpSyntaxNode body)
 		{
 			DataFlowAnalysis? dataFlowAnalysis;
 
@@ -128,29 +128,27 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 			private CancellationToken _cancellation;
 			private IReadOnlyCollection<string>? _parametersToCheck;
 			private HashSet<string>? _reassignedParameters;
+			private List<string>? _reassignedParametersInAssignmentTempStorage;
 			private SemanticModel? _semanticModel;
 
+			private SyntaxNode? _body;
 			private ExpressionSyntax? _callSite;
 			private bool _callSiteIsReached;
 
-			private HashSet<IMethodSymbol>? _checkedLocalMethods;
+			private HashSet<IMethodSymbol>? _checkedLocalFunctions;
 
-			[MemberNotNullWhen(returnValue: true, nameof(_callSite))]
-			private bool HasCallSite => _callSite != null;
-
-			public HashSet<string>? GetParametersReassignedBeforeCallsite(SyntaxNode declarationNode, ExpressionSyntax? callSite,
+			public HashSet<string>? GetParametersReassignedBeforeCallsite(CSharpSyntaxNode body, ExpressionSyntax callSite,
 																		  IReadOnlyCollection<string> parametersToCheck, SemanticModel semanticModel, 
 																		  CancellationToken cancellation)
 			{
-				if (callSite != null && (callSite.IsMissing || callSite.ContainsDiagnostics))	// Can't analyze syntax with errors
-					return null;
-
 				try
 				{
-					InitializeState(parametersToCheck, callSite, semanticModel, cancellation);
+					InitializeState(parametersToCheck, callSite, semanticModel, body, cancellation);
 
-					var body = declarationNode.GetBody();
-					body?.Accept(this);
+					// If call site is an invocation or indexer access we won't reach its arguments during the normal tree walking because we will encounter call first
+					// At the same time reassignment may happen in argument expressions. Therefore, we need to check them first
+					CheckCallSiteArguments();
+					body.Accept(this);
 
 					return _reassignedParameters;
 				}
@@ -162,6 +160,22 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 					// 
 					// By default C# returns by value and a ref modifier is required to return the reference to the field itself.
 					ClearState();
+				}
+			}
+
+			private void CheckCallSiteArguments()
+			{
+				var argumentsList = _callSite!.GetArgumentsList();
+
+				if (argumentsList == null || argumentsList.Arguments.Count == 0)
+					return;
+
+				foreach (ArgumentSyntax argument in argumentsList.Arguments)
+				{
+					if (argument.Expression is not (LiteralExpressionSyntax or ThisExpressionSyntax))
+					{
+						argument.Expression.Accept(this);
+					}
 				}
 			}
 
@@ -180,9 +194,8 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				base.DefaultVisit(node);
 			}
 
-
 			private bool IsCallSite(ExpressionSyntax? expression) =>
-				HasCallSite && _callSite.RawKind == expression?.RawKind && _callSite.FullSpan == expression.FullSpan;
+				_callSite!.RawKind == expression?.RawKind && _callSite.FullSpan == expression.FullSpan;
 
 			public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignmentNode)
 			{
@@ -191,55 +204,58 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				if (_callSiteIsReached || assignmentNode.ContainsDiagnostics || assignmentNode.IsMissing)
 					return;
 
-				CheckLeftPartOfAssignmentForReassignedParameters(assignmentNode.Left);
+				try
+				{
+					_reassignedParametersInAssignmentTempStorage = null;
+					CheckLeftPartOfAssignmentForReassignedParameters(assignmentNode.Left);
+
+					if (_reassignedParametersInAssignmentTempStorage?.Count > 0 && 
+						!assignmentNode.Right.Contains(_callSite) &&                    // check for reassignments like: parameter = Call() 
+						DoesReassignmentDefinitelyOverrideParameter(assignmentNode))						
+					{
+						AddToReassignedParameters(_reassignedParametersInAssignmentTempStorage);
+					}
+				}
+				finally
+				{
+					_reassignedParametersInAssignmentTempStorage = null;
+				}
+				
 				base.VisitAssignmentExpression(assignmentNode);
 			}
 
 			private void CheckLeftPartOfAssignmentForReassignedParameters(ExpressionSyntax partOfAssignmentLeftExpression)
 			{
+				// Here we check the left part of assignment. There could be many different expressions in the left part but we can skip some of them.
+				// We are interested in left parts that are:
+				// - Identifiers like: parameter = null;
+				// - Tuple expressions: (parameter, _) = GetTuple();
+				// 
+				// It's useful to explicitly state that we don't need:
+				// - array or indexer access expressions, in case parameter is an array or a type with an indexer: parameter[0] = null; 
+				// - member access expressions, like: parameter.Property = null and parameter?.Property = null;
+				//
+				// We don't attempt to track the reassignment of the parameter content, we search only for reassignments of the parameter itself
 				switch (partOfAssignmentLeftExpression)
 				{
 					case IdentifierNameSyntax identifier
 					when _parametersToCheck!.Contains(identifier.Identifier.ValueText):
-						AddToReassignedParameters(identifier.Identifier.ValueText);
-						break;
-
-					case ElementAccessExpressionSyntax elementAccessNode:
-						IdentifierNameSyntax? elementAccessIdentifier = GetIdentifierFromElementAccessNode(elementAccessNode);
-
-						if (elementAccessIdentifier != null && _parametersToCheck!.Contains(elementAccessIdentifier.Identifier.ValueText))
-							AddToReassignedParameters(elementAccessIdentifier.Identifier.ValueText);
-
-						break;
+						AddToTemporaryListOfReassignedParameters(identifier.Identifier.ValueText);
+						return;
 
 					case TupleExpressionSyntax tupleExpression:
 
 						foreach (ArgumentSyntax argument in tupleExpression.Arguments)
 							CheckLeftPartOfAssignmentForReassignedParameters(argument.Expression);
 
-						break;
+						return;
 				}
 			}
 
-			private IdentifierNameSyntax? GetIdentifierFromElementAccessNode(ElementAccessExpressionSyntax elementAccess)
+			private void AddToTemporaryListOfReassignedParameters(string parameterName)
 			{
-				ExpressionSyntax current = elementAccess.Expression;
-
-				while (current != null)
-				{
-					switch (current)
-					{
-						case IdentifierNameSyntax identifier:
-							return identifier;
-						case ElementAccessExpressionSyntax outerElementAccess:
-							current = outerElementAccess.Expression;
-							continue;
-						default:
-							return null;
-					}
-				}
-
-				return null;
+				_reassignedParametersInAssignmentTempStorage ??= new List<string>();
+				_reassignedParametersInAssignmentTempStorage.Add(parameterName);
 			}
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax invocationExpression)
@@ -265,15 +281,18 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				if (localMethod == null || localMethod.IsStatic || localMethod.MethodKind != MethodKind.LocalFunction)
 					return;
 
-				if (_checkedLocalMethods?.Contains(localMethod) == true)
+				if (_checkedLocalFunctions?.Contains(localMethod) == true)
 					return;
 
-				AddToCheckedLocalMethods(localMethod);
+				AddToCheckedLocalFunctions(localMethod);
 
 				// Local method may have parameters with the same name as outer method parameters which will hide the outer method parameters
-				var nonRedeclaredParameters = _parametersToCheck.Where(checkedParameterName => localMethod.Parameters.All(p => p.Name != checkedParameterName))
-																.ToList(capacity: _parametersToCheck!.Count);
-				if (nonRedeclaredParameters.Count == 0)
+				var nonRedeclaredParameters = localMethod.Parameters.IsDefaultOrEmpty
+					? _parametersToCheck
+					: _parametersToCheck.Where(checkedParameterName => localMethod.Parameters.All(p => p.Name != checkedParameterName))
+										.ToList(capacity: _parametersToCheck!.Count);
+
+				if (nonRedeclaredParameters!.Count == 0)
 					return;
 
 				SyntaxNode? localMethodDeclaration = localMethod.GetSyntax(_cancellation);
@@ -282,22 +301,23 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				if (localMethodBody == null)
 					return;
 
-				var oldParametersToCheck = _parametersToCheck;
+				var localMethodDFA = AnalyseDataFlow(_semanticModel!, localMethodBody);
 
-				try
-				{		
-					_parametersToCheck = nonRedeclaredParameters;
-					localMethodBody.Accept(this);
-				}
-				finally
+				if (localMethodDFA == null || localMethodDFA.AlwaysAssigned.IsDefaultOrEmpty)
+					return;
+
+				foreach (string parameterName in nonRedeclaredParameters)
 				{
-					_parametersToCheck = oldParametersToCheck;
-				}		
+					if (localMethodDFA.AlwaysAssigned.Any(symbol => symbol.Name == parameterName))
+					{
+						AddToReassignedParameters(parameterName);
+					}
+				}
 			}
 
 			private void CheckIfInvocationReassignesParametersWithOutArguments(InvocationExpressionSyntax invocationExpression)
 			{
-				if (invocationExpression.ArgumentList.Arguments.Count == 0)
+				if (invocationExpression.ArgumentList.Arguments.Count == 0 || invocationExpression.Equals(_callSite))
 					return;
 
 				for (int i = 0; i < invocationExpression.ArgumentList.Arguments.Count; i++)
@@ -309,7 +329,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 					string outArgumentIdentifierName = identifier.Identifier.ValueText;
 
-					if (_parametersToCheck.Contains(outArgumentIdentifierName))
+					if (_parametersToCheck.Contains(outArgumentIdentifierName) && DoesReassignmentDefinitelyOverrideParameter(argument))
 					{
 						AddToReassignedParameters(outArgumentIdentifierName);
 					}
@@ -319,7 +339,23 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 			public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax localFunction)
 			{
 				// Local function can be declared in the middle of the code. We don't visit it from the normal tree walking.
-				// If there are local function invocations we'll visit its body from the invocation node.
+				// If there are local function invocations we'll analyze data flow for its body obtained from the invocation
+			}
+
+			private bool DoesReassignmentDefinitelyOverrideParameter(SyntaxNode reassignmentNode)
+			{
+				// Check if reassignment is in arguments
+				if (CallSiteArgumentsContainReassignment(reassignmentNode))
+					return true;
+
+				var reassignStatementParent = reassignmentNode.GetStatementNode()?.Parent;
+				return reassignStatementParent?.Contains(_callSite) ?? false;
+			}
+
+			private bool CallSiteArgumentsContainReassignment(SyntaxNode reassignmentNode)
+			{
+				var argumentsList = _callSite?.GetArgumentsList();
+				return argumentsList?.Contains(reassignmentNode) ?? false;
 			}
 
 			#region Skip visiting anonymous functions and lambdas
@@ -340,14 +376,16 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 			}
 			#endregion
+
 			#region State Management
-			[MemberNotNull(nameof(_parametersToCheck), nameof(_semanticModel))]
-			private void InitializeState(IReadOnlyCollection<string> parametersToCheck, ExpressionSyntax? callSite, SemanticModel semanticModel,
-										 CancellationToken cancellation)
+			[MemberNotNull(nameof(_parametersToCheck), nameof(_semanticModel), nameof(_callSite), nameof(_body))]
+			private void InitializeState(IReadOnlyCollection<string> parametersToCheck, ExpressionSyntax callSite, SemanticModel semanticModel,
+										 SyntaxNode body, CancellationToken cancellation)
 			{
 				_parametersToCheck = parametersToCheck;
 				_cancellation = cancellation;
 				_callSite = callSite;
+				_body = body;
 				_semanticModel = semanticModel;
 			}
 
@@ -357,9 +395,10 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				_parametersToCheck = null;
 				_reassignedParameters = null;
 				_callSite = null;
+				_body = null;
 				_callSiteIsReached = false;
 				_semanticModel = null;
-				_checkedLocalMethods = null;
+				_checkedLocalFunctions = null;
 			}
 
 			[MemberNotNull(nameof(_reassignedParameters))]
@@ -369,11 +408,22 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				_reassignedParameters.Add(parameterName);
 			}
 
-			[MemberNotNull(nameof(_checkedLocalMethods))]
-			private void AddToCheckedLocalMethods(IMethodSymbol localMethod)
+			[MemberNotNull(nameof(_reassignedParameters))]
+			private void AddToReassignedParameters(IEnumerable<string> parametersNames)
 			{
-				_checkedLocalMethods = _checkedLocalMethods ?? new HashSet<IMethodSymbol>();
-				_checkedLocalMethods.Add(localMethod);
+				_reassignedParameters = _reassignedParameters ?? new HashSet<string>();
+
+				foreach (var parameterName in parametersNames)
+				{
+					_reassignedParameters.Add(parameterName);
+				}
+			}
+
+			[MemberNotNull(nameof(_checkedLocalFunctions))]
+			private void AddToCheckedLocalFunctions(IMethodSymbol localFunction)
+			{
+				_checkedLocalFunctions = _checkedLocalFunctions ?? new HashSet<IMethodSymbol>();
+				_checkedLocalFunctions.Add(localFunction);
 			}
 			#endregion
 		}
