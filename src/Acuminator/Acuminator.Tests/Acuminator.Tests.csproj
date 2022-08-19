@@ -248,6 +248,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\CustomView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\CustomAttribute.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_Reassign.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_Local.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
