@@ -19,18 +19,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 		private Dictionary<string, List<NonCapturableArgument>>? _parametersUsedInCallArguments;
 		private readonly Dictionary<string, PassedParameter>? _nonCapturableContainingMethodsParameters;
 
-		public IReadOnlyCollection<NonCapturableArgument>? ArgumentsWithNonCapturableElements => _arguments;
+		public IReadOnlyCollection<NonCapturableArgument>? ArgumentsWithNonCapturableElements => 
+			_arguments;
+
+		public IReadOnlyCollection<PassedParameter>? NonCapturableContainingMethodsParameters =>
+			_nonCapturableContainingMethodsParameters?.Values;
+
 
 		[MemberNotNullWhen(returnValue: true, nameof(_arguments), nameof(ArgumentsWithNonCapturableElements))]
-		public bool HasArgumentsWithNonCapturableElements => _arguments?.Count > 0;
+		public bool HasArgumentsWithNonCapturableElements =>
+			_arguments?.Count > 0;
 
 		[MemberNotNullWhen(returnValue: true, nameof(_parametersUsedInCallArguments), nameof(_arguments), nameof(ArgumentsWithNonCapturableElements))]
-		public bool HasNonCapturableParametersInArguments => _parametersUsedInCallArguments?.Count > 0;
+		public bool HasNonCapturableParametersInArguments => 
+			_parametersUsedInCallArguments?.Count > 0;
 
-		[MemberNotNullWhen(returnValue: true, nameof(_nonCapturableContainingMethodsParameters))]
-		public bool HasNonCapturableContainingMethodsParameters => _nonCapturableContainingMethodsParameters?.Count > 0;
+		[MemberNotNullWhen(returnValue: true, nameof(_nonCapturableContainingMethodsParameters), nameof(NonCapturableContainingMethodsParameters))]
+		public bool HasNonCapturableContainingMethodsParameters => 
+			_nonCapturableContainingMethodsParameters?.Count > 0;
 
-		public bool HasNonCapturableElements => HasNonCapturableParametersInArguments || HasNonCapturableContainingMethodsParameters;
+		public bool HasNonCapturableElements =>
+			HasArgumentsWithNonCapturableElements || HasNonCapturableContainingMethodsParameters;
+
+		public bool HasNonCapturableParameters =>
+			HasNonCapturableParametersInArguments || HasNonCapturableContainingMethodsParameters;
 
 		public NonCapturableElementsInfo()
 		{
@@ -74,6 +86,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			}
 		}
 
+		public IReadOnlyCollection<string>? GetNamesOfUsedNonCapturableParameters()
+		{
+			if (!HasNonCapturableContainingMethodsParameters)
+				return _parametersUsedInCallArguments?.Keys;
+			else if (!HasNonCapturableParametersInArguments)
+				return _nonCapturableContainingMethodsParameters.Keys;
+
+			return _parametersUsedInCallArguments.Keys.Concat(_nonCapturableContainingMethodsParameters.Keys)
+													  .Distinct()
+													  .ToList(capacity: _parametersUsedInCallArguments.Count + _nonCapturableContainingMethodsParameters.Count);
+		}
+
 		public void RemoveParameterUsage(string parameterName)
 		{
 			_nonCapturableContainingMethodsParameters?.Remove(parameterName);
@@ -95,6 +119,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					_arguments?.Remove(argument);
 				}
 			}
+
+			_parametersUsedInCallArguments?.Remove(parameterName);
 		}
 
 		private List<NonCapturableArgument>? GetCallArgumentsUsingParameter(string parameterName)
