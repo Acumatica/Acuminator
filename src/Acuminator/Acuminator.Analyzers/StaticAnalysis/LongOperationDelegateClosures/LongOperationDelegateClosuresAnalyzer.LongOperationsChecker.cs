@@ -595,22 +595,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					callingMethod!.Parameters.Any(p => p.Name == parameterName);
 			}
 
-			private void FilterReassignedParameters(NonCapturableArgumentsInfo nonCapturableArguments, MemberDeclarationSyntax callingTypeMemberNode,
+			private void FilterReassignedParameters(NonCapturableElementsInfo nonCapturableElements, MemberDeclarationSyntax callingTypeMemberNode,
 													ExpressionSyntax callSite, SemanticModel semanticModel)
 			{
-				if (!nonCapturableArguments.HasNonCapturableParameters)
+				if (!nonCapturableElements.HasNonCapturableParameters)
+					return;
+
+				var parameterNames = nonCapturableElements.GetNamesOfUsedNonCapturableParameters();
+
+				if (parameterNames.IsNullOrEmpty())
 					return;
 
 				var reassignedParameters =
-					_parametersReassignedFinder.GetParametersReassignedBeforeCallsite(callingTypeMemberNode, callSite,
-																					  nonCapturableArguments.UsedParameters,
+					_parametersReassignedFinder.GetParametersReassignedBeforeCallsite(callingTypeMemberNode, callSite, parameterNames,
 																					  semanticModel, CancellationToken);
 				if (reassignedParameters.IsNullOrEmpty())
 					return;
 
 				foreach (string reassignedParameter in reassignedParameters)
 				{
-					nonCapturableArguments.RemoveParameterUsage(reassignedParameter);
+					nonCapturableElements.RemoveParameterUsage(reassignedParameter);
 				}
 			}
 
