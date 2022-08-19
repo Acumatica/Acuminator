@@ -330,43 +330,57 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				ThrowIfCancellationRequested();
 
-				// There can be three types of non capturable parameters that can be passed to other methods:
+				// There can be four types of non capturable parameters that can be passed to other methods:
 				// 1. PXAdapter from action delegate if we are at the top of call stack.
 				// 2. this reference if we are in a graph or graph extension
 				// 3. non capturable parameters passed to the calling methods from the previous method call		
+				// 4. for a non-static local function parameters from all containing methods up to the non-local method or first static local function.
+				 
+				// Search for the adapter only if we are at the top of call stack
 				IParameterSymbol? adapterParameter = IsInsideRecursiveCall
 					? null
 					: GetNonCapturableAdapterParameter(callingTypeMember as IMethodSymbol);
 
-				NonCapturableArgumentsInfo? nonCapturableArguments = GetNonCapturableArgumentsInfo(argumentsList.Arguments, callingTypeMember, 
-																								   adapterParameter);
-				if (nonCapturableArguments.IsNullOrEmpty())
+				NonCapturableElementsInfo? nonCapturableElements = GetNonCapturableElementsInfo(argumentsList.Arguments, callingTypeMember, 
+																								adapterParameter, calledMethod);
+				if (nonCapturableElements == null || !nonCapturableElements.HasNonCapturableElements)
 					return null;
 
-				FilterReassignedParameters(nonCapturableArguments, callingTypeMemberNode, callSite, semanticModel);
+				// We also can filter for reassigned parameters
+				FilterReassignedParameters(nonCapturableElements, callingTypeMemberNode, callSite, semanticModel);
 
-				if (nonCapturableArguments.Count == 0)
+				if (!nonCapturableElements.HasNonCapturableElements)
 					return null;
 
-				ArgumentsToParametersMapping? argumentsToParametersMapping = calledMethod.MapArgumentsToParameters(argumentsList);
+				var nonCapturableParametersFromCallArguments = 
+					GetNonCapturableParametersFromCallArguments(calledMethod, nonCapturableElements, argumentsList);
 
-				if (argumentsToParametersMapping == null)
-					return null;
+				if (!nonCapturableElements.HasNonCapturableContainingMethodsParameters)
+					return nonCapturableParametersFromCallArguments;
 
-				var nonCapturableParametersOfCalledMethod = new List<PassedParameter>(capacity: nonCapturableArguments.Count);
+				var notRedefinedContainingMethodParameters = GetContainingMethodParametersNotRedefinedByCalledMethod();
 
-				foreach (NonCapturableArgument argument in nonCapturableArguments)
+				if (notRedefinedContainingMethodParameters.Count == 0)
+					return nonCapturableParametersFromCallArguments;
+				else if (nonCapturableParametersFromCallArguments.IsNullOrEmpty())
+					return notRedefinedContainingMethodParameters;
+
+				nonCapturableParametersFromCallArguments.AddRange(notRedefinedContainingMethodParameters);
+				return nonCapturableParametersFromCallArguments;
+
+				//-----------------------------------------------Local Function-----------------------------------------
+				IReadOnlyCollection<PassedParameter> GetContainingMethodParametersNotRedefinedByCalledMethod()
 				{
-					CapturedInstancesTypes capturedTypes = argument.GetCapturedTypes();
-
-					if (capturedTypes == CapturedInstancesTypes.None)
-						continue;
-
-					var mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(calledMethod, argument.Index);
-					nonCapturableParametersOfCalledMethod.Add(new PassedParameter(mappedParameter.Name, capturedTypes));
+					if (calledMethod.Parameters.IsDefaultOrEmpty)
+						return nonCapturableElements!.NonCapturableContainingMethodsParameters!;
+					else
+					{
+						return (from containingMethodParameter in nonCapturableElements!.NonCapturableContainingMethodsParameters
+								where !calledMethod.Parameters.Any(p => p.Name == containingMethodParameter.Name)
+								select containingMethodParameter)
+							 .ToList(capacity: nonCapturableElements.NonCapturableContainingMethodsParameters!.Count);
+					}
 				}
-
-				return nonCapturableParametersOfCalledMethod;
 			}
 
 			/// <summary>
@@ -596,8 +610,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				foreach (string reassignedParameter in reassignedParameters)
 				{
-					nonCapturableArguments.RemoveParameterUsageFromArguments(reassignedParameter);
+					nonCapturableArguments.RemoveParameterUsage(reassignedParameter);
 				}
+			}
+
+			private List<PassedParameter>? GetNonCapturableParametersFromCallArguments(IMethodSymbol calledMethod,  NonCapturableElementsInfo nonCapturableElements,
+																					   BaseArgumentListSyntax argumentsList)
+			{
+				if (!nonCapturableElements.HasArgumentsWithNonCapturableElements)
+					return null;
+
+				ArgumentsToParametersMapping? argumentsToParametersMapping = calledMethod.MapArgumentsToParameters(argumentsList);
+
+				if (argumentsToParametersMapping == null)
+					return null;
+
+				var nonCapturableParametersOfCalledMethodFromCallArgs =
+					new List<PassedParameter>(capacity: nonCapturableElements.ArgumentsWithNonCapturableElements.Count);
+
+				foreach (NonCapturableArgument argument in nonCapturableElements.ArgumentsWithNonCapturableElements)
+				{
+					CapturedInstancesTypes capturedTypes = argument.GetCapturedTypes();
+
+					if (capturedTypes == CapturedInstancesTypes.None)
+						continue;
+
+					var mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(calledMethod, argument.Index);
+					nonCapturableParametersOfCalledMethodFromCallArgs.Add(new PassedParameter(mappedParameter.Name, capturedTypes));
+				}
+
+				return nonCapturableParametersOfCalledMethodFromCallArgs;
 			}
 			#endregion
 
