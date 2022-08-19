@@ -165,8 +165,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				ISymbol? identifierSymbol = _semanticModel.GetSymbolInfo(identifierName, _cancellation).Symbol;
 
-				if (identifierSymbol == null || identifierSymbol.IsStatic)
+				if (identifierSymbol == null || (identifierSymbol.Kind != SymbolKind.Method && identifierSymbol.IsStatic) ||
+					(identifierSymbol is IMethodSymbol methodSymbol && methodSymbol.IsDefinitelyStatic(_cancellation)))
+				{
 					return CapturedInstancesTypes.None;
+				}
 
 				switch (identifierSymbol.Kind)
 				{

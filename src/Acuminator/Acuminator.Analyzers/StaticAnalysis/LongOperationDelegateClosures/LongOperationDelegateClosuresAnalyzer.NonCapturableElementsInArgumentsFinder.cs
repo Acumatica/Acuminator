@@ -109,11 +109,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				if (_captureLocalGraphInstance)
 					return;
 
-				if (_callingTypeMember!.ContainingType.IsPXGraphOrExtension(_pxContext) && !_callingTypeMember.IsStatic)
+				if (_callingTypeMember!.ContainingType.IsPXGraphOrExtension(_pxContext) && !CallerIsStatic())
 				{
 					_captureLocalGraphInstance = true;
 				}
 			}
+
+			private bool CallerIsStatic() =>
+				_callingTypeMember is IMethodSymbol methodSymbol
+					? methodSymbol.IsDefinitelyStatic(_cancellation)
+					: _callingTypeMember!.IsStatic;
 
 			public override void VisitInitializerExpression(InitializerExpressionSyntax initializer)
 			{

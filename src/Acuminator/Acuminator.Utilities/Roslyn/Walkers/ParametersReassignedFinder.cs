@@ -278,7 +278,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 				// Step into non static local methods since they can reassign parameters.
 				// Any outer method parameter used in the local function  
-				if (localMethod == null || localMethod.IsStatic || localMethod.MethodKind != MethodKind.LocalFunction)
+				if (localMethod == null || localMethod.MethodKind != MethodKind.LocalFunction || localMethod.IsDefinitelyStatic(_cancellation))
 					return;
 
 				if (_checkedLocalFunctions?.Contains(localMethod) == true)
