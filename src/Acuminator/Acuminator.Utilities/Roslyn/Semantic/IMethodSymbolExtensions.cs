@@ -4,10 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -110,19 +114,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// The non-local method containing the local function.
 		/// </returns>
 		public static IMethodSymbol? GetContainingNonLocalMethod(this IMethodSymbol localFunction) =>
-			GetStaticOrNonLocalContainingMethod(localFunction, stopOnStaticMethod: false);
+			GetStaticOrNonLocalContainingMethod(localFunction, stopOnStaticMethod: false, CancellationToken.None);
 
 		/// <summary>
 		/// Gets the topmost static or non-local method containing the <paramref name="localFunction"/>. In case of a non-local method returns itself.
 		/// </summary>
 		/// <param name="localFunction">The method that can be local function.</param>
+		/// <param name="cancellation">A token that allows processing to be cancelled.</param>
 		/// <returns>
 		/// the topmost static or non-local method containing the <paramref name="localFunction"/>.
 		/// </returns>
-		public static IMethodSymbol? GetStaticOrNonLocalContainingMethod(this IMethodSymbol localFunction) =>
-			GetStaticOrNonLocalContainingMethod(localFunction, stopOnStaticMethod: true);
+		public static IMethodSymbol? GetStaticOrNonLocalContainingMethod(this IMethodSymbol localFunction, CancellationToken cancellation) =>
+			GetStaticOrNonLocalContainingMethod(localFunction, stopOnStaticMethod: true, cancellation);
 
-		private static IMethodSymbol? GetStaticOrNonLocalContainingMethod(IMethodSymbol localFunction, bool stopOnStaticMethod)
+		private static IMethodSymbol? GetStaticOrNonLocalContainingMethod(IMethodSymbol localFunction, bool stopOnStaticMethod,
+																		  CancellationToken cancellation)
 		{
 			localFunction.ThrowOnNull(nameof(localFunction));
 
@@ -131,7 +137,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			IMethodSymbol? current = localFunction;
 
-			while (current != null && current.MethodKind == MethodKind.LocalFunction && (!stopOnStaticMethod || !localFunction.IsStatic))
+			while (current != null && current.MethodKind == MethodKind.LocalFunction && (!stopOnStaticMethod || !localFunction.IsDefinitelyStatic(cancellation)))
 				current = current.ContainingSymbol as IMethodSymbol;
 
 			return current;
@@ -145,7 +151,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>
 		/// All parameters available for the local function including parameters from containing methods.
 		/// </returns>
-		public static ImmutableArray<IParameterSymbol> GetAllParametersAvailableForLocalFunction(this IMethodSymbol localFunction, bool includeOwnParameters)
+		public static ImmutableArray<IParameterSymbol> GetAllParametersAvailableForLocalFunction(this IMethodSymbol localFunction, bool includeOwnParameters,
+																								 CancellationToken cancellation)
 		{
 			if (localFunction.CheckIfNull(nameof(localFunction)).MethodKind != MethodKind.LocalFunction)
 				return localFunction.Parameters;
@@ -167,6 +174,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			do
 			{
+				cancellation.ThrowIfCancellationRequested();
+
 				var containingMethod = current.ContainingSymbol as IMethodSymbol;
 
 				// For a non static nested local function we can add parameters from its containing local function even if it is static
@@ -184,7 +193,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 				current = containingMethod;
 			}
-			while (current?.MethodKind == MethodKind.LocalFunction && !current.IsStatic);	
+			while (current?.MethodKind == MethodKind.LocalFunction && !current.IsDefinitelyStatic(cancellation));	
 
 			return parametersBuilder.ToImmutable();
 		}
@@ -197,7 +206,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>
 		/// True if non local method parameter is redefined in a local method, false if not.
 		/// </returns>
-		public static bool IsNonLocalMethodParameterRedefined(this IMethodSymbol localMethod, string parameterName)
+		public static bool IsNonLocalMethodParameterRedefined(this IMethodSymbol localMethod, string parameterName, CancellationToken cancellation)
 		{
 			localMethod.ThrowOnNull(nameof(localMethod));
 
@@ -208,7 +217,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			while (current?.MethodKind == MethodKind.LocalFunction)
 			{
-				if (current.IsStatic || (!current.Parameters.IsDefaultOrEmpty && current.Parameters.Any(p => p.Name == parameterName)))
+				if ((!current.Parameters.IsDefaultOrEmpty && current.Parameters.Any(p => p.Name == parameterName)) ||
+					current.IsDefinitelyStatic(cancellation))
 				{
 					return true;
 				}
@@ -217,6 +227,51 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 
 			return false;
+		}
+
+
+		/// <summary>
+		/// Check if <paramref name="method"/> definitely static.
+		/// </summary>
+		/// <remarks>
+		/// There is a bug in older versions of Roslyn that local functions are always static: https://github.com/dotnet/roslyn/issues/27719 This code attempts to workaround it. <br/>
+		/// TODO: we need to remove this method after migration to more modern version of Roslyn.
+		/// </remarks>
+		/// <param name="method">The method to act on.</param>
+		/// <param name="cancellation">A token that allows processing to be cancelled.</param>
+		/// <returns>
+		/// True if <paramref name="method"/> is definitely static, false if not.
+		/// </returns>
+		public static bool IsDefinitelyStatic(this IMethodSymbol method, CancellationToken cancellation)
+		{
+			if (method.MethodKind != MethodKind.LocalFunction)
+				return method.IsStatic;
+
+			var methodDeclaration = method.GetSyntax(cancellation);
+			return methodDeclaration?.IsStatic() ?? method.IsStatic;
+		}
+
+		/// <summary>
+		/// Check if <paramref name="method"/> definitely static.
+		/// </summary>
+		/// <remarks>
+		/// There is a bug in older versions of Roslyn that local functions are always static: https://github.com/dotnet/roslyn/issues/27719 This code attempts to workaround it. <br/>
+		/// TODO: we need to remove this method after migration to more modern version of Roslyn.
+		/// </remarks>
+		/// <param name="method">The method to act on.</param>
+		/// <param name="methodDeclaration">The method declaration node.</param>
+		/// <returns>
+		/// True if <paramref name="method"/> is definitely static, false if not.
+		/// </returns>
+		public static bool IsDefinitelyStatic(this IMethodSymbol method, SyntaxNode methodDeclaration)
+		{
+			method.ThrowOnNull(nameof(method));
+			methodDeclaration.ThrowOnNull(nameof(methodDeclaration));
+
+			if (method.MethodKind != MethodKind.LocalFunction)
+				return method.IsStatic;
+
+			return methodDeclaration.IsStatic();
 		}
 	}
 }
