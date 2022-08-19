@@ -30,48 +30,56 @@ namespace Acuminator.Tests.Sources
 		[PXButton]
 		public virtual IEnumerable someAction(PXAdapter adapter)
 		{
-			TestAdapterReassignedAlwaysBeforeCapture(adapter);                          // No diagnosic
-			TestAdapterReassignedNullAlwaysBeforeCapture(adapter);                      // No diagnosic
-			TestAdapterReassignedViaOutAlwaysBeforeCapture(adapter);                    // No diagnosic
-			TestAdapterReassignedAndUsedLater(adapter);									// No diagnosic
-			TestAdapterReassignedWithLocalFunction(adapter);							// No diagnosic
+			ReassignedAlwaysBeforeCapture(adapter);                          // No diagnosic
+			ReassignedNullAlwaysBeforeCapture(adapter);                      // No diagnosic
+			ReassignedViaOutAlwaysBeforeCapture(adapter);                    // No diagnosic
+			ReassignedAndUsedLater(adapter);                                 // No diagnosic
+			ReassignedWithLocalFunction(adapter);                            // No diagnosic
 
-			TestAdapterNotReassignedWithLocalFunction(adapter);                         // Show diagnosic
-			TestAdapterNotReassignedWithLocalFunctionRedefineParameter(adapter);        // Show diagnosic
-			TestAdapterNotReassignedWithLambdaNotInvoked(adapter);						// Show diagnosic
-			TestAdapterReassignedConditionallyBeforeCapture(adapter, true);             // Show diagnosic
-			TestAdapterReassignedInOtherClauseThanCapture(adapter, true);				// Show diagnosic
+			NotReassignedWithLocalFunction(adapter);                        // Show diagnosic
+			NotReassignedWithLocalFunctionRedefineParameter(adapter);       // Show diagnosic
+			NotReassignedWithLambdaNotInvoked(adapter);						// Show diagnosic
+			ReassignedConditionallyBeforeCapture(adapter, true);            // Show diagnosic
+			ReassignedInOtherClauseThanCapture(adapter, true);				// Show diagnosic
+
+			ReassignedAlwaysInIf(adapter, true);                            // No diagnosic
+			ReassignedAlwaysInSwitch(adapter, true);                        // No diagnosic
+			ReassignedConditionallyInSwitch(adapter, true);                 // Show diagnosic
+
+			NestedLocalFunctionAlwaysReassign(adapter);                     // No diagnosic
+			NestedLocalFunctionNoReassign(adapter);							// Show diagnosic
+			NestedLocalFunctionConditionalReassign(adapter);                // Show diagnosic
 
 			return adapter.Get();
 		}
 
 
-		private void TestAdapterReassignedAlwaysBeforeCapture(PXAdapter adapter)
+		private void ReassignedAlwaysBeforeCapture(PXAdapter adapter)
 		{
 			adapter = new PXAdapter(
 				new PXView(this, isReadOnly: true, PXSelect<SomeDAC>.GetCommand()));
 			PXLongOperation.StartOperation(this, () => adapter.Get());					// This reassignment happens always and should not be reported
 		}
 
-		private void TestAdapterReassignedNullAlwaysBeforeCapture(PXAdapter adapter)
+		private void ReassignedNullAlwaysBeforeCapture(PXAdapter adapter)
 		{
 			adapter = null;
 			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment happens always and should not be reported
 		}
 
-		private void TestAdapterReassignedViaOutAlwaysBeforeCapture(PXAdapter adapter)
+		private void ReassignedViaOutAlwaysBeforeCapture(PXAdapter adapter)
 		{
 			Reassign(out adapter);
 			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment happens always and should not be reported
 		}
 
-		private void TestAdapterReassignedAndUsedLater(PXAdapter adapter)
+		private void ReassignedAndUsedLater(PXAdapter adapter)
 		{
 			adapter = NewAdapter();                                     // This reassignment happens always and should not be reported
 			RunAdapter(adapter);
 		}
 
-		private void TestAdapterReassignedWithLocalFunction(PXAdapter adapter)
+		private void ReassignedWithLocalFunction(PXAdapter adapter)
 		{
 			void Local()
 			{
@@ -82,7 +90,7 @@ namespace Acuminator.Tests.Sources
 			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment happens always and should not be reported
 		}
 
-		private void TestAdapterNotReassignedWithLocalFunction(PXAdapter adapter)
+		private void NotReassignedWithLocalFunction(PXAdapter adapter)
 		{
 			void Local()
 			{
@@ -92,7 +100,7 @@ namespace Acuminator.Tests.Sources
 			PXLongOperation.StartOperation(this, () => adapter.Get());  // No reassignment happens, this should be reported
 		}
 
-		private void TestAdapterNotReassignedWithLocalFunctionRedefineParameter(PXAdapter adapter)
+		private void NotReassignedWithLocalFunctionRedefineParameter(PXAdapter adapter)
 		{
 			void Local(PXAdapter adapter)
 			{
@@ -103,7 +111,7 @@ namespace Acuminator.Tests.Sources
 			PXLongOperation.StartOperation(this, () => adapter.Get());  // No reassignment happens, this should be reported
 		}
 
-		private void TestAdapterNotReassignedWithLambdaNotInvoked(PXAdapter adapter)
+		private void NotReassignedWithLambdaNotInvoked(PXAdapter adapter)
 		{
 			Action redefineLambda = () => adapter = NewAdapter();
 			Action redefineDelegate = delegate { adapter = NewAdapter(); };
@@ -112,7 +120,7 @@ namespace Acuminator.Tests.Sources
 		}
 
 
-		private void TestAdapterReassignedConditionallyBeforeCapture(PXAdapter adapter, bool condition)
+		private void ReassignedConditionallyBeforeCapture(PXAdapter adapter, bool condition)
 		{
 			if (condition)
 			{
@@ -122,7 +130,7 @@ namespace Acuminator.Tests.Sources
 			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment does not happen always and should be reported
 		}
 
-		private void TestAdapterReassignedInOtherClauseThanCapture(PXAdapter adapter, bool condition)
+		private void ReassignedInOtherClauseThanCapture(PXAdapter adapter, bool condition)
 		{
 			if (condition)
 			{
@@ -134,8 +142,117 @@ namespace Acuminator.Tests.Sources
 			}
 		}
 
+		private void ReassignedAlwaysInIf(PXAdapter adapter, bool condition)
+		{
+			if (condition)
+			{
+				adapter = NewAdapter();
+
+				{
+					PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment happens always and should not be reported
+				}
+			}
+		}
+
+		private void ReassignedAlwaysInSwitch(PXAdapter adapter, bool condition)
+		{
+			switch (condition)
+			{
+				case true:
+					adapter = NewAdapter();
+
+					if (adapter != null)
+					{
+						PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment happens always and should not be reported
+					}
+
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		private void ReassignedConditionallyInSwitch(PXAdapter adapter, bool condition)
+		{
+			switch (condition)
+			{
+				case true:
+					adapter = NewAdapter();
+					break;
+
+				default:
+					break;
+			}
+
+			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment does not happen always and should be reported
+		}
+
+		private void NestedLocalFunctionAlwaysReassign(PXAdapter adapter)
+		{
+			Local(true, adapter);
+
+			void Local(bool flag, PXAdapter adapterToCheck)
+			{
+				NestedLocal(flag, adapter);
+
+				void NestedLocal(bool flag2, PXAdapter adapterToCheck2)
+				{
+					NestedNestedLocal(flag2, adapterToCheck2);
+
+					void NestedNestedLocal(bool flag3, PXAdapter adapterToCheck3)
+					{
+						adapter = NewAdapter();
+					}
+				}
+			}
+
+			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment happens always and should not be reported
+		}
+
+		private void NestedLocalFunctionNoReassign(PXAdapter adapter)
+		{
+			Local(true, adapter);
+			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment doesn't happen and should be reported
+
+			void Local(bool flag, PXAdapter adapterToCheck)
+			{
+				NestedLocal(flag, adapter);
+
+				void NestedLocal(bool flag2, PXAdapter adapterToCheck2)
+				{
+					void NestedNestedLocal(bool flag3, PXAdapter adapterToCheck3)
+					{
+						adapter = NewAdapter();
+					}
+				}
+			}
+		}
+
+		private void NestedLocalFunctionConditionalReassign(PXAdapter adapter)
+		{
+			void Local(bool flag, PXAdapter adapterToCheck)
+			{
+				NestedLocal(flag, adapter);
+
+				void NestedLocal(bool flag2, PXAdapter adapterToCheck2)
+				{
+					if (flag2)
+						NestedNestedLocal(flag2, adapterToCheck2);
+
+					void NestedNestedLocal(bool flag3, PXAdapter adapterToCheck3)
+					{
+						adapter = NewAdapter();
+					}
+				}
+			}
+
+			Local(true, adapter);
+			PXLongOperation.StartOperation(this, () => adapter.Get());  // This reassignment happens only in some cases and should be reported		
+		}
+
 		private static PXAdapter NewAdapter() => 
-			new PXAdapter(new PXView(this, isReadOnly: true, PXSelect<SomeDAC>.GetCommand()));
+			new PXAdapter(new PXView(new PXGraph(), isReadOnly: true, PXSelect<SomeDAC>.GetCommand()));
 
 		private void Reassign(out PXAdapter adapter)
 		{
