@@ -1523,7 +1523,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
+        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type parameter.
         /// </summary>
         public static string PX1093Title {
             get {
