@@ -142,6 +142,26 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
+		/// Concatenate <see cref="ImmutableArray{TItem}"/>s. This is an optimization method which allows to avoid boxing for <see cref="ImmutableArray{TItem}"/>s.
+		/// </summary>
+		/// <typeparam name="TItem">Type of the item.</typeparam>
+		/// <param name="sourceList">The source list to act on.</param>
+		/// <param name="listToConcat">The list to concat.</param>
+		/// <returns>
+		/// An enumerator that allows foreach to be used to process concatenated arrays.
+		/// </returns>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TItem> Concat<TItem>(this ImmutableArray<TItem> sourceList, ImmutableArray<TItem> listToConcat)
+		{
+			for (int i = 0; i < sourceList.Length; i++)
+				yield return sourceList[i];
+
+			for (int i = 0; i < listToConcat.Length; i++)
+				yield return listToConcat[i];
+		}
+
+		/// <summary>
 		/// Where method for <see cref="SyntaxTokenList"/>. This is an optimization method which allows to avoid boxing.
 		/// </summary>
 		/// <param name="source">The <see cref="SyntaxTokenList"/> to act on.</param>
