@@ -185,6 +185,8 @@ namespace Acuminator.Utilities.Roslyn
 		private bool RecursiveAnalysisEnabled() => Settings.RecursiveAnalysisEnabled && NodesStack.Count <= MaxDepth;
 
 		protected bool IsInsideRecursiveCall => NodesStack.Count > 0;
+
+		protected SyntaxNode? NodeCurrentlyVisitedRecursively { get; private set; }
 		#region Visit
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -280,28 +282,44 @@ namespace Acuminator.Utilities.Roslyn
 		{
 		}
 
-		public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+		public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax localFunctionStatement)
 		{
-			// When we visit local function declaration it is like we start visiting another method at the top of call stack
-			// No previous recursive context applies to the local function declaration itself because it is a declaration, not a call.
-			// Thus, we need to save previous recursive context, reset it, visit local function and then restore saved context
-			var oldNodesStack = NodesStack;
-			var oldMethodsInStack = MethodsInStack;
-			var oldOriginalNode = OriginalNode;
+			// There are two ways to get into local function statement with the nested invocation walker:
+			// 1. Visit it during the recursive visit of a local function call. In such case it can be processesd as usual
+			// 2. Visit the declaration during the normal syntax walking.
+
+			// We are visiting local function declaration currently from a recursive call only if the currently visited node equals to the localFunctionStatement
+			// If we look just on IsInsideRecursiveCall flag we can't distinguish cases when there is a recursively visited function 
+			// in which we find local function declaration during the normal syntax walk
+			if (localFunctionStatement.Equals(NodeCurrentlyVisitedRecursively))	
+			{
+				base.VisitLocalFunctionStatement(localFunctionStatement);   //Process recursive call as usual
+				return;
+			}
+			
+			// When we visit local function declaration during the normal syntax walking it is like we start visiting another method at the top of call stack
+			// No previous recursive context applies to the local function declaration itself because it is a declaration, not a call. 
+			// In fact, the method can be never called. Thus, we need to save previous recursive context, reset it, visit local function and then restore saved context
+			var oldNodesStack                      = NodesStack;
+			var oldMethodsInStack                  = MethodsInStack;
+			var oldOriginalNode                    = OriginalNode;
+			var oldNodeCurrentlyVisitedRecursively = NodeCurrentlyVisitedRecursively;
 
 			try
 			{
-				NodesStack = new Stack<SyntaxNode>();
-				MethodsInStack = new HashSet<IMethodSymbol>();
-				OriginalNode = null;
+				NodesStack                      = new Stack<SyntaxNode>();
+				MethodsInStack                  = new HashSet<IMethodSymbol>();
+				OriginalNode                    = null;
+				NodeCurrentlyVisitedRecursively = null;
 
-				base.VisitLocalFunctionStatement(node);
+				base.VisitLocalFunctionStatement(localFunctionStatement);
 			}
 			finally
 			{
-				NodesStack = oldNodesStack;
-				MethodsInStack = oldMethodsInStack;
-				OriginalNode = oldOriginalNode;
+				NodesStack                      = oldNodesStack;
+				MethodsInStack                  = oldMethodsInStack;
+				OriginalNode                    = oldOriginalNode;
+				NodeCurrentlyVisitedRecursively = oldNodeCurrentlyVisitedRecursively;
 			}
 		}
 
@@ -316,12 +334,22 @@ namespace Acuminator.Utilities.Roslyn
 			if (!BypassMethod(calledMethod, calledMethodNode, callSite))
 			{
 				BeforeRecursiveVisit(calledMethod, calledMethodNode, callSite);
+				SyntaxNode? oldNodeCurrentlyVisitedRecursively = NodeCurrentlyVisitedRecursively;
 
-				Push(callSite, calledMethod);
-				calledMethodNode.Accept(this);
-				Pop(calledMethod);
+				try
+				{
+					Push(callSite, calledMethod);
+					NodeCurrentlyVisitedRecursively = calledMethodNode;
 
-				wasVisited = true;
+					calledMethodNode.Accept(this);
+
+					wasVisited = true;
+				}
+				finally
+				{
+					NodeCurrentlyVisitedRecursively = oldNodeCurrentlyVisitedRecursively;
+					Pop(calledMethod);
+				}
 			}
 
 			AfterRecursiveVisit(calledMethod, calledMethodNode, callSite, wasVisited);
