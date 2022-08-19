@@ -27,9 +27,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 		private class LongOperationsChecker : NestedInvocationWalker
 		{
 			private readonly SyntaxNodeAnalysisContext _context;
-			private readonly Stack<PassedParametersToNotBeCaptured?> _nonCapturablePassedParameters = new();
 			private readonly ParametersReassignedFinder _parametersReassignedFinder = new();
 			private readonly NonCapturableElementsInArgumentsFinder _nonCapturableElementsInArgumentsFinder;
+
+			private Stack<PassedParametersToNotBeCaptured?> NonCapturablePassedParameters { get; set; } = new();
 
 			public LongOperationsChecker(SyntaxNodeAnalysisContext context, PXContext pxContext) :
 									base(pxContext, context.CancellationToken)
@@ -229,7 +230,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				PassedParametersToNotBeCaptured? nonCapturableParameters = GetMethodNonCapturableParameters(calledMethod, callSite);
 
-				_nonCapturablePassedParameters.Push(nonCapturableParameters);
+				NonCapturablePassedParameters.Push(nonCapturableParameters);
 			}
 
 			protected override bool BypassMethod(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
@@ -251,17 +252,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				base.AfterRecursiveVisit(calledMethod, calledMethodNode, callSite, wasVisited);
 
-				_nonCapturablePassedParameters.Pop();
+				NonCapturablePassedParameters.Pop();
 			}
 
 			private PassedParametersToNotBeCaptured? GetMethodNonCapturableParameters(IMethodSymbol calledMethod, ExpressionSyntax callSite)
 			{
-				if (calledMethod.Parameters.IsDefaultOrEmpty)
-					return null;                                //Method does not have any parameters so we can't pass anything to it that can be captured later
+				if (!CanCalledMethodCaptureNonCapturableElements(calledMethod))
+					return null;
 
 				var argumentsList = callSite.GetArgumentsList();
 
-				if (argumentsList == null || argumentsList.Arguments.Count == 0)
+				if (argumentsList == null || (argumentsList.Arguments.Count == 0 && calledMethod.MethodKind != MethodKind.LocalFunction))
 					return null;
 
 				var callingTypeMemberNode = callSite.Parent<MemberDeclarationSyntax>();
@@ -281,6 +282,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					return null;
 
 				return new PassedParametersToNotBeCaptured(nonCapturableParameters);
+			}
+
+			private bool CanCalledMethodCaptureNonCapturableElements(IMethodSymbol calledMethod)
+			{
+				// If the method has parameters it can capture some non capturable elements in them
+				if (!calledMethod.Parameters.IsDefaultOrEmpty)
+					return true;
+
+				// If the method doesn't have parameters it can capture this reference unless it is a static method
+				if (calledMethod.IsStatic)
+					return false;
+
+				bool isInsideGraph = calledMethod.ContainingType?.IsPXGraphOrExtension(PxContext) ?? false;
+
+				//Method can capture non-capturable this reference only if it is inside graph or graph extension
+				if (isInsideGraph)
+					return true;
+
+				// If the method is a non static local function it can also capture parameters from the outer method
+				if (calledMethod.MethodKind == MethodKind.LocalFunction && calledMethod.ContainingSymbol is IMethodSymbol containingMethod)
+					return !containingMethod.Parameters.IsDefaultOrEmpty;
+				
+				return false;
 			}
 
 			private IReadOnlyCollection<PassedParameter>? GetNonCapturableParameters(ISymbol callingTypeMember, MemberDeclarationSyntax callingTypeMemberNode,
@@ -365,7 +389,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				// Obtain adapter parameter
 				var (adapterParameter, hasPXButtonAttribute) = FindAdapterParameterInMethod(actionHandlerMethod);
-				
+
 				if (adapterParameter == null)
 					return null;
 				
@@ -398,6 +422,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					: null;
 			}
 
+			
+
 			private (IParameterSymbol? AdapterParameter, bool HasPXButtonAttribute) FindAdapterParameterInMethod(IMethodSymbol actionHandlerMethod)
 			{
 				// Check if method is valid graph action handler
@@ -412,7 +438,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				// If the method has PXButton attribute then do more flexible search for adapter parameter.
 				// Check if the method has a single adapter parameter and if yes then return it
 				var adapterParameters = actionHandlerMethod.Parameters.Where(parameter => parameter.Type.Equals(PxContext.PXAdapterType))
-																.ToList(capacity: 1);
+																	  .ToList(capacity: 1);
 				return adapterParameters.Count == 1
 					? (AdapterParameter: adapterParameters[0], HasPXButtonAttribute: true)
 					: (AdapterParameter: null, HasPXButtonAttribute: true);
@@ -424,7 +450,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			private NonCapturableArgumentsInfo? GetNonCapturableArgumentsInfo(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember, 
 																			  IParameterSymbol? adapterParameter)
 			{
-				var parametersPassedBefore = GetAllPassedParametersByNames(adapterParameter?.Name);
+				var parametersPassedBefore = GetAllPassedParametersByNames(adapterParameter?.Name, callingTypeMember as IMethodSymbol);
 
 				if (parametersPassedBefore == null || parametersPassedBefore.Count == 0)
 					return default;
@@ -451,9 +477,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return nonCapturableArgumentsInfo;				
 			}
 
-			private IReadOnlyDictionary<string, PassedParameter>? GetAllPassedParametersByNames(string? adapterParameterName)
+			private IReadOnlyDictionary<string, PassedParameter>? GetAllPassedParametersByNames(string? adapterParameterName, IMethodSymbol? callingMethod)
 			{
-				PassedParametersToNotBeCaptured? parametersPassedBefore = PeekPassedParametersFromStack();
+				var parametersPassedBefore = GetAvailablePassedParametersFromStack(callingMethod);
 
 				if (adapterParameterName == null)
 					return parametersPassedBefore;
@@ -481,6 +507,63 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				}
 			}
 
+			private IReadOnlyDictionary<string, PassedParameter>? GetAvailablePassedParametersFromStack(IMethodSymbol? callingMethod)
+			{
+				if (callingMethod == null || NonCapturablePassedParameters.Count == 0)
+					return null;
+
+				var parametersPassedToCallingMethod = PeekPassedParametersFromStack();
+
+				if (callingMethod.MethodKind != MethodKind.LocalFunction)
+					return parametersPassedToCallingMethod;
+
+				// Local functions can capture parameters from their containing methods (unless the parameter is redefined or the containing method is a static local function)
+				// We need to combile all parameters from outer methods that have non-capturable elements. 
+				// We could have retrieved them from the NonCapturablePassedParameters stack and combine but that would require some complex combining logic 
+				// for eacn of the nested local functions (of course, it's a rare case to have local functions and its even more rare to have a local function nested in local function).
+				// 
+				// Instead we'll take a dynamic programming approach. 
+				// We will assume that for a call located in a nested local function the NonCapturablePassedParameters stack already contains all possible combined non-capturable parameters
+				// passed to the method containing this nested local function and a call to it and we only need to combine these parameters with the parameters passed to the nested local function.
+				//  
+				// This is a dynamic programming, when the next entry in the stack is calculated from the previous entry via a recurrent formula:
+				// - For a call in local function we combine non-capturable parameters passed to it with non-capturable parameters passed to the containing non-local method
+				// - For a call to a nested local function we combine non-capturable parameters passed to it with non-capturable parameters passed to its containing local function
+				// - And so on.
+				if (callingMethod.IsStatic)
+					return parametersPassedToCallingMethod;     // no extra parameters from outer methods can be used by the static local function
+
+				if (callingMethod.ContainingSymbol is not IMethodSymbol methodContainingCallToCallingMethod)
+					return parametersPassedToCallingMethod;
+
+				var parametersPassedToMethodContainingCallToCallingMethod = NonCapturablePassedParameters.Count > 1
+					? NonCapturablePassedParameters.ElementAt(1)
+					: null;
+
+				if (parametersPassedToMethodContainingCallToCallingMethod.IsNullOrEmpty())
+					return parametersPassedToCallingMethod;
+				else if (parametersPassedToCallingMethod.IsNullOrEmpty())
+					return parametersPassedToMethodContainingCallToCallingMethod;
+
+				var combinedParameters = 
+					new Dictionary<string, PassedParameter>(capacity: parametersPassedToCallingMethod.Count + parametersPassedToMethodContainingCallToCallingMethod.Count);
+
+				foreach (var (parameterName, parameter) in parametersPassedToMethodContainingCallToCallingMethod)
+				{
+					if (!IsRedefinedByCallingMethod(parameterName))
+						combinedParameters[parameterName] = parameter;
+				}
+
+				foreach (var (parameterName, parameter) in parametersPassedToCallingMethod)
+					combinedParameters[parameterName] = parameter;
+
+				return combinedParameters;
+
+				//------------------------------------------------------------Local Function--------------------------------------------------
+				bool IsRedefinedByCallingMethod(string parameterName) =>
+					callingMethod!.Parameters.Any(p => p.Name == parameterName);
+			}
+
 			private void FilterReassignedParameters(NonCapturableArgumentsInfo nonCapturableArguments, MemberDeclarationSyntax callingTypeMemberNode,
 													ExpressionSyntax callSite, SemanticModel semanticModel)
 			{
@@ -501,8 +584,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			}
 			#endregion
 
-			private PassedParametersToNotBeCaptured? PeekPassedParametersFromStack() => _nonCapturablePassedParameters.Count > 0
-					? _nonCapturablePassedParameters.Peek()
+			private PassedParametersToNotBeCaptured? PeekPassedParametersFromStack() => NonCapturablePassedParameters.Count > 0
+					? NonCapturablePassedParameters.Peek()
 					: null;
 		}
 	}
