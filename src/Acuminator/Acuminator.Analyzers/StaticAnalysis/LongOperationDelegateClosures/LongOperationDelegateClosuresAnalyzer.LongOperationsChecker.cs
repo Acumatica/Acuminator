@@ -245,7 +245,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				base.BeforeBypassCheck(calledMethod, calledMethodNode, callSite);
 
-				PassedParametersToNotBeCaptured? nonCapturableParameters = GetMethodNonCapturableParameters(calledMethod, callSite);
+				PassedParametersToNotBeCaptured? nonCapturableParameters = GetMethodNonCapturableParametersToPushToStack(calledMethod, callSite);
 
 				NonCapturablePassedParameters.Push(nonCapturableParameters);
 			}
@@ -272,7 +272,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				NonCapturablePassedParameters.Pop();
 			}
 
-			private PassedParametersToNotBeCaptured? GetMethodNonCapturableParameters(IMethodSymbol calledMethod, ExpressionSyntax callSite)
+			private PassedParametersToNotBeCaptured? GetMethodNonCapturableParametersToPushToStack(IMethodSymbol calledMethod, ExpressionSyntax callSite)
 			{
 				if (!CanCalledMethodCaptureNonCapturableElements(calledMethod))
 					return null;
@@ -333,7 +333,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				// There can be four types of non capturable parameters that can be passed to other methods:
 				// 1. PXAdapter from action delegate if we are at the top of call stack.
 				// 2. this reference if we are in a graph or graph extension
-				// 3. non capturable parameters passed to the calling methods from the previous method call		
+				// 3. non capturable parameters passed to the calling methods from the previous method call
 				// 4. for a non-static local function parameters from all containing methods up to the non-local method or first static local function.
 				 
 				// Search for the adapter only if we are at the top of call stack
@@ -453,8 +453,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					: null;
 			}
 
-			
-
 			private (IParameterSymbol? AdapterParameter, bool HasPXButtonAttribute) FindAdapterParameterInMethod(IMethodSymbol actionHandlerMethod)
 			{
 				// Check if method is valid graph action handler
@@ -478,15 +476,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			private bool HasPXButtonAttribute(IMethodSymbol method) => 
 				method.HasAttribute(PxContext.AttributeTypes.PXButtonAttribute, checkOverrides: true);
 
-			private NonCapturableArgumentsInfo? GetNonCapturableArgumentsInfo(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember, 
-																			  IParameterSymbol? adapterParameter)
+			private NonCapturableElementsInfo? GetNonCapturableElementsInfo(SeparatedSyntaxList<ArgumentSyntax> callArguments, ISymbol callingTypeMember, 
+																			IParameterSymbol? adapterParameter, IMethodSymbol calledMethod)
 			{
-				var parametersPassedBefore = GetAllPassedParametersByNames(adapterParameter?.Name, callingTypeMember as IMethodSymbol);
+				IReadOnlyDictionary<string, PassedParameter>? parametersPassedBefore = 
+					GetAllPassedParametersByNames(adapterParameter?.Name, callingTypeMember as IMethodSymbol);
 
 				if (parametersPassedBefore == null || parametersPassedBefore.Count == 0)
 					return default;
 
-				NonCapturableArgumentsInfo? nonCapturableArgumentsInfo = null;
+				// For called non static local functions we need to assume that all parameters passed before can be used inside the function
+				NonCapturableElementsInfo? nonCapturableElementsInfo = 
+					calledMethod.MethodKind == MethodKind.LocalFunction && !calledMethod.IsStatic
+						? new NonCapturableElementsInfo(nonCapturableContainingMethodsParameters: parametersPassedBefore)
+						: null;
 
 				for (int argIndex = 0; argIndex < callArguments.Count; argIndex++)
 				{
@@ -498,14 +501,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 					if (captureNonCapturableElement)
 					{
-						nonCapturableArgumentsInfo ??= new NonCapturableArgumentsInfo();
+						nonCapturableElementsInfo ??= new NonCapturableElementsInfo();
 						var nonCapturableArgument = new NonCapturableArgument(argIndex, captureLocalGraphInstance, parametersUsedInArgument);
 
-						nonCapturableArgumentsInfo.Add(nonCapturableArgument);
+						nonCapturableElementsInfo.AddCallArgument(nonCapturableArgument);
 					}
 				}
 
-				return nonCapturableArgumentsInfo;				
+				return nonCapturableElementsInfo;
 			}
 
 			private IReadOnlyDictionary<string, PassedParameter>? GetAllPassedParametersByNames(string? adapterParameterName, IMethodSymbol? callingMethod)
