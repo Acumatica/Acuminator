@@ -24,42 +24,42 @@ namespace Acuminator.Tests.Sources
 			var localGraph = PXGraph.CreateInstance<ProcessingGraph_ComplexMapping>();
 
 			// Params check
-			processor.TestGraphCaptured_ParamsNotCaptured(true, 1, this, adapter, null);									//Show diagnostic
+			processor.GraphCaptured_ParamsNotCaptured(true, 1, this, adapter, null);									//Show diagnostic
 
-			processor.TestGraphCaptured_ParamsNotCaptured(true, 1, localGraph, adapter, "arg1", "arg2");					//No diagnostic
-			processor.TestGraphCaptured_ParamsNotCaptured(true, 1, localGraph, adapter, this);								//No diagnostic
-			processor.TestGraphCaptured_ParamsNotCaptured(true, 1, localGraph, adapter, new object[] { "arg", this });		//No diagnostic
+			processor.GraphCaptured_ParamsNotCaptured(true, 1, localGraph, adapter, "arg1", "arg2");					//No diagnostic
+			processor.GraphCaptured_ParamsNotCaptured(true, 1, localGraph, adapter, this);								//No diagnostic
+			processor.GraphCaptured_ParamsNotCaptured(true, 1, localGraph, adapter, new object[] { "arg", this });		//No diagnostic
 
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, "arg1", "arg2");						//No diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, "arg1", "arg2", this);					//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, this);									//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, new object[] { "arg", this });			//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, new object[] { "arg", localGraph });	//No diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, "arg1", "arg2");						//No diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, "arg1", "arg2", this);					//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, this);									//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, new object[] { "arg", this });			//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, localGraph, adapter, new object[] { "arg", localGraph });	//No diagnostic
 
 			// Named parameters check - names in position
-			processor.TestGraphCaptured_ParamsCaptured(someFlag: true, count: 1, graph: this, adapter: adapter, args: null);	//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(someFlag: true, count: 1, graph: localGraph, adapter, "arg1", "arg2");	//No diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(someFlag: true, count: 1, graph: localGraph, adapter, localGraph, this); //Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(someFlag: true, count: 1, graph: this, adapter: adapter, args: null);	//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(someFlag: true, count: 1, graph: localGraph, adapter, "arg1", "arg2");	//No diagnostic
+			processor.GraphCaptured_ParamsCaptured(someFlag: true, count: 1, graph: localGraph, adapter, localGraph, this); //Show diagnostic
 
 			// Named parameters check - names out of position
-			processor.TestGraphCaptured_ParamsCaptured(someFlag: true, count: 1, adapter: adapter, graph: localGraph, args: localGraph);	//No diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: localGraph);						//No diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(someFlag: true, count: 1, adapter: adapter, graph: localGraph, args: this);			//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(someFlag: true, count: 1, adapter: adapter, graph: this, args: localGraph);			//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: this, args: new[] { localGraph });					//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: new[] { localGraph });			//No diagnostic
-			processor.TestGraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: new[] { localGraph, this });		//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(someFlag: true, count: 1, adapter: adapter, graph: localGraph, args: localGraph);	//No diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: localGraph);						//No diagnostic
+			processor.GraphCaptured_ParamsCaptured(someFlag: true, count: 1, adapter: adapter, graph: localGraph, args: this);			//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(someFlag: true, count: 1, adapter: adapter, graph: this, args: localGraph);			//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: this, args: new[] { localGraph });					//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: new[] { localGraph });			//No diagnostic
+			processor.GraphCaptured_ParamsCaptured(true, 1, adapter: adapter, graph: localGraph, args: new[] { localGraph, this });		//Show diagnostic
 
 			// Named parameters check - optional parameters
-			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, this);						//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, localGraph);				//No diagnostic
+			processor.GraphCaptured_ParamsCaptured_OptionalArgs(adapter, this);						//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured_OptionalArgs(adapter, localGraph);				//No diagnostic
 
-			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph);						//No diagnostic
-			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph, someFlag: true);		//No diagnostic
-			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph, args: this);			//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph);						//No diagnostic
+			processor.GraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph, someFlag: true);		//No diagnostic
+			processor.GraphCaptured_ParamsCaptured_OptionalArgs(adapter, graph: localGraph, args: this);			//Show diagnostic
 
-			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(graph: this, adapter: adapter, someFlag: true, args: localGraph);	//Show diagnostic
-			processor.TestGraphCaptured_ParamsCaptured_OptionalArgs(adapter: adapter, this, count: 1, args: "asd");						//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured_OptionalArgs(graph: this, adapter: adapter, someFlag: true, args: localGraph);	//Show diagnostic
+			processor.GraphCaptured_ParamsCaptured_OptionalArgs(adapter: adapter, this, count: 1, args: "asd");						//Show diagnostic
 
 			return adapter.Get();
 		}
@@ -71,14 +71,14 @@ namespace Acuminator.Tests.Sources
 		
 		private class Processor
 		{
-			public IEnumerable TestGraphCaptured_ParamsCaptured_OptionalArgs(PXAdapter adapter, ProcessingGraph_ComplexMapping graph, int count = 1,
-																			 bool someFlag = true, params object[] args)
+			public IEnumerable GraphCaptured_ParamsCaptured_OptionalArgs(PXAdapter adapter, ProcessingGraph_ComplexMapping graph, int count = 1,
+																		 bool someFlag = true, params object[] args)
 			{
-				return TestGraphCaptured_ParamsCaptured(someFlag, count, graph, adapter, args);
+				return GraphCaptured_ParamsCaptured(someFlag, count, graph, adapter, args);
 			}
 
-			public IEnumerable TestGraphCaptured_ParamsNotCaptured(bool someFlag, int count, ProcessingGraph_ComplexMapping graph, 
-																	PXAdapter adapter, params object[] args)
+			public IEnumerable GraphCaptured_ParamsNotCaptured(bool someFlag, int count, ProcessingGraph_ComplexMapping graph, 
+															   PXAdapter adapter, params object[] args)
 			{
 				PXLongOperation.StartOperation(graph, args =>
 				{
@@ -91,9 +91,9 @@ namespace Acuminator.Tests.Sources
 
 				return adapter.Get();
 			}
-
-			public IEnumerable TestGraphCaptured_ParamsCaptured(bool someFlag, int count, ProcessingGraph_ComplexMapping graph,
-																PXAdapter adapter, params object[] args)
+			
+			public IEnumerable GraphCaptured_ParamsCaptured(bool someFlag, int count, ProcessingGraph_ComplexMapping graph,
+															PXAdapter adapter, params object[] args)
 			{
 				PXLongOperation.StartOperation(graph, () =>
 				{
