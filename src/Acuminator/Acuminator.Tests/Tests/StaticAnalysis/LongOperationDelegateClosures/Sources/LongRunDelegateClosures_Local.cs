@@ -20,11 +20,11 @@ namespace Acuminator.Tests.Sources
 		public virtual IEnumerable someAction(PXAdapter adapter)
 		{
 			NestedLocalFunctionNoCapture(adapter);                          // No diagnosic
-			NestedStaticLocalFunctionRedefineParameterNoCapture(adapter);	// No diagnosic
+			NestedLocalFunctionRedefineParameterNoCapture(adapter);         // No diagnosic
 
 			LocalCapture();                                                 // Show diagnostic		
 			NestedLocalFunctionWithCapture(adapter);                        // Show diagnosic
-			NestedStaticLocalFunctionRedefineParameterCapture(adapter);     // Show diagnosic
+			NestedLocalFunctionRedefineParameterCapture(adapter);			// Show diagnosic
 			NestedStaticLocalFunctionWithCaptureFromParameter(adapter);     // Show diagnosic
 
 			return adapter.Get();
@@ -54,7 +54,7 @@ namespace Acuminator.Tests.Sources
 			}
 		}
 
-		private void NestedStaticLocalFunctionRedefineParameterNoCapture(PXAdapter adapter)
+		private void NestedLocalFunctionRedefineParameterNoCapture(PXAdapter adapter)
 		{
 			Local(true, adapter);
 
@@ -74,7 +74,7 @@ namespace Acuminator.Tests.Sources
 			}
 		}
 
-		private void NestedStaticLocalFunctionRedefineParameterCapture(PXAdapter adapter)
+		private void NestedLocalFunctionRedefineParameterCapture(PXAdapter adapter)
 		{
 			Local(true, adapter);
 
