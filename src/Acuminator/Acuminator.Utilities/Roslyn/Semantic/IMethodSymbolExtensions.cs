@@ -143,6 +143,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return current;
 		}
 
+		public static IEnumerable<IMethodSymbol> GetContainingMethodsAndThis(this IMethodSymbol localFunction) =>
+			localFunction.CheckIfNull(nameof(localFunction)).MethodKind == MethodKind.LocalFunction
+				? localFunction.GetContainingMethods(includeThis: true)
+				: new[] { localFunction };
+
+		public static IEnumerable<IMethodSymbol> GetContainingMethods(this IMethodSymbol localFunction) =>
+			localFunction.CheckIfNull(nameof(localFunction)).MethodKind == MethodKind.LocalFunction
+				? localFunction.GetContainingMethods(includeThis: false)
+				: Enumerable.Empty<IMethodSymbol>();
+
+		private static IEnumerable<IMethodSymbol> GetContainingMethods(this IMethodSymbol localFunction, bool includeThis)
+		{
+			IMethodSymbol? current = includeThis
+				? localFunction
+				: localFunction.ContainingSymbol as IMethodSymbol;
+
+			while (current != null)
+			{
+				yield return current;
+				current = current.ContainingSymbol as IMethodSymbol;
+			}
+		}
+
 		/// <summary>
 		/// Gets all parameters available for local function including parameters from containing methods.
 		/// </summary>
