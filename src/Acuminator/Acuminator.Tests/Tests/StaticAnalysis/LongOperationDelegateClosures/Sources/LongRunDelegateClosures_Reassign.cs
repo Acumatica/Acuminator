@@ -30,25 +30,25 @@ namespace Acuminator.Tests.Sources
 		[PXButton]
 		public virtual IEnumerable someAction(PXAdapter adapter)
 		{
-			ReassignedAlwaysBeforeCapture(adapter);                          // No diagnosic
-			ReassignedNullAlwaysBeforeCapture(adapter);                      // No diagnosic
-			ReassignedViaOutAlwaysBeforeCapture(adapter);                    // No diagnosic
-			ReassignedAndUsedLater(adapter);                                 // No diagnosic
-			ReassignedWithLocalFunction(adapter);                            // No diagnosic
+			ReassignedAlwaysBeforeCapture(adapter);                          // No diagnostic
+			ReassignedNullAlwaysBeforeCapture(adapter);                      // No diagnostic
+			ReassignedViaOutAlwaysBeforeCapture(adapter);                    // No diagnostic
+			ReassignedAndUsedLater(adapter);                                 // No diagnostic
+			ReassignedWithLocalFunction(adapter);                            // No diagnostic
 
-			NotReassignedWithLocalFunction(adapter);                        // Show diagnosic
-			NotReassignedWithLocalFunctionRedefineParameter(adapter);       // Show diagnosic
-			NotReassignedWithLambdaNotInvoked(adapter);						// Show diagnosic
-			ReassignedConditionallyBeforeCapture(adapter, true);            // Show diagnosic
-			ReassignedInOtherClauseThanCapture(adapter, true);				// Show diagnosic
+			NotReassignedWithLocalFunction(adapter);                        // Show diagnostic
+			NotReassignedWithLocalFunctionRedefineParameter(adapter);       // Show diagnostic
+			NotReassignedWithLambdaNotInvoked(adapter);						// Show diagnostic
+			ReassignedConditionallyBeforeCapture(adapter, true);            // Show diagnostic
+			ReassignedInOtherClauseThanCapture(adapter, true);				// Show diagnostic
 
-			ReassignedAlwaysInIf(adapter, true);                            // No diagnosic
-			ReassignedAlwaysInSwitch(adapter, true);                        // No diagnosic
-			ReassignedConditionallyInSwitch(adapter, true);                 // Show diagnosic
+			ReassignedAlwaysInIf(adapter, true);                            // No diagnostic
+			ReassignedAlwaysInSwitch(adapter, true);                        // No diagnostic
+			ReassignedConditionallyInSwitch(adapter, true);                 // Show diagnostic
 
-			NestedLocalFunctionAlwaysReassign(adapter);                     // No diagnosic
-			NestedLocalFunctionNoReassign(adapter);							// Show diagnosic
-			NestedLocalFunctionConditionalReassign(adapter);                // Show diagnosic
+			NestedLocalFunctionAlwaysReassign(adapter);                     // No diagnostic
+			NestedLocalFunctionNoReassign(adapter);							// Show diagnostic
+			NestedLocalFunctionConditionalReassign(adapter);                // Show diagnostic
 
 			return adapter.Get();
 		}

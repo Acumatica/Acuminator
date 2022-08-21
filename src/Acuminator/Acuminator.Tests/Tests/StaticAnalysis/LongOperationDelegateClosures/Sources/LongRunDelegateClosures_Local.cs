@@ -19,13 +19,13 @@ namespace Acuminator.Tests.Sources
 		[PXButton]
 		public virtual IEnumerable someAction(PXAdapter adapter)
 		{
-			NestedLocalFunctionNoCapture(adapter);                          // No diagnosic
-			NestedLocalFunctionRedefineParameterNoCapture(adapter);         // No diagnosic
+			NestedLocalFunctionNoCapture(adapter);                          // No diagnostic
+			NestedLocalFunctionRedefineParameterNoCapture(adapter);         // No diagnostic
 
 			LocalCapture();                                                 // Show diagnostic		
-			NestedLocalFunctionWithCapture(adapter);                        // Show diagnosic
-			NestedLocalFunctionRedefineParameterCapture(adapter);			// Show diagnosic
-			NestedStaticLocalFunctionWithCaptureFromParameter(adapter);     // Show diagnosic
+			NestedLocalFunctionWithCapture(adapter);                        // Show diagnostic
+			NestedLocalFunctionRedefineParameterCapture(adapter);			// Show diagnostic
+			NestedStaticLocalFunctionWithCaptureFromParameter(adapter);     // Show diagnostic
 
 			return adapter.Get();
 
