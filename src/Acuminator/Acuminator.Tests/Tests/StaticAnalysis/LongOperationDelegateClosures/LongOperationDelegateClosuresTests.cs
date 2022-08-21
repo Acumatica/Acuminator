@@ -183,5 +183,18 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationDelegateClosures
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 28, column: 4, formatArgs),
 				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 35, column: 5, formatArgs));
 		}
+
+		[Theory(Skip = "Recursive analysis of passed delegates currently is not supported for this diagnostic and is skipped for now")]
+		[EmbeddedFileData("LongRunDelegateClosures_Delegates.cs")]
+		public Task GraphDelegateCaptured_InLocalFunctions_InLongRun(string actual)
+		{
+			string[] formatArgs = new[] { AnalyzerResources.PX1008Title_CapturedGraphFormatArg, AnalyzerResources.PX1008Title_LongRunDelegateFormatArg };
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 26, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 28, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 32, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 38, column: 4, formatArgs),
+				Descriptors.PX1008_LongOperationDelegateClosures.CreateFor(line: 41, column: 5, formatArgs));
+		}
 	}
 }
