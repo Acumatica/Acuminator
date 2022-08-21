@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 			if (body == null)
 				return null;
 			
-			var dataFlowAnalysis = AnalyseDataFlow(semanticModel, body);
+			var dataFlowAnalysis = semanticModel.AnalyseDataFlow(body);
 
 			// If there is no call site then rely only on data flow analysis AlwaysAssigned results, assume that we check the whole containing type member
 			if (callSite == null)
@@ -82,24 +82,6 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				return null;
 
 			return _reassignSearchingWalker.GetParametersReassignedBeforeCallsite(body, callSite, parametersToCheck, semanticModel, cancellation);
-		}
-
-		private static DataFlowAnalysis? AnalyseDataFlow(SemanticModel semanticModel, CSharpSyntaxNode body)
-		{
-			DataFlowAnalysis? dataFlowAnalysis;
-
-			try
-			{
-				dataFlowAnalysis = semanticModel.AnalyzeDataFlow(body);
-			}
-			catch (Exception)
-			{
-				return default;
-			}
-
-			return dataFlowAnalysis?.Succeeded == true
-				? dataFlowAnalysis
-				: null;
 		}
 
 		private HashSet<string>? GetCheckedParametersPresentInDataFlowReassignedSymbols(ImmutableArray<ISymbol> dataFlowReassigned, 
@@ -269,46 +251,39 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				// and step into local function calls
 				CheckIfInvocationReassignesParametersWithOutArguments(invocationExpression);
 
-				// Simple syntax check to filter out invocations that are definitely non local methods
+				// Simple syntax check to filter out invocations that are definitely non local functions
 				if (invocationExpression.Expression is not IdentifierNameSyntax)
 					return;
 
 				var symbolInfo = _semanticModel.GetSymbolInfo(invocationExpression, _cancellation);
-				var localMethod = (symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault()) as IMethodSymbol;
+				var localFunction = (symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault()) as IMethodSymbol;
 
-				// Step into non static local methods since they can reassign parameters.
-				// Any outer method parameter used in the local function  
-				if (localMethod == null || localMethod.MethodKind != MethodKind.LocalFunction || localMethod.IsDefinitelyStatic(_cancellation))
+				// Analyse local functions since they can reassign parameters from containing methods
+				if (localFunction == null || localFunction.MethodKind != MethodKind.LocalFunction)
 					return;
 
-				if (_checkedLocalFunctions?.Contains(localMethod) == true)
+				if (_checkedLocalFunctions?.Contains(localFunction) == true)
 					return;
 
-				AddToCheckedLocalFunctions(localMethod);
+				AddToCheckedLocalFunctions(localFunction);
 
 				// Local method may have parameters with the same name as outer method parameters which will hide the outer method parameters
-				var nonRedeclaredParameters = localMethod.Parameters.IsDefaultOrEmpty
+				var nonRedeclaredParameters = localFunction.Parameters.IsDefaultOrEmpty
 					? _parametersToCheck
-					: _parametersToCheck.Where(checkedParameterName => localMethod.Parameters.All(p => p.Name != checkedParameterName))
+					: _parametersToCheck.Where(checkedParameterName => localFunction.Parameters.All(p => p.Name != checkedParameterName))
 										.ToList(capacity: _parametersToCheck!.Count);
 
 				if (nonRedeclaredParameters!.Count == 0)
 					return;
 
-				SyntaxNode? localMethodDeclaration = localMethod.GetSyntax(_cancellation);
-				var localMethodBody = localMethodDeclaration?.GetBody();
+				List<ISymbol>? reassignedContainingMethodsParameters = GetReassignedContainingMethodsParameters(localFunction);
 
-				if (localMethodBody == null)
-					return;
-
-				var localMethodDFA = AnalyseDataFlow(_semanticModel!, localMethodBody);
-
-				if (localMethodDFA == null || localMethodDFA.AlwaysAssigned.IsDefaultOrEmpty)
+				if (reassignedContainingMethodsParameters.IsNullOrEmpty())
 					return;
 
 				foreach (string parameterName in nonRedeclaredParameters)
 				{
-					if (localMethodDFA.AlwaysAssigned.Any(symbol => symbol.Name == parameterName))
+					if (reassignedContainingMethodsParameters.Any(symbol => symbol.Name == parameterName))
 					{
 						AddToReassignedParameters(parameterName);
 					}
@@ -334,6 +309,34 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 						AddToReassignedParameters(outArgumentIdentifierName);
 					}
 				}
+			}
+
+			private List<ISymbol>? GetReassignedContainingMethodsParameters(IMethodSymbol localFunction)
+			{
+				SyntaxNode? localFunctionDeclaration = localFunction.GetSyntax(_cancellation);
+				var localFunctionBody = localFunctionDeclaration?.GetBody();
+
+				// Static local functions can't reassign parameters from containing methods
+				if (localFunctionBody == null || localFunction.IsDefinitelyStatic(localFunctionDeclaration!))
+					return null;
+
+				// If there are containing local functions we must check for the first containing static local function.
+				// Only its parameters and parameters of its local functions can be reassigned by this localFunction
+				var containingMethodsWithReassignableParameters = localFunction.GetContainingMethods()
+																			   .TakeWhile(function => function.MethodKind != MethodKind.LocalFunction ||
+																									  !function.IsDefinitelyStatic(_cancellation))
+																			   .ToList(capacity: 1);
+				if (containingMethodsWithReassignableParameters.Count == 0)
+					return null;
+
+				var localMethodDFA = _semanticModel!.AnalyseDataFlow(localFunctionBody);
+
+				if (localMethodDFA == null || localMethodDFA.AlwaysAssigned.IsDefaultOrEmpty)
+					return null;
+
+				return localMethodDFA.AlwaysAssigned
+									 .Where(symbol => containingMethodsWithReassignableParameters.Contains(symbol.ContainingSymbol))
+									 .ToList();
 			}
 
 			public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax localFunction)
