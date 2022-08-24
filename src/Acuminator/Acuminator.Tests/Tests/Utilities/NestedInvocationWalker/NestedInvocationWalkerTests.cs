@@ -1,17 +1,24 @@
-﻿using System;
-using Acuminator.Utilities;
-using Acuminator.Tests.Helpers;
-using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
-using static Acuminator.Tests.Verification.VerificationHelper;
+
+using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+
+using Xunit;
+
+using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 {
@@ -26,7 +33,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			public IReadOnlyList<Location> Locations => _locations;
 
 			public ExceptionWalker(Compilation compilation, CancellationToken cancellationToken) 
-				: base(compilation, cancellationToken, CodeAnalysisSettings.Default)
+				: base(new PXContext(compilation, CodeAnalysisSettings.Default), cancellationToken)
 			{
 			}
 

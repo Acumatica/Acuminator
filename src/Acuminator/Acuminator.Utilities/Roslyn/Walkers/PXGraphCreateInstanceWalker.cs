@@ -22,24 +22,22 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 	public class PXGraphCreateInstanceWalker : NestedInvocationWalker
 	{
 		private readonly SymbolAnalysisContext _context;
-		private readonly PXContext _pxContext;
 		private readonly DiagnosticDescriptor _descriptor;
 
 		public PXGraphCreateInstanceWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
-			: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+			: base(pxContext, context.CancellationToken)
 		{
 			_context = context;
-			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
 			_descriptor = descriptor.CheckIfNull(nameof(descriptor));
 		}
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
-			_context.CancellationToken.ThrowIfCancellationRequested();
+			ThrowIfCancellationRequested();
 
-			IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
+			IMethodSymbol? symbol = GetSymbol<IMethodSymbol>(node);
 
-			if (symbol != null && _pxContext.PXGraph.CreateInstance.Contains(symbol.ConstructedFrom))
+			if (symbol != null && PxContext.PXGraph.CreateInstance.Contains(symbol.ConstructedFrom))
 			{
 				ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
 			}
@@ -56,11 +54,11 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 		/// <param name="node">The node.</param>
 		public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 		{
-			_context.CancellationToken.ThrowIfCancellationRequested();
+			ThrowIfCancellationRequested();
 
-			ITypeSymbol createdObjectType = GetSymbol<ITypeSymbol>(node.Type);
+			ITypeSymbol? createdObjectType = GetSymbol<ITypeSymbol>(node.Type);
 
-			if (createdObjectType != null && createdObjectType.IsPXGraph(_pxContext))
+			if (createdObjectType != null && createdObjectType.IsPXGraph(PxContext))
 			{
 				ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
 			}

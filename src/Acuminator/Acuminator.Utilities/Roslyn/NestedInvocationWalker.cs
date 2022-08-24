@@ -42,9 +42,15 @@ namespace Acuminator.Utilities.Roslyn
 	{
 		private const int MaxDepth = 100; // to avoid circular dependencies
 
-		private readonly Compilation _compilation;
-		
-		protected readonly CodeAnalysisSettings _settings;
+		/// <summary>
+		/// Acumatica specific context with compilation, settings and Acumatica-specific symbol collections.
+		/// </summary>
+		protected PXContext PxContext { get; }
+
+		private Compilation Compilation => PxContext.Compilation;
+
+		protected CodeAnalysisSettings Settings => PxContext.CodeAnalysisSettings;
+
 		private readonly Dictionary<SyntaxTree, SemanticModel> _semanticModels = new Dictionary<SyntaxTree, SemanticModel>();
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
@@ -60,51 +66,52 @@ namespace Acuminator.Utilities.Roslyn
         /// </summary>
         protected SyntaxNode? OriginalNode { get; private set; }
 
-		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
-        private readonly HashSet<IMethodSymbol> _methodsInStack = new HashSet<IMethodSymbol>();
-		private readonly Func<IMethodSymbol, bool> _bypassMethod;
+		private Stack<SyntaxNode> NodesStack { get; set; } = new Stack<SyntaxNode>();
+
+        private HashSet<IMethodSymbol> MethodsInStack { get; set; } = new HashSet<IMethodSymbol>();
+
+		private readonly Lazy<HashSet<INamedTypeSymbol>> _typesToBypass;
+		private readonly Func<IMethodSymbol, bool>? _extraBypassCheck;
 
 		/// <summary>
 		/// Constructor of the class.
 		/// </summary>
-		/// <param name="compilation">Compilation.</param>
+		/// <param name="pxContext">Acumatica specific context with compilation, settings and Acumatica-specific symbol collections.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
-		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
-		/// <param name="bypassMethod">
-		/// (Optional) Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. 
-		/// If not supplied, default implementation is used to bypass some core types from PX.Data namespace.
-		/// </param>
-		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken, CodeAnalysisSettings? codeAnalysisSettings,
-										 Func<IMethodSymbol, bool>? bypassMethod = null)
+		/// <param name="bypassMethod">(Optional) An optional delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. </param>
+		protected NestedInvocationWalker(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? extraBypassCheck = null)
 		{
-			compilation.ThrowOnNull(nameof (compilation));
+			pxContext.ThrowOnNull(nameof (pxContext));
 
-			_compilation = compilation;
+			PxContext = pxContext;
             CancellationToken = cancellationToken;
-			_settings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
+			_extraBypassCheck = extraBypassCheck;
 
-			if (bypassMethod != null)
-			{
-				_bypassMethod = bypassMethod;
-			}
-			else
-			{
-				var pxContext = new PXContext(_compilation, _settings);
-				var typesToBypass = GetTypesToBypass(pxContext).ToHashSet();
-
-				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
-			}		
+			//Use lazy to avoid calling virtual methods inside the constructor
+			_typesToBypass = new Lazy<HashSet<INamedTypeSymbol>>(valueFactory: GetTypesToBypass, isThreadSafe: false);
 		}
 
-		protected virtual IEnumerable<INamedTypeSymbol> GetTypesToBypass(PXContext pxContext)
-		{
-			return new[]
+		/// <summary>
+		/// Gets types to bypass. The alker won't go into their type members.
+		/// </summary>
+		/// <returns>
+		/// The types to bypass.
+		/// </returns>
+		/// <remarks>
+		/// some core types from PX.Data namespace
+		/// </remarks>
+		protected virtual HashSet<INamedTypeSymbol> GetTypesToBypass() =>
+			new HashSet<INamedTypeSymbol>()
 			{
-				pxContext.PXGraph.Type,
-				pxContext.PXView.Type,
-				pxContext.PXCache.Type
+				PxContext.PXGraph.Type,
+				PxContext.PXView.Type,
+				PxContext.PXCache.Type,
+				PxContext.PXCache.GenericType,
+				PxContext.PXAction.Type,
+				PxContext.PXSelectBaseGeneric.Type,
+				PxContext.PXAdapterType,
+				PxContext.PXDatabase.Type
 			};
-		}
 
 		protected void ThrowIfCancellationRequested() => CancellationToken.ThrowIfCancellationRequested();
 
@@ -137,13 +144,13 @@ namespace Acuminator.Utilities.Roslyn
 
 		protected virtual SemanticModel? GetSemanticModel(SyntaxTree syntaxTree)
 		{
-			if (!_compilation.ContainsSyntaxTree(syntaxTree))
+			if (!Compilation.ContainsSyntaxTree(syntaxTree))
 				return null;
 
 			if (_semanticModels.TryGetValue(syntaxTree, out var semanticModel))
 				return semanticModel;
 
-			semanticModel = _compilation.GetSemanticModel(syntaxTree);
+			semanticModel = Compilation.GetSemanticModel(syntaxTree);
 			_semanticModels[syntaxTree] = semanticModel;
 			return semanticModel;
 		}
@@ -170,31 +177,16 @@ namespace Acuminator.Utilities.Roslyn
 				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
 				var semanticModel = GetSemanticModel(nodeToReport.SyntaxTree);
 
-				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, _settings, CancellationToken);
+				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, Settings, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}
 
-		private void Push(SyntaxNode node, IMethodSymbol symbol)
-		{
-			if (_nodesStack.Count == 0)
-				OriginalNode = node;
+		private bool RecursiveAnalysisEnabled() => Settings.RecursiveAnalysisEnabled && NodesStack.Count <= MaxDepth;
 
-			_nodesStack.Push(node);
-            _methodsInStack.Add(symbol);
-		}
+		protected bool IsInsideRecursiveCall => NodesStack.Count > 0;
 
-		private void Pop(IMethodSymbol symbol)
-		{
-			_nodesStack.Pop();
-            _methodsInStack.Remove(symbol);
-
-			if (_nodesStack.Count == 0)
-				OriginalNode = null;
-		}
-
-		private bool RecursiveAnalysisEnabled() => _settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
-
+		protected SyntaxNode? NodeCurrentlyVisitedRecursively { get; private set; }
 		#region Visit
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -204,7 +196,7 @@ namespace Acuminator.Utilities.Roslyn
 			if (RecursiveAnalysisEnabled() && node.Parent?.Kind() != SyntaxKind.ConditionalAccessExpression)
 			{
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
-				VisitMethodSymbol(methodSymbol, node);
+				VisitCalledMethod(methodSymbol, node);
 			}
 
 			base.VisitInvocationExpression(node);
@@ -212,17 +204,27 @@ namespace Acuminator.Utilities.Roslyn
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
+			VisitPropertyOrIndexerAccessExpression(node);
+			base.VisitMemberAccessExpression(node);
+		}
+
+		public override void VisitElementAccessExpression(ElementAccessExpressionSyntax node)
+		{
+			VisitPropertyOrIndexerAccessExpression(node);
+			base.VisitElementAccessExpression(node);
+		}
+
+		private void VisitPropertyOrIndexerAccessExpression(ExpressionSyntax node)
+		{
 			ThrowIfCancellationRequested();
 
 			if (RecursiveAnalysisEnabled() && node.Parent != null
 				&& !node.Parent.IsKind(SyntaxKind.ObjectInitializerExpression)
-			    && !(node.Parent is AssignmentExpressionSyntax))
+				&& node.Parent is not AssignmentExpressionSyntax)
 			{
 				var propertySymbol = GetSymbol<IPropertySymbol>(node);
-				VisitMethodSymbol(propertySymbol?.GetMethod, node);
+				VisitCalledMethod(propertySymbol?.GetMethod, node);
 			}
-
-			base.VisitMemberAccessExpression(node);
 		}
 
 		public override void VisitAssignmentExpression(AssignmentExpressionSyntax node)
@@ -232,7 +234,7 @@ namespace Acuminator.Utilities.Roslyn
 			if (RecursiveAnalysisEnabled())
 			{
 				var propertySymbol = GetSymbol<IPropertySymbol>(node.Left);
-				VisitMethodSymbol(propertySymbol?.SetMethod, node);
+				VisitCalledMethod(propertySymbol?.SetMethod, node);
 			}
 
 			base.VisitAssignmentExpression(node);
@@ -245,7 +247,7 @@ namespace Acuminator.Utilities.Roslyn
 			if (RecursiveAnalysisEnabled())
 			{
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
-				VisitMethodSymbol(methodSymbol, node);
+				VisitCalledMethod(methodSymbol, node);
 			}
 
 			base.VisitObjectCreationExpression(node);
@@ -262,7 +264,7 @@ namespace Acuminator.Utilities.Roslyn
 					? propertySymbol.GetMethod 
 					: GetSymbol<IMethodSymbol>(node.WhenNotNull);
 
-				VisitMethodSymbol(methodSymbol, node);
+				VisitCalledMethod(methodSymbol, node);
 			}
 
 			base.VisitConditionalAccessExpression(node);
@@ -280,22 +282,158 @@ namespace Acuminator.Utilities.Roslyn
 		{
 		}
 
-		private void VisitMethodSymbol(IMethodSymbol? symbol, SyntaxNode originalNode)
+		public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax localFunctionStatement)
 		{
-			if (symbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode &&
-                !IsMethodInStack(symbol) && !_bypassMethod(symbol))
+			// There are two ways to get into local function statement with the nested invocation walker:
+			// 1. Visit it during the recursive visit of a local function call. In such case it can be processesd as usual
+			// 2. Visit the declaration during the normal syntax walking.
+
+			// We are visiting local function declaration currently from a recursive call only if the currently visited node equals to the localFunctionStatement
+			// If we look just on IsInsideRecursiveCall flag we can't distinguish cases when there is a recursively visited function 
+			// in which we find local function declaration during the normal syntax walk
+			if (localFunctionStatement.Equals(NodeCurrentlyVisitedRecursively))	
 			{
-				Push(originalNode, symbol);
-				methodNode.Accept(this);
-				Pop(symbol);
+				base.VisitLocalFunctionStatement(localFunctionStatement);   //Process recursive call as usual
+				return;
+			}
+			
+			// When we visit local function declaration during the normal syntax walking it is like we start visiting another method at the top of call stack
+			// No previous recursive context applies to the local function declaration itself because it is a declaration, not a call. 
+			// In fact, the method can be never called. Thus, we need to save previous recursive context, reset it, visit local function and then restore saved context
+			var oldNodesStack                      = NodesStack;
+			var oldMethodsInStack                  = MethodsInStack;
+			var oldOriginalNode                    = OriginalNode;
+			var oldNodeCurrentlyVisitedRecursively = NodeCurrentlyVisitedRecursively;
+
+			try
+			{
+				NodesStack                      = new Stack<SyntaxNode>();
+				MethodsInStack                  = new HashSet<IMethodSymbol>();
+				OriginalNode                    = null;
+				NodeCurrentlyVisitedRecursively = null;
+
+				base.VisitLocalFunctionStatement(localFunctionStatement);
+			}
+			finally
+			{
+				NodesStack                      = oldNodesStack;
+				MethodsInStack                  = oldMethodsInStack;
+				OriginalNode                    = oldOriginalNode;
+				NodeCurrentlyVisitedRecursively = oldNodeCurrentlyVisitedRecursively;
 			}
 		}
 
-        private bool IsMethodInStack(IMethodSymbol symbol)
-        {
-            return _methodsInStack.Contains(symbol);
-        }
+		private void VisitCalledMethod(IMethodSymbol? calledMethod, ExpressionSyntax callSite)
+		{
+			if (calledMethod == null || IsMethodInStack(calledMethod) || calledMethod.GetSyntax(CancellationToken) is not CSharpSyntaxNode calledMethodNode)
+				return;
 
-        #endregion
-    }
+			bool wasVisited = false;
+			BeforeBypassCheck(calledMethod, calledMethodNode, callSite);
+
+			if (!BypassMethod(calledMethod, calledMethodNode, callSite))
+			{
+				BeforeRecursiveVisit(calledMethod, calledMethodNode, callSite);
+				SyntaxNode? oldNodeCurrentlyVisitedRecursively = NodeCurrentlyVisitedRecursively;
+
+				try
+				{
+					Push(callSite, calledMethod);
+					NodeCurrentlyVisitedRecursively = calledMethodNode;
+
+					calledMethodNode.Accept(this);
+
+					wasVisited = true;
+				}
+				finally
+				{
+					NodeCurrentlyVisitedRecursively = oldNodeCurrentlyVisitedRecursively;
+					Pop(calledMethod);
+				}
+			}
+
+			AfterRecursiveVisit(calledMethod, calledMethodNode, callSite, wasVisited);
+		}
+
+        private bool IsMethodInStack(IMethodSymbol calledMethod) =>
+			MethodsInStack.Contains(calledMethod);
+
+		/// <summary>
+		/// Extensibility point that allows to add some logic executed before <paramref name="calledMethod"/> is checked by the bypass check <see cref="BypassMethod(IMethodSymbol)"/>.
+		/// </summary>
+		/// <param name="calledMethod">The called method symbol.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
+		protected virtual void BeforeBypassCheck(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
+		{
+		}
+
+		/// <summary>
+		/// Extensibility point that allows to add some logic executed after the bypass check on a <paramref name="calledMethod"/> that passed it and 
+		/// just before the visit of the <paramref name="calledMethodNode"/>.
+		/// </summary>
+		/// <param name="calledMethod">The called method symbol.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
+		protected virtual void BeforeRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
+		{
+		}
+
+		/// <summary>
+		/// Extensibility point that allows to add some logic executed after the recursive visit of a <paramref name="calledMethod"/>.
+		/// The logic is executed both for methods that passed bypass check and were visited and for methods that didn't pass it. <br/>
+		/// The flag <paramref name="wasVisited"/> allows to distinguish between the methods that were really visited and those that were bypassed.
+		/// </summary>
+		/// <param name="calledMethod">The called method symbol.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
+		/// <param name="wasVisited">True if the <paramref name="calledMethod"/> was really visited.</param>
+		protected virtual void AfterRecursiveVisit(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite, bool wasVisited)
+		{
+		}
+
+		/// <summary>
+		/// An analysis that checks if walker should skip going into <paramref name="calledMethod"/>.
+		/// </summary>
+		/// <remarks>
+		/// The default implementation will check <paramref name="calledMethod"/>.ContainingType and bypass all types obtained from the extendable <see cref="GetTypesToBypass"/> method.<br/>
+		/// If the method containing type is one of bypassed types then the code will immediately return <see langword="true"/> and <paramref name="calledMethod"/> will be bypassed. If custom
+		/// extraBypassCheck delegate was specified in the <see cref=" NestedInvocationWalker"/> constructor then it will be called after the check for bypassed types.<br/>
+		/// The method be overriden for custom skip logic.
+		/// </remarks>
+		/// <param name="calledMethod">The called method symbol to check.</param>
+		/// <param name="calledMethodNode">The called method node.</param>
+		/// <param name="callSite">Syntax node representing the call site into which the walker steps in.</param>
+		/// <returns>
+		/// <see langword="true"/> if the <paramref name="calledMethod"/> should be skipped, <see langword="false"/> if the walker should go into it.
+		/// </returns>
+		protected virtual bool BypassMethod(IMethodSymbol calledMethod, CSharpSyntaxNode calledMethodNode, ExpressionSyntax callSite)
+		{
+			var typesToBypass = _typesToBypass.Value;
+
+			if (typesToBypass != null && typesToBypass.Contains(calledMethod.ContainingType))
+				return true;
+
+			return _extraBypassCheck?.Invoke(calledMethod) ?? false;
+		}
+
+		private void Push(SyntaxNode callSite, IMethodSymbol calledMethod)
+		{
+			if (NodesStack.Count == 0)
+				OriginalNode = callSite;
+
+			NodesStack.Push(callSite);
+			MethodsInStack.Add(calledMethod);
+		}
+
+		private void Pop(IMethodSymbol calledMethod)
+		{
+			NodesStack.Pop();
+			MethodsInStack.Remove(calledMethod);
+
+			if (NodesStack.Count == 0)
+				OriginalNode = null;
+		}
+		#endregion
+	}
 }

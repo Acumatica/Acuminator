@@ -33,7 +33,7 @@ namespace Acuminator.Vsix.Utilities
 			if (maxTextLength <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maxTextLength), maxTextLength, "Value must be greater than 0");
 
-			if (text.IsNullOrEmpty() || text!.Length <= maxTextLength)
+			if (text.IsNullOrEmpty() || text.Length <= maxTextLength)
 				return text;
 
 			string trimmedText = text.Substring(0, maxTextLength.Value);

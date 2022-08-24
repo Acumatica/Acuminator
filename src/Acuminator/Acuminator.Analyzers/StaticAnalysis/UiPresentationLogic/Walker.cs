@@ -10,19 +10,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 	internal class Walker : NestedInvocationWalker
 	{
 		private readonly SymbolAnalysisContext _context;
-		private readonly PXContext _pxContext;
 		private readonly DiagnosticDescriptor _diagnosticDescriptor;
 		private readonly object[] _messageArgs;
 
 		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor,
 			params object[] messageArgs)
-			: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+			: base(pxContext, context.CancellationToken)
 		{
-			pxContext.ThrowOnNull(nameof (pxContext));
 			diagnosticDescriptor.ThrowOnNull(nameof (diagnosticDescriptor));
 
 			_context = context;
-			_pxContext = pxContext;
 			_diagnosticDescriptor = diagnosticDescriptor;
 			_messageArgs = messageArgs;
 		}
@@ -34,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 			var methodSymbol = GetSymbol<IMethodSymbol>(node);
 			methodSymbol = methodSymbol?.OriginalDefinition?.OverriddenMethod ?? methodSymbol?.OriginalDefinition;
 
-			if (methodSymbol != null && _pxContext.UiPresentationLogicMethods.Contains(methodSymbol))
+			if (methodSymbol != null && PxContext.UiPresentationLogicMethods.Contains(methodSymbol))
 			{
 				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
 			}

@@ -15,11 +15,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
-	internal class LongOperationDelegateTypeClassifier
+	internal static class LongOperationDelegateTypeClassifier
 	{
-		public LongOperationDelegateType? GetLongOperationDelegateType(InvocationExpressionSyntax? longOperationSetupMethodInvocationNode,
-																	   SemanticModel? semanticModel, PXContext pxContext, 
-																	   CancellationToken cancellationToken)
+		public static LongOperationDelegateType? GetLongOperationDelegateType(InvocationExpressionSyntax? longOperationSetupMethodInvocationNode,
+																			  SemanticModel? semanticModel, PXContext pxContext, 
+																			  CancellationToken cancellationToken)
 		{
 			if (semanticModel == null)
 				return null;

@@ -402,7 +402,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ITypeSymbol GetUnderlyingTypeFromNullable(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
-			if (!typeSymbol.IsNullable(pxContext) || !(typeSymbol is INamedTypeSymbol namedTypeSymbol))
+			if (!typeSymbol.IsNullable(pxContext) || typeSymbol is not INamedTypeSymbol namedTypeSymbol)
 				return null;
 
 			ImmutableArray<ITypeSymbol> typeArgs = namedTypeSymbol.TypeArguments;
@@ -449,7 +449,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			builder.Append(DefaultNestedTypesSeparator)
 				   .Append(typeSymbol.Name);
 
-			if (!(typeSymbol is INamedTypeSymbol namedType) || !namedType.IsGenericType)
+			if (typeSymbol is not INamedTypeSymbol namedType || !namedType.IsGenericType)
 				return builder;
 
 			var typeArgs = namedType.TypeArguments;
@@ -460,7 +460,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static string GetClrStyleTypeFullNameForNotNestedType(this ITypeSymbol notNestedTypeSymbol)
 		{
-			if (!(notNestedTypeSymbol is INamedTypeSymbol namedType) || !namedType.IsGenericType)
+			if (notNestedTypeSymbol is not INamedTypeSymbol namedType || !namedType.IsGenericType)
 				return notNestedTypeSymbol.ToDisplayString();
 
 			var typeArgs = namedType.TypeArguments;
@@ -488,7 +488,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				if (reference == null)
 					continue;
 
-				if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
+				if (reference.GetSyntax(cancellation) is not ConstructorDeclarationSyntax node)
 					continue;
 
 				initializers.Add((node, ctr));
@@ -511,7 +511,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 				SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
 
-				if (!(reference?.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
+				if (reference?.GetSyntax(cancellation) is not ConstructorDeclarationSyntax node)
 					continue;
 
 				staticCtrs.Add(new StaticConstructorInfo(node, ctr, order));

@@ -1,6 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Acuminator.Utilities.Common
@@ -20,7 +23,8 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T CheckIfNull<T>(this T obj, string paramName = null, string message = null)
+		[return: NotNullIfNotNull("obj")]
+		public static T CheckIfNull<T>(this T? obj, string? paramName = null, string? message = null)
 		{
 			obj.ThrowOnNull(paramName, message);
 			return obj;
@@ -28,7 +32,7 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ThrowOnNull<T>(this T obj, string parameter = null, string message = null)
+		public static void ThrowOnNull<T>([NotNull] this T? obj, string? parameter = null, string? message = null)
 		{
 			if (obj != null)
 				return;
@@ -48,7 +52,8 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<T> CheckIfNullOrEmpty<T>(this IEnumerable<T> collection, string paramName = null, string message = null)
+		[return: NotNullIfNotNull("collection")]
+		public static IEnumerable<T> CheckIfNullOrEmpty<T>(this IEnumerable<T>? collection, string? paramName = null, string? message = null)
 		{
 			collection.ThrowOnNullOrEmpty(paramName, message);
 			return collection;
@@ -64,7 +69,7 @@ namespace Acuminator.Utilities.Common
 		/// <param name="message">(Optional) The error message.</param>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ThrowOnNullOrEmpty<T>(this IEnumerable<T> collection, string paramName = null, string message = null)
+		public static void ThrowOnNullOrEmpty<T>([NotNull] this IEnumerable<T>? collection, string? paramName = null, string? message = null)
 		{
 			if (collection == null)
 			{
@@ -90,7 +95,8 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static string CheckIfNullOrWhiteSpace(this string str, string paramName = null, string message = null)
+		[return: NotNullIfNotNull("str")]
+		public static string CheckIfNullOrWhiteSpace(this string? str, string? paramName = null, string? message = null)
 		{
 			str.ThrowOnNullOrWhiteSpace(paramName, message);
 			return str;
@@ -98,17 +104,20 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ThrowOnNullOrWhiteSpace(this string str, string parameter = null, string message = null)
+		public static void ThrowOnNullOrWhiteSpace([NotNull] this string? str, string? parameter = null, string? message = null)
 		{
+			#pragma warning disable CS8777 // Parameter must have a non-null value when exiting. 
+			// string.IsNullOrWhiteSpace is just not annotated so its safe to return here
 			if (!string.IsNullOrWhiteSpace(str))
 				return;
+			#pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
 			throw str == null
 				? NewArgumentNullException(parameter, message)
 				: NewArgumentException(parameter, message);
 		}
 
-		private static ArgumentNullException NewArgumentNullException(string parameter = null, string message = null)
+		private static ArgumentNullException NewArgumentNullException(string? parameter = null, string? message = null)
 		{
 			return parameter == null
 			   ? new ArgumentNullException()
@@ -117,7 +126,7 @@ namespace Acuminator.Utilities.Common
 				   : new ArgumentNullException(parameter, message);
 		}
 
-		private static ArgumentException NewArgumentException(string parameter = null, string message = null)
+		private static ArgumentException NewArgumentException(string? parameter = null, string? message = null)
 		{
 			return parameter == null
 			   ? new ArgumentNullException()

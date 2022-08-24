@@ -41,6 +41,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 
 		public const string PXView = "PXView";
 
+		public const string PXAdapter = "PXAdapter";
+
 		public const string IBqlTable = "IBqlTable";
 
 		public const string BqlCommand = "BqlCommand";

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿#nullable enable
+
+using System;
 
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
@@ -61,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
         /// <summary>
         /// Constructor for the unit tests.
         /// </summary>
-        public DacAnalyzersAggregator(CodeAnalysisSettings settings, params IDacAnalyzer[] innerAnalyzers) : base(settings, innerAnalyzers)
+        public DacAnalyzersAggregator(CodeAnalysisSettings? settings, params IDacAnalyzer[] innerAnalyzers) : base(settings, innerAnalyzers)
         {
         }
 
@@ -77,14 +79,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			if (inferredDacModel == null)
 				return;
 
-			ParallelOptions parallelOptions = new ParallelOptions
-			{
-				CancellationToken = context.CancellationToken
-			};
-
-			Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
+			RunAggregatedAnalyzersInParallel(context, innerAnalyzerIndex =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
+				var innerAnalyzer = _innerAnalyzers[innerAnalyzerIndex];
 
 				if (innerAnalyzer.ShouldAnalyze(pxContext, inferredDacModel))
 				{

@@ -18,14 +18,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 	public class StartLongOperationDelegateWalker : DelegatesWalkerBase
 	{
 		private readonly HashSet<SyntaxNode> _delegates = new HashSet<SyntaxNode>();
-		private readonly PXContext _pxContext;
 
 		public ImmutableArray<SyntaxNode> Delegates => _delegates.ToImmutableArray();
 
-		public StartLongOperationDelegateWalker(PXContext pxContext, Compilation compilation, CancellationToken cancellation)
-			: base(compilation, cancellation, pxContext.CodeAnalysisSettings)
+		public StartLongOperationDelegateWalker(PXContext pxContext, CancellationToken cancellation)
+			: base(pxContext, cancellation)
 		{
-			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -34,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 
 			IMethodSymbol? methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-			if (methodSymbol == null || !_pxContext.StartOperation.Contains(methodSymbol))
+			if (methodSymbol == null || !PxContext.StartOperation.Contains(methodSymbol))
 			{
 				base.VisitInvocationExpression(node);
 			}

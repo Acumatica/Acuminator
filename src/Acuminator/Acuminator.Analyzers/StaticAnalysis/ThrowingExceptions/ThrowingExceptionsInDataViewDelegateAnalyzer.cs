@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
             var walker = new WalkerForGraphAnalyzer(context, pxContext, Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation);
 
             CheckProcessingDelegates(pxGraph, walker, context.CancellationToken);
-            CheckLongOperationStartDelegates(pxGraph.Symbol, walker, pxContext, context.Compilation, context.CancellationToken);
+            CheckLongOperationStartDelegates(pxGraph.Symbol, walker, pxContext, context.CancellationToken);
         }
 
         private void CheckProcessingDelegates(PXGraphSemanticModel pxGraph, WalkerForGraphAnalyzer walker, CancellationToken cancellation)
@@ -67,11 +67,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         }
 
         private void CheckLongOperationStartDelegates(ISymbol symbol, WalkerForGraphAnalyzer walker, PXContext pxContext,
-                                                      Compilation compilation, CancellationToken cancellation)
+                                                      CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
 
-            var longOperationDelegates = GetLongOperationStartDelegates(symbol, pxContext, compilation, cancellation);
+            var longOperationDelegates = GetLongOperationStartDelegates(symbol, pxContext, cancellation);
 
             foreach (var loDel in longOperationDelegates)
             {
@@ -80,8 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
             }
         }
 
-        private IEnumerable<SyntaxNode> GetLongOperationStartDelegates(ISymbol symbol, PXContext pxContext, Compilation compilation,
-                                                                       CancellationToken cancellation)
+        private IEnumerable<SyntaxNode> GetLongOperationStartDelegates(ISymbol symbol, PXContext pxContext, CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
 
@@ -93,7 +92,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
             {
                 cancellation.ThrowIfCancellationRequested();
 
-                var loStartWalker = new StartLongOperationDelegateWalker(pxContext, compilation, cancellation);
+                var loStartWalker = new StartLongOperationDelegateWalker(pxContext, cancellation);
 
                 loStartWalker.Visit(node);
                 loDelegateNodeList.AddRange(loStartWalker.Delegates);

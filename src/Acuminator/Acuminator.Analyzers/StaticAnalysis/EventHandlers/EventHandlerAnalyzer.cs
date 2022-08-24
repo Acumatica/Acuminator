@@ -1,4 +1,6 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+﻿#nullable enable
+
+using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
@@ -41,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		/// <summary>
 		/// Constructor for the unit tests.
 		/// </summary>
-		public EventHandlerAnalyzer(CodeAnalysisSettings settings, params IEventHandlerAnalyzer[] innerAnalyzers)
+		public EventHandlerAnalyzer(CodeAnalysisSettings? settings, params IEventHandlerAnalyzer[] innerAnalyzers)
             : base(settings, innerAnalyzers)
 		{
 		}
@@ -58,14 +60,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			if (eventType == EventType.None)
 				return;
 
-			ParallelOptions parallelOptions = new ParallelOptions
-			{
-				CancellationToken = context.CancellationToken
-			};
-
-			Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
+			RunAggregatedAnalyzersInParallel(context, innerAnalyzerIndex =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
+				var innerAnalyzer = _innerAnalyzers[innerAnalyzerIndex];
 
 				if (innerAnalyzer.ShouldAnalyze(pxContext, eventType))
 				{

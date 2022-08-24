@@ -15,17 +15,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public class InstanceCreatedEventsAddHandlerWalker : NestedInvocationWalker
 	{
-		private readonly PXContext _pxContext;
 		private int _currentDeclarationOrder = 0;
 
 		public List<InitDelegateInfo> GraphInitDelegates { get; } = new List<InitDelegateInfo>();
 
 		public InstanceCreatedEventsAddHandlerWalker(PXContext pxContext, CancellationToken cancellation)
-			: base(pxContext.Compilation, cancellation, pxContext.CodeAnalysisSettings)
+			: base(pxContext, cancellation)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			_pxContext = pxContext;
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax invocationNode)
@@ -41,7 +37,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (semanticModel == null || methodSymbol == null || methodSymbol.TypeParameters.IsDefaultOrEmpty)
 				return;
 
-			bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(methodSymbol.ConstructedFrom);
+			bool isCreationDelegateAddition = PxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(methodSymbol.ConstructedFrom);
 
 			if (isCreationDelegateAddition)
 			{

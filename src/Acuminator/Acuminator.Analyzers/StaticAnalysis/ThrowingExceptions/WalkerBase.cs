@@ -12,15 +12,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
     public abstract class WalkerBase : NestedInvocationWalker
     {
         protected readonly SymbolAnalysisContext _context;
-        protected readonly PXContext _pxContext;
 
         protected WalkerBase(SymbolAnalysisContext context, PXContext pxContext)
-            : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+            : base(pxContext, context.CancellationToken)
         {
-            pxContext.ThrowOnNull(nameof(pxContext));
-
             _context = context;
-            _pxContext = pxContext;
         }
 
         protected bool IsPXSetupNotEnteredException(ExpressionSyntax? expressionAfterThrowkeyword)
@@ -40,7 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
                 return false;
             }
 
-            bool isSetupNotEntered = exceptionType.InheritsFromOrEquals(_pxContext.Exceptions.PXSetupNotEnteredException);
+            bool isSetupNotEntered = exceptionType.InheritsFromOrEquals(PxContext.Exceptions.PXSetupNotEnteredException);
             return isSetupNotEntered;
         }
     }

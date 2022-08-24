@@ -1,15 +1,19 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+﻿#nullable enable
+
+using System.Collections.Generic;
+using System.Collections.Immutable;
+
+using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 {
@@ -47,16 +51,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 		private class Walker : NestedInvocationWalker
 		{
 			private readonly SymbolAnalysisContext _context;
-			private readonly PXContext _pxContext;
 			private readonly EventType _eventType;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
-				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+				: base(pxContext, context.CancellationToken)
 			{
-				pxContext.ThrowOnNull(nameof(pxContext));
-
 				_context = context;
-				_pxContext = pxContext;
 				_eventType= eventType;
 			}
 
@@ -67,10 +67,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 				methodSymbol = methodSymbol?.OriginalDefinition?.OverriddenMethod ?? methodSymbol?.OriginalDefinition;
 
-				if (methodSymbol != null && _pxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
+				if (methodSymbol != null && PxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
 				{
-					if (!_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled &&
-					    _eventType == EventType.FieldSelecting)
+					if (!Settings.IsvSpecificAnalyzersEnabled && _eventType == EventType.FieldSelecting)
 					{
 						ReportDiagnostic(_context.ReportDiagnostic,
 							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV,

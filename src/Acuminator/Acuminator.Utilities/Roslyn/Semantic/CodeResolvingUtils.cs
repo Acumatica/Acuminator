@@ -311,6 +311,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXAction, includeInterfaces: false);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsPXAction(this ITypeSymbol typeSymbol, PXContext pxContext) =>
+			typeSymbol.InheritsFrom(pxContext?.PXAction.Type);
+
 		public static bool IsCustomBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));

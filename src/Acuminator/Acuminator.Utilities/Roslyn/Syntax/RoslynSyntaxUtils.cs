@@ -183,7 +183,13 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			}
 		}
 
-		public static bool IsPublic(this MemberDeclarationSyntax? member)
+		public static bool IsStatic(this SyntaxNode node)
+		{
+			SyntaxTokenList modifiers = node.GetModifiers();
+			return modifiers.Any(SyntaxKind.StaticKeyword);
+		}
+
+		public static bool IsPublic(this MemberDeclarationSyntax member)
 		{
 			SyntaxTokenList modifiers = member.GetModifiers();
 			return modifiers.Any(SyntaxKind.PublicKeyword);
@@ -202,7 +208,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return modifiers.Any(SyntaxKind.InternalKeyword) && !modifiers.Any(SyntaxKind.PrivateKeyword);  
 		}
 
-		public static SyntaxTokenList GetModifiers(this MemberDeclarationSyntax? member) =>
+		public static SyntaxTokenList GetModifiers(this SyntaxNode member) =>
 			member.CheckIfNull(nameof(member)) switch
 			{
 				BasePropertyDeclarationSyntax basePropertyDeclaration => basePropertyDeclaration.Modifiers,
@@ -210,6 +216,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				BaseTypeDeclarationSyntax baseTypeDeclaration         => baseTypeDeclaration.Modifiers,
 				BaseFieldDeclarationSyntax baseFieldDeclaration       => baseFieldDeclaration.Modifiers,
 				DelegateDeclarationSyntax delegateDeclaration         => delegateDeclaration.Modifiers,
+				LocalFunctionStatementSyntax localFunctionStatement   => localFunctionStatement.Modifiers,
 				_                                                     => SyntaxFactory.TokenList()
 			};
 
@@ -222,9 +229,17 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static CSharpSyntaxNode? GetBody(this SyntaxNode? node) =>
 			node switch
 			{
-				AccessorDeclarationSyntax accessorSyntax => accessorSyntax.Body,
-				MethodDeclarationSyntax methodSyntax => methodSyntax.Body ?? methodSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
-				ConstructorDeclarationSyntax constructorSyntax => constructorSyntax.Body,
+				AccessorDeclarationSyntax accessorSyntax         => accessorSyntax.Body ?? 
+																	accessorSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
+
+				MethodDeclarationSyntax methodSyntax             => methodSyntax.Body ?? 
+																	methodSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
+
+				ConstructorDeclarationSyntax constructorSyntax   => constructorSyntax.Body ?? 
+																	constructorSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
+
+				LocalFunctionStatementSyntax localFunctionSyntax => localFunctionSyntax.Body ??
+																	localFunctionSyntax.ExpressionBody?.Expression as CSharpSyntaxNode,
 				_ => null,
 			};
 
@@ -271,9 +286,19 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			const string commentPrefix = "//";
 			string comment = commentContent.IsNullOrWhiteSpace()
 				? commentPrefix
-				: commentPrefix + " " + commentContent!.Trim();
+				: commentPrefix + " " + commentContent.Trim();
 
 			return SyntaxFactory.Comment(comment);
 		}
+
+		public static BaseArgumentListSyntax? GetArgumentsList(this SyntaxNode callSite) =>
+			callSite switch
+			{
+				InvocationExpressionSyntax invocation                           => invocation.ArgumentList,
+				ElementAccessExpressionSyntax elementAccess                     => elementAccess.ArgumentList,
+				ObjectCreationExpressionSyntax objectCreation                   => objectCreation.ArgumentList,
+				ElementBindingExpressionSyntax elementBinding                   => elementBinding.ArgumentList,
+				_                                                               => null
+			};
 	}
 }

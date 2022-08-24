@@ -121,7 +121,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (children.IsNullOrEmpty())
 				return;
 
-			foreach (TreeNodeViewModel? child in children!)
+			foreach (TreeNodeViewModel? child in children)
 			{
 				if (child != null)
 					BuildSubTree(child);

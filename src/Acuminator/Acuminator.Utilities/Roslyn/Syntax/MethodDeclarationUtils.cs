@@ -102,7 +102,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 			SyntaxNode current = node;
 
-			while (current != null && !(current is StatementSyntax))
+			while (current != null && current is not StatementSyntax)
 			{
 				current = current.Parent;
 			}
@@ -179,6 +179,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsStatic(this BaseMethodDeclarationSyntax node) =>
+			node.CheckIfNull(nameof(node))
+				.Modifiers
+				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsStatic(this LocalFunctionStatementSyntax node) =>
 			node.CheckIfNull(nameof(node))
 				.Modifiers
 				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));

@@ -58,17 +58,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 		private class Walker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
-            private readonly PXContext _pxContext;
             private readonly ImmutableHashSet<ISymbol> _nonRedeclaredBaseViews;
 
             public Walker(SymbolAnalysisContext context, PXContext pxContext, ImmutableHashSet<ISymbol> nonRedeclaredBaseViews)
-                : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
+                : base(pxContext, context.CancellationToken)
             {
-                pxContext.ThrowOnNull(nameof(pxContext));
                 nonRedeclaredBaseViews.ThrowOnNull(nameof(nonRedeclaredBaseViews));
 
                 _context = context;
-                _pxContext = pxContext;
                 _nonRedeclaredBaseViews = nonRedeclaredBaseViews;
             }
 
@@ -88,13 +85,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
                 var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
                 // Case Base.PXSelectBaseGenIns.Select()
-                if (_pxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
+                if (PxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
                 {
                     reported = TryToReport(expressionSymbol, node);
                 }
                 // Case Base.PXSelectBaseGenIns.View.Select()
-                else if (_pxContext.PXView.Select.Contains(symbol) &&
-                         _pxContext.PXSelectBase.View.Equals(expressionSymbol) &&
+                else if (PxContext.PXView.Select.Contains(symbol) &&
+						 PxContext.PXSelectBase.View.Equals(expressionSymbol) &&
                          node.Expression is MemberAccessExpressionSyntax expressionNode)
                 {
                     var innerExpressionSymbol = GetSymbol<ISymbol>(expressionNode.Expression);

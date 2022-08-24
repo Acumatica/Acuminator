@@ -1,9 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
@@ -13,7 +16,7 @@ namespace Acuminator.Utilities.Common
 	public static class EnumerableExtensions
 	{
 		[DebuggerStepThrough]
-		public static IEnumerable<T> ToEnumerable<T>(this T item)
+		public static IEnumerable<T> ToEnumerable<T>(this T? item)
 		{
 			if (item != null)
 				yield return item;
@@ -27,7 +30,7 @@ namespace Acuminator.Utilities.Common
 		/// <param name="action">The action.</param>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+		public static void ForEach<T>(this IEnumerable<T> source, Action<T?> action)
 		{
 			source.ThrowOnNull(nameof(source));
 			action.ThrowOnNull(nameof(action));
@@ -75,7 +78,7 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer = null)
+		public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T>? comparer = null)
 		{
 			source.ThrowOnNull(nameof(source));
 			return comparer != null
@@ -136,6 +139,26 @@ namespace Acuminator.Utilities.Common
 					yield return item;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Concatenate <see cref="ImmutableArray{TItem}"/>s. This is an optimization method which allows to avoid boxing for <see cref="ImmutableArray{TItem}"/>s.
+		/// </summary>
+		/// <typeparam name="TItem">Type of the item.</typeparam>
+		/// <param name="sourceList">The source list to act on.</param>
+		/// <param name="listToConcat">The list to concat.</param>
+		/// <returns>
+		/// An enumerator that allows foreach to be used to process concatenated arrays.
+		/// </returns>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TItem> Concat<TItem>(this ImmutableArray<TItem> sourceList, ImmutableArray<TItem> listToConcat)
+		{
+			for (int i = 0; i < sourceList.Length; i++)
+				yield return sourceList[i];
+
+			for (int i = 0; i < listToConcat.Length; i++)
+				yield return listToConcat[i];
 		}
 
 		/// <summary>
@@ -253,12 +276,12 @@ namespace Acuminator.Utilities.Common
 		/// <param name="source">The source to act on.</param>
 		/// <returns/>
 		[DebuggerStepThrough]
-		public static ImmutableArray<TItem> Reverse<TItem>(this ImmutableArray<TItem> source)
+		public static ImmutableArray<TItem?> Reverse<TItem>(this ImmutableArray<TItem?> source)
 		{
 			if (source.Length == 0)
 				return source;
 
-			ImmutableArray<TItem>.Builder builder = ImmutableArray.CreateBuilder<TItem>(source.Length);
+			ImmutableArray<TItem?>.Builder builder = ImmutableArray.CreateBuilder<TItem?>(source.Length);
 
 			for (int i = source.Length - 1; i >= 0; i--)
 			{		
@@ -298,7 +321,7 @@ namespace Acuminator.Utilities.Common
 			? source.Count == 0
 			: throw new ArgumentNullException(nameof(source));
 
-		public static bool Contains<T>(this IEnumerable<T> sequence, Func<T, bool> predicate)
+		public static bool Contains<T>(this IEnumerable<T> sequence, Func<T?, bool> predicate)
 		{
 			sequence.ThrowOnNull(nameof(sequence));
 			predicate.ThrowOnNull(nameof(predicate));
@@ -308,14 +331,124 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Contains<T>(this T[] array, T item) => Array.IndexOf(array, item) >= 0;
+		public static bool Contains<T>(this T?[] array, T? item) => Array.IndexOf(array, item) >= 0;
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) => source?.IsEmpty() ?? true;
+		public static bool IsNullOrEmpty<T>([NotNullWhen(returnValue: false)] this IEnumerable<T>? source) => 
+			source?.IsEmpty() ?? true;
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullOrEmpty<T>(this T[] array) => array == null || array.Length == 0;
+		public static bool IsNullOrEmpty<T>([NotNullWhen(returnValue: false)] this T[]? array) => 
+			array == null || array.Length == 0;
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<T>(this ImmutableArray<T> source, Func<T, bool> condition) =>
+			FindIndex(source, startInclusive: 0, endExclusive: source.Length, condition);
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<T>(this ImmutableArray<T> source, int startInclusive, Func<T, bool> condition) =>
+			FindIndex(source, startInclusive, endExclusive: source.Length, condition);
+
+		[DebuggerStepThrough]
+		public static int FindIndex<T>(this ImmutableArray<T> source, int startInclusive, int endExclusive, Func<T, bool> condition)
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			if (startInclusive < 0 || startInclusive >= source.Length)
+				throw new ArgumentOutOfRangeException(nameof(startInclusive));
+			else if (endExclusive <= 0 || endExclusive > source.Length)
+				throw new ArgumentOutOfRangeException(nameof(endExclusive));
+
+			for (int i = startInclusive; i < endExclusive; i++)
+			{
+				if (condition(source[i]))
+					return i;
+			}
+
+			return -1;
+		}
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			return FindIndex(source, startInclusive: 0, endExclusive: source.Count, condition);
+		}
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FindIndex<TNode>(this SeparatedSyntaxList<TNode> source, int startInclusive, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			return FindIndex(source, startInclusive, endExclusive: source.Count, condition);
+		}
+
+		[DebuggerStepThrough]
+		public static int FindIndex<TNode>(this SeparatedSyntaxList<TNode> source, int startInclusive, int endExclusive, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			if (startInclusive < 0 || startInclusive >= source.Count)
+				throw new ArgumentOutOfRangeException(nameof(startInclusive));
+			else if (endExclusive <= 0 || endExclusive > source.Count)
+				throw new ArgumentOutOfRangeException(nameof(endExclusive));
+
+			for (int i = startInclusive; i < endExclusive; i++)
+			{
+				if (condition(source[i]))
+					return i;
+			}
+
+			return -1;
+		}
+
+		[DebuggerStepThrough]
+		public static bool All<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			for (int i = 0; i < source.Count; i++)
+			{
+				if (!condition(source[i]))
+					return false;
+			}
+
+			return true;
+		}
+
+		[DebuggerStepThrough]
+		public static bool Any<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
+		where TNode : SyntaxNode
+		{
+			condition.ThrowOnNull(nameof(condition));
+
+			for (int i = 0; i < source.Count; i++)
+			{
+				if (condition(source[i]))
+					return true;
+			}
+
+			return false;
+		}
+
+		[DebuggerStepThrough]
+		public static bool Contains<TNode>(this SyntaxList<TNode> source, TNode node)
+		where TNode : SyntaxNode
+		{
+			for (int i = 0; i < source.Count; i++)
+			{
+				if (Equals(node, source[i]))
+					return true;
+			}
+
+			return false;
+		}
 	}
 }
