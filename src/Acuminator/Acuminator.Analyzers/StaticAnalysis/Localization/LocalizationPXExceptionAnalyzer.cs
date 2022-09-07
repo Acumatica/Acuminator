@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -74,24 +76,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             }
         }
 
-        private ExpressionSyntax GetMessageExpression(SyntaxNodeAnalysisContext syntaxContext, ImmutableArray<IParameterSymbol> pars, ArgumentListSyntax args)
+        private ExpressionSyntax? GetMessageExpression(SyntaxNodeAnalysisContext syntaxContext, ImmutableArray<IParameterSymbol> pars, ArgumentListSyntax? args)
         {
             syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-            ArgumentSyntax messageArg = null;
+			if (args == null)
+				return null;
 
-            foreach (ArgumentSyntax a in args.Arguments)
+            ArgumentSyntax? messageArg = null;
+
+            foreach (ArgumentSyntax argument in args.Arguments)
             {
-                IParameterSymbol p = a.DetermineParameter(pars, false);
+                IParameterSymbol? parameter = argument.DetermineParameter(pars, allowParams: false);
 
-                if (_messageArgNames.Contains(p?.Name, StringComparer.Ordinal))
+                if (_messageArgNames.Contains(parameter?.Name, StringComparer.Ordinal))
                 {
-                    messageArg = a;
+                    messageArg = argument;
                     break;
                 }
             }
 
-            if (messageArg == null || messageArg.Expression == null)
+            if (messageArg?.Expression == null)
                 return null;
 
             return messageArg.Expression;
