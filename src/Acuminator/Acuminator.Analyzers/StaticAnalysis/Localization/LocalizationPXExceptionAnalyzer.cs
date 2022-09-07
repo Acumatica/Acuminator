@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                     continue;
 
                 ImmutableArray<IParameterSymbol> pars = methodSymbol.Parameters;
-                ExpressionSyntax messageExpression = GetMessageExpression(syntaxContext, pars, c.ArgumentList);
+                ExpressionSyntax? messageExpression = GetMessageExpression(syntaxContext, pars, c.ArgumentList);
 
                 if (messageExpression == null)
                     continue;
@@ -119,7 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                 return;
 
             ImmutableArray<IParameterSymbol> pars = ctorSymbol.Parameters;
-            ExpressionSyntax messageExpression = GetMessageExpression(syntaxContext, pars, ctorNode.ArgumentList);
+            ExpressionSyntax? messageExpression = GetMessageExpression(syntaxContext, pars, ctorNode.ArgumentList);
 
             if (messageExpression == null)
                 return;
