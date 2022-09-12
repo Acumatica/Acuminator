@@ -14,6 +14,7 @@ using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
@@ -87,8 +88,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private ImmutableArray<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, 
-			PXContext pxContext)
+		private ImmutableArray<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext)
 		{
 			var dataFlow = semanticModel.TryAnalyzeDataFlow(body);
 
@@ -96,8 +96,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				return ImmutableArray<ISymbol>.Empty;
 
 			// this
-			var thisGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
-				.FirstOrDefault(t => t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
+			var containingCodeElement = body.Parent<MemberDeclarationSyntax>();
+			bool isInsideStaticCodeElement = containingCodeElement?.IsStatic() ?? false;
+			var thisGraph = isInsideStaticCodeElement 
+				? null
+				: dataFlow.WrittenOutside.OfType<IParameterSymbol>()
+						  .FirstOrDefault(t => t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
 			// Method parameter
 			var parGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
 				.FirstOrDefault(t => !t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
