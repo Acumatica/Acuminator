@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -53,13 +54,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (walker.GraphArguments.IsEmpty) return;
 
 			// Collect all available PXGraph instances (@this, method parameters, local variables)
-			var existingGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext);
-			if (existingGraphs.IsEmpty) return;
+			var availableGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext);
+			if (availableGraphs.Count == 0) 
+				return;
 
 			// Determine if available PXGraph instance is used outside of BQL queries
-			var usedGraphs = GetSymbolUsages(body, existingGraphs, context.SemanticModel, walker.GraphArguments)
-				.ToImmutableHashSet();
-			var availableGraphs = existingGraphs.Except(usedGraphs).ToArray();
+			var usedGraphs = GetGraphSymbolUsages(body, availableGraphs, context.SemanticModel, walker.GraphArguments).ToHashSet();
+
+			// Remove graphs used somewhere outside of BQL statements
+			if (usedGraphs.Count > 0)
+			{
+			foreach (var graph in usedGraphs)
+			{
+				availableGraphs.Remove(graph);
+			}
+			}
 
 			// Analyze each PXGraph-typed parameter in BQL queries
 			foreach (var graphArgSyntax in walker.GraphArguments)
@@ -77,8 +86,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 						CreateDiagnosticProperties(availableGraphs, pxContext)),
 						pxContext.CodeAnalysisSettings);
 				}
-				else if (availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
-				                                    && !usedGraphs.Contains(localVar))
+				else if (availableGraphs.Count > 0 && 
+						 context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar && !usedGraphs.Contains(localVar))
 				{
 					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
 						graphArgSyntax.GetLocation(),
@@ -88,12 +97,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private ImmutableArray<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext)
+		private List<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext)
 		{
 			var dataFlow = semanticModel.TryAnalyzeDataFlow(body);
 
 			if (dataFlow == null) 
-				return ImmutableArray<ISymbol>.Empty;
+				return new List<ISymbol>();
 
 			// this
 			var containingCodeElement = body.Parent<MemberDeclarationSyntax>();
@@ -105,36 +114,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// Method parameter
 			var parGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
 				.FirstOrDefault(t => !t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
+
 			// Local variable
 			var localVarGraphs = dataFlow.WrittenInside.OfType<ILocalSymbol>()
 				.Where(t => t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
 
 			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
-			var builder = ImmutableArray<ISymbol>.Empty.ToBuilder();
+			var existingGraphs = new List<ISymbol>();
 
-			if (thisGraph != null) 
-				builder.Add(thisGraph);
+			if (thisGraph != null)
+				existingGraphs.Add(thisGraph);
 
-			if (parGraph != null) 
-				builder.Add(parGraph);
+			if (parGraph != null)
+				existingGraphs.Add(parGraph);
 
-			builder.AddRange(localVarGraphs);
-
-			return builder.ToImmutable();
+			existingGraphs.AddRange(localVarGraphs);
+			return existingGraphs;
 		}
 
-		private IEnumerable<ISymbol> GetSymbolUsages(CSharpSyntaxNode node, 
-			IEnumerable<ISymbol> symbols, SemanticModel semanticModel, IEnumerable<SyntaxNode> nodesToSkip)
+		private IEnumerable<ISymbol> GetGraphSymbolUsages(CSharpSyntaxNode node, List<ISymbol> existingGraphs, SemanticModel semanticModel, 
+														  ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip)
 		{
-			var symbolsSet = (symbols as IImmutableSet<ISymbol>) ?? symbols.ToImmutableHashSet();
-			var nodesToSkipSet = (nodesToSkip as IImmutableSet<SyntaxNode>) ?? nodesToSkip.ToImmutableHashSet();
+			var nodesToVisit = node.DescendantNodesAndSelf()
+								   .Where(n => n is not ExpressionSyntax expressionNode || 
+											  !bqlSelectGraphArgNodesToSkip.Contains(expressionNode));
 
-			foreach (var subNode in node.DescendantNodesAndSelf()
-				.Where(n => !nodesToSkipSet.Contains(n)))
+			foreach (var subNode in nodesToVisit)
 			{
 				var symbol = semanticModel.GetSymbolInfo(subNode).Symbol;
 
-				if (symbol != null && symbolsSet.Contains(symbol))
+				if (symbol != null && existingGraphs.Contains(symbol))
 					yield return symbol;
 			}
 		}
