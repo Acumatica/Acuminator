@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
@@ -49,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 						PXGraphCreationForBqlQueriesAnalyzer.IsGraphExtensionPropertyPrefix + i);
 
 					var codeAction = CodeAction.Create(codeActionName, 
-						ct => ReplaceIdentifier(context.Document, root, node, identifierName, isGraphExtension, context.CancellationToken),
+						ct => ReplaceIdentifier(context.Document, root!, node, identifierName, isGraphExtension, context.CancellationToken),
 						equivalenceKey: codeActionName);
 					context.RegisterCodeFix(codeAction, diagnostic);
 				}

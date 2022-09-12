@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -27,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		public PXGraphCreationForBqlQueriesAnalyzer() : this(null)
 		{ }
 
-		public PXGraphCreationForBqlQueriesAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public PXGraphCreationForBqlQueriesAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -40,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			// Get body from a method or property
-			CSharpSyntaxNode body = context.CodeBlock?.GetBody();
+			CSharpSyntaxNode? body = context.CodeBlock?.GetBody();
 			if (body == null) return;
 
 			// Collect all PXGraph-typed method parameters passed to BQL queries
@@ -87,9 +90,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		private ImmutableArray<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, 
 			PXContext pxContext)
 		{
-			var dataFlow = semanticModel.AnalyzeDataFlow(body);
+			var dataFlow = semanticModel.TryAnalyzeDataFlow(body);
 
-			if (!dataFlow.Succeeded) 
+			if (dataFlow == null) 
 				return ImmutableArray<ISymbol>.Empty;
 
 			// this
@@ -139,7 +142,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			foreach (var graph in availableGraphs)
 			{
-				ITypeSymbol type = graph switch
+				ITypeSymbol? type = graph switch
 				{
 					IParameterSymbol property => property.Type,
 					ILocalSymbol local => local.Type,
