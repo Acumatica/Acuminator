@@ -126,18 +126,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				var symbolInfo = semanticModel.GetSymbolInfo(subNode, cancellation);
 				var symbol = symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
 
-				if (symbol != null)
-				{
-					if (existingGraphs.Contains(symbol))
-						yield return symbol;
-				}
-				else
-				{
-					var declaredSymbol = semanticModel.GetDeclaredSymbol(subNode, cancellation);
-
-					if (declaredSymbol != null && existingGraphs.Contains(declaredSymbol))
-						yield return declaredSymbol;
-				}				
+				if (symbol != null && existingGraphs.Contains(symbol))	
+					yield return symbol;						
 			}
 		}
 
