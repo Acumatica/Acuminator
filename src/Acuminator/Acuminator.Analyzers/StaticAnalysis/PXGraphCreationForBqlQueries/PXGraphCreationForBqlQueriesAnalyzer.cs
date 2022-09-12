@@ -142,9 +142,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// 2. PXGraph parameter is not used in any way because its modifications might affect the BQL query results
 			if (instantiationType != GraphInstantiationType.None)
 			{
-				context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
-					graphArgSyntax.GetLocation(),
-					CreateDiagnosticProperties(availableGraphs, pxContext)),
+				var diagnosticPropertiesForGraphCreatedInArgumentExpression = CreateDiagnosticProperties(availableGraphs, pxContext);
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries, graphArgSyntax.GetLocation(),
+									  diagnosticPropertiesForGraphCreatedInArgumentExpression),
 					pxContext.CodeAnalysisSettings);
 				return;
 			}
@@ -155,13 +156,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			var graphArgSymbolInfo = context.SemanticModel.GetSymbolInfo(graphArgSyntax, context.CancellationToken);
 			ILocalSymbol? localVar = (graphArgSymbolInfo.Symbol ?? graphArgSymbolInfo.CandidateSymbols.FirstOrDefault()) as ILocalSymbol;
 
-			if (localVar != null && !usedGraphs.Contains(localVar))
-			{
-				context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
-					graphArgSyntax.GetLocation(),
-					CreateDiagnosticProperties(availableGraphs.Where(graph => !Equals(graph, localVar)), pxContext)),
-					pxContext.CodeAnalysisSettings);
-			}
+			if (localVar == null || usedGraphs.Contains(localVar))
+				return;
+
+			// If there is only a single local variable available then there are no other graphs in the context to use other than this local variable.
+			// This is the case of static graph methods used by processing views where a graph instance is created and used inside the static method. 
+			// We allow such cases.
+			if (availableGraphs.Count == 1 && localVar.Equals(availableGraphs[0]))
+				return;
+
+			var diagnosticProperties = CreateDiagnosticProperties(availableGraphs.Where(graph => !localVar.Equals(graph)), pxContext);
+			context.ReportDiagnosticWithSuppressionCheck(
+				Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries, graphArgSyntax.GetLocation(), diagnosticProperties),
+				pxContext.CodeAnalysisSettings);
 		}
 
 		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
