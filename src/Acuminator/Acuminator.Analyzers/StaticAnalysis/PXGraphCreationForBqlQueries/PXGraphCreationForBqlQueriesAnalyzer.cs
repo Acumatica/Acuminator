@@ -59,7 +59,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				return;
 
 			// Determine if available PXGraph instance is used outside of BQL queries
-			var usedGraphs = GetGraphSymbolUsages(body, availableGraphs, context.SemanticModel, walker.GraphArguments).ToHashSet();
+			var usedGraphs = GetGraphSymbolUsages(body, availableGraphs, context.SemanticModel, walker.GraphArguments, context.CancellationToken)
+								.ToHashSet();
 
 			// Remove graphs used somewhere outside of BQL statements
 			if (usedGraphs.Count > 0)
@@ -133,7 +134,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		}
 
 		private IEnumerable<ISymbol> GetGraphSymbolUsages(CSharpSyntaxNode node, List<ISymbol> existingGraphs, SemanticModel semanticModel, 
-														  ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip)
+														  ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, CancellationToken cancellation)
 		{
 			var nodesToVisit = node.DescendantNodesAndSelf()
 								   .Where(n => n is not ExpressionSyntax expressionNode || 
@@ -141,11 +142,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			foreach (var subNode in nodesToVisit)
 			{
-				var symbol = semanticModel.GetSymbolInfo(subNode).Symbol;
+				var symbolInfo = semanticModel.GetSymbolInfo(subNode, cancellation);
+				var symbol = symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
 
-				if (symbol != null && existingGraphs.Contains(symbol))
+				if (symbol != null)
+				{
+					if (existingGraphs.Contains(symbol))
 					yield return symbol;
 			}
+				else
+				{
+					var declaredSymbol = semanticModel.GetDeclaredSymbol(subNode, cancellation);
+
+					if (declaredSymbol != null && existingGraphs.Contains(declaredSymbol))
+						yield return declaredSymbol;
+				}				
+			}
+		}
+		}
 		}
 
 		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
