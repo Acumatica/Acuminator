@@ -77,11 +77,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource,
 			    Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(15, 13));
 
+		[Theory]
+		[EmbeddedFileData("CustomerMaint_CheckGraphContext.cs")]
+		public async Task InsideGraph_OnlyInstanceMethodsAreReported_WithThisReferenceSuggestion(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(17, 50));
 		#endregion
 
 		#region False-positive checks
 
-	    [Theory]
+		[Theory]
 	    [EmbeddedFileData("ExternalService.cs", "Customer.cs", "CustomerMaint.cs")]
 	    public async Task ExternalService_ShouldNotShowDiagnostic(string source, string dacSource, string graphSource) =>
 		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource);
