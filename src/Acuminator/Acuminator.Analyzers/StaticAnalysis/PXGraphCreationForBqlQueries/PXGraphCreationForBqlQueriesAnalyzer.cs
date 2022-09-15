@@ -131,7 +131,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		}
 
 		private void AnalyzeGraphArgumentOfBqlQuery(CodeBlockAnalysisContext context, PXContext pxContext, ExpressionSyntax graphArgSyntax,
-													List<ISymbol> availableGraphs, Dictionary<ISymbol, List<SyntaxNode>> availableGraphUsages)
+													int bqlCallsCountInBlock, List<ISymbol> availableGraphs, 
+													Dictionary<ISymbol, List<SyntaxNode>> availableGraphUsages)
 		{
 			var instantiationType = graphArgSyntax.GetGraphInstantiationType(context.SemanticModel, pxContext);
 
@@ -143,7 +144,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			{
 				var diagnosticPropertiesForGraphCreatedInArgumentExpression = CreateDiagnosticProperties(availableGraphs, pxContext);
 				context.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries, graphArgSyntax.GetLocation(),
+					Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable, graphArgSyntax.GetLocation(),
 									  diagnosticPropertiesForGraphCreatedInArgumentExpression),
 					pxContext.CodeAnalysisSettings);
 				return;
@@ -171,7 +172,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			var diagnosticProperties = CreateDiagnosticProperties(availableGraphsNotUsedBeforeBqlQuery.Where(graph => !localVar.Equals(graph)), pxContext);
 			context.ReportDiagnosticWithSuppressionCheck(
-				Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries, graphArgSyntax.GetLocation(), diagnosticProperties),
+				Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable, graphArgSyntax.GetLocation(), diagnosticProperties),
 				pxContext.CodeAnalysisSettings);
 		}
 

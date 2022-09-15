@@ -357,7 +357,7 @@
   <data name="PX1071Title" xml:space="preserve">
     <value>Actions cannot be executed within event handlers</value>
   </data>
-  <data name="PX1072Title" xml:space="preserve">
+  <data name="PX1072Title_ReuseExistingGraphVariable" xml:space="preserve">
     <value>BQL queries must be executed within the context of an existing PXGraph instance</value>
   </data>
   <data name="PX1080Title" xml:space="preserve">
@@ -636,5 +636,8 @@
   </data>
   <data name="PX1008Title_LongRunDelegateFormatArg" xml:space="preserve">
     <value>long run operation</value>
+  </data>
+  <data name="PX1072Title_CreateSharedGraphVariable" xml:space="preserve">
+    <value>Create a shared graph variable that can be reused by BQL queries</value>
   </data>
 </root>

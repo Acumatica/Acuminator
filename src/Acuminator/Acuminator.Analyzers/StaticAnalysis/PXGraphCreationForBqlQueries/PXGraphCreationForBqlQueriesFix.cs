@@ -18,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 	public class PXGraphCreationForBqlQueriesFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries.Id);
+			ImmutableArray.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
