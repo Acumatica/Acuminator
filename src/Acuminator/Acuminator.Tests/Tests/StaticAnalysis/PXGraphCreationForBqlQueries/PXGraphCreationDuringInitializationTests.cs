@@ -87,8 +87,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 		[EmbeddedFileData("ExternalService_TwoQueryWithGraphCreation.cs", "Customer.cs", "CustomerMaint.cs")]
 		public async Task TwoQuery_WithGraphCreationInArgument(string source, string dacSource, string graphSource) =>
 			await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource,
-				Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable.CreateFor(14, 51),
-				Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable.CreateFor(15, 51));
+				Descriptors.PX1072_PXGraphCreationForBqlQueries_CreateSharedGraphVariable.CreateFor(14, 51),
+				Descriptors.PX1072_PXGraphCreationForBqlQueries_CreateSharedGraphVariable.CreateFor(15, 51));
 		#endregion
 
 		#region False-positive checks
