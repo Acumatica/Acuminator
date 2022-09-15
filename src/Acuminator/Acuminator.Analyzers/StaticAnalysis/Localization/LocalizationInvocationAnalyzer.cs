@@ -1,12 +1,15 @@
-﻿using Acuminator.Utilities;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
@@ -41,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
         {
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(syntaxContext.Node is InvocationExpressionSyntax invocationNode))
+			if (syntaxContext.Node is not InvocationExpressionSyntax invocationNode)
 				return;
 
 			SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode, syntaxContext.CancellationToken);
@@ -50,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (!isLocalizationMethod)
 				return;
 
-			ExpressionSyntax messageExpression = GetLocalizationMethodInvocationExpression(syntaxContext, invocationNode);
+			ExpressionSyntax? messageExpression = GetLocalizationMethodInvocationExpression(syntaxContext, invocationNode);
 
 			if (messageExpression == null)
 				return;
@@ -59,10 +62,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             messageHelper.ValidateMessage();
         }
 
-        private ExpressionSyntax GetLocalizationMethodInvocationExpression(SyntaxNodeAnalysisContext syntaxContext, 
+        private ExpressionSyntax? GetLocalizationMethodInvocationExpression(SyntaxNodeAnalysisContext syntaxContext, 
 																		   InvocationExpressionSyntax invocationNode)
         {
-            ArgumentSyntax messageArg = invocationNode.ArgumentList?.Arguments.FirstOrDefault();
+            ArgumentSyntax? messageArg = invocationNode.ArgumentList?.Arguments.FirstOrDefault();
 
             if (messageArg?.Expression == null)
                 return null;

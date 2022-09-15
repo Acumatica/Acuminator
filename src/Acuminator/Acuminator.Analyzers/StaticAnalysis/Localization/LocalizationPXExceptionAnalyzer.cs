@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -49,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
         {
             syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-            if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration))
+            if (syntaxContext.Node is not ClassDeclarationSyntax classDeclaration)
                 return;
 
             INamedTypeSymbol type = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration);

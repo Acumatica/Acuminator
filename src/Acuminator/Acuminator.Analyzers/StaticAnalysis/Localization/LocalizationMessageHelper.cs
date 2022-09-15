@@ -1,11 +1,15 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,12 +20,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
     internal class LocalizationMessageHelper
     {
         private const string _formatRegexString = @"(?<Par>{.+})";
-        private static readonly Regex _formatRegex = new Regex(_formatRegexString, RegexOptions.CultureInvariant);
+        private static readonly Regex _formatRegex = new Regex(_formatRegexString, RegexOptions.CultureInvariant | RegexOptions.Compiled);
         private readonly SyntaxNodeAnalysisContext _syntaxContext;
         private readonly PXContext _pxContext;
         private readonly ExpressionSyntax _messageExpression;
         private readonly bool _isFormatMethod;
-        private ISymbol _messageMember;
+        private ISymbol? _messageMember;
 
         private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
         private CancellationToken Cancellation => _syntaxContext.CancellationToken;
@@ -46,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                 return;
             }
 
-            ITypeSymbol messageType = ReadMessageInfo();
+            ITypeSymbol? messageType = ReadMessageInfo();
             if (messageType != null && _messageMember != null)
             {
                 if (IsNonLocalizableMessageType(messageType))
@@ -71,7 +75,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             }
         }
 
-        private ITypeSymbol ReadMessageInfo()
+        private ITypeSymbol? ReadMessageInfo()
         {
             Cancellation.ThrowIfCancellationRequested();
 
