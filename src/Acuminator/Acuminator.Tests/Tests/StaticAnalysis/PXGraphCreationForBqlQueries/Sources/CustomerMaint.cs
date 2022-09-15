@@ -11,13 +11,4 @@ namespace PX.Objects
 	{
 		public PXSelect<Customer> Customers;
 	}
-
-	public class Customer : IBqlTable
-	{
-		#region AcctCD
-		[PXDBString(8, IsKey = true, InputMask = "")]
-		public string AcctCD { get; set; }
-		public abstract class acctCd : IBqlField { }
-		#endregion	
-	}
 }
