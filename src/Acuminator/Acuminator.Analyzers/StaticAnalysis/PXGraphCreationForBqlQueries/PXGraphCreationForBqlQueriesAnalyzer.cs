@@ -149,18 +149,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				return;
 			}
 
+			var graphArgSymbolInfo = context.SemanticModel.GetSymbolInfo(graphArgSyntax, context.CancellationToken);
+			ILocalSymbol? localVar = (graphArgSymbolInfo.Symbol ?? graphArgSymbolInfo.CandidateSymbols.FirstOrDefault()) as ILocalSymbol;
+
+			//Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
+			if (localVar == null || availableGraphUsages.ContainsKey(localVar))  
+				return;
+
 			var availableGraphsNotUsedBeforeBqlQuery = 
 				availableGraphs.Where(graph => IsAvailableGraphNotUsedBeforeBqlQuery(graph, graphArgSyntax, availableGraphUsages))
 							   .ToList();
 
 			if (availableGraphsNotUsedBeforeBqlQuery.Count == 0)
-				return;
-
-			var graphArgSymbolInfo = context.SemanticModel.GetSymbolInfo(graphArgSyntax, context.CancellationToken);
-			ILocalSymbol? localVar = (graphArgSymbolInfo.Symbol ?? graphArgSymbolInfo.CandidateSymbols.FirstOrDefault()) as ILocalSymbol;
-
-			if (localVar == null)
-				return;
+				return;			
 
 			// If there is only a single local variable available then there are no other graphs in the context to use other than this local variable.
 			// This is the case of static graph methods used by processing views where a graph instance is created and used inside the static method. 
