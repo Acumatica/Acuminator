@@ -14,7 +14,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new LocalizationPXExceptionAnalyzer(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
-											.WithSuppressionMechanismDisabled());
+											.WithSuppressionMechanismDisabled()
+											.WithRecursiveAnalysisEnabled());
 
         [Theory]
         [EmbeddedFileData("LocalizationExceptionWithHardcodedStrings.cs")]
