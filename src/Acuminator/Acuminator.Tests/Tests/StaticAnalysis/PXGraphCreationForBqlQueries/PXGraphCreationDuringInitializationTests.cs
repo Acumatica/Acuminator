@@ -82,6 +82,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 		public async Task InsideGraph_OnlyInstanceMethodsAreReported_WithThisReferenceSuggestion(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(17, 50));
+
+		[Theory]
+		[EmbeddedFileData("ExternalService_TwoQueryWithGraphCreation.cs", "Customer.cs", "CustomerMaint.cs")]
+		public async Task TwoQuery_WithGraphCreationInArgument(string source, string dacSource, string graphSource) =>
+			await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource,
+				Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(14, 51),
+				Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(15, 51));
 		#endregion
 
 		#region False-positive checks
