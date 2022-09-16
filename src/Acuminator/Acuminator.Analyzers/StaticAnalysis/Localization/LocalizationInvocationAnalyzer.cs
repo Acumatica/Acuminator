@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -48,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				return;
 
 			SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode, syntaxContext.CancellationToken);
-			var (isFormatMethod, isLocalizationMethod) = GetLocalizationMethodSymbolInfo(pxContext, symbolInfo);
+			var (isFormatMethod, isLocalizationMethod) = GetLocalizationMethodInfoFromSymbolInfo(pxContext, symbolInfo);
 
 			if (!isLocalizationMethod)
 				return;
@@ -58,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (messageExpression == null)
 				return;
 
-			LocalizationMessageHelper messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, isFormatMethod);
+			var messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, isFormatMethod);
             messageHelper.ValidateMessage();
         }
 
@@ -78,42 +77,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             return messageArg.Expression;
         }
 
-        private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodSymbolInfo(PXContext pxContext, SymbolInfo symbolInfo)
+        private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodInfoFromSymbolInfo(PXContext pxContext, SymbolInfo symbolInfo)
         {
 			if (symbolInfo.Symbol == null && symbolInfo.CandidateSymbols.IsEmpty)
 				return (IsFormatMethod: false, IsLocalizationMethod: false);
 
-			if (symbolInfo.Symbol != null)
-            {
-				bool isFormatMethod = IsFormatMethodSymbol(pxContext, symbolInfo.Symbol);
+			if (symbolInfo.Symbol is IMethodSymbol method)
+				return GetLocalizationMethodInfoFromSymbol(method, pxContext);
 
-				if (isFormatMethod)
-					return (IsFormatMethod: true, IsLocalizationMethod: true);
+			if (!symbolInfo.CandidateSymbols.IsDefaultOrEmpty)
+			{
+				foreach (IMethodSymbol candidate in symbolInfo.CandidateSymbols.OfType<IMethodSymbol>())
+				{
+					var (isFormatMethod, isLocalizationMethod) = GetLocalizationMethodInfoFromSymbol(candidate, pxContext);
 
-				bool isNonFormatLocalizationMethod = IsLocalizationNonFormatMethodSymbol(pxContext, symbolInfo.Symbol);
-				return (IsFormatMethod: false, IsLocalizationMethod: isNonFormatLocalizationMethod);
-            }
-
-            foreach (ISymbol candidate in symbolInfo.CandidateSymbols)
-            {
-				bool isFormatMethod = IsFormatMethodSymbol(pxContext, candidate);
-				if (isFormatMethod)
-					return (IsFormatMethod: true, IsLocalizationMethod: true);
-
-				bool isNonFormatLocalizationMethod = IsLocalizationNonFormatMethodSymbol(pxContext, candidate);
-				if (isNonFormatLocalizationMethod)
-					return (IsFormatMethod: false, IsLocalizationMethod: true);
-            }
+					if (isLocalizationMethod)
+						return (isFormatMethod, isLocalizationMethod);
+				}
+			}
 
             return (IsFormatMethod: false, IsLocalizationMethod: false);
         }
 
-		private bool IsFormatMethodSymbol(PXContext pxContext, ISymbol symbol) =>
-			pxContext.Localization.PXMessagesFormatMethods.Contains(symbol) || 
-			pxContext.Localization.PXLocalizerFormatMethods.Contains(symbol);
+		private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodInfoFromSymbol(IMethodSymbol method, PXContext pxContext)
+		{
+			if (IsFormatMethodSymbol(method, pxContext))
+				return (IsFormatMethod: true, IsLocalizationMethod: true);
 
-		private bool IsLocalizationNonFormatMethodSymbol(PXContext pxContext, ISymbol symbol) =>
-			 pxContext.Localization.PXMessagesSimpleMethods.Contains(symbol) ||
-			 pxContext.Localization.PXLocalizerSimpleMethods.Contains(symbol);
+			return (IsFormatMethod: false, IsLocalizationMethod: IsLocalizationNonFormatMethodSymbol(method, pxContext));
+		}
+
+		private bool IsFormatMethodSymbol(IMethodSymbol method, PXContext pxContext) =>
+			pxContext.Localization.PXMessagesFormatMethods.Contains(method) || 
+			pxContext.Localization.PXLocalizerFormatMethods.Contains(method);
+
+		private bool IsLocalizationNonFormatMethodSymbol(IMethodSymbol method, PXContext pxContext) =>
+			 pxContext.Localization.PXMessagesSimpleMethods.Contains(method) ||
+			 pxContext.Localization.PXLocalizerSimpleMethods.Contains(method);
     }
 }
