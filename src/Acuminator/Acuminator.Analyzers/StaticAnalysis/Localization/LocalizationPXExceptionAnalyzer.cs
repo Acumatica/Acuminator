@@ -65,6 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			var baseOrThisConstructorCalls = exceptionClassDeclaration.DescendantNodes()
 																	  .OfType<ConstructorInitializerSyntax>()
 																	  .Where(constructorCall => constructorCall.ArgumentList?.Arguments.Count is > 0);
+			LocalizationMessageValidator? messageValidator = null;
 
 			foreach (ConstructorInitializerSyntax constructorCall in baseOrThisConstructorCalls)
 			{
@@ -78,8 +79,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				if (messageExpression == null)
 					continue;
 
-				var messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, isFormatMethod: false);
-				messageHelper.ValidateMessage();
+				messageValidator ??= new LocalizationMessageValidator(syntaxContext, pxContext);
+				messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
 			}
 		}
 
@@ -132,8 +133,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (messageExpression == null)
 				return;
 
-			var messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, isFormatMethod: false);
-			messageHelper.ValidateMessage();
+			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext);
+			messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
 		}
 
 		private bool IsLocalizableException(ITypeSymbol type, PXContext pxContext) =>

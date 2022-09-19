@@ -59,8 +59,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (stringArgExpression == null)
 				return;
 
-			var messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, stringArgExpression, isFormatMethod);
-            messageHelper.ValidateMessage();
+			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext);
+			messageValidator.ValidateMessage(stringArgExpression, isFormatMethod);
         }
 
         private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodInfoFromSymbolInfo(PXContext pxContext, 
