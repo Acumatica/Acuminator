@@ -46,25 +46,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionConstructorInvocation(syntaxContext, pxContext),
 															 SyntaxKind.ObjectCreationExpression);
-			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInitializer(syntaxContext, pxContext),
+			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionChainedConstructorCall(syntaxContext, pxContext),
 															 SyntaxKind.ClassDeclaration);
 		}
 
-		private void AnalyzePXExceptionCtorInitializer(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		private void AnalyzePXExceptionChainedConstructorCall(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (syntaxContext.Node is not ClassDeclarationSyntax classDeclaration)
+			if (syntaxContext.Node is not ClassDeclarationSyntax exceptionClassDeclaration)
 				return;
 
-			INamedTypeSymbol type = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, syntaxContext.CancellationToken);
+			INamedTypeSymbol exceptionType = syntaxContext.SemanticModel.GetDeclaredSymbol(exceptionClassDeclaration, syntaxContext.CancellationToken);
 
-			if (type == null || !IsLocalizableException(type, pxContext))
+			if (exceptionType == null || !IsLocalizableException(exceptionType, pxContext))
 				return;
 
-			var baseOrThisConstructorCalls = classDeclaration.DescendantNodes()
-															 .OfType<ConstructorInitializerSyntax>()
-															 .Where(constructorCall => constructorCall.ArgumentList != null);
+			var baseOrThisConstructorCalls = exceptionClassDeclaration.DescendantNodes()
+																	  .OfType<ConstructorInitializerSyntax>()
+																	  .Where(constructorCall => constructorCall.ArgumentList?.Arguments.Count is > 0);
 
 			foreach (ConstructorInitializerSyntax constructorCall in baseOrThisConstructorCalls)
 			{
@@ -113,21 +113,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (syntaxContext.Node is not ObjectCreationExpressionSyntax construtorCall || construtorCall.ArgumentList == null)
+			if (syntaxContext.Node is not ObjectCreationExpressionSyntax constructorCall || constructorCall.ArgumentList?.Arguments.Count is null or 0)
 				return;
 
-			ITypeSymbol? type = syntaxContext.SemanticModel.GetTypeInfo(construtorCall, syntaxContext.CancellationToken).Type;
+			ITypeSymbol? exceptionType = syntaxContext.SemanticModel.GetTypeInfo(constructorCall, syntaxContext.CancellationToken).Type;
 
-			if (type == null || !IsLocalizableException(type, pxContext))
+			if (exceptionType == null || !IsLocalizableException(exceptionType, pxContext))
 				return;
 
-			var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(construtorCall, syntaxContext.CancellationToken);
+			var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
 
 			if (symbol is not IMethodSymbol constructor)
 				return;
 
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-			ExpressionSyntax? messageExpression = GetMessageExpression(constructor, construtorCall.ArgumentList);
+			ExpressionSyntax? messageExpression = GetMessageExpression(constructor, constructorCall.ArgumentList);
 
 			if (messageExpression == null)
 				return;
