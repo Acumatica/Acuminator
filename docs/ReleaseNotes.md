@@ -1,6 +1,24 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 3.1
+Acuminator 3.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 3.1, the following enhancements have been implemented:
+ - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in the `IsActive` method in graph and DAC extension and the `IsActiveForGraph` method.
+ - Code snippets are now provided for generic event handlers and DAC fields. 
+ 
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - Diagnostic suppression performed using Acuminator code fix did not work in Visual Studio 2022 because it relied on internal API that was changed in the new version of Visual Studio
+ - The [PX1072](diagnostics/PX1072.md) diagnostic displayed a warning for static methods while it should report only graph instance methods.
+ - The [PX1086](diagnostics/PX1086.md) diagnostic failed on expression that create collections when the braces were omitted.
+ - Acuminator failed when the PXGraph.InstanceCreated.AddHandler  method had a type parameter.
+ - The [PX1008](diagnostics/PX1008.md) diagnostic displayed a warning when capturing a reference to `this` in a delegate even in a class that was not a graph or a graph extension.
+ - Code snippets provided by Acuminator were not installed correctly when the Acuminator package was updated or reinstalled from Visual Studio.
+ - The [PX1050](diagnostics/PX1050.md) diagnostic did not display a warning for interpolated strings.
+
 ## Acuminator 3.0
 Acuminator 3.0 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
