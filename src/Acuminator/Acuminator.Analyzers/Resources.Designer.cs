@@ -1325,7 +1325,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create a shared graph variable that can be reused by BQL queries.
+        ///   Looks up a localized string similar to Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries..
         /// </summary>
         public static string PX1072Title_CreateSharedGraphVariable {
             get {
