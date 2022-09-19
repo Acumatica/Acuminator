@@ -90,23 +90,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (constructorParameters.IsDefaultOrEmpty)
 				return null;
 
-			ArgumentSyntax? messageArg = null;
+			ArgumentsToParametersMapping? argumentsToParametersMapping = constructor.MapArgumentsToParameters(args);
 
-			foreach (ArgumentSyntax argument in args.Arguments)
+			if (argumentsToParametersMapping == null)
+				return null;
+
+			for (int argIndex = 0; argIndex < args.Arguments.Count; argIndex++)
 			{
-				IParameterSymbol? parameter = argument.DetermineParameter(constructorParameters, allowParams: false);
+				IParameterSymbol mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(constructor, argIndex);
 
-				if (_messageArgNames.Contains(parameter?.Name, StringComparer.Ordinal))
+				if (_messageArgNames.Contains(mappedParameter.Name, StringComparer.Ordinal))
 				{
-					messageArg = argument;
-					break;
+					var argument = args.Arguments[argIndex];
+					return argument.Expression;
 				}
 			}
 
-			if (messageArg?.Expression == null)
-				return null;
-
-			return messageArg.Expression;
+			return null;
 		}
 
 		private void AnalyzePXExceptionConstructorInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
