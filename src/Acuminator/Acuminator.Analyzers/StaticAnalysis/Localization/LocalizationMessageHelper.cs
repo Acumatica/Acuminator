@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -17,138 +18,167 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
-    internal class LocalizationMessageHelper
-    {
-        private const string _formatRegexString = @"(?<Par>{.+})";
-        private static readonly Regex _formatRegex = new Regex(_formatRegexString, RegexOptions.CultureInvariant | RegexOptions.Compiled);
-        private readonly SyntaxNodeAnalysisContext _syntaxContext;
-        private readonly PXContext _pxContext;
-        private readonly ExpressionSyntax _messageExpression;
-        private readonly bool _isFormatMethod;
-        private ISymbol? _messageMember;
+	internal class LocalizationMessageHelper
+	{
+		private static readonly Regex _formatRegex = new Regex(@"(?<Par>{.+})", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-        private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
-        private CancellationToken Cancellation => _syntaxContext.CancellationToken;
-        private LocalizationSymbols Localization => _pxContext.Localization;
+		private readonly SyntaxNodeAnalysisContext _syntaxContext;
+		private readonly PXContext _pxContext;
 
-        public LocalizationMessageHelper(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, ExpressionSyntax messageExpression, bool isFormatMethod)
-        {
-            _syntaxContext = syntaxContext;
-            _pxContext = pxContext;
-            _messageExpression = messageExpression;
-            _isFormatMethod = isFormatMethod;
-        }
+		private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
 
-        public void ValidateMessage()
-        {
-            bool isHardcodedMessage = _messageExpression is LiteralExpressionSyntax;
-            if (isHardcodedMessage)
-            {
-                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()),
-					_pxContext.CodeAnalysisSettings);
-                return;
-            }
+		private CancellationToken Cancellation => _syntaxContext.CancellationToken;
 
-            ITypeSymbol? messageType = ReadMessageInfo();
-            if (messageType != null && _messageMember != null)
-            {
-                if (IsNonLocalizableMessageType(messageType))
-                {
-                    _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()),
-						_pxContext.CodeAnalysisSettings);
-                }
+		public LocalizationMessageHelper(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			_syntaxContext = syntaxContext;
+			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
+		}
 
-                if (IsIncorrectStringToFormat())
-                {
-                    _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()),
-						_pxContext.CodeAnalysisSettings);
-                }
-            }
-            else if (IsStringConcatenation())
-            {
-                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()),
-					_pxContext.CodeAnalysisSettings);
-            }
-        }
+		public void ValidateMessage(ExpressionSyntax? messageExpression, bool isFormatMethod)
+		{
+			if (messageExpression == null)
+				return;
 
-        private ITypeSymbol? ReadMessageInfo()
-        {
-            Cancellation.ThrowIfCancellationRequested();
+			Cancellation.ThrowIfCancellationRequested();
 
-            if (!(_messageExpression is MemberAccessExpressionSyntax memberAccess) ||
-                !(memberAccess.Name is IdentifierNameSyntax messageMember))
-                return null;
+			if (!CheckThatMessageIsNotLiteralString(messageExpression))
+				return;
 
-            ITypeSymbol messageClassType = memberAccess.Expression
-                                           .DescendantNodesAndSelf()
-                                           .OfType<IdentifierNameSyntax>()
-										   .Reverse()
-                                           .Select(i => SemanticModel.GetTypeInfo(i, Cancellation).Type)
-                                           .Where(t => t != null && t.IsReferenceType)
-                                           .FirstOrDefault();
-            if (messageClassType == null)
-                return null;
+			ISymbol? messageSymbolWithStringType = GetMessageSymbol(messageExpression);
 
-			if (!(SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol is IFieldSymbol messageMemberInfo) ||
-				!messageMemberInfo.IsConst ||
-				messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
+			if (messageSymbolWithStringType == null || messageSymbolWithStringType is IMethodSymbol)
 			{
-				return null;
+				if (IsStringConcatenation(messageExpression, messageSymbolWithStringType))
+				{
+					_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, messageExpression.GetLocation()),
+						_pxContext.CodeAnalysisSettings);
+				}
+
+				return;
 			}
 
-			_messageMember = messageMemberInfo;
-            return messageClassType;
-        }
+			ITypeSymbol? messageContainerType = messageSymbolWithStringType.ContainingType;
 
-        private bool IsNonLocalizableMessageType(ITypeSymbol messageType)
-        {
-            Cancellation.ThrowIfCancellationRequested();
+			if (messageContainerType == null)
+				return;
 
-            ImmutableArray<AttributeData> attributes = messageType.GetAttributes();
-            return attributes.All(a => !a.AttributeClass.Equals(Localization.PXLocalizableAttribute));
-        }
+			Cancellation.ThrowIfCancellationRequested();
 
-        private bool IsIncorrectStringToFormat()
-        {
-            Cancellation.ThrowIfCancellationRequested();
+			if (IsNonLocalizableMessageType(messageContainerType))
+			{
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, messageExpression.GetLocation()),
+					_pxContext.CodeAnalysisSettings);
+			}
 
-            if (!_isFormatMethod)
-                return false;
+			Cancellation.ThrowIfCancellationRequested();
 
-            Optional<object> constString = SemanticModel.GetConstantValue(_messageExpression, Cancellation);
-            if (!constString.HasValue)
-                return false;
+			if (!CheckThatMessageSymbolIsFieldWithConstant(messageExpression, messageSymbolWithStringType))
+				return;
 
-            MatchCollection matchesValue = _formatRegex.Matches(constString.Value as string);
+			if (IsIncorrectStringToFormat(messageExpression, isFormatMethod))
+			{
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, messageExpression.GetLocation()),
+					_pxContext.CodeAnalysisSettings);
+			}
+		}
 
-            return matchesValue.Count == 0;
-        }
+		private bool CheckThatMessageIsNotLiteralString(ExpressionSyntax messageExpression)
+		{
+			if (messageExpression is LiteralExpressionSyntax)
+			{
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, messageExpression.GetLocation()),
+					_pxContext.CodeAnalysisSettings);
 
-        private bool IsStringConcatenation()
-        {
-            Cancellation.ThrowIfCancellationRequested();
+				return false;
+			}
 
-            bool isStringAddition = _messageExpression is BinaryExpressionSyntax && _messageExpression.IsKind(SyntaxKind.AddExpression);
-            if (isStringAddition)
-                return true;
+			return true;
+		}
 
-            if (!(_messageExpression is InvocationExpressionSyntax i) || !(i.Expression is MemberAccessExpressionSyntax memberAccess) ||
-                memberAccess.Expression == null || memberAccess.Name == null)
-                return false;
+		private ISymbol? GetMessageSymbol(ExpressionSyntax messageExpression)
+		{
+			var messageSymbolInfo = SemanticModel.GetSymbolInfo(messageExpression, Cancellation);
 
-            ITypeSymbol stringType = SemanticModel.GetTypeInfo(memberAccess.Expression, Cancellation).Type;
-            if (stringType == null || stringType.SpecialType != SpecialType.System_String)
-                return false;
+			if (messageSymbolInfo.Symbol != null)
+			{
+				return SymbolHasStringType(messageSymbolInfo.Symbol)
+					? messageSymbolInfo.Symbol
+					: null;
+			}
 
-            ISymbol stringMethod = SemanticModel.GetSymbolInfo(memberAccess.Name, Cancellation).Symbol;
-            if (stringMethod == null || (!_pxContext.StringFormat.Contains(stringMethod) && !_pxContext.StringConcat.Contains(stringMethod)))
-                return false;
+			if (messageSymbolInfo.CandidateSymbols.IsDefaultOrEmpty)
+				return null;
 
-            return true;
-        }
-    }
+			return messageSymbolInfo.CandidateSymbols.Where(SymbolHasStringType).FirstOrDefault();
+		}
+
+		private bool SymbolHasStringType(ISymbol? symbol) =>
+			symbol switch
+			{
+				IFieldSymbol { Type: { SpecialType: SpecialType.System_String } } => true,
+				IPropertySymbol { Type: { SpecialType: SpecialType.System_String } } => true,
+				IMethodSymbol { ReturnType: { SpecialType: SpecialType.System_String } } => true,
+				_ => false
+			};
+
+		private bool IsStringConcatenation(ExpressionSyntax messageExpression, ISymbol? messageSymbolWithStringType)
+		{
+			Cancellation.ThrowIfCancellationRequested();
+
+			bool isStringAddition = messageExpression is BinaryExpressionSyntax && messageExpression.IsKind(SyntaxKind.AddExpression);
+			if (isStringAddition)
+				return true;
+
+			if (messageExpression is not InvocationExpressionSyntax invocation ||
+				invocation.Expression is not MemberAccessExpressionSyntax memberAccess ||
+				memberAccess.Expression == null || memberAccess.Name == null)
+			{
+				return false;
+			}
+
+			return messageSymbolWithStringType != null &&
+				(_pxContext.SystemTypes.String.StringFormat.Contains(messageSymbolWithStringType) ||
+				 _pxContext.SystemTypes.String.StringConcat.Contains(messageSymbolWithStringType));
+		}
+
+		private bool IsNonLocalizableMessageType(ITypeSymbol messageType)
+		{
+			ImmutableArray<AttributeData> attributes = messageType.GetAttributes();
+			return attributes.All(a => !a.AttributeClass.Equals(_pxContext.Localization.PXLocalizableAttribute));
+		}
+
+		private bool CheckThatMessageSymbolIsFieldWithConstant(ExpressionSyntax messageExpression, ISymbol messageSymbolWithStringType)
+		{
+			if (messageSymbolWithStringType is not IFieldSymbol field || !field.IsConst)
+			{
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1050_NonConstFieldStringInLocalizationMethod, messageExpression.GetLocation()),
+					_pxContext.CodeAnalysisSettings);
+
+				return false;
+			}
+
+			return true;
+		}
+
+		private bool IsIncorrectStringToFormat(ExpressionSyntax messageExpression, bool isFormatMethod)
+		{
+			if (!isFormatMethod)
+				return false;
+
+			Optional<object> constString = SemanticModel.GetConstantValue(messageExpression, Cancellation);
+
+			if (!constString.HasValue || constString.Value is not string stringConstant)
+				return false;
+
+			MatchCollection matchesValue = _formatRegex.Matches(stringConstant);
+
+			return matchesValue.Count == 0;
+		}
+	}
 }
