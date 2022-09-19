@@ -36,58 +36,45 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
-            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeLocalizationMethodInvocation(syntaxContext, pxContext), SyntaxKind.InvocationExpression);
+            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeLocalizationMethodInvocation(syntaxContext, pxContext), 
+															 SyntaxKind.InvocationExpression);
         }
 
         private void AnalyzeLocalizationMethodInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (syntaxContext.Node is not InvocationExpressionSyntax invocationNode)
+			if (syntaxContext.Node is not InvocationExpressionSyntax localizationMethodInvocationNode)
 				return;
 
-			SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode, syntaxContext.CancellationToken);
-			var (isFormatMethod, isLocalizationMethod) = GetLocalizationMethodInfoFromSymbolInfo(pxContext, symbolInfo);
+			SymbolInfo localizationMethodInfo = syntaxContext.SemanticModel.GetSymbolInfo(localizationMethodInvocationNode, 
+																						  syntaxContext.CancellationToken);
+			var (isFormatMethod, isLocalizationMethod) = GetLocalizationMethodInfoFromSymbolInfo(pxContext, localizationMethodInfo);
 
 			if (!isLocalizationMethod)
 				return;
 
-			ExpressionSyntax? messageExpression = GetLocalizationMethodInvocationExpression(syntaxContext, invocationNode);
-
-			if (messageExpression == null)
+			ExpressionSyntax? stringArgExpression = GetStringArgumentExpressionFromLocalizationMethodInvocation(syntaxContext, 
+																												localizationMethodInvocationNode);
+			if (stringArgExpression == null)
 				return;
 
-			var messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, isFormatMethod);
+			var messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, stringArgExpression, isFormatMethod);
             messageHelper.ValidateMessage();
         }
 
-        private ExpressionSyntax? GetLocalizationMethodInvocationExpression(SyntaxNodeAnalysisContext syntaxContext, 
-																		   InvocationExpressionSyntax invocationNode)
+        private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodInfoFromSymbolInfo(PXContext pxContext, 
+																										 SymbolInfo localizationMethodInfo)
         {
-            ArgumentSyntax? messageArg = invocationNode.ArgumentList?.Arguments.FirstOrDefault();
-
-            if (messageArg?.Expression == null)
-                return null;
-
-            ITypeSymbol messageArgType = syntaxContext.SemanticModel.GetTypeInfo(messageArg.Expression, syntaxContext.CancellationToken).Type;
-
-            if (messageArgType == null || messageArgType.SpecialType != SpecialType.System_String)
-                return null;
-
-            return messageArg.Expression;
-        }
-
-        private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodInfoFromSymbolInfo(PXContext pxContext, SymbolInfo symbolInfo)
-        {
-			if (symbolInfo.Symbol == null && symbolInfo.CandidateSymbols.IsEmpty)
+			if (localizationMethodInfo.Symbol == null && localizationMethodInfo.CandidateSymbols.IsEmpty)
 				return (IsFormatMethod: false, IsLocalizationMethod: false);
 
-			if (symbolInfo.Symbol is IMethodSymbol method)
-				return GetLocalizationMethodInfoFromSymbol(method, pxContext);
+			if (localizationMethodInfo.Symbol is IMethodSymbol localizationMethod)
+				return GetLocalizationMethodInfoFromSymbol(localizationMethod, pxContext);
 
-			if (!symbolInfo.CandidateSymbols.IsDefaultOrEmpty)
+			if (!localizationMethodInfo.CandidateSymbols.IsDefaultOrEmpty)
 			{
-				foreach (IMethodSymbol candidate in symbolInfo.CandidateSymbols.OfType<IMethodSymbol>())
+				foreach (IMethodSymbol candidate in localizationMethodInfo.CandidateSymbols.OfType<IMethodSymbol>())
 				{
 					var (isFormatMethod, isLocalizationMethod) = GetLocalizationMethodInfoFromSymbol(candidate, pxContext);
 
@@ -99,12 +86,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             return (IsFormatMethod: false, IsLocalizationMethod: false);
         }
 
-		private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodInfoFromSymbol(IMethodSymbol method, PXContext pxContext)
+		private (bool IsFormatMethod, bool IsLocalizationMethod) GetLocalizationMethodInfoFromSymbol(IMethodSymbol localizationMethod, PXContext pxContext)
 		{
-			if (IsFormatMethodSymbol(method, pxContext))
+			if (IsFormatMethodSymbol(localizationMethod, pxContext))
 				return (IsFormatMethod: true, IsLocalizationMethod: true);
 
-			return (IsFormatMethod: false, IsLocalizationMethod: IsLocalizationNonFormatMethodSymbol(method, pxContext));
+			return (IsFormatMethod: false, IsLocalizationMethod: IsLocalizationNonFormatMethodSymbol(localizationMethod, pxContext));
 		}
 
 		private bool IsFormatMethodSymbol(IMethodSymbol method, PXContext pxContext) =>
@@ -114,5 +101,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 		private bool IsLocalizationNonFormatMethodSymbol(IMethodSymbol method, PXContext pxContext) =>
 			 pxContext.Localization.PXMessagesSimpleMethods.Contains(method) ||
 			 pxContext.Localization.PXLocalizerSimpleMethods.Contains(method);
-    }
+
+		private ExpressionSyntax? GetStringArgumentExpressionFromLocalizationMethodInvocation(SyntaxNodeAnalysisContext syntaxContext,
+																							  InvocationExpressionSyntax localizationMethodInvocationNode)
+		{
+			ArgumentSyntax? messageArg = localizationMethodInvocationNode.ArgumentList?.Arguments.FirstOrDefault();
+
+			if (messageArg?.Expression == null)
+				return null;
+
+			ITypeSymbol? messageArgType = syntaxContext.SemanticModel.GetTypeInfo(messageArg.Expression, syntaxContext.CancellationToken).Type;
+
+			if (messageArgType?.SpecialType != SpecialType.System_String)
+				return null;
+
+			return messageArg.Expression;
+		}
+	}
 }
