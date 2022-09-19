@@ -18,7 +18,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
-	internal class LocalizationMessageHelper
+	internal class LocalizationMessageValidator
 	{
 		private static readonly Regex _formatRegex = new Regex(@"(?<Par>{.+})", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 		private CancellationToken Cancellation => _syntaxContext.CancellationToken;
 
-		public LocalizationMessageHelper(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		public LocalizationMessageValidator(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			_syntaxContext = syntaxContext;
 			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
