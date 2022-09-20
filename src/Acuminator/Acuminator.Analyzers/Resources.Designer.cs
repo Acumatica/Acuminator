@@ -1361,7 +1361,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Graph cannot declare static {0}..
+        ///   Looks up a localized string similar to Graphs and graph extensions cannot declare static {0}..
         /// </summary>
         public static string PX1062MessageFormat {
             get {
