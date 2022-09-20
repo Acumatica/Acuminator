@@ -38,7 +38,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(36, 52),
 				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(37, 52),
 				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(38, 58),
-				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(39, 65));
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(39, 65),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(41, 43));
 		}
 
 		[Theory]
