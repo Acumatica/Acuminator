@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 			Cancellation.ThrowIfCancellationRequested();
 
-			if (!CheckThatMessageIsNotLiteralString(messageExpression))
+			if (!CheckThatMessageIsNotHardCodedString(messageExpression))
 				return;
 
 			ISymbol? messageSymbolWithStringType = GetMessageSymbol(messageExpression);
@@ -86,9 +86,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			}
 		}
 
-		private bool CheckThatMessageIsNotLiteralString(ExpressionSyntax messageExpression)
+		private bool CheckThatMessageIsNotHardCodedString(ExpressionSyntax messageExpression)
 		{
-			if (messageExpression is LiteralExpressionSyntax)
+			if (messageExpression is (LiteralExpressionSyntax or InterpolatedStringExpressionSyntax))
 			{
 				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, messageExpression.GetLocation()),
