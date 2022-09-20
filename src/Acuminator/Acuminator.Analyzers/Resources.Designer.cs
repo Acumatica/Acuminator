@@ -1307,6 +1307,105 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to action.
+        /// </summary>
+        public static string PX1062FixFormatArg_Action {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_Action", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to field.
+        /// </summary>
+        public static string PX1062FixFormatArg_Field {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to property.
+        /// </summary>
+        public static string PX1062FixFormatArg_Property {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_Property", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to view.
+        /// </summary>
+        public static string PX1062FixFormatArg_View {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove static from {0}. .
+        /// </summary>
+        public static string PX1062FixMakeNonStaticFormat {
+            get {
+                return ResourceManager.GetString("PX1062FixMakeNonStaticFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make {0} read-only..
+        /// </summary>
+        public static string PX1062FixMakeReadOnlyFormat {
+            get {
+                return ResourceManager.GetString("PX1062FixMakeReadOnlyFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph cannot declare static {0}..
+        /// </summary>
+        public static string PX1062MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to actions.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Actions {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mutable fields.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Fields {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Fields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mutable properties.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Properties {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Properties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to views.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Views {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Views", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {

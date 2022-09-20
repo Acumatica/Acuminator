@@ -643,4 +643,37 @@
   <data name="PX1072Title_CreateSharedGraphVariable" xml:space="preserve">
     <value>Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries.</value>
   </data>
+  <data name="PX1062MessageFormat" xml:space="preserve">
+    <value>Graph cannot declare static {0}.</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Fields" xml:space="preserve">
+    <value>mutable fields</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Properties" xml:space="preserve">
+    <value>mutable properties</value>
+  </data>
+  <data name="PX1062FixMakeReadOnlyFormat" xml:space="preserve">
+    <value>Make {0} read-only.</value>
+  </data>
+  <data name="PX1062FixFormatArg_Field" xml:space="preserve">
+    <value>field</value>
+  </data>
+  <data name="PX1062FixFormatArg_Property" xml:space="preserve">
+    <value>property</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Views" xml:space="preserve">
+    <value>views</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Actions" xml:space="preserve">
+    <value>actions</value>
+  </data>
+  <data name="PX1062FixMakeNonStaticFormat" xml:space="preserve">
+    <value>Remove static from {0}. </value>
+  </data>
+  <data name="PX1062FixFormatArg_View" xml:space="preserve">
+    <value>view</value>
+  </data>
+  <data name="PX1062FixFormatArg_Action" xml:space="preserve">
+    <value>action</value>
+  </data>
 </root>
