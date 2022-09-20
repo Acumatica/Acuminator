@@ -286,7 +286,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate closure and will cause synchronous delegate execution. It may lead to random bugs and data consistency issues.
+        ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues..
         /// </summary>
         public static string PX1008Title {
             get {
@@ -1325,11 +1325,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries..
+        /// </summary>
+        public static string PX1072Title_CreateSharedGraphVariable {
+            get {
+                return ResourceManager.GetString("PX1072Title_CreateSharedGraphVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BQL queries must be executed within the context of an existing PXGraph instance.
         /// </summary>
-        public static string PX1072Title {
+        public static string PX1072Title_ReuseExistingGraphVariable {
             get {
-                return ResourceManager.GetString("PX1072Title", resourceCulture);
+                return ResourceManager.GetString("PX1072Title_ReuseExistingGraphVariable", resourceCulture);
             }
         }
         

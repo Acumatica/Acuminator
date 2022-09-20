@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -27,12 +29,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			public ImmutableArray<ExpressionSyntax> GraphArguments => _graphArguments.ToImmutableArray();
 
 			public BqlGraphArgWalker(SemanticModel semanticModel, PXContext pxContext)
-			{
-				semanticModel.ThrowOnNull(nameof (semanticModel));
-				pxContext.ThrowOnNull(nameof (pxContext));
-
-				_semanticModel = semanticModel;
-				_pxContext = pxContext;
+			{				
+				_semanticModel = semanticModel.CheckIfNull(nameof(semanticModel));
+				_pxContext = pxContext.CheckIfNull(nameof(pxContext));
 			}
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -45,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				var declaringType = methodSymbol?.ContainingType?.OriginalDefinition;
 
 				if (declaringType != null && declaringType.IsBqlCommand(_pxContext) 
-					&& !methodSymbol.Parameters.IsEmpty && methodSymbol.Parameters[0].Type.IsPXGraph(_pxContext) 
+					&& !methodSymbol!.Parameters.IsEmpty && methodSymbol.Parameters[0].Type.IsPXGraph(_pxContext) 
 					&& node.ArgumentList.Arguments.Count > 0 &&
 				    (methodSymbol.Name.StartsWith(SelectMethodName, StringComparison.Ordinal) ||
 				     methodSymbol.Name.StartsWith(SearchMethodName, StringComparison.Ordinal)))

@@ -324,8 +324,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1071_PXActionExecutionInEventHandlers_NonISV { get; } =
 			Rule("PX1071", nameof(Resources.PX1071Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1071);
 
-		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries { get; } =
-			Rule("PX1072", nameof(Resources.PX1072Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1072);
+		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable { get; } =
+			Rule("PX1072", nameof(Resources.PX1072Title_ReuseExistingGraphVariable).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1072);
+
+		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries_CreateSharedGraphVariable { get; } =
+			Rule("PX1072", nameof(Resources.PX1072Title_CreateSharedGraphVariable).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1072);
 
 		public static DiagnosticDescriptor PX1073_ThrowingExceptionsInRowPersisted { get; } =
 			Rule("PX1073", nameof(Resources.PX1073Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1073);

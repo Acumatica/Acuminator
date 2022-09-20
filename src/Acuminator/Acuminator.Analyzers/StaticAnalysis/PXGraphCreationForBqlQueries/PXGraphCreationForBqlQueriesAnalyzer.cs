@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -11,6 +16,7 @@ using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
@@ -22,12 +28,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		public static readonly string IsGraphExtensionPropertyPrefix = "IsGraphExtension";
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
-			Descriptors.PX1072_PXGraphCreationForBqlQueries);
+			Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable,
+			Descriptors.PX1072_PXGraphCreationForBqlQueries_CreateSharedGraphVariable);
 
 		public PXGraphCreationForBqlQueriesAnalyzer() : this(null)
 		{ }
 
-		public PXGraphCreationForBqlQueriesAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public PXGraphCreationForBqlQueriesAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -40,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			// Get body from a method or property
-			CSharpSyntaxNode body = context.CodeBlock?.GetBody();
+			CSharpSyntaxNode? body = context.CodeBlock?.GetBody();
 			if (body == null) return;
 
 			// Collect all PXGraph-typed method parameters passed to BQL queries
@@ -49,87 +56,159 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (walker.GraphArguments.IsEmpty) return;
 
 			// Collect all available PXGraph instances (@this, method parameters, local variables)
-			var existingGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext);
-			if (existingGraphs.IsEmpty) return;
+			var availableGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext);
 
-			// Determine if available PXGraph instance is used outside of BQL queries
-			var usedGraphs = GetSymbolUsages(body, existingGraphs, context.SemanticModel, walker.GraphArguments)
-				.ToImmutableHashSet();
-			var availableGraphs = existingGraphs.Except(usedGraphs).ToArray();
+			if (availableGraphs.Count == 0)
+			{
+				AnalyseCaseWithNoAvailableExistingGraphs(context, pxContext, walker.GraphArguments);
+				return;
+			}
+
+			// Determine usage locations of available PXGraph instance outside of BQL queries
+			var availableGraphUsages = GetGraphSymbolsUsages(body, availableGraphs, context.SemanticModel, walker.GraphArguments, context.CancellationToken);
 
 			// Analyze each PXGraph-typed parameter in BQL queries
-			foreach (var graphArgSyntax in walker.GraphArguments)
+			foreach (ExpressionSyntax graphArgSyntax in walker.GraphArguments)
 			{
-				var instantiationType = graphArgSyntax.GetGraphInstantiationType(context.SemanticModel, pxContext);
-
-				// New PXGraph() / new TGraph() / PXGraph.CreateInstance<TGraph> are reported at all times
-				// All other usages are reported only if:
-				// 1. There is at least one existing PXGraph instance available
-				// 2. PXGraph parameter is not used in any way because its modifications might affect the BQL query results
-				if (instantiationType != GraphInstantiationType.None)
-				{
-					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
-						graphArgSyntax.GetLocation(),
-						CreateDiagnosticProperties(availableGraphs, pxContext)),
-						pxContext.CodeAnalysisSettings);
-				}
-				else if (availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
-				                                    && !usedGraphs.Contains(localVar))
-				{
-					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
-						graphArgSyntax.GetLocation(),
-						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)), pxContext)),
-						pxContext.CodeAnalysisSettings);
-				}
+				AnalyzeGraphArgumentOfBqlQuery(context, pxContext, graphArgSyntax, availableGraphs, availableGraphUsages);
 			}
 		}
 
-		private ImmutableArray<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, 
-			PXContext pxContext)
+		private List<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext)
 		{
-			var dataFlow = semanticModel.AnalyzeDataFlow(body);
+			var dataFlow = semanticModel.TryAnalyzeDataFlow(body);
 
-			if (!dataFlow.Succeeded) 
-				return ImmutableArray<ISymbol>.Empty;
+			if (dataFlow == null) 
+				return new List<ISymbol>();
 
 			// this
-			var thisGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
-				.FirstOrDefault(t => t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
+			var containingCodeElement = body.Parent<MemberDeclarationSyntax>();
+			bool isInsideStaticCodeElement = containingCodeElement?.IsStatic() ?? false;
+			var thisGraph = isInsideStaticCodeElement 
+				? null
+				: dataFlow.WrittenOutside.OfType<IParameterSymbol>()
+						  .FirstOrDefault(t => t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
 			// Method parameter
 			var parGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
 				.FirstOrDefault(t => !t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
+
 			// Local variable
 			var localVarGraphs = dataFlow.WrittenInside.OfType<ILocalSymbol>()
 				.Where(t => t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
 
 			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
-			var builder = ImmutableArray<ISymbol>.Empty.ToBuilder();
+			var existingGraphs = new List<ISymbol>();
 
-			if (thisGraph != null) 
-				builder.Add(thisGraph);
+			if (thisGraph != null)
+				existingGraphs.Add(thisGraph);
 
-			if (parGraph != null) 
-				builder.Add(parGraph);
+			if (parGraph != null)
+				existingGraphs.Add(parGraph);
 
-			builder.AddRange(localVarGraphs);
-
-			return builder.ToImmutable();
+			existingGraphs.AddRange(localVarGraphs);
+			return existingGraphs;
 		}
 
-		private IEnumerable<ISymbol> GetSymbolUsages(CSharpSyntaxNode node, 
-			IEnumerable<ISymbol> symbols, SemanticModel semanticModel, IEnumerable<SyntaxNode> nodesToSkip)
+		private void AnalyseCaseWithNoAvailableExistingGraphs(CodeBlockAnalysisContext context, PXContext pxContext, ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodes)
 		{
-			var symbolsSet = (symbols as IImmutableSet<ISymbol>) ?? symbols.ToImmutableHashSet();
-			var nodesToSkipSet = (nodesToSkip as IImmutableSet<SyntaxNode>) ?? nodesToSkip.ToImmutableHashSet();
+			if (bqlSelectGraphArgNodes.Length == 1)		//Do not report a case with a single BQL query with graph creation in argument
+				return;
 
-			foreach (var subNode in node.DescendantNodesAndSelf()
-				.Where(n => !nodesToSkipSet.Contains(n)))
+			// Report a warning to create a shared graph variable to the user
+			foreach (var graphArgSyntax in bqlSelectGraphArgNodes)
 			{
-				var symbol = semanticModel.GetSymbolInfo(subNode).Symbol;
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_CreateSharedGraphVariable, graphArgSyntax.GetLocation()),
+					pxContext.CodeAnalysisSettings);
+			}		
+		}
 
-				if (symbol != null && symbolsSet.Contains(symbol))
-					yield return symbol;
+		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode node, List<ISymbol> existingGraphs, SemanticModel semanticModel,
+																			ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, 
+																			CancellationToken cancellation)
+		{
+			var nodesToVisit = node.DescendantNodesAndSelf()
+								   .Where(n => n is not ExpressionSyntax expressionNode || 
+											  !bqlSelectGraphArgNodesToSkip.Contains(expressionNode));
+			var graphSymbolsUsages = new Dictionary<ISymbol, List<SyntaxNode>>();
+
+			foreach (var subNode in nodesToVisit)
+			{
+				var symbolInfo = semanticModel.GetSymbolInfo(subNode, cancellation);
+				var symbol = symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
+
+				if (symbol != null && existingGraphs.Contains(symbol))
+				{
+					if (graphSymbolsUsages.TryGetValue(symbol, out List<SyntaxNode> usageNodes))
+						usageNodes.Add(subNode);
+					else
+						graphSymbolsUsages.Add(symbol, new List<SyntaxNode> { subNode });
+				}
 			}
+
+			return graphSymbolsUsages;
+		}
+
+		private void AnalyzeGraphArgumentOfBqlQuery(CodeBlockAnalysisContext context, PXContext pxContext, ExpressionSyntax graphArgSyntax,
+													List<ISymbol> availableGraphs, Dictionary<ISymbol, List<SyntaxNode>> availableGraphUsages)
+		{
+			var instantiationType = graphArgSyntax.GetGraphInstantiationType(context.SemanticModel, pxContext);
+
+			// New PXGraph() / new TGraph() / PXGraph.CreateInstance<TGraph> are reported at all times
+			// All other usages are reported only if:
+			// 1. There is at least one existing PXGraph instance available
+			// 2. PXGraph parameter is not used in any way because its modifications might affect the BQL query results
+			if (instantiationType != GraphInstantiationType.None)
+			{
+				var diagnosticPropertiesForGraphCreatedInArgumentExpression = CreateDiagnosticProperties(availableGraphs, pxContext);
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable, graphArgSyntax.GetLocation(),
+									  diagnosticPropertiesForGraphCreatedInArgumentExpression),
+					pxContext.CodeAnalysisSettings);
+				return;
+			}
+
+			var graphArgSymbolInfo = context.SemanticModel.GetSymbolInfo(graphArgSyntax, context.CancellationToken);
+			ILocalSymbol? localVar = (graphArgSymbolInfo.Symbol ?? graphArgSymbolInfo.CandidateSymbols.FirstOrDefault()) as ILocalSymbol;
+
+			//Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
+			if (localVar == null || availableGraphUsages.ContainsKey(localVar))  
+				return;
+
+			var availableGraphsNotUsedBeforeBqlQuery = 
+				availableGraphs.Where(graph => IsAvailableGraphNotUsedBeforeBqlQuery(graph, graphArgSyntax, availableGraphUsages))
+							   .ToList();
+
+			if (availableGraphsNotUsedBeforeBqlQuery.Count == 0)
+				return;			
+
+			// If there is only a single local variable available then there are no other graphs in the context to use other than this local variable.
+			// This is the case of static graph methods used by processing views where a graph instance is created and used inside the static method. 
+			// We allow such cases.
+			if (availableGraphsNotUsedBeforeBqlQuery.Count == 1 && localVar.Equals(availableGraphsNotUsedBeforeBqlQuery[0]))
+				return;
+
+			var diagnosticProperties = CreateDiagnosticProperties(availableGraphsNotUsedBeforeBqlQuery.Where(graph => !localVar.Equals(graph)), pxContext);
+			context.ReportDiagnosticWithSuppressionCheck(
+				Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable, graphArgSyntax.GetLocation(), diagnosticProperties),
+				pxContext.CodeAnalysisSettings);
+		}
+
+		private bool IsAvailableGraphNotUsedBeforeBqlQuery(ISymbol availableGraph, ExpressionSyntax graphArgSyntax, 
+														   Dictionary<ISymbol, List<SyntaxNode>> availableGraphsUsages)
+		{
+			if (!availableGraphsUsages.TryGetValue(availableGraph, out List<SyntaxNode> graphUsages))
+				return true;
+
+			int graphArgStart = graphArgSyntax.SpanStart;
+
+			foreach (SyntaxNode graphUsage in graphUsages)
+			{
+				if (graphUsage.Span.End < graphArgStart)
+					return false;
+			}
+
+			return true;
 		}
 
 		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
@@ -139,7 +218,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			foreach (var graph in availableGraphs)
 			{
-				ITypeSymbol type = graph switch
+				ITypeSymbol? type = graph switch
 				{
 					IParameterSymbol property => property.Type,
 					ILocalSymbol local => local.Type,

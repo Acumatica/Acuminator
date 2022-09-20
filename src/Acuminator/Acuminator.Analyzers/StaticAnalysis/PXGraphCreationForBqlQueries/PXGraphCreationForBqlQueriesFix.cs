@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
@@ -16,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 	public class PXGraphCreationForBqlQueriesFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries.Id);
+			ImmutableArray.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -49,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 						PXGraphCreationForBqlQueriesAnalyzer.IsGraphExtensionPropertyPrefix + i);
 
 					var codeAction = CodeAction.Create(codeActionName, 
-						ct => ReplaceIdentifier(context.Document, root, node, identifierName, isGraphExtension, context.CancellationToken),
+						ct => ReplaceIdentifier(context.Document, root!, node, identifierName, isGraphExtension, context.CancellationToken),
 						equivalenceKey: codeActionName);
 					context.RegisterCodeFix(codeAction, diagnostic);
 				}
