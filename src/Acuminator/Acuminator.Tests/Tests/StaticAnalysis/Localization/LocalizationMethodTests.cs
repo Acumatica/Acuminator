@@ -69,6 +69,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		}
 
 		[Theory]
+		[EmbeddedFileData("LocalizationWithNonConstStringsInMethods.cs",
+						  "Messages.cs")]
+		public void Methods_WithNonConstStringArgument(string source, string messages)
+		{
+			VerifyCSharpDiagnostic(sources: new[] { source, messages },
+				Descriptors.PX1051_NonLocalizableString.CreateFor(12, 43),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(12, 43),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(14, 43),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(15, 43),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(17, 43),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(18, 43)
+			);
+		}
+
+		[Theory]
 		[EmbeddedFileData("LocalizationWithConcatenationInMethods.cs",
 						  "Messages.cs")]
 		public void Methods_WithStringConcatenations(string source, string messages)
