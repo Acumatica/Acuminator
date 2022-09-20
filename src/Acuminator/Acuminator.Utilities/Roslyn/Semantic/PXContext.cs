@@ -106,8 +106,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(TypeFullNames.IPXLocalizableList);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(TypeFullNames.PXConnectionScope);
 
-        public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
-        public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
         public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(DelegateNames.Initialize)
                                                                  .OfType<IMethodSymbol>()
                                                                  .First();

@@ -272,9 +272,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1049", nameof(Resources.PX1049Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1049);
 
 		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
-            Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1050);
+            Rule("PX1050", nameof(Resources.PX1050Title_HardcodedString).GetLocalized(), 
+				 Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1050);
 
-        public static DiagnosticDescriptor PX1051_NonLocalizableString { get; } =
+		public static DiagnosticDescriptor PX1050_NonConstFieldStringInLocalizationMethod { get; } =
+			Rule("PX1050", nameof(Resources.PX1050Title_NonConstFieldString).GetLocalized(), 
+				 Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1050);
+
+		public static DiagnosticDescriptor PX1051_NonLocalizableString { get; } =
             Rule("PX1051", nameof(Resources.PX1051Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1051);
 
         public static DiagnosticDescriptor PX1052_IncorrectStringToFormat { get; } =

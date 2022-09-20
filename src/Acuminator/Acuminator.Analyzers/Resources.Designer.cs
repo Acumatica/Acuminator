@@ -1138,9 +1138,18 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
-        public static string PX1050Title {
+        public static string PX1050Title_HardcodedString {
             get {
-                return ResourceManager.GetString("PX1050Title", resourceCulture);
+                return ResourceManager.GetString("PX1050Title_HardcodedString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
+        /// </summary>
+        public static string PX1050Title_NonConstFieldString {
+            get {
+                return ResourceManager.GetString("PX1050Title_NonConstFieldString", resourceCulture);
             }
         }
         

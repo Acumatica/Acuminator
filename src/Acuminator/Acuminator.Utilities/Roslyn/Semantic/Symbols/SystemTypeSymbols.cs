@@ -1,20 +1,22 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
 	public class SystemTypeSymbols : SymbolsSetBase
 	{
-		internal SystemTypeSymbols(Compilation compilation) : base(compilation)
-		{ }
+		private readonly Lazy<StringSymbols> _string;
+
+		public StringSymbols String => _string.Value;
 
 		public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
 
 		public IArrayTypeSymbol ByteArray => Compilation.CreateArrayTypeSymbol(Byte);
 		public IArrayTypeSymbol UInt16Array => Compilation.CreateArrayTypeSymbol(UInt16);
-		public IArrayTypeSymbol StringArray => Compilation.CreateArrayTypeSymbol(String);
+		public IArrayTypeSymbol StringArray => Compilation.CreateArrayTypeSymbol(String.Type);
 
-		public INamedTypeSymbol String => Compilation.GetSpecialType(SpecialType.System_String);
 		public INamedTypeSymbol Bool => Compilation.GetSpecialType(SpecialType.System_Boolean);
 		public INamedTypeSymbol Int64 => Compilation.GetSpecialType(SpecialType.System_Int64);	
 		public INamedTypeSymbol Int32 => Compilation.GetSpecialType(SpecialType.System_Int32);
@@ -34,5 +36,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName);
 		public INamedTypeSymbol TimeSpan => Compilation.GetTypeByMetadataName(typeof(TimeSpan).FullName);
+
+		internal SystemTypeSymbols(Compilation compilation) : base(compilation)
+		{
+			_string = new Lazy<StringSymbols>(() => new StringSymbols(Compilation));
+		}
 	}
 }

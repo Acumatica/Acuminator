@@ -1,88 +1,92 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class LocalizationSymbols : SymbolsSetBase
-    {
-        private const string _pxMessagesMetadataName = "PX.Data.PXMessages";
-        private const string _pxLocalizerMetadataName = "PX.Data.PXLocalizer";
-        private const string _pxLocalizableAttributeMetadataName = "PX.Common.PXLocalizableAttribute";
+	public class LocalizationSymbols : SymbolsSetBase
+	{
+		private const string PXMessagesMetadataName             = "PX.Data.PXMessages";
+		private const string PXLocalizerMetadataName            = "PX.Data.PXLocalizer";
+		private const string PXLocalizableAttributeMetadataName = "PX.Common.PXLocalizableAttribute";
 
-        private readonly string[] _pxMessagesSimpleMethodNames = new[]
-        {
-                "Localize",
-                "LocalizeNoPrefix"
-            };
-        private readonly string[] _pxMessagesFormatMethodNames = new[]
-        {
-                "LocalizeFormat",
-                "LocalizeFormatNoPrefix",
-                "LocalizeFormatNoPrefixNLA"
-            };
-        private const string _pxLocalizerSimpleMethodName = "Localize";
-        private readonly string[] _pxLocalizerFormatMethodNames = new[]
-        {
-                "LocalizeFormat",
-                "LocalizeFormatWithKey"
-            };
+		private static readonly string[] _pxMessagesSimpleMethodNames =
+		{
+			"Localize",
+			"LocalizeNoPrefix"
+		};
 
-        public ImmutableArray<ISymbol> PXMessagesSimpleMethods { get; private set; }
-        public ImmutableArray<ISymbol> PXMessagesFormatMethods { get; private set; }
-        public ImmutableArray<ISymbol> PXLocalizerSimpleMethods { get; private set; }
-        public ImmutableArray<ISymbol> PXLocalizerFormatMethods { get; private set; }
+		private static readonly string[] _pxMessagesFormatMethodNames =
+		{
+			"LocalizeFormat",
+			"LocalizeFormatNoPrefix",
+			"LocalizeFormatNoPrefixNLA"
+		};
 
-        internal LocalizationSymbols(Compilation compilation) : base(compilation)
-        {
-            InitMethods();
-        }
+		private static readonly string[] _pxLocalizerSimpleMethodNames = 
+		{ 
+			"Localize"
+		};
 
-        private INamedTypeSymbol PXMessages => Compilation.GetTypeByMetadataName(_pxMessagesMetadataName);
-        private INamedTypeSymbol PXLocalizer => Compilation.GetTypeByMetadataName(_pxLocalizerMetadataName);
-        public INamedTypeSymbol PXLocalizableAttribute => Compilation.GetTypeByMetadataName(_pxLocalizableAttributeMetadataName);
+		private static readonly string[] _pxLocalizerFormatMethodNames =
+		{
+			"LocalizeFormat",
+			"LocalizeFormatWithKey"
+		};
 
-        private void InitMethods()
-        {
-            IEnumerable<ISymbol> pxMessagesMembers = PXMessages.GetMembers();
-            (ImmutableArray<ISymbol> simple, ImmutableArray<ISymbol> format) =
-                GetMethods(pxMessagesMembers, _pxMessagesSimpleMethodNames, _pxMessagesFormatMethodNames);
+		public INamedTypeSymbol PXMessages { get; }
 
-            PXMessagesSimpleMethods = simple;
-            PXMessagesFormatMethods = format;
+		public INamedTypeSymbol PXLocalizer { get; }
 
-            IEnumerable<ISymbol> pxLocalizerMembers = PXLocalizer.GetMembers();
-            IEnumerable<string> pxLocalizerSimpleMethodNames = _pxLocalizerSimpleMethodName.ToEnumerable();
-            (simple, format) = GetMethods(pxLocalizerMembers, pxLocalizerSimpleMethodNames, _pxLocalizerFormatMethodNames);
+		public INamedTypeSymbol PXLocalizableAttribute { get; }
 
-            PXLocalizerSimpleMethods = simple;
-            PXLocalizerFormatMethods = format;
-        }
+		public ImmutableArray<IMethodSymbol> PXMessagesSimpleMethods { get; }
 
-        private (ImmutableArray<ISymbol>, ImmutableArray<ISymbol>) GetMethods(IEnumerable<ISymbol> membersToAnalyze,
-            IEnumerable<string> simpleMethodNames, IEnumerable<string> formatMethodNames)
-        {
-            List<ISymbol> simpleMethods = new List<ISymbol>();
-            List<ISymbol> formatMethods = new List<ISymbol>();
+		public ImmutableArray<IMethodSymbol> PXMessagesFormatMethods { get; }
 
-            foreach (ISymbol m in membersToAnalyze)
-            {
-                if (m.Kind != SymbolKind.Method)
-                    continue;
+		public ImmutableArray<IMethodSymbol> PXLocalizerSimpleMethods { get; }
 
-                if (simpleMethodNames.Contains(m.MetadataName))
-                {
-                    simpleMethods.Add(m);
-                }
-                else if (formatMethodNames.Contains(m.MetadataName))
-                {
-                    formatMethods.Add(m);
-                }
-            }
+		public ImmutableArray<IMethodSymbol> PXLocalizerFormatMethods { get; }
 
-            return (simpleMethods.ToImmutableArray(), formatMethods.ToImmutableArray());
-        }
-    }
+		internal LocalizationSymbols(Compilation compilation) : base(compilation)
+		{
+			PXMessages = Compilation.GetTypeByMetadataName(PXMessagesMetadataName);
+			PXLocalizer = Compilation.GetTypeByMetadataName(PXLocalizerMetadataName);
+			PXLocalizableAttribute = Compilation.GetTypeByMetadataName(PXLocalizableAttributeMetadataName);
+
+			(PXMessagesSimpleMethods, PXMessagesFormatMethods) = 
+				GetLocalizationMethodsFromType(PXMessages, _pxMessagesSimpleMethodNames, _pxMessagesFormatMethodNames);
+			(PXLocalizerSimpleMethods, PXLocalizerFormatMethods) = 
+				GetLocalizationMethodsFromType(PXLocalizer, _pxLocalizerSimpleMethodNames, _pxLocalizerFormatMethodNames);
+		}
+
+		private (ImmutableArray<IMethodSymbol> SimpleMethods, ImmutableArray<IMethodSymbol> FormatMethods) GetLocalizationMethodsFromType(INamedTypeSymbol type,
+																																		  string[] simpleMethodNames,
+																																		  string[] formatMethodNames)
+		{
+			var methods		  = type.GetMembers().OfType<IMethodSymbol>();
+			var simpleMethods = ImmutableArray.CreateBuilder<IMethodSymbol>(initialCapacity: simpleMethodNames.Length);
+			var formatMethods = ImmutableArray.CreateBuilder<IMethodSymbol>(initialCapacity: formatMethodNames.Length);
+
+			foreach (IMethodSymbol method in methods)
+			{
+				if (simpleMethodNames.Contains(method.MetadataName))
+				{
+					simpleMethods.Add(method);
+				}
+				else if (formatMethodNames.Contains(method.MetadataName))
+				{
+					formatMethods.Add(method);
+				}
+			}
+
+			return (simpleMethods.ToImmutable(), formatMethods.ToImmutable());
+		}
+	}
 }

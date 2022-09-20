@@ -21,7 +21,25 @@ namespace Acuminator.Tests.Sources
     {
         public const string CommasInUserName = "Usernames cannot contain commas.";
         public const string StringToFormat = "Text with placeholder {0}";
+
+
+		public static string StringProperty => CommasInUserName;
     }
+
+	[PXLocalizable]
+	public class NonConstantMessages
+	{
+		public static readonly string StaticReadOnlyField = "Static field";
+		public string InstanceReadOnlyField = "Instance field";
+
+		public static string StaticStringProperty => StaticReadOnlyField;
+
+		public string InstanceStringProperty => InstanceReadOnlyField;
+
+		public static string StaticMethod() => StaticReadOnlyField;
+
+		public string InstanceMethod() => InstanceReadOnlyField;
+	}
 }
 
 namespace InnerNamespace
