@@ -81,28 +81,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			bool isView = graphOrExtension.ViewsByNames.ContainsKey(staticFieldOrProperty.Name);
 
 			if (isView)
-				return (Resources.PX1062MessageFormatArg_Views, CreatePropertiesWithIsViewOrAction());
+				return (Resources.PX1062MessageFormatArg_Views, CreateDiagnosticProperties(isViewOrAction: true, Resources.PX1062FixFormatArg_View));
 
 			bool isAction = graphOrExtension.ActionsByNames.ContainsKey(staticFieldOrProperty.Name);
 
 			if (isAction)
-				return (Resources.PX1062MessageFormatArg_Actions, CreatePropertiesWithIsViewOrAction());
+				return (Resources.PX1062MessageFormatArg_Actions, CreateDiagnosticProperties(isViewOrAction: true, Resources.PX1062FixFormatArg_Action));
 
 			switch (staticFieldOrProperty)
 			{
 				case IFieldSymbol:
-					return (Resources.PX1062MessageFormatArg_Fields , null);
+					return (Resources.PX1062MessageFormatArg_Fields, CreateDiagnosticProperties(isViewOrAction: false, Resources.PX1062FixFormatArg_Field));
 				case IPropertySymbol:
-					return (Resources.PX1062MessageFormatArg_Properties, null);
+					return (Resources.PX1062MessageFormatArg_Properties, CreateDiagnosticProperties(isViewOrAction: false, Resources.PX1062FixFormatArg_Property));
 				default:
 					return null;
 			}
 		}
 
-		private ImmutableDictionary<string, string> CreatePropertiesWithIsViewOrAction()
+		private ImmutableDictionary<string, string> CreateDiagnosticProperties(bool isViewOrAction, string codeFixFormatArg)
 		{
 			var properties = ImmutableDictionary.CreateBuilder<string, string>();
-			properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction, bool.TrueString);
+			properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, codeFixFormatArg);
+
+			if (isViewOrAction)
+				properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction, bool.TrueString);
+
 			return properties.ToImmutable();
 		}
 	}
