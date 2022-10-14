@@ -30,19 +30,38 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		}
 
 		/// <summary>
-		/// Get a parent with a specified type <typeparamref name="TParent"/>
+		/// Get the first parent node with a specified type <typeparamref name="TParent"/>
 		/// </summary>
 		/// <typeparam name="TParent">Parent node type.</typeparam>
 		/// <param name="node">The node to act on.</param>
 		/// <returns/>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static TParent? Parent<TParent>(this SyntaxNode node)
+		public static TParent? Parent<TParent>(this SyntaxNode? node)
 		where TParent : SyntaxNode
 		{
-			if (node == null)
-				return null;
+			return node.ParentOrSelf<TParent>(includeSelf: false);
+		}
 
-			SyntaxNode curNode = node.Parent;
+		/// <summary>
+		/// Get the first parent node or self with a specified type <typeparamref name="TParent"/>
+		/// </summary>
+		/// <typeparam name="TParent">Parent or self node type.</typeparam>
+		/// <param name="node">The node to act on.</param>
+		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static TParent? ParentOrSelf<TParent>(this SyntaxNode? node)
+		where TParent : SyntaxNode
+		{
+			return node.ParentOrSelf<TParent>(includeSelf: true);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static TParent? ParentOrSelf<TParent>(this SyntaxNode? node, bool includeSelf)
+		where TParent : SyntaxNode
+		{
+			SyntaxNode? curNode = includeSelf 
+				? node 
+				: node?.Parent;
 
 			while (curNode != null)
 			{
