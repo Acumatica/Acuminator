@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -9,20 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
-
-using static Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature.InvalidPXActionSignatureFix;
 
 namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 {
@@ -42,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 			if (diagnostic == null)
 				return Task.CompletedTask;
-
+			
 			string? codeFixFormatArg = GetCodeFixFormatArg(diagnostic);
 
 			if (codeFixFormatArg.IsNullOrWhiteSpace())
@@ -57,7 +50,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 				CodeAction makeReadOnlyCodeAction =
 					CodeAction.Create(makeReadOnlyCodeActionName,
-									  cToken => MakeReadOnly(context.Document, context.Span, cToken),
+									  cToken => ChangeModifiersAsync(context.Document, context.Span, 
+																	 AddReadOnlyToModifiers, cToken),
 									  equivalenceKey: makeReadOnlyCodeActionName);
 				context.RegisterCodeFix(makeReadOnlyCodeAction, diagnostic);
 			}
@@ -66,8 +60,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			string makeNonStaticCodeActionName = string.Format(makeNonStaticCodeActionFormat, codeFixFormatArg);
 
 			CodeAction makeNonStaticCodeAction =
-					CodeAction.Create(makeNonStaticCodeActionName,
-									  cToken => MakeNonStatic(context.Document, context.Span, cToken),
+					CodeAction.Create(makeNonStaticCodeActionName, 
+									  cToken => ChangeModifiersAsync(context.Document, context.Span,
+																	 RemoveStaticModifier, cToken),
 									  equivalenceKey: makeNonStaticCodeActionName);
 			context.RegisterCodeFix(makeNonStaticCodeAction, diagnostic);
 			return Task.CompletedTask;
@@ -88,100 +83,82 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 				: null;
 		}
 
-		private async Task<Document> MakeReadOnly(Document document, TextSpan span, CancellationToken cancellationToken)
+		private async Task<Document> ChangeModifiersAsync(Document document, TextSpan span, Func<SyntaxTokenList, SyntaxTokenList?> modifiersChanger,
+														  CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode diagnosticNode = root?.FindNode(span);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? diagnosticNode = root?.FindNode(span);
+			var memberDeclaration = diagnosticNode?.ParentOrSelf<MemberDeclarationSyntax>();
 
-			if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
+			if (memberDeclaration == null)
 				return document;
 
-			ClassDeclarationSyntax dacDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
-			string identifierToRemove = diagnosticNode is ClassDeclarationSyntax dacFieldDeclaration
-											? dacFieldDeclaration.Identifier.Text
-											: (diagnosticNode as PropertyDeclarationSyntax)?.Identifier.Text;
+			cancellationToken.ThrowIfCancellationRequested();
 
-			if (identifierToRemove.IsNullOrWhiteSpace())
+			var memberDeclarationWithReadOnly = ChangeModifiers(memberDeclaration, modifiersChanger);
+
+			if (memberDeclarationWithReadOnly == null)
 				return document;
 
-			var regionsVisitor = new RegionsVisitor(identifierToRemove, cancellationToken);
-			regionsVisitor.Visit(dacDeclaration);
+			cancellationToken.ThrowIfCancellationRequested();
 
-			if (cancellationToken.IsCancellationRequested)
-				return document;
-
-			ClassDeclarationSyntax modifiedDac = RemoveRegions(dacDeclaration, regionsVisitor.RegionNodesToRemove);
-			var propertiesToRemove = modifiedDac.Members.OfType<PropertyDeclarationSyntax>() //-V3080
-														.Where(p => identifierToRemove.Equals(p.Identifier.Text,
-																							  StringComparison.OrdinalIgnoreCase));
-			modifiedDac = modifiedDac.RemoveNodes(propertiesToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);
-
-			var dacFieldsToRemove = modifiedDac.Members.OfType<ClassDeclarationSyntax>()
-													   .Where(dacField => identifierToRemove.Equals(dacField.Identifier.Text,
-																									StringComparison.OrdinalIgnoreCase));
-			modifiedDac = modifiedDac.RemoveNodes(dacFieldsToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);
-			var modifiedRoot = root.ReplaceNode(dacDeclaration, modifiedDac);
-
-			if (cancellationToken.IsCancellationRequested)
-				return document;
-
-			//Format tabulations
-			Workspace workspace = document.Project.Solution.Workspace;
-			OptionSet formatOptions = GetFormattingOptions(workspace);
-			modifiedRoot = Formatter.Format(modifiedRoot, workspace, formatOptions, cancellationToken);
-
-			if (cancellationToken.IsCancellationRequested)
-				return document;
-
+			var modifiedRoot = root.ReplaceNode(memberDeclaration, memberDeclarationWithReadOnly);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
-		private async Task<Document> MakeNonStatic(Document document, TextSpan span, CancellationToken cancellationToken)
+		private static MemberDeclarationSyntax? ChangeModifiers(MemberDeclarationSyntax memberDeclaration,
+																Func<SyntaxTokenList, SyntaxTokenList?> modifiersChanger)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode diagnosticNode = root?.FindNode(span);
+			switch (memberDeclaration)
+			{
+				case FieldDeclarationSyntax fieldDeclaration:
+				{ 
+					var changedModifiers = modifiersChanger(fieldDeclaration.Modifiers);
+					return changedModifiers.HasValue
+						? fieldDeclaration.WithModifiers(changedModifiers.Value)
+						: null;
+				}
+				case PropertyDeclarationSyntax propertyDeclaration:
+				{
+					var changedModifiers = modifiersChanger(propertyDeclaration.Modifiers);
+					return changedModifiers.HasValue
+						? propertyDeclaration.WithModifiers(changedModifiers.Value)
+						: null;
+				}
+				case IndexerDeclarationSyntax indexerDeclaration:
+					{
+						var changedModifiers = modifiersChanger(indexerDeclaration.Modifiers);
+						return changedModifiers.HasValue
+							? indexerDeclaration.WithModifiers(changedModifiers.Value)
+							: null;
+					}
+				default:
+					return null;
+			}
+		}
 
-			if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
-				return document;
+		private static SyntaxTokenList? AddReadOnlyToModifiers(SyntaxTokenList modifiers)
+		{
+			var readOnlyToken = SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword);
 
-			ClassDeclarationSyntax dacDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
-			string identifierToRemove = diagnosticNode is ClassDeclarationSyntax dacFieldDeclaration
-											? dacFieldDeclaration.Identifier.Text
-											: (diagnosticNode as PropertyDeclarationSyntax)?.Identifier.Text;
+			// place readonly right after static if it is present
+			int staticIndex = modifiers.IndexOf(SyntaxKind.StaticKeyword);
+			var modifiersWithReadOnly = staticIndex >= 0 && staticIndex < (modifiers.Count - 1)
+				? modifiers.Insert(staticIndex, readOnlyToken)
+				: modifiers.Add(readOnlyToken);
 
-			if (identifierToRemove.IsNullOrWhiteSpace())
-				return document;
+			return modifiersWithReadOnly;
+		}
 
-			var regionsVisitor = new RegionsVisitor(identifierToRemove, cancellationToken);
-			regionsVisitor.Visit(dacDeclaration);
+		private static SyntaxTokenList? RemoveStaticModifier(SyntaxTokenList modifiers)
+		{
+			int staticIndex = modifiers.IndexOf(SyntaxKind.StaticKeyword);
 
-			if (cancellationToken.IsCancellationRequested)
-				return document;
+			if (staticIndex < 0)
+				return null;
 
-			ClassDeclarationSyntax modifiedDac = RemoveRegions(dacDeclaration, regionsVisitor.RegionNodesToRemove);
-			var propertiesToRemove = modifiedDac.Members.OfType<PropertyDeclarationSyntax>() //-V3080
-														.Where(p => identifierToRemove.Equals(p.Identifier.Text,
-																							  StringComparison.OrdinalIgnoreCase));
-			modifiedDac = modifiedDac.RemoveNodes(propertiesToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);
-
-			var dacFieldsToRemove = modifiedDac.Members.OfType<ClassDeclarationSyntax>()
-													   .Where(dacField => identifierToRemove.Equals(dacField.Identifier.Text,
-																									StringComparison.OrdinalIgnoreCase));
-			modifiedDac = modifiedDac.RemoveNodes(dacFieldsToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);
-			var modifiedRoot = root.ReplaceNode(dacDeclaration, modifiedDac);
-
-			if (cancellationToken.IsCancellationRequested)
-				return document;
-
-			//Format tabulations
-			Workspace workspace = document.Project.Solution.Workspace;
-			OptionSet formatOptions = GetFormattingOptions(workspace);
-			modifiedRoot = Formatter.Format(modifiedRoot, workspace, formatOptions, cancellationToken);
-
-			if (cancellationToken.IsCancellationRequested)
-				return document;
-
-			return document.WithSyntaxRoot(modifiedRoot);
+			var modifiersWithoutStatic = modifiers.RemoveAt(staticIndex);
+			return modifiersWithoutStatic;
 		}
 	}
 }
