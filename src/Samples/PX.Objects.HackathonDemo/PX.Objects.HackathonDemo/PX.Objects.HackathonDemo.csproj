@@ -126,6 +126,7 @@
     <Compile Include="CallsToInternalAPI\InternalAPI.cs" />
     <Compile Include="CallsToInternalAPI\GraphUsingInternalApi.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
+    <Compile Include="Graph\Static fields and properties in graph\POCustomOrderEntry.cs" />
     <Compile Include="Graph\View Order\DAC\ARTran.cs" />
     <Compile Include="Graph\View Order\DAC\SOTran.cs" />
     <Compile Include="Graph\View Order\DAC\SOInvoice.cs" />
