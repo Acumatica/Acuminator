@@ -653,7 +653,7 @@
     <value>mutable properties</value>
   </data>
   <data name="PX1062FixMakeReadOnlyFormat" xml:space="preserve">
-    <value>Make {0} read-only.</value>
+    <value>Make the {0} read-only</value>
   </data>
   <data name="PX1062FixFormatArg_Field" xml:space="preserve">
     <value>field</value>
@@ -668,7 +668,7 @@
     <value>actions</value>
   </data>
   <data name="PX1062FixMakeNonStaticFormat" xml:space="preserve">
-    <value>Remove static from {0}. </value>
+    <value>Remove static from the {0}</value>
   </data>
   <data name="PX1062FixFormatArg_View" xml:space="preserve">
     <value>view</value>

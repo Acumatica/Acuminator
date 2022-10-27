@@ -1343,7 +1343,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove static from {0}. .
+        ///   Looks up a localized string similar to Remove static from the {0}.
         /// </summary>
         public static string PX1062FixMakeNonStaticFormat {
             get {
@@ -1352,7 +1352,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make {0} read-only..
+        ///   Looks up a localized string similar to Make the {0} read-only.
         /// </summary>
         public static string PX1062FixMakeReadOnlyFormat {
             get {
