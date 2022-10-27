@@ -41,18 +41,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			if (codeFixFormatArg.IsNullOrWhiteSpace())
 				return Task.CompletedTask;
 
-			bool isViewOrAction = IsViewOrAction(diagnostic);
+			bool isViewOrAction = diagnostic.IsFlagSet(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction);
 
 			if (!isViewOrAction)
-			{
+			{		
 				string makeReadOnlyCodeActionFormat = nameof(Resources.PX1062FixMakeReadOnlyFormat).GetLocalized().ToString();
 				string makeReadOnlyCodeActionName = string.Format(makeReadOnlyCodeActionFormat, codeFixFormatArg);
 
-				CodeAction makeReadOnlyCodeAction =
-					CodeAction.Create(makeReadOnlyCodeActionName,
-									  cToken => ChangeModifiersAsync(context.Document, context.Span, 
-																	 AddReadOnlyToModifiers, cToken),
-									  equivalenceKey: makeReadOnlyCodeActionName);
+				bool isProperty = diagnostic.IsFlagSet(StaticFieldOrPropertyInGraphDiagnosticProperties.IsProperty);
+				Func<CancellationToken, Task<Document>> createChangedDocumentFunc = 
+					isProperty
+						? cToken => MakePropertyReadOnlyAsync(context.Document, context.Span, cToken)
+						: cToken => ChangeModifiersAsync(context.Document, context.Span, AddReadOnlyToModifiers, cToken);
+
+				CodeAction makeReadOnlyCodeAction = CodeAction.Create(makeReadOnlyCodeActionName,
+															   createChangedDocumentFunc,
+															   equivalenceKey: makeReadOnlyCodeActionName);
+				
 				context.RegisterCodeFix(makeReadOnlyCodeAction, diagnostic);
 			}
 
@@ -68,11 +73,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			return Task.CompletedTask;
 		}
 
-		private bool IsViewOrAction(Diagnostic diagnostic) =>
-			diagnostic.Properties?.Count > 0 &&
-			diagnostic.Properties.TryGetValue(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction, out string value) &&
-			bool.TrueString.Equals(value, StringComparison.OrdinalIgnoreCase);
-
 		private string? GetCodeFixFormatArg(Diagnostic diagnostic)
 		{
 			if (diagnostic.Properties?.Count is null or 0)
@@ -81,6 +81,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			return diagnostic.Properties.TryGetValue(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, out string value)
 				? value
 				: null;
+		}
+
+		public static int P { get; set;  }
+
+		private async Task<Document> MakePropertyReadOnlyAsync(Document document, TextSpan span, CancellationToken cancellationToken)
+		{
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? diagnosticNode = root?.FindNode(span);
+			var propertyDeclaration = diagnosticNode?.ParentOrSelf<PropertyDeclarationSyntax>();
+
+			if (propertyDeclaration?.AccessorList?.Accessors.Count is null or 0)
+				return document;
+
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var setAccessorIndex = propertyDeclaration.AccessorList.Accessors.IndexOf(accessor => accessor.IsKind(SyntaxKind.SetAccessorDeclaration));
+
+			if (setAccessorIndex < 0)
+				return document;
+
+			var modifiedAccessors = propertyDeclaration.AccessorList.Accessors.RemoveAt(setAccessorIndex);
+			var readonlyPropertyDeclaration = 
+				propertyDeclaration.WithAccessorList(
+					propertyDeclaration.AccessorList.WithAccessors(
+						modifiedAccessors));
+
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var modifiedRoot = root.ReplaceNode(propertyDeclaration, readonlyPropertyDeclaration);
+			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
 		private async Task<Document> ChangeModifiersAsync(Document document, TextSpan span, Func<SyntaxTokenList, SyntaxTokenList?> modifiersChanger,
@@ -95,14 +125,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var memberDeclarationWithReadOnly = ChangeModifiers(memberDeclaration, modifiersChanger);
+			var memberDeclarationWithChangedModifiers = ChangeModifiers(memberDeclaration, modifiersChanger);
 
-			if (memberDeclarationWithReadOnly == null)
+			if (memberDeclarationWithChangedModifiers == null)
 				return document;
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var modifiedRoot = root.ReplaceNode(memberDeclaration, memberDeclarationWithReadOnly);
+			var modifiedRoot = root.ReplaceNode(memberDeclaration, memberDeclarationWithChangedModifiers);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 

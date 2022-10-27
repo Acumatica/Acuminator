@@ -87,28 +87,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 																														  bool isView, bool isAction)
 		{
 			if (isView)
-				return (Resources.PX1062MessageFormatArg_Views, CreateDiagnosticProperties(isViewOrAction: true, Resources.PX1062FixFormatArg_View));
+			{
+				return (Resources.PX1062MessageFormatArg_Views,
+							CreateDiagnosticProperties(isViewOrAction: true, isProperty: staticFieldOrProperty is IPropertySymbol,
+													   Resources.PX1062FixFormatArg_View));
+			}
 			else if (isAction)
-				return (Resources.PX1062MessageFormatArg_Actions, CreateDiagnosticProperties(isViewOrAction: true, Resources.PX1062FixFormatArg_Action));
+			{
+				return (Resources.PX1062MessageFormatArg_Actions, 
+							CreateDiagnosticProperties(isViewOrAction: true, isProperty: staticFieldOrProperty is IPropertySymbol, 
+													   Resources.PX1062FixFormatArg_Action));
+			}
 
 			switch (staticFieldOrProperty)
 			{
 				case IFieldSymbol:
-					return (Resources.PX1062MessageFormatArg_Fields, CreateDiagnosticProperties(isViewOrAction: false, Resources.PX1062FixFormatArg_Field));
+					return (Resources.PX1062MessageFormatArg_Fields, 
+							CreateDiagnosticProperties(isViewOrAction: false, isProperty: false, Resources.PX1062FixFormatArg_Field));
 				case IPropertySymbol:
-					return (Resources.PX1062MessageFormatArg_Properties, CreateDiagnosticProperties(isViewOrAction: false, Resources.PX1062FixFormatArg_Property));
+					return (Resources.PX1062MessageFormatArg_Properties, 
+							CreateDiagnosticProperties(isViewOrAction: false, isProperty: true, Resources.PX1062FixFormatArg_Property));
 				default:
 					return null;
 			}
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(bool isViewOrAction, string codeFixFormatArg)
+		private ImmutableDictionary<string, string> CreateDiagnosticProperties(bool isViewOrAction, bool isProperty, string codeFixFormatArg)
 		{
 			var properties = ImmutableDictionary.CreateBuilder<string, string>();
 			properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, codeFixFormatArg);
 
 			if (isViewOrAction)
 				properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction, bool.TrueString);
+
+			if (isProperty)
+				properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsProperty, bool.TrueString);
 
 			return properties.ToImmutable();
 		}
