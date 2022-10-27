@@ -195,6 +195,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return modifiers.Any(SyntaxKind.PublicKeyword);
 		}
 
+		public static bool IsReadOnly(this MemberDeclarationSyntax member)
+		{
+			SyntaxTokenList modifiers = member.GetModifiers();
+			return modifiers.Any(SyntaxKind.ReadOnlyKeyword);
+		}
+
 		public static bool IsPartial(this TypeDeclarationSyntax typeDeclaration) =>
 			typeDeclaration.CheckIfNull(nameof(typeDeclaration))
 						   .Modifiers
