@@ -270,6 +270,13 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_SingleQueryWithGraphCreation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_TwoQueryWithGraphCreation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\GraphWithStaticMembers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\GraphExtensionWithStaticMembers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticField_ReadOnlyFix_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticField_ReadOnlyFix.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticReadOnlyView_RemoveStaticFix_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticReadOnlyView_RemoveStaticFix.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticAction_RemoveStaticFix_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticAction_RemoveStaticFix.cs" />
     <Compile Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\StaticFieldOrPropertyInGraphTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />

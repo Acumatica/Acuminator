@@ -40,19 +40,31 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.StaticFieldOrPropertyInGraph
 				Descriptors.PX1062_StaticFieldOrPropertyInGraph.CreateFor(24, 10, AnalysisResources.PX1062MessageFormatArg_Actions));
 
 		[Theory]
-		[EmbeddedFileData("GraphWithNonPrimaryDacView.cs",
-						  "GraphWithNonPrimaryDacView_Expected.cs")]
-		public void Test_Code_Fix_For_Graph_And_Graph_Extension(string actual, string expected)
-		{
-			//VerifyCSharpFix(actual, expected);
-		}
+		[EmbeddedFileData("GraphExtensionWithStaticMembers.cs")]
+		public virtual async Task GraphExtension_WithStatic_Fields_Properties_Actions_Views(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1062_StaticFieldOrPropertyInGraph.CreateFor(10, 10, AnalysisResources.PX1062MessageFormatArg_Fields),
+				Descriptors.PX1062_StaticFieldOrPropertyInGraph.CreateFor(12, 10, AnalysisResources.PX1062MessageFormatArg_Properties),
+				Descriptors.PX1062_StaticFieldOrPropertyInGraph.CreateFor(18, 10, AnalysisResources.PX1062MessageFormatArg_Views),
+				Descriptors.PX1062_StaticFieldOrPropertyInGraph.CreateFor(20, 10, AnalysisResources.PX1062MessageFormatArg_Views),
+				Descriptors.PX1062_StaticFieldOrPropertyInGraph.CreateFor(24, 10, AnalysisResources.PX1062MessageFormatArg_Actions));
 
 		[Theory]
-		[EmbeddedFileData("DerivedGraphWithBaseGraphPrimaryDac.cs",
-						  "DerivedGraphWithBaseGraphPrimaryDac_Expected.cs")]
-		public void Test_Code_Fix_For_Derived_Graph(string actual, string expected)
-		{
-			//VerifyCSharpFix(actual, expected);
-		}
+		[EmbeddedFileData(@"CodeFix\GraphWithStaticField_ReadOnlyFix.cs",
+						  @"CodeFix\GraphWithStaticField_ReadOnlyFix_Expected.cs")]
+		public async Task CodeFix_Graph_WithStaticMutableField_MakeFieldReadonly(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"CodeFix\GraphWithStaticAction_RemoveStaticFix.cs",
+						  @"CodeFix\GraphWithStaticAction_RemoveStaticFix_Expected.cs")]
+		public async Task CodeFix_Graph_WithStaticAction_RemoveStatic(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"CodeFix\GraphWithStaticReadOnlyView_RemoveStaticFix.cs",
+						  @"CodeFix\GraphWithStaticReadOnlyView_RemoveStaticFix_Expected.cs")]
+		public async Task CodeFix_Graph_WithStaticReadOnlyView_RemoveStatic(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
 	}
 }
