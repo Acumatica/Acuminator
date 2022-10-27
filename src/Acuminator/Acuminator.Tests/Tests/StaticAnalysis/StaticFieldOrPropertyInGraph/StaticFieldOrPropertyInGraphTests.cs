@@ -52,7 +52,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.StaticFieldOrPropertyInGraph
 		[Theory]
 		[EmbeddedFileData(@"CodeFix\GraphWithStaticField_ReadOnlyFix.cs",
 						  @"CodeFix\GraphWithStaticField_ReadOnlyFix_Expected.cs")]
-		public async Task CodeFix_Graph_WithStaticMutableField_MakeFieldReadonly(string actual, string expected) =>
+		public async Task CodeFix_Graph_WithStaticMutableField_MakeReadonly(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"CodeFix\GraphWithStaticProperty_ReadOnlyFix.cs",
+						  @"CodeFix\GraphWithStaticProperty_ReadOnlyFix_Expected.cs")]
+		public async Task CodeFix_Graph_WithStaticMutableProperty_MakeReadonly(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
