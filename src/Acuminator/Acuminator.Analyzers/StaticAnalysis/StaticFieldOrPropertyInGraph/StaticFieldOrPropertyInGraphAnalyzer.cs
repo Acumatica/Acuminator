@@ -39,19 +39,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			foreach (ISymbol staticFieldOrProperty in graphStaticFieldsAndProperties)
 			{
 				symbolContext.CancellationToken.ThrowIfCancellationRequested();
-				ReportStaticFieldOrProperty(symbolContext, pxContext, staticFieldOrProperty, graphOrExtension);
+				AnalyseStaticFieldOrProperty(symbolContext, pxContext, staticFieldOrProperty, graphOrExtension);
 			}
 		}
 
-		private void ReportStaticFieldOrProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, ISymbol staticFieldOrProperty,
-												PXGraphSemanticModel graphOrExtension)
+		private void AnalyseStaticFieldOrProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, ISymbol staticFieldOrProperty,
+												  PXGraphSemanticModel graphOrExtension)
 		{
+			bool isView = graphOrExtension.ViewsByNames.ContainsKey(staticFieldOrProperty.Name);
+			bool isAction = graphOrExtension.ActionsByNames.ContainsKey(staticFieldOrProperty.Name);
+
+			if (!isView && !isAction && staticFieldOrProperty.IsReadOnly())
+				return;
+
 			Location? location = GetStaticFieldOrPropertyLocation(staticFieldOrProperty, symbolContext.CancellationToken);
 
 			if (location == null)
 				return;
 
-			var diagnosticInfo = GetDiagnosticFormatArgsAndProperties(staticFieldOrProperty, graphOrExtension);
+			var diagnosticInfo = GetDiagnosticFormatArgsAndProperties(staticFieldOrProperty, isView, isAction);
 
 			if (diagnosticInfo == null)
 				return;
@@ -78,16 +84,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 		}
 
 		private (string FormatArg, ImmutableDictionary<string, string>? Properties)? GetDiagnosticFormatArgsAndProperties(ISymbol staticFieldOrProperty,
-																														  PXGraphSemanticModel graphOrExtension)
+																														  bool isView, bool isAction)
 		{
-			bool isView = graphOrExtension.ViewsByNames.ContainsKey(staticFieldOrProperty.Name);
-
 			if (isView)
 				return (Resources.PX1062MessageFormatArg_Views, CreateDiagnosticProperties(isViewOrAction: true, Resources.PX1062FixFormatArg_View));
-
-			bool isAction = graphOrExtension.ActionsByNames.ContainsKey(staticFieldOrProperty.Name);
-
-			if (isAction)
+			else if (isAction)
 				return (Resources.PX1062MessageFormatArg_Actions, CreateDiagnosticProperties(isViewOrAction: true, Resources.PX1062FixFormatArg_Action));
 
 			switch (staticFieldOrProperty)
