@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -65,6 +66,12 @@ namespace Acuminator.Vsix.Logger
 
 		private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
 		{
+			// Skip logging numerous VS timeout exceptions to decrease contention for UI thread
+			var innerExceptions = e.Exception.Flatten().InnerExceptions;
+
+			if (innerExceptions.All(exception => exception is TimeoutException))
+				return;
+
 			LogMode logMode = LogMode.Error;
 
 			if (_swallowUnobservedTaskExceptions && !e.Observed)
@@ -73,7 +80,7 @@ namespace Acuminator.Vsix.Logger
 				logMode = LogMode.Warning;
 			}
 
-			foreach (Exception exception in e.Exception.Flatten().InnerExceptions)
+			foreach (Exception exception in innerExceptions)
 			{
 				LogException(exception, logOnlyFromAcuminatorAssemblies: false, logMode);
 			} 
