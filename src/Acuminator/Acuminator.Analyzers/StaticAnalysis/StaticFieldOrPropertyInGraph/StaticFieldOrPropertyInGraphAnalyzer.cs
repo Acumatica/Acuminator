@@ -13,6 +13,7 @@ using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
@@ -64,7 +65,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 		private Location? GetStaticFieldOrPropertyLocation(ISymbol staticFieldOrProperty, CancellationToken cancellation)
 		{
-			var fieldOrPropertyDeclaration = staticFieldOrProperty.GetSyntax(cancellation);
+			var fieldOrPropertyNode = staticFieldOrProperty.GetSyntax(cancellation);
+			var fieldOrPropertyDeclaration = fieldOrPropertyNode?.ParentOrSelf<MemberDeclarationSyntax>();
 			var staticModifier = fieldOrPropertyDeclaration?.GetModifiers()
 															.FirstOrDefault(modifier => modifier.IsKind(SyntaxKind.StaticKeyword));	
 			if (staticModifier != null)
