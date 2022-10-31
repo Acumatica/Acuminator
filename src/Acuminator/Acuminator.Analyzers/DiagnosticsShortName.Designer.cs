@@ -628,11 +628,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ExceptionWthoutSerializationConstructor.
+        ///   Looks up a localized string similar to ExceptionWithoutSerializationConstructor.
         /// </summary>
         public static string PX1063 {
             get {
                 return ResourceManager.GetString("PX1063", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ExceptionWithNewFieldsAndNoGetObjectDataOverride.
+        /// </summary>
+        public static string PX1064 {
+            get {
+                return ResourceManager.GetString("PX1064", resourceCulture);
             }
         }
         

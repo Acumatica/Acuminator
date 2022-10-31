@@ -376,6 +376,9 @@
     <value>StaticPropertyOrFieldInGraph</value>
   </data>
   <data name="PX1063" xml:space="preserve">
-    <value>ExceptionWthoutSerializationConstructor</value>
+    <value>ExceptionWithoutSerializationConstructor</value>
+  </data>
+  <data name="PX1064" xml:space="preserve">
+    <value>ExceptionWithNewFieldsAndNoGetObjectDataOverride</value>
   </data>
 </root>
