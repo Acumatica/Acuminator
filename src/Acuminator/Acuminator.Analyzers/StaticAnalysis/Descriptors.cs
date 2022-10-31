@@ -326,6 +326,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1063_NoSerializationConstructorInException { get; } =
 			Rule("PX1063", nameof(Resources.PX1063Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1063);
 
+		public static DiagnosticDescriptor PX1064_NoGetObjectDataOverrideInExceptionWithNewFields { get; } =
+			Rule("PX1064", nameof(Resources.PX1064Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1064);
+
 		public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1070);
 
