@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Composition;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Roslyn.Constants;
