@@ -166,7 +166,7 @@
     <value>The {0} DAC, DAC extension, or DAC property should have a description in the summary XML tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
-    <value>The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues.</value>
+    <value>The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues</value>
   </data>
   <data name="PX1009Fix" xml:space="preserve">
     <value>Change the base type to a PXCacheExtension overload</value>
@@ -190,7 +190,7 @@
     <value>Change the type parameter of the action to the primary DAC ({0})</value>
   </data>
   <data name="PX1012Title" xml:space="preserve">
-    <value>The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar.</value>
+    <value>The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar</value>
   </data>
   <data name="PX1014Fix" xml:space="preserve">
     <value>Make the type nullable</value>
@@ -199,10 +199,10 @@
     <value>A DAC field must have a nullable type</value>
   </data>
   <data name="PX1015MessageFormatWithOnlyRequiredParams" xml:space="preserve">
-    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}.</value>
+    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}</value>
   </data>
   <data name="PX1015MessageFormatWithRequiredAndOptionalParams" xml:space="preserve">
-    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
+    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}</value>
   </data>
   <data name="PX1018Title" xml:space="preserve">
     <value>The graph with the specified primary DAC type does not contain a view of this type</value>
@@ -286,19 +286,19 @@
     <value>In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope</value>
   </data>
   <data name="PX1050Title_HardcodedString" xml:space="preserve">
-    <value>Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
+    <value>Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class</value>
   </data>
   <data name="PX1050Title_NonConstFieldString" xml:space="preserve">
-    <value>Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
+    <value>Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class</value>
   </data>
   <data name="PX1051Title" xml:space="preserve">
-    <value>Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
+    <value>Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute</value>
   </data>
   <data name="PX1052Title" xml:space="preserve">
-    <value>Incorrect format string in the localization method. You should use correct format string constants from the appropriate localizable messages class.</value>
+    <value>Incorrect format string in the localization method. You should use correct format string constants from the appropriate localizable messages class</value>
   </data>
   <data name="PX1053Title" xml:space="preserve">
-    <value>Strings concatenation is not allowed as a parameter for localization methods and PXException constructors. You should use localization format methods instead.</value>
+    <value>Strings concatenation is not allowed as a parameter for localization methods and PXException constructors. You should use localization format methods instead</value>
   </data>
   <data name="PX1015Title" xml:space="preserve">
     <value>The number of arguments passed to the method does not match the number of BQL statement parameters</value>
@@ -325,7 +325,7 @@
     <value>A long-running operation cannot be started within an event handler</value>
   </data>
   <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
-    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.</value>
+    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else</value>
   </data>
   <data name="PX1045Title" xml:space="preserve">
     <value>A PXGraph instance cannot be created within an event handler</value>
@@ -373,10 +373,10 @@
     <value>Make the field bound to the identity column be a non-key field and leave all other key fields untouched</value>
   </data>
   <data name="PX1055FixRemoveIdentityAttribute" xml:space="preserve">
-    <value>Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.)</value>
+    <value>Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually)</value>
   </data>
   <data name="PX1055Title" xml:space="preserve">
-    <value>Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key.</value>
+    <value>Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key</value>
   </data>
   <data name="PX1073Title" xml:space="preserve">
     <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
@@ -541,10 +541,10 @@
     <value>Non-public graph extensions are not supported</value>
   </data>
   <data name="PX1016DacExtensionTitle" xml:space="preserve">
-    <value>A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active.</value>
+    <value>A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active</value>
   </data>
   <data name="PX1016GraphExtensionTitle" xml:space="preserve">
-    <value>A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active.</value>
+    <value>A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active</value>
   </data>
   <data name="PX1033Title" xml:space="preserve">
     <value>The DAC does not have an explicit primary key declaration</value>
@@ -556,7 +556,7 @@
     <value>The DAC has multiple key declarations which use the same set of fields</value>
   </data>
   <data name="PX1036PKTitle" xml:space="preserve">
-    <value>The DAC must have one primary key which should be named "PK". This key could be turned into a primary key for this DAC.</value>
+    <value>The DAC must have one primary key which should be named "PK". This key could be turned into a primary key for this DAC</value>
   </data>
   <data name="PX1036FKTitle" xml:space="preserve">
     <value>Foreign keys should be declared in a public static class named "FK"</value>
@@ -641,10 +641,10 @@
     <value>long run operation</value>
   </data>
   <data name="PX1072Title_CreateSharedGraphVariable" xml:space="preserve">
-    <value>Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries.</value>
+    <value>Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries</value>
   </data>
   <data name="PX1062MessageFormat" xml:space="preserve">
-    <value>Graphs and graph extensions cannot declare static {0}.</value>
+    <value>Graphs and graph extensions cannot declare static {0}</value>
   </data>
   <data name="PX1062MessageFormatArg_Fields" xml:space="preserve">
     <value>mutable fields</value>

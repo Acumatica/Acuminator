@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else..
+        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.
         /// </summary>
         public static string EventHandlerSignatureCodeActionTitle {
             get {
@@ -286,7 +286,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues..
+        ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues.
         /// </summary>
         public static string PX1008Title {
             get {
@@ -394,7 +394,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar..
+        ///   Looks up a localized string similar to The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar.
         /// </summary>
         public static string PX1012Title {
             get {
@@ -439,7 +439,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}..
+        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}.
         /// </summary>
         public static string PX1015MessageFormatWithOnlyRequiredParams {
             get {
@@ -448,7 +448,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}..
+        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.
         /// </summary>
         public static string PX1015MessageFormatWithRequiredAndOptionalParams {
             get {
@@ -466,7 +466,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active..
+        ///   Looks up a localized string similar to A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active.
         /// </summary>
         public static string PX1016DacExtensionTitle {
             get {
@@ -475,7 +475,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active..
+        ///   Looks up a localized string similar to A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active.
         /// </summary>
         public static string PX1016GraphExtensionTitle {
             get {
@@ -956,7 +956,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC must have one primary key which should be named &quot;PK&quot;. This key could be turned into a primary key for this DAC..
+        ///   Looks up a localized string similar to The DAC must have one primary key which should be named &quot;PK&quot;. This key could be turned into a primary key for this DAC.
         /// </summary>
         public static string PX1036PKTitle {
             get {
@@ -1136,7 +1136,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
+        ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.
         /// </summary>
         public static string PX1050Title_HardcodedString {
             get {
@@ -1145,7 +1145,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
+        ///   Looks up a localized string similar to Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.
         /// </summary>
         public static string PX1050Title_NonConstFieldString {
             get {
@@ -1154,7 +1154,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute..
+        ///   Looks up a localized string similar to Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.
         /// </summary>
         public static string PX1051Title {
             get {
@@ -1163,7 +1163,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Incorrect format string in the localization method. You should use correct format string constants from the appropriate localizable messages class..
+        ///   Looks up a localized string similar to Incorrect format string in the localization method. You should use correct format string constants from the appropriate localizable messages class.
         /// </summary>
         public static string PX1052Title {
             get {
@@ -1172,7 +1172,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Strings concatenation is not allowed as a parameter for localization methods and PXException constructors. You should use localization format methods instead..
+        ///   Looks up a localized string similar to Strings concatenation is not allowed as a parameter for localization methods and PXException constructors. You should use localization format methods instead.
         /// </summary>
         public static string PX1053Title {
             get {
@@ -1208,7 +1208,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.).
+        ///   Looks up a localized string similar to Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually).
         /// </summary>
         public static string PX1055FixRemoveIdentityAttribute {
             get {
@@ -1217,7 +1217,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key..
+        ///   Looks up a localized string similar to Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key.
         /// </summary>
         public static string PX1055Title {
             get {
@@ -1361,7 +1361,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Graphs and graph extensions cannot declare static {0}..
+        ///   Looks up a localized string similar to Graphs and graph extensions cannot declare static {0}.
         /// </summary>
         public static string PX1062MessageFormat {
             get {
@@ -1451,7 +1451,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries..
+        ///   Looks up a localized string similar to Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries.
         /// </summary>
         public static string PX1072Title_CreateSharedGraphVariable {
             get {
