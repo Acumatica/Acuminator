@@ -13,9 +13,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
     {
         internal SerializationSymbols(Compilation compilation) : base(compilation)
         {
-			SerializationInfo = Compilation.GetTypeByMetadataName(typeof(SerializationInfo).FullName);
-			StreamingContext = Compilation.GetTypeByMetadataName(typeof(StreamingContext).FullName);
+			NonSerializedAttribute = Compilation.GetTypeByMetadataName(typeof(NonSerializedAttribute).FullName);
+			SerializationInfo      = Compilation.GetTypeByMetadataName(typeof(SerializationInfo).FullName);
+			StreamingContext       = Compilation.GetTypeByMetadataName(typeof(StreamingContext).FullName);
 		}
+
+		public INamedTypeSymbol NonSerializedAttribute { get; }
 
 		public INamedTypeSymbol SerializationInfo { get; }
 
