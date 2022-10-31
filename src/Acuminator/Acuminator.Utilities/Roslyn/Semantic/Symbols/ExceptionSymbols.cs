@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
