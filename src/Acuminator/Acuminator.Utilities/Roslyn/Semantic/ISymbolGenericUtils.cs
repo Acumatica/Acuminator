@@ -3,12 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -46,5 +47,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			var typeNode = typeSymbol.GetSyntax() as MemberDeclarationSyntax;
 			return typeNode?.IsReadOnly() ?? false;
 		}
+
+		/// <summary>
+		/// Check if <paramref name="symbol"/> is explicitly declared in the code.
+		/// </summary>
+		/// <param name="symbol">The symbol to check.</param>
+		/// <returns>
+		/// True if <paramref name="symbol"/> explicitly declared, false if not.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsExplicitlyDeclared(this ISymbol symbol) =>
+			!symbol.CheckIfNull(nameof(symbol)).IsImplicitlyDeclared && symbol.CanBeReferencedByName;
 	}
 }
