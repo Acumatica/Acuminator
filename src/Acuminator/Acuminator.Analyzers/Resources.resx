@@ -676,4 +676,7 @@
   <data name="PX1062FixFormatArg_Action" xml:space="preserve">
     <value>action</value>
   </data>
+  <data name="PX1063Title" xml:space="preserve">
+    <value>The exception does not have a serialization constructor for the correct deserialization of the exception data </value>
+  </data>
 </root>

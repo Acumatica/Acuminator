@@ -1406,6 +1406,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The exception does not have a serialization constructor for the correct deserialization of the exception data .
+        /// </summary>
+        public static string PX1063Title {
+            get {
+                return ResourceManager.GetString("PX1063Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {
