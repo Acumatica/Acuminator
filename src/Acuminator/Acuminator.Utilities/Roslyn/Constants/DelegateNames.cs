@@ -81,5 +81,10 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public const string PrimaryKeyFindByMethod = "FindBy";
 
 		public const string Persist = "Persist";
+
+		public static class Serialization
+		{
+			public const string GetObjectData = "GetObjectData";
+		}
 	}
 }
