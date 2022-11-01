@@ -1406,11 +1406,29 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a serialization constructor to the exception declaration.
+        /// </summary>
+        public static string PX1063Fix {
+            get {
+                return ResourceManager.GetString("PX1063Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The exception class declaration does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica, especially in the cluster mode.
         /// </summary>
         public static string PX1063Title {
             get {
                 return ResourceManager.GetString("PX1063Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add an override for the GetObjectData method to the exception declaration.
+        /// </summary>
+        public static string PX1064Fix {
+            get {
+                return ResourceManager.GetString("PX1064Fix", resourceCulture);
             }
         }
         
