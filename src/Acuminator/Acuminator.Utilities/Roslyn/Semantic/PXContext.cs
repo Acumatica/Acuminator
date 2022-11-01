@@ -120,7 +120,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(TypeFullNames.IImplementType);
 
-		public PXContext(Compilation compilation, CodeAnalysisSettings codeAnalysisSettings)
+		public PXContext(Compilation compilation, CodeAnalysisSettings? codeAnalysisSettings)
 		{
 			compilation.ThrowOnNull(nameof(compilation));
 
