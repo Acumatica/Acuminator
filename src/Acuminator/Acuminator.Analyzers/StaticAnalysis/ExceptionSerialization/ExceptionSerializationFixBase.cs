@@ -1,14 +1,9 @@
 ﻿#nullable enable
 
-using System.Collections.Immutable;
-using System.Composition;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Acuminator.Utilities.Roslyn.Constants;
-using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
@@ -73,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			var generatedSerializationMemberDeclaration = GenerateSerializationMemberNode(generator, diagnostic);
+			var generatedSerializationMemberDeclaration = GenerateSerializationMemberNode(generator, pxContext, diagnostic);
 
 			if (generatedSerializationMemberDeclaration == null)
 				return document;
@@ -94,13 +89,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			if (changedRoot == null)
 				return document;
 
-			changedRoot = changedRoot.AddMissingUsingDirectiveForNamespace(NamespaceNames.DotNetSerializationNamespace);
+			//changedRoot = changedRoot.AddMissingUsingDirectiveForNamespace(NamespaceNames.DotNetSerializationNamespace);
 			return document.WithSyntaxRoot(changedRoot);
 		}
 
 		/// <summary>
 		/// Searches for the position to insert the generated exception type member responsible for the serialization.
 		/// </summary>
+		/// <remarks>
+		/// We try to keep a preferred order of serialization type members: serialization constructor folowed by the GetObjectData method override.
+		/// </remarks>
 		/// <param name="exceptionDeclaration">The exception declaration.</param>
 		/// <param name="semanticModel">The semantic model.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
@@ -111,11 +109,43 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 		protected abstract int FindPositionToInsertGeneratedMember(ClassDeclarationSyntax exceptionDeclaration, SemanticModel semanticModel,
 																   PXContext pxContext, CancellationToken cancellationToken);
 
-		protected abstract MemberDeclarationSyntax? GenerateSerializationMemberNode(SyntaxGenerator generator, Diagnostic diagnosticProperties);
+		protected abstract MemberDeclarationSyntax? GenerateSerializationMemberNode(SyntaxGenerator generator, PXContext pxContext, Diagnostic diagnostic);
 
 		protected bool IsMethodUsedForSerialization(IMethodSymbol method, PXContext pxContext) =>
 			method.Parameters.Length == 2 &&
 			method.Parameters[0]?.Type == pxContext.Serialization.SerializationInfo &&
 			method.Parameters[1]?.Type == pxContext.Serialization.StreamingContext;
-	}
+
+		protected SyntaxNode[] GenerateSerializationMemberParameters(SyntaxGenerator generator, PXContext pxContext) =>
+			new[]
+			{
+				generator.ParameterDeclaration(name: SerializationInfoParameterName,
+											   type: generator.TypeExpression(pxContext.Serialization.SerializationInfo)),	//Should add using directive for System.Runtime.Serialization
+				generator.ParameterDeclaration(name: StreamingContextParameterName,
+											   type: generator.TypeExpression(pxContext.Serialization.StreamingContext))	//Should add using directive for System.Runtime.Serialization
+			};
+
+		protected SyntaxNode GenerateReflectionSerializerMethodCall(SyntaxGenerator generator, string methodName, PXContext pxContext)
+		{
+			SyntaxNode[] arguments = GetArgumentsForReflectionSerializerCall(generator);
+
+			return generator.ExpressionStatement
+					(
+						generator.InvocationExpression(
+							generator.MemberAccessExpression(
+								generator.TypeExpression(pxContext.Serialization.ReflectionSerializer),				//Should add using directive for PX.Common
+								methodName),
+							arguments)
+					);
+		}
+
+		private SyntaxNode[] GetArgumentsForReflectionSerializerCall(SyntaxGenerator generator) =>
+			new[]
+			{
+				generator.Argument(
+					generator.ThisExpression()),
+				generator.Argument(
+					IdentifierName(SerializationInfoParameterName))
+			};
+}
 }

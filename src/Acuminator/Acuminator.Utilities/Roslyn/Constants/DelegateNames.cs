@@ -85,6 +85,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static class Serialization
 		{
 			public const string GetObjectData = "GetObjectData";
+			public const string ReflectionSerializer_GetObjectData = "GetObjectData";
 		}
 	}
 }
