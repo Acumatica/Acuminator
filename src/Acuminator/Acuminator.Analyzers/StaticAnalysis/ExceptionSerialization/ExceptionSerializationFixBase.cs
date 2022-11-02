@@ -136,11 +136,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 					IdentifierName(SerializationInfoParameterName))
 			};
 
+			// In older version of Acumatica there is only PXReflectionSerializer
+			INamedTypeSymbol reflectionSerializer = pxContext.Serialization.ReflectionSerializer ??
+													pxContext.Serialization.PXReflectionSerializer;
 			return generator.ExpressionStatement
 					(
 						generator.InvocationExpression(
 							generator.MemberAccessExpression(
-								generator.TypeExpression(pxContext.Serialization.ReflectionSerializer),             //Should add using directive for PX.Common
+								generator.TypeExpression(reflectionSerializer),						//Should add using directive for PX.Common
 								methodName),
 							reflectionSerializerCallArguments)
 					);
