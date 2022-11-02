@@ -15,10 +15,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Text;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using System.Reflection;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 {
@@ -60,8 +58,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			return -1;
 		}
 
-		protected override MemberDeclarationSyntax? GenerateSerializationMemberNode(SyntaxGenerator generator, PXContext pxContext,
-																					Diagnostic diagnostic) =>
+		protected override MemberDeclarationSyntax? GenerateSerializationMemberNode(SyntaxGenerator generator, ClassDeclarationSyntax exceptionDeclaration,
+																					PXContext pxContext, Diagnostic diagnostic) =>
 			GenerateGetObjectDataOverrideNode(generator, pxContext);
 
 		private MethodDeclarationSyntax? GenerateGetObjectDataOverrideNode(SyntaxGenerator generator, PXContext pxContext)

@@ -20,7 +20,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 {
 	public abstract class ExceptionSerializationFixBase : CodeFixProvider
-	{		
+	{
 		protected const string SerializationInfoParameterName = "info";
 		protected const string StreamingContextParameterName = "context";
 
@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			var generatedSerializationMemberDeclaration = GenerateSerializationMemberNode(generator, pxContext, diagnostic);
+			var generatedSerializationMemberDeclaration = GenerateSerializationMemberNode(generator, exceptionDeclaration, pxContext, diagnostic);
 
 			if (generatedSerializationMemberDeclaration == null)
 				return document;
@@ -109,7 +109,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 		protected abstract int FindPositionToInsertGeneratedMember(ClassDeclarationSyntax exceptionDeclaration, SemanticModel semanticModel,
 																   PXContext pxContext, CancellationToken cancellationToken);
 
-		protected abstract MemberDeclarationSyntax? GenerateSerializationMemberNode(SyntaxGenerator generator, PXContext pxContext, Diagnostic diagnostic);
+		protected abstract MemberDeclarationSyntax? GenerateSerializationMemberNode(SyntaxGenerator generator, ClassDeclarationSyntax exceptionDeclaration,
+																					PXContext pxContext, Diagnostic diagnostic);
 
 		protected bool IsMethodUsedForSerialization(IMethodSymbol method, PXContext pxContext) =>
 			method.Parameters.Length == 2 &&
@@ -127,25 +128,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 		protected SyntaxNode GenerateReflectionSerializerMethodCall(SyntaxGenerator generator, string methodName, PXContext pxContext)
 		{
-			SyntaxNode[] arguments = GetArgumentsForReflectionSerializerCall(generator);
-
-			return generator.ExpressionStatement
-					(
-						generator.InvocationExpression(
-							generator.MemberAccessExpression(
-								generator.TypeExpression(pxContext.Serialization.ReflectionSerializer),				//Should add using directive for PX.Common
-								methodName),
-							arguments)
-					);
-		}
-
-		private SyntaxNode[] GetArgumentsForReflectionSerializerCall(SyntaxGenerator generator) =>
-			new[]
+			SyntaxNode[] reflectionSerializerCallArguments =
 			{
 				generator.Argument(
 					generator.ThisExpression()),
 				generator.Argument(
 					IdentifierName(SerializationInfoParameterName))
 			};
-}
+
+			return generator.ExpressionStatement
+					(
+						generator.InvocationExpression(
+							generator.MemberAccessExpression(
+								generator.TypeExpression(pxContext.Serialization.ReflectionSerializer),             //Should add using directive for PX.Common
+								methodName),
+							reflectionSerializerCallArguments)
+					);
+		}
+	}
 }
