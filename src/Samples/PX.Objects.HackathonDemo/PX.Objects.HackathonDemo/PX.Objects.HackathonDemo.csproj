@@ -97,6 +97,8 @@
     <Compile Include="DAC\Referential Integrity\Misc\OAuthClient.cs" />
     <Compile Include="DAC\Referential Integrity\Misc\OAuthClientClaim.cs" />
     <Compile Include="DAC\TaxTran.cs" />
+    <Compile Include="ExceptionSerialization\PXWorkspaceNotExistsException.cs" />
+    <Compile Include="ExceptionSerialization\PXSignatureRequiredException.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrder.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrderEntryExt.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrderExt.cs" />
