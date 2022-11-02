@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -81,8 +82,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var newDacNode = dacNode.WithMembers(
 										dacNode.Members.Insert(positionToInsertFK, foreignKeyContainerNode));
 
-			var changedRoot = root.ReplaceNode(dacNode, newDacNode);
-			changedRoot = AddUsingsForReferentialIntegrityNamespace(changedRoot);
+			var changedRoot = root.ReplaceNode(dacNode, newDacNode) as CompilationUnitSyntax;
+
+			if (changedRoot == null)
+				return Task.FromResult(document);
+
+			changedRoot = changedRoot.AddMissingUsingDirectiveForNamespace(NamespaceNames.ReferentialIntegrityAttributes);
 			var modifiedDocument = document.WithSyntaxRoot(changedRoot);
 			return Task.FromResult(modifiedDocument);
 		}
@@ -285,23 +290,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				yield return propertyName.ToSingleLineComment();
 				yield return EndOfLine(Environment.NewLine);
 			}
-		}
-
-		private SyntaxNode AddUsingsForReferentialIntegrityNamespace(SyntaxNode root)
-		{
-			if (!(root is CompilationUnitSyntax compilationUnit))
-				return root;
-
-			bool alreadyHasUsing =
-				 compilationUnit.Usings
-								.Any(usingDirective => NamespaceNames.ReferentialIntegrityAttributes == usingDirective.Name?.ToString());
-
-			if (alreadyHasUsing)
-				return root;
-
-			return compilationUnit.AddUsings(
-						UsingDirective(
-							ParseName(NamespaceNames.ReferentialIntegrityAttributes)));
 		}
 	}
 }
