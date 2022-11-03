@@ -207,6 +207,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\INUnit_MultipleUniqueKeys_UnboundField.cs" />
+    <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\MissingSerializationConstructorFixTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\ExceptionSerializationTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\PXSignatureRequiredException.cs" />
+    <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\PXWorkspaceNotExistsException.cs" />
     <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFieldsSuppressComment_Expected.cs" />
