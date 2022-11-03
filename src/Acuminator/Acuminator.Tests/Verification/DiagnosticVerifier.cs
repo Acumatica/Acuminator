@@ -158,8 +158,26 @@ namespace Acuminator.Tests.Verification
 		private async Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, 
 												  DiagnosticResult[] expected, bool checkOnlyFirstDocument)
 		{
-			var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, checkOnlyFirstDocument).ConfigureAwait(false);
-			VerifyDiagnosticResults(diagnostics, analyzer, expected);
+			try
+			{
+				var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, checkOnlyFirstDocument).ConfigureAwait(false);
+				VerifyDiagnosticResults(diagnostics, analyzer, expected);
+			}
+			catch (AggregateException aggregateException)
+			{
+				var innerExceptions = aggregateException.Flatten().InnerExceptions;
+
+				switch (innerExceptions.Count)
+				{
+					case 0:
+						throw;
+					case 1:
+						throw innerExceptions[0];
+					default:
+						string errorMsg = string.Join(Environment.NewLine + Environment.NewLine, innerExceptions);
+						throw new Exception(errorMsg);
+				}
+			}	
 		}
 
 		#endregion
