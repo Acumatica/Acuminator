@@ -118,7 +118,7 @@ namespace Acuminator.Tests.Verification
 
 			var solution = workspace.CurrentSolution
 									.AddProject(projectId, GeneratedProjectName, GeneratedProjectName, language)
-									.AddMetadataReferences(projectId, _metadataReferences);
+									.AddMetadataReferences(projectId, MetadataReferences);
 									
 			if (externalCode != null && externalCode.Length > 0)
 			{
@@ -131,7 +131,12 @@ namespace Acuminator.Tests.Verification
 			var parseOptions = project.ParseOptions.WithFeatures(
 														project.ParseOptions.Features.Union(new[] { KeyValuePair.Create("IOperation", "true") }));
 
+			// Prepare C# parsing and compilation options
+			var parseOptions = CreateParseOptions(project);
 			solution = solution.WithProjectParseOptions(projectId, parseOptions);
+
+			CSharpCompilationOptions compileOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary); // compile to a dll
+			solution = solution.WithProjectCompilationOptions(projectId, compileOptions);
 
 			int count = 0;
 
@@ -144,6 +149,17 @@ namespace Acuminator.Tests.Verification
 			}
 
 			return solution.GetProject(projectId);
+		}
+
+		private static ParseOptions CreateParseOptions(Project project)
+		{
+			var customeFeatures = new[] { KeyValuePair.Create("IOperation", "true") };
+			var projectFeatures = project.ParseOptions.Features.Union(customeFeatures);
+
+			return new CSharpParseOptions()
+						.WithKind(SourceCodeKind.Regular)			// as representing a complete .cs file
+						.WithLanguageVersion(LanguageVersion.Latest)
+						.WithFeatures(projectFeatures);				// enabling the latest language features
 		}
 
 		/// <summary>
