@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -6,12 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
+
 using PX.Data;
 
 using Acuminator.Utilities.Common;
@@ -23,10 +28,17 @@ namespace Acuminator.Tests.Verification
 {
 	public static class VerificationHelper
 	{
-		private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-		private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
+		private const string GeneratedFileNameSeed = "Test";
+		private const string CSharpDefaultFileExt = "cs";
+		private const string VisualBasicDefaultExt = "vb";
+		private const string GeneratedProjectName = "GenProject";
+		private const string BuildFailMessage = "External assembly build failure";
+
+		private static readonly string DotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+
 		private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 		private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
+
 		private static readonly MetadataReference PXDataReference = MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location);
 		private static readonly MetadataReference FluentBqlReference = MetadataReference.CreateFromFile(typeof(FbqlCommand).Assembly.Location);
 		private static readonly MetadataReference PXCommonReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXContext).Assembly.Location);
@@ -34,25 +46,49 @@ namespace Acuminator.Tests.Verification
 		private static readonly MetadataReference PXObjectsReference =
 			MetadataReference.CreateFromFile(typeof(PX.Objects.GL.PeriodIDAttribute).Assembly.Location);
 
-		private static readonly MetadataReference[] _metadataReferences =
+		private static readonly MetadataReference[] DotNetReferences;
+		private static readonly MetadataReference[] MetadataReferences;
+			
+		static VerificationHelper()
 		{
-			CorlibReference,
-			SystemCoreReference,
-			CSharpSymbolsReference,
-			CodeAnalysisReference,
-			PXDataReference,
-			PXCommonReference,
-			PXCommonStdReference,
-			PXObjectsReference,
-			FluentBqlReference
-		};
+			List<MetadataReference> dotNetReferences = new(capacity: 5);
 
-		private const string GeneratedFileNameSeed = "Test";
-		private const string CSharpDefaultFileExt = "cs";
-		private const string VisualBasicDefaultExt = "vb";
-		private const string GeneratedProjectName = "GenProject";
-		private const string BuildFailMessage = "External assembly build failure";
+			AddMetadataReferenceIfDllExists(dotNetReferences, "mscorlib.dll");
+			AddMetadataReferenceIfDllExists(dotNetReferences, "netstandard.dll");
+			AddMetadataReferenceIfDllExists(dotNetReferences, "System.dll");
+			AddMetadataReferenceIfDllExists(dotNetReferences, "System.Core.dll");
+			AddMetadataReferenceIfDllExists(dotNetReferences, "System.Runtime.dll");
 
+			DotNetReferences = dotNetReferences.ToArray();
+			MetadataReferences = DotNetReferences.Concat(new[]
+			{
+				CSharpSymbolsReference,
+				CodeAnalysisReference,
+				PXDataReference,
+				PXCommonReference,
+				PXCommonStdReference,
+				PXObjectsReference,
+				FluentBqlReference
+			})
+			.ToArray();
+		}
+
+		private static void AddMetadataReferenceIfDllExists(List<MetadataReference> dotNetReferences, string dllName)
+		{
+			string pathToDll = Path.Combine(DotNetAssemblyPath, dllName);
+
+			if (!File.Exists(pathToDll))
+				return;
+
+			try
+			{
+				var reference = MetadataReference.CreateFromFile(pathToDll);
+				dotNetReferences.Add(reference);
+			}
+			catch (Exception)
+			{
+			}
+		}
 
 		/// <summary>
 		/// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
@@ -85,7 +121,7 @@ namespace Acuminator.Tests.Verification
 		/// <param name="language">The language the source code is in</param>
 		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Document created from the source string</returns>
-		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null)
+		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[]? externalCode = null)
 		{
 			return CreateProject(new[] { source }, language, externalCode).Documents.First();
 		}
@@ -103,7 +139,7 @@ namespace Acuminator.Tests.Verification
 		/// <param name="language">The language the source code is in</param>
 		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null)
+		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[]? externalCode = null)
 		{
 			string fileNamePrefix = GeneratedFileNameSeed;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
@@ -128,8 +164,6 @@ namespace Acuminator.Tests.Verification
 			}
 
 			var project = solution.GetProject(projectId);
-			var parseOptions = project.ParseOptions.WithFeatures(
-														project.ParseOptions.Features.Union(new[] { KeyValuePair.Create("IOperation", "true") }));
 
 			// Prepare C# parsing and compilation options
 			var parseOptions = CreateParseOptions(project);
@@ -251,11 +285,11 @@ namespace Acuminator.Tests.Verification
 			CSharpCompilation compilation = CSharpCompilation.Create(
 					assemblyName,
 					syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
-					references: _metadataReferences,
+					references: MetadataReferences,
 					options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
 			// Emit the image of this assembly 
-			byte[] image = null;
+			byte[]? image = null;
 
 			using (var ms = new MemoryStream())
 			{
