@@ -89,7 +89,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			if (changedRoot == null)
 				return document;
 
-			//changedRoot = changedRoot.AddMissingUsingDirectiveForNamespace(NamespaceNames.DotNetSerializationNamespace);
+			changedRoot = AddMissingUsingDirectives(changedRoot, diagnostic);
 			return document.WithSyntaxRoot(changedRoot);
 		}
 
@@ -121,9 +121,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			new[]
 			{
 				generator.ParameterDeclaration(name: SerializationInfoParameterName,
-											   type: generator.TypeExpression(pxContext.Serialization.SerializationInfo)),	//Should add using directive for System.Runtime.Serialization
+											   type: generator.IdentifierName(pxContext.Serialization.SerializationInfo.Name)),
 				generator.ParameterDeclaration(name: StreamingContextParameterName,
-											   type: generator.TypeExpression(pxContext.Serialization.StreamingContext))	//Should add using directive for System.Runtime.Serialization
+											   type: generator.IdentifierName(pxContext.Serialization.StreamingContext.Name))
 			};
 
 		protected SyntaxNode GenerateReflectionSerializerMethodCall(SyntaxGenerator generator, string methodName, PXContext pxContext)
@@ -143,10 +143,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 					(
 						generator.InvocationExpression(
 							generator.MemberAccessExpression(
-								generator.TypeExpression(reflectionSerializer),						//Should add using directive for PX.Common
+								generator.IdentifierName(reflectionSerializer.Name),
 								methodName),
 							reflectionSerializerCallArguments)
 					);
 		}
+
+		protected abstract CompilationUnitSyntax AddMissingUsingDirectives(CompilationUnitSyntax root, Diagnostic diagnostic);
 	}
 }

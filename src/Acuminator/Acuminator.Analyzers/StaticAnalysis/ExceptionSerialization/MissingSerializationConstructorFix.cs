@@ -5,6 +5,7 @@ using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -67,9 +68,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 																					PXContext pxContext, Diagnostic diagnostic)
 		{
 			bool hasNewSerializableData = diagnostic.IsFlagSet(ExceptionSerializationDiagnosticProperties.HasNewDataForSerialization);
-			return hasNewSerializableData
-				? GenerateSerializationConstructorWithNewSerializableDataProcessing(generator, exceptionDeclaration, pxContext)
-				: GenerateEmptySerializationConstructor(generator, exceptionDeclaration, pxContext);
+
+			if (hasNewSerializableData)
+			{
+				if (pxContext.Serialization.ReflectionSerializer == null && pxContext.Serialization.PXReflectionSerializer == null)
+					return null;
+
+				return GenerateSerializationConstructorWithNewSerializableDataProcessing(generator, exceptionDeclaration, pxContext);
+			}
+			else
+				return GenerateEmptySerializationConstructor(generator, exceptionDeclaration, pxContext);
 		}
 
 		private ConstructorDeclarationSyntax? GenerateSerializationConstructorWithNewSerializableDataProcessing(SyntaxGenerator generator, 
@@ -107,6 +115,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 																		baseConstructorArguments: baseConstructorArguments,
 																		statements: statements);
 			return generatedConstructor as ConstructorDeclarationSyntax;
+		}
+
+		protected override CompilationUnitSyntax AddMissingUsingDirectives(CompilationUnitSyntax root, Diagnostic diagnostic)
+		{
+			var changedRoot = root.AddMissingUsingDirectiveForNamespace(NamespaceNames.DotNetSerializationNamespace);
+			bool hasNewSerializableData = diagnostic.IsFlagSet(ExceptionSerializationDiagnosticProperties.HasNewDataForSerialization);
+
+			return hasNewSerializableData
+				? changedRoot.AddMissingUsingDirectiveForNamespace(NamespaceNames.PXCommon)
+				: changedRoot;
 		}
 	}
 }

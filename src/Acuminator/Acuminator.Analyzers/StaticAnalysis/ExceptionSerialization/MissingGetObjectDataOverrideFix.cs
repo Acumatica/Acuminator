@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -59,8 +60,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 		}
 
 		protected override MemberDeclarationSyntax? GenerateSerializationMemberNode(SyntaxGenerator generator, ClassDeclarationSyntax exceptionDeclaration,
-																					PXContext pxContext, Diagnostic diagnostic) =>
-			GenerateGetObjectDataOverrideNode(generator, pxContext);
+																					PXContext pxContext, Diagnostic diagnostic)
+		{
+			if (pxContext.Serialization.ReflectionSerializer == null && pxContext.Serialization.PXReflectionSerializer == null)
+				return null;
+
+			return GenerateGetObjectDataOverrideNode(generator, pxContext);
+		}
 
 		private MethodDeclarationSyntax? GenerateGetObjectDataOverrideNode(SyntaxGenerator generator, PXContext pxContext)
 		{
@@ -98,5 +104,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 							arguments)
 					);
 		}
+
+		protected override CompilationUnitSyntax AddMissingUsingDirectives(CompilationUnitSyntax root, Diagnostic diagnostic) =>
+			root.AddMissingUsingDirectiveForNamespace(NamespaceNames.DotNetSerializationNamespace)
+				.AddMissingUsingDirectiveForNamespace(NamespaceNames.PXCommon);
 	}
 }
