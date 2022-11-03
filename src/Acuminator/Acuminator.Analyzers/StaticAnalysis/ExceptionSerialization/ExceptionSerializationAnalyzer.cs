@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -107,21 +108,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			if (members.IsDefaultOrEmpty)
 				return Enumerable.Empty<ISymbol>();
 
+			var allBackingFieldsAssociatedSymbols = members.OfType<IFieldSymbol>()
+														   .Where(field => field.AssociatedSymbol != null)
+														   .Select(field => field.AssociatedSymbol)
+														   .ToHashSet();
 			return from member in members
 				   where member.IsExplicitlyDeclared() && exceptionType.Equals(member.ContainingType) &&
-						 IsSerializableFieldOrProperty(member, pxContext)
+						 IsSerializableFieldOrProperty(member, pxContext, allBackingFieldsAssociatedSymbols)
 				   select member;
 		}
 
-		private static bool IsSerializableFieldOrProperty(ISymbol exceptionMember, PXContext pxContext)
+		private static bool IsSerializableFieldOrProperty(ISymbol exceptionMember, PXContext pxContext, HashSet<ISymbol> allBackingFieldsAssociatedSymbols)
 		{
-			if (exceptionMember is not (IFieldSymbol or IPropertySymbol))
-				return false;
+			switch (exceptionMember)
+			{
+				case IFieldSymbol:
+				case IPropertySymbol exceptionProperty when IsAutoProperty(exceptionProperty):
+					break;
+				default:
+					return false;
+			}
 
 			var attributes = exceptionMember.GetAttributes();
 			return attributes.IsDefaultOrEmpty 
 				? true
 				: attributes.All(a => a.AttributeClass != pxContext.Serialization.NonSerializedAttribute);
+
+			//---------------------------------------------------Local Function-------------------------------------------------------------------
+			bool IsAutoProperty(IPropertySymbol property) => 
+				allBackingFieldsAssociatedSymbols.Contains(property);
 		}
 
 		private static void ReportMissingSerializationConstructor(SymbolAnalysisContext context, PXContext pxContext, Location location,
