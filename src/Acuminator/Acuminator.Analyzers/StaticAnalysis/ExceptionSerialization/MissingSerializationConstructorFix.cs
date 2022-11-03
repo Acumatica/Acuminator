@@ -110,8 +110,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 					IdentifierName(StreamingContextParameterName))
 			};
 
+			// The serialization constructor is protected by default but for sealed classes it should be private
+			bool isSealed = exceptionDeclaration.Modifiers.Any(SyntaxKind.SealedKeyword);
+			Accessibility accessibility = isSealed ? Accessibility.Private : Accessibility.Protected;
+
 			var generatedConstructor = generator.ConstructorDeclaration(containingTypeName: exceptionDeclaration.Identifier.Text,
-																		parameters, Accessibility.Protected, 
+																		parameters, accessibility, 
 																		baseConstructorArguments: baseConstructorArguments,
 																		statements: statements);
 			return generatedConstructor as ConstructorDeclarationSyntax;
