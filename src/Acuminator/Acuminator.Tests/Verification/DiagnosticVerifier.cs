@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -371,19 +372,21 @@ namespace Acuminator.Tests.Verification
 				projects.Add(document.Project);
 			}
 
-			var diagnostics = new List<Diagnostic>();
+			var allDiagnostics = new List<Diagnostic>();
+			var compilationWithAnalyzerOptions = CreateCompilationWithAnalyzersOptions();
+			var analyzers = ImmutableArray.Create(analyzer);
 
 			foreach (var project in projects)
 			{
 				var compilation = await project.GetCompilationAsync().ConfigureAwait(false);
-				var compilationWithAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create(analyzer));
-				var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
+				var compilationWithAnalyzers = compilation.WithAnalyzers(analyzers, compilationWithAnalyzerOptions);
+				var projectDiagnostics = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
 
-				foreach (var diag in diags)
+				foreach (var diag in projectDiagnostics)
 				{
 					if (diag.Location == Location.None || diag.Location.IsInMetadata)
 					{
-						diagnostics.Add(diag);
+						allDiagnostics.Add(diag);
 					}
 					else
 					{
@@ -398,16 +401,30 @@ namespace Acuminator.Tests.Verification
 
 							if (documentPath == diag.Location.SourceTree.FilePath)
 							{
-								diagnostics.Add(diag);
+								allDiagnostics.Add(diag);
 							}
 						}
 					}
 				}
 			}
 
-			var results = SortDiagnostics(diagnostics);
-			diagnostics.Clear();
+			var results = SortDiagnostics(allDiagnostics);
+			allDiagnostics.Clear();
 			return results;
+		}
+
+		/// <summary>
+		/// Creates compilation with analyzers options with default values + do not use concurrent analysis during the debugging of unit tests.
+		/// </summary>
+		/// <returns>
+		/// The new compilation with analyzers options with default values.
+		/// </returns>
+		private static CompilationWithAnalyzersOptions CreateCompilationWithAnalyzersOptions()
+		{
+			bool isUnderDebug = Debugger.IsAttached;
+			return new CompilationWithAnalyzersOptions(options: null, onAnalyzerException: null,
+													   concurrentAnalysis: !isUnderDebug, logAnalyzerExecutionTime: true,
+													   reportSuppressedDiagnostics: false, analyzerExceptionFilter: null);
 		}
 
 		/// <summary>
