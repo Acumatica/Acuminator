@@ -1,11 +1,17 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿
+#nullable enable
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlField
@@ -14,11 +20,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlField
 	{
 		[Theory]
 		[EmbeddedFileData("LegacyBqlFieldGood.cs")]
-		public void TestDiagnostic_Good(string actual) => VerifyCSharpDiagnostic(actual);
+		public async Task TestDiagnostic_Good(string actual) => await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 		[EmbeddedFileData("LegacyBqlFieldBad.cs")]
-		public void TestDiagnostic_Bad(string actual) => VerifyCSharpDiagnostic(actual,
+		public async Task TestDiagnostic_Bad(string actual) => await VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1060_LegacyBqlField.CreateFor(12, 25, "legacyBoolField"),
 			Descriptors.PX1060_LegacyBqlField.CreateFor(16, 25, "legacyByteField"),
 			Descriptors.PX1060_LegacyBqlField.CreateFor(20, 25, "legacyShortField"),
@@ -34,7 +40,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlField
 
 		[Theory]
 		[EmbeddedFileData("LegacyBqlFieldBad.cs", "LegacyBqlFieldBad_Expected.cs")]
-		public void TestCodeFix(string actual, string expected) => VerifyCSharpFix(actual, expected);
+		public async Task TestCodeFix(string actual, string expected) => await VerifyCSharpFixAsync(actual, expected);
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
 			new DacAnalyzersAggregator(
