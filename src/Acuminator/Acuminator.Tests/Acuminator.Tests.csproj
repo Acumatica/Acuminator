@@ -211,6 +211,9 @@
     <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\ExceptionSerializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\ExceptionWithNewSerializableData.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\ExceptionWithNoNewSerializableData.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NewSerializableData_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NewSerializableData.cs" />
+    <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NoNewSerializableData.cs" />
     <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFieldsSuppressComment_Expected.cs" />
