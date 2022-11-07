@@ -27,7 +27,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ExceptionSerialization
 		[Theory]
 		[EmbeddedFileData(@"CodeFix\MissingSerializationConstructor_NewSerializableData.cs", 
 						  @"CodeFix\MissingSerializationConstructor_NewSerializableData_Expected.cs")]
-		public async Task Exception_SealedClass_WithNewSerializableData(string actual, string expected) => 
+		public async Task Exception_SealedClass_WithNewSerializableData_AndGetObjectDataOverride(string actual, string expected) => 
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"CodeFix\MissingSerializationConstructor_NoNewSerializableData.cs",
+						  @"CodeFix\MissingSerializationConstructor_NoNewSerializableData_Expected.cs")]
+		public async Task Exception_NotSealedClass_WithNoSerializableData_NoGetObjectDataOverride(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 	}
 }

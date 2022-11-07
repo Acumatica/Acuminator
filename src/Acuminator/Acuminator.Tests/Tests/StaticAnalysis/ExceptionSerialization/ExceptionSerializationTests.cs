@@ -44,5 +44,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ExceptionSerialization
 		[EmbeddedFileData(@"CodeFix\MissingSerializationConstructor_NewSerializableData_Expected.cs")]
 		public async Task Exception_NewSerializableData_NoDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData(@"CodeFix\MissingSerializationConstructor_NoNewSerializableData_Expected.cs")]
+		public async Task Exception_NoNewSerializableData_NoDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 	}
 }
