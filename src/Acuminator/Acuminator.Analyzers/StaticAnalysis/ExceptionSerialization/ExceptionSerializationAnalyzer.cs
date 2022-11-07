@@ -108,38 +108,49 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			if (members.IsDefaultOrEmpty)
 				return Enumerable.Empty<ISymbol>();
 
-			var allBackingFieldsAssociatedSymbols = members.OfType<IFieldSymbol>()
-														   .Where(field => !field.IsStatic && field.AssociatedSymbol != null)
-														   .Select(field => field.AssociatedSymbol)
-														   .ToHashSet();
+			var allBackingFieldsByAssociatedSymbols = members.OfType<IFieldSymbol>()
+															 .Where(field => !field.IsStatic && !field.IsConst && field.AssociatedSymbol != null)
+															 .GroupBy(field => field.AssociatedSymbol)
+															 .ToDictionary(groupedByAssociatedSymbol => groupedByAssociatedSymbol.Key,
+																		   groupedByAssociatedSymbol => groupedByAssociatedSymbol.First());
 			return from member in members
 				   where member.IsExplicitlyDeclared() && exceptionType.Equals(member.ContainingType) &&
-						 IsSerializableFieldOrProperty(member, pxContext, allBackingFieldsAssociatedSymbols)
+						 IsSerializableFieldOrProperty(member, pxContext, allBackingFieldsByAssociatedSymbols)
 				   select member;
 		}
 
-		private static bool IsSerializableFieldOrProperty(ISymbol exceptionMember, PXContext pxContext, HashSet<ISymbol> allBackingFieldsAssociatedSymbols)
+		private static bool IsSerializableFieldOrProperty(ISymbol exceptionMember, PXContext pxContext, 
+														  Dictionary<ISymbol, IFieldSymbol> allBackingFieldsByAssociatedSymbols)
 		{
 			if (exceptionMember.IsStatic)
 				return false;
 
+			ImmutableArray<AttributeData> attributes;
+
 			switch (exceptionMember)
 			{
 				case IFieldSymbol exceptionField when !exceptionField.IsConst:
-				case IPropertySymbol exceptionProperty when IsAutoProperty(exceptionProperty):
+					attributes = exceptionField.GetAttributes();
 					break;
+
+				case IPropertySymbol exceptionProperty:
+
+					// Check that property is an auto-property with compiler generated backing field
+					if (!allBackingFieldsByAssociatedSymbols.TryGetValue(exceptionProperty, out var backingField))
+						return false;
+
+					attributes = backingField.GetAttributes();
+					break;
+
 				default:
 					return false;
 			}
 
-			var attributes = exceptionMember.GetAttributes();
-			return attributes.IsDefaultOrEmpty 
-				? true
-				: attributes.All(a => a.AttributeClass != pxContext.Serialization.NonSerializedAttribute);
+			bool hasNonSerializedAttributeDeclared = attributes.IsDefaultOrEmpty
+				? false
+				: attributes.Any(a => a.AttributeClass == pxContext.Serialization.NonSerializedAttribute);
 
-			//---------------------------------------------------Local Function-------------------------------------------------------------------
-			bool IsAutoProperty(IPropertySymbol property) => 
-				allBackingFieldsAssociatedSymbols.Contains(property);
+			return !hasNonSerializedAttributeDeclared;
 		}
 
 		private static void ReportMissingSerializationConstructor(SymbolAnalysisContext context, PXContext pxContext, Location location,
