@@ -109,7 +109,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 				return Enumerable.Empty<ISymbol>();
 
 			var allBackingFieldsAssociatedSymbols = members.OfType<IFieldSymbol>()
-														   .Where(field => field.AssociatedSymbol != null)
+														   .Where(field => !field.IsStatic && field.AssociatedSymbol != null)
 														   .Select(field => field.AssociatedSymbol)
 														   .ToHashSet();
 			return from member in members
@@ -120,9 +120,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 		private static bool IsSerializableFieldOrProperty(ISymbol exceptionMember, PXContext pxContext, HashSet<ISymbol> allBackingFieldsAssociatedSymbols)
 		{
+			if (exceptionMember.IsStatic)
+				return false;
+
 			switch (exceptionMember)
 			{
-				case IFieldSymbol:
+				case IFieldSymbol exceptionField when !exceptionField.IsConst:
 				case IPropertySymbol exceptionProperty when IsAutoProperty(exceptionProperty):
 					break;
 				default:
