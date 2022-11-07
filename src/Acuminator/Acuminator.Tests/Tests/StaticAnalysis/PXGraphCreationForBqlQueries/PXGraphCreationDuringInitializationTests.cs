@@ -109,6 +109,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 			await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource);
 
 		[Theory]
+		[EmbeddedFileData("ExternalService_TwoQueriesReuseGraphField.cs", "Customer.cs")]
+		public async Task TwoQueries_ReusingSameGraphInArgument_ShouldNotShowDiagnostic(string source, string dacSource) =>
+			await VerifyCSharpDiagnosticAsync(source, dacSource);
+
+
+		[Theory]
 	    [EmbeddedFileData("InstanceIsUsedOutsideBql.cs", "Customer.cs", "CustomerMaint.cs")]
 	    public async Task InstanceIsUsedOutsideBql_ShouldNotShowDiagnostic(string source, string dacSource, string graphSource) =>
 		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource);
