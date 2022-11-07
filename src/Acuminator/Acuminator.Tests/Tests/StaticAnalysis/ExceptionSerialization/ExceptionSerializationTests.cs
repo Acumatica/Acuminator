@@ -22,7 +22,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ExceptionSerialization
 		public void Exception_WithNewSerializableData_AndNoSerializationConstructor_AndNoGetObjectDataOverride(string actual) =>
 			VerifyCSharpDiagnostic(actual,
 				Descriptors.PX1063_NoSerializationConstructorInException.CreateFor(10, 22),
-				Descriptors.PX1064_NoGetObjectDataOverrideInExceptionWithNewFields.CreateFor(10, 22));
+				Descriptors.PX1064_NoGetObjectDataOverrideInExceptionWithNewFields.CreateFor(10, 22),
+
+				Descriptors.PX1063_NoSerializationConstructorInException.CreateFor(33, 22),
+				Descriptors.PX1064_NoGetObjectDataOverrideInExceptionWithNewFields.CreateFor(33, 22));
 
 		[Theory]
 		[EmbeddedFileData("ExceptionWithNoNewSerializableData.cs")]

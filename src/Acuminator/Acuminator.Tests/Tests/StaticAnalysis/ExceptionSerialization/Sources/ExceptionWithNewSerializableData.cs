@@ -7,7 +7,7 @@ using PX.Data;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ExceptionSerialization.Sources
 {
-	public sealed class PXSignatureRequiredException : PXBaseRedirectException
+	public sealed class PXNewSerializableAutoPropertiesException : PXBaseRedirectException
 	{
 		/// <summary>
 		/// Identificator of the document that should be signed
@@ -22,7 +22,30 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ExceptionSerialization.Sources
 		/// </summary>
 		public PXGraph Graph { get; private set; }
 
-		public PXSignatureRequiredException(PXGraph graph, string viewName, Guid fileId) : base(fileId.ToString())
+		public PXNewSerializableAutoPropertiesException(PXGraph graph, string viewName, Guid fileId) : base(fileId.ToString())
+		{
+			Graph = graph;
+			ViewName = viewName;
+			FileId = fileId;
+		}
+	}
+
+	public sealed class PXNewSerializableFieldsException : PXBaseRedirectException
+	{
+		/// <summary>
+		/// Identificator of the document that should be signed
+		/// </summary>
+		public Guid FileId;
+		/// <summary>
+		/// View name from which sign action is called
+		/// </summary>
+		public string ViewName;
+		/// <summary>
+		/// Connected graph
+		/// </summary>
+		public PXGraph Graph;
+
+		public PXNewSerializableFieldsException(PXGraph graph, string viewName, Guid fileId) : base(fileId.ToString())
 		{
 			Graph = graph;
 			ViewName = viewName;
