@@ -88,8 +88,8 @@ All code snippets are located in the Acumatica [Code Snippets](https://github.co
 ## The Process of Building the Solution
 To build the solution, do the following:
 1. Create the _lib_ folder in the root folder. 
-2. Add _PX.Data.dll_, _PX.Data.BQL.Fluent.dll_, _PX.Common.dll_, _PX.BulkInsert.dll_, _PX.Objects.dll_, and _PX.DbServices.dll_ (from Acumatica ERP 2019 R1 or higher) to the _lib_ folder.
-   Starting from Acumatica ERP 2020 R2, you also need to add _PX.Common.Std.dll_ to the _lib_ folder.
+2. Add _PX.Data.dll_, _PX.Data.BQL.Fluent.dll_, _PX.Common.dll_, _PX.Common.Std.dll_, _PX.BulkInsert.dll_, _PX.Objects.dll_, and _PX.DbServices.dll_ (from Acumatica ERP 2022 R2 or higher) to the _lib_ folder.   
+   You can use older versions of Acumatica dlls but there is no guarantee that Acuminator will work correctly. The current recommended version is 2022R2, no minor update.
 3. Configure assembly signing in one of the following ways:
     * Add your strong-name key file as _src/key.snk_. If you don't have one, run Developer Command Prompt and generate the key by using the following command: _sn.exe -k "src\key.snk"_.
     * Turn off assembly signing for all projects in the solution. (To turn off assembly signing for a project, open the project properties and, in the **Signing** pane, clear the **Sign the assembly** check box.)
