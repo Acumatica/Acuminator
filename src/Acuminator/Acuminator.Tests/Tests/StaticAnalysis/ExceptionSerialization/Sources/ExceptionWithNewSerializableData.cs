@@ -5,7 +5,7 @@ using System.Text;
 
 using PX.Data;
 
-namespace PX.Objects.HackathonDemo.ExceptionSerialization
+namespace Acuminator.Tests.Tests.StaticAnalysis.ExceptionSerialization.Sources
 {
 	public sealed class PXSignatureRequiredException : PXBaseRedirectException
 	{

@@ -18,10 +18,19 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ExceptionSerialization
 											.WithSuppressionMechanismDisabled());
 
 		[Theory]
-		[EmbeddedFileData("PXSignatureRequiredException.cs")]
+		[EmbeddedFileData("ExceptionWithNewSerializableData.cs")]
 		public void Exception_WithNewSerializableData_AndNoSerializationConstructor_AndNoGetObjectDataOverride(string actual) =>
 			VerifyCSharpDiagnostic(actual,
 				Descriptors.PX1063_NoSerializationConstructorInException.CreateFor(10, 22),
 				Descriptors.PX1064_NoGetObjectDataOverrideInExceptionWithNewFields.CreateFor(10, 22));
+
+		[Theory]
+		[EmbeddedFileData("ExceptionWithNoNewSerializableData.cs")]
+		public void Exception_NoNewSerializableData_AndNoSerializationConstructor_NoGetObjectDataOverrideNeeded(string actual) =>
+			VerifyCSharpDiagnostic(actual,
+				Descriptors.PX1063_NoSerializationConstructorInException.CreateFor(7, 17),
+				Descriptors.PX1063_NoSerializationConstructorInException.CreateFor(15, 15),
+				Descriptors.PX1063_NoSerializationConstructorInException.CreateFor(31, 15),
+				Descriptors.PX1063_NoSerializationConstructorInException.CreateFor(56, 15));
 	}
 }
