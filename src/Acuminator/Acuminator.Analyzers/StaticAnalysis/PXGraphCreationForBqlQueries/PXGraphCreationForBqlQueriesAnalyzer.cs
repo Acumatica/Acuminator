@@ -50,8 +50,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			CSharpSyntaxNode? body = context.CodeBlock?.GetBody();
 			if (body == null) return;
 
-			// Collect all PXGraph-typed method parameters passed to BQL queries
-			var walker = new BqlGraphArgWalker(context.SemanticModel, pxContext);
+			// Collect all PXGraph-typed method parameters passed to BQL queries except graph-typed fields and properties
+			var walker = new BqlGraphArgWalker(context.SemanticModel, pxContext, context.CancellationToken);
 			body.Accept(walker);
 			if (walker.GraphArguments.IsEmpty) return;
 
@@ -74,12 +74,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private HashSet<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
+		private List<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
 		{
 			var dataFlow = semanticModel.TryAnalyzeDataFlow(body);
 
 			if (dataFlow == null) 
-				return new HashSet<ISymbol>();
+				return new List<ISymbol>();
 
 			// this
 			var containingCodeElement = body.Parent<MemberDeclarationSyntax>();
@@ -96,12 +96,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			var localVarGraphs = dataFlow.WrittenInside.OfType<ILocalSymbol>()
 				.Where(t => t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
 
-			// External service graph fields and properties
-			HashSet<ISymbol>? usedServiceGraphFieldsAndProperties =
-				GetUsedGraphFieldsAndPropertiesFromExternalService(dataFlow, body, isInsideStaticCodeElement, semanticModel, pxContext, cancellation);
-
 			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
-			var existingGraphs = new HashSet<ISymbol>();
+			var existingGraphs = new List<ISymbol>();
 
 			if (thisGraph != null)
 				existingGraphs.Add(thisGraph);
@@ -109,67 +105,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (parGraph != null)
 				existingGraphs.Add(parGraph);
 
-			foreach (var localVar in localVarGraphs)
-				existingGraphs.Add(localVar);
-
-			if (usedServiceGraphFieldsAndProperties?.Count > 0)
-			{
-				foreach (var usedFieldOrProperty in usedServiceGraphFieldsAndProperties)
-					existingGraphs.Add(usedFieldOrProperty);
-			}
+			existingGraphs.AddRange(localVarGraphs);				
 
 			return existingGraphs;
 		}
-
-		private HashSet<ISymbol>? GetUsedGraphFieldsAndPropertiesFromExternalService(DataFlowAnalysis dataFlow, SyntaxNode body, 
-																				 bool isInsideStaticCodeElement, SemanticModel semanticModel, 
-																				 PXContext pxContext, CancellationToken cancellation)
-		{
-			var thisService = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
-													 .FirstOrDefault(t => t.IsThis && t.Type != null && !t.Type.IsPXGraphOrExtension(pxContext));
-			if (thisService == null)
-				return null;
-
-			var members = thisService.Type.GetMembers();
-
-			if (members.IsDefaultOrEmpty)
-				return null;
-
-			cancellation.ThrowIfCancellationRequested();
-			var graphTypedFieldsAndProperties = GetGraphTypedFieldsAndProperties(members, isInsideStaticCodeElement,  pxContext).ToList();
-
-			if (graphTypedFieldsAndProperties.Count == 0)
-				return null;
-
-			HashSet<ISymbol>? usedGraphFieldsAndProperties = null;
-			var usageCandidates = from identifierNode in body.DescendantNodes().OfType<IdentifierNameSyntax>()
-								  where graphTypedFieldsAndProperties.Any(symbol => symbol.Name == identifierNode.Identifier.Text)
-								  select identifierNode;
-
-			foreach (IdentifierNameSyntax usageCandidate in usageCandidates)
-			{
-				var usedSymbol = semanticModel.GetSymbolOrFirstCandidate(usageCandidate, cancellation);
-
-				if (usedSymbol is IFieldSymbol or IPropertySymbol && graphTypedFieldsAndProperties.Contains(usedSymbol))
-				{
-					usedGraphFieldsAndProperties ??= new();
-					usedGraphFieldsAndProperties.Add(usedSymbol);
-
-					if (usedGraphFieldsAndProperties.Count == graphTypedFieldsAndProperties.Count)
-						break;
-				}
-			}
-
-			return usedGraphFieldsAndProperties;
-		}
-
-		private IEnumerable<ISymbol> GetGraphTypedFieldsAndProperties(ImmutableArray<ISymbol> members, bool isInsideStaticCodeElement, PXContext pxContext) =>
-			from member in members
-			where member.CanBeReferencedByName && !member.IsImplicitlyDeclared &&
-				  (!isInsideStaticCodeElement || member.IsStatic) &&
-				  ((member is IFieldSymbol field && field.Type.IsPXGraphOrExtension(pxContext)) ||
-				   (member is IPropertySymbol property && property.Type.IsPXGraphOrExtension(pxContext)))
-			select member;
 
 		private void AnalyseCaseWithNoAvailableExistingGraphs(CodeBlockAnalysisContext context, PXContext pxContext, ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodes)
 		{
@@ -194,10 +133,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		private HashSet<ISymbol> GetDifferentSymbolsFromCallArgs(SemanticModel semanticModel, ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodes, 
 																 CancellationToken cancellation) =>
 			bqlSelectGraphArgNodes.Select(graphArgSyntax => semanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, cancellation))
-								  .Where(graphArgSymbol => graphArgSymbol != null)
+								  .Where(graphArgSymbol => graphArgSymbol != null && (graphArgSymbol is not IPropertySymbol or IFieldSymbol))
 								  .ToHashSet()!;
 
-		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode body, HashSet<ISymbol> existingGraphs, SemanticModel semanticModel,
+		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode body, List<ISymbol> existingGraphs, SemanticModel semanticModel,
 																			ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, 
 																			CancellationToken cancellation)
 		{
@@ -223,7 +162,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		}
 
 		private void AnalyzeGraphArgumentOfBqlQuery(CodeBlockAnalysisContext context, PXContext pxContext, ExpressionSyntax graphArgSyntax,
-													HashSet<ISymbol> availableGraphs, Dictionary<ISymbol, List<SyntaxNode>> availableGraphUsages)
+													List<ISymbol> availableGraphs, Dictionary<ISymbol, List<SyntaxNode>> availableGraphUsages)
 		{
 			var instantiationType = graphArgSyntax.GetGraphInstantiationType(context.SemanticModel, pxContext);
 
