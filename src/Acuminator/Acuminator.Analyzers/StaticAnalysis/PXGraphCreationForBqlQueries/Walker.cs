@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using System.Xml.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -43,21 +44,52 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			{
 				_cancellation.ThrowIfCancellationRequested();
 
+				if (node.ArgumentList?.Arguments.Count is null or 0)
+				{
+					base.VisitInvocationExpression(node);
+					return;
+				}
+
 				var methodSymbol = _semanticModel.GetSymbolOrFirstCandidate(node, _cancellation) as IMethodSymbol;
 
+				if (IsBqlSelectOrSearch(methodSymbol))
+				{
+					var bqlCallGraphArg = node.ArgumentList.Arguments[0].Expression;
+
+					if (!ArgumentIsPropertyOrField(bqlCallGraphArg))
+						_graphArguments.Add(bqlCallGraphArg);
+				}
+
+				base.VisitInvocationExpression(node);
+			}
+
+			private bool IsBqlSelectOrSearch(IMethodSymbol? methodSymbol)
+			{
 				// Check BQL Select / Search methods by name because
 				// variations of these methods are declared in different PXSelectBase-derived classes
 				var declaringType = methodSymbol?.ContainingType?.OriginalDefinition;
 
-				if (declaringType != null && declaringType.IsBqlCommand(_pxContext) 
-					&& !methodSymbol!.Parameters.IsEmpty && methodSymbol.Parameters[0].Type.IsPXGraph(_pxContext) 
-					&& node.ArgumentList.Arguments.Count > 0 &&
-				    (methodSymbol.Name.StartsWith(SelectMethodName, StringComparison.Ordinal) ||
-				     methodSymbol.Name.StartsWith(SearchMethodName, StringComparison.Ordinal)))
-				{
-					var graphArg = node.ArgumentList.Arguments[0].Expression;
-					_graphArguments.Add(graphArg);
-				}
+				return declaringType != null && declaringType.IsBqlCommand(_pxContext) &&
+					   !methodSymbol!.Parameters.IsEmpty && methodSymbol.Parameters[0].Type.IsPXGraph(_pxContext) &&
+						(methodSymbol.Name.StartsWith(SelectMethodName, StringComparison.Ordinal) ||
+						 methodSymbol.Name.StartsWith(SearchMethodName, StringComparison.Ordinal));
+			}
+
+			private bool ArgumentIsPropertyOrField(ExpressionSyntax bqlCallGraphArg)
+			{
+				if (bqlCallGraphArg is IdentifierNameSyntax identifier)
+					return ArgumentIsPropertyOrField(identifier);
+
+				// analyze complex expressions passed as argument
+				return bqlCallGraphArg.DescendantNodes()
+									  .OfType<IdentifierNameSyntax>()
+									  .Any(ArgumentIsPropertyOrField);
+			}
+
+			private bool ArgumentIsPropertyOrField(IdentifierNameSyntax identifier)
+			{
+				var graphArgSymbol = _semanticModel.GetSymbolOrFirstCandidate(identifier, _cancellation);
+				return graphArgSymbol is IPropertySymbol or IFieldSymbol;
 			}
 		}
 	}
