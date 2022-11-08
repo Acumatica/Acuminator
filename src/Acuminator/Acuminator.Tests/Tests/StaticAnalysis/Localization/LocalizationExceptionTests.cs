@@ -55,6 +55,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
+		[EmbeddedFileData("LocalizationCorrect_MessagePassedFromAnotherPXException.cs")]
+		public async Task MessagePassedFromAnotherPXException_Exception(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
 		[EmbeddedFileData("LocalizationWithConcatenationInExceptions.cs",
 						  "Messages.cs")]
 		public async Task Localization_PXException_With_Concatenations(string source, string messages)
