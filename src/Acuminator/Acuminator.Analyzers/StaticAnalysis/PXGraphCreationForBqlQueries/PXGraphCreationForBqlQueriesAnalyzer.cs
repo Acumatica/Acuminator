@@ -97,7 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				.Where(t => t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
 
 			// External service graph fields and properties
-			HashSet<ISymbol>? usedServiceGraphFieldsAndProperties = 
+			HashSet<ISymbol>? usedServiceGraphFieldsAndProperties =
 				GetUsedGraphFieldsAndPropertiesFromExternalService(dataFlow, body, isInsideStaticCodeElement, semanticModel, pxContext, cancellation);
 
 			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
@@ -208,8 +208,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			foreach (var subNode in nodesToVisit)
 			{
-				var symbolInfo = semanticModel.GetSymbolInfo(subNode, cancellation);
-				var symbol = symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
+				var symbol = semanticModel.GetSymbolOrFirstCandidate(subNode, cancellation);
 
 				if (symbol != null && existingGraphs.Contains(symbol))
 				{
@@ -244,7 +243,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			var localVar = context.SemanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, context.CancellationToken) as ILocalSymbol;
 
-			//Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
+			// Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
+			// This includes fields and properties that store graph or a graph extension. The analysis of type members that store graphs
+			//  goes outside of method boundaries. We can't predict side effects in the business logic cuased by the change of a graph stored as type member
 			if (localVar == null || availableGraphUsages.ContainsKey(localVar))  
 				return;
 
