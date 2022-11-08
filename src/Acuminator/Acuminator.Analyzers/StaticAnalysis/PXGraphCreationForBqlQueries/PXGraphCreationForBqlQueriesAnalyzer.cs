@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (walker.GraphArguments.IsEmpty) return;
 
 			// Collect all available PXGraph instances (@this, method parameters, local variables)
-			var availableGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext);
+			var availableGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext, context.CancellationToken);
 
 			if (availableGraphs.Count == 0)
 			{
@@ -74,12 +74,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private List<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext)
+		private HashSet<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
 		{
 			var dataFlow = semanticModel.TryAnalyzeDataFlow(body);
 
 			if (dataFlow == null) 
-				return new List<ISymbol>();
+				return new HashSet<ISymbol>();
 
 			// this
 			var containingCodeElement = body.Parent<MemberDeclarationSyntax>();
@@ -96,8 +96,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			var localVarGraphs = dataFlow.WrittenInside.OfType<ILocalSymbol>()
 				.Where(t => t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
 
+			// External service graph fields and properties
+			HashSet<ISymbol>? usedServiceGraphFieldsAndProperties = 
+				GetUsedGraphFieldsAndPropertiesFromExternalService(dataFlow, body, isInsideStaticCodeElement, semanticModel, pxContext, cancellation);
+
 			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
-			var existingGraphs = new List<ISymbol>();
+			var existingGraphs = new HashSet<ISymbol>();
 
 			if (thisGraph != null)
 				existingGraphs.Add(thisGraph);
@@ -105,9 +109,67 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (parGraph != null)
 				existingGraphs.Add(parGraph);
 
-			existingGraphs.AddRange(localVarGraphs);
+			foreach (var localVar in localVarGraphs)
+				existingGraphs.Add(localVar);
+
+			if (usedServiceGraphFieldsAndProperties?.Count > 0)
+			{
+				foreach (var usedFieldOrProperty in usedServiceGraphFieldsAndProperties)
+					existingGraphs.Add(usedFieldOrProperty);
+			}
+
 			return existingGraphs;
 		}
+
+		private HashSet<ISymbol>? GetUsedGraphFieldsAndPropertiesFromExternalService(DataFlowAnalysis dataFlow, SyntaxNode body, 
+																				 bool isInsideStaticCodeElement, SemanticModel semanticModel, 
+																				 PXContext pxContext, CancellationToken cancellation)
+		{
+			var thisService = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
+													 .FirstOrDefault(t => t.IsThis && t.Type != null && !t.Type.IsPXGraphOrExtension(pxContext));
+			if (thisService == null)
+				return null;
+
+			var members = thisService.Type.GetMembers();
+
+			if (members.IsDefaultOrEmpty)
+				return null;
+
+			cancellation.ThrowIfCancellationRequested();
+			var graphTypedFieldsAndProperties = GetGraphTypedFieldsAndProperties(members, isInsideStaticCodeElement,  pxContext).ToList();
+
+			if (graphTypedFieldsAndProperties.Count == 0)
+				return null;
+
+			HashSet<ISymbol>? usedGraphFieldsAndProperties = null;
+			var usageCandidates = from identifierNode in body.DescendantNodes().OfType<IdentifierNameSyntax>()
+								  where graphTypedFieldsAndProperties.Any(symbol => symbol.Name == identifierNode.Identifier.Text)
+								  select identifierNode;
+
+			foreach (IdentifierNameSyntax usageCandidate in usageCandidates)
+			{
+				var usedSymbol = semanticModel.GetSymbolOrFirstCandidate(usageCandidate, cancellation);
+
+				if (usedSymbol is IFieldSymbol or IPropertySymbol && graphTypedFieldsAndProperties.Contains(usedSymbol))
+				{
+					usedGraphFieldsAndProperties ??= new();
+					usedGraphFieldsAndProperties.Add(usedSymbol);
+
+					if (usedGraphFieldsAndProperties.Count == graphTypedFieldsAndProperties.Count)
+						break;
+				}
+			}
+
+			return usedGraphFieldsAndProperties;
+		}
+
+		private IEnumerable<ISymbol> GetGraphTypedFieldsAndProperties(ImmutableArray<ISymbol> members, bool isInsideStaticCodeElement, PXContext pxContext) =>
+			from member in members
+			where member.CanBeReferencedByName && !member.IsImplicitlyDeclared &&
+				  (!isInsideStaticCodeElement || member.IsStatic) &&
+				  ((member is IFieldSymbol field && field.Type.IsPXGraphOrExtension(pxContext)) ||
+				   (member is IPropertySymbol property && property.Type.IsPXGraphOrExtension(pxContext)))
+			select member;
 
 		private void AnalyseCaseWithNoAvailableExistingGraphs(CodeBlockAnalysisContext context, PXContext pxContext, ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodes)
 		{
@@ -135,10 +197,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 								  .Where(graphArgSymbol => graphArgSymbol != null)
 								  .ToHashSet()!;
 
+		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode body, HashSet<ISymbol> existingGraphs, SemanticModel semanticModel,
 																			ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, 
 																			CancellationToken cancellation)
 		{
-			var nodesToVisit = node.DescendantNodesAndSelf()
+			var nodesToVisit = body.DescendantNodesAndSelf()
 								   .Where(n => n is not ExpressionSyntax expressionNode || 
 											  !bqlSelectGraphArgNodesToSkip.Contains(expressionNode));
 			var graphSymbolsUsages = new Dictionary<ISymbol, List<SyntaxNode>>();
@@ -161,7 +224,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		}
 
 		private void AnalyzeGraphArgumentOfBqlQuery(CodeBlockAnalysisContext context, PXContext pxContext, ExpressionSyntax graphArgSyntax,
-													List<ISymbol> availableGraphs, Dictionary<ISymbol, List<SyntaxNode>> availableGraphUsages)
+													HashSet<ISymbol> availableGraphs, Dictionary<ISymbol, List<SyntaxNode>> availableGraphUsages)
 		{
 			var instantiationType = graphArgSyntax.GetGraphInstantiationType(context.SemanticModel, pxContext);
 
@@ -179,8 +242,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				return;
 			}
 
-			var graphArgSymbolInfo = context.SemanticModel.GetSymbolInfo(graphArgSyntax, context.CancellationToken);
-			ILocalSymbol? localVar = (graphArgSymbolInfo.Symbol ?? graphArgSymbolInfo.CandidateSymbols.FirstOrDefault()) as ILocalSymbol;
+			var localVar = context.SemanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, context.CancellationToken) as ILocalSymbol;
 
 			//Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
 			if (localVar == null || availableGraphUsages.ContainsKey(localVar))  
@@ -232,7 +294,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				ITypeSymbol? type = graph switch
 				{
 					IParameterSymbol property => property.Type,
-					ILocalSymbol local => local.Type,
+					ILocalSymbol local        => local.Type,
+					IFieldSymbol field        => field.Type,
+					IPropertySymbol property  => property.Type,
 					_ => null
 				};
 
