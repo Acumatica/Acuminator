@@ -114,6 +114,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (bqlSelectGraphArgNodes.Length == 1)		//Do not report a case with a single BQL query with graph creation in argument
 				return;
 
+			// Do not report case when several BQL queries use the same symbol
+			var graphArgsSymbols = GetDifferentSymbolsFromCallArgs(context.SemanticModel, bqlSelectGraphArgNodes, context.CancellationToken);
+
+			if (graphArgsSymbols.Count <= 1)
+				return;
+
 			// Report a warning to create a shared graph variable to the user
 			foreach (var graphArgSyntax in bqlSelectGraphArgNodes)
 			{
@@ -123,7 +129,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}		
 		}
 
-		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode node, List<ISymbol> existingGraphs, SemanticModel semanticModel,
+		private HashSet<ISymbol> GetDifferentSymbolsFromCallArgs(SemanticModel semanticModel, ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodes, 
+																 CancellationToken cancellation) =>
+			bqlSelectGraphArgNodes.Select(graphArgSyntax => semanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, cancellation))
+								  .Where(graphArgSymbol => graphArgSymbol != null)
+								  .ToHashSet()!;
+
 																			ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, 
 																			CancellationToken cancellation)
 		{
