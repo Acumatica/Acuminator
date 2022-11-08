@@ -50,13 +50,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			CSharpSyntaxNode? body = context.CodeBlock?.GetBody();
 			if (body == null) return;
 
-			// Collect all PXGraph-typed method parameters passed to BQL queries
-			var walker = new BqlGraphArgWalker(context.SemanticModel, pxContext);
+			// Collect all PXGraph-typed method parameters passed to BQL queries except graph-typed fields and properties
+			var walker = new BqlGraphArgWalker(context.SemanticModel, pxContext, context.CancellationToken);
 			body.Accept(walker);
 			if (walker.GraphArguments.IsEmpty) return;
 
 			// Collect all available PXGraph instances (@this, method parameters, local variables)
-			var availableGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext);
+			var availableGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext, context.CancellationToken);
 
 			if (availableGraphs.Count == 0)
 			{
@@ -74,7 +74,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private List<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext)
+		private List<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
 		{
 			var dataFlow = semanticModel.TryAnalyzeDataFlow(body);
 
@@ -105,13 +105,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (parGraph != null)
 				existingGraphs.Add(parGraph);
 
-			existingGraphs.AddRange(localVarGraphs);
+			existingGraphs.AddRange(localVarGraphs);				
+
 			return existingGraphs;
 		}
 
 		private void AnalyseCaseWithNoAvailableExistingGraphs(CodeBlockAnalysisContext context, PXContext pxContext, ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodes)
 		{
 			if (bqlSelectGraphArgNodes.Length == 1)		//Do not report a case with a single BQL query with graph creation in argument
+				return;
+
+			// Do not report case when several BQL queries use the same symbol
+			var graphArgsSymbols = GetDifferentSymbolsFromCallArgs(context.SemanticModel, bqlSelectGraphArgNodes, context.CancellationToken);
+
+			if (graphArgsSymbols.Count <= 1)
 				return;
 
 			// Report a warning to create a shared graph variable to the user
@@ -123,19 +130,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}		
 		}
 
-		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode node, List<ISymbol> existingGraphs, SemanticModel semanticModel,
+		private HashSet<ISymbol> GetDifferentSymbolsFromCallArgs(SemanticModel semanticModel, ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodes, 
+																 CancellationToken cancellation) =>
+			bqlSelectGraphArgNodes.Select(graphArgSyntax => semanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, cancellation))
+								  .Where(graphArgSymbol => graphArgSymbol != null && (graphArgSymbol is not IPropertySymbol or IFieldSymbol))
+								  .ToHashSet()!;
+
+		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode body, List<ISymbol> existingGraphs, SemanticModel semanticModel,
 																			ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, 
 																			CancellationToken cancellation)
 		{
-			var nodesToVisit = node.DescendantNodesAndSelf()
+			var nodesToVisit = body.DescendantNodesAndSelf()
 								   .Where(n => n is not ExpressionSyntax expressionNode || 
 											  !bqlSelectGraphArgNodesToSkip.Contains(expressionNode));
 			var graphSymbolsUsages = new Dictionary<ISymbol, List<SyntaxNode>>();
 
 			foreach (var subNode in nodesToVisit)
 			{
-				var symbolInfo = semanticModel.GetSymbolInfo(subNode, cancellation);
-				var symbol = symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
+				var symbol = semanticModel.GetSymbolOrFirstCandidate(subNode, cancellation);
 
 				if (symbol != null && existingGraphs.Contains(symbol))
 				{
@@ -168,10 +180,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				return;
 			}
 
-			var graphArgSymbolInfo = context.SemanticModel.GetSymbolInfo(graphArgSyntax, context.CancellationToken);
-			ILocalSymbol? localVar = (graphArgSymbolInfo.Symbol ?? graphArgSymbolInfo.CandidateSymbols.FirstOrDefault()) as ILocalSymbol;
+			var localVar = context.SemanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, context.CancellationToken) as ILocalSymbol;
 
-			//Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
+			// Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
+			// This includes fields and properties that store graph or a graph extension. The analysis of type members that store graphs
+			//  goes outside of method boundaries. We can't predict side effects in the business logic cuased by the change of a graph stored as type member
 			if (localVar == null || availableGraphUsages.ContainsKey(localVar))  
 				return;
 
@@ -221,7 +234,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				ITypeSymbol? type = graph switch
 				{
 					IParameterSymbol property => property.Type,
-					ILocalSymbol local => local.Type,
+					ILocalSymbol local        => local.Type,
+					IFieldSymbol field        => field.Type,
+					IPropertySymbol property  => property.Type,
 					_ => null
 				};
 

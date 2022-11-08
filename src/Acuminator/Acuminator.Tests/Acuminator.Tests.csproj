@@ -269,6 +269,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CustomerMaint_CheckGraphContext.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_SingleQueryWithGraphCreation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_TwoQueryWithGraphCreation.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_TwoQueriesReuseGraphField.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_TwoQueries_UseDifferentGraphFields.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description.cs" />
