@@ -12,6 +12,7 @@
     * [Control Flow Statements](#control-flow-statements)
     * [Local Functions](#local-functions)
 * [Best Practices](#best-practices)
+    * [Diagnostic and Code Fix Messages Style](#diagnostic-and-code-fix-messages-style) 
     * [Analyzers](#analyzers)
         * [Independent Analyzers](#independent-analyzers)
         * [Aggregated analyzers](#aggregated-analyzers)
@@ -176,6 +177,15 @@ The local functions can be used in the following three cases:
 ## Best Practices
 
 The [C# Coding Conventions](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions) should be considered in addition to our own.
+
+### Diagnostic and Code Fix Messages Style
+
+Diagnostic and code fix messages should follow the following rules:
+* All messages must be approved by Acumatica. Acumatica documentation team is responsible for the verification of new messages.
+
+* There are rules for the placement dot at the end of the sentence. In this area Acuminator messages are consistent with Microsoft compiler warning messages:
+   * For messages consisting of a single sentence do not place dot at the end of the sentence
+   * For messages consisting of two or more sentences place dot at the end of each sentence
 
 ### Analyzers
 
