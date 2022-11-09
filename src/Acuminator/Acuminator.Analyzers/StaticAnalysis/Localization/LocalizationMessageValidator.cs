@@ -19,21 +19,31 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
+	internal enum ValidationContext
+	{
+		LocalizationMethodCall,
+		PXExceptionConstructorCall,
+		PXExceptionBaseOrThisConstructorCall
+	}
+
 	internal class LocalizationMessageValidator
 	{
 		private static readonly Regex _formatRegex = new Regex(@"(?<Par>{.+})", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly PXContext _pxContext;
+		private readonly ValidationContext _validationContext;
 
 		private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
 
 		private CancellationToken Cancellation => _syntaxContext.CancellationToken;
 
-		public LocalizationMessageValidator(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		public LocalizationMessageValidator(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
+											ValidationContext validationContext)
 		{
 			_syntaxContext = syntaxContext;
 			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
+			_validationContext = validationContext;	
 		}
 
 		public void ValidateMessage(ExpressionSyntax? messageExpression, bool isFormatMethod)
