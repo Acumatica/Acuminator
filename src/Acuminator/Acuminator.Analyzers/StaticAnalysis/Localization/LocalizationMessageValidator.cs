@@ -66,8 +66,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 						Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, messageExpression.GetLocation()),
 						_pxContext.CodeAnalysisSettings);
 				}
+				else
+					CheckThatMessageIsNotMethodCallPassedToBaseConstructor(messageSymbolWithStringType, messageExpression);
 
-				CheckThatMessageIsNotMethodCallPassedToBaseConstructor(messageSymbolWithStringType, messageExpression);
 				return;
 			}
 
