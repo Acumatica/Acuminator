@@ -644,7 +644,7 @@
     <value>Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries.</value>
   </data>
   <data name="PX1062MessageFormat" xml:space="preserve">
-    <value>Graphs and graph extensions cannot declare static {0}.</value>
+    <value>You cannot declare static {0} in graphs or graph extensions</value>
   </data>
   <data name="PX1062MessageFormatArg_Fields" xml:space="preserve">
     <value>mutable fields</value>
@@ -668,7 +668,7 @@
     <value>actions</value>
   </data>
   <data name="PX1062FixMakeNonStaticFormat" xml:space="preserve">
-    <value>Remove static from the {0}</value>
+    <value>Remove the static modifier from the {0}</value>
   </data>
   <data name="PX1062FixFormatArg_View" xml:space="preserve">
     <value>view</value>

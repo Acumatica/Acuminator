@@ -1343,7 +1343,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove static from the {0}.
+        ///   Looks up a localized string similar to Remove the static modifier from the {0}.
         /// </summary>
         public static string PX1062FixMakeNonStaticFormat {
             get {
@@ -1361,7 +1361,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Graphs and graph extensions cannot declare static {0}..
+        ///   Looks up a localized string similar to You cannot declare static {0} in graphs or graph extensions.
         /// </summary>
         public static string PX1062MessageFormat {
             get {
