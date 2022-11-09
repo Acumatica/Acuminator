@@ -67,6 +67,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 						_pxContext.CodeAnalysisSettings);
 				}
 
+				CheckThatMessageIsNotMethodCallPassedToBaseConstructor(messageSymbolWithStringType, messageExpression);
 				return;
 			}
 
@@ -153,6 +154,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			return messageSymbolWithStringType != null &&
 				(_pxContext.SystemTypes.String.StringFormat.Contains(messageSymbolWithStringType) ||
 				 _pxContext.SystemTypes.String.StringConcat.Contains(messageSymbolWithStringType));
+		}
+
+		private void CheckThatMessageIsNotMethodCallPassedToBaseConstructor(ISymbol? messageSymbolWithStringType, ExpressionSyntax messageExpression)
+		{
+			if (messageSymbolWithStringType is IMethodSymbol method &&
+				_validationContext == ValidationContext.PXExceptionBaseOrThisConstructorCall)
+			{
+				var location = messageExpression.GetLocation();
+
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, location),
+					_pxContext.CodeAnalysisSettings);
+
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1050_NonConstFieldStringInLocalizationMethod, location),
+					_pxContext.CodeAnalysisSettings);
+			}
 		}
 
 		private bool IsPXExceptionMessageProperty(ISymbol messageSymbolWithStringType)
