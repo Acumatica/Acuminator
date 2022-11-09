@@ -107,6 +107,47 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
+		/// Gets the <paramref name="propertySymbol"/> and its overrides.
+		/// </summary>
+		/// <param name="propertySymbol">The property to act on.</param>
+		/// <returns>
+		/// The <paramref name="propertySymbol"/> and its overrides.
+		/// </returns>
+		public static IEnumerable<IPropertySymbol> GetOverridesAndThis(this IPropertySymbol propertySymbol) =>
+			GetOverridesImpl(propertySymbol.CheckIfNull(nameof(propertySymbol)), includeThis: true);
+
+		/// <summary>
+		/// Gets the overrides of <paramref name="propertySymbol"/>.
+		/// </summary>
+		/// <param name="propertySymbol">The property to act on.</param>
+		/// <returns>
+		/// The overrides of <paramref name="propertySymbol"/>.
+		/// </returns>
+		public static IEnumerable<IPropertySymbol> GetOverrides(this IPropertySymbol propertySymbol) =>
+			GetOverridesImpl(propertySymbol.CheckIfNull(nameof(propertySymbol)), includeThis: false);
+
+		private static IEnumerable<IPropertySymbol> GetOverridesImpl(IPropertySymbol propertySymbol, bool includeThis)
+		{
+			if (!propertySymbol.IsOverride)
+			{
+				if (includeThis)
+					yield return propertySymbol;
+
+				yield break;
+			}
+			else
+			{
+				IPropertySymbol current = includeThis ? propertySymbol : propertySymbol.OverriddenProperty;
+
+				while (current?.IsOverride == true)
+				{
+					yield return current;
+					current = current.OverriddenProperty;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets the topmost non-local method containing the local function declaration. In case of a non-local method returns itself.
 		/// </summary>
 		/// <param name="localFunction">The method that can be local function.</param>
