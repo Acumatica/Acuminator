@@ -619,6 +619,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to StaticPropertyOrFieldInGraph.
+        /// </summary>
+        public static string PX1062 {
+            get {
+                return ResourceManager.GetString("PX1062", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UiPresentationLogicInEventHandlers.
         /// </summary>
         public static string PX1070 {

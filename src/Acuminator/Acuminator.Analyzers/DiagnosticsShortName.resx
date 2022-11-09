@@ -372,4 +372,7 @@
   <data name="PX1056IsActiveForGraphMethod" xml:space="preserve">
     <value>PXGraphCreationInIsActiveForGraphMethod</value>
   </data>
+  <data name="PX1062" xml:space="preserve">
+    <value>StaticPropertyOrFieldInGraph</value>
+  </data>
 </root>

@@ -320,6 +320,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1061_LegacyBqlConstant { get; } =
 			Rule("PX1061", nameof(Resources.PX1061Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info, DiagnosticsShortName.PX1061);
 
+		public static DiagnosticDescriptor PX1062_StaticFieldOrPropertyInGraph { get; } =
+			Rule("PX1062", nameof(Resources.PX1062MessageFormat).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1062);
+
 		public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1070);
 

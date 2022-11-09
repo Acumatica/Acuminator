@@ -19,6 +19,7 @@ using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
+using Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
@@ -59,6 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			new NonPublicGraphAndDacExtensionAnalyzer(),
 			new NoIsActiveMethodForExtensionAnalyzer(),
 			new InvalidPXActionSignatureAnalyzer(),
+			new StaticFieldOrPropertyInGraphAnalyzer(),
 			new TypoInViewDelegateNameAnalyzer())
         {
         }
