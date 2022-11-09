@@ -33,6 +33,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		}
 
 		[Theory]
+		[EmbeddedFileData("ExceptionWithConstStringFieldPassedToBaseConstructor.cs")]
+		public async Task Localization_PXException_WithTypeMemberArguments_PassedToBaseConstructor(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1051_NonLocalizableString.CreateFor(21, 11),
+
+				Descriptors.PX1051_NonLocalizableString.CreateFor(27, 11),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(27, 11),
+
+				Descriptors.PX1051_NonLocalizableString.CreateFor(33, 11),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(33, 11),
+
+				Descriptors.PX1051_NonLocalizableString.CreateFor(39, 11),
+				Descriptors.PX1050_NonConstFieldStringInLocalizationMethod.CreateFor(39, 11));
+
+		[Theory]
 		[EmbeddedFileData("LocalizationWithNonLocalizableStringInExceptions.cs",
 						  "Messages.cs")]
 		public async Task Localization_PXException_With_NonLocalizableMessageArgument(string source, string messages)

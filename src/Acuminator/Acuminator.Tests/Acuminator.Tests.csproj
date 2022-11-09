@@ -264,6 +264,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationWithNonConstStringsInMethods.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationInterpolationStringInException.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationCorrect_MessagePassedFromAnotherPXException.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\ExceptionWithConstStringFieldPassedToBaseConstructor.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
