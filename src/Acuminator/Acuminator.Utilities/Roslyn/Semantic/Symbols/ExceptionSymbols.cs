@@ -3,6 +3,7 @@
 using System;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
+using System.Linq;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -17,6 +18,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol Exception { get; }
 
 		public INamedTypeSymbol PXException { get; }
+
+		public IPropertySymbol? PXExceptionMessage =>
+			PXException.GetMembers(PropertyNames.Exception.Message)
+					   .OfType<IPropertySymbol>()
+					   .FirstOrDefault();
 
 	    public INamedTypeSymbol PXBaseRedirectException => Compilation.GetTypeByMetadataName(TypeFullNames.Exceptions.PXBaseRedirectException);
 	    public INamedTypeSymbol PXSetupNotEnteredException => Compilation.GetTypeByMetadataName(TypeFullNames.Exceptions.PXSetupNotEnteredException);

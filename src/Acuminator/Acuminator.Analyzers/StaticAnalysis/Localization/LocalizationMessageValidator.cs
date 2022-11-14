@@ -8,6 +8,7 @@ using System.Threading;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 
@@ -59,14 +60,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				return;
 			}
 
-			ITypeSymbol? messageContainerType = messageSymbolWithStringType.ContainingType;
-
-			if (messageContainerType == null)
+			if (messageSymbolWithStringType.ContainingType == null || IsPXExceptionMessageProperty(messageSymbolWithStringType))
 				return;
 
 			Cancellation.ThrowIfCancellationRequested();
 
-			if (IsNonLocalizableMessageType(messageContainerType))
+			if (!IsLocalizableMessagesContainer(messageSymbolWithStringType.ContainingType))
 			{
 				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, messageExpression.GetLocation()),
@@ -88,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 		private bool CheckThatMessageIsNotHardCodedString(ExpressionSyntax messageExpression)
 		{
-			if (messageExpression is (LiteralExpressionSyntax or InterpolatedStringExpressionSyntax))
+			if (messageExpression is LiteralExpressionSyntax or InterpolatedStringExpressionSyntax)
 			{
 				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, messageExpression.GetLocation()),
@@ -146,10 +145,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				 _pxContext.SystemTypes.String.StringConcat.Contains(messageSymbolWithStringType));
 		}
 
-		private bool IsNonLocalizableMessageType(ITypeSymbol messageType)
+		private bool IsPXExceptionMessageProperty(ISymbol messageSymbolWithStringType)
 		{
-			ImmutableArray<AttributeData> attributes = messageType.GetAttributes();
-			return attributes.All(a => !a.AttributeClass.Equals(_pxContext.Localization.PXLocalizableAttribute));
+			if (messageSymbolWithStringType is not IPropertySymbol property || property.Name != PropertyNames.Exception.Message ||
+				_pxContext.Exceptions.PXException == null)
+			{
+				return false;
+			}
+
+			var pxExceptionMessageProperty = _pxContext.Exceptions.PXExceptionMessage;
+
+			if (pxExceptionMessageProperty == null)
+				return false;
+
+			return property.ContainingType.InheritsFromOrEquals(_pxContext.Exceptions.PXException) &&
+				   property.GetOverridesAndThis()
+						   .Contains(pxExceptionMessageProperty);
+		}
+
+		private bool IsLocalizableMessagesContainer(ITypeSymbol messageContainerType)
+		{
+			ImmutableArray<AttributeData> attributes = messageContainerType.GetAttributes();
+			return attributes.IsDefaultOrEmpty
+				? false
+				: attributes.Any(a => a.AttributeClass.Equals(_pxContext.Localization.PXLocalizableAttribute));
 		}
 
 		private bool CheckThatMessageSymbolIsFieldWithConstant(ExpressionSyntax messageExpression, ISymbol messageSymbolWithStringType)
