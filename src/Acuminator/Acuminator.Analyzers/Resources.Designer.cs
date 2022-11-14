@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else..
+        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.
         /// </summary>
         public static string EventHandlerSignatureCodeActionTitle {
             get {
@@ -160,7 +160,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}.
+        ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}..
         /// </summary>
         public static string PX1005MessageFormat {
             get {
@@ -754,7 +754,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.
+        ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing..
         /// </summary>
         public static string PX1030TitleDefaultAttributeOnDacExtension {
             get {
@@ -1406,6 +1406,42 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a serialization constructor to the exception declaration.
+        /// </summary>
+        public static string PX1063Fix {
+            get {
+                return ResourceManager.GetString("PX1063Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The declaration of the exception class does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
+        /// </summary>
+        public static string PX1063Title {
+            get {
+                return ResourceManager.GetString("PX1063Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add an override for the GetObjectData method to the exception declaration.
+        /// </summary>
+        public static string PX1064Fix {
+            get {
+                return ResourceManager.GetString("PX1064Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
+        /// </summary>
+        public static string PX1064Title {
+            get {
+                return ResourceManager.GetString("PX1064Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {
@@ -1460,7 +1496,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead..
         /// </summary>
         public static string PX1074MessageFormat {
             get {
@@ -1469,7 +1505,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead..
         /// </summary>
         public static string PX1074Title {
             get {

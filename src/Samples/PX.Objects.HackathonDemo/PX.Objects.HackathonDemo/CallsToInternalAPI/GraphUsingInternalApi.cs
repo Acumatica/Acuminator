@@ -30,7 +30,7 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
                 serviceProvider.Service.ProvideService();
             }
 
-            PX.Api.Mobile.Legacy.Provider.InvalidateCache();
-        }
+			PX.Api.Mobile.Legacy.Provider.InitCaches();
+		}
     }
 }

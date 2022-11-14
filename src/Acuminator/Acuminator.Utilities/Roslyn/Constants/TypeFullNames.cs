@@ -193,13 +193,19 @@
 		#endregion
 
 
-		public static class Exceptions
+		internal static class Exceptions
 		{
-			internal const string PXException = "PX.Data.PXException";
-			internal const string PXBaseRedirectException = "PX.Data.PXBaseRedirectException";
-			internal const string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
-			internal const string PXRowPersistedException = "PX.Data.PXRowPersistedException";
-			internal const string PXLockViolationException = "PX.Data.PXLockViolationException";
+			public const string PXException                = "PX.Data.PXException";
+			public const string PXBaseRedirectException    = "PX.Data.PXBaseRedirectException";
+			public const string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
+			public const string PXRowPersistedException    = "PX.Data.PXRowPersistedException";
+			public const string PXLockViolationException   = "PX.Data.PXLockViolationException";
+		}
+
+		internal static class Serialization
+		{
+			public const string ReflectionSerializer = "PX.Common.ReflectionSerializer";
+			public const string PXReflectionSerializer = "PX.Common.PXReflectionSerializer";
 		}
 	}
 }

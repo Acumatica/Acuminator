@@ -148,7 +148,7 @@
     <value>Change the view delegate name to match the view name</value>
   </data>
   <data name="PX1005MessageFormat" xml:space="preserve">
-    <value>A possible typo in the view delegate name. The view name for this delegate: {0}</value>
+    <value>A possible typo in the view delegate name. The view name for this delegate: {0}.</value>
   </data>
   <data name="PX1005Title" xml:space="preserve">
     <value>A possible typo in the view delegate name</value>
@@ -268,7 +268,7 @@
     <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
   </data>
   <data name="PX1030TitleDefaultAttributeOnDacExtension" xml:space="preserve">
-    <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing</value>
+    <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.</value>
   </data>
   <data name="PX1040Fix" xml:space="preserve">
     <value>Move the code to the Initialize() method</value>
@@ -325,7 +325,7 @@
     <value>A long-running operation cannot be started within an event handler</value>
   </data>
   <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
-    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.</value>
+    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else</value>
   </data>
   <data name="PX1045Title" xml:space="preserve">
     <value>A PXGraph instance cannot be created within an event handler</value>
@@ -382,10 +382,10 @@
     <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
   </data>
   <data name="PX1074Title" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead</value>
+    <value>PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.</value>
   </data>
   <data name="PX1074MessageFormat" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead</value>
+    <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.</value>
   </data>
   <data name="PX1075MessageFormat" xml:space="preserve">
     <value>PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler</value>
@@ -675,5 +675,17 @@
   </data>
   <data name="PX1062FixFormatArg_Action" xml:space="preserve">
     <value>action</value>
+  </data>
+  <data name="PX1063Title" xml:space="preserve">
+    <value>The declaration of the exception class does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
+  </data>
+  <data name="PX1064Title" xml:space="preserve">
+    <value>The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
+  </data>
+  <data name="PX1064Fix" xml:space="preserve">
+    <value>Add an override for the GetObjectData method to the exception declaration</value>
+  </data>
+  <data name="PX1063Fix" xml:space="preserve">
+    <value>Add a serialization constructor to the exception declaration</value>
   </data>
 </root>
