@@ -59,7 +59,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (stringArgExpression == null)
 				return;
 
-			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext);
+			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext, ValidationContext.LocalizationMethodCall);
 			messageValidator.ValidateMessage(stringArgExpression, isFormatMethod);
         }
 

@@ -79,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				if (messageExpression == null)
 					continue;
 
-				messageValidator ??= new LocalizationMessageValidator(syntaxContext, pxContext);
+				messageValidator ??= new LocalizationMessageValidator(syntaxContext, pxContext, ValidationContext.PXExceptionBaseOrThisConstructorCall);
 				messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
 			}
 		}
@@ -133,7 +133,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (messageExpression == null)
 				return;
 
-			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext);
+			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext, ValidationContext.PXExceptionConstructorCall);
 			messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
 		}
 

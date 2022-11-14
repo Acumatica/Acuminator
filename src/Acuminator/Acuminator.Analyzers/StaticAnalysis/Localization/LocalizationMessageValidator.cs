@@ -19,21 +19,31 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
+	internal enum ValidationContext
+	{
+		LocalizationMethodCall,
+		PXExceptionConstructorCall,
+		PXExceptionBaseOrThisConstructorCall
+	}
+
 	internal class LocalizationMessageValidator
 	{
 		private static readonly Regex _formatRegex = new Regex(@"(?<Par>{.+})", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly PXContext _pxContext;
+		private readonly ValidationContext _validationContext;
 
 		private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
 
 		private CancellationToken Cancellation => _syntaxContext.CancellationToken;
 
-		public LocalizationMessageValidator(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		public LocalizationMessageValidator(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
+											ValidationContext validationContext)
 		{
 			_syntaxContext = syntaxContext;
 			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
+			_validationContext = validationContext;	
 		}
 
 		public void ValidateMessage(ExpressionSyntax? messageExpression, bool isFormatMethod)
@@ -56,6 +66,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 						Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, messageExpression.GetLocation()),
 						_pxContext.CodeAnalysisSettings);
 				}
+				else
+					CheckThatMessageIsNotMethodCallPassedToBaseConstructor(messageSymbolWithStringType, messageExpression);
 
 				return;
 			}
@@ -143,6 +155,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			return messageSymbolWithStringType != null &&
 				(_pxContext.SystemTypes.String.StringFormat.Contains(messageSymbolWithStringType) ||
 				 _pxContext.SystemTypes.String.StringConcat.Contains(messageSymbolWithStringType));
+		}
+
+		private void CheckThatMessageIsNotMethodCallPassedToBaseConstructor(ISymbol? messageSymbolWithStringType, ExpressionSyntax messageExpression)
+		{
+			if (messageSymbolWithStringType is IMethodSymbol method &&
+				_validationContext == ValidationContext.PXExceptionBaseOrThisConstructorCall)
+			{
+				var location = messageExpression.GetLocation();
+
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, location),
+					_pxContext.CodeAnalysisSettings);
+
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1050_NonConstFieldStringInLocalizationMethod, location),
+					_pxContext.CodeAnalysisSettings);
+			}
 		}
 
 		private bool IsPXExceptionMessageProperty(ISymbol messageSymbolWithStringType)
