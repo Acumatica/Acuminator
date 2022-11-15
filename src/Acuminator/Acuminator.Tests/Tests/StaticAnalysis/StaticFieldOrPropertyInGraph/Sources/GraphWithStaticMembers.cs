@@ -29,5 +29,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.StaticFieldOrPropertyInGraph.Sou
 		{
 			
 		}
+
+
+		public const int Constant = 5;			// Should not be reported
 	}
 }
