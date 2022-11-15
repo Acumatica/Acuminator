@@ -32,9 +32,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			var graphStaticFieldsAndProperties = from member in graphOrExtension.Symbol.GetMembers()
-												 where member.IsStatic && member.CanBeReferencedByName && !member.IsImplicitlyDeclared &&
+												 where member.IsStatic && member.IsExplicitlyDeclared() &&
 													   graphOrExtension.Symbol.Equals(member.ContainingType) &&
-													   member is IPropertySymbol or IFieldSymbol
+													   member is IPropertySymbol or IFieldSymbol { IsConst: false }
 												 select member;
 
 			foreach (ISymbol staticFieldOrProperty in graphStaticFieldsAndProperties)
