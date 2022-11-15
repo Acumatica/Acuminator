@@ -9,7 +9,7 @@ In Acuminator 3.1, the following enhancements have been implemented:
  - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to check that graphs and graph extensions do not contain static members.
  - The following new diagnostics have been added to prevent errors related to the serialization and deserialization of exceptions: 
    - The [PX1063](diagnostics/PX1063.md) diagnostic checks that the exception classes derived from `System.Exception` always declare a serialization constructor.
-   - The [PX1064](diagnostics/PX1064.md) diagnostic checks that the exception-derived classes which declare new serealizable data, always provide an override of the `GetObjectData` method.
+   - The [PX1064](diagnostics/PX1064.md) diagnostic checks that the exception classes derived from `System.Exception` which declare new serializable data, always provide an override of the `GetObjectData` method.
  - Support for the following complex expressions passed to SetProcessDelegate API has been added to the [PX1008](diagnostics/PX1008.md) and [PX1086](diagnostics/PX1086.md) diagnostics:
    - Cast expression like
    - Object creation expression
