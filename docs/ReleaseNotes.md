@@ -6,18 +6,52 @@ Acuminator 3.1 includes the bug fixes and enhancements described in this section
 
 ### Enhancements
 In Acuminator 3.1, the following enhancements have been implemented:
+ - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to check that graphs and graph extensions do not contain statis members.
+ - The following new diagnostics have been added to prevent serealization and desealization errors: 
+   - The [PX1063](diagnostics/PX1063.md) diagnostic checks that the exception-derived classes always declare a serealization constructor.
+   - The [PX1064](diagnostics/PX1064.md) diagnostic checks that the exception-derived classes which declare new serealizable data, always provide an override of the `GetObjectData` method.
+ - Support for the following complex expressions passed to SetProcessDelegate API has been added to the [PX1008](diagnostics/PX1008.md) and [PX1086](diagnostics/PX1086.md) diagnostics:
+   - Cast expression like
+   - Object creation expression
+   - Local variable or parameter that store delegate
+   - Property or field that store delegate
  - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in the `IsActive` method in graph and DAC extension and the `IsActiveForGraph` method.
- - Code snippets are now provided for generic event handlers and DAC fields. 
+ - The [PX1057](diagnostics/PX1057.md) and [PX1084](diagnostics/PX1084.md) diagnostics now prevent graph creation via a direct constructor call, that is, the `new PXGraph()` method call.
+ - The [PX1050](diagnostics/PX1050.md) diagnostic now displays a warning for interpolated strings and strings passed to localization methods or exception constructors that are not constant fields.
+ 
+ #### Code Snippets
+ Acuminator now provides code snippets for DACs, DAC fields, and graph events. A developer can use these code snippets to speed up writing new code and avoid common mistakes.
+   For more details on installing and using the code snippets, see [the CodeSnippets repository on GitHub](https://github.com/Acumatica/CodeSnippets). 
+   
+ #### Improvements in the PX1008 diagnostic 
+ The [PX1008](diagnostics/PX1008.md) diagnostic has been completely reworked. Now it is a data flow diagnostic that goes recursively into methods and checks how the data is transferred to them.
+ The following enhancements have been implemented in the diagnostic:
+   - Check for captured adapters has been implemented 
+   - Improvements in diagnostic messages
+   - Support for the PX1008 diagnostic has been added to custom views and attributes 
+   - Extended design of syntax walkers for inter-procedural analysis
+     New extension points and new API has been added.
+ 
+ #### Improvements in the PX1072 diagnostic 
+ The following fixes have been implemented in the [PX1072](diagnostics/PX1072.md) diagnostic:
+   - In static graph members, the declaring graph now is not considered available for usage in fBQL queries
+   - The diagnostic now does not display a warning if a single local graph is available and used in an fQBL query.
+   - The diagnostic now displayed a warning when a class contains multiple fBQL queries and no graph is available.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
- - Diagnostic suppression performed using Acuminator code fix did not work in Visual Studio 2022 because it relied on internal API that was changed in the new version of Visual Studio
- - The [PX1072](diagnostics/PX1072.md) diagnostic displayed a warning for static methods while it should report only graph instance methods.
- - The [PX1086](diagnostics/PX1086.md) diagnostic failed on expression that create collections when the braces were omitted.
- - Acuminator failed when the PXGraph.InstanceCreated.AddHandler  method had a type parameter.
+ - Code fixes provided by Acuminator diagnostics stopped appearing in the UI in the latest release of Visual Studio 2022.
+ - The [PX1086](diagnostics/PX1086.md) diagnostic failed on syntax expressions that create collections with collection initializer when the constructor braces were omitted.
  - The [PX1008](diagnostics/PX1008.md) diagnostic displayed a warning when capturing a reference to `this` in a delegate even in a class that was not a graph or a graph extension.
- - Code snippets provided by Acuminator were not installed correctly when the Acuminator package was updated or reinstalled from Visual Studio.
- - The [PX1050](diagnostics/PX1050.md) diagnostic did not display a warning for interpolated strings.
+ - Support for complex expressions passed to the `SetProcessDelegate` method has been added to diagnostics related to long runs
+ - The process of creation of a graph semantic model has been improved. Now runtime errors which occurred in diagnostics of graphs and graph extensions have been fixed.
+ - Minor bugs with inter-procedural analysis of local functions have been fixed.
+ - Acuminator failed when the a graph which is a generic type parameter was passed to the `PXGraph.InstanceCreated.AddHandler`  method.
+
+### Other Changes
+ - Extended design of syntax walkers for inter-procedural analysis has been implemented, extension points and new API has been added.
+ - Nullable reference code analysis and nullable annotations have been introduced to parts of Acuminator. 
+
 
 ## Acuminator 3.0
 Acuminator 3.0 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.

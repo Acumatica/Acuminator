@@ -62,12 +62,15 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1053](diagnostics/PX1053.md) | Concatenated strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Unavailable |
 | [PX1054](diagnostics/PX1054.md) | A `PXGraph` instance cannot start a long-running operation during the `PXGraph` initialization. | Error | Unavailable |
 | [PX1055](diagnostics/PX1055.md) | An invalid primary key of the DAC is used. | Error | Available |
-| [PX1056](diagnostics/PX1056.md) | A PXGraph instance cannot be initialized inside the IsActive or IsActiveForGraph<TGraph> method. | Error | Unavailable |
+| [PX1056](diagnostics/PX1056.md) | A PXGraph instance cannot be initialized inside the `IsActive` or `IsActiveForGraph<TGraph>` method. | Error | Unavailable |
 | [PX1057](diagnostics/PX1057.md) | A `PXGraph` instance cannot be initialized while another `PXGraph` instance is being initialized. | Error | Unavailable |
 | [PX1058](diagnostics/PX1058.md) | A `PXGraph` instance cannot save changes to the database during the `PXGraph` initialization. | Error | Unavailable |
 | [PX1059](diagnostics/PX1059.md) | Changes to `PXCache` cannot be performed during the `PXGraph` initialization. | Error | Unavailable |
 | [PX1060](diagnostics/PX1060.md) | DAC fields should be strongly typed to be used in fluent BQL queries. | Message | Available |
 | [PX1061](diagnostics/PX1061.md) | Constants should be strongly typed to be used in fluent BQL queries. | Message | Available |
+| [PX1062](diagnostics/PX1062.md) | You cannot declare static members in graphs or graph extensions  | Error | Available |
+| [PX1063](diagnostics/PX1063.md) | Constants should be strongly typed to be used in fluent BQL queries. | Message | Available |
+| [PX1064](diagnostics/PX1064.md) | Constants should be strongly typed to be used in fluent BQL queries. | Message | Available |
 | [PX1070](diagnostics/PX1070.md) | The state of fields and actions can be configured only in `RowSelected` event handlers. | Error | Unavailable |
 | [PX1071](diagnostics/PX1071.md) | Actions cannot be executed within event handlers. | Error | Unavailable |
 | [PX1072](diagnostics/PX1072.md) | BQL queries must be executed within the context of an existing `PXGraph` instance. | Warning (ISV Level 1: Significant) | Available |
