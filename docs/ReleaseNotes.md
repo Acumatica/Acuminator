@@ -6,7 +6,7 @@ Acuminator 3.1 includes the bug fixes and enhancements described in this section
 
 ### Enhancements
 In Acuminator 3.1, the following enhancements have been implemented:
- - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to check that graphs and graph extensions do not contain statis members.
+ - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to check that graphs and graph extensions do not contain static members.
  - The following new diagnostics have been added to prevent serealization and desealization errors: 
    - The [PX1063](diagnostics/PX1063.md) diagnostic checks that the exception-derived classes always declare a serealization constructor.
    - The [PX1064](diagnostics/PX1064.md) diagnostic checks that the exception-derived classes which declare new serealizable data, always provide an override of the `GetObjectData` method.
