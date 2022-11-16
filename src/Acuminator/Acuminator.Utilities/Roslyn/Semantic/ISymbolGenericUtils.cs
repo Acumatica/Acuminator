@@ -58,5 +58,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsExplicitlyDeclared(this ISymbol symbol) =>
 			!symbol.CheckIfNull(nameof(symbol)).IsImplicitlyDeclared && symbol.CanBeReferencedByName;
+
+		public static bool IsDeclaredInType(this ISymbol symbol, ITypeSymbol? type)
+		{
+			symbol.ThrowOnNull(nameof(symbol));
+		
+			if (type == null || symbol.ContainingType == null)
+				return false;
+
+			return symbol.ContainingType == type || symbol.ContainingType == type.OriginalDefinition;
+		}
 	}
 }
