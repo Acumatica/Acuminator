@@ -26,7 +26,7 @@ In Acuminator 3.1, the following enhancements have been implemented:
  #### Improvements in the PX1008 diagnostic 
  The [PX1008](diagnostics/PX1008.md) diagnostic has been completely reworked. Now it is a data flow diagnostic that goes recursively into methods and checks how the data is transferred to them.
  The following enhancements have been implemented in the diagnostic:
-   - Check for captured adapters has been implemented 
+   - PX1008 now checks that `PXAdapter` adapters, passed to graph/graph extension action delegates, are not captured in delegate closures by long run and processing delegates
    - Improvements in diagnostic messages
    - Support for the PX1008 diagnostic has been added to custom views and attributes 
    - Extended design of syntax walkers for inter-procedural analysis
