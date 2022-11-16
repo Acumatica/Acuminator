@@ -427,7 +427,7 @@
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\DiagnosticData.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Base\SuppressDiagnosticCommandBase.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDTOWrapperBase.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\VsixBuildActionSetter.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\BuildAction\VsixBuildActionSetterVS2019.cs" />
     <Compile Include="Commands\DiagnosticSuppression\VsixIOErrorProcessor.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Suppression File\SuppressDiagnosticInSuppressionFileCommand.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDiagnosticService.cs" />

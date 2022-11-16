@@ -12,9 +12,9 @@ using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
 	/// <summary>
-	/// A helper to set Build Action for newly added suppression file.
+	/// A helper to set Build Action for newly added suppression file in VS 2019 or older.
 	/// </summary>
-	public class VsixBuildActionSetter : ICustomBuildActionSetter
+	public class VsixBuildActionSetterVS2019 : ICustomBuildActionSetter
 	{
 		public bool SetBuildAction(string roslynSuppressionFilePath, string buildActionToSet)
 		{
