@@ -8,11 +8,13 @@ using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities.DiagnosticSuppression.BuildAction;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+using Acuminator.Utilities;
+using Acuminator.Vsix.Logger;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
 	/// <summary>
-	/// A helper to set Build Action for newly added suppression file in VS 2019 or older.
+	/// A helper to set Build Action for newly added suppression file in VS 2019 or older that can use VS COM API directy.
 	/// </summary>
 	public class VsixBuildActionSetterVS2019 : ICustomBuildActionSetter
 	{
@@ -20,6 +22,9 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace(nameof(roslynSuppressionFilePath));
 			buildActionToSet.ThrowOnNullOrWhiteSpace(nameof(buildActionToSet));
+
+			if (SharedVsSettings.VSVersion.VS2022OrNewer)
+				return false;
 
 			try
 			{
@@ -29,8 +34,9 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				return ThreadHelper.JoinableTaskFactory.Run(() => SetBuildActionAsync(roslynSuppressionFilePath, buildActionToSet));
 				#pragma warning restore VSTHRD104 
 			}
-			catch
+			catch (Exception ex)
 			{
+				AcuminatorLogger.LogException(ex);
 				return false;
 			}
 		}
@@ -72,8 +78,9 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				buildActionProperty.Value = buildActionToSet;
 				return true;
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
+				AcuminatorLogger.LogException(ex);
 				return false;
 			}		
 		}
