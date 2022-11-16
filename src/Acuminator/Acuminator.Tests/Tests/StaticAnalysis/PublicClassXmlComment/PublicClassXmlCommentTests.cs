@@ -29,21 +29,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicClass_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(11, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(11, 15));
 
 		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs")]
 		public async Task PublicClass_WithoutSummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(12, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(12, 15));
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs")]
 		public async Task PublicClass_WithEmptySummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(14, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(14, 15));
 
 		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
@@ -64,9 +64,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[EmbeddedFileData("DAC_ExcludedWithNested.cs")]
 		public async Task ExcludedWithNested_PublicClasses_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(18, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 16, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(39, 16, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(18, 15),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 16),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(39, 16));
 
 		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs", "WithoutDescription_AddDescription.cs")]
@@ -103,9 +103,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicDac_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(22, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(43, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(22, 17),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 17),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(43, 17));
 
 		[Theory]
 		[EmbeddedFileData("DAC_AddDescription.cs")]
@@ -148,14 +148,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicPartialHelper_SingleWithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23));
 
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithBadComment.cs")]
 		public async Task PublicPartialHelper_BadCommentOnOtherDeclaration(string source, string badCommentSource) =>
 			await VerifyCSharpDiagnosticAsync(
 				source, badCommentSource,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23));
 
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithComment.cs")]
