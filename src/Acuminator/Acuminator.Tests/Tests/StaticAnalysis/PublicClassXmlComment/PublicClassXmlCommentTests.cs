@@ -9,8 +9,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 
-using Resources = Acuminator.Analyzers.Resources;
-
 namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 {
 	public class PublicClassXmlCommentTests : CodeFixVerifier
