@@ -46,20 +46,26 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			var oldScheduler = TaskScheduler.Current;
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
+			try
+			{
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-			EnvDTE.DTE? dte = await AcuminatorVSPackage.Instance.GetServiceAsync<EnvDTE.DTE>();
+				EnvDTE.DTE? dte = await AcuminatorVSPackage.Instance.GetServiceAsync<EnvDTE.DTE>();
 
-			if (dte == null)
-				return false;
+				if (dte == null)
+					return false;
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
-			EnvDTE.ProjectItem? suppressionFileDteItem = dte.Solution.FindProjectItem(roslynSuppressionFilePath);
+				EnvDTE.ProjectItem? suppressionFileDteItem = dte.Solution.FindProjectItem(roslynSuppressionFilePath);
 
-			if (!TrySetBuildActionWithProjectItem(suppressionFileDteItem, buildActionToSet))
-				return false;
-
-			await oldScheduler;  //Return to the old scheduler
-			return true;
+				if (!TrySetBuildActionWithProjectItem(suppressionFileDteItem, buildActionToSet))
+					return false;
+			
+				return true;
+			}
+			finally
+			{
+				await oldScheduler;  //Return to the old scheduler
+			}
 		}
 
 		#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
