@@ -423,6 +423,7 @@
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
     <Compile Include="Commands\BQL Fixer\AngleBracesBqlRewriter.cs" />
     <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\BuildAction\VsixBuildActionSetterVS2022.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\DiagnosticDataLocation.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\DiagnosticData.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Base\SuppressDiagnosticCommandBase.cs" />
