@@ -196,51 +196,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to class.
-        /// </summary>
-        public static string PX1007Class {
-            get {
-                return ResourceManager.GetString("PX1007Class", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DAC property.
-        /// </summary>
-        public static string PX1007DacProperty {
-            get {
-                return ResourceManager.GetString("PX1007DacProperty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to entity.
-        /// </summary>
-        public static string PX1007DefaultEntity {
-            get {
-                return ResourceManager.GetString("PX1007DefaultEntity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to delegate.
-        /// </summary>
-        public static string PX1007Delegate {
-            get {
-                return ResourceManager.GetString("PX1007Delegate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to enumeration.
-        /// </summary>
-        public static string PX1007Enum {
-            get {
-                return ResourceManager.GetString("PX1007Enum", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add a description.
         /// </summary>
         public static string PX1007FixAddDescription {
@@ -259,25 +214,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to interface.
-        /// </summary>
-        public static string PX1007Interface {
-            get {
-                return ResourceManager.GetString("PX1007Interface", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to struct.
-        /// </summary>
-        public static string PX1007Struct {
-            get {
-                return ResourceManager.GetString("PX1007Struct", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} DAC, DAC extension, or DAC property should have a description in the summary XML tag.
+        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the summary XML tag.
         /// </summary>
         public static string PX1007Title {
             get {
