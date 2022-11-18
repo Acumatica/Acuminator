@@ -17,7 +17,8 @@ In Acuminator 3.1, the following enhancements have been implemented:
    - Property or field that store delegate
  - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in the `IsActive` method in graph and DAC extension and the `IsActiveForGraph` method.
  - The [PX1057](diagnostics/PX1057.md) and [PX1084](diagnostics/PX1084.md) diagnostics now prevent graph creation via a direct constructor call, that is, the `new PXGraph()` method call.
- - The [PX1050](diagnostics/PX1050.md) diagnostic now displays a warning for interpolated strings and strings passed to localization methods or exception constructors that are not constant fields.
+ - The [PX1050](diagnostics/PX1050.md) and [PX1051](diagnostics/PX1051.md) diagnostics now display less false alerts and find more cases of an incorrect localization.
+ - Performance of the the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics has been improved. Multiple runtime error during the analysis of a graph extension were fixed in these diagnostics by removing the redundant analysis of events from the base graph.
  
  #### Code Snippets
  Acuminator now provides code snippets for DACs, DAC fields, and graph events. A developer can use these code snippets to speed up writing new code and avoid common mistakes.
@@ -26,31 +27,31 @@ In Acuminator 3.1, the following enhancements have been implemented:
  #### Improvements in the PX1008 diagnostic 
  The [PX1008](diagnostics/PX1008.md) diagnostic has been completely reworked. Now it is a data flow diagnostic that goes recursively into methods and checks how the data is transferred to them.
  The following enhancements have been implemented in the diagnostic:
-   - PX1008 now checks that `PXAdapter` adapters, passed to graph/graph extension action delegates, are not captured in delegate closures by long run and processing delegates
+   - Checks that adapters of the `PXAdapter` type, passed to a graph or a graph extension action delegates, are not captured in delegate closures by long run and processing delegates
    - Improvements in diagnostic messages
-   - Support for the PX1008 diagnostic has been added to custom views and attributes 
-   - Extended design of syntax walkers for inter-procedural analysis
-     New extension points and new API has been added.
+   - Checks that custom views and attributes capture graph and adapter references in a closure of a long run delegate
+   - Bug fixes: The diagnostic displayed a warning when capturing a reference to `this` in a delegate even in a class that was not a graph or a graph extension
  
  #### Improvements in the PX1072 diagnostic 
  The following fixes have been implemented in the [PX1072](diagnostics/PX1072.md) diagnostic:
-   - In static graph members, the declaring graph now is not considered available for usage in fBQL queries
-   - The diagnostic now does not display a warning if a single local graph is available and used in an fQBL query.
+   - In static graph members, the declaring graph now is not considered available for usage in Fluent BQL queries
+   - The diagnostic now does not display a warning if a single local graph is available and used in an  Fluent BQL query.
    - The diagnostic now displayed a warning when a class contains multiple fBQL queries and no graph is available.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - Code fixes provided by Acuminator diagnostics stopped appearing in the UI in the latest release of Visual Studio 2022.
+ - When a diagnostic was suppressed in a global suppression file via a code fix, Acuminator did not include the suppression file to the Visual Studio project.
  - The [PX1086](diagnostics/PX1086.md) diagnostic failed on syntax expressions that create collections with collection initializer when the constructor braces were omitted.
- - The [PX1008](diagnostics/PX1008.md) diagnostic displayed a warning when capturing a reference to `this` in a delegate even in a class that was not a graph or a graph extension.
- - Support for complex expressions passed to the `SetProcessDelegate` method has been added to diagnostics related to long runs
  - The process of creation of a graph semantic model has been improved. Now runtime errors which occurred in diagnostics of graphs and graph extensions have been fixed.
  - Minor bugs with inter-procedural analysis of local functions have been fixed.
- - Acuminator failed when the a graph which is a generic type parameter was passed to the `PXGraph.InstanceCreated.AddHandler`  method.
+ - Acuminator failed during the analysis of the code with a graph, which is a generic type parameter,  passed to the `PXGraph.InstanceCreated.AddHandler`  method.
 
 ### Other Changes
  - Extended design of syntax walkers for inter-procedural analysis has been implemented, extension points and new API has been added.
  - Nullable reference code analysis and nullable annotations have been introduced to parts of Acuminator. 
+ - Design of syntax walkers has been extended for inter-procedural analysis
+   New extension points and new API has been added.
 
 
 ## Acuminator 3.0
