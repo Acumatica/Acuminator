@@ -28,7 +28,7 @@ To clear the MEF cache, do the following:
 1. Install the [Clear MEF Component Cache]("https://marketplace.visualstudio.com/items?itemName=MadsKristensen.ClearMEFComponentCache") extension.
    After the extension is installed, the new command **Clear MEF Component Cache** appears in the **Tools** menu of Visual Studio as shown in the following screenshot.
    <br/>
-   ![Clear MEF Component Cache](../../images/Tools_ClearMEFCache.png)
+   ![Clear MEF Component Cache](../../images/Tools_ClearMEFCache.png)<br/>
 2. In Visual Studio, go to **Tools > Clear MEF Component Cache**.
 3. In the dialog box which appear, click **Yes**.
 The cache is cleared. 

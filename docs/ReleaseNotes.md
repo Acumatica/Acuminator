@@ -36,10 +36,10 @@ In Acuminator 3.1, the following enhancements have been implemented:
  Acuminator now provides code snippets for DACs, DAC fields, and graph events. A developer can use these code snippets to speed up writing new code and avoid common mistakes.
  You can start using code snippets by typing "dac" or "_" and selecting the appropriate snippet in the IntelliSense code completion list as shown in the following screenshot.
  <br/>
-   ![image](https://user-images.githubusercontent.com/7687400/170328654-d343c2da-9659-4e6c-b1c8-c894dad99292.png)
+   ![image](https://user-images.githubusercontent.com/7687400/170328654-d343c2da-9659-4e6c-b1c8-c894dad99292.png)<br/>
  When you select a shortcut from IntelliSense suggestions and press the Tab key, the system inserts the code snippet as shown in the following screenshot.
  <br/> 
-   ![image](https://user-images.githubusercontent.com/7687400/170331206-ee2f35b8-028f-4d9c-be44-f489783ac4c5.png)
+   ![image](https://user-images.githubusercontent.com/7687400/170331206-ee2f35b8-028f-4d9c-be44-f489783ac4c5.png)<br/>
    For more details on installing and using the code snippets, see [the CodeSnippets repository on GitHub](https://github.com/Acumatica/CodeSnippets). 
    
  #### Improvements in the PX1008 diagnostic 

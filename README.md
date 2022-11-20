@@ -98,7 +98,7 @@ To build the solution, do the following:
 ## Documentation
 * [Diagnostics](docs/Summary.md#diagnostics)
 * [Code Refactoring](docs/Summary.md#code-refactoring)
-* [Troubleshooting](docs/Troubleshooting/Troubleshooting.md)
+* [Troubleshooting](docs/dev/Troubleshooting/Troubleshooting.md)
 
 ## Developer Documentation
 * [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)
