@@ -6,7 +6,7 @@ Acuminator 3.1 includes the bug fixes and enhancements described in this section
 
 ### Enhancements
 In Acuminator 3.1, the following enhancements have been implemented:
- - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to check that graphs and graph extensions do not contain static members.
+ - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to check that graphs and graph extensions do not contain static actions, views or other static mutable fields and properties.
  - The following new diagnostics have been added to prevent errors related to the serialization and deserialization of exceptions: 
    - The [PX1063](diagnostics/PX1063.md) diagnostic checks that the exception classes derived from `System.Exception` always declare a serialization constructor.
    - The [PX1064](diagnostics/PX1064.md) diagnostic checks that the exception classes derived from `System.Exception` which declare new serializable data, always provide an override of the `GetObjectData` method.
@@ -18,7 +18,13 @@ In Acuminator 3.1, the following enhancements have been implemented:
 	    ProductCreateUpdate();
 	 });
 	 ```
-   - Object creation expression
+   - Object creation expression as shown in the following example:
+     ```C#
+	 ProcessProductSync.SetProcessDelegate(new PXProcessingBase<KNCASyncDetails>.ProcessListDelegate(delegate
+	 {
+		ProductCreateUpdate();
+	 }));
+	 ```
    - Local variable or parameter that store delegate
    - Property or field that store delegate
  - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in the `IsActive` method in graph and DAC extension and the `IsActiveForGraph` method.
@@ -28,6 +34,12 @@ In Acuminator 3.1, the following enhancements have been implemented:
  
  #### Code Snippets
  Acuminator now provides code snippets for DACs, DAC fields, and graph events. A developer can use these code snippets to speed up writing new code and avoid common mistakes.
+ You can start using code snippets by typing "dac" or "_" and selecting the appropriate snippet in the IntelliSense code completion list as shown in the following screenshot.
+ <br/>
+   ![image](https://user-images.githubusercontent.com/7687400/170328654-d343c2da-9659-4e6c-b1c8-c894dad99292.png)
+ When you select a shortcut from IntelliSense suggestions and press the Tab key, the system inserts the code snippet as shown in the following screenshot.
+ <br/> 
+   ![image](https://user-images.githubusercontent.com/7687400/170331206-ee2f35b8-028f-4d9c-be44-f489783ac4c5.png)
    For more details on installing and using the code snippets, see [the CodeSnippets repository on GitHub](https://github.com/Acumatica/CodeSnippets). 
    
  #### Improvements in the PX1008 diagnostic 
@@ -42,7 +54,7 @@ In Acuminator 3.1, the following enhancements have been implemented:
  The following fixes have been implemented in the [PX1072](diagnostics/PX1072.md) diagnostic:
    - In static graph members, the declaring graph now is not considered available for usage in Fluent BQL queries
    - The diagnostic now does not display a warning if a single local graph is available and used in an  Fluent BQL query.
-   - The diagnostic now displayed a warning when a class contains multiple fBQL queries and no graph is available.
+   - The diagnostic now displayed a warning when a class contains multiple Fluent BQL queries and no graph is available.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
