@@ -14,6 +14,7 @@ In some cases, the Acuminator files from the previous version may remain in the 
 To remove these Acuminator files, do the following:
 1. Locate the Visual Studio folder. The location of the folder may depend on the installation settings. An example location is the following where <User_Name> is the name of your user in Windows:
    `C:\Users\<User_Name>\AppData\Local\Microsoft\VisualStudio`
+   
    > **NOTE:** If you do not see the AppData folder in the File Explorer, you need to enable showing of hidden folders in the Control Panel. For the instruction, see [How to Show Hidden Files in Windows 10](https://www.technipages.com/show-hidden-files-windows).
 2. In the VisualStudio folder, locate the folder for your version of Visual Studio. 
 	The folder's name contains the special number of the Visual Studio version (`16` corresponds to Visual Studio 2019, `17` corresponds to Visual Studio 2022) and the hashed string that contains the update number. For example, `17.0_b0a1b8a3`.
