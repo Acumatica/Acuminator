@@ -52,8 +52,8 @@ In Acuminator 3.1, the following enhancements have been implemented:
  
  #### Improvements in the PX1072 diagnostic 
  The following fixes have been implemented in the [PX1072](diagnostics/PX1072.md) diagnostic:
-   - In static graph members, the declaring graph now is not considered available for usage in Fluent BQL queries
-   - The diagnostic now does not display a warning if a single local graph is available and used in an  Fluent BQL query.
+   - In static graph members, the declaring graph now is not considered available for usage in BQL or Fluent BQL queries.
+   - The diagnostic now does not display a warning if a single local graph is available and used in a BQL or Fluent BQL query.
    - The diagnostic now displayes a warning when a class contains multiple BQL or Fluent BQL queries and there are no available graphs, that is, graphs instances which already exist and can be used by a BQL query.
  
 ### Fixed Bugs
