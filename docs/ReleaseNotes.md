@@ -27,10 +27,9 @@ In Acuminator 3.1, the following enhancements have been implemented:
 	 ```
    - Local variable or parameter that store delegate
    - Property or field that store delegate
- - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in either  `IsActive` or `IsActiveForGraph` methods in a graph extension or DAC extension.
+ - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in either the `IsActive` or `IsActiveForGraph` methods in a graph extension or a DAC extension.
  - The [PX1057](diagnostics/PX1057.md) and [PX1084](diagnostics/PX1084.md) diagnostics now prevent graph creation via a direct constructor call, that is, the `new PXGraph()` method call.
  - The [PX1050](diagnostics/PX1050.md) and [PX1051](diagnostics/PX1051.md) diagnostics now display less false alerts and find more cases of an incorrect localization like interpolation strings.
- - Performance of the the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics has been improved. Runtime errors during the analysis of a graph extension were fixed in these diagnostics by removing the redundant analysis of events from the base graph.
  
  #### Code Snippets
  Acuminator now provides code snippets for DACs, DAC fields, and graph events. A developer can use these code snippets to speed up writing new code and avoid common mistakes.
@@ -62,6 +61,7 @@ In this version of Acuminator, the following bugs have been fixed:
  - When a diagnostic was suppressed in a global suppression file via a code fix for a project without Acuminator suppression file, Acuminator incorrectly generated it in Visual Studio 2022. It did not generate the "AdditionalFiles" section in the project file for the generated suppression file.
  - The [PX1086](diagnostics/PX1086.md) diagnostic failed on syntax expressions that create collections with collection initializer when the constructor braces were omitted.
  - The process of creation of a graph semantic model has been improved. Now runtime errors which occurred in diagnostics of graphs and graph extensions have been fixed.
+ - Performance of the the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics have been improved. Runtime errors during the analysis of a graph extension were fixed in these diagnostics by removing the redundant analysis of events from the base graph.
  - Minor bugs with inter-procedural analysis of local functions have been fixed.
  - Acuminator failed during the analysis of the code with a graph, which is a generic type parameter,  passed to the `PXGraph.InstanceCreated.AddHandler`  method.
 
