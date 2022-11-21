@@ -59,7 +59,7 @@ In Acuminator 3.1, the following enhancements have been implemented:
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - Two Acuminator code fixes, which suppressed Acuminator diagnostics alerts either with a local comment or in the Acuminator suppression file, stopped appearing in the UI in the latest release of Visual Studio 2022.
- - When a diagnostic was suppressed in a global suppression file via a code fix, Acuminator did not include the suppression file to the Visual Studio project.
+ - When a diagnostic was suppressed in a global suppression file via a code fix for a project without Acuminator suppression file, Acuminator incorrectly generated it in Visual Studio 2022. It did not generate the "AdditionalFiles" section in the project file for the generated suppression file.
  - The [PX1086](diagnostics/PX1086.md) diagnostic failed on syntax expressions that create collections with collection initializer when the constructor braces were omitted.
  - The process of creation of a graph semantic model has been improved. Now runtime errors which occurred in diagnostics of graphs and graph extensions have been fixed.
  - Minor bugs with inter-procedural analysis of local functions have been fixed.
