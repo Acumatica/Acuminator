@@ -29,7 +29,7 @@ In Acuminator 3.1, the following enhancements have been implemented:
    - Property or field that store delegate
  - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in the `IsActive` method in graph and DAC extension and the `IsActiveForGraph` method.
  - The [PX1057](diagnostics/PX1057.md) and [PX1084](diagnostics/PX1084.md) diagnostics now prevent graph creation via a direct constructor call, that is, the `new PXGraph()` method call.
- - The [PX1050](diagnostics/PX1050.md) and [PX1051](diagnostics/PX1051.md) diagnostics now display less false alerts and find more cases of an incorrect localization.
+ - The [PX1050](diagnostics/PX1050.md) and [PX1051](diagnostics/PX1051.md) diagnostics now display less false alerts and find more cases of an incorrect localization like interpolation strings.
  - Performance of the the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics has been improved. Multiple runtime error during the analysis of a graph extension were fixed in these diagnostics by removing the redundant analysis of events from the base graph.
  
  #### Code Snippets
