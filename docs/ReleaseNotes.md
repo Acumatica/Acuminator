@@ -42,7 +42,7 @@ In Acuminator 3.1, the following enhancements have been implemented:
    For more details on installing and using the code snippets, see [the CodeSnippets repository on GitHub](https://github.com/Acumatica/CodeSnippets). 
    
  #### Improvements in the PX1008 diagnostic 
- The [PX1008](diagnostics/PX1008.md) diagnostic has been completely reworked. Now it is a data flow diagnostic that goes recursively into methods and checks how the data is transferred to them.
+ The [PX1008](diagnostics/PX1008.md) diagnostic has been completely reworked. Now this diagnostic implements a data flow analysis that goes recursively into methods and checks how the data is transferred to them.
  The following enhancements have been implemented in the diagnostic:
    - Checks that adapters of the `PXAdapter` type, passed to a graph or a graph extension action delegates, are not captured in delegate closures by long run and processing delegates
    - Improvements in diagnostic messages
