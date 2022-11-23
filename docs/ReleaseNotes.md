@@ -6,70 +6,70 @@ Acuminator 3.1 includes the bug fixes and enhancements described in this section
 
 ### Enhancements
 In Acuminator 3.1, the following enhancements have been implemented:
- - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to check that graphs and graph extensions do not contain static actions, views or other static mutable fields and properties.
+ - The [PX1062](diagnostics/PX1062.md) diagnostic has been added to make sure that graphs and graph extensions do not contain static actions, views, or other static mutable fields and properties.
  - The following new diagnostics have been added to prevent errors related to the serialization and deserialization of exceptions: 
-   - The [PX1063](diagnostics/PX1063.md) diagnostic checks that the exception classes derived from `System.Exception` always declare a serialization constructor.
-   - The [PX1064](diagnostics/PX1064.md) diagnostic checks that the exception classes derived from `System.Exception` which declare new serializable data, always provide an override of the `GetObjectData` method.
+   - The [PX1063](diagnostics/PX1063.md) diagnostic ensures that the exception classes derived from `System.Exception` always declare a serialization constructor.
+   - The [PX1064](diagnostics/PX1064.md) diagnostic ensures that the exception classes derived from `System.Exception` which declare new serializable data, always provide an override of the `GetObjectData` method.
  - Support for the following complex expressions passed to SetProcessDelegate API has been added to the [PX1008](diagnostics/PX1008.md) and [PX1086](diagnostics/PX1086.md) diagnostics:
-   - Cast expression as shown in the following example:
+   - A cast expression as shown in the following example:
      ```C#
 	 ProcessProductSync.SetProcessDelegate((PXProcessingBase<KNCASyncDetails>.ProcessListDelegate)delegate
 	 {
 	    ProductCreateUpdate();
 	 });
 	 ```
-   - Object creation expression as shown in the following example:
+   - An object creation expression as shown in the following example:
      ```C#
 	 ProcessProductSync.SetProcessDelegate(new PXProcessingBase<KNCASyncDetails>.ProcessListDelegate(delegate
 	 {
 		ProductCreateUpdate();
 	 }));
 	 ```
-   - Local variable or parameter that store delegate
-   - Property or field that store delegate
- - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check and warn if a graph is created in either the `IsActive` or `IsActiveForGraph` methods in a graph extension or a DAC extension.
- - The [PX1057](diagnostics/PX1057.md) and [PX1084](diagnostics/PX1084.md) diagnostics now prevent graph creation via a direct constructor call, that is, the `new PXGraph()` method call.
- - The [PX1050](diagnostics/PX1050.md) and [PX1051](diagnostics/PX1051.md) diagnostics now display less false alerts and find more cases of an incorrect localization like interpolation strings.
+   - A local variable or parameter that stores the delegate
+   - A property or field that stores the delegate
+ - The [PX1056](diagnostics/PX1056.md) diagnostic has been added to check whether a graph is created in the `IsActive` or `IsActiveForGraph` method in a graph extension or a DAC extension, and warn you if it is.
+ - The [PX1057](diagnostics/PX1057.md) and [PX1084](diagnostics/PX1084.md) diagnostics now prevent graph creation via a direct constructor call&mdash;that is, the `new PXGraph()` method call.
+ - The [PX1050](diagnostics/PX1050.md) and [PX1051](diagnostics/PX1051.md) diagnostics now display fewer false alerts and find more cases of incorrect localization, such as interpolation strings.
  
  #### Code Snippets
- Acuminator now provides code snippets for DACs, DAC fields, and graph events. A developer can use these code snippets to speed up writing new code and avoid common mistakes.
- You can start using code snippets by typing "dac" or "_" and selecting the appropriate snippet in the IntelliSense code completion list as shown in the following screenshot.
+ Acuminator now provides code snippets for DACs, DAC fields, and graph events. A developer can use these code snippets to speed up the writing of new code and avoid common mistakes.
+ You can start using code snippets by typing "dac" or "_" and selecting the appropriate snippet in the IntelliSense code completion list, as shown in the following screenshot.
  <br/>
    ![image](https://user-images.githubusercontent.com/7687400/170328654-d343c2da-9659-4e6c-b1c8-c894dad99292.png)<br/>
- When you select a shortcut from IntelliSense suggestions and press the Tab key, the system inserts the code snippet as shown in the following screenshot.
+ When you select a shortcut from the IntelliSense suggestions and press Tab, the system inserts the code snippet, as shown in the following screenshot.
  <br/> 
    ![image](https://user-images.githubusercontent.com/7687400/170331206-ee2f35b8-028f-4d9c-be44-f489783ac4c5.png)<br/>
    For more details on installing and using the code snippets, see [the CodeSnippets repository on GitHub](https://github.com/Acumatica/CodeSnippets). 
    
- #### Improvements in the PX1008 diagnostic 
+ #### Improvements in the PX1008 Diagnostic 
  The [PX1008](diagnostics/PX1008.md) diagnostic has been completely reworked. Now this diagnostic implements a data flow analysis that goes recursively into methods and checks how the data is transferred to them.
  The following enhancements have been implemented in the diagnostic:
-   - Checks that adapters of the `PXAdapter` type, passed to a graph or a graph extension action delegates, are not captured in delegate closures by long run and processing delegates
+   - Checks to be sure that when adapters of the `PXAdapter` type are passed to an action delegate in a graph or a graph extension, the adapters are not captured in delegate closures by long-running and processing delegates.
    - Improvements in diagnostic messages
    - Checks that custom views and attributes capture graph and adapter references in a closure of a long run delegate
    - Bug fixes: The diagnostic displayed a warning when capturing a reference to `this` in a delegate even in a class that was not a graph or a graph extension
  
- #### Improvements in the PX1072 diagnostic 
+ #### Improvements in the PX1072 Diagnostic 
  The following fixes have been implemented in the [PX1072](diagnostics/PX1072.md) diagnostic:
-   - In static graph members, the declaring graph now is not considered available for usage in BQL or Fluent BQL queries.
-   - The diagnostic now does not display a warning if a single local graph is available and used in a BQL or Fluent BQL query.
-   - The diagnostic now displayes a warning when a class contains multiple BQL or Fluent BQL queries and there are no available graphs, that is, graphs instances which already exist and can be used by a BQL query.
+   - In static graph members, the declaring graph is no longer considered available for usage in BQL or Fluent BQL queries.
+   - The diagnostic no longer displays a warning if a single local graph is available and used in a BQL or Fluent BQL query.
+   - The diagnostic now displays a warning when a class contains multiple BQL or Fluent BQL queries and there are no available graphs&mdash;that is, graphs instances that already exist and can be used by a BQL query.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
- - Two Acuminator code fixes, which suppressed Acuminator diagnostics alerts either with a local comment or in the Acuminator suppression file, stopped appearing in the UI in the latest release of Visual Studio 2022.
- - When a diagnostic was suppressed in a global suppression file via a code fix for a project without Acuminator suppression file, Acuminator incorrectly generated it in Visual Studio 2022. It did not generate the "AdditionalFiles" section in the project file for the generated suppression file.
- - The [PX1086](diagnostics/PX1086.md) diagnostic failed on syntax expressions that create collections with collection initializer when the constructor braces were omitted.
- - The process of creation of a graph semantic model has been improved. Now runtime errors which occurred in diagnostics of graphs and graph extensions have been fixed.
- - Performance of the the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics have been improved. Runtime errors during the analysis of a graph extension were fixed in these diagnostics by removing the redundant analysis of events from the base graph.
+ - Two Acuminator code fixes, which suppressed Acuminator diagnostic alerts either with a local comment or in the Acuminator suppression file, stopped appearing in the UI in the latest release of Visual Studio 2022.
+ - When a diagnostic was suppressed in a global suppression file via a code fix for a project without the Acuminator suppression file, Acuminator incorrectly generated it in Visual Studio 2022. It did not generate the "AdditionalFiles" section in the project file for the generated suppression file.
+ - The [PX1086](diagnostics/PX1086.md) diagnostic failed on syntax expressions that create collections with the collection initializer when the constructor braces were omitted.
+ - The process of creating a graph semantic model has been improved. Now runtime errors that occurred in diagnostics of graphs and graph extensions have been fixed.
+ - The performance of the the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics has been improved. Runtime errors during the analysis of a graph extension were fixed in these diagnostics through the removal of the redundant analysis of events from the base graph.
  - Minor bugs with inter-procedural analysis of local functions have been fixed.
- - Acuminator failed during the analysis of the code with a graph, which is a generic type parameter,  passed to the `PXGraph.InstanceCreated.AddHandler`  method.
+ - Acuminator failed during the analysis of code with a graph that is a generic type parameter that is passed to the `PXGraph.InstanceCreated.AddHandler`  method.
 
 ### Other Changes
- - Extended design of syntax walkers for inter-procedural analysis has been implemented, extension points and new API has been added.
+ - Extended design of syntax walkers for inter-procedural analysis has been implemented. Also, extension points and a new API have been added.
  - Nullable reference code analysis and nullable annotations have been introduced to parts of Acuminator. 
- - Design of syntax walkers has been extended for inter-procedural analysis
-   New extension points and new API has been added.
+ - The design of syntax walkers has been extended for inter-procedural analysis
+   Also, a new extension points and a new API have been added.
 
 
 ## Acuminator 3.0
