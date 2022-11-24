@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#nullable enable
+
+using System;
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -13,9 +14,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	{
 		protected Compilation Compilation { get; }
 
-		internal SymbolsSetBase(Compilation compilation)
+		private protected SymbolsSetBase(Compilation compilation)
 		{
-			Compilation = compilation;
+			Compilation = compilation.CheckIfNull(nameof(compilation));
 		}
 	}
 }

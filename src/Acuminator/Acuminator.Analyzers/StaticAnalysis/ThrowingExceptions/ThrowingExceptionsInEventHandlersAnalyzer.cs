@@ -84,10 +84,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 		private void AnalyzeGraphEventsForEventType(EventType eventType, SymbolAnalysisContext context, PXContext pxContext,
 													PXGraphEventSemanticModel graphOrGraphExtensionWithEvents)
 		{
-			var graphEventsOfEventType = graphOrGraphExtensionWithEvents.GetEventsByEventType(eventType);
+			var declaredGraphEventsOfEventType = graphOrGraphExtensionWithEvents
+														.GetEventsByEventType(eventType)
+														.Where(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphOrGraphExtensionWithEvents.Symbol));
 			ThrowInGraphEventsWalker? walker = null;
 
-			foreach (GraphEventInfoBase graphEvent in graphEventsOfEventType)
+			foreach (GraphEventInfoBase graphEvent in declaredGraphEventsOfEventType)
 			{
 				walker ??= new ThrowInGraphEventsWalker(context, pxContext, eventType, graphOrGraphExtensionWithEvents);
 

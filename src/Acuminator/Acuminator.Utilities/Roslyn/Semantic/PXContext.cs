@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -73,7 +75,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private readonly Lazy<ExceptionSymbols> _exceptions;
 		public ExceptionSymbols Exceptions => _exceptions.Value;
 
-        private readonly Lazy<PXProcessingBaseSymbols> _pxProcessingBase;
+		private readonly Lazy<SerializationSymbols> _serialization;
+		public SerializationSymbols Serialization => _serialization.Value;
+
+		private readonly Lazy<PXProcessingBaseSymbols> _pxProcessingBase;
         public PXProcessingBaseSymbols PXProcessingBase => _pxProcessingBase.Value;
 
 		private readonly Lazy<PXReferentialIntegritySymbols> _referentialIntegritySymbols;
@@ -106,8 +111,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(TypeFullNames.IPXLocalizableList);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(TypeFullNames.PXConnectionScope);
 
-        public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
-        public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
         public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(DelegateNames.Initialize)
                                                                  .OfType<IMethodSymbol>()
                                                                  .First();
@@ -117,7 +120,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(TypeFullNames.IImplementType);
 
-		public PXContext(Compilation compilation, CodeAnalysisSettings codeAnalysisSettings)
+		public PXContext(Compilation compilation, CodeAnalysisSettings? codeAnalysisSettings)
 		{
 			compilation.ThrowOnNull(nameof(compilation));
 
@@ -139,6 +142,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_pxDatabase = new Lazy<PXDatabaseSymbols>(() => new PXDatabaseSymbols(Compilation));
 			_pxView = new Lazy<PXViewSymbols>(() => new PXViewSymbols(Compilation));
 			_exceptions = new Lazy<ExceptionSymbols>(() => new ExceptionSymbols(Compilation));
+			_serialization = new Lazy<SerializationSymbols>(() => new SerializationSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
             _pxSelectBase = new Lazy<PXSelectBaseSymbols>(() => new PXSelectBaseSymbols(Compilation));
 			_pxSelectExtensionSymbols = new Lazy<PXSelectExtensionSymbols>(() => new PXSelectExtensionSymbols(Compilation));

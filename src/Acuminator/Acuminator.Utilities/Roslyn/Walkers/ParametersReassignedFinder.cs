@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 			if (body == null)
 				return null;
 			
-			var dataFlowAnalysis = semanticModel.AnalyseDataFlow(body);
+			var dataFlowAnalysis = semanticModel.TryAnalyzeDataFlow(body);
 
 			// If there is no call site then rely only on data flow analysis AlwaysAssigned results, assume that we check the whole containing type member
 			if (callSite == null)
@@ -329,7 +329,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				if (containingMethodsWithReassignableParameters.Count == 0)
 					return null;
 
-				var localMethodDFA = _semanticModel!.AnalyseDataFlow(localFunctionBody);
+				var localMethodDFA = _semanticModel!.TryAnalyzeDataFlow(localFunctionBody);
 
 				if (localMethodDFA == null || localMethodDFA.AlwaysAssigned.IsDefaultOrEmpty)
 					return null;

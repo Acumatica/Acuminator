@@ -1,8 +1,11 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Roslyn.Constants;
+
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -11,13 +14,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	/// </summary>
 	public abstract class SymbolsSetForTypeBase : SymbolsSetBase
 	{
-		public INamedTypeSymbol Type { get; }
+		public INamedTypeSymbol? Type { get; }
 
 		public bool IsDefined => Type != null;
 
-		internal SymbolsSetForTypeBase(Compilation compilation, string typeName) : base(compilation)
+		private protected SymbolsSetForTypeBase(Compilation compilation, string typeName) : base(compilation)
 		{
 			Type = compilation.GetTypeByMetadataName(typeName);
+		}
+
+		private protected SymbolsSetForTypeBase(Compilation compilation, INamedTypeSymbol? type) : base(compilation)
+		{
+			Type = type;
 		}
 	}
 }

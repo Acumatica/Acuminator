@@ -54,7 +54,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 					}
 				case ObjectCreationExpressionSyntax objectCreationExpression:
 					{
-						if (objectCreationExpression.ArgumentList.Arguments.Count != 1)
+						if (objectCreationExpression.ArgumentList?.Arguments.Count != 1)
 							return default;
 
 						ArgumentSyntax delegateCreationArg = objectCreationExpression.ArgumentList.Arguments[0];
@@ -100,7 +100,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 					return GetDelegateNode(castExpression.Expression);
 
 				case ObjectCreationExpressionSyntax objectCreationExpression:
-					if (objectCreationExpression.ArgumentList.Arguments.Count != 1)
+					if (objectCreationExpression.ArgumentList?.Arguments.Count != 1)
 						return null;
 
 					ArgumentSyntax delegateCreationArg = objectCreationExpression.ArgumentList.Arguments[0];

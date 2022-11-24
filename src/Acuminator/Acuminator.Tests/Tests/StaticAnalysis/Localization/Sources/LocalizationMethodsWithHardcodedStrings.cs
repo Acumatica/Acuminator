@@ -38,7 +38,9 @@ namespace Acuminator.Tests.Sources
             localizedString = PXLocalizer.LocalizeFormat("Hardcoded String To Format {0}", parameter);
             localizedString = PXLocalizer.LocalizeFormatWithKey("Hardcoded String To Format {0}", typeof(MyMessages).FullName, parameter);
 
-            return localizedString;
+			localizedString = PXLocalizer.Localize($"Hardcoded String {123}");
+
+			return localizedString;
         }
     }
 }

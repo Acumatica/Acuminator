@@ -148,7 +148,7 @@
     <value>Change the view delegate name to match the view name</value>
   </data>
   <data name="PX1005MessageFormat" xml:space="preserve">
-    <value>A possible typo in the view delegate name. The view name for this delegate: {0}</value>
+    <value>A possible typo in the view delegate name. The view name for this delegate: {0}.</value>
   </data>
   <data name="PX1005Title" xml:space="preserve">
     <value>A possible typo in the view delegate name</value>
@@ -163,7 +163,7 @@
     <value>Exclude the class from the API Reference</value>
   </data>
   <data name="PX1007Title" xml:space="preserve">
-    <value>The {0} DAC, DAC extension, or DAC property should have a description in the summary XML tag</value>
+    <value>The DAC, DAC extension, or DAC property should have a description in the summary XML tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
     <value>The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues.</value>
@@ -268,7 +268,7 @@
     <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
   </data>
   <data name="PX1030TitleDefaultAttributeOnDacExtension" xml:space="preserve">
-    <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing</value>
+    <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.</value>
   </data>
   <data name="PX1040Fix" xml:space="preserve">
     <value>Move the code to the Initialize() method</value>
@@ -285,8 +285,11 @@
   <data name="PX1042Title" xml:space="preserve">
     <value>In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope</value>
   </data>
-  <data name="PX1050Title" xml:space="preserve">
+  <data name="PX1050Title_HardcodedString" xml:space="preserve">
     <value>Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
+  </data>
+  <data name="PX1050Title_NonConstFieldString" xml:space="preserve">
+    <value>Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
   </data>
   <data name="PX1051Title" xml:space="preserve">
     <value>Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
@@ -322,7 +325,7 @@
     <value>A long-running operation cannot be started within an event handler</value>
   </data>
   <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
-    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.</value>
+    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else</value>
   </data>
   <data name="PX1045Title" xml:space="preserve">
     <value>A PXGraph instance cannot be created within an event handler</value>
@@ -357,7 +360,7 @@
   <data name="PX1071Title" xml:space="preserve">
     <value>Actions cannot be executed within event handlers</value>
   </data>
-  <data name="PX1072Title" xml:space="preserve">
+  <data name="PX1072Title_ReuseExistingGraphVariable" xml:space="preserve">
     <value>BQL queries must be executed within the context of an existing PXGraph instance</value>
   </data>
   <data name="PX1080Title" xml:space="preserve">
@@ -379,10 +382,10 @@
     <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
   </data>
   <data name="PX1074Title" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead</value>
+    <value>PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.</value>
   </data>
   <data name="PX1074MessageFormat" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead</value>
+    <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.</value>
   </data>
   <data name="PX1075MessageFormat" xml:space="preserve">
     <value>PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler</value>
@@ -491,27 +494,6 @@
   </data>
   <data name="SuppressDiagnosticWithCommentNonNestedCodeActionTitle" xml:space="preserve">
     <value>Suppress the {0} diagnostic with Acuminator in a comment</value>
-  </data>
-  <data name="PX1007Class" xml:space="preserve">
-    <value>class</value>
-  </data>
-  <data name="PX1007Delegate" xml:space="preserve">
-    <value>delegate</value>
-  </data>
-  <data name="PX1007Enum" xml:space="preserve">
-    <value>enumeration</value>
-  </data>
-  <data name="PX1007Interface" xml:space="preserve">
-    <value>interface</value>
-  </data>
-  <data name="PX1007Struct" xml:space="preserve">
-    <value>struct</value>
-  </data>
-  <data name="PX1007DefaultEntity" xml:space="preserve">
-    <value>entity</value>
-  </data>
-  <data name="PX1007DacProperty" xml:space="preserve">
-    <value>DAC property</value>
   </data>
   <data name="PX1019Title" xml:space="preserve">
     <value>A DAC property field with the AutoNumber attribute must have the string type</value>
@@ -636,5 +618,53 @@
   </data>
   <data name="PX1008Title_LongRunDelegateFormatArg" xml:space="preserve">
     <value>long run operation</value>
+  </data>
+  <data name="PX1072Title_CreateSharedGraphVariable" xml:space="preserve">
+    <value>Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries.</value>
+  </data>
+  <data name="PX1062MessageFormat" xml:space="preserve">
+    <value>You cannot declare static {0} in graphs or graph extensions</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Fields" xml:space="preserve">
+    <value>mutable fields</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Properties" xml:space="preserve">
+    <value>mutable properties</value>
+  </data>
+  <data name="PX1062FixMakeReadOnlyFormat" xml:space="preserve">
+    <value>Make the {0} read-only</value>
+  </data>
+  <data name="PX1062FixFormatArg_Field" xml:space="preserve">
+    <value>field</value>
+  </data>
+  <data name="PX1062FixFormatArg_Property" xml:space="preserve">
+    <value>property</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Views" xml:space="preserve">
+    <value>views</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Actions" xml:space="preserve">
+    <value>actions</value>
+  </data>
+  <data name="PX1062FixMakeNonStaticFormat" xml:space="preserve">
+    <value>Remove the static modifier from the {0}</value>
+  </data>
+  <data name="PX1062FixFormatArg_View" xml:space="preserve">
+    <value>view</value>
+  </data>
+  <data name="PX1062FixFormatArg_Action" xml:space="preserve">
+    <value>action</value>
+  </data>
+  <data name="PX1063Title" xml:space="preserve">
+    <value>The declaration of the exception class does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
+  </data>
+  <data name="PX1064Title" xml:space="preserve">
+    <value>The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
+  </data>
+  <data name="PX1064Fix" xml:space="preserve">
+    <value>Add an override for the GetObjectData method to the exception declaration</value>
+  </data>
+  <data name="PX1063Fix" xml:space="preserve">
+    <value>Add a serialization constructor to the exception declaration</value>
   </data>
 </root>

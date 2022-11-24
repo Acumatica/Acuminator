@@ -14,8 +14,11 @@ namespace PX.Objects
 			var existingGraph = PXGraph.CreateInstance<CustomerMaint>();
 			var graph = PXGraph.CreateInstance<CustomerMaint>();
 
-			graph.Customers.Current = PXSelect<Customer, Where<Customer.bAccountID, Equal<Required<Customer.bAccountID>>>>
-				.Select(graph, acuCustomerId);
+			if (acuCustomerId > 0)
+			{
+				graph.Customers.Current = PXSelect<Customer, Where<Customer.bAccountID, Equal<Required<Customer.bAccountID>>>>
+					.Select(graph, acuCustomerId);
+			}
 
 			graph.Actions.PressSave();
 		}

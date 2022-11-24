@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else..
+        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.
         /// </summary>
         public static string EventHandlerSignatureCodeActionTitle {
             get {
@@ -160,7 +160,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}.
+        ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}..
         /// </summary>
         public static string PX1005MessageFormat {
             get {
@@ -196,51 +196,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to class.
-        /// </summary>
-        public static string PX1007Class {
-            get {
-                return ResourceManager.GetString("PX1007Class", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DAC property.
-        /// </summary>
-        public static string PX1007DacProperty {
-            get {
-                return ResourceManager.GetString("PX1007DacProperty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to entity.
-        /// </summary>
-        public static string PX1007DefaultEntity {
-            get {
-                return ResourceManager.GetString("PX1007DefaultEntity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to delegate.
-        /// </summary>
-        public static string PX1007Delegate {
-            get {
-                return ResourceManager.GetString("PX1007Delegate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to enumeration.
-        /// </summary>
-        public static string PX1007Enum {
-            get {
-                return ResourceManager.GetString("PX1007Enum", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add a description.
         /// </summary>
         public static string PX1007FixAddDescription {
@@ -259,25 +214,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to interface.
-        /// </summary>
-        public static string PX1007Interface {
-            get {
-                return ResourceManager.GetString("PX1007Interface", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to struct.
-        /// </summary>
-        public static string PX1007Struct {
-            get {
-                return ResourceManager.GetString("PX1007Struct", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} DAC, DAC extension, or DAC property should have a description in the summary XML tag.
+        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the summary XML tag.
         /// </summary>
         public static string PX1007Title {
             get {
@@ -286,7 +223,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate closure and will cause synchronous delegate execution. It may lead to random bugs and data consistency issues.
+        ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues..
         /// </summary>
         public static string PX1008Title {
             get {
@@ -754,7 +691,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.
+        ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing..
         /// </summary>
         public static string PX1030TitleDefaultAttributeOnDacExtension {
             get {
@@ -1138,9 +1075,18 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
-        public static string PX1050Title {
+        public static string PX1050Title_HardcodedString {
             get {
-                return ResourceManager.GetString("PX1050Title", resourceCulture);
+                return ResourceManager.GetString("PX1050Title_HardcodedString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
+        /// </summary>
+        public static string PX1050Title_NonConstFieldString {
+            get {
+                return ResourceManager.GetString("PX1050Title_NonConstFieldString", resourceCulture);
             }
         }
         
@@ -1298,6 +1244,141 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to action.
+        /// </summary>
+        public static string PX1062FixFormatArg_Action {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_Action", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to field.
+        /// </summary>
+        public static string PX1062FixFormatArg_Field {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_Field", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to property.
+        /// </summary>
+        public static string PX1062FixFormatArg_Property {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_Property", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to view.
+        /// </summary>
+        public static string PX1062FixFormatArg_View {
+            get {
+                return ResourceManager.GetString("PX1062FixFormatArg_View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the static modifier from the {0}.
+        /// </summary>
+        public static string PX1062FixMakeNonStaticFormat {
+            get {
+                return ResourceManager.GetString("PX1062FixMakeNonStaticFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make the {0} read-only.
+        /// </summary>
+        public static string PX1062FixMakeReadOnlyFormat {
+            get {
+                return ResourceManager.GetString("PX1062FixMakeReadOnlyFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot declare static {0} in graphs or graph extensions.
+        /// </summary>
+        public static string PX1062MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to actions.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Actions {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mutable fields.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Fields {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Fields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mutable properties.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Properties {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Properties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to views.
+        /// </summary>
+        public static string PX1062MessageFormatArg_Views {
+            get {
+                return ResourceManager.GetString("PX1062MessageFormatArg_Views", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a serialization constructor to the exception declaration.
+        /// </summary>
+        public static string PX1063Fix {
+            get {
+                return ResourceManager.GetString("PX1063Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The declaration of the exception class does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
+        /// </summary>
+        public static string PX1063Title {
+            get {
+                return ResourceManager.GetString("PX1063Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add an override for the GetObjectData method to the exception declaration.
+        /// </summary>
+        public static string PX1064Fix {
+            get {
+                return ResourceManager.GetString("PX1064Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
+        /// </summary>
+        public static string PX1064Title {
+            get {
+                return ResourceManager.GetString("PX1064Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {
@@ -1325,11 +1406,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries..
+        /// </summary>
+        public static string PX1072Title_CreateSharedGraphVariable {
+            get {
+                return ResourceManager.GetString("PX1072Title_CreateSharedGraphVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BQL queries must be executed within the context of an existing PXGraph instance.
         /// </summary>
-        public static string PX1072Title {
+        public static string PX1072Title_ReuseExistingGraphVariable {
             get {
-                return ResourceManager.GetString("PX1072Title", resourceCulture);
+                return ResourceManager.GetString("PX1072Title_ReuseExistingGraphVariable", resourceCulture);
             }
         }
         
@@ -1343,7 +1433,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead..
         /// </summary>
         public static string PX1074MessageFormat {
             get {
@@ -1352,7 +1442,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead..
         /// </summary>
         public static string PX1074Title {
             get {

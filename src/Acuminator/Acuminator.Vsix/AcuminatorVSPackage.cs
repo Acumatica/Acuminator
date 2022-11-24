@@ -361,7 +361,9 @@ namespace Acuminator.Vsix
         {
             SuppressionManager.InitOrReset(_vsWorkspace, generateSuppressionBase: false, 
 										   errorProcessorFabric: () => new VsixIOErrorProcessor(),
-										   buildActionSetterFabric: () => new VsixBuildActionSetter());
+										   buildActionSetterFabric: () => SharedVsSettings.VSVersion.VS2022OrNewer 
+																			? new VsixBuildActionSetterVS2022() 
+																			: new VsixBuildActionSetterVS2019());
         }
 
         private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()

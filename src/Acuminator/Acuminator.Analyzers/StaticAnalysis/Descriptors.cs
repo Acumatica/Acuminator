@@ -272,9 +272,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1049", nameof(Resources.PX1049Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1049);
 
 		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
-            Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1050);
+            Rule("PX1050", nameof(Resources.PX1050Title_HardcodedString).GetLocalized(), 
+				 Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1050);
 
-        public static DiagnosticDescriptor PX1051_NonLocalizableString { get; } =
+		public static DiagnosticDescriptor PX1050_NonConstFieldStringInLocalizationMethod { get; } =
+			Rule("PX1050", nameof(Resources.PX1050Title_NonConstFieldString).GetLocalized(), 
+				 Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1050);
+
+		public static DiagnosticDescriptor PX1051_NonLocalizableString { get; } =
             Rule("PX1051", nameof(Resources.PX1051Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1051);
 
         public static DiagnosticDescriptor PX1052_IncorrectStringToFormat { get; } =
@@ -315,6 +320,15 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1061_LegacyBqlConstant { get; } =
 			Rule("PX1061", nameof(Resources.PX1061Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info, DiagnosticsShortName.PX1061);
 
+		public static DiagnosticDescriptor PX1062_StaticFieldOrPropertyInGraph { get; } =
+			Rule("PX1062", nameof(Resources.PX1062MessageFormat).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1062);
+
+		public static DiagnosticDescriptor PX1063_NoSerializationConstructorInException { get; } =
+			Rule("PX1063", nameof(Resources.PX1063Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1063);
+
+		public static DiagnosticDescriptor PX1064_NoGetObjectDataOverrideInExceptionWithNewFields { get; } =
+			Rule("PX1064", nameof(Resources.PX1064Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1064);
+
 		public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1070);
 
@@ -324,8 +338,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1071_PXActionExecutionInEventHandlers_NonISV { get; } =
 			Rule("PX1071", nameof(Resources.PX1071Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1071);
 
-		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries { get; } =
-			Rule("PX1072", nameof(Resources.PX1072Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1072);
+		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable { get; } =
+			Rule("PX1072", nameof(Resources.PX1072Title_ReuseExistingGraphVariable).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1072);
+
+		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries_CreateSharedGraphVariable { get; } =
+			Rule("PX1072", nameof(Resources.PX1072Title_CreateSharedGraphVariable).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1072);
 
 		public static DiagnosticDescriptor PX1073_ThrowingExceptionsInRowPersisted { get; } =
 			Rule("PX1073", nameof(Resources.PX1073Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1073);

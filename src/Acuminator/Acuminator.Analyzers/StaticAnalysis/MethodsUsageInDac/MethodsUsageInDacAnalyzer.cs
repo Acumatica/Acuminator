@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
                 pxContext.SystemTypes.Decimal,
                 pxContext.SystemTypes.Float,
                 pxContext.SystemTypes.Double,
-                pxContext.SystemTypes.String,
+                pxContext.SystemTypes.String.Type,
                 pxContext.SystemTypes.Guid,
                 pxContext.SystemTypes.DateTime,
                 pxContext.SystemTypes.TimeSpan,

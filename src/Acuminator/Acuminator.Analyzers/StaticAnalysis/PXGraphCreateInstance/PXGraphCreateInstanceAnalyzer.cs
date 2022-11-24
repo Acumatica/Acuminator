@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
@@ -35,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
                     return;
                 }
 
-                DiagnosticDescriptor descriptor = GetDiagnosticDescriptor(typeSymbol);
+                DiagnosticDescriptor? descriptor = GetDiagnosticDescriptor(typeSymbol);
 
                 if (descriptor != null)
                 {
@@ -46,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
                 base.VisitObjectCreationExpression(node);
             }
 
-			private DiagnosticDescriptor GetDiagnosticDescriptor(ITypeSymbol typeSymbol)
+			private DiagnosticDescriptor? GetDiagnosticDescriptor(ITypeSymbol typeSymbol)
 			{
 				if (typeSymbol is ITypeParameterSymbol typeParameterSymbol && typeParameterSymbol.IsPXGraph(_pxContext))
 				{
@@ -68,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
         public PXGraphCreateInstanceAnalyzer() : this(null)
         { }
 
-        public PXGraphCreateInstanceAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+        public PXGraphCreateInstanceAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
         { }
 
 

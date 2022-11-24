@@ -1,10 +1,15 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,18 +17,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class LocalizationPXExceptionAnalyzer : PXDiagnosticAnalyzer
-    {
-        private readonly string[] _messageArgNames = new[] { "message", "format" };
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+	public class LocalizationPXExceptionAnalyzer : PXDiagnosticAnalyzer
+	{
+		private static readonly string[] _messageArgNames = new[] { "message", "format" };
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create
-            (
-                Descriptors.PX1050_HardcodedStringInLocalizationMethod,
-                Descriptors.PX1051_NonLocalizableString,
-                Descriptors.PX1053_ConcatenationPriorLocalization
-            );
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create
+			(
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod,
+				Descriptors.PX1051_NonLocalizableString,
+				Descriptors.PX1053_ConcatenationPriorLocalization
+			);
 
 		public LocalizationPXExceptionAnalyzer() : base()
 		{
@@ -38,97 +43,102 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 		}
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-        {
-            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInvocation(syntaxContext, pxContext), SyntaxKind.ObjectCreationExpression);
-            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInitializer(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
-        }
+		{
+			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionConstructorInvocation(syntaxContext, pxContext),
+															 SyntaxKind.ObjectCreationExpression);
+			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionChainedConstructorCall(syntaxContext, pxContext),
+															 SyntaxKind.ClassDeclaration);
+		}
 
-        private void AnalyzePXExceptionCtorInitializer(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {
-            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+		private void AnalyzePXExceptionChainedConstructorCall(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-            if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration))
-                return;
+			if (syntaxContext.Node is not ClassDeclarationSyntax exceptionClassDeclaration)
+				return;
 
-            INamedTypeSymbol type = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration);
-            bool isLocalizableException = type != null && IsLocalizableException(syntaxContext, pxContext, type);
+			INamedTypeSymbol exceptionType = syntaxContext.SemanticModel.GetDeclaredSymbol(exceptionClassDeclaration, syntaxContext.CancellationToken);
 
-            if (!isLocalizableException)
-                return;
+			if (exceptionType == null || !IsLocalizableException(exceptionType, pxContext))
+				return;
 
-            IEnumerable<ConstructorInitializerSyntax> baseCtors = classDeclaration.DescendantNodes()
-                                                                  .OfType<ConstructorInitializerSyntax>();
-            foreach (ConstructorInitializerSyntax c in baseCtors)
-            {
-                if (!(syntaxContext.SemanticModel.GetSymbolInfo(c, syntaxContext.CancellationToken).Symbol is IMethodSymbol methodSymbol))
-                    continue;
+			var baseOrThisConstructorCalls = exceptionClassDeclaration.DescendantNodes()
+																	  .OfType<ConstructorInitializerSyntax>()
+																	  .Where(constructorCall => constructorCall.ArgumentList?.Arguments.Count is > 0);
+			LocalizationMessageValidator? messageValidator = null;
 
-                ImmutableArray<IParameterSymbol> pars = methodSymbol.Parameters;
-                ExpressionSyntax messageExpression = GetMessageExpression(syntaxContext, pars, c.ArgumentList);
+			foreach (ConstructorInitializerSyntax constructorCall in baseOrThisConstructorCalls)
+			{
+				var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
 
-                if (messageExpression == null)
-                    continue;
+				if (symbol is not IMethodSymbol constructorSymbol)
+					continue;
 
-                LocalizationMessageHelper messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, false);
-                messageHelper.ValidateMessage();
-            }
-        }
+				ExpressionSyntax? messageExpression = GetMessageExpression(constructorSymbol, constructorCall.ArgumentList);
 
-        private ExpressionSyntax GetMessageExpression(SyntaxNodeAnalysisContext syntaxContext, ImmutableArray<IParameterSymbol> pars, ArgumentListSyntax args)
-        {
-            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+				if (messageExpression == null)
+					continue;
 
-            ArgumentSyntax messageArg = null;
+				messageValidator ??= new LocalizationMessageValidator(syntaxContext, pxContext, ValidationContext.PXExceptionBaseOrThisConstructorCall);
+				messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
+			}
+		}
 
-            foreach (ArgumentSyntax a in args.Arguments)
-            {
-                IParameterSymbol p = a.DetermineParameter(pars, false);
+		private ExpressionSyntax? GetMessageExpression(IMethodSymbol constructor, ArgumentListSyntax args)
+		{
+			var constructorParameters = constructor.Parameters;
 
-                if (_messageArgNames.Contains(p?.Name, StringComparer.Ordinal))
-                {
-                    messageArg = a;
-                    break;
-                }
-            }
+			if (constructorParameters.IsDefaultOrEmpty)
+				return null;
 
-            if (messageArg == null || messageArg.Expression == null)
-                return null;
+			ArgumentsToParametersMapping? argumentsToParametersMapping = constructor.MapArgumentsToParameters(args);
 
-            return messageArg.Expression;
-        }
+			if (argumentsToParametersMapping == null)
+				return null;
 
-        private void AnalyzePXExceptionCtorInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {
-            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+			for (int argIndex = 0; argIndex < args.Arguments.Count; argIndex++)
+			{
+				IParameterSymbol mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(constructor, argIndex);
 
-            if (!(syntaxContext.Node is ObjectCreationExpressionSyntax ctorNode) || ctorNode.ArgumentList == null)
-                return;
+				if (_messageArgNames.Contains(mappedParameter.Name, StringComparer.Ordinal))
+				{
+					var argument = args.Arguments[argIndex];
+					return argument.Expression;
+				}
+			}
 
-            ITypeSymbol type = syntaxContext.SemanticModel.GetTypeInfo(ctorNode, syntaxContext.CancellationToken).Type;
-            bool isLocalizableException = type != null && IsLocalizableException(syntaxContext, pxContext, type);
+			return null;
+		}
 
-            if (!isLocalizableException)
-                return;
+		private void AnalyzePXExceptionConstructorInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-            if (!(syntaxContext.SemanticModel.GetSymbolInfo(ctorNode, syntaxContext.CancellationToken).Symbol is IMethodSymbol ctorSymbol))
-                return;
+			if (syntaxContext.Node is not ObjectCreationExpressionSyntax constructorCall || constructorCall.ArgumentList?.Arguments.Count is null or 0)
+				return;
 
-            ImmutableArray<IParameterSymbol> pars = ctorSymbol.Parameters;
-            ExpressionSyntax messageExpression = GetMessageExpression(syntaxContext, pars, ctorNode.ArgumentList);
+			ITypeSymbol? exceptionType = syntaxContext.SemanticModel.GetTypeInfo(constructorCall, syntaxContext.CancellationToken).Type;
 
-            if (messageExpression == null)
-                return;
+			if (exceptionType == null || !IsLocalizableException(exceptionType, pxContext))
+				return;
 
-            LocalizationMessageHelper messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, false);
-            messageHelper.ValidateMessage();
-        }
+			var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
 
-        private bool IsLocalizableException(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, ITypeSymbol type)
-        {
-            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+			if (symbol is not IMethodSymbol constructor)
+				return;
 
-            return type.InheritsFromOrEquals(pxContext.Exceptions.PXException) 
-                   && !type.InheritsFromOrEquals(pxContext.Exceptions.PXBaseRedirectException);
-        }
-    }
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+			ExpressionSyntax? messageExpression = GetMessageExpression(constructor, constructorCall.ArgumentList);
+
+			if (messageExpression == null)
+				return;
+
+			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext, ValidationContext.PXExceptionConstructorCall);
+			messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
+		}
+
+		private bool IsLocalizableException(ITypeSymbol type, PXContext pxContext) =>
+			type.InheritsFromOrEquals(pxContext.Exceptions.PXException) &&
+		   !type.InheritsFromOrEquals(pxContext.Exceptions.PXBaseRedirectException);
+	}
 }

@@ -16,8 +16,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionOnNonPrimaryView
 	public class PXActionOnNonPrimaryViewTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new PXGraphAnalyzer(CodeAnalysisSettings.Default,
-				new PXActionOnNonPrimaryViewAnalyzer());
+			new PXGraphAnalyzer(CodeAnalysisSettings.Default
+													.WithStaticAnalysisEnabled()
+													.WithSuppressionMechanismDisabled(),
+								new PXActionOnNonPrimaryViewAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXActionOnNonPrimaryViewFix();
 

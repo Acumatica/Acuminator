@@ -148,7 +148,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (reportDiagnostic)
 			{
-				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
+				ReportDiagnostic(_syntaxContext, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
 			}
 		}
 
@@ -180,7 +180,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (reportDiagnostic)
 			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), thisDeclarationParseResult);
+				ReportDiagnostic(_syntaxContext, identifier.GetLocation(), thisDeclarationParseResult);
 			}
 		}
 
@@ -279,30 +279,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			!content.IsNullOrEmpty() &&
 			 content.Any(char.IsLetterOrDigit);
 
-		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
-									  Location location, XmlCommentParseResult parseResult)
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, Location location, XmlCommentParseResult parseResult)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var memberCategory = GetMemberCategory(memberDeclaration);
 			var properties = ImmutableDictionary<string, string>.Empty
 																.Add(XmlAnalyzerConstants.XmlCommentParseResultKey, parseResult.ToString());
-			var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties, memberCategory);
+			var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties);
 
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
 		}
-
-		private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration) =>
-			 memberDeclaration switch
-			 {
-				 ClassDeclarationSyntax _     => nameof(Resources.PX1007Class).GetLocalized(),
-				 PropertyDeclarationSyntax _  => nameof(Resources.PX1007DacProperty).GetLocalized(),
-				 StructDeclarationSyntax _    => nameof(Resources.PX1007Struct).GetLocalized(),
-				 InterfaceDeclarationSyntax _ => nameof(Resources.PX1007Interface).GetLocalized(),
-				 EnumDeclarationSyntax _      => nameof(Resources.PX1007Enum).GetLocalized(),
-				 DelegateDeclarationSyntax _  => nameof(Resources.PX1007Delegate).GetLocalized(),
-				 _                            => nameof(Resources.PX1007DefaultEntity).GetLocalized(),
-			 };
 
 		private bool CheckAttributeNames(IEnumerable<string> attributeNames)
 		{

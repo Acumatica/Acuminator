@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -22,9 +24,13 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 
 		private static object _locker = new object();
 
-		private static volatile Type _codeActionWithNestedActionsType;
-		private static object _lowCodeActionPriorityInstance;
-		private static bool? _roslynOldApiUsed;
+		private static volatile Type? _codeActionWithNestedActionsType;
+		private static object? _lowCodeActionPriorityInstance;
+
+		private static bool? _isApiWithoutPriorityUsed;
+		private static bool? _isVs2022Roslyn;
+
+		private const bool IsCodeActionCreatedFromFactoryMethod = true;
 
 		/// <summary>
 		/// Creates a <see cref="CodeAction"/> representing a group of code actions. 
@@ -36,8 +42,8 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 		/// <returns>
 		/// The new code action with nested actions.
 		/// </returns>
-		public static CodeAction CreateCodeActionWithNestedActions(string groupActionTitle, ImmutableArray<CodeAction> nestedCodeActions,
-																   bool isInlinable = false)
+		public static CodeAction? CreateCodeActionWithNestedActions(string groupActionTitle, ImmutableArray<CodeAction> nestedCodeActions,
+																    bool isInlinable = false)
 		{
 			groupActionTitle.ThrowOnNullOrWhiteSpace(nameof(groupActionTitle));
 
@@ -46,19 +52,23 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 
 			InitializeSharedStaticData();
 
-			if (_codeActionWithNestedActionsType == null || _roslynOldApiUsed == null)
+			if (_codeActionWithNestedActionsType == null || _isApiWithoutPriorityUsed == null || _isVs2022Roslyn == null)
 				return null;
 
 			try
 			{
-				if (_roslynOldApiUsed.Value)
+				if (_isApiWithoutPriorityUsed.Value)
 				{
 					return Activator.CreateInstance(_codeActionWithNestedActionsType, groupActionTitle, nestedCodeActions, isInlinable) as CodeAction;
 				}
 				else if (_lowCodeActionPriorityInstance != null)
 				{
-					return Activator.CreateInstance(_codeActionWithNestedActionsType, groupActionTitle, nestedCodeActions,
-													isInlinable, _lowCodeActionPriorityInstance) as CodeAction;
+					BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+					var args = _isVs2022Roslyn.Value
+						? new[] { groupActionTitle, nestedCodeActions, isInlinable, _lowCodeActionPriorityInstance, IsCodeActionCreatedFromFactoryMethod }
+						: new[] { groupActionTitle, nestedCodeActions, isInlinable, _lowCodeActionPriorityInstance };
+
+					return Activator.CreateInstance(_codeActionWithNestedActionsType, bindingFlags, binder: null, args, culture: null) as CodeAction;
 				}
 				else
 					return null;
@@ -92,11 +102,23 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 			if (_codeActionWithNestedActionsType == null)
 				return;
 
-			var codeActionWithNestedActionsConstructor = _codeActionWithNestedActionsDataTypeInfo.DeclaredConstructors.FirstOrDefault();
+			var declaredConstructors = _codeActionWithNestedActionsDataTypeInfo!.DeclaredConstructors.ToList();
+
+			if (declaredConstructors.Count == 0)
+			{
+				_codeActionWithNestedActionsType = null;
+				return;
+			}
+
+			_isVs2022Roslyn = declaredConstructors.Count > 1;
+			var codeActionWithNestedActionsConstructor = _isVs2022Roslyn.Value
+				? declaredConstructors.FirstOrDefault(constructor => constructor.GetParameters().Length == 5)
+				: declaredConstructors[0];
 
 			if (codeActionWithNestedActionsConstructor == null)
 			{
 				_codeActionWithNestedActionsType = null;
+				_isVs2022Roslyn = null;
 				return;
 			}
 
@@ -105,26 +127,29 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 			switch (parameters?.Length)
 			{
 				case 3:
-					_roslynOldApiUsed = true;
+					_isApiWithoutPriorityUsed = true;
 					return;
 				case 4:
-					_roslynOldApiUsed = false;
+				case 5:
+					_isApiWithoutPriorityUsed = false;
 					InitializeCodeActionPriorityInstance(codeActionTypeInfo);
 					return;
 				default:
 					_codeActionWithNestedActionsType = null;
+					_isVs2022Roslyn = null;
 					return;
 			}
 		}
 
 		private static void InitializeCodeActionPriorityInstance(System.Reflection.TypeInfo codeActionTypeInfo)
 		{
-			Type codeActionPriorityType = codeActionTypeInfo.Assembly.GetType(CodeActionPriorityTypeFullName);
+			Type? codeActionPriorityType = codeActionTypeInfo.Assembly.GetType(CodeActionPriorityTypeFullName);
 
 			if (codeActionPriorityType == null)
 			{
 				_codeActionWithNestedActionsType = null;
-				_roslynOldApiUsed = null;
+				_isApiWithoutPriorityUsed = null;
+				_isVs2022Roslyn = null;
 				return;
 			}
 
@@ -138,7 +163,8 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 			{
 				_codeActionWithNestedActionsType = null;
 				_lowCodeActionPriorityInstance = null;
-				_roslynOldApiUsed = null;
+				_isApiWithoutPriorityUsed = null;
+				_isVs2022Roslyn = null;
 			}
 		}
 	}

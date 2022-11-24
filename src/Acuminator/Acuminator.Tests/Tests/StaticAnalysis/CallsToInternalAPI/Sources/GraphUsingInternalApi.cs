@@ -40,7 +40,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
 			if (Helper.IsActive)
 				Helper.DoSomething();
 
-			PX.Api.Mobile.Legacy.Provider.InvalidateCache();
+			PX.Api.Mobile.Legacy.Provider.InitCaches();
 		}
 	}
 }
