@@ -68,8 +68,7 @@ In this version of Acuminator, the following bugs have been fixed:
 ### Other Changes
  - Extended design of syntax walkers for inter-procedural analysis has been implemented. Also, extension points and a new API have been added.
  - Nullable reference code analysis and nullable annotations have been introduced to parts of Acuminator. 
- - The design of syntax walkers has been extended for inter-procedural analysis
-   Also, a new extension points and a new API have been added.
+ - The design of syntax walkers has been extended for inter-procedural analysis.
 
 
 ## Acuminator 3.0
