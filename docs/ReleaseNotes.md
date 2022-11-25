@@ -61,7 +61,7 @@ In this version of Acuminator, the following bugs have been fixed:
  - When a diagnostic was suppressed in a global suppression file via a code fix for a project without the Acuminator suppression file, Acuminator incorrectly generated it in Visual Studio 2022. It did not generate the "AdditionalFiles" section in the project file for the generated suppression file.
  - The [PX1086](diagnostics/PX1086.md) diagnostic failed on syntax expressions that create collections with the collection initializer when the constructor braces were omitted.
  - The process of creating a graph semantic model has been improved. Now runtime errors that occurred in diagnostics of graphs and graph extensions have been fixed.
- - The performance of the the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics has been improved. Runtime errors during the analysis of a graph extension were fixed in these diagnostics through the removal of the redundant analysis of events from the base graph.
+ - The performance of the [PX1073](diagnostics/PX1073.md) and [PX1074](diagnostics/PX1074.md) diagnostics has been improved. Runtime errors during the analysis of a graph extension were fixed in these diagnostics through the removal of the redundant analysis of events from the base graph.
  - Minor bugs with inter-procedural analysis of local functions have been fixed.
  - Acuminator failed during the analysis of code with a graph that is a generic type parameter that is passed to the `PXGraph.InstanceCreated.AddHandler`  method.
 
