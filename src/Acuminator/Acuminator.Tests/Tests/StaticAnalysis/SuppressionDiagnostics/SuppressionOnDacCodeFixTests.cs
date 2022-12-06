@@ -26,10 +26,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressDiagnosticTestCodeFix();
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\ForbiddenFields_Suppressed.cs")]
+		[EmbeddedFileData(@"Dac\ForbiddenFieldsSuppressComment_Expected.cs")]
 		public virtual void DacForbiddenFields_Suppressed(string source) =>
-			VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(17, 17, "CompanyID"));
+			VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\WithConstructor_Unsuppressed.cs")]
