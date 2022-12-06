@@ -99,16 +99,14 @@ namespace Acuminator.Tests.Helpers
 
 			using (var stream = assembly.GetManifestResourceStream($"{_prefix}.{resourceID}"))
 			{
-				if (stream != null)
-				{
+				if (stream == null)
+					throw new InvalidOperationException($"Can't find the source text with Resource ID \"{resourceID}\" for the file {fileName}");
+		
 					using (var reader = new StreamReader(stream))
 					{
 						return reader.ReadToEnd();
 					}
 				}
-			}
-
-			return null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
