@@ -21,28 +21,28 @@ namespace Acuminator.Tests.Helpers
 		private readonly string[] _fileNames;
 
 		public EmbeddedFileDataAttribute(string fileName, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName }, testFilePath)
 		{
 		}
 
 		public EmbeddedFileDataAttribute(string fileName1, string fileName2, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName1, fileName2 }, testFilePath)
 		{
 		}
 
 		public EmbeddedFileDataAttribute(string fileName1, string fileName2, string fileName3, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName1, fileName2, fileName3 }, testFilePath)
 		{
 		}
 		public EmbeddedFileDataAttribute(string fileName, string[] internalCodeFileNames, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName }, testFilePath, internalCodeFileNames)
 		{ }
 
-		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] externalCodeFileNames = null)
+		protected EmbeddedFileDataAttribute(string[] fileNames, string? testFilePath, string[] externalCodeFileNames = null)
 		{
 			if (fileNames.IsNullOrEmpty())
 				throw new ArgumentNullException(nameof(fileNames));
