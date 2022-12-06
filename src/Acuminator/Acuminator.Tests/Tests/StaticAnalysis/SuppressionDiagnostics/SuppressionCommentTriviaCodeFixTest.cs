@@ -1,4 +1,7 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -19,51 +22,51 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\StaticCall_Suppressed.cs")]
-		public virtual void StaticCalls_Suppressed(string source) =>
-			VerifyCSharpDiagnostic(source);
+		public virtual Task StaticCalls_Suppressed(string source) =>
+			VerifyCSharpDiagnosticAsync(source);
 
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\StaticCall.cs", 
 						  @"BqlParameterMismatch\StaticCall_Suppressed.cs")]
-		public virtual void StaticCalls_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task StaticCalls_CodeFix(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\StaticCallWithCustomPredicate_Suppressed.cs")]
-		public virtual void StaticCall_WithCustomPredicates_Suppressed(string source) =>
-			VerifyCSharpDiagnostic(source);
+		public virtual Task StaticCall_WithCustomPredicates_Suppressed(string source) =>
+			VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\StaticCallWithCustomPredicate.cs",
 						  @"BqlParameterMismatch\StaticCallWithCustomPredicate_Suppressed.cs")]
-		public virtual void StaticCall_WithCustomPredicates_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task StaticCall_WithCustomPredicates_CodeFix(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\InheritanceCall_Suppressed.cs")]
-		public virtual void InheritanceCalls_InstanceAndStatic_Suppressed(string source) => 
-			VerifyCSharpDiagnostic(source);
+		public virtual Task InheritanceCalls_InstanceAndStatic_Suppressed(string source) => 
+			VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\InheritanceCall.cs",
 						  @"BqlParameterMismatch\InheritanceCall_Suppressed.cs")]
-		public virtual void InheritanceCalls_InstanceAndStatic_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task InheritanceCalls_InstanceAndStatic_CodeFix(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\PXUpdateCall_Suppressed.cs", @"BqlParameterMismatch\SOOrder.cs")]
-		public virtual void PXUpdateCalls_Suppressed(string source, string dacSource) =>
-			VerifyCSharpDiagnostic(new[] { source, dacSource });
+		public virtual Task PXUpdateCalls_Suppressed(string source, string dacSource) =>
+			VerifyCSharpDiagnosticAsync(new[] { source, dacSource });
 		
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\SearchCall_Suppressed.cs", @"BqlParameterMismatch\SOOrder.cs")]
-		public virtual void SearchCalls_Suppressed(string source, string dacSource) =>
-			VerifyCSharpDiagnostic(new[] { source, dacSource });
+		public virtual Task SearchCalls_Suppressed(string source, string dacSource) =>
+			VerifyCSharpDiagnosticAsync(new[] { source, dacSource });
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\VariableInstanceCall_Suppressed.cs", @"BqlParameterMismatch\SOOrder.cs")]
-		public virtual void VariableInstanceCalls_Suppressed(string source, string dacSource) =>
-			VerifyCSharpDiagnostic(new[] { source, dacSource });
+		public virtual Task VariableInstanceCalls_Suppressed(string source, string dacSource) =>
+			VerifyCSharpDiagnosticAsync(new[] { source, dacSource });
 	}
 }

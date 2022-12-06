@@ -1,4 +1,8 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
@@ -22,7 +26,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\DAC_Without_XML_Description.cs", @"Dac\DAC_Without_XML_Description_Expected.cs")]
-		public virtual void DacWithoutXMLDescription_SuppressComment_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task DacWithoutXMLDescription_SuppressComment_CodeFix(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 	}
 }
