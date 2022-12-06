@@ -128,6 +128,10 @@ namespace Acuminator.Vsix
 		/// <returns/>
 		public static async System.Threading.Tasks.Task ForceLoadPackageAsync()
 		{
+			// In unit tests this can be null
+			if (ThreadHelper.JoinableTaskFactory == null)
+				return;
+
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			IVsShell shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
