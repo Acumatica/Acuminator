@@ -1,4 +1,8 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute;
@@ -17,7 +21,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default
-				.WithIsvSpecificAnalyzersEnabled(),
+									.WithIsvSpecificAnalyzersEnabled()
+									.WithStaticAnalysisEnabled()
+									.WithRecursiveAnalysisEnabled(),
 				new ForbiddenFieldsInDacAnalyzer(),
 				new DacExtensionDefaultAttributeAnalyzer());
 
@@ -26,32 +32,32 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		[Theory]
 		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_All.cs",
 			@"Dac\SuppressMuiltipleDiagnostics_All_Suppressed.cs")]
-		public virtual void SuppressMuiltipleDiagnostics_All_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task SuppressMuiltipleDiagnostics_All_CodeFix(string actual, string expected) => 
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_One.cs",
 		@"Dac\SuppressMuiltipleDiagnostics_One_Suppressed.cs")]
-		public virtual void SuppressMuiltipleDiagnostics_One_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task SuppressMuiltipleDiagnostics_One_CodeFix(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_All.cs")]
-		public virtual void ShowAllUnsuppressedDiagnostics(string source) =>
-			VerifyCSharpDiagnostic(source,
+		public virtual Task ShowAllUnsuppressedDiagnostics(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(line: 13, column: 25,  messageArgs: "companyMask"),
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.CreateFor(line: 14, column: 4),
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(line: 16, column: 17, messageArgs : "CompanyMask"));
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_One.cs")]
-		public virtual void ShowUnsuppressedDiagnostic(string source) =>
-			VerifyCSharpDiagnostic(source,
+		public virtual Task ShowUnsuppressedDiagnostic(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.CreateFor(line: 16, column: 4));
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_One_Suppressed.cs")]
-		public virtual void SuppressMultipleDiagnostics(string source) =>
-			VerifyCSharpDiagnostic(source);
+		public virtual Task SuppressMultipleDiagnostics(string source) =>
+			VerifyCSharpDiagnosticAsync(source);
 	}
 }

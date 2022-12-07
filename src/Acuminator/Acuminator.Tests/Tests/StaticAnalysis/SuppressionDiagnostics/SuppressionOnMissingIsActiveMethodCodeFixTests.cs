@@ -1,4 +1,8 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -21,7 +25,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\DacExtension_WithoutIsActive.cs", @"Dac\DacExtension_WithoutIsActive_Expected.cs")]
-		public virtual void DacExtension_WithoutIsActiveMethod_SuppressComment_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task DacExtension_WithoutIsActiveMethod_SuppressComment_CodeFix(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 	}
 }

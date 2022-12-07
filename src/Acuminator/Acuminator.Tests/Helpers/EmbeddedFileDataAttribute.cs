@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,44 +21,45 @@ namespace Acuminator.Tests.Helpers
 		private readonly string[] _fileNames;
 
 		public EmbeddedFileDataAttribute(string fileName, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName }, testFilePath)
 		{
 		}
 
 		public EmbeddedFileDataAttribute(string fileName1, string fileName2, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName1, fileName2 }, testFilePath)
 		{
 		}
 
 		public EmbeddedFileDataAttribute(string fileName1, string fileName2, string fileName3, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName1, fileName2, fileName3 }, testFilePath)
 		{
 		}
 		public EmbeddedFileDataAttribute(string fileName, string[] internalCodeFileNames, bool overloadParam = true,
-			[CallerFilePath] string testFilePath = null)
+			[CallerFilePath] string? testFilePath = null)
 			: this(new[] { fileName }, testFilePath, internalCodeFileNames)
 		{ }
 
-		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] externalCodeFileNames = null)
+		protected EmbeddedFileDataAttribute(string[] fileNames, string? testFilePath, string[] externalCodeFileNames = null)
 		{
 			if (fileNames.IsNullOrEmpty())
 				throw new ArgumentNullException(nameof(fileNames));
 
-			foreach (string fileName in fileNames)
+			foreach (string? fileName in fileNames)
 			{
-				if (String.IsNullOrWhiteSpace(fileName))
+				if (fileName.IsNullOrWhiteSpace())
 					// ReSharper disable once LocalizableElement
 					throw new ArgumentException("File name cannot be empty", nameof(fileNames));
 			}
+
 			if (!externalCodeFileNames.IsNullOrEmpty())
 			{
-				foreach (string internalCodeFileName in externalCodeFileNames)
+				foreach (string? externalCodeFileName in externalCodeFileNames)
 				{
-					if (String.IsNullOrWhiteSpace(internalCodeFileName))
-						throw new ArgumentException("File name cannot be empty", nameof(internalCodeFileName));
+					if (externalCodeFileName.IsNullOrWhiteSpace())
+						throw new ArgumentException("File name cannot be empty", nameof(externalCodeFileName));
 				}
 			}
 			
@@ -70,9 +73,9 @@ namespace Acuminator.Tests.Helpers
 			yield return _fileNames.Select(ReadFile).ToArray<object>();
 		}
 
-		private static string GetPrefixFromTestFilePath(string testFilePath)
+		private static string GetPrefixFromTestFilePath(string? testFilePath)
 		{
-			string folderFullPath = testFilePath.IsNullOrWhiteSpace()
+			string? folderFullPath = testFilePath.IsNullOrWhiteSpace()
 				? null
 				: Path.GetDirectoryName(testFilePath);
 
@@ -99,16 +102,14 @@ namespace Acuminator.Tests.Helpers
 
 			using (var stream = assembly.GetManifestResourceStream($"{_prefix}.{resourceID}"))
 			{
-				if (stream != null)
+				if (stream == null)
+					throw new InvalidOperationException($"Can't find the source text with Resource ID \"{resourceID}\" for the file {fileName}");
+		
+				using (var reader = new StreamReader(stream))
 				{
-					using (var reader = new StreamReader(stream))
-					{
-						return reader.ReadToEnd();
-					}
-				}
+					return reader.ReadToEnd();
+				}			
 			}
-
-			return null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -68,9 +69,31 @@ namespace Acuminator.Analyzers.Utils
 			}
 
 			if (loadTask is Task task)
+				LoadPackageWithTimeout(task);
+		}
+
+		private static void LoadPackageWithTimeout(Task loadTask)
+		{
+			const int defaultTimeoutSeconds = 20;
+
+			try
 			{
-				const int defaultTimeoutSeconds = 20;
-				task.Wait(TimeSpan.FromSeconds(defaultTimeoutSeconds));
+				loadTask.Wait(TimeSpan.FromSeconds(defaultTimeoutSeconds));
+			}
+			catch (AggregateException aggregateException)
+			{
+				var innerExceptions = aggregateException.Flatten().InnerExceptions;
+
+				switch (innerExceptions.Count)
+				{
+					case 0:
+						throw;
+					case 1:
+						throw innerExceptions[0];
+					default:
+						string errorMsg = string.Join(Environment.NewLine + Environment.NewLine, innerExceptions);
+						throw new InvalidOperationException(errorMsg);
+				}
 			}
 		}
 	}

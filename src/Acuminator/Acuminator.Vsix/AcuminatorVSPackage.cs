@@ -69,7 +69,7 @@ namespace Acuminator.Vsix
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
-		public const string PackageVersion = "3.1.0";
+		public const string PackageVersion = "3.2.0";
 
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.
@@ -128,6 +128,10 @@ namespace Acuminator.Vsix
 		/// <returns/>
 		public static async System.Threading.Tasks.Task ForceLoadPackageAsync()
 		{
+			// In unit tests this can be null
+			if (ThreadHelper.JoinableTaskFactory == null)
+				return;
+
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			IVsShell shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
