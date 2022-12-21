@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -21,14 +23,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting);
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
-			eventType == EventType.RowSelecting;
+			eventType == EventType.RowSelecting && !pxContext.IsAcumatica2023R1_OrGreater;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodSymbol = (IMethodSymbol)context.Symbol;
-			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+			var methodSymbol = context.Symbol as IMethodSymbol;
+			var methodSyntax = methodSymbol?.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 			methodSyntax?.Accept(new DiagnosticWalker(context, pxContext));
 		}
 
@@ -42,11 +44,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 
 				public PXConnectionScopeVisitor(DiagnosticWalker parent, PXContext pxContext)
 				{
-					parent.ThrowOnNull(nameof(parent));
-					pxContext.ThrowOnNull(nameof(pxContext));
-
-					_parent = parent;
-					_pxContext = pxContext;
+					_parent = parent.CheckIfNull(nameof(parent));
+					_pxContext = pxContext.CheckIfNull(nameof(pxContext));
 				}
 
 				public override bool VisitUsingStatement(UsingStatementSyntax node)
@@ -60,7 +59,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 					if (semanticModel == null)
 						return false;
 
-					var symbolInfo = semanticModel.GetSymbolInfo(node.Type);
+					var symbolInfo = semanticModel.GetSymbolInfo(node.Type, _parent.CancellationToken);
 					return symbolInfo.Symbol?.OriginalDefinition != null
 					       && symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope);
 				}

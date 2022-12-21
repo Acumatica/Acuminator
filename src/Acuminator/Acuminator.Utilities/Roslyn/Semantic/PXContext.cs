@@ -15,6 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public bool IsAcumatica2018R2_OrGreater { get; }
 		public bool IsAcumatica2019R1_OrGreater { get; }
 
+		public bool IsAcumatica2023R1_OrGreater => PXCache.RowSelectingWhileReading != null;
+
 		public CodeAnalysisSettings CodeAnalysisSettings { get; }
 
 		/// <summary>
