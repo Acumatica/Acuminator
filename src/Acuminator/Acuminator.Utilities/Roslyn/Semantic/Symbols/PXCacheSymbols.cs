@@ -3,6 +3,9 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
+using System;
+using System.Linq;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -15,9 +18,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public ImmutableArray<IMethodSymbol> RaiseExceptionHandling { get; }
 
 		public INamedTypeSymbol GenericType { get; }
+		
+		public IEventSymbol? RowSelectingWhileReading { get; }
 
 		internal PXCacheSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXCache)
 		{
+			Type.ThrowOnNull(nameof(Type));
+
 			GenericType = Compilation.GetTypeByMetadataName(TypeFullNames.PXCache1);
 
 			Insert = Type.GetMethods(DelegateNames.Insert);
@@ -25,6 +32,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			Delete = Type.GetMethods(DelegateNames.Delete);
 
 			RaiseExceptionHandling = Type.GetMethods(DelegateNames.RaiseExceptionHandling);
+			RowSelectingWhileReading = Type.GetMembers(EventsNames.PXCache.RowSelectingWhileReading)
+										   .OfType<IEventSymbol>()
+										   .FirstOrDefault();
 		}
 	}
 }
