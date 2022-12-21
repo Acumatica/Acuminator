@@ -320,7 +320,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
 			context.ThrowOnNull(nameof(context));
 
-			int pxSelectBaseStandartDepth = context.IsAcumatica2018R2 ? 3 : 2;
+			int pxSelectBaseStandartDepth = context.IsAcumatica2018R2_OrGreater ? 3 : 2;
 			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBase.Type);
 
 			if (pxSelectBaseDepth > pxSelectBaseStandartDepth)
