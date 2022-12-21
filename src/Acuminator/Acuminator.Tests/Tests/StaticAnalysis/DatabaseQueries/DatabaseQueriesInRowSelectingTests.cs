@@ -1,24 +1,49 @@
-﻿using System.Threading.Tasks;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries
 {
 	public class DatabaseQueriesInRowSelectingTests : CodeFixVerifier
 	{
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DatabaseQueriesInRowSelectingFix();
+		/// <summary>
+		/// A special PX1042 analyzer for unit tests to untie it from Acumatica version
+		/// </summary>
+		private class DatabaseQueriesInRowSelectingAnalyzerInTests : DatabaseQueriesInRowSelectingAnalyzer
+		{
+			public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
+				eventType == EventType.RowSelecting;
+		}
+
+		/// <summary>
+		/// A special PX1042 code fix for unit tests to untie it from Acumatica version
+		/// </summary>
+		private class DatabaseQueriesInRowSelectingFixInTests : DatabaseQueriesInRowSelectingFix
+		{
+			protected override bool ShouldGenerateConnectionScope(PXContext pxContext) => true;
+		}
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DatabaseQueriesInRowSelectingFixInTests();
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
-			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithRecursiveAnalysisEnabled(),
-				new DatabaseQueriesInRowSelectingAnalyzer());
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
+														 .WithRecursiveAnalysisEnabled()
+														 .WithStaticAnalysisEnabled()
+														 .WithSuppressionMechanismDisabled(),
+				new DatabaseQueriesInRowSelectingAnalyzerInTests());
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelecting\BQLSelect.cs")]

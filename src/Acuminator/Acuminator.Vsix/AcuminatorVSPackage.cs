@@ -128,9 +128,16 @@ namespace Acuminator.Vsix
 		/// <returns/>
 		public static async System.Threading.Tasks.Task ForceLoadPackageAsync()
 		{
-			// In unit tests this can be null
-			if (ThreadHelper.JoinableTaskFactory == null)
+			// In unit tests this can be null or throw NRE
+			try
+			{
+				if (ThreadHelper.JoinableTaskFactory == null)
+					return;
+			}
+			catch(Exception ex) 
+			{
 				return;
+			}
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

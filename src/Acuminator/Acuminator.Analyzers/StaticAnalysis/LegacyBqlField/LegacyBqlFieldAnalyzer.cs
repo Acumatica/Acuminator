@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 		}.ToImmutableDictionary();
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
-			pxContext.IsAcumatica2019R1 && 
+			pxContext.IsAcumatica2019R1_OrGreater && 
 			base.ShouldAnalyze(pxContext, dac);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)

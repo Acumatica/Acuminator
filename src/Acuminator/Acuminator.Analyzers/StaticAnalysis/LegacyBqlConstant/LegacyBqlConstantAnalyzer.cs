@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1061_LegacyBqlConstant);
 
-		protected override bool ShouldAnalyze(PXContext pxContext) => pxContext.IsAcumatica2019R1;
+		protected override bool ShouldAnalyze(PXContext pxContext) => pxContext.IsAcumatica2019R1_OrGreater;
 
 		public LegacyBqlConstantAnalyzer() : this(null)
 		{ }

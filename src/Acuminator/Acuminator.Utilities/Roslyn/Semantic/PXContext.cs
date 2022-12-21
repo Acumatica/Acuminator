@@ -12,8 +12,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 {
 	public class PXContext
 	{
-		public bool IsAcumatica2018R2 { get; }
-		public bool IsAcumatica2019R1 { get; }
+		public bool IsAcumatica2018R2_OrGreater { get; }
+		public bool IsAcumatica2019R1_OrGreater { get; }
+
+		public bool IsAcumatica2023R1_OrGreater => PXCache.RowSelectingWhileReading != null;
 
 		public CodeAnalysisSettings CodeAnalysisSettings { get; }
 
@@ -151,8 +153,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
 
-            IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
-			IsAcumatica2019R1 = IImplementType != null;
+            IsAcumatica2018R2_OrGreater = PXSelectBase2018R2NewType != null;
+			IsAcumatica2019R1_OrGreater = IImplementType != null;
 		}
 
 		private ImmutableHashSet<IMethodSymbol> GetUiPresentationLogicMethods()

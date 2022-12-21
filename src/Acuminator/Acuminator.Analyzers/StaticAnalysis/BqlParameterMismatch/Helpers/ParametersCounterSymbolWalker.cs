@@ -27,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				_syntaxContext = syntaxContext;
 				_cancellationToken = _syntaxContext.CancellationToken;
 
-				_isAcumatica2018R2 = pxContext.IsAcumatica2018R2;
+				_isAcumatica2018R2 = pxContext.IsAcumatica2018R2_OrGreater;
 
 				if (_isAcumatica2018R2)
 				{
