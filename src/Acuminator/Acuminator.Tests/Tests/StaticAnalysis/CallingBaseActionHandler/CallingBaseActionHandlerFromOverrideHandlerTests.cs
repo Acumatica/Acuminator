@@ -1,11 +1,16 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.CallingBaseActionHandler
@@ -15,7 +20,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallingBaseActionHandler
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
             new PXGraphAnalyzer(
                 CodeAnalysisSettings.Default
-                .WithRecursiveAnalysisEnabled(),
+									.WithRecursiveAnalysisEnabled()
+									.WithStaticAnalysisEnabled()
+									.WithSuppressionMechanismDisabled(),
                 new CallingBaseActionHandlerFromOverrideHandlerAnalyzer());
 
         [Theory]
