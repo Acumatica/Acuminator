@@ -27,9 +27,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		public async Task Localization_PXException_WithHardcodedMessageArgument(string source)
 		{
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(9, 45),
-				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(16, 75),
-				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(24, 20));
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(10, 45),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(17, 75),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(22, 36),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(30, 67),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(35, 36),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(43, 67),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(66, 20),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(72, 11));
 		}
 
 		[Theory]
