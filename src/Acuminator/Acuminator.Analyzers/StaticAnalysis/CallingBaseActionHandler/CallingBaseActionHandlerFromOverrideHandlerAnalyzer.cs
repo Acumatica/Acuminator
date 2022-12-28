@@ -31,21 +31,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var redeclaredActionNamesHashSet = graphExtension.Actions
-				.Where(a => graphExtension.Symbol.Equals(a.Symbol?.ContainingSymbol) && a.Base != null)
-				.Select(a => a.Symbol.Name)
+				.Where(action => graphExtension.Symbol.Equals(action.Symbol?.ContainingSymbol) && action.Base != null)
+				.Select(action => action.Symbol.Name)
 				.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 			var redeclaredHandlersWithoutActionsList = graphExtension.ActionHandlers
-				.Where(h => graphExtension.Symbol.Equals(h.Symbol?.ContainingSymbol) && h.Base != null &&
-							!redeclaredActionNamesHashSet.Contains(h.Symbol.Name))
+				.Where(handler => graphExtension.Symbol.Equals(handler.Symbol?.ContainingSymbol) && handler.Base != null &&
+								  !redeclaredActionNamesHashSet.Contains(handler.Symbol.Name))
 				.ToList();
 
 			var baseHandlersHashSet = redeclaredHandlersWithoutActionsList
-				.Select(h => h.Base.Symbol)
+				.Select(handler => handler.Base.Symbol)
 				.ToHashSet();
 
 			var baseActionsHashSet = redeclaredHandlersWithoutActionsList
-				.Select(h => graphExtension.ActionsByNames[h.Symbol.Name].Symbol)
+				.Select(handler => graphExtension.ActionsByNames[handler.Symbol.Name].Symbol)
 				.ToHashSet();
 
 			var walker = new Walker(context, pxContext, baseActionsHashSet, baseHandlersHashSet);
