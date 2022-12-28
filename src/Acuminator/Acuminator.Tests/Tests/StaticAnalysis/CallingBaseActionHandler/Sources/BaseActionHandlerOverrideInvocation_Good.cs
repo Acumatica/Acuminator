@@ -10,7 +10,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallingBaseActionHandler.Sources
 	where TGraph : PXGraph, new()
 	where TPrimary : class, IBqlTable, new()
 	{
-		public PXAction<ARPayment> captureOnlyCCPayment;
+		public PXAction<TPrimary> captureOnlyCCPayment;
 
 		[PXUIField(DisplayName = "Record and Capture Preauthorization", MapEnableRights = PXCacheRights.Update, MapViewRights = PXCacheRights.Update)]
 		[PXProcessButton]
