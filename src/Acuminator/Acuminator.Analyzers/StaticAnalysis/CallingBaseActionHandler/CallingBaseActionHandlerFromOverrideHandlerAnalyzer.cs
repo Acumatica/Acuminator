@@ -50,10 +50,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 
 			var walker = new Walker(context, pxContext, baseActionsHashSet, baseHandlersHashSet);
 
-			foreach (var actionHandler in redeclaredHandlersWithoutActionsList)
+			foreach (ActionHandlerInfo actionHandler in redeclaredHandlersWithoutActionsList)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				walker.Visit(actionHandler.Node);
+				walker.CheckActionHandler(actionHandler);
 			}
 		}
 
@@ -63,6 +63,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 			private readonly HashSet<ISymbol> _baseActions;
 			private readonly HashSet<IMethodSymbol> _baseHandlers;
 
+			private ActionHandlerInfo? _currentActionHandler;
+
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, HashSet<ISymbol> baseActions, HashSet<IMethodSymbol> baseHandlers)
 				: base(pxContext, context.CancellationToken)
 			{
@@ -71,22 +73,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 				_context = context;
 			}
 
-			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+			public void CheckActionHandler(ActionHandlerInfo actionHandler)
+			{
+				try
+				{
+					_currentActionHandler = actionHandler;
+					Visit(_currentActionHandler.Node);
+				}
+				finally
+				{
+					_currentActionHandler = null;
+				}
+			}
+
+			public override void VisitInvocationExpression(InvocationExpressionSyntax invocationNode)
 			{
 				ThrowIfCancellationRequested();
 
-				var methodSymbol = GetSymbol<IMethodSymbol>(node);
+				var methodSymbol = GetSymbol<IMethodSymbol>(invocationNode);
 				if (methodSymbol == null)
 				{
 					return;
 				}
 
 				// Case Base.someActionHandler(adapter)
-				if (_baseHandlers.Contains(methodSymbol))
+				if (IsDirectCallToBaseActionHandler(invocationNode, methodSymbol))
 				{
 					ReportDiagnostic(_context.ReportDiagnostic,
 						Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation,
-						node);
+						invocationNode);
 
 					return;
 				}
@@ -95,7 +110,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 
 				// Case Base.SomeAction.Press(adapter)
 				if (PxContext.PXAction.Press.Contains(originalMethodSymbol) &&
-					node.Expression is MemberAccessExpressionSyntax memberAccess && memberAccess.Expression != null)
+					invocationNode.Expression is MemberAccessExpressionSyntax memberAccess && memberAccess.Expression != null)
 				{
 					var expressionSymbol = GetSymbol<ISymbol>(memberAccess.Expression);
 
@@ -103,13 +118,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 					{
 						ReportDiagnostic(_context.ReportDiagnostic,
 							Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation,
-							node);
+							invocationNode);
 
 						return;
 					}
 				}
 
-				base.VisitInvocationExpression(node);
+				base.VisitInvocationExpression(invocationNode);
+			}
+
+			/// <summary>
+			/// Check if the call is a direct call to the base action handler that looks like this:<br/>
+			/// <c>Base.someActionHandler(adapter)</c>
+			/// </summary>
+			/// <param name="invocationNode">The invocation node.</param>
+			/// <param name="calledMethod">The called method.</param>
+			/// <returns>
+			/// True for a direct call to the base action handler.
+			/// </returns>
+			private bool IsDirectCallToBaseActionHandler(InvocationExpressionSyntax invocationNode, IMethodSymbol calledMethod)
+			{
+				if (!_baseHandlers.Contains(calledMethod))
+					return false;
+
+				if (_currentActionHandler?.Symbol.IsOverride != true)
+					return true;
+
+				// For action handler overrides we must check that this is not an access via base keyword like this:
+				// base.someActionHandler(adapter);
+				return invocationNode.Expression is not MemberAccessExpressionSyntax memberAccessExpressionNode ||
+					   memberAccessExpressionNode.Expression is not BaseExpressionSyntax;
 			}
 		}
 	}
