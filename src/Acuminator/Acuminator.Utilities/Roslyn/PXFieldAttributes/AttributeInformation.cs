@@ -73,6 +73,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (context.FieldAttributes.AcctSubAttribute != null)
 				types.Add(context.FieldAttributes.AcctSubAttribute, true);
 
+			if (context.FieldAttributes.PXEntityAttribute != null)
+				types.Add(context.FieldAttributes.PXEntityAttribute, true);
+
+			if (context.FieldAttributes.UnboundAccountAttribute != null)
+				types.Add(context.FieldAttributes.UnboundAccountAttribute, false);
+
 			return types;
 		}
 			
