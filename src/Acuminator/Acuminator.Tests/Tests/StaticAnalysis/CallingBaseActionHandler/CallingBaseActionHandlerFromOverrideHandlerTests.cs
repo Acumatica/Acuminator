@@ -48,8 +48,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallingBaseActionHandler
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("BaseActionHandlerOverrideInvocation_Good.cs")]
-		public async Task OverriddenActionHandler_InvocationOfDotNet_base_Method_NoDiagnostic(string source) =>
+		[EmbeddedFileData("BaseActionHandlerOverrideInvocation_Good_Generic.cs")]
+		public async Task OverriddenActionHandler_GenericExtensions_InvocationOfDotNet_base_Method_NoDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("BaseActionHandlerOverrideInvocation_NonGeneric.cs")]
+		public async Task OverriddenActionHandler_NonGenericExtensions_MixedStylesOfBaseHandlerInvocations(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation.CreateFor(45, 4));
 	}
 }
