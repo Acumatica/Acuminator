@@ -189,6 +189,10 @@ Diagnostic and code fix messages should follow the following rules:
 
 ### Analyzers
 
+Acuminator analyzers are Roslyn analyzers. Therefore, the following links may be useful:
+* Roslyn documentation section: https://github.com/dotnet/roslyn/tree/main/docs/analyzers
+* Roslyn documentation on analyzer actions: https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md
+
 Overall Acuminator analyzers can be divided into two categories:
 * Independent analyzers
 * Aggregated analyzers
