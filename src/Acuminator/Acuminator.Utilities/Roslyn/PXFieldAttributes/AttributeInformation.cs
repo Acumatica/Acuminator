@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -29,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public PXContext Context { get; }
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
-		public ImmutableDictionary<ITypeSymbol,bool> TypesContainingIsDBField { get; }
+		public ImmutableArray<(ITypeSymbol AttributeType, bool IsDbFieldDefaultValue)> TypesContainingIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
 		private const string NonDB = "NonDB";
@@ -38,7 +40,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
 			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableHashSet();
-			TypesContainingIsDBField = GetTypesContainingIsDBField(Context).ToImmutableDictionary();
+			TypesContainingIsDBField = GetTypesContainingIsDBField(Context)
+											.OrderBy(typeWithValue => typeWithValue.AttributeType, TypeSymbolsByHierachyComparer.Instance)
+											.ToImmutableArray();
 
 			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = Context.AttributeTypes.PXDynamicAggregateAttribute;
@@ -63,17 +67,19 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return types;
 		}
 
-		private static Dictionary<ITypeSymbol, bool> GetTypesContainingIsDBField(PXContext context)
+		private static IEnumerable<(ITypeSymbol AttributeType, bool IsDbFieldDefaultValue)> GetTypesContainingIsDBField(PXContext context)
 		{
-			var types = new Dictionary<ITypeSymbol, bool>();
-
 			if (context.FieldAttributes.PeriodIDAttribute != null)
-				types.Add(context.FieldAttributes.PeriodIDAttribute, true);
+				yield return (context.FieldAttributes.PeriodIDAttribute, true);
 
 			if (context.FieldAttributes.AcctSubAttribute != null)
-				types.Add(context.FieldAttributes.AcctSubAttribute, true);
+				yield return (context.FieldAttributes.AcctSubAttribute, true);
 
-			return types;
+			if (context.FieldAttributes.UnboundAccountAttribute != null)
+				yield return (context.FieldAttributes.UnboundAccountAttribute, false);
+
+			if (context.FieldAttributes.PXEntityAttribute != null)
+				yield return (context.FieldAttributes.PXEntityAttribute, true);		
 		}
 			
 
@@ -133,7 +139,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{
 					aggregatedAttribute.GetBaseTypes()
 									   .TakeWhile(baseType => !baseType.Equals(_eventSubscriberAttribute))
-									   .ForEach(baseType => results.Add(baseType));
+									   .ForEach(baseType => results.Add(baseType!));
 				}
 
 				if (IsAggregatorAttribute(aggregatedAttribute))
@@ -197,12 +203,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			switch (isDbPropertyAttributeArgs.Count)
 			{
 				case 0:     //Case when there is IsDBField property but it isn't set explicitly in attribute's declaration
-					ITypeSymbol typeFromRegister = TypesContainingIsDBField.Keys.FirstOrDefault(t => IsAttributeDerivedFromClass(attribute.AttributeClass, t));
+					var (typeFromRegister, defaultIsDbFieldValue) = 
+						TypesContainingIsDBField.FirstOrDefault(typeWithValue => IsAttributeDerivedFromClass(attribute.AttributeClass, typeWithValue.AttributeType));
 
 					// Query hard-coded register with attributes which has IsDBField property with some initial assigned value
 					bool? dbFieldPreInitializedValue = typeFromRegister != null
-						? TypesContainingIsDBField[typeFromRegister]
-						: (bool?)null;
+						? defaultIsDbFieldValue
+						: null;
 
 					return dbFieldPreInitializedValue == null
 						? GetBoundTypeFromStandardBoundTypeAttributes(attribute)

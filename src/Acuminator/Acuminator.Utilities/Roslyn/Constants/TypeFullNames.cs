@@ -13,8 +13,10 @@
 		internal const string AutoNumberAttribute = "PX.Objects.CS.AutoNumberAttribute";
 		internal const string NumberingSequence = "PX.Objects.CS.NumberingSequence";
 
+		internal const string PXEntityAttribute = "PX.Data.PXEntityAttribute";
 		internal const string PeriodIDAttribute = "PX.Objects.GL.PeriodIDAttribute";
 		internal const string AcctSubAttribute = "PX.Objects.GL.AcctSubAttribute";
+		internal const string UnboundAccountAttribute = "PX.Objects.GL.UnboundAccountAttribute";
 		internal const string PXDBCalcedAttribute = "PX.Data.PXDBCalcedAttribute";
 		internal const string PXDBScalarAttribute = "PX.Data.PXDBScalarAttribute";
 		internal const string PXDBUserPasswordAttribute = "PX.Data.PXDBUserPasswordAttribute";

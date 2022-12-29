@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
@@ -60,8 +62,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		#region DBBound  attributes defined by IsDBField 
 
-		public INamedTypeSymbol PeriodIDAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PeriodIDAttribute);
-		public INamedTypeSymbol AcctSubAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.AcctSubAttribute);
+		public INamedTypeSymbol? PeriodIDAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PeriodIDAttribute);
+		public INamedTypeSymbol? AcctSubAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.AcctSubAttribute);
+		public INamedTypeSymbol? PXEntityAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXEntityAttribute);
+		public INamedTypeSymbol? UnboundAccountAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.UnboundAccountAttribute);
 
 		#endregion
 	}
