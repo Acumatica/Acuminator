@@ -89,5 +89,10 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string ReflectionSerializer_GetObjectData      = "GetObjectData";
 			public const string ReflectionSerializer_RestoreObjectProps = "RestoreObjectProps";
 		}
+
+		internal static class Workflow
+		{
+			public const string Configure = "Configure";
+		}
 	}
 }
