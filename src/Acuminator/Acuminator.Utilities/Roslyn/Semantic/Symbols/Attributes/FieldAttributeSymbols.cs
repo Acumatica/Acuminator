@@ -66,6 +66,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol? AcctSubAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.AcctSubAttribute);
 		public INamedTypeSymbol? PXEntityAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXEntityAttribute);
 		public INamedTypeSymbol? UnboundAccountAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.UnboundAccountAttribute);
+		public INamedTypeSymbol? UnboundCashAccountAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.UnboundCashAccountAttribute);
+		public INamedTypeSymbol? APTranRecognizedInventoryItemAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.APTranRecognizedInventoryItemAttribute);
 
 		#endregion
 	}

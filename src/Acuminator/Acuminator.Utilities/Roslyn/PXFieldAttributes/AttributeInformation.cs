@@ -67,21 +67,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return types;
 		}
 
-		private static IEnumerable<(ITypeSymbol AttributeType, bool IsDbFieldDefaultValue)> GetTypesContainingIsDBField(PXContext context)
-		{
-			if (context.FieldAttributes.PeriodIDAttribute != null)
-				yield return (context.FieldAttributes.PeriodIDAttribute, true);
-
-			if (context.FieldAttributes.AcctSubAttribute != null)
-				yield return (context.FieldAttributes.AcctSubAttribute, true);
-
-			if (context.FieldAttributes.UnboundAccountAttribute != null)
-				yield return (context.FieldAttributes.UnboundAccountAttribute, false);
-
-			if (context.FieldAttributes.PXEntityAttribute != null)
-				yield return (context.FieldAttributes.PXEntityAttribute, true);		
-		}
-			
+		private static IEnumerable<(ITypeSymbol AttributeType, bool IsDbFieldDefaultValue)> GetTypesContainingIsDBField(PXContext context) =>
+			new List<(ITypeSymbol? AttributeType, bool IsDbFieldDefaultValue)>()
+			{
+				(context.FieldAttributes.PeriodIDAttribute, true),
+				(context.FieldAttributes.AcctSubAttribute, true),
+				(context.FieldAttributes.UnboundAccountAttribute, false),
+				(context.FieldAttributes.UnboundCashAccountAttribute, false),
+				(context.FieldAttributes.APTranRecognizedInventoryItemAttribute, false),
+				(context.FieldAttributes.PXEntityAttribute, true)
+			}
+			.Where(attributeTypeWithIsDbFieldValue => attributeTypeWithIsDbFieldValue.AttributeType != null)!;			
 
 		/// <summary>
 		/// Get the collection of Acumatica attributes defined by the <paramref name="attributeType"/> including attributes on aggregates.
