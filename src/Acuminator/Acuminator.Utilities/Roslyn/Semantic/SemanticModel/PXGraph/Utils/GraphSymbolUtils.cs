@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
+			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return null;
 
 			var baseGraphExtensionType = graphExtension.GetBaseTypesAndThis()
@@ -96,7 +96,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			pxContext.ThrowOnNull(nameof(pxContext));
 			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
 
-			if (!isGraph && !graphOrExtension?.InheritsFrom(pxContext.PXGraphExtensionType) != true)
+			if (!isGraph && !graphOrExtension?.InheritsFrom(pxContext.PXGraphExtension.Type) != true)
 				return null;
 
 			ITypeSymbol graph = isGraph
@@ -125,7 +125,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			IMethodSymbol initialize = typeSymbol.GetMembers()
 									   .OfType<IMethodSymbol>()
-									   .Where(m => pxContext.PXGraphExtensionInitializeMethod.Equals(m.OverriddenMethod))
+									   .Where(m => pxContext.PXGraphExtension.Initialize.Equals(m.OverriddenMethod))
 									   .FirstOrDefault();
 			if (initialize == null)
 				return (null, null);
