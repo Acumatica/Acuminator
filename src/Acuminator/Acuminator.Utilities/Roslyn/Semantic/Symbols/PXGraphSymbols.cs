@@ -1,7 +1,11 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Roslyn.Constants;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -9,7 +13,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	{
 		public class InstanceCreatedEventsSymbols : SymbolsSetForTypeBase
 	    {
-			public IMethodSymbol AddHandler { get; }
+			public IMethodSymbol? AddHandler { get; }
 
 		    internal InstanceCreatedEventsSymbols(Compilation compilation) : base(compilation, DelegateNames.InstanceCreatedEvents)
 		    {
@@ -25,9 +29,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 	    public InstanceCreatedEventsSymbols InstanceCreatedEvents { get; }
 
-		public IMethodSymbol InitCacheMapping => Type.GetMembers(DelegateNames.InitCacheMapping)
-													 .OfType<IMethodSymbol>()
-													 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
+		public IMethodSymbol? InitCacheMapping => Type?.GetMembers(DelegateNames.InitCacheMapping)
+													   .OfType<IMethodSymbol>()
+													   .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
 
 		internal PXGraphSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXGraph)
         {
