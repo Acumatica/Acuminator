@@ -103,7 +103,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				IMethodSymbol current = includeThis ? methodSymbol : methodSymbol.OverriddenMethod;
 
-				while (current?.IsOverride == true)
+				while (current != null)
 				{
 					yield return current;
 					current = current.OverriddenMethod;
@@ -149,7 +149,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				IPropertySymbol current = includeThis ? propertySymbol : propertySymbol.OverriddenProperty;
 
-				while (current?.IsOverride == true)
+				while (current != null)
 				{
 					yield return current;
 					current = current.OverriddenProperty;
