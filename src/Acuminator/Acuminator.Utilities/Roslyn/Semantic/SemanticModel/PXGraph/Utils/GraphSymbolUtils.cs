@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -22,7 +24,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <returns>
 		/// The graph from graph extension.
 		/// </returns>
-		public static ITypeSymbol GetGraphFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext)
+		public static ITypeSymbol? GetGraphFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -93,21 +95,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <returns>
 		/// The declared primary DAC from graph or graph extension.
 		/// </returns>
-		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this ITypeSymbol graphOrExtension, PXContext pxContext)
+		public static ITypeSymbol? GetDeclaredPrimaryDacFromGraphOrGraphExtension(this ITypeSymbol? graphOrExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
-			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
 
-			if (!isGraph && !graphOrExtension?.InheritsFrom(pxContext.PXGraphExtension.Type) != true)
+			if (graphOrExtension == null)
 				return null;
 
-			ITypeSymbol graph = isGraph
+			bool isGraph = graphOrExtension.InheritsFrom(pxContext.PXGraph.Type);
+
+			if (!isGraph && !graphOrExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
+				return null;
+
+			ITypeSymbol? graph = isGraph
 				? graphOrExtension
 				: graphOrExtension.GetGraphFromGraphExtension(pxContext);
 
-			var baseGraphType = graph.GetBaseTypesAndThis()
-									 .OfType<INamedTypeSymbol>()
-									 .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
+			var baseGraphType = graph?.GetBaseTypesAndThis()
+									  .OfType<INamedTypeSymbol>()
+									  .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
 
 			if (baseGraphType == null || baseGraphType.TypeArguments.Length < 2)
 				return null;
@@ -132,20 +138,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (initializeCandidates.IsDefaultOrEmpty)
 				return default;
 
-			IMethodSymbol initialize = (from method in initializeCandidates.OfType<IMethodSymbol>()
-										where method.IsOverride && method.IsDeclaredInType(typeSymbol) &&
+			IMethodSymbol? initialize = (from method in initializeCandidates.OfType<IMethodSymbol>()
+										 where method.IsOverride && method.IsDeclaredInType(typeSymbol) &&
 											  method.GetOverrides().Any(@override => @override.Equals(pxContext.PXGraphExtension.Initialize))
-										select method)
-									  .FirstOrDefault();
+										 select method)
+									   .FirstOrDefault();
 
-			SyntaxReference reference = initialize?.DeclaringSyntaxReferences.FirstOrDefault();
+			SyntaxReference? reference = initialize?.DeclaringSyntaxReferences.FirstOrDefault();
 			if (reference == null)
 				return default;
 
 			if (reference.GetSyntax(cancellation) is not MethodDeclarationSyntax node)
 				return default;
 
-			return (node, initialize);
+			return (node, initialize!);
 		}
 
 		/// <summary>
