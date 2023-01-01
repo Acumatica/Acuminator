@@ -17,7 +17,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 	/// </summary>
 	public class IsActiveMethodInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
-		private const int IsActiveDeclarationOrderToPlaceItFirst= -1;
+		private const int IsActiveDeclarationOrderToPlaceItFirst= -3;
 
 		public IsActiveMethodInfo(MethodDeclarationSyntax node, IMethodSymbol isActiveMethod, int? declarationOrder = null) :
 							 base(node, isActiveMethod, declarationOrder ?? IsActiveDeclarationOrderToPlaceItFirst)
