@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -123,19 +125,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-			IMethodSymbol initialize = typeSymbol.GetMembers()
-									   .OfType<IMethodSymbol>()
-									   .Where(m => pxContext.PXGraphExtension.Initialize.Equals(m.OverriddenMethod))
-									   .FirstOrDefault();
-			if (initialize == null)
-				return (null, null);
+			if (pxContext.PXGraphExtension.Initialize == null)
+				return default;
 
-			SyntaxReference reference = initialize.DeclaringSyntaxReferences.FirstOrDefault();
+			var initializeCandidates = typeSymbol.GetMembers(DelegateNames.Initialize);
+			if (initializeCandidates.IsDefaultOrEmpty)
+				return default;
+
+			IMethodSymbol initialize = (from method in initializeCandidates.OfType<IMethodSymbol>()
+										where method.IsOverride && method.IsDeclaredInType(typeSymbol) &&
+											  method.GetOverrides().Any(@override => @override.Equals(pxContext.PXGraphExtension.Initialize))
+										select method)
+									  .FirstOrDefault();
+
+			SyntaxReference reference = initialize?.DeclaringSyntaxReferences.FirstOrDefault();
 			if (reference == null)
-				return (null, null);
+				return default;
 
-			if (!(reference.GetSyntax(cancellation) is MethodDeclarationSyntax node))
-				return (null, null);
+			if (reference.GetSyntax(cancellation) is not MethodDeclarationSyntax node)
+				return default;
 
 			return (node, initialize);
 		}

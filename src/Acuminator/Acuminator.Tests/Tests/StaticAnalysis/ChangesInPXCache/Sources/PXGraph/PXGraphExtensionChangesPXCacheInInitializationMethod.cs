@@ -3,8 +3,8 @@ using PX.SM;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphLongOperationDuringInitialization.Sources
 {
-    public class SMAccessExt : PXGraphExtension<SMAccessPersonalMaint>
-    {
+    public class SMAccessExtDerived : SMAccessExtBase
+	{
         public override void Initialize()
         {
             int count = Base.Identities.Select().Count;
@@ -21,4 +21,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphLongOperationDuringInitia
             }
         }
     }
+
+	public class SMAccessExtBase : PXGraphExtension<SMAccessPersonalMaint>
+	{
+		public override void Initialize()
+		{
+		}
+	}
 }
