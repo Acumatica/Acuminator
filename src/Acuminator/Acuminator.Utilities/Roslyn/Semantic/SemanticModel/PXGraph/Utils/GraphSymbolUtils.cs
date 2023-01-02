@@ -201,5 +201,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					return false;
 			}
 		}
+
+		internal static IMethodSymbol? GetConfigureMethodFromBaseGraphOrGraphExtension(this INamedTypeSymbol pxGraphOrPXGraphExtension, PXContext pxContext)
+		{
+			var pxScreenConfiguration = pxContext?.PXScreenConfiguration;
+
+			if (pxScreenConfiguration == null)
+				return null;
+
+			var configureMethods = pxGraphOrPXGraphExtension!.GetMembers(DelegateNames.Workflow.Configure);
+
+			if (configureMethods.IsDefaultOrEmpty)
+				return null;
+
+			return configureMethods.OfType<IMethodSymbol>()
+								   .FirstOrDefault(method => method.ReturnsVoid && method.IsVirtual && method.DeclaredAccessibility == Accessibility.Public &&
+															 method.Parameters.Length == 1 && pxScreenConfiguration.Equals(method.Parameters[0].Type));
+		}
 	}
 }

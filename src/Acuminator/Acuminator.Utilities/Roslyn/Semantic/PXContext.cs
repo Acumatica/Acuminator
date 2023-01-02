@@ -139,8 +139,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_attributes                  = new Lazy<AttributeSymbols>(() => new AttributeSymbols(Compilation));
 			_systemTypes                 = new Lazy<SystemTypeSymbols>(() => new SystemTypeSymbols(Compilation));
             _localizationMethods         = new Lazy<LocalizationSymbols>(() => new LocalizationSymbols(Compilation));
-            _pxGraph                     = new Lazy<PXGraphSymbols>(() => new PXGraphSymbols(Compilation));
-			_pxGraphExtensionSymbols     = new Lazy<PXGraphExtensionSymbols>(() => new PXGraphExtensionSymbols(Compilation));
+            _pxGraph                     = new Lazy<PXGraphSymbols>(() => new PXGraphSymbols(this));
+			_pxGraphExtensionSymbols     = new Lazy<PXGraphExtensionSymbols>(() => new PXGraphExtensionSymbols(this));
             _pxCache                     = new Lazy<PXCacheSymbols>(() => new PXCacheSymbols(Compilation));
 			_pxAction                    = new Lazy<PXActionSymbols>(() => new PXActionSymbols(Compilation));
 			_pxDatabase                  = new Lazy<PXDatabaseSymbols>(() => new PXDatabaseSymbols(Compilation));
