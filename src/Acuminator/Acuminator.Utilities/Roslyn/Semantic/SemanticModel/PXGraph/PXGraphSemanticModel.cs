@@ -80,10 +80,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo { get; }
 
 		/// <summary>
-		/// Gets the PXGraphExtension.Configure method overrides. Extensions that override this method are 
+		/// Gets infos about the Configure method overrides declared in the graph or graph extension's class hierarchy. 
 		/// </summary>
 		/// <value>
-		/// The configure method overrides.
+		/// Infos about Configure method overrides.
 		/// </value>
 		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides { get; }
 
@@ -345,7 +345,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (Type == GraphType.None)
 				return ImmutableArray<ConfigureMethodInfo>.Empty;
 
-			var configureOverrides = ConfigureMethodInfo.GetConfigureMethodInfos(Symbol, PXContext, _cancellation);
+			var configureOverrides = ConfigureMethodInfo.GetConfigureMethodInfos(Symbol, Type, PXContext, _cancellation);
 			return configureOverrides.ToImmutableArray();
 		}
 	}

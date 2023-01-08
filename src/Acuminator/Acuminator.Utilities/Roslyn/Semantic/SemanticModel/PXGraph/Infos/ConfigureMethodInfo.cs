@@ -41,21 +41,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// - PXOverride mechanism is not supported by the workflow mechanism. Thus, it's no use to check chained extensions, <bt/>  
 		/// they can't affect workflow configuration done by the base extension or graph
 		/// - Graph and graph extension overrides of Configure method can be considered independently.<br/>  
-		/// Therefore, for graph extension base graph's Configure method overrides are not included into results
+		/// Therefore, for graph extension base graph's Configure method overrides are not included into results.
 		/// </remarks>
 		/// <param name="graphOrGraphExtension">The graph or graph extension.</param>
+		/// <param name="graphType">Type of the <paramref name="graphOrGraphExtension"/> symbol.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
 		/// <param name="cancellationToken">A token that allows processing to be cancelled.</param>
 		/// <param name="declarationOrder">(Optional) The declaration order.</param>
 		/// <returns>
 		/// A collection of <see cref="ConfigureMethodInfo"/> DTOs if the graph / graph extension contains one or several Configure method, otherwise an empty collection.
 		/// </returns>
-		internal static IReadOnlyCollection<ConfigureMethodInfo> GetConfigureMethodInfos(INamedTypeSymbol graphOrGraphExtension, PXContext pxContext, 
+		internal static IReadOnlyCollection<ConfigureMethodInfo> GetConfigureMethodInfos(INamedTypeSymbol graphOrGraphExtension, GraphType graphType, PXContext pxContext,
 																						 CancellationToken cancellationToken, int? declarationOrder = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-			if (pxContext?.PXGraphExtension.Configure == null)
+			var originalConfigureMethod = GetOriginalConfigureMethod(graphType, pxContext);
+
+			if (originalConfigureMethod == null)
 				return Array.Empty<ConfigureMethodInfo>();
 
 			ImmutableArray<ISymbol> configureTypeMembers = graphOrGraphExtension.GetMembers(DelegateNames.Workflow.Configure);
@@ -75,7 +78,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				var overridesChain = configureMethodCandidate.GetOverridesAndThis().ToList();
 				var originalVirtualMethod = overridesChain[overridesChain.Count - 1];
 
-				if (pxContext.PXGraphExtension.Configure.Equals(originalVirtualMethod))
+				if (originalConfigureMethod.Equals(originalVirtualMethod))
 				{
 					// Do not include the original PXGraphExtension.Configure method into results
 					return overridesChain.Take(overridesChain.Count - 1)
@@ -86,5 +89,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			return Array.Empty<ConfigureMethodInfo>();
 		}
+
+		private static IMethodSymbol? GetOriginalConfigureMethod(GraphType graphType, PXContext pxContext) =>
+			graphType switch
+			{
+				GraphType.PXGraph => pxContext?.PXGraph.Configure,
+				GraphType.PXGraphExtension => pxContext?.PXGraphExtension.Configure,
+				_ => null
+			};
 	}
 }
