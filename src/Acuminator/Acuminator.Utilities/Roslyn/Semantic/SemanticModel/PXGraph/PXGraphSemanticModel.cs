@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -29,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// The graph symbol. For the graph is the same as <see cref="Symbol"/>. For graph extensions is the extension's base graph.
 		/// </summary>
-		public ITypeSymbol GraphSymbol { get; }
+		public ITypeSymbol? GraphSymbol { get; }
 
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors { get; }
 		public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
@@ -40,7 +42,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, DataViewDelegateInfo> ViewDelegatesByNames { get; }
 		public IEnumerable<DataViewDelegateInfo> ViewDelegates => ViewDelegatesByNames.Values;
 
-
 		public ImmutableDictionary<string, ActionInfo> ActionsByNames { get; }
 		public IEnumerable<ActionInfo> Actions => ActionsByNames.Values;
 
@@ -50,8 +51,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// Actions which are declared in a graph/graph extension represented by this semantic model instance.
 		/// </summary>
-		public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None 
-			? Enumerable.Empty<ActionInfo>() 
+		public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None
+			? Enumerable.Empty<ActionInfo>()
 			: Actions.Where(action => Symbol?.Equals(action.Symbol?.ContainingType) ?? false);
 
 		/// <summary>
@@ -68,7 +69,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <value>
 		/// The info about IsActive method.
 		/// </value>
-		public IsActiveMethodInfo IsActiveMethodInfo { get; }
+		public IsActiveMethodInfo? IsActiveMethodInfo { get; }
 
 		/// <summary>
 		/// Gets the info about IsActiveForGraph&lt;TGraph&gt; method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
@@ -76,8 +77,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <value>
 		/// The info about IsActiveForGraph&lt;TGraph&gt; method.
 		/// </value>
-		public IsActiveForGraphMethodInfo IsActiveForGraphMethodInfo { get; }
+		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo { get; }
 
+		/// <summary>
+		/// Gets the PXGraphExtension.Configure method overrides. Extensions that override this method are 
+		/// </summary>
+		/// <value>
+		/// The configure method overrides.
+		/// </value>
+		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides { get; }
+
+		/// <summary>
+		/// Flag indicating whether the graph or graph extension configures workflow.
+		/// </summary>
+		public bool ConfiguresWorkflow => !ConfigureMethodOverrides.IsDefaultOrEmpty;
 
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
 									 CancellationToken cancellation = default)
@@ -107,6 +120,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			Initializers = GetDeclaredInitializers().ToImmutableArray();
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
+			ConfigureMethodOverrides = GetConfigureMethodOverrides();
 		}
 
 		private void InitProcessingDelegatesInfo()
@@ -136,7 +150,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				walker.Visit(node);
 			}
-			
+
 			foreach (var (viewName, paramsDelegateInfo) in walker.ParametersDelegateListByView)
 			{
 				ViewsByNames[viewName].ParametersDelegates = paramsDelegateInfo.ToImmutableArray();
@@ -160,7 +174,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private ImmutableDictionary<string, DataViewInfo> GetDataViews() =>
 			GetInfos(() => Symbol.GetViewsWithSymbolsFromPXGraph(PXContext),
 					 () => Symbol.GetViewsFromGraphExtensionAndBaseGraph(PXContext));
-		
+
 		private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates() =>
 			GetInfos(() => Symbol.GetViewDelegatesFromGraph(ViewsByNames, PXContext, cancellation: _cancellation),
 					 () => Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, PXContext, _cancellation));
@@ -168,11 +182,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private ImmutableDictionary<string, ActionInfo> GetActions() =>
 			GetInfos(() => Symbol.GetActionSymbolsWithTypesFromGraph(PXContext),
 					 () => Symbol.GetActionsFromGraphExtensionAndBaseGraph(PXContext));
-		
-		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers() => 
+
+		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers() =>
 			GetInfos(() => Symbol.GetActionHandlersFromGraph(ActionsByNames, PXContext, cancellation: _cancellation),
 					 () => Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, PXContext, _cancellation));
-		
+
 		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> graphInfosSelector,
 																   Func<OverridableItemsCollection<TInfo>> graphExtInfosSelector)
 		where TInfo : IOverridableItem<TInfo>
@@ -218,7 +232,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="semanticModel">Semantic model</param>
 		/// <param name="cancellation">Cancellation</param>
 		/// <returns></returns>
-		public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, 
+		public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
 																	GraphSemanticModelCreationOptions modelCreationOptions,
 																	CancellationToken cancellation = default)
 		{
@@ -271,7 +285,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		public static PXGraphSemanticModel InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol,
+		public static PXGraphSemanticModel? InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol,
 															  GraphSemanticModelCreationOptions modelCreationOptions,
 															  CancellationToken cancellation)
 		{
@@ -316,14 +330,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return walker.GraphInitDelegates;
 		}
 
-		private IsActiveMethodInfo GetIsActiveMethodInfo() =>
+		private IsActiveMethodInfo? GetIsActiveMethodInfo() =>
 			Type == GraphType.PXGraphExtension
 				? IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation)
 				: null;
 
-		private IsActiveForGraphMethodInfo GetIsActiveForGraphMethodInfo() =>
+		private IsActiveForGraphMethodInfo? GetIsActiveForGraphMethodInfo() =>
 			Type == GraphType.PXGraphExtension
 				? IsActiveForGraphMethodInfo.GetIsActiveForGraphMethodInfo(Symbol, _cancellation)
 				: null;
+
+		private ImmutableArray<ConfigureMethodInfo> GetConfigureMethodOverrides()
+		{
+			if (Type == GraphType.None)
+				return ImmutableArray<ConfigureMethodInfo>.Empty;
+
+			var configureOverrides = ConfigureMethodInfo.GetConfigureMethodInfos(Symbol, PXContext, _cancellation);
+			return configureOverrides.ToImmutableArray();
+		}
 	}
 }
