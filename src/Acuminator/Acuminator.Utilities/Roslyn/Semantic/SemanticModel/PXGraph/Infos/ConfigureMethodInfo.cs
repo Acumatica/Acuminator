@@ -34,16 +34,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		/// <summary>
-		/// Collects info about Configure method overrides from a graph extension symbol and creates <see cref="ConfigureMethodInfo"/> DTO.
+		/// Collects info about Configure method overrides from a graph or graph extension symbol and creates <see cref="ConfigureMethodInfo"/> DTO.
 		/// </summary>
-		/// <param name="graphExtension">The graph extension.</param>
+		/// <remarks>
+		/// We collect only Configure method overrides from the class hierarchy because:<br/>
+		/// - PXOverride mechanism is not supported by the workflow mechanism. Thus, it's no use to check chained extensions, <bt/>  
+		/// they can't affect workflow configuration done by the base extension or graph
+		/// - Graph and graph extension overrides of Configure method can be considered independently.<br/>  
+		/// Therefore, for graph extension base graph's Configure method overrides are not included into results
+		/// </remarks>
+		/// <param name="graphOrGraphExtension">The graph or graph extension.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
 		/// <param name="cancellationToken">A token that allows processing to be cancelled.</param>
 		/// <param name="declarationOrder">(Optional) The declaration order.</param>
 		/// <returns>
-		/// A collection of <see cref="ConfigureMethodInfo"/> DTOs if the graph extension contains one or several Configure method, otherwise an empty collection.
+		/// A collection of <see cref="ConfigureMethodInfo"/> DTOs if the graph / graph extension contains one or several Configure method, otherwise an empty collection.
 		/// </returns>
-		internal static IReadOnlyCollection<ConfigureMethodInfo> GetConfigureMethodInfos(INamedTypeSymbol graphExtension, PXContext pxContext, 
+		internal static IReadOnlyCollection<ConfigureMethodInfo> GetConfigureMethodInfos(INamedTypeSymbol graphOrGraphExtension, PXContext pxContext, 
 																						 CancellationToken cancellationToken, int? declarationOrder = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -51,7 +58,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (pxContext?.PXGraphExtension.Configure == null)
 				return Array.Empty<ConfigureMethodInfo>();
 
-			ImmutableArray<ISymbol> configureTypeMembers = graphExtension.GetMembers(DelegateNames.Workflow.Configure);
+			ImmutableArray<ISymbol> configureTypeMembers = graphOrGraphExtension.GetMembers(DelegateNames.Workflow.Configure);
 
 			if (configureTypeMembers.IsDefaultOrEmpty)
 				return Array.Empty<ConfigureMethodInfo>();
