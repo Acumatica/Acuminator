@@ -61,12 +61,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (originalConfigureMethod == null)
 				return Array.Empty<ConfigureMethodInfo>();
 
-			ImmutableArray<ISymbol> configureTypeMembers = graphOrGraphExtension.GetMembers(DelegateNames.Workflow.Configure);
+			var allConfigureTypeMethods = (from type in graphOrGraphExtension.GetBaseTypesAndThis()
+										   select type.GetMembers(DelegateNames.Workflow.Configure)
+												into configureTypeMembers
+										   where !configureTypeMembers.IsDefaultOrEmpty
+										   select configureTypeMembers.OfType<IMethodSymbol>())
+										  .SelectMany(m => m);
 
-			if (configureTypeMembers.IsDefaultOrEmpty)
-				return Array.Empty<ConfigureMethodInfo>();
-
-			var configureCandidates = from method in configureTypeMembers.OfType<IMethodSymbol>()
+			var configureCandidates = from method in allConfigureTypeMethods
 									  where !method.IsStatic && method.ReturnsVoid && method.IsOverride && 
 											 method.DeclaredAccessibility == Accessibility.Public && method.Parameters.Length == 1
 									  select method;
