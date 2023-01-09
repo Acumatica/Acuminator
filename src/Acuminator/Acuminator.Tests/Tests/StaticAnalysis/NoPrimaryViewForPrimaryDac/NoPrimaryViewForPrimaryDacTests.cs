@@ -33,6 +33,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoPrimaryViewForPrimaryDac
 				Descriptors.PX1018_NoPrimaryViewForPrimaryDac.CreateFor(line: 23, column: 15));
 
 		[Theory]
+		[EmbeddedFileData("GenericGraphNoPrimaryViewForPrimaryDac.cs")]
+		public virtual Task GenericGraphs_WithInheritance_WithoutPrimaryView_NoDiagnostics(string source) => 
+			VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1018_NoPrimaryViewForPrimaryDac.CreateFor(line: 23, column: 69));
+
+		[Theory]
 		[EmbeddedFileData("HasPrimaryViewForPrimaryDac.cs")]
 		public virtual Task WithPrimaryView_NoDiagnostics(string source) => VerifyCSharpDiagnosticAsync(source);
 
@@ -44,11 +50,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoPrimaryViewForPrimaryDac
 
 		[Theory]
 		[EmbeddedFileData("HasPrimaryViewForPrimaryDacFluentBQL.cs")]
-		public virtual Task WithPrimaryView_FluentBql_NoDiagnostics(string source) => VerifyCSharpDiagnosticAsync(source);
-
-		[Theory]
-		[EmbeddedFileData("GenericGraphNoPrimaryViewForPrimaryDac.cs")]
-		public virtual Task GenericGraphs_WithInheritance_WithoutPrimaryView_NoDiagnostics(string source) => VerifyCSharpDiagnosticAsync(source);
+		public virtual Task WithPrimaryView_FluentBql_NoDiagnostics(string source) => VerifyCSharpDiagnosticAsync(source);	
 
 		[Theory]
 		[EmbeddedFileData("AbstractGraphNoPrimaryViewForPrimaryDac.cs")]
