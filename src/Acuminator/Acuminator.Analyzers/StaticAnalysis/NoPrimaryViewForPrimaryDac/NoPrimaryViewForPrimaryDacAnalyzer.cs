@@ -7,6 +7,7 @@ using System.Linq;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
 
@@ -22,16 +23,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => 
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraph &&
-			!graph.Symbol.IsAbstract;
+			!graph.Symbol.IsAbstract && !graph.Symbol.IsUnboundGenericType;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			ITypeSymbol? declaredPrimaryDacType = graph.Symbol.GetDeclaredPrimaryDacFromGraphOrGraphExtension(pxContext);
 
-			if (declaredPrimaryDacType == null)
+			if (declaredPrimaryDacType == null || declaredPrimaryDacType is ITypeParameterSymbol)
 				return;
 
 			bool hasViewForPrimaryDac = graph.Views.Select(view => view.DAC).Contains(declaredPrimaryDacType);
