@@ -22,18 +22,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => graph.Type == GraphType.PXGraph;
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => 
+			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraph;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph)
 		{
+			context.CancellationToken.ThrowIfCancellationRequested();
 			ITypeSymbol? declaredPrimaryDacType = graph.Symbol.GetDeclaredPrimaryDacFromGraphOrGraphExtension(pxContext);
 
-			if (declaredPrimaryDacType == null || context.CancellationToken.IsCancellationRequested)
+			if (declaredPrimaryDacType == null)
 				return;
 
 			bool hasViewForPrimaryDac = graph.Views.Select(view => view.DAC).Contains(declaredPrimaryDacType);
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (hasViewForPrimaryDac || context.CancellationToken.IsCancellationRequested)
+			if (hasViewForPrimaryDac)
 				return;
 
 			Location? location = GetLocation(graph, declaredPrimaryDacType, context);
@@ -41,6 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			if (location == null)
 				return;
 
+			context.CancellationToken.ThrowIfCancellationRequested();
 			context.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac, location),
 				pxContext.CodeAnalysisSettings);
@@ -62,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 
 			foreach (GenericNameSyntax baseClassTypeNode in baseClassesTypeNodes)
 			{
-				var baseClassTypeSymbol = semanticModel.GetSymbolInfo(baseClassTypeNode, context.CancellationToken).Symbol as INamedTypeSymbol;
+				var baseClassTypeSymbol = semanticModel.GetSymbolOrFirstCandidate(baseClassTypeNode, context.CancellationToken) as INamedTypeSymbol;
 				Location? location = GetLocationFromBaseClassTypeNode(baseClassTypeNode, baseClassTypeSymbol, declaredPrimaryDacType);
 
 				if (location != null)
