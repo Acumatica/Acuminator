@@ -17,7 +17,7 @@ namespace PX.Objects.HackathonDemo
 
 	public class ARInvoiceEntry : InvoiceEntryBase
 	{
-		PXSelect<ARInvoice> Invoices;
+		public PXSelect<ARInvoice> Invoices;
 	}
 
 	public class SOInvoiceEntry : ARInvoiceEntry

@@ -28,14 +28,14 @@ namespace PX.Objects.HackathonDemo
 
 	public class ARInvoiceEntry : ARInvoiceEntryBase<ARInvoiceEntry>
 	{
-		PXSelect<ARInvoice> Invoices;
+		public PXSelect<ARInvoice> Invoices;
 	}
 
 	public class OrderEntryBaseWithView<TGraph, TSomeType, TDac> : PXGraph<TGraph, TSomeType, TDac>
 	where TGraph : PXGraph, new()
 	where TDac : class, IBqlTable, new()
 	{
-		PXSelect<TDac> Orders;
+		public PXSelect<TDac> Orders;
 	}
 
 	public class SOOrderEntryBase<TDac> : OrderEntryBaseWithView<SOOrderEntryBase<TDac>, int, TDac>
