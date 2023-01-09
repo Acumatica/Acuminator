@@ -257,6 +257,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				throw new ArgumentException("Invalid interface type", nameof(interfaceType));
 			}
 
+			// Interface types themselves are not included into AllInterfaces set, they do not implement themselves from Roslyn POV.
+			// However, for simplicity in Acuminator analysis we can assume equality of type and interfaceType as a special case of type implementing interfaceType interface.
+			// Therefore, we need to check type if it's an interface if it equals to the interfaceType
+			if (type.TypeKind == TypeKind.Interface && type.Equals(interfaceType))
+				return true;
+
 			return type.AllInterfaces.Any(t => t.Equals(interfaceType));
 		}
 
