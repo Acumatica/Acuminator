@@ -45,5 +45,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoPrimaryViewForPrimaryDac
 		[Theory]
 		[EmbeddedFileData("HasPrimaryViewForPrimaryDacFluentBQL.cs")]
 		public virtual Task WithPrimaryView_FluentBql_NoDiagnostics(string source) => VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("GenericGraphNoPrimaryViewForPrimaryDac.cs")]
+		public virtual Task GenericGraphs_WithInheritance_WithoutPrimaryView_NoDiagnostics(string source) => VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("AbstractGraphNoPrimaryViewForPrimaryDac.cs")]
+		public virtual Task AbstractGraphs_WithInheritance_WithoutPrimaryView_NoDiagnostics(string source) => VerifyCSharpDiagnosticAsync(source);
 	}
 }
