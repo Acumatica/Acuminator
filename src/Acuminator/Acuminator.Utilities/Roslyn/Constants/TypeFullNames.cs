@@ -204,6 +204,7 @@
 			public const string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
 			public const string PXRowPersistedException    = "PX.Data.PXRowPersistedException";
 			public const string PXLockViolationException   = "PX.Data.PXLockViolationException";
+			public const string PXExceptionInfo            = "PX.Objects.Common.Exceptions.PXExceptionInfo";
 		}
 
 		internal static class Serialization
