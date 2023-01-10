@@ -44,10 +44,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionConstructorInvocation(syntaxContext, pxContext),
+			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeConstructorInvocations(syntaxContext, pxContext),
 															 SyntaxKind.ObjectCreationExpression);
 			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionChainedConstructorCall(syntaxContext, pxContext),
 															 SyntaxKind.ClassDeclaration);
+		}
+
+		private void AnalyzeConstructorInvocations(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			AnalyzePXExceptionConstructorInvocation(syntaxContext, pxContext);
 		}
 
 		private void AnalyzePXExceptionConstructorInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
