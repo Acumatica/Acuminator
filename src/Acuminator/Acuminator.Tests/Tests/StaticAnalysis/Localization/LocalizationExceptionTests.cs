@@ -38,6 +38,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		}
 
 		[Theory]
+		[EmbeddedFileData("LocalizationPXExceptionInfoWithHardcodedStrings.cs")]
+		public async Task Localization_PXExceptionInfo_WithHardcodedMessageArgument(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(11, 53),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(17, 64),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(25, 44),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(28, 67));
+		}
+
+		[Theory]
 		[EmbeddedFileData("ExceptionWithConstStringFieldPassedToBaseConstructor.cs")]
 		public async Task Localization_PXException_WithTypeMemberArguments_PassedToBaseConstructor(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
