@@ -295,7 +295,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtension.Type);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

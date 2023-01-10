@@ -18,9 +18,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	public class IsActiveForGraphMethodInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
 		/// <summary>
-		/// (Immutable) The IsActiveForGraph&lt;TGraph&gt; declaration order to place it second after IsActive .
+		/// The IsActiveForGraph&lt;TGraph&gt; declaration order to place it second after IsActive.
 		/// </summary>
-		private const int IsActiveForGraphDeclarationOrderToPlaceItSecond = -1;
+		private const int IsActiveForGraphDeclarationOrderToPlaceItSecond = -2;
 
 		public IsActiveForGraphMethodInfo(MethodDeclarationSyntax node, IMethodSymbol isActiveForGraphMethod, int? declarationOrder = null) :
 									 base(node, isActiveForGraphMethod, declarationOrder ?? IsActiveForGraphDeclarationOrderToPlaceItSecond)

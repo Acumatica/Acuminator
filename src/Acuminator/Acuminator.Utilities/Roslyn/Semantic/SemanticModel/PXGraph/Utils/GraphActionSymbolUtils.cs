@@ -249,7 +249,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																		AddActionInfoWithOrderDelegate<TInfo> addGraphExtensionActionInfoWithOrder)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
+			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return new OverridableItemsCollection<TInfo>();
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);

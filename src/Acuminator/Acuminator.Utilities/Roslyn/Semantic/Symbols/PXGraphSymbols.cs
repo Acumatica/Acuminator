@@ -1,7 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -9,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	{
 		public class InstanceCreatedEventsSymbols : SymbolsSetForTypeBase
 	    {
-			public IMethodSymbol AddHandler { get; }
+			public IMethodSymbol? AddHandler { get; }
 
 		    internal InstanceCreatedEventsSymbols(Compilation compilation) : base(compilation, DelegateNames.InstanceCreatedEvents)
 		    {
@@ -25,18 +31,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 	    public InstanceCreatedEventsSymbols InstanceCreatedEvents { get; }
 
-		public IMethodSymbol InitCacheMapping => Type.GetMembers(DelegateNames.InitCacheMapping)
-													 .OfType<IMethodSymbol>()
-													 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
+		public IMethodSymbol? InitCacheMapping => Type?.GetMembers(DelegateNames.InitCacheMapping)
+													   .OfType<IMethodSymbol>()
+													   .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
 
-		internal PXGraphSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXGraph)
+		public IMethodSymbol? Configure { get; }
+
+		internal PXGraphSymbols(PXContext pxContext) : base(pxContext.Compilation, TypeFullNames.PXGraph)
         {
-			GenericTypeGraph = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1);
-			GenericTypeGraphDac = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2);
-			GenericTypeGraphDacField = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3);
+			Type.ThrowOnNull(nameof(Type));
+
+			GenericTypeGraph = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1);
+			GenericTypeGraphDac = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2);
+			GenericTypeGraphDacField = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3);
 
 			CreateInstance = Type.GetMethods(DelegateNames.CreateInstance);
-			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(compilation);
-        }
+			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(Compilation);
+
+			Configure = Type.GetConfigureMethodFromBaseGraphOrGraphExtension(pxContext);
+		}
     }
 }

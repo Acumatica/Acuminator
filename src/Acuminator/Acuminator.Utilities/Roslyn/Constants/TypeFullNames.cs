@@ -211,5 +211,10 @@
 			public const string ReflectionSerializer = "PX.Common.ReflectionSerializer";
 			public const string PXReflectionSerializer = "PX.Common.PXReflectionSerializer";
 		}
+
+		internal static class Workflow
+		{
+			public const string PXScreenConfiguration = "PX.Data.WorkflowAPI.PXScreenConfiguration";
+		}
 	}
 }
