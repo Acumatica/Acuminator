@@ -50,6 +50,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 															 SyntaxKind.ClassDeclaration);
 		}
 
+		private void AnalyzePXExceptionConstructorInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			if (syntaxContext.Node is not ObjectCreationExpressionSyntax constructorCall || constructorCall.ArgumentList?.Arguments.Count is null or 0)
+				return;
+
+			ITypeSymbol? exceptionType = syntaxContext.SemanticModel.GetTypeInfo(constructorCall, syntaxContext.CancellationToken).Type;
+
+			if (exceptionType == null || !IsLocalizableException(exceptionType, pxContext))
+				return;
+
+			var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
+
+			if (symbol is not IMethodSymbol constructor)
+				return;
+
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+			ExpressionSyntax? messageExpression = GetMessageExpression(constructor, constructorCall.ArgumentList);
+
+			if (messageExpression == null)
+				return;
+
+			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext, ValidationContext.PXExceptionConstructorCall);
+			messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
+		}
+
 		private void AnalyzePXExceptionChainedConstructorCall(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
@@ -108,33 +135,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			}
 
 			return null;
-		}
-
-		private void AnalyzePXExceptionConstructorInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-		{
-			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			if (syntaxContext.Node is not ObjectCreationExpressionSyntax constructorCall || constructorCall.ArgumentList?.Arguments.Count is null or 0)
-				return;
-
-			ITypeSymbol? exceptionType = syntaxContext.SemanticModel.GetTypeInfo(constructorCall, syntaxContext.CancellationToken).Type;
-
-			if (exceptionType == null || !IsLocalizableException(exceptionType, pxContext))
-				return;
-
-			var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
-
-			if (symbol is not IMethodSymbol constructor)
-				return;
-
-			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-			ExpressionSyntax? messageExpression = GetMessageExpression(constructor, constructorCall.ArgumentList);
-
-			if (messageExpression == null)
-				return;
-
-			var messageValidator = new LocalizationMessageValidator(syntaxContext, pxContext, ValidationContext.PXExceptionConstructorCall);
-			messageValidator.ValidateMessage(messageExpression, isFormatMethod: false);
 		}
 
 		private bool IsLocalizableException(ITypeSymbol type, PXContext pxContext) =>
