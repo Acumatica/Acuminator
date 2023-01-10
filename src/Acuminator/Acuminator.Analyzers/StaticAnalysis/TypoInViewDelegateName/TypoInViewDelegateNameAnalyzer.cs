@@ -1,14 +1,18 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 
 namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
@@ -43,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 				if (viewWithoutDelegatesNames.Any(viewName => viewName == method.Name))
 					continue;
 
-				string nearestViewName = FindNearestView(viewWithoutDelegatesNames, method);
+				string? nearestViewName = FindNearestView(viewWithoutDelegatesNames, method);
 
 				if (nearestViewName != null && !method.Locations.IsEmpty)
 				{
@@ -57,11 +61,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 			}
 		}
 
-	    private string FindNearestView(List<string> viewCandidatesNames, IMethodSymbol method)
+	    private string? FindNearestView(List<string> viewCandidatesNames, IMethodSymbol method)
 	    {
 			string methodName = method.Name.ToLowerInvariant();
 		    int minDistance = int.MaxValue;
-		    string nearestViewName = null;
+		    string? nearestViewName = null;
 
 		    foreach (var viewName in viewCandidatesNames)
 		    {
