@@ -23,6 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 	{
 		LocalizationMethodCall,
 		PXExceptionConstructorCall,
+		PXExceptionInfoConstructorCall,
 		PXExceptionBaseOrThisConstructorCall
 	}
 
