@@ -72,7 +72,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				return;
 			}
 
-			if (messageSymbolWithStringType.ContainingType == null || IsPXExceptionMessageProperty(messageSymbolWithStringType))
+			if (messageSymbolWithStringType.ContainingType == null || IsAllowedMessageSymbol(messageSymbolWithStringType))
 				return;
 
 			Cancellation.ThrowIfCancellationRequested();
@@ -174,22 +174,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			}
 		}
 
-		private bool IsPXExceptionMessageProperty(ISymbol messageSymbolWithStringType)
+		private bool IsAllowedMessageSymbol(ISymbol messageSymbolWithStringType)
 		{
-			if (messageSymbolWithStringType is not IPropertySymbol property || property.Name != PropertyNames.Exception.Message ||
-				_pxContext.Exceptions.PXException == null)
+			if (messageSymbolWithStringType is not IPropertySymbol messageProperty)
+				return false;
+
+			return IsPXExceptionMessageProperty(messageProperty) || IsPXExceptionInfoMessageFormatProperty(messageProperty);
+		}
+
+		private bool IsPXExceptionMessageProperty(IPropertySymbol messageProperty)
+		{
+			if (messageProperty.Name != PropertyNames.Exception.Message ||
+				_pxContext.Exceptions.PXException == null || _pxContext.Exceptions.PXException_Message == null)
 			{
 				return false;
 			}
 
-			var pxExceptionMessageProperty = _pxContext.Exceptions.PXExceptionMessage;
+			return messageProperty.ContainingType.InheritsFromOrEquals(_pxContext.Exceptions.PXException) &&
+				   messageProperty.GetOverridesAndThis()
+								  .Contains(_pxContext.Exceptions.PXException_Message);
+		}
 
-			if (pxExceptionMessageProperty == null)
+		private bool IsPXExceptionInfoMessageFormatProperty(IPropertySymbol messageProperty)
+		{
+			if (messageProperty.Name != PropertyNames.Exception.MessageFormat ||
+				_pxContext.Exceptions.PXExceptionInfo == null || _pxContext.Exceptions.PXExceptionInfo_MessageFormat == null)
+			{
 				return false;
+			}
 
-			return property.ContainingType.InheritsFromOrEquals(_pxContext.Exceptions.PXException) &&
-				   property.GetOverridesAndThis()
-						   .Contains(pxExceptionMessageProperty);
+			return messageProperty.ContainingType.InheritsFromOrEquals(_pxContext.Exceptions.PXExceptionInfo) &&
+				   messageProperty.Equals(_pxContext.Exceptions.PXExceptionInfo_MessageFormat);
 		}
 
 		private bool IsLocalizableMessagesContainer(ITypeSymbol messageContainerType)
