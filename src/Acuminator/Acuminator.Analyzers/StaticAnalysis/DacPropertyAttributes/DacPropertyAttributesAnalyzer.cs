@@ -19,9 +19,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
 	public class DacPropertyAttributesAnalyzer : DacAggregatedAnalyzerBase
 	{
-		private const int MaxThreadsCount = 3;
-		private const int DacPropertiesConcurrentAnalysisThreshold = 50;
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -37,24 +34,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		{
 			FieldTypeAttributesRegister fieldAttributesRegister = new FieldTypeAttributesRegister(pxContext);
 
-			if (dacOrDacExt.PropertiesByNames.Count >= DacPropertiesConcurrentAnalysisThreshold)	//Do concurrent analysis only for big DACs
+			foreach (DacPropertyInfo property in dacOrDacExt.AllDeclaredProperties)
 			{
-				ParallelOptions parallelOptions = new ParallelOptions
-				{
-					CancellationToken = context.CancellationToken,
-					MaxDegreeOfParallelism = MaxThreadsCount
-				};
-
-				Parallel.ForEach(dacOrDacExt.AllDeclaredProperties, parallelOptions,
-								 property => CheckDacProperty(property, context, pxContext, fieldAttributesRegister));
-			}
-			else
-			{
-				foreach (DacPropertyInfo property in dacOrDacExt.AllDeclaredProperties)
-				{
-					CheckDacProperty(property, context, pxContext, fieldAttributesRegister);
-				}
-			}
+				CheckDacProperty(property, context, pxContext, fieldAttributesRegister);
+			}	
 		}
 
 		private static void CheckDacProperty(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
