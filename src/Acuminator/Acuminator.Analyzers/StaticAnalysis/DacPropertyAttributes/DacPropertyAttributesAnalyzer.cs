@@ -1,4 +1,12 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
+﻿#nullable enable
+
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
@@ -6,14 +14,10 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
@@ -229,7 +233,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				return;
 			}
 
-			ITypeSymbol typeToCompare;
+			ITypeSymbol? typeToCompare;
 
 			if (property.PropertyType.IsValueType)
 			{
@@ -253,8 +257,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		{
 			var diagnosticProperties = ImmutableDictionary.Create<string, string>()
 														  .Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
-			Location propertyTypeLocation = property.Node.Type.GetLocation();
-			Location attributeLocation = fieldAttribute.AttributeData.GetLocation(symbolContext.CancellationToken);
+			Location? propertyTypeLocation = property.Node.Type.GetLocation();
+			Location? attributeLocation = fieldAttribute.AttributeData.GetLocation(symbolContext.CancellationToken);
 
 			if (propertyTypeLocation != null)
 			{
@@ -278,7 +282,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		{
 			Location[] attributeLocations = attributesToReport.Select(a => a.AttributeData.GetLocation(symbolContext.CancellationToken))
 															  .Where(location => location != null)
-															  .ToArray();
+															  .ToArray()!;
 			foreach (Location location in attributeLocations)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
