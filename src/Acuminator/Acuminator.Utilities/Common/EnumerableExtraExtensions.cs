@@ -189,7 +189,7 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TItem?> PrependItem<TItem>(this IEnumerable<TItem>? source, TItem? itemToAdd) =>
+		public static IEnumerable<TItem> PrependItem<TItem>(this IEnumerable<TItem> source, TItem itemToAdd) =>
 			source.PrependOrAppend(itemToAdd, isAppending: false);
 
 		/// <summary>
@@ -201,11 +201,11 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TItem?> AppendItem<TItem>(this IEnumerable<TItem>? source, TItem? itemToAdd) =>
+		public static IEnumerable<TItem> AppendItem<TItem>(this IEnumerable<TItem> source, TItem itemToAdd) =>
 			source.PrependOrAppend(itemToAdd, isAppending: true);
 
 		[DebuggerStepThrough]
-		private static IEnumerable<TItem?> PrependOrAppend<TItem>(this IEnumerable<TItem>? source, TItem? itemToAdd, bool isAppending)
+		private static IEnumerable<TItem> PrependOrAppend<TItem>(this IEnumerable<TItem> source, TItem itemToAdd, bool isAppending)
 		{
 			if (!isAppending)
 				yield return itemToAdd;
