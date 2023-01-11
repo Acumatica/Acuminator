@@ -1,7 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Acuminator.Utilities.Common
 {
@@ -12,13 +15,6 @@ namespace Acuminator.Utilities.Common
 		{
 			source.ThrowOnNull(nameof(source));
 			return source.Cast<T?>().FirstOrDefault();
-		}
-
-		public static T? FirstOrNullable<T>(this IEnumerable<T> source, Func<T, bool> predicate)
-		where T : struct
-		{
-			source.ThrowOnNull(nameof(source));
-			return source.Cast<T?>().FirstOrDefault(v => predicate(v.Value));
 		}
 
 		public static T? LastOrNullable<T>(this IEnumerable<T> source)
@@ -143,7 +139,7 @@ namespace Acuminator.Utilities.Common
 
 		public static bool SequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, T, bool> comparer)
 		{
-			Debug.Assert(comparer != null);
+			comparer.ThrowOnNull(nameof(comparer));
 
 			if (first == second)
 			{
@@ -184,11 +180,51 @@ namespace Acuminator.Utilities.Common
 			public static readonly IComparer<T> Comparer = Comparer<T>.Create(CompareTo);
 		}
 
-		public static T[] Append<T>(this T[] source, T element) => ConcatArray(element, source, false);
+		/// <summary>
+		/// Prepends <paramref name="source"/> with an <paramref name="itemToAdd"/>.
+		/// </summary>
+		/// <typeparam name="TItem">Type of the item.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <param name="itemToAdd">The item to add.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TItem?> PrependItem<TItem>(this IEnumerable<TItem>? source, TItem? itemToAdd) =>
+			source.PrependOrAppend(itemToAdd, isAppending: false);
 
-		public static T[] Prepend<T>(this T[] tail, T head) => ConcatArray(head, tail, true);
+		/// <summary>
+		/// Appends <paramref name="source"/> with an <paramref name="item"/>.
+		/// </summary>
+		/// <typeparam name="TItem">Type of the item.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <param name="itemToAdd">The item to add.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TItem?> AppendItem<TItem>(this IEnumerable<TItem>? source, TItem? itemToAdd) =>
+			source.PrependOrAppend(itemToAdd, isAppending: true);
 
-		private static T[] ConcatArray<T>(T extraElement, T[] source, bool insertAtStart)
+		[DebuggerStepThrough]
+		private static IEnumerable<TItem?> PrependOrAppend<TItem>(this IEnumerable<TItem>? source, TItem? itemToAdd, bool isAppending)
+		{
+			if (!isAppending)
+				yield return itemToAdd;
+
+			if (source != null)
+			{
+				foreach (var item in source)
+					yield return item;
+			}
+
+			if (isAppending)
+				yield return itemToAdd;
+		}
+
+		public static T[] Append<T>(this T[]? source, T element) => ConcatArray(element, source, false);
+
+		public static T[] Prepend<T>(this T[]? tail, T head) => ConcatArray(head, tail, true);
+
+		private static T[] ConcatArray<T>(T extraElement, T[]? source, bool insertAtStart)
 		{
 			if (source == null)
 			{
@@ -201,11 +237,11 @@ namespace Acuminator.Utilities.Common
 			return result;
 		}
 
-		public static T[] Append<T>(this T[] source, params T[] elements) => ConcatArrays(elements, source, false);
+		public static T[] Append<T>(this T[]? source, params T[] elements) => ConcatArrays(elements, source, insertAtStart: false);
 
-		public static T[] Prepend<T>(this T[] tail, params T[] head) => ConcatArrays(head, tail, true);
+		public static T[] Prepend<T>(this T[]? tail, params T[] head) => ConcatArrays(head, tail, insertAtStart: true);
 
-		private static T[] ConcatArrays<T>(T[] extraElements, T[] source, bool insertAtStart)
+		private static T[] ConcatArrays<T>(T[] extraElements, T[]? source, bool insertAtStart)
 		{
 			if (source == null)
 			{
