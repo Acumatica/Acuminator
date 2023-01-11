@@ -23,7 +23,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type) =>
+			type.GetBaseTypesImplementation(includeThis: true);
+
+		/// <summary>
+		/// Gets the base types and this in this collection. The types are returned from the most derived ones to the most base <see cref="Object"/> type
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetBaseTypes(this ITypeSymbol type) =>
+			type.GetBaseTypesImplementation(includeThis: false);
+
+		private static IEnumerable<ITypeSymbol> GetBaseTypesImplementation(this ITypeSymbol type, bool includeThis)
 		{
 			type.ThrowOnNull(nameof(type));
 
@@ -31,35 +44,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				// for a type parameter we can consider its generic constraints like "where T : SomeClass" as its base types
 				var constraintTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
-												   .SelectMany(constraint => constraint.GetBaseTypesImplementation(includeThis: true))
+												   .SelectMany(constraint => constraint.GetBaseTypesIterator(includeThis: true))
 												   .Distinct();
-				return constraintTypes.PrependItem(typeParameter);
+				return includeThis 
+					? constraintTypes.PrependItem(typeParameter)
+					: constraintTypes;
 			}
 
-			return type.GetBaseTypesImplementation(includeThis: true);
+			return type.GetBaseTypesIterator(includeThis);
 		}
 
-		/// <summary>
-		/// Gets the base types and this in this collection. The types are returned from the most derived ones to the most base <see cref="Object"/> type
-		/// </summary>
-		/// <param name="type">The type to act on.</param>
-		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetBaseTypes(this ITypeSymbol type)
-		{
-			type.ThrowOnNull(nameof(type));
-
-			if (type is ITypeParameterSymbol typeParameter)
-			{
-				// for a type parameter we can consider its generic constraints like "where T : SomeClass" as its base types
-				return typeParameter.GetAllConstraintTypes(includeInterfaces: false)
-									.SelectMany(constraint => constraint.GetBaseTypesImplementation(includeThis: true))
-									.Distinct();
-			}
-
-			return type.GetBaseTypesImplementation(includeThis: false);			
-		}
-
-		private static IEnumerable<ITypeSymbol> GetBaseTypesImplementation(this ITypeSymbol typeToUse, bool includeThis)
+		private static IEnumerable<ITypeSymbol> GetBaseTypesIterator(this ITypeSymbol typeToUse, bool includeThis)
 		{
 			var current = includeThis ? typeToUse : typeToUse.BaseType;
 
