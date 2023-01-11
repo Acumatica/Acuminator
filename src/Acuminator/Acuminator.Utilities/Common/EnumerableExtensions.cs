@@ -147,11 +147,8 @@ namespace Acuminator.Utilities.Common
 		/// <typeparam name="TItem">Type of the item.</typeparam>
 		/// <param name="sourceList">The source list to act on.</param>
 		/// <param name="listToConcat">The list to concat.</param>
-		/// <returns>
-		/// An enumerator that allows foreach to be used to process concatenated arrays.
-		/// </returns>
+		/// <returns/>
 		[DebuggerStepThrough]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<TItem> Concat<TItem>(this ImmutableArray<TItem> sourceList, ImmutableArray<TItem> listToConcat)
 		{
 			for (int i = 0; i < sourceList.Length; i++)

@@ -72,7 +72,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				return;
 
 			bool isLocalizableException = IsLocalizableException(createdObjectType, pxContext);
-			bool isPXExceptionInfo = createdObjectType.InheritsFromOrEquals(pxContext.Exceptions.PXExceptionInfo);
+			bool isPXExceptionInfo = pxContext.Exceptions.PXExceptionInfo != null 
+				? createdObjectType.InheritsFromOrEquals(pxContext.Exceptions.PXExceptionInfo)
+				: false;
 
 			if (!isLocalizableException && !isPXExceptionInfo)
 				return;
