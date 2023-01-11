@@ -29,16 +29,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			if (type is ITypeParameterSymbol typeParameter)
 			{
-				IEnumerable<ITypeSymbol> constraintTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
-																	    .SelectMany(GetBaseTypesImplementation)
-																	    .Distinct();
-				return typeParameter.ToEnumerable()
-									.Concat(constraintTypes);
+				// for a type parameter we can consider its generic constraints like "where T : SomeClass" as its base types
+				var constraintTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
+												   .SelectMany(constraint => constraint.GetBaseTypesImplementation(includeThis: true))
+												   .Distinct();
+				return constraintTypes.PrependItem(typeParameter);
 			}
-			else
-			{
-				return type.GetBaseTypesAndThisImplementation();
-			}		
+
+			return type.GetBaseTypesImplementation(includeThis: true);
 		}
 
 		/// <summary>
@@ -46,34 +44,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<INamedTypeSymbol> GetBaseTypes(this ITypeSymbol type)
+		public static IEnumerable<ITypeSymbol> GetBaseTypes(this ITypeSymbol type)
 		{
 			type.ThrowOnNull(nameof(type));
 
 			if (type is ITypeParameterSymbol typeParameter)
 			{
+				// for a type parameter we can consider its generic constraints like "where T : SomeClass" as its base types
 				return typeParameter.GetAllConstraintTypes(includeInterfaces: false)
-									.SelectMany(GetBaseTypesImplementation)
+									.SelectMany(constraint => constraint.GetBaseTypesImplementation(includeThis: true))
 									.Distinct();
 			}
 
-			return type.GetBaseTypesImplementation();			
+			return type.GetBaseTypesImplementation(includeThis: false);			
 		}
 
-		private static IEnumerable<ITypeSymbol> GetBaseTypesAndThisImplementation(this ITypeSymbol typeToUse)
+		private static IEnumerable<ITypeSymbol> GetBaseTypesImplementation(this ITypeSymbol typeToUse, bool includeThis)
 		{
-			var current = typeToUse;
-
-			while (current != null)
-			{
-				yield return current;
-				current = current.BaseType;
-			}
-		}
-
-		private static IEnumerable<INamedTypeSymbol> GetBaseTypesImplementation(this ITypeSymbol typeToUse)
-		{
-			var current = typeToUse.BaseType;
+			var current = includeThis ? typeToUse : typeToUse.BaseType;
 
 			while (current != null)
 			{

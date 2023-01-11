@@ -65,6 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 
 			var constantUnderlyingType = constantDef
 				.GetBaseTypes()
+				.OfType<INamedTypeSymbol>()
 				.FirstOrDefault(t => t.IsGenericType && t.InheritsFromOrEqualsGeneric(pxContext.BqlConstantType))?
 				.TypeArguments[0];
 
