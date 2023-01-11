@@ -42,7 +42,7 @@ namespace Acuminator.Tests.Helpers
 			: this(new[] { fileName }, testFilePath, internalCodeFileNames)
 		{ }
 
-		protected EmbeddedFileDataAttribute(string[] fileNames, string? testFilePath, string[] externalCodeFileNames = null)
+		protected EmbeddedFileDataAttribute(string[] fileNames, string? testFilePath, string[]? externalCodeFileNames = null)
 		{
 			if (fileNames.IsNullOrEmpty())
 				throw new ArgumentNullException(nameof(fileNames));
@@ -114,7 +114,7 @@ namespace Acuminator.Tests.Helpers
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static string TransformFileNameToAssemblyResourceID(string fileName) =>
-			fileName?.Replace(Path.DirectorySeparatorChar, '.')
-					 .Replace(' ', '_');
+			fileName.Replace(Path.DirectorySeparatorChar, '.')
+					.Replace(' ', '_');
 	}
 }
