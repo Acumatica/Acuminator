@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// Helper used to retrieve info about Acumatica attributes and their relationship with each other.
 	/// </summary>
 	/// <remarks>
-	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
+	/// By Acumatica attribute we mean an attribute derived from PXEventSubscriberAttribute.
 	/// </remarks>
 	public class AcumaticaAttributesInfoProvider
 	{
@@ -38,27 +38,52 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		}
 
 		/// <summary>
+		/// Check if <paramref name="attributeType"/> is Acumatica attribute.
+		/// Acumatica attributes are PXEventSubscriberAttribute attribute and all attributes derived from it.
+		/// </summary>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <returns/>
+		public bool IsAcumaticaAttribute(ITypeSymbol attributeType) =>
+			_eventSubscriberAttribute.Equals(attributeType) || IsDerivedFromPXEventSubscriberAttribute(attributeType);
+
+		/// <summary>
+		/// Check if <paramref name="attributeType"/> is derived from PXEventSubscriberAttribute attribute (but is not PXEventSubscriberAttribute itself)
+		/// </summary>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <returns/>
+		public bool IsDerivedFromPXEventSubscriberAttribute(ITypeSymbol attributeType) =>
+			attributeType.InheritsFrom(_eventSubscriberAttribute);
+
+		/// <summary>
+		/// Check if <paramref name="attributeType"/> is an Acumatica aggregator attribute.
+		/// </summary>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <returns/>
+		public bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
+			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
+
+		/// <summary>
 		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. If non Acumatica attributes are passed then <c>flase</c> is returned.
 		/// </summary>
 		/// <param name="attributeType">Type of the attribute.</param>
-		/// <param name="typeToCheck">The base attribute type to check.</param>
+		/// <param name="baseAttributeTypeToCheck">The base attribute type to check.</param>
 		/// <returns>
-		/// True if attribute derived from <paramref name="typeToCheck"/>, false if not.
+		/// True if attribute derived from <paramref name="baseAttributeTypeToCheck"/>, false if not.
 		/// </returns>
-		public bool IsAttributeDerivedFromClass(ITypeSymbol attributeType, ITypeSymbol typeToCheck)
+		public bool IsAttributeDerivedFromOtherAttribute(ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck)
 		{
 			attributeType.ThrowOnNull(nameof(attributeType));
-			typeToCheck.ThrowOnNull(nameof(typeToCheck));
+			baseAttributeTypeToCheck.ThrowOnNull(nameof(baseAttributeTypeToCheck));
 
-			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute) || !typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
+			if (!IsAcumaticaAttribute(attributeType) || !IsAcumaticaAttribute(baseAttributeTypeToCheck))
 				return false;
 
-			return IsAttributeDerivedFromClass(attributeType, typeToCheck, recursionDepth: 0);
+			return IsAttributeDerivedFromOtherAttribute(attributeType, baseAttributeTypeToCheck, recursionDepth: 0);
 		}
 
-		private bool IsAttributeDerivedFromClass(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int recursionDepth)
+		private bool IsAttributeDerivedFromOtherAttribute(ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, int recursionDepth)
 		{
-			if (attributeType.InheritsFromOrEquals(typeToCheck))
+			if (attributeType.InheritsFromOrEquals(baseAttributeTypeToCheck))
 				return true;
 
 			if (recursionDepth > MaxRecursionDepth)
@@ -66,9 +91,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			 
 			if (IsAggregatorAttribute(attributeType))
 			{
-				return attributeType.GetAllAttributesDefinedOnThisAndBaseTypes()
-									.Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute))
-									.Any(attribute => IsAttributeDerivedFromClass(attribute, typeToCheck, recursionDepth + 1));
+				var aggregatedAcumaticaAttributes = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(attributeType);
+				return aggregatedAcumaticaAttributes.Any(attribute => IsAttributeDerivedFromOtherAttribute(attribute, baseAttributeTypeToCheck, recursionDepth + 1));
 			}
 
 			return false;
@@ -138,9 +162,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private IEnumerable<ITypeSymbol> GetAllDeclaredAcumaticaAttributesOnClassHierarchy(ITypeSymbol type) =>
 			type.GetAllAttributesDefinedOnThisAndBaseTypes()
-				.Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute));
-
-		private bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
-			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
+				.Where(IsDerivedFromPXEventSubscriberAttribute);
 	}
 }
