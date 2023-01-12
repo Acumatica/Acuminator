@@ -1,12 +1,5 @@
-﻿using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Text;
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -15,7 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Utilities.Roslyn.Semantic;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
@@ -119,7 +121,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 				if (mode == CodeFixModes.RemoveIdentityAttribute && isIdentityAttribute)
 				{
-					if ((attributeNode.Parent as AttributeListSyntax).Attributes.Count == 1)
+					if ((attributeNode.Parent as AttributeListSyntax)?.Attributes.Count == 1)
 						deletedNodes.Add(attributeNode.Parent);
 					else
 						deletedNodes.Add(attributeNode);
@@ -137,12 +139,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private IEnumerable<AttributeArgumentSyntax> GetIsKeyEQTrueArguments(AttributeSyntax attributeNode)
 		{
-			return attributeNode
-				.ArgumentList
-				.Arguments
-				.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(DelegateNames.IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
-				(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString,StringComparison.OrdinalIgnoreCase));
+			var arguments = attributeNode.ArgumentList.Arguments;
+
+			if (arguments.Count == 0)
+				return Enumerable.Empty<AttributeArgumentSyntax>();
+
+			return arguments.Where(attributeArgument => QueryIfIsKeyAttributeArgument(attributeArgument) && 
+														CheckIfAttributeArgumentValueIsTrue(attributeArgument));
 		}
 
+		private bool QueryIfIsKeyAttributeArgument(AttributeArgumentSyntax? attributeArgument) =>
+			PropertyNames.Attributes.IsKey.Equals(attributeArgument?.NameEquals?.Name?.Identifier.ValueText, StringComparison.OrdinalIgnoreCase);
+
+		private bool CheckIfAttributeArgumentValueIsTrue(AttributeArgumentSyntax? attributeArgument) =>
+			attributeArgument?.Expression is LiteralExpressionSyntax argumentValue
+				? bool.TrueString.Equals(argumentValue.Token.ValueText, StringComparison.OrdinalIgnoreCase)
+				: false;
 	}
 }
