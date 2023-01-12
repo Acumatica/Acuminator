@@ -753,7 +753,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_Override.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\NoPrimaryViewForPrimaryDacTests.cs" />
-    <Compile Include="Tests\Utilities\AttributeInformation\AttributeInformationTests.cs" />
+    <Compile Include="Tests\Utilities\AttributeInformation\AttributeSymbolHelpersTests.cs" />
     <Compile Include="Verification\CodeFixVerifier.cs" />
     <Compile Include="Verification\DiagnosticVerifier.cs" />
     <Compile Include="Verification\DiagnosticResult.cs" />

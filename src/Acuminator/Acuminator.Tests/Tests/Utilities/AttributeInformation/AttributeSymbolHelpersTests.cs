@@ -20,10 +20,9 @@ using Xunit;
 
 using static Acuminator.Tests.Verification.VerificationHelper;
 
-namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
+namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 {
-
-	public class AttributeInformationTests 
+	public class AttributeSymbolHelpersTests
 	{
 		/* 
 		 *  Tests attribute derived 
