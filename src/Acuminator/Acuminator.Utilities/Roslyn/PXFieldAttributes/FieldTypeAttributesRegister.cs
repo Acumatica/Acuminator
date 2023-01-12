@@ -15,6 +15,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	{
 		private readonly PXContext _pxContext;
 
+		private readonly AcumaticaAttributesInfoProvider _attributesInfoProvider;
 		private readonly AttributeInformation _attributeInformation;
 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleUnboundTypes { get; }
@@ -28,12 +29,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public FieldTypeAttributesRegister(PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			_pxContext = pxContext;
-			_attributeInformation = new AttributeInformation(_pxContext);
+			_pxContext                 = pxContext.CheckIfNull(nameof(pxContext));
+			_attributesInfoProvider    = new AcumaticaAttributesInfoProvider(_pxContext);
+			_attributeInformation      = new AttributeInformation(_pxContext);
 			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_pxContext).Keys;
-			UnboundTypeAttributes = unboundFieldAttributes.ToImmutableHashSet();
+			UnboundTypeAttributes      = unboundFieldAttributes.ToImmutableHashSet();
 
 			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(_pxContext).Keys;
 			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
@@ -52,14 +52,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			var expandedAttributes = _attributeInformation.GetAcumaticaAttributesFullList(attributeSymbol);
+			var flattenedAttributes = _attributesInfoProvider.GetFlattenedAcumaticaAttributes(attributeSymbol);
 
-			if (expandedAttributes.IsNullOrEmpty())
+			if (flattenedAttributes.IsNullOrEmpty())
 				return Enumerable.Empty<FieldTypeAttributeInfo>();
 
 			List<FieldTypeAttributeInfo> typeAttributeInfos = new List<FieldTypeAttributeInfo>(capacity: 2);
 
-			foreach (ITypeSymbol attribute in expandedAttributes)
+			foreach (ITypeSymbol attribute in flattenedAttributes)
 			{
 				FieldTypeAttributeInfo? attributeInfo = GetTypeAttributeInfo(attribute);
 

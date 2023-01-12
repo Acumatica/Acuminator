@@ -327,7 +327,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 			List<HashSet<ITypeSymbol>> result = new List<HashSet<ITypeSymbol>>();
 
-			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
+			var attributesInfoProvider = new AcumaticaAttributesInfoProvider(pxContext);
 
 			foreach (var property in properties)
 			{
@@ -340,7 +340,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 				foreach (var attribute in attributes)
 				{
-					var fullAttributesSet = attributeInformation.GetAcumaticaAttributesFullList(attribute.AttributeClass, expand).ToHashSet();
+					var fullAttributesSet = attributesInfoProvider.GetFlattenedAcumaticaAttributes(attribute.AttributeClass, expand).ToHashSet();
 
 					if (fullAttributesSet.Count > 0)
 					{
