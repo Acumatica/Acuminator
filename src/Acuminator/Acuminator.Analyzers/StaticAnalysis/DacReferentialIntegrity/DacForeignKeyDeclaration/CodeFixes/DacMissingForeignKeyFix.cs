@@ -162,7 +162,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type;
 			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
-			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
+			DBBoundnessCalculator attributeInformation = new DBBoundnessCalculator(pxContext);
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacProperties
 				where !dacProperty.Attributes.IsDefaultOrEmpty && 

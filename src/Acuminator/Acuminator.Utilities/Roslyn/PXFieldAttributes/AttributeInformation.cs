@@ -4,21 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Helper used to retrieve information about the Acumatica attributes.
+	/// Helper used to retrieve the information about Acumatica attributes DB boundness.
 	/// </summary>
 	/// <remarks>
 	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
 	/// </remarks>
-	public class AttributeInformation
+	public class DBBoundnessCalculator
 	{		
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
@@ -26,16 +26,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public PXContext Context { get; }
 
-		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
+		public ImmutableArray<ITypeSymbol> BoundBaseTypes { get; }
+
 		public ImmutableArray<MixedDbBoundnessAttributeInfo> AttributesContainingIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
 		private const string NonDB = "NonDB";
 
-		public AttributeInformation(PXContext pxContext)
+		public DBBoundnessCalculator(PXContext pxContext)
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
-			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableHashSet();
+			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableArray();
 			AttributesContainingIsDBField = FieldTypeAttributesRegister.GetTypesContainingIsDBField(Context)
 											.OrderBy(typeWithValue => typeWithValue.AttributeType, TypeSymbolsByHierachyComparer.Instance)
 											.ToImmutableArray();
@@ -124,11 +125,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 
-			if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute) ||
-				attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
-			{
+			if (!attribute.AttributeClass.IsAcumaticaAttribute(Context) || attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
 				return BoundType.NotDefined;
-			}
 
 			//First check attribute for IsDBField property, it takes highest priority in attribute's boundability and can appear in all kinds of attributes like Account/Sub attributes
 			bool containsIsDbFieldproperty = attribute.AttributeClass.GetBaseTypesAndThis()

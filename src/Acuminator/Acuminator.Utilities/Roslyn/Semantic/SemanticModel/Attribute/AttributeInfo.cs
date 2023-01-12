@@ -54,15 +54,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			IsAutoNumberAttribute = isAutoNumberAttribute;
 		}
 
-		public static AttributeInfo Create(AttributeData attribute, AttributeInformation attributeInformation, int declarationOrder)
+		public static AttributeInfo Create(AttributeData attribute, DBBoundnessCalculator attributeInformation, int declarationOrder)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 			attributeInformation.ThrowOnNull(nameof(attributeInformation));
 
 			BoundType boundType = attributeInformation.GetBoundAttributeType(attribute);
-			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation);
-			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation);
-			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, attributeInformation);
+			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation.Context);
+			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation.Context);
+			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, attributeInformation.Context);
 			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(PropertyNames.Attributes.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
@@ -70,27 +70,27 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 									 isPXDefaultAttribute, isAutoNumberAttribute);
 		}
 
-		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, AttributeInformation attributeInformation) =>
-			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, attributeInformation.Context.FieldAttributes.PXDBIdentityAttribute) ||
-			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, attributeInformation.Context.FieldAttributes.PXDBLongIdentityAttribute);
+		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext) =>
+			attribute.AttributeClass.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext) ||
+			attribute.AttributeClass.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext);
 
-		private static bool IsPXDefaultAttribute(AttributeData attribute, AttributeInformation attributeInformation)
+		private static bool IsPXDefaultAttribute(AttributeData attribute, PXContext pxContext)
 		{
-			var pxDefaultAttribute = attributeInformation.Context.AttributeTypes.PXDefaultAttribute;
-			var pxUnboundDefaultAttribute = attributeInformation.Context.AttributeTypes.PXUnboundDefaultAttribute;
+			var pxDefaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
+			var pxUnboundDefaultAttribute = pxContext.AttributeTypes.PXUnboundDefaultAttribute;
 
-			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxDefaultAttribute) &&
-				   !attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxUnboundDefaultAttribute);
+			return attribute.AttributeClass.IsDerivedFromAttribute(pxDefaultAttribute, pxContext) &&
+				   !attribute.AttributeClass.IsDerivedFromAttribute(pxUnboundDefaultAttribute, pxContext);
 		}
 
-		private static bool CheckForAutoNumberAttribute(AttributeData attribute, AttributeInformation attributeInformation)
+		private static bool CheckForAutoNumberAttribute(AttributeData attribute, PXContext pxContext)
 		{
-			var autoNumberAttribute = attributeInformation.Context.AttributeTypes.AutoNumberAttribute.Type;
+			var autoNumberAttribute = pxContext.AttributeTypes.AutoNumberAttribute.Type;
 
 			if (autoNumberAttribute == null)
 				return false;
 
-			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, autoNumberAttribute);
+			return attribute.AttributeClass.IsDerivedFromAttribute(autoNumberAttribute, pxContext);
 		}
 	}
 }

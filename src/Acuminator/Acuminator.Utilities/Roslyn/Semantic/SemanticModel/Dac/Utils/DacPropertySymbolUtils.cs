@@ -51,7 +51,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			int estimatedCapacity = dac.GetTypeMembers().Length;
 			var propertiesByName = new OverridableItemsCollection<DacPropertyInfo>(estimatedCapacity);
 			var dacProperties = GetRawPropertiesFromDacImpl(dac, pxContext, includeFromInheritanceChain, cancellation);
-			var attributeInformation = new AttributeInformation(pxContext);
+			var attributeInformation = new DBBoundnessCalculator(pxContext);
 
 			propertiesByName.AddRangeWithDeclarationOrder(dacProperties, startingOrder: 0, 
 												(rawData, order) => DacPropertyInfo.Create(pxContext, rawData.Node, rawData.Symbol, order, attributeInformation, dacFields));
@@ -102,7 +102,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			dacExtension.ThrowOnNull(nameof(dacExtension));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			var attributeInformation = new AttributeInformation(pxContext);
+			var attributeInformation = new DBBoundnessCalculator(pxContext);
 			return GetPropertiesOrFieldsInfoFromDacExtension<DacPropertyInfo>(dacExtension, pxContext, AddPropertiesFromDac, AddPropertiesFromDacExtension);
 
 			//-----------------------Local function----------------------------------------
