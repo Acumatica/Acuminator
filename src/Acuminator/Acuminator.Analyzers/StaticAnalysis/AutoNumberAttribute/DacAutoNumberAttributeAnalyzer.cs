@@ -32,24 +32,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			var autoNumberProperties = dacOrDacExt.DeclaredDacProperties.Where(property => property.IsAutoNumbering);
-			AcumaticaAttributesInfoProvider attributesInfoProvider = new AcumaticaAttributesInfoProvider(pxContext);
 
 			foreach (DacPropertyInfo dacProperty in autoNumberProperties)
 			{
-				CheckDacProperty(context, attributesInfoProvider, dacProperty);
+				CheckDacProperty(context, pxContext, dacProperty);
 			}		
 		}
 
-		private void CheckDacProperty(SymbolAnalysisContext context, AcumaticaAttributesInfoProvider attributesInfoProvider, DacPropertyInfo dacProperty)
+		private void CheckDacProperty(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
 		{
 			if (dacProperty.PropertyType.SpecialType != SpecialType.System_String)
 			{
-				ReportDacPropertyTypeIsNotString(context, attributesInfoProvider.PxContext, dacProperty);
+				ReportDacPropertyTypeIsNotString(context, pxContext, dacProperty);
 				return;
 			}
 
 			context.CancellationToken.ThrowIfCancellationRequested();
-			CheckIfStringLengthIsSufficientForAutoNumbering(context, attributesInfoProvider, dacProperty);
+			CheckIfStringLengthIsSufficientForAutoNumbering(context, pxContext, dacProperty);
 		}
 
 		private void ReportDacPropertyTypeIsNotString(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
@@ -74,20 +73,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			}
 		}
 
-		private void CheckIfStringLengthIsSufficientForAutoNumbering(SymbolAnalysisContext context, AcumaticaAttributesInfoProvider attributesInfoProvider,
-																	 DacPropertyInfo dacProperty)
+		private void CheckIfStringLengthIsSufficientForAutoNumbering(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
 		{
-			var dbBoundStringAttribute = attributesInfoProvider.PxContext.FieldAttributes.PXDBStringAttribute;
-			var unboundStringAttribute = attributesInfoProvider.PxContext.FieldAttributes.PXStringAttribute;
+			var dbBoundStringAttribute = pxContext.FieldAttributes.PXDBStringAttribute;
+			var unboundStringAttribute = pxContext.FieldAttributes.PXStringAttribute;
 			var stringAttributes = dacProperty.Attributes
-											  .Where(a => IsStringAttribute(a, attributesInfoProvider, dbBoundStringAttribute, unboundStringAttribute))
+											  .Where(a => IsStringAttribute(a, pxContext, dbBoundStringAttribute, unboundStringAttribute))
 											  .ToList();
 			if (stringAttributes.Count != 1)
 				return;
 
 			AttributeInfo stringAttribute = stringAttributes[0];
 			int? stringLength = GetStringLengthFromStringAttribute(stringAttribute);
-			int minAllowedLength = attributesInfoProvider.PxContext.AttributeTypes.AutoNumberAttribute.MinAutoNumberLength;
+			int minAllowedLength = pxContext.AttributeTypes.AutoNumberAttribute.MinAutoNumberLength;
 
 			if (stringLength.HasValue && stringLength < minAllowedLength)
 			{
@@ -97,15 +95,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 					return;
 
 				var diagnostic = Diagnostic.Create(Descriptors.PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering, attributeLocation, minAllowedLength);
-				context.ReportDiagnosticWithSuppressionCheck(diagnostic, attributesInfoProvider.PxContext.CodeAnalysisSettings);
+				context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 			}
 		}
 
-		private bool IsStringAttribute(AttributeInfo attribute, AcumaticaAttributesInfoProvider attributesInfoProvider, 
+		private bool IsStringAttribute(AttributeInfo attribute, PXContext pxContext, 
 									   INamedTypeSymbol dbBoundStringAttribute, INamedTypeSymbol unboundStringAttribute) =>
 			attribute.BoundType != BoundType.NotDefined &&
-			(attributesInfoProvider.IsAttributeDerivedFromOtherAttribute(attribute.AttributeType, dbBoundStringAttribute) ||
-			 attributesInfoProvider.IsAttributeDerivedFromOtherAttribute(attribute.AttributeType, unboundStringAttribute));
+			(attribute.AttributeType.IsDerivedFromAttribute(dbBoundStringAttribute, pxContext) ||
+			 attribute.AttributeType.IsDerivedFromAttribute(unboundStringAttribute, pxContext));
 
 		private int? GetStringLengthFromStringAttribute(AttributeInfo stringAttribute)
 		{
