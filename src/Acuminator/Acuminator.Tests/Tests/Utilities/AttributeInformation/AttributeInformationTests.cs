@@ -1,19 +1,24 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Acuminator.Tests.Helpers;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
+
+using FluentAssertions;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Xunit;
-using static Acuminator.Tests.Verification.VerificationHelper;
-using FluentAssertions;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
+using Xunit;
+
+using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
@@ -25,29 +30,31 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		 * */
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public Task AttributeSimpleInformation(string source) =>
-			AttributeInformationAsync(source, new List<bool> { false, true, false, false, true, false });
+		public Task AttributesOnPropertiesAreDerivedFromPXDefault_SimpleAttributes(string source) =>
+			CheckIfAttributesOnPropertiesAreDerivedFromPXDefaultAsync(source, new List<bool> { false, true, false, false, true, false });
 		
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public Task AggregateAttributeAsync(string source) =>
-			AttributeInformationAsync(source, new List<bool> { true, true });
+		public Task AttributesOnPropertiesAreDerivedFromPXDefault_AggregateAttribute(string source) =>
+			CheckIfAttributesOnPropertiesAreDerivedFromPXDefaultAsync(source, new List<bool> { true, true });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		public Task AggregateRegursiveAttributeAsync(string source) =>
-			AttributeInformationAsync(source, new List<bool> { true, false });
+		public Task AttributesOnPropertiesAreDerivedFromPXDefault_AggregateOnAggregateAttribute(string source) =>
+			CheckIfAttributesOnPropertiesAreDerivedFromPXDefaultAsync(source, new List<bool> { true, false });
 
-		private async Task AttributeInformationAsync(string source, List<bool> expected)
+		private async Task CheckIfAttributesOnPropertiesAreDerivedFromPXDefaultAsync(string source, List<bool> expected)
 		{
 			Document document = CreateDocument(source);
-			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
-			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
-			List<bool> actual = new List<bool>();
+			List<bool> actual = new List<bool>(capacity: expected.Count);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+			var pxdefaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
 
 			foreach (var property in properties)
 			{
@@ -56,9 +63,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
-					var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
-					actual.Add(attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
+					actual.Add(attribute.AttributeClass.IsDerivedFromAttribute(pxdefaultAttribute, pxContext));
 				}
 			}
 
@@ -95,8 +100,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		private async Task IsBoundAttributeAsync(string source, List<BoundType> expected)
 		{
 			Document document = CreateDocument(source);
-			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
-			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
 			List<BoundType> actual = new List<BoundType>();
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
@@ -142,12 +148,12 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			IsDBFieldPropertyAsync(source,
 									expected: new List<bool> {true, false, true, false});
 
-
-		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null)
+		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[]? code = null)
 		{
 			Document document = CreateDocument(source, externalCode: code);
-			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
-			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var (semanticModel, syntaxRoot)  = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
 			List<bool> actual = new List<bool>(capacity: expected.Capacity);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
@@ -156,14 +162,14 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes()
 																		  .OfType<PropertyDeclarationSyntax>()
 																		  .Where(a => !a.AttributeLists.IsNullOrEmpty());
-
 			foreach (PropertyDeclarationSyntax property in properties)
 			{
-				IPropertySymbol propertySymbol =  semanticModel.GetDeclaredSymbol(property);
-				
-				actual.Add((propertySymbol != null)?
-								attributeInformation.ContainsBoundAttributes(propertySymbol.GetAttributes()):
-								false);
+				IPropertySymbol? propertySymbol =  semanticModel.GetDeclaredSymbol(property);
+				bool actualValue = propertySymbol != null
+					? attributeInformation.ContainsBoundAttributes(propertySymbol.GetAttributes())
+					: false;
+
+				actual.Add(actualValue);
 			}
 
 			actual.Should().BeEquivalentTo(expected);
@@ -317,30 +323,28 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		private async Task ListOfParentsAsync(string source, List<List<string>> expected, bool expand = false)
 		{
 			Document document = CreateDocument(source);
-			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
-			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
+
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
-
-			var expectedSymbols = ConvertStringsToITypeSymbols(expected, semanticModel);
-
+			var expectedSymbols = ConvertSymbolNamesToTypeSymbols(expected, semanticModel);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
 			List<HashSet<ITypeSymbol>> result = new List<HashSet<ITypeSymbol>>();
 
-			var attributesInfoProvider = new AcumaticaAttributesInfoProvider(pxContext);
-
 			foreach (var property in properties)
 			{
-				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+				var propertySymbol = semanticModel.GetDeclaredSymbol(property);
 
-				if (typeSymbol == null)
+				if (propertySymbol == null)
 					continue;
 
-				var attributes = typeSymbol.GetAttributes();
+				var attributes = propertySymbol.GetAttributes();
 
 				foreach (var attribute in attributes)
 				{
-					var fullAttributesSet = attributesInfoProvider.GetFlattenedAcumaticaAttributes(attribute.AttributeClass, expand).ToHashSet();
+					var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, expand).ToHashSet();
 
 					if (fullAttributesSet.Count > 0)
 					{
@@ -352,23 +356,13 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			Assert.Equal(expectedSymbols, result);
 		}
 
-		private List<HashSet<ITypeSymbol>> ConvertStringsToITypeSymbols(List<List<string>> expectedSymbolNamesSets, SemanticModel semanticModel)
-		{
-			var expectedSymbols = new List<HashSet<ITypeSymbol>>(capacity: expectedSymbolNamesSets.Count);
+		private List<HashSet<ITypeSymbol>> ConvertSymbolNamesToTypeSymbols(List<List<string>> expectedSymbolNamesSets, SemanticModel semanticModel) =>
+			expectedSymbolNamesSets.Select(symbolNamesSet => GetTypeSymbolsFromNames(semanticModel, symbolNamesSet))
+								   .ToList(capacity: expectedSymbolNamesSets.Count);
 
-			foreach (List<string> symbolNamesSet in expectedSymbolNamesSets)
-			{
-				HashSet<ITypeSymbol> expectedSymbolsSet = new HashSet<ITypeSymbol>();
-
-				foreach (string symbolName in symbolNamesSet)
-				{
-					expectedSymbolsSet.Add(semanticModel.Compilation.GetTypeByMetadataName(symbolName));
-				}
-
-				expectedSymbols.Add(expectedSymbolsSet);
-			}
-
-			return expectedSymbols;
-		}
+		private HashSet<ITypeSymbol> GetTypeSymbolsFromNames(SemanticModel semanticModel, List<string> symbolNames) =>
+			symbolNames.Select(symbolName => semanticModel.Compilation.GetTypeByMetadataName(symbolName))
+					   .Where(typeSymbol => typeSymbol != null)
+					   .ToHashSet<ITypeSymbol>();
 	}
 }
