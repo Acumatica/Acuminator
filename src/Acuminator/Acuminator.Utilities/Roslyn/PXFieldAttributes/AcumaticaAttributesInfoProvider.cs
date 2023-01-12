@@ -72,14 +72,23 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </returns>
 		public bool IsAttributeDerivedFromOtherAttribute(ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck)
 		{
-			attributeType.ThrowOnNull(nameof(attributeType));
-			baseAttributeTypeToCheck.ThrowOnNull(nameof(baseAttributeTypeToCheck));
-
 			if (!IsAcumaticaAttribute(attributeType) || !IsAcumaticaAttribute(baseAttributeTypeToCheck))
 				return false;
 
 			return IsAttributeDerivedFromOtherAttribute(attributeType, baseAttributeTypeToCheck, recursionDepth: 0);
 		}
+
+		/// <summary>
+		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. <br/>
+		/// This is an internal unsafe version which for performance reasons doesn't check input types for being Acumatica attributes.
+		/// </summary>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="baseAttributeTypeToCheck">The base attribute type to check.</param>
+		/// <returns>
+		/// True if attribute derived from <paramref name="baseAttributeTypeToCheck"/>, false if not.
+		/// </returns>
+		internal bool IsAttributeDerivedFromOtherAttributeUnsafe(ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck) =>
+			 IsAttributeDerivedFromOtherAttribute(attributeType, baseAttributeTypeToCheck, recursionDepth: 0);
 
 		private bool IsAttributeDerivedFromOtherAttribute(ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, int recursionDepth)
 		{

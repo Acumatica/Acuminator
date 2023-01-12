@@ -14,9 +14,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	public class FieldTypeAttributesRegister
 	{
 		private readonly PXContext _pxContext;
-
-		private readonly AcumaticaAttributesInfoProvider _attributesInfoProvider;
 		private readonly AttributeInformation _attributeInformation;
+
+		private AcumaticaAttributesInfoProvider AttributesInfoProvider => _attributeInformation.AttributesInfoProvider;
 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleUnboundTypes { get; }
 
@@ -30,7 +30,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public FieldTypeAttributesRegister(PXContext pxContext)
 		{
 			_pxContext                 = pxContext.CheckIfNull(nameof(pxContext));
-			_attributesInfoProvider    = new AcumaticaAttributesInfoProvider(_pxContext);
 			_attributeInformation      = new AttributeInformation(_pxContext);
 			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_pxContext).Keys;
 			UnboundTypeAttributes      = unboundFieldAttributes.ToImmutableHashSet();
@@ -52,7 +51,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			var flattenedAttributes = _attributesInfoProvider.GetFlattenedAcumaticaAttributes(attributeSymbol);
+			var flattenedAttributes = AttributesInfoProvider.GetFlattenedAcumaticaAttributes(attributeSymbol);
 
 			if (flattenedAttributes.IsNullOrEmpty())
 				return Enumerable.Empty<FieldTypeAttributeInfo>();
