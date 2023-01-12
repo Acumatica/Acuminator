@@ -162,7 +162,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type;
 			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
-			DBBoundnessCalculator attributeInformation = new DBBoundnessCalculator(pxContext);
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacProperties
 				where !dacProperty.Attributes.IsDefaultOrEmpty && 
@@ -180,7 +179,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				bool isDerivedFromOrAggregateForeignKeyAttribute =
 					foreignKeyAttributes.Exists(
-						foreignKeyAttribute => attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeType, foreignKeyAttribute));
+						foreignKeyAttribute => attribute.AttributeType.IsDerivedFromAttribute(foreignKeyAttribute, pxContext));
 
 				if (isDerivedFromOrAggregateForeignKeyAttribute)
 					return true;
@@ -188,21 +187,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				var selectorAttributeMembers = attribute.AttributeType.GetBaseTypesAndThis()
 																	  .SelectMany(type => type.GetMembers(selectorAttributeProperty));
 
-
-				var selectorAttributeCandidateMemberTypes = from type in attribute.AttributeType.GetBaseTypesAndThis()
-																								.TakeWhile(attrType => attrType != pxContext.AttributeTypes.PXEventSubscriberAttribute)
-															from member in type.GetMembers(selectorAttributeProperty)
-															select member switch
-															{
-																IPropertySymbol property => property.Type,
-																IFieldSymbol field => field.Type,
-																_ => null
-															};
+				var selectorAttributeCandidateMemberTypes = 
+					from type in attribute.AttributeType.GetBaseTypesAndThis()
+														.TakeWhile(attrType => attrType != pxContext.AttributeTypes.PXEventSubscriberAttribute)
+					from member in type.GetMembers(selectorAttributeProperty)
+					select member switch
+					{
+						IPropertySymbol property => property.Type,
+						IFieldSymbol field => field.Type,
+						_ => null
+					};
 
 				return selectorAttributeCandidateMemberTypes
 						.Any(memberType => memberType != null &&
-										   (attributeInformation.IsAttributeDerivedFromClass(memberType, selectorAttribute) ||
-											attributeInformation.IsAttributeDerivedFromClass(memberType, dimensionSelectorAttribute)));												 
+										   (memberType.IsDerivedFromAttribute(selectorAttribute, pxContext) ||
+											memberType.IsDerivedFromAttribute(dimensionSelectorAttribute, pxContext)));												 
 			}
 		}
 
