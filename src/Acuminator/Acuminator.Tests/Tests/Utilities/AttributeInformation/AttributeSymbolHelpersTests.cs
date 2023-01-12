@@ -156,7 +156,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 			List<bool> actual = new List<bool>(capacity: expected.Capacity);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
-			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.DbBoundnessCalculator(pxContext);
+			var dbBoundnessCalculator = new DbBoundnessCalculator(pxContext);
 
 			IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes()
 																		  .OfType<PropertyDeclarationSyntax>()
@@ -164,14 +164,25 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			foreach (PropertyDeclarationSyntax property in properties)
 			{
 				IPropertySymbol? propertySymbol =  semanticModel.GetDeclaredSymbol(property);
-				bool actualValue = propertySymbol != null
-					? attributeInformation.ContainsBoundAttributes(propertySymbol.GetAttributes())
-					: false;
-
+				bool actualValue = IsPropertyDBBound(propertySymbol);
 				actual.Add(actualValue);
 			}
 
 			actual.Should().BeEquivalentTo(expected);
+
+			//-------------------------------------Local Function--------------------------------------
+			bool IsPropertyDBBound(IPropertySymbol? propertySymbol)
+			{
+				if (propertySymbol == null) 
+					return false;
+
+				var propertyAttributes = propertySymbol.GetAttributes();
+
+				if (propertyAttributes.IsDefaultOrEmpty)
+					return false;
+
+				return propertyAttributes.Any(a => dbBoundnessCalculator!.GetBoundAttributeType(a) == BoundType.DbBound);
+			}
 		}
 
 		[Theory]
