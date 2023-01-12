@@ -4,7 +4,6 @@ namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class DelegateNames
 	{
-		public const string IsKey = "IsKey";
 		public const string IsActive = "IsActive";
 		public const string IsActiveForGraph = "IsActiveForGraph";
 

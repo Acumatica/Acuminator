@@ -63,7 +63,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation);
 			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation);
 			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, attributeInformation);
-			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(DelegateNames.IsKey) &&
+			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(PropertyNames.Attributes.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
 			return new AttributeInfo(attribute, boundType, declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute,
