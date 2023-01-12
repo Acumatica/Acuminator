@@ -54,7 +54,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			IsAutoNumberAttribute = isAutoNumberAttribute;
 		}
 
-		public static AttributeInfo Create(AttributeData attribute, DBBoundnessCalculator attributeInformation, int declarationOrder)
+		public static AttributeInfo Create(AttributeData attribute, DbBoundnessCalculator attributeInformation, int declarationOrder)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 			attributeInformation.ThrowOnNull(nameof(attributeInformation));

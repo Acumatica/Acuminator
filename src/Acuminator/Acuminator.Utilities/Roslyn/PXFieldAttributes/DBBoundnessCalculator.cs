@@ -18,7 +18,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// <remarks>
 	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
 	/// </remarks>
-	public class DBBoundnessCalculator
+	public class DbBoundnessCalculator
 	{		
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
@@ -33,7 +33,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private const string IsDBField = "IsDBField";
 		private const string NonDB = "NonDB";
 
-		public DBBoundnessCalculator(PXContext pxContext)
+		public DbBoundnessCalculator(PXContext pxContext)
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
 			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableArray();
@@ -46,9 +46,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_pxDBLocalizableStringAttribute = Context.FieldAttributes.PXDBLocalizableStringAttribute;
 		}
 
-		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context)
+		private static List<ITypeSymbol> GetBoundBaseTypes(PXContext context)
 		{
-			var types = new HashSet<ITypeSymbol>();
+			var types = new List<ITypeSymbol>();
 
 			if (context.FieldAttributes.PXDBFieldAttribute != null)
 				types.Add(context.FieldAttributes.PXDBFieldAttribute);
@@ -97,24 +97,24 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public bool ContainsUnboundAttributes(ImmutableArray<AttributeData> attributes) =>
 			attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
 
-		///// <summary>
-		///// Check if Acumatica attribute is derived from the specified Acumatica attribute type. If non Acumatica attributes are passed then <c>flase</c> is returned.
-		///// </summary>
-		///// <param name="attributeType">Type of the attribute.</param>
-		///// <param name="typeToCheck">The base attribute type to check.</param>
-		///// <returns>
-		///// True if attribute derived from <paramref name="typeToCheck"/>, false if not.
-		///// </returns>
-		//public bool IsAttributeDerivedFromClass(ITypeSymbol attributeType, ITypeSymbol typeToCheck)
-		//{
-		//	attributeType.ThrowOnNull(nameof(attributeType));
-		//	typeToCheck.ThrowOnNull(nameof(typeToCheck));
+		/// <summary>
+		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. If non Acumatica attributes are passed then <c>flase</c> is returned.
+		/// </summary>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="typeToCheck">The base attribute type to check.</param>
+		/// <returns>
+		/// True if attribute derived from <paramref name="typeToCheck"/>, false if not.
+		/// </returns>
+		public bool IsAttributeDerivedFromClass(ITypeSymbol attributeType, ITypeSymbol typeToCheck)
+		{
+			attributeType.ThrowOnNull(nameof(attributeType));
+			typeToCheck.ThrowOnNull(nameof(typeToCheck));
 
-		//	if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute) || !typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
-		//		return false;
+			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute) || !typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
+				return false;
 
-		//	return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);
-		//}
+			return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);
+		}
 
 		/// <summary>
 		/// Query if Acumatica attribute is bound.

@@ -114,7 +114,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
-											 DBBoundnessCalculator attributesInformation, IDictionary<string, DacFieldInfo> dacFields,
+											 DbBoundnessCalculator attributesInformation, IDictionary<string, DacFieldInfo> dacFields,
 											 DacPropertyInfo baseInfo = null)
 		{
 			context.ThrowOnNull(nameof(context));
@@ -131,7 +131,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos);
 		}
 
-		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, DBBoundnessCalculator attributeInformation)
+		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator attributeInformation)
 		{
 			int relativeDeclarationOrder = 0;
 
