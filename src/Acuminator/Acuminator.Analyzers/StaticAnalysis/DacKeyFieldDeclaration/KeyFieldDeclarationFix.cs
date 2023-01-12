@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
@@ -47,12 +48,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				return Task.FromResult(false);
 
 			Document document = context.Document;
+			List<Location> attributeLocations = diagnostic.AdditionalLocations.ToList(capacity: diagnostic.AdditionalLocations.Count + 1);
+			attributeLocations.Add(diagnostic.Location);
+
+			context.CancellationToken.ThrowIfCancellationRequested();
 
 			string codeActionIdentityKeyName = nameof(Resources.PX1055FixEditKeyFieldAttributes).GetLocalized().ToString();
 			CodeAction codeActionIdentityKey = CodeAction.Create(codeActionIdentityKeyName,
 																cToken => RemoveKeysFromFieldsAsync(document,
 																									cToken,
-																									diagnostic,
+																									attributeLocations,
 																									CodeFixModes.EditKeyFieldAttributes),
 																equivalenceKey: codeActionIdentityKeyName);
 
@@ -60,7 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			CodeAction codeActionBoundKeys = CodeAction.Create(codeActionBoundKeysName,
 																cToken => RemoveKeysFromFieldsAsync(document,
 																									cToken,
-																									diagnostic,
+																									attributeLocations,
 																									CodeFixModes.EditIdentityAttribute),
 																equivalenceKey: codeActionBoundKeysName);
 
@@ -68,44 +73,63 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			CodeAction codeActionRemoveIdentityColumn = CodeAction.Create(codeActionRemoveIdentityColumnName,
 																			cToken => RemoveKeysFromFieldsAsync(document,
 																												cToken,
-																												diagnostic,
+																												attributeLocations,
 																												CodeFixModes.RemoveIdentityAttribute),
 																			equivalenceKey: codeActionRemoveIdentityColumnName);
-
-			context.RegisterCodeFix(codeActionIdentityKey, context.Diagnostics);
-			context.RegisterCodeFix(codeActionBoundKeys, context.Diagnostics);
-			context.RegisterCodeFix(codeActionRemoveIdentityColumn, context.Diagnostics);
+			context.RegisterCodeFix(codeActionIdentityKey, diagnostic);
+			context.RegisterCodeFix(codeActionBoundKeys, diagnostic);
+			context.RegisterCodeFix(codeActionRemoveIdentityColumn, diagnostic);
 
 			return Task.FromResult(true);
 		}
 
 		private async Task<Document> RemoveKeysFromFieldsAsync(Document document, CancellationToken cancellationToken,
-															   Diagnostic diagnostic, CodeFixModes mode)
+															   List<Location> attributeLocations, CodeFixModes mode)
 		{
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
-			var attributeInformation = new AttributeInformation(pxContext);
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var semanticModelTask = document.GetSemanticModelAsync(cancellationToken);
+			var rootTask = document.GetSyntaxRootAsync(cancellationToken);
+
+			await Task.WhenAll(semanticModelTask, rootTask).ConfigureAwait(false);
+			var (semanticModel, root) = (semanticModelTask.Result, rootTask.Result);
+
+			if (semanticModel == null || root == null)
+				return document;
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			List<Location> attributeLocations = diagnostic.AdditionalLocations.ToList();
-			attributeLocations.Add(diagnostic.Location);
+			List<SyntaxNode>? nodesToDelete = GetNodesToDelete(attributeLocations, mode, root, semanticModel, cancellationToken);
+			if (nodesToDelete.IsNullOrEmpty())
+				return document;
 
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode newRoot;
+			if (mode == CodeFixModes.RemoveIdentityAttribute)
+				newRoot = root.RemoveNodes(nodesToDelete, SyntaxRemoveOptions.KeepExteriorTrivia);
+			else
+				newRoot = root.RemoveNodes(nodesToDelete, SyntaxRemoveOptions.KeepNoTrivia);
 
+			return document.WithSyntaxRoot(newRoot);
+		}
+
+		private List<SyntaxNode>? GetNodesToDelete(List<Location> attributeLocations, CodeFixModes mode, SyntaxNode root,
+												   SemanticModel semanticModel, CancellationToken cancellationToken)
+		{
+			var pxContext                 = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
+			var attributeInformation      = new AttributeInformation(pxContext);
 			List<SyntaxNode> deletedNodes = new List<SyntaxNode>();
 
 			foreach (var attributeLocation in attributeLocations)
 			{
-				AttributeSyntax attributeNode = root?.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
+				cancellationToken.ThrowIfCancellationRequested();
 
+				AttributeSyntax? attributeNode = root.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
 				if (attributeNode == null)
-					return document;
+					return null;
 
-				ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
-
+				ITypeSymbol? attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
 				if (attributeType == null)
-					return document;
+					return null;
 
 				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
 										   attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
@@ -114,27 +138,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if ((mode == CodeFixModes.EditIdentityAttribute && isIdentityAttribute) ||
 					(mode == CodeFixModes.EditKeyFieldAttributes && !isIdentityAttribute))
 				{
-					IEnumerable<AttributeArgumentSyntax> deletedNode = GetIsKeyEQTrueArguments(attributeNode);
+					IEnumerable<AttributeArgumentSyntax> deletedAttributeArgumentNodes = GetIsKeyEQTrueArguments(attributeNode);
 
-					deletedNodes.AddRange(deletedNode);
+					deletedNodes.AddRange(deletedAttributeArgumentNodes);
 				}
 
 				if (mode == CodeFixModes.RemoveIdentityAttribute && isIdentityAttribute)
 				{
-					if ((attributeNode.Parent as AttributeListSyntax)?.Attributes.Count == 1)
-						deletedNodes.Add(attributeNode.Parent);
+					if (attributeNode.Parent is AttributeListSyntax attributeListNode && attributeListNode.Attributes.Count == 1)
+						deletedNodes.Add(attributeListNode);
 					else
 						deletedNodes.Add(attributeNode);
 				}
 			}
 
-			SyntaxNode newRoot;
-			if (mode == CodeFixModes.RemoveIdentityAttribute)
-				newRoot = root.RemoveNodes(deletedNodes, SyntaxRemoveOptions.KeepExteriorTrivia);
-			else
-				newRoot = root.RemoveNodes(deletedNodes, SyntaxRemoveOptions.KeepNoTrivia);
-
-			return document.WithSyntaxRoot(newRoot);
+			return deletedNodes;
 		}
 
 		private IEnumerable<AttributeArgumentSyntax> GetIsKeyEQTrueArguments(AttributeSyntax attributeNode)
