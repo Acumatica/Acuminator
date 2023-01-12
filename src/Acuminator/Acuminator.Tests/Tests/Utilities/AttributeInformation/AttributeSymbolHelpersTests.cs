@@ -106,7 +106,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			List<BoundType> actual = new List<BoundType>();
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
-			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
+			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.DBBoundnessCalculator(pxContext);
 
 			foreach (var property in properties)
 			{
@@ -156,7 +156,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 			List<bool> actual = new List<bool>(capacity: expected.Capacity);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
-			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
+			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.DBBoundnessCalculator(pxContext);
 
 			IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes()
 																		  .OfType<PropertyDeclarationSyntax>()
