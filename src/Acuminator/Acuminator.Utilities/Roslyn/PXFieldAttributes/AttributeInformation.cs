@@ -19,19 +19,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
 	/// </remarks>
 	public class AttributeInformation
-	{
-		private const int DefaultRecursionDepth = 10;
-		
+	{		
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
-		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
-		private readonly INamedTypeSymbol _aggregateAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
 		private readonly INamedTypeSymbol _pxDBLocalizableStringAttribute;
 
 		public PXContext Context { get; }
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
-		public ImmutableArray<(ITypeSymbol AttributeType, bool IsDbFieldDefaultValue)> TypesContainingIsDBField { get; }
+		public ImmutableArray<MixedDbBoundnessAttributeInfo> AttributesContainingIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
 		private const string NonDB = "NonDB";
@@ -40,13 +36,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
 			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableHashSet();
-			TypesContainingIsDBField = GetTypesContainingIsDBField(Context)
+			AttributesContainingIsDBField = FieldTypeAttributesRegister.GetTypesContainingIsDBField(Context)
 											.OrderBy(typeWithValue => typeWithValue.AttributeType, TypeSymbolsByHierachyComparer.Instance)
 											.ToImmutableArray();
 
 			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
-			_dynamicAggregateAttribute = Context.AttributeTypes.PXDynamicAggregateAttribute;
-			_aggregateAttribute = Context.AttributeTypes.PXAggregateAttribute;
 			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
 			_pxDBLocalizableStringAttribute = Context.FieldAttributes.PXDBLocalizableStringAttribute;
 		}
@@ -67,108 +61,59 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return types;
 		}
 
-		private static IEnumerable<(ITypeSymbol AttributeType, bool IsDbFieldDefaultValue)> GetTypesContainingIsDBField(PXContext context) =>
-			new List<(ITypeSymbol? AttributeType, bool IsDbFieldDefaultValue)>()
-			{
-				(context.FieldAttributes.PeriodIDAttribute, true),
-				(context.FieldAttributes.AcctSubAttribute, true),
-				(context.FieldAttributes.UnboundAccountAttribute, false),
-				(context.FieldAttributes.UnboundCashAccountAttribute, false),
-				(context.FieldAttributes.APTranRecognizedInventoryItemAttribute, false),
-				(context.FieldAttributes.PXEntityAttribute, true)
-			}
-			.Where(attributeTypeWithIsDbFieldValue => attributeTypeWithIsDbFieldValue.AttributeType != null)!;			
-
 		/// <summary>
-		/// Get the collection of Acumatica attributes defined by the <paramref name="attributeType"/> including attributes on aggregates.
+		/// Query if collection of attributes contains bound attribute.
 		/// </summary>
-		/// <param name="attributeType">Type of the attribute.</param>
-		/// <param name="includeBaseTypes">(Optional) True to include, false to exclude the base Acumatica types.</param>
+		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
-		public IEnumerable<ITypeSymbol> GetAcumaticaAttributesFullList(ITypeSymbol attributeType, bool includeBaseTypes = false)
-		{
-			if (attributeType == null || attributeType.Equals(_eventSubscriberAttribute))
-				return Enumerable.Empty<ITypeSymbol>();
+		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes) =>
+			attributes.CheckIfNull(nameof(attributes))
+					  .Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
 
-			var baseAcumaticaAttributeTypes = attributeType.GetBaseTypesAndThis().ToList();
-
-			if (!baseAcumaticaAttributeTypes.Contains(_eventSubscriberAttribute))
-				return Enumerable.Empty<ITypeSymbol>();
-
-			HashSet<ITypeSymbol> results;
-
-			if (includeBaseTypes)
-			{
-				results = baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(_eventSubscriberAttribute))
-													 .ToHashSet();
-			}
-			else
-			{
-				results = new HashSet<ITypeSymbol>() { attributeType };
-			}
-
-			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(_aggregateAttribute) ||
-										baseAcumaticaAttributeTypes.Contains(_dynamicAggregateAttribute);
-
-			if (isAggregateAttribute)
-			{
-				var allAcumaticaAttributes = attributeType.GetAllAttributesDefinedOnThisAndBaseTypes()
-														  .Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute));
-
-				foreach (var attribute in allAcumaticaAttributes)
-				{
-					CollectAggregatedAttribute(attribute, DefaultRecursionDepth);
-				}
-			}
-
-			return results;
-
-
-			void CollectAggregatedAttribute(ITypeSymbol aggregatedAttribute, int depth)
-			{
-				results.Add(aggregatedAttribute);
-
-				if (depth < 0)
-					return;
-
-				if (includeBaseTypes)
-				{
-					aggregatedAttribute.GetBaseTypes()
-									   .TakeWhile(baseType => !baseType.Equals(_eventSubscriberAttribute))
-									   .ForEach(baseType => results.Add(baseType!));
-				}
-
-				if (IsAggregatorAttribute(aggregatedAttribute))
-				{
-					var allAcumaticaAttributes = aggregatedAttribute.GetAllAttributesDefinedOnThisAndBaseTypes()
-																	.Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute));
-
-					foreach (var attribute in allAcumaticaAttributes)
-					{
-						CollectAggregatedAttribute(attribute, depth - 1);
-					}
-				}
-			}
-		}
 
 		/// <summary>
-		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. If non Acumatica attributes are passed then <c>flase</c> is returned.
+		/// Query if collection of attributes contains bound attribute. Overload for immutable array to prevent boxing.
 		/// </summary>
-		/// <param name="attributeType">Type of the attribute.</param>
-		/// <param name="typeToCheck">The base attribute type to check.</param>
-		/// <returns>
-		/// True if attribute derived from <paramref name="typeToCheck"/>, false if not.
-		/// </returns>
-		public bool IsAttributeDerivedFromClass(ITypeSymbol attributeType, ITypeSymbol typeToCheck)
-		{
-			attributeType.ThrowOnNull(nameof(attributeType));
-			typeToCheck.ThrowOnNull(nameof(typeToCheck));
+		/// <param name="attributes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsBoundAttributes(ImmutableArray<AttributeData> attributes) =>
+			attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
 
-			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute) || !typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
-				return false;
+		/// <summary>
+		/// Query if collection of attributes contains unbound attribute.
+		/// </summary>
+		/// <param name="attributes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes) =>
+			attributes.CheckIfNull(nameof(attributes))
+					  .Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
 
-			return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);
-		}
+		/// <summary>
+		/// Query if collection of attributes contains unbound attribute. Overload for immutable array to prevent boxing.
+		/// </summary>
+		/// <param name="attributes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsUnboundAttributes(ImmutableArray<AttributeData> attributes) =>
+			attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
+
+		///// <summary>
+		///// Check if Acumatica attribute is derived from the specified Acumatica attribute type. If non Acumatica attributes are passed then <c>flase</c> is returned.
+		///// </summary>
+		///// <param name="attributeType">Type of the attribute.</param>
+		///// <param name="typeToCheck">The base attribute type to check.</param>
+		///// <returns>
+		///// True if attribute derived from <paramref name="typeToCheck"/>, false if not.
+		///// </returns>
+		//public bool IsAttributeDerivedFromClass(ITypeSymbol attributeType, ITypeSymbol typeToCheck)
+		//{
+		//	attributeType.ThrowOnNull(nameof(attributeType));
+		//	typeToCheck.ThrowOnNull(nameof(typeToCheck));
+
+		//	if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute) || !typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
+		//		return false;
+
+		//	return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);
+		//}
 
 		/// <summary>
 		/// Query if Acumatica attribute is bound.
@@ -200,7 +145,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			{
 				case 0:     //Case when there is IsDBField property but it isn't set explicitly in attribute's declaration
 					var (typeFromRegister, defaultIsDbFieldValue) = 
-						TypesContainingIsDBField.FirstOrDefault(typeWithValue => IsAttributeDerivedFromClass(attribute.AttributeClass, typeWithValue.AttributeType));
+						AttributesContainingIsDBField
+							.FirstOrDefault(typeWithValue => attribute.AttributeClass.IsDerivedFromAttribute(typeWithValue.AttributeType, Context));
 
 					// Query hard-coded register with attributes which has IsDBField property with some initial assigned value
 					bool? dbFieldPreInitializedValue = typeFromRegister != null
@@ -226,10 +172,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private BoundType GetBoundTypeFromStandardBoundTypeAttributes(AttributeData attribute)
 		{
-			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
+			if (BoundBaseTypes.Any(boundBaseType => attribute.AttributeClass.IsDerivedFromAttributeUnsafe(boundBaseType, Context)))
 			{
-				if (_pxDBLocalizableStringAttribute != null && IsAttributeDerivedFromClassInternal(attribute.AttributeClass, _pxDBLocalizableStringAttribute))
+				if (_pxDBLocalizableStringAttribute != null && 
+					attribute.AttributeClass.IsDerivedFromAttributeUnsafe(_pxDBLocalizableStringAttribute, Context))
+				{
 					return GetBoundTypeFromLocalizableStringDerivedAttribute(attribute);
+				}
 
 				return BoundType.DbBound;
 			}
@@ -251,61 +200,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 			else
 				return BoundType.Unknown;
-		}
-
-		/// <summary>
-		/// Query if collection of attributes contains bound attribute.
-		/// </summary>
-		/// <param name="attributes">The attributes collection.</param>
-		/// <returns/>
-		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes) => 
-			attributes.CheckIfNull(nameof(attributes))
-					  .Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
-		
-
-		/// <summary>
-		/// Query if collection of attributes contains bound attribute. Overload for immutable array to prevent boxing.
-		/// </summary>
-		/// <param name="attributes">The attributes collection.</param>
-		/// <returns/>
-		public bool ContainsBoundAttributes(ImmutableArray<AttributeData> attributes) => 
-			attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
-
-		/// <summary>
-		/// Query if collection of attributes contains unbound attribute.
-		/// </summary>
-		/// <param name="attributes">The attributes collection.</param>
-		/// <returns/>
-		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes) =>
-			attributes.CheckIfNull(nameof(attributes))
-					  .Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
-
-		/// <summary>
-		/// Query if collection of attributes contains unbound attribute. Overload for immutable array to prevent boxing.
-		/// </summary>
-		/// <param name="attributes">The attributes collection.</param>
-		/// <returns/>
-		public bool ContainsUnboundAttributes(ImmutableArray<AttributeData> attributes) =>
-			attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
-
-		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
-		{
-			if (depth < 0)
-				return false;
-			else if (attributeType.InheritsFromOrEquals(typeToCheck))
-				return true;
-
-			if (IsAggregatorAttribute(attributeType))
-			{
-				return attributeType.GetAllAttributesDefinedOnThisAndBaseTypes()
-									.Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute))
-									.Any(attribute => IsAttributeDerivedFromClassInternal(attribute, typeToCheck, depth - 1));
-			}
-
-			return false;
-		}
-
-		private bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
-			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
+		}	
 	}
 }

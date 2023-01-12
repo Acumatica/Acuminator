@@ -116,7 +116,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 												   SemanticModel semanticModel, CancellationToken cancellationToken)
 		{
 			var pxContext                 = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
-			var attributesInfoProvider    = new AcumaticaAttributesInfoProvider(pxContext);
 			List<SyntaxNode> deletedNodes = new List<SyntaxNode>();
 
 			foreach (var attributeLocation in attributeLocations)
@@ -131,9 +130,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (attributeType == null)
 					return null;
 
-				bool isIdentityAttribute = 
-					attributesInfoProvider.IsAttributeDerivedFromOtherAttribute(attributeType, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
-					attributesInfoProvider.IsAttributeDerivedFromOtherAttribute(attributeType, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
+				bool isIdentityAttribute =
+					attributeType.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext) ||
+					attributeType.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext);
 
 				if ((mode == CodeFixModes.EditIdentityAttribute && isIdentityAttribute) ||
 					(mode == CodeFixModes.EditKeyFieldAttributes && !isIdentityAttribute))
