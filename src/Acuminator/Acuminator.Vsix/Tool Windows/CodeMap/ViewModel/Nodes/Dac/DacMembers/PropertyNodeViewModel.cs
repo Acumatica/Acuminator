@@ -28,7 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public bool IsIdentity => PropertyInfo.IsIdentity;
 
-		public BoundType EffectiveBoundType => PropertyInfo.EffectiveBoundType;
+		public DbBoundnessType EffectiveBoundType => PropertyInfo.EffectiveBoundType;
 
 		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
 								base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
@@ -54,10 +54,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			switch (EffectiveBoundType)
 			{		
-				case BoundType.Unbound:
+				case DbBoundnessType.Unbound:
 					yield return new TextViewModel(this, "Unbound");
 					break;
-				case BoundType.DbBound:
+				case DbBoundnessType.DbBound:
 					yield return new TextViewModel(this, "Bound");
 					break;
 			}

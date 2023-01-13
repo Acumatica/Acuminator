@@ -101,7 +101,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 
 		private bool IsStringAttribute(AttributeInfo attribute, PXContext pxContext, 
 									   INamedTypeSymbol dbBoundStringAttribute, INamedTypeSymbol unboundStringAttribute) =>
-			attribute.BoundType != BoundType.NotDefined &&
+			attribute.BoundType != DbBoundnessType.NotDefined &&
 			(attribute.AttributeType.IsDerivedFromAttribute(dbBoundStringAttribute, pxContext) ||
 			 attribute.AttributeType.IsDerivedFromAttribute(unboundStringAttribute, pxContext));
 

@@ -51,11 +51,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
         {         
             switch (property.EffectiveBoundType)
             {
-                case BoundType.Unbound:
+                case DbBoundnessType.Unbound:
                     AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, property);
                     return;
 
-                case BoundType.DbBound
+                case DbBoundnessType.DbBound
                 when dacOrExtension.DacType == DacType.DacExtension: // Analyze bound property only for extensions
                     AnalyzeBoundPropertyAttributes(symbolContext, pxContext, property);
 					return;

@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// </summary>
 		public int DeclarationOrder { get; }
 
-		public BoundType BoundType { get; }
+		public DbBoundnessType BoundType { get; }
 
 		public bool IsIdentity { get; }
 
@@ -41,7 +41,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		protected virtual string DebuggerDisplay => $"{Name}";
 
-		protected AttributeInfo(AttributeData attributeData, BoundType boundType, int declarationOrder, bool isKey, bool isIdentity, 
+		protected AttributeInfo(AttributeData attributeData, DbBoundnessType boundType, int declarationOrder, bool isKey, bool isIdentity, 
 								bool isDefaultAttribute, bool isAutoNumberAttribute)
 		{
 			attributeData.ThrowOnNull(nameof(attributeData));
@@ -59,7 +59,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			attribute.ThrowOnNull(nameof(attribute));
 			attributeInformation.ThrowOnNull(nameof(attributeInformation));
 
-			BoundType boundType = attributeInformation.GetBoundAttributeType(attribute);
+			DbBoundnessType boundType = attributeInformation.GetBoundAttributeType(attribute);
 			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation.Context);
 			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation.Context);
 			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, attributeInformation.Context);

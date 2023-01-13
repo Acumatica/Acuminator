@@ -123,7 +123,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public bool IsFullyUnbound() =>
-			DacProperties.All(p => p.EffectiveBoundType != BoundType.DbBound && p.EffectiveBoundType != BoundType.Unknown);
+			DacProperties.All(p => p.EffectiveBoundType != DbBoundnessType.DbBound && p.EffectiveBoundType != DbBoundnessType.Unknown);
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
 			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, FieldsByNames, cancellation: _cancellation),

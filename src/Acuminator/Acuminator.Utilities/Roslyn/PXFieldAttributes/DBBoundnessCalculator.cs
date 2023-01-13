@@ -13,30 +13,30 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Helper used to retrieve the information about Acumatica attributes DB boundness.
+	/// Helper used to retrieve the information about DB boundness of concrete application of Acumatica attribute.
 	/// </summary>
 	/// <remarks>
 	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
 	/// </remarks>
 	public class DbBoundnessCalculator
-	{		
+	{
+		private const string IsDBField = "IsDBField";
+		private const string NonDB = "NonDB";
+
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
 		private readonly INamedTypeSymbol _pxDBLocalizableStringAttribute;
 
 		public PXContext Context { get; }
 
-		public ImmutableArray<ITypeSymbol> BoundBaseTypes { get; }
+		public ImmutableArray<ITypeSymbol> StandardBoundBaseTypes { get; }
 
 		public ImmutableArray<MixedDbBoundnessAttributeInfo> AttributesContainingIsDBField { get; }
-
-		private const string IsDBField = "IsDBField";
-		private const string NonDB = "NonDB";
 
 		public DbBoundnessCalculator(PXContext pxContext)
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
-			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableArray();
+			StandardBoundBaseTypes = GetStandardBoundBaseTypes(Context).ToImmutableArray();
 			AttributesContainingIsDBField = FieldTypeAttributesRegister.GetTypesContainingIsDBField(Context)
 											.OrderBy(typeWithValue => typeWithValue.AttributeType, TypeSymbolsByHierachyComparer.Instance)
 											.ToImmutableArray();
@@ -46,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_pxDBLocalizableStringAttribute = Context.FieldAttributes.PXDBLocalizableStringAttribute;
 		}
 
-		private static List<ITypeSymbol> GetBoundBaseTypes(PXContext context)
+		private static List<ITypeSymbol> GetStandardBoundBaseTypes(PXContext context)
 		{
 			var types = new List<ITypeSymbol>();
 
@@ -67,12 +67,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </summary>
 		/// <param name="attribute">Data of the attribute.</param>
 		/// <returns/>
-		public BoundType GetBoundAttributeType(AttributeData attribute)
+		public DbBoundnessType GetBoundAttributeType(AttributeData attribute)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 
 			if (!attribute.AttributeClass.IsAcumaticaAttribute(Context) || attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
-				return BoundType.NotDefined;
+				return DbBoundnessType.NotDefined;
 
 			//First check attribute for IsDBField property, it takes highest priority in attribute's boundability and can appear in all kinds of attributes like Account/Sub attributes
 			bool containsIsDbFieldproperty = attribute.AttributeClass.GetBaseTypesAndThis()
@@ -100,23 +100,23 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					return dbFieldPreInitializedValue == null
 						? GetBoundTypeFromStandardBoundTypeAttributes(attribute)
 						: dbFieldPreInitializedValue.Value 
-							? BoundType.DbBound 
-							: BoundType.Unbound;
+							? DbBoundnessType.DbBound 
+							: DbBoundnessType.Unbound;
 						
 				case 1 when isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument:     //Case when IsDBField property is set explicitly with correct bool value
 					return isDbPropertyAttributeArgument
-						? BoundType.DbBound
-						: BoundType.Unbound;
+						? DbBoundnessType.DbBound
+						: DbBoundnessType.Unbound;
 
 				case 1:                        //Strange rare case when IsDBField property is set explicitly with value of type other than bool. In this case we don't know if attribute is bound
 				default:                       //Strange case when there are multiple different "IsDBField" properties set in attribute constructor (with different letters register case)
-					return BoundType.Unknown;
+					return DbBoundnessType.Unknown;
 			}
 		}
 
-		private BoundType GetBoundTypeFromStandardBoundTypeAttributes(AttributeData attribute)
+		private DbBoundnessType GetBoundTypeFromStandardBoundTypeAttributes(AttributeData attribute)
 		{
-			if (BoundBaseTypes.Any(boundBaseType => attribute.AttributeClass.IsDerivedFromAttributeUnsafe(boundBaseType, Context)))
+			if (StandardBoundBaseTypes.Any(boundBaseType => attribute.AttributeClass.IsDerivedFromAttributeUnsafe(boundBaseType, Context)))
 			{
 				if (_pxDBLocalizableStringAttribute != null && 
 					attribute.AttributeClass.IsDerivedFromAttributeUnsafe(_pxDBLocalizableStringAttribute, Context))
@@ -124,26 +124,26 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					return GetBoundTypeFromLocalizableStringDerivedAttribute(attribute);
 				}
 
-				return BoundType.DbBound;
+				return DbBoundnessType.DbBound;
 			}
 
-			return BoundType.Unbound;
+			return DbBoundnessType.Unbound;
 		}
 
-		private BoundType GetBoundTypeFromLocalizableStringDerivedAttribute(AttributeData attribute)
+		private DbBoundnessType GetBoundTypeFromLocalizableStringDerivedAttribute(AttributeData attribute)
 		{
 			var (nonDbArgKey, nonDbArgValue) = attribute.NamedArguments.FirstOrDefault(arg => arg.Key == NonDB);
 
 			if (nonDbArgKey == null)
-				return BoundType.DbBound;
+				return DbBoundnessType.DbBound;
 			else if (nonDbArgValue.Value is bool nonDbArgValueBool)
 			{
 				return nonDbArgValueBool
-					? BoundType.Unbound
-					: BoundType.DbBound;
+					? DbBoundnessType.Unbound
+					: DbBoundnessType.DbBound;
 			}
 			else
-				return BoundType.Unknown;
+				return DbBoundnessType.Unknown;
 		}	
 	}
 }

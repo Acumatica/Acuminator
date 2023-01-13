@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				Base = value;
 				
-				if (value != null && BoundType == BoundType.NotDefined) //Inherit BoundType from the base property only if we don't override it
+				if (value != null && BoundType == DbBoundnessType.NotDefined) //Inherit BoundType from the base property only if we don't override it
 				{
 					EffectiveBoundType = value.EffectiveBoundType;
 				}
@@ -55,12 +55,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <summary>
 		/// The bound type declared on this property.
 		/// </summary>
-		public BoundType BoundType { get; }
+		public DbBoundnessType BoundType { get; }
 
 		/// <summary>
 		/// The effective bound type for this property obtained by the combination of <see cref="BoundType"/>s of this propety's override chain. 
 		/// </summary>
-		public BoundType EffectiveBoundType
+		public DbBoundnessType EffectiveBoundType
 		{
 			get;
 			private set;
@@ -79,7 +79,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 			Base = baseInfo;
 
-			if (BoundType == BoundType.NotDefined)
+			if (BoundType == DbBoundnessType.NotDefined)
 			{
 				EffectiveBoundType = baseInfo.EffectiveBoundType;
 			}
@@ -92,7 +92,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Attributes = attributeInfos.ToImmutableArray();
 			IsDacProperty = isDacProperty;
 
-			BoundType boundType = BoundType.NotDefined;
+			DbBoundnessType boundType = DbBoundnessType.NotDefined;
 			bool isIdentity = false;
 			bool isPrimaryKey = false;
 			bool isAutoNumbering = false;
