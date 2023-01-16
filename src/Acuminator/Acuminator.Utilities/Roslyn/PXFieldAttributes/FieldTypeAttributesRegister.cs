@@ -1,9 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
@@ -14,44 +18,34 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	public class FieldTypeAttributesRegister
 	{
 		private readonly PXContext _pxContext;
-		private readonly AttributeInformation _attributeInformation;
 
-		private AcumaticaAttributesInfoProvider AttributesInfoProvider => _attributeInformation.AttributesInfoProvider;
+		public ImmutableDictionary<ITypeSymbol, ITypeSymbol?> UnboundDacFieldTypeAttributesWithFieldType { get; }
 
-		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleUnboundTypes { get; }
+		public ImmutableDictionary<ITypeSymbol, ITypeSymbol?> BoundDacFieldTypeAttributesWithFieldType { get; }
 
-		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleBoundTypes { get; }
+		public ImmutableArray<ITypeSymbol> SpecialAttributes { get; }
 
-		public ImmutableHashSet<ITypeSymbol> UnboundTypeAttributes { get; }
-		public ImmutableHashSet<ITypeSymbol> BoundTypeAttributes { get; }
-		public ImmutableHashSet<ITypeSymbol> SpecialAttributes { get; }
 		public ImmutableHashSet<ITypeSymbol> AllTypeAttributes { get; }
 
 		public FieldTypeAttributesRegister(PXContext pxContext)
 		{
 			_pxContext                 = pxContext.CheckIfNull(nameof(pxContext));
-			_attributeInformation      = new AttributeInformation(_pxContext);
-			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_pxContext).Keys;
-			UnboundTypeAttributes      = unboundFieldAttributes.ToImmutableHashSet();
-
-			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(_pxContext).Keys;
-			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
+			UnboundDacFieldTypeAttributesWithFieldType = GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext).ToImmutableDictionary();
+			BoundDacFieldTypeAttributesWithFieldType = GetBoundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext).ToImmutableDictionary();
 
 			var specialAttributes = GetSpecialAttributes(_pxContext);
-			SpecialAttributes = specialAttributes.ToImmutableHashSet();
-			AllTypeAttributes = unboundFieldAttributes.Concat(boundFieldAttributes)
-													  .Concat(specialAttributes)
-													  .ToImmutableHashSet();
-
-			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(_pxContext).ToImmutableDictionary();
-			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(_pxContext).ToImmutableDictionary();
+			SpecialAttributes = specialAttributes.ToImmutableArray();
+			AllTypeAttributes = UnboundDacFieldTypeAttributesWithFieldType.Keys
+									.Concat(BoundDacFieldTypeAttributesWithFieldType.Keys)
+									.Concat(specialAttributes)
+									.ToImmutableHashSet();
 		}
 
 		public IEnumerable<FieldTypeAttributeInfo> GetFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			var flattenedAttributes = AttributesInfoProvider.GetFlattenedAcumaticaAttributes(attributeSymbol);
+			var flattenedAttributes = attributeSymbol.GetThisAndAllAggregatedAttributes(_pxContext);
 
 			if (flattenedAttributes.IsNullOrEmpty())
 				return Enumerable.Empty<FieldTypeAttributeInfo>();
@@ -83,12 +77,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			else if (firstTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBCalcedAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
-			if (CorrespondingSimpleBoundTypes.TryGetValue(firstTypeAttribute, out var boundFieldType))
+			if (BoundDacFieldTypeAttributesWithFieldType.TryGetValue(firstTypeAttribute, out var boundFieldType))
 			{
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.BoundTypeAttribute, boundFieldType);
 			}
 
-			if (CorrespondingSimpleUnboundTypes.TryGetValue(firstTypeAttribute, out var unboundFieldType))
+			if (UnboundDacFieldTypeAttributesWithFieldType.TryGetValue(firstTypeAttribute, out var unboundFieldType))
 			{
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.UnboundTypeAttribute, unboundFieldType);
 			}
@@ -96,54 +90,54 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			throw new InvalidOperationException($"Cannot get type attribute info for {typeAttribute}");
 		}
 
-		private static HashSet<ITypeSymbol> GetSpecialAttributes(PXContext pxContext) =>
-			new HashSet<ITypeSymbol>
+		private static List<ITypeSymbol> GetSpecialAttributes(PXContext pxContext) =>
+			new List<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXDBScalarAttribute,
 				pxContext.FieldAttributes.PXDBCalcedAttribute
 			};
 
-		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleUnboundTypes(PXContext pxContext)
+		private static Dictionary<ITypeSymbol, ITypeSymbol?> GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(PXContext pxContext)
 		{
-			return new Dictionary<ITypeSymbol, ITypeSymbol>
+			return new Dictionary<ITypeSymbol, ITypeSymbol?>
 			{
-				{ pxContext.FieldAttributes.PXLongAttribute, pxContext.SystemTypes.Int64 },
-				{ pxContext.FieldAttributes.PXIntAttribute, pxContext.SystemTypes.Int32 },
-				{ pxContext.FieldAttributes.PXShortAttribute, pxContext.SystemTypes.Int16 },
-				{ pxContext.FieldAttributes.PXStringAttribute, pxContext.SystemTypes.String.Type },
-				{ pxContext.FieldAttributes.PXByteAttribute, pxContext.SystemTypes.Byte },
+				{ pxContext.FieldAttributes.PXLongAttribute,    pxContext.SystemTypes.Int64 },
+				{ pxContext.FieldAttributes.PXIntAttribute,     pxContext.SystemTypes.Int32 },
+				{ pxContext.FieldAttributes.PXShortAttribute,   pxContext.SystemTypes.Int16 },
+				{ pxContext.FieldAttributes.PXStringAttribute,  pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXByteAttribute,    pxContext.SystemTypes.Byte },
 				{ pxContext.FieldAttributes.PXDecimalAttribute, pxContext.SystemTypes.Decimal },
-				{ pxContext.FieldAttributes.PXDoubleAttribute, pxContext.SystemTypes.Double },
-				{ pxContext.FieldAttributes.PXFloatAttribute, pxContext.SystemTypes.Float },
-				{ pxContext.FieldAttributes.PXDateAttribute, pxContext.SystemTypes.DateTime },
-				{ pxContext.FieldAttributes.PXGuidAttribute, pxContext.SystemTypes.Guid },
-				{ pxContext.FieldAttributes.PXBoolAttribute, pxContext.SystemTypes.Bool },
+				{ pxContext.FieldAttributes.PXDoubleAttribute,  pxContext.SystemTypes.Double },
+				{ pxContext.FieldAttributes.PXFloatAttribute,   pxContext.SystemTypes.Float },
+				{ pxContext.FieldAttributes.PXDateAttribute,    pxContext.SystemTypes.DateTime },
+				{ pxContext.FieldAttributes.PXGuidAttribute,    pxContext.SystemTypes.Guid },
+				{ pxContext.FieldAttributes.PXBoolAttribute,    pxContext.SystemTypes.Bool },
 			};
 		}
 
-		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleBoundTypes(PXContext pxContext)
+		private static Dictionary<ITypeSymbol, ITypeSymbol?> GetBoundDacFieldTypeAttributesWithCorrespondingTypes(PXContext pxContext)
 		{
-			var types = new Dictionary<ITypeSymbol, ITypeSymbol>
+			var types = new Dictionary<ITypeSymbol, ITypeSymbol?>
 			{
-				{ pxContext.FieldAttributes.PXDBFieldAttribute, null },
-				{ pxContext.FieldAttributes.PXDBLongAttribute, pxContext.SystemTypes.Int64 },
-				{ pxContext.FieldAttributes.PXDBIntAttribute, pxContext.SystemTypes.Int32 },
-				{ pxContext.FieldAttributes.PXDBShortAttribute, pxContext.SystemTypes.Int16 },
-				{ pxContext.FieldAttributes.PXDBStringAttribute, pxContext.SystemTypes.String.Type },
-				{ pxContext.FieldAttributes.PXDBByteAttribute, pxContext.SystemTypes.Byte },
-				{ pxContext.FieldAttributes.PXDBDecimalAttribute, pxContext.SystemTypes.Decimal },
-				{ pxContext.FieldAttributes.PXDBDoubleAttribute, pxContext.SystemTypes.Double },
-				{ pxContext.FieldAttributes.PXDBFloatAttribute, pxContext.SystemTypes.Float },
-				{ pxContext.FieldAttributes.PXDBDateAttribute, pxContext.SystemTypes.DateTime },
-				{ pxContext.FieldAttributes.PXDBGuidAttribute, pxContext.SystemTypes.Guid },
-				{ pxContext.FieldAttributes.PXDBBoolAttribute, pxContext.SystemTypes.Bool },
-				{ pxContext.FieldAttributes.PXDBTimestampAttribute, pxContext.SystemTypes.ByteArray },
-				{ pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext.SystemTypes.Int32 },
+				{ pxContext.FieldAttributes.PXDBFieldAttribute,		   null },
+				{ pxContext.FieldAttributes.PXDBLongAttribute,         pxContext.SystemTypes.Int64 },
+				{ pxContext.FieldAttributes.PXDBIntAttribute,          pxContext.SystemTypes.Int32 },
+				{ pxContext.FieldAttributes.PXDBShortAttribute,        pxContext.SystemTypes.Int16 },
+				{ pxContext.FieldAttributes.PXDBStringAttribute,       pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXDBByteAttribute,         pxContext.SystemTypes.Byte },
+				{ pxContext.FieldAttributes.PXDBDecimalAttribute,      pxContext.SystemTypes.Decimal },
+				{ pxContext.FieldAttributes.PXDBDoubleAttribute,       pxContext.SystemTypes.Double },
+				{ pxContext.FieldAttributes.PXDBFloatAttribute,        pxContext.SystemTypes.Float },
+				{ pxContext.FieldAttributes.PXDBDateAttribute,         pxContext.SystemTypes.DateTime },
+				{ pxContext.FieldAttributes.PXDBGuidAttribute,         pxContext.SystemTypes.Guid },
+				{ pxContext.FieldAttributes.PXDBBoolAttribute,         pxContext.SystemTypes.Bool },
+				{ pxContext.FieldAttributes.PXDBTimestampAttribute,    pxContext.SystemTypes.ByteArray },
+				{ pxContext.FieldAttributes.PXDBIdentityAttribute,     pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext.SystemTypes.Int64 },
-				{ pxContext.FieldAttributes.PXDBBinaryAttribute, pxContext.SystemTypes.ByteArray },
-				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.SystemTypes.String.Type },
-				{ pxContext.FieldAttributes.PXDBAttributeAttribute, pxContext.SystemTypes.StringArray },
-				{ pxContext.FieldAttributes.PXDBDataLengthAttribute, pxContext.SystemTypes.Int64 },
+				{ pxContext.FieldAttributes.PXDBBinaryAttribute,       pxContext.SystemTypes.ByteArray },
+				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXDBAttributeAttribute,    pxContext.SystemTypes.StringArray },
+				{ pxContext.FieldAttributes.PXDBDataLengthAttribute,   pxContext.SystemTypes.Int64 },
 			};
 
 			var packagedIntegerAttribute = pxContext.FieldAttributes.PXDBPackedIntegerArrayAttribute;
@@ -155,5 +149,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			return types;
 		}
+
+		private IEnumerable<MixedDbBoundnessAttributeInfo> GetDacFieldTypeAttributesContainingIsDBField(PXContext context) =>
+			new List<MixedDbBoundnessAttributeInfo?>()
+			{
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PeriodIDAttribute, context.SystemTypes.String.Type, true),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.AcctSubAttribute, context.SystemTypes.Int32, true),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundAccountAttribute, context.SystemTypes.Int32, false),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundCashAccountAttribute, context.SystemTypes.Int32, false),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.APTranRecognizedInventoryItemAttribute, context.SystemTypes.Int32, false),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PXEntityAttribute, null, true)
+			}
+			.Where(attributeTypeWithIsDbFieldValue => attributeTypeWithIsDbFieldValue != null)!;
 	}
 }
