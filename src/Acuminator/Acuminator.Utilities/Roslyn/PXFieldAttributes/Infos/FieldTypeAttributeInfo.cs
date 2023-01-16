@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public FieldTypeAttributeKind Kind { get; }
 
-		public bool IsSpecial =>
+		public bool IsCalculatedOnDbSide =>
 			Kind == FieldTypeAttributeKind.PXDBCalcedAttribute || Kind == FieldTypeAttributeKind.PXDBScalarAttribute;
 
 		public bool IsFieldAttribute =>
