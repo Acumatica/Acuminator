@@ -78,7 +78,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			foreach (AttributeInfo attribute in attributes)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				var attributeInfos = fieldAttributesRegister.GetFieldTypeAttributeInfos(attribute.AttributeData.AttributeClass).ToList();
+				var attributeInfos = fieldAttributesRegister.GetDacFieldTypeAttributeInfos(attribute.AttributeData.AttributeClass).ToList();
 
 				if (attributeInfos.Count > 0)
 				{

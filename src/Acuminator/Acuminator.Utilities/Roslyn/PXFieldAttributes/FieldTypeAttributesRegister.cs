@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Information about the Acumatica field type attributes.
+	/// Information about the Acumatica DAC field type attributes.
 	/// </summary>
 	public class FieldTypeAttributesRegister
 	{
@@ -23,25 +23,26 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol?> BoundDacFieldTypeAttributesWithFieldType { get; }
 
-		public ImmutableArray<ITypeSymbol> SpecialAttributes { get; }
+		public ImmutableArray<ITypeSymbol> AttributesCalcedOnDbSide { get; }
 
 		public ImmutableHashSet<ITypeSymbol> AllTypeAttributes { get; }
 
 		public FieldTypeAttributesRegister(PXContext pxContext)
 		{
-			_pxContext                 = pxContext.CheckIfNull(nameof(pxContext));
+			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
 			UnboundDacFieldTypeAttributesWithFieldType = GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext).ToImmutableDictionary();
 			BoundDacFieldTypeAttributesWithFieldType = GetBoundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext).ToImmutableDictionary();
 
-			var specialAttributes = GetSpecialAttributes(_pxContext);
-			SpecialAttributes = specialAttributes.ToImmutableArray();
+			var attributesCalcedOnDbSide = GetAttributesCalcedOnDbSide(_pxContext);
+			AttributesCalcedOnDbSide = attributesCalcedOnDbSide.ToImmutableArray();
+
 			AllTypeAttributes = UnboundDacFieldTypeAttributesWithFieldType.Keys
 									.Concat(BoundDacFieldTypeAttributesWithFieldType.Keys)
-									.Concat(specialAttributes)
+									.Concat(attributesCalcedOnDbSide)
 									.ToImmutableHashSet();
 		}
 
-		public IEnumerable<FieldTypeAttributeInfo> GetFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
+		public IEnumerable<FieldTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
@@ -54,7 +55,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			foreach (ITypeSymbol attribute in flattenedAttributes)
 			{
-				FieldTypeAttributeInfo? attributeInfo = GetTypeAttributeInfo(attribute);
+				FieldTypeAttributeInfo? attributeInfo = GetDacFieldTypeAttributeInfo(attribute);
 
 				if (attributeInfo != null)
 				{
@@ -65,7 +66,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return typeAttributeInfos;
 		}
 
-		private FieldTypeAttributeInfo? GetTypeAttributeInfo(ITypeSymbol typeAttribute)
+		private FieldTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol typeAttribute)
 		{
 			var firstTypeAttribute = typeAttribute.GetBaseTypesAndThis()
 												  .FirstOrDefault(type => AllTypeAttributes.Contains(type));
@@ -90,7 +91,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			throw new InvalidOperationException($"Cannot get type attribute info for {typeAttribute}");
 		}
 
-		private static List<ITypeSymbol> GetSpecialAttributes(PXContext pxContext) =>
+		private static List<ITypeSymbol> GetAttributesCalcedOnDbSide(PXContext pxContext) =>
 			new List<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXDBScalarAttribute,

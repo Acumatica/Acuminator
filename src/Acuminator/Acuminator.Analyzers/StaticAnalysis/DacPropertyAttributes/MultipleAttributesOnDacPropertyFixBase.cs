@@ -165,7 +165,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				if (attributeType == null)
 					return false;
 				
-				var attributeInfos = _attributesRegister.GetFieldTypeAttributeInfos(attributeType);
+				var attributeInfos = _attributesRegister.GetDacFieldTypeAttributeInfos(attributeType);
 				return attributeInfos.Any(_attributeToRemovePredicate);
 			}
 		}
