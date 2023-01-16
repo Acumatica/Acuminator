@@ -76,34 +76,34 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		public Task AreBoundAttributesAsync(string source) =>
 			IsBoundAttributeAsync(source, 
-											new List<BoundType>
+											new List<DbBoundnessType>
 											{
-												BoundType.Unbound,
-												BoundType.NotDefined,
-												BoundType.Unbound,
-												BoundType.DbBound,
-												BoundType.NotDefined,
-												BoundType.Unbound
+												DbBoundnessType.Unbound,
+												DbBoundnessType.NotDefined,
+												DbBoundnessType.Unbound,
+												DbBoundnessType.DbBound,
+												DbBoundnessType.NotDefined,
+												DbBoundnessType.Unbound
 											});
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		public Task AreBoundAggregateAttributesAsync(string source) =>
-			IsBoundAttributeAsync(source, new List<BoundType> { BoundType.DbBound, BoundType.Unbound });
+			IsBoundAttributeAsync(source, new List<DbBoundnessType> { DbBoundnessType.DbBound, DbBoundnessType.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public Task AreBoundAggregateRecursiveAttributeAsync(string source) =>
-			IsBoundAttributeAsync(source, new List<BoundType> { BoundType.Unbound, BoundType.DbBound });
+			IsBoundAttributeAsync(source, new List<DbBoundnessType> { DbBoundnessType.Unbound, DbBoundnessType.DbBound });
 
-		private async Task IsBoundAttributeAsync(string source, List<BoundType> expected)
+		private async Task IsBoundAttributeAsync(string source, List<DbBoundnessType> expected)
 		{
 			Document document = CreateDocument(source);
 			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
 			semanticModel.ThrowOnNull(nameof(semanticModel));
 			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
-			List<BoundType> actual = new List<BoundType>();
+			List<DbBoundnessType> actual = new List<DbBoundnessType>();
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.DbBoundnessCalculator(pxContext);
@@ -181,7 +181,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 				if (propertyAttributes.IsDefaultOrEmpty)
 					return false;
 
-				return propertyAttributes.Any(a => dbBoundnessCalculator!.GetBoundAttributeType(a) == BoundType.DbBound);
+				return propertyAttributes.Any(a => dbBoundnessCalculator!.GetBoundAttributeType(a) == DbBoundnessType.DbBound);
 			}
 		}
 
