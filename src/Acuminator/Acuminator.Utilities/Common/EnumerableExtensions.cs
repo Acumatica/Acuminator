@@ -313,6 +313,17 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void AddRange<T>(this HashSet<T> hashset, IEnumerable<T> items)
+		{
+			hashset.ThrowOnNull(nameof(hashset));
+			items.ThrowOnNull(nameof(items));
+
+			foreach (var item in items)
+				hashset.Add(item);
+		}
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsEmpty<T>(this IEnumerable<T> source) =>
 			source.CheckIfNull(nameof(source)) switch
 			{
