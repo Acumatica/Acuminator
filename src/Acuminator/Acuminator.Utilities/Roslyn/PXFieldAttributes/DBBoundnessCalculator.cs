@@ -31,16 +31,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public ImmutableArray<ITypeSymbol> StandardBoundBaseTypes { get; }
 
-		public ImmutableArray<MixedDbBoundnessAttributeInfo> AttributesContainingIsDBField { get; }
-
 		public DbBoundnessCalculator(PXContext pxContext)
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
 			StandardBoundBaseTypes = GetStandardBoundBaseTypes(Context).ToImmutableArray();
-			AttributesContainingIsDBField = FieldTypeAttributesRegister.GetTypesContainingIsDBField(Context)
-											.OrderBy(typeWithValue => typeWithValue.AttributeType, TypeSymbolsByHierachyComparer.Instance)
-											.ToImmutableArray();
-
+			
 			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
 			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
 			_pxDBLocalizableStringAttribute = Context.FieldAttributes.PXDBLocalizableStringAttribute;

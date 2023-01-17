@@ -74,6 +74,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private FieldTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol attribute)
 		{
+
+			var firstIdDbFieldAttribute = SortedAttributesContainingIsDBField
+							.FirstOrDefault(typeWithValue => attribute.AttributeClass.IsDerivedFromAttribute(typeWithValue.AttributeType, Context));
+
 			var firstDacFieldTypeAttribute = attribute.GetBaseTypesAndThis()
 													  .FirstOrDefault(type => AllDacFieldTypeAttributes.Contains(type));
 			if (firstDacFieldTypeAttribute == null)
