@@ -25,7 +25,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public ImmutableArray<ITypeSymbol> AttributesCalcedOnDbSide { get; }
 
-		public ImmutableHashSet<ITypeSymbol> AllTypeAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> AllDacFieldTypeAttributes { get; }
+
+		public ImmutableArray<MixedDbBoundnessAttributeInfo> SortedAttributesContainingIsDBField { get; }
 
 		public FieldTypeAttributesRegister(PXContext pxContext)
 		{
@@ -36,10 +38,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			var attributesCalcedOnDbSide = GetAttributesCalcedOnDbSide(_pxContext);
 			AttributesCalcedOnDbSide = attributesCalcedOnDbSide.ToImmutableArray();
 
-			AllTypeAttributes = UnboundDacFieldTypeAttributesWithFieldType.Keys
-									.Concat(BoundDacFieldTypeAttributesWithFieldType.Keys)
-									.Concat(attributesCalcedOnDbSide)
-									.ToImmutableHashSet();
+			AllDacFieldTypeAttributes = UnboundDacFieldTypeAttributesWithFieldType.Keys
+										.Concat(BoundDacFieldTypeAttributesWithFieldType.Keys)
+										.Concat(attributesCalcedOnDbSide)
+										.ToImmutableHashSet();
+
+			SortedAttributesContainingIsDBField = GetDacFieldTypeAttributesContainingIsDBField(_pxContext)
+													.OrderBy(typeWithValue => typeWithValue.AttributeType, TypeSymbolsByHierachyComparer.Instance)
+													.ToImmutableArray();
 		}
 
 		public IReadOnlyCollection<FieldTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
@@ -66,29 +72,29 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return typeAttributeInfos;
 		}
 
-		private FieldTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol typeAttribute)
+		private FieldTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol attribute)
 		{
-			var firstTypeAttribute = typeAttribute.GetBaseTypesAndThis()
-												  .FirstOrDefault(type => AllTypeAttributes.Contains(type));
-			if (firstTypeAttribute == null)
+			var firstDacFieldTypeAttribute = attribute.GetBaseTypesAndThis()
+													  .FirstOrDefault(type => AllDacFieldTypeAttributes.Contains(type));
+			if (firstDacFieldTypeAttribute == null)
 				return null;
 
-			if (firstTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBScalarAttribute))
+			if (firstDacFieldTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBScalarAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
-			else if (firstTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBCalcedAttribute))
+			else if (firstDacFieldTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBCalcedAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
-			if (BoundDacFieldTypeAttributesWithFieldType.TryGetValue(firstTypeAttribute, out var boundFieldType))
+			if (BoundDacFieldTypeAttributesWithFieldType.TryGetValue(firstDacFieldTypeAttribute, out var boundFieldType))
 			{
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.BoundTypeAttribute, boundFieldType);
 			}
 
-			if (UnboundDacFieldTypeAttributesWithFieldType.TryGetValue(firstTypeAttribute, out var unboundFieldType))
+			if (UnboundDacFieldTypeAttributesWithFieldType.TryGetValue(firstDacFieldTypeAttribute, out var unboundFieldType))
 			{
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.UnboundTypeAttribute, unboundFieldType);
 			}
 
-			throw new InvalidOperationException($"Cannot get type attribute info for {typeAttribute}");
+			throw new InvalidOperationException($"Cannot get DAC field type attribute info for {attribute}");
 		}
 
 		private static List<ITypeSymbol> GetAttributesCalcedOnDbSide(PXContext pxContext) =>
@@ -151,14 +157,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return types;
 		}
 
-		private IEnumerable<MixedDbBoundnessAttributeInfo> GetDacFieldTypeAttributesContainingIsDBField(PXContext context) =>
+		private static IEnumerable<MixedDbBoundnessAttributeInfo> GetDacFieldTypeAttributesContainingIsDBField(PXContext context) =>
 			new List<MixedDbBoundnessAttributeInfo?>()
 			{
-				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PeriodIDAttribute, context.SystemTypes.String.Type, true),
-				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.AcctSubAttribute, context.SystemTypes.Int32, true),
-				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundAccountAttribute, context.SystemTypes.Int32, false),
-				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundCashAccountAttribute, context.SystemTypes.Int32, false),
-				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.APTranRecognizedInventoryItemAttribute, context.SystemTypes.Int32, false),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PeriodIDAttribute,						 context.SystemTypes.String.Type, isDbBoundByDefault: true),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.AcctSubAttribute,						 context.SystemTypes.Int32, isDbBoundByDefault: true),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundAccountAttribute,				 context.SystemTypes.Int32, isDbBoundByDefault: false),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundCashAccountAttribute,			 context.SystemTypes.Int32, isDbBoundByDefault: false),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.APTranRecognizedInventoryItemAttribute, context.SystemTypes.Int32, isDbBoundByDefault: false),
 				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PXEntityAttribute, null, true)
 			}
 			.Where(attributeTypeWithIsDbFieldValue => attributeTypeWithIsDbFieldValue != null)!;
