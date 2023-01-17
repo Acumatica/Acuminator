@@ -128,47 +128,53 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (!baseAcumaticaAttributeTypes.Contains(eventSubscriberAttribute))
 				return Array.Empty<ITypeSymbol>();
 
+			INamedTypeSymbol pxAggregateAttribute = pxContext.AttributeTypes.PXAggregateAttribute;
+			INamedTypeSymbol pxDynamicAggregateAttribute = pxContext.AttributeTypes.PXDynamicAggregateAttribute;
+
 			var results = includeBaseTypes
 				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute)).ToHashSet()
 				: new HashSet<ITypeSymbol>() { attributeType };
 
-			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxContext.AttributeTypes.PXAggregateAttribute) ||
-										baseAcumaticaAttributeTypes.Contains(pxContext.AttributeTypes.PXDynamicAggregateAttribute);
+			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxAggregateAttribute) ||
+										baseAcumaticaAttributeTypes.Contains(pxDynamicAggregateAttribute);
 			if (!isAggregateAttribute)
 				return results;
 
 			var allDeclaredAcumaticaAttributesOnClassHierarchy = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(attributeType, pxContext);
 
-			foreach (var attribute in allDeclaredAcumaticaAttributesOnClassHierarchy)
+			foreach (var aggregatedAttribute in allDeclaredAcumaticaAttributesOnClassHierarchy)
 			{
-				CollectAggregatedAttributes(results, attribute, pxContext, includeBaseTypes, recursionDepth: 0);
+				CollectAggregatedAttributes(aggregatedAttribute, recursionDepth: 0);
 			}
 
 			return results;
-		}
 
-		private static void CollectAggregatedAttributes(HashSet<ITypeSymbol> results, ITypeSymbol aggregatedAttribute, PXContext pxContext, 
-														bool includeBaseTypes, int recursionDepth)
-		{
-			if (!results.Add(aggregatedAttribute) || recursionDepth > MaxRecursionDepth)
-				return;
-
-			if (includeBaseTypes)
+			//--------------------------------------------------Local Function-----------------------------------------------------
+			void CollectAggregatedAttributes(ITypeSymbol aggregatedAttribute, int recursionDepth)
 			{
-				var baseAcumaticaAttributeTypes = 
-					aggregatedAttribute.GetBaseTypes()
-									   .TakeWhile(baseType => !baseType.Equals(pxContext.AttributeTypes.PXEventSubscriberAttribute));
+				if (!results.Add(aggregatedAttribute) || recursionDepth > MaxRecursionDepth)
+					return;
 
-				results.AddRange(baseAcumaticaAttributeTypes);					
-			}
+				var aggregatedAttributeBaseTypes = aggregatedAttribute.GetBaseTypes().ToList();
 
-			if (aggregatedAttribute.IsAggregatorAttribute(pxContext))
-			{
-				var allDeclaredAcumaticaAttributesOnClassHierarchy = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(aggregatedAttribute, pxContext);
-
-				foreach (var attribute in allDeclaredAcumaticaAttributesOnClassHierarchy)
+				if (includeBaseTypes)
 				{
-					CollectAggregatedAttributes(results, attribute, pxContext, includeBaseTypes, recursionDepth + 1);
+					var aggregatedAttributeBaseAcumaticaAttributeTypes = 
+						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute));
+
+					results.AddRange(aggregatedAttributeBaseAcumaticaAttributeTypes);
+				}
+
+				bool isAggregateOnAggregateAttribute = aggregatedAttributeBaseTypes.Contains(pxAggregateAttribute) ||
+													   aggregatedAttributeBaseTypes.Contains(pxDynamicAggregateAttribute);
+				if (isAggregateOnAggregateAttribute)
+				{
+					var allDeclaredAcumaticaAttributesOnClassHierarchy = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(aggregatedAttribute, pxContext);
+
+					foreach (var attribute in allDeclaredAcumaticaAttributesOnClassHierarchy)
+					{
+						CollectAggregatedAttributes(attribute, recursionDepth + 1);
+					}
 				}
 			}
 		}
