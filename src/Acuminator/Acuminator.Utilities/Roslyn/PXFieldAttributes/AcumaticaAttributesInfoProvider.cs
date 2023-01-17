@@ -114,20 +114,19 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </summary>
 		/// <param name="attributeType">Type of the attribute.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
-		/// <param name="includeBaseTypes">(Optional) True to include, false to exclude the base Acumatica types.</param>
+		/// <param name="includeBaseTypes">True to include, false to exclude the base Acumatica types.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetThisAndAllAggregatedAttributes(this ITypeSymbol? attributeType, PXContext pxContext, 
-																				 bool includeBaseTypes = false)
+		public static IReadOnlyCollection<ITypeSymbol> GetThisAndAllAggregatedAttributes(this ITypeSymbol? attributeType, PXContext pxContext, bool includeBaseTypes)
 		{
 			var eventSubscriberAttribute = pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXEventSubscriberAttribute;
 
 			if (attributeType == null || attributeType.Equals(eventSubscriberAttribute))
-				return Enumerable.Empty<ITypeSymbol>();
+				return Array.Empty<ITypeSymbol>();
 
 			var baseAcumaticaAttributeTypes = attributeType.GetBaseTypesAndThis().ToList();
 
 			if (!baseAcumaticaAttributeTypes.Contains(eventSubscriberAttribute))
-				return Enumerable.Empty<ITypeSymbol>();
+				return Array.Empty<ITypeSymbol>();
 
 			var results = includeBaseTypes
 				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute)).ToHashSet()

@@ -341,7 +341,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			var expectedSymbols = ConvertSymbolNamesToTypeSymbols(expected, semanticModel);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
-			List<HashSet<ITypeSymbol>> result = new List<HashSet<ITypeSymbol>>();
+			var actualResult = new List<IReadOnlyCollection<ITypeSymbol>>();
 
 			foreach (var property in properties)
 			{
@@ -354,16 +354,16 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 				foreach (var attribute in attributes)
 				{
-					var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, expand).ToHashSet();
+					var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, expand);
 
 					if (fullAttributesSet.Count > 0)
 					{
-						result.Add(fullAttributesSet);
+						actualResult.Add(fullAttributesSet);
 					}
 				}
 			}
 
-			Assert.Equal(expectedSymbols, result);
+			Assert.Equal(expectedSymbols, actualResult);
 		}
 
 		private List<HashSet<ITypeSymbol>> ConvertSymbolNamesToTypeSymbols(List<List<string>> expectedSymbolNamesSets, SemanticModel semanticModel) =>

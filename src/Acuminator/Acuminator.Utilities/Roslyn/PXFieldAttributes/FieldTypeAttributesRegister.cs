@@ -52,9 +52,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			var flattenedAttributes = attributeSymbol.GetThisAndAllAggregatedAttributes(_pxContext);
+			var flattenedAttributes = attributeSymbol.GetThisAndAllAggregatedAttributes(_pxContext, includeBaseTypes: true);
 
-			if (flattenedAttributes.IsNullOrEmpty())
+			if (flattenedAttributes.Count == 0)
 				return Array.Empty<FieldTypeAttributeInfo>();
 
 			List<FieldTypeAttributeInfo> typeAttributeInfos = new List<FieldTypeAttributeInfo>(capacity: 2);
