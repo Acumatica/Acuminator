@@ -42,14 +42,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 									.ToImmutableHashSet();
 		}
 
-		public IEnumerable<FieldTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
+		public IReadOnlyCollection<FieldTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
 			var flattenedAttributes = attributeSymbol.GetThisAndAllAggregatedAttributes(_pxContext);
 
 			if (flattenedAttributes.IsNullOrEmpty())
-				return Enumerable.Empty<FieldTypeAttributeInfo>();
+				return Array.Empty<FieldTypeAttributeInfo>();
 
 			List<FieldTypeAttributeInfo> typeAttributeInfos = new List<FieldTypeAttributeInfo>(capacity: 2);
 
@@ -59,7 +59,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 				if (attributeInfo != null)
 				{
-					typeAttributeInfos.Add(attributeInfo.Value);
+					typeAttributeInfos.Add(attributeInfo);
 				}
 			}
 

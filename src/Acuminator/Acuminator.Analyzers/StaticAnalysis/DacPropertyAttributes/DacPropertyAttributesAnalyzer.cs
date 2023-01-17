@@ -68,17 +68,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			CheckForFieldTypeAttributes(property, symbolContext, pxContext, attributesWithInfos);
 		}
 	
-		private static List<(AttributeInfo Attribute, List<FieldTypeAttributeInfo> Infos)> GetFieldTypeAttributesInfos(ImmutableArray<AttributeInfo> attributes,
-																													   FieldTypeAttributesRegister fieldAttributesRegister,
-																													   CancellationToken cancellationToken)
+		private static List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> GetFieldTypeAttributesInfos(
+																													ImmutableArray<AttributeInfo> attributes,
+																													FieldTypeAttributesRegister fieldAttributesRegister,
+																													CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var fieldInfosList = new List<(AttributeInfo, List<FieldTypeAttributeInfo>)>(capacity: attributes.Length);
+			var fieldInfosList = new List<(AttributeInfo, IReadOnlyCollection<FieldTypeAttributeInfo>)>(capacity: attributes.Length);
 
 			foreach (AttributeInfo attribute in attributes)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				var attributeInfos = fieldAttributesRegister.GetDacFieldTypeAttributeInfos(attribute.AttributeData.AttributeClass).ToList();
+				var attributeInfos = fieldAttributesRegister.GetDacFieldTypeAttributeInfos(attribute.AttributeData.AttributeClass);
 
 				if (attributeInfos.Count > 0)
 				{
@@ -90,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static bool CheckForMultipleAttributesCalcedOnDbSide(SymbolAnalysisContext symbolContext, PXContext pxContext,
-																	 List<(AttributeInfo Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
+																List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
 			var (attributesCalcedOnDbSideDeclaredOnDacProperty, attributesCalcedOnDbSideWithConflictingAggregatorDeclarations) = 
 				FilterAttributesCalcedOnDbSide();
@@ -141,7 +142,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, IPropertySymbol propertySymbol,
-																	   List<(AttributeInfo Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
+															List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -163,7 +164,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-														List<(AttributeInfo Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
+														List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
 			var (typeAttributesDeclaredOnDacProperty, typeAttributesWithConflictingAggregatorDeclarations) = FilterTypeAttributes();
 
@@ -225,7 +226,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo fieldAttribute, ITypeSymbol fieldType,
+		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo fieldAttribute, ITypeSymbol? fieldType,
 																		   PXContext pxContext, SymbolAnalysisContext symbolContext)
 		{
 			if (fieldType == null)                           //PXDBFieldAttribute case
