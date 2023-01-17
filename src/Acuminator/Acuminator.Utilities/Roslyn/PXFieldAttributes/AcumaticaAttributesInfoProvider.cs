@@ -150,9 +150,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private static void CollectAggregatedAttributes(HashSet<ITypeSymbol> results, ITypeSymbol aggregatedAttribute, PXContext pxContext, 
 														bool includeBaseTypes, int recursionDepth)
 		{
-			results.Add(aggregatedAttribute);
-
-			if (recursionDepth > MaxRecursionDepth)
+			if (!results.Add(aggregatedAttribute) || recursionDepth > MaxRecursionDepth)
 				return;
 
 			if (includeBaseTypes)
@@ -161,8 +159,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					aggregatedAttribute.GetBaseTypes()
 									   .TakeWhile(baseType => !baseType.Equals(pxContext.AttributeTypes.PXEventSubscriberAttribute));
 
-				foreach (ITypeSymbol baseAcumaticaAttribute in baseAcumaticaAttributeTypes)
-					results.Add(baseAcumaticaAttribute!);
+				results.AddRange(baseAcumaticaAttributeTypes);					
 			}
 
 			if (aggregatedAttribute.IsAggregatorAttribute(pxContext))
