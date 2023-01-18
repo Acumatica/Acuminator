@@ -18,7 +18,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// <remarks>
 	/// By Acumatica attribute we mean an attribute derived from PXEventSubscriberAttribute.
 	/// </remarks>
-	public static class AcumaticaAttributesInfoProvider
+	public static class AcumaticaAttributesRelationsInfoProvider
 	{
 		private const int MaxRecursionDepth = 50;
 
