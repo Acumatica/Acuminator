@@ -13,9 +13,9 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Information about the Acumatica DAC field type attributes.
+	/// Provider of information about the Acumatica DAC field type attributes metadata.
 	/// </summary>
-	public class FieldTypeAttributesRegister
+	public class FieldTypeAttributesMetadataProvider
 	{
 		private readonly PXContext _pxContext;
 
@@ -29,7 +29,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public ImmutableArray<MixedDbBoundnessAttributeInfo> SortedAttributesContainingIsDBField { get; }
 
-		public FieldTypeAttributesRegister(PXContext pxContext)
+		public FieldTypeAttributesMetadataProvider(PXContext pxContext)
 		{
 			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
 			UnboundDacFieldTypeAttributesWithFieldType = GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext).ToImmutableDictionary();
@@ -75,7 +75,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private FieldTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol attribute)
 		{
 			var firstMixedBoundnessAttribute = SortedAttributesContainingIsDBField
-															.FirstOrDefault(a => attribute.IsDerivedFromAttribute(a.AttributeType, _pxContext));
+															.FirstOrDefault(a => attribute.IsDerivedFromOrAggregatesAttribute(a.AttributeType, _pxContext));
 			if (firstMixedBoundnessAttribute != null)
 				return firstMixedBoundnessAttribute;
 
