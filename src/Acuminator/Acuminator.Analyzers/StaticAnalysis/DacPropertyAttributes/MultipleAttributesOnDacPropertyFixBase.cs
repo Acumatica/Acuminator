@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -6,11 +8,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -37,10 +41,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (codeActionName.IsNullOrWhiteSpace() || removePredicate == null)
 				return;
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(root?.FindNode(context.Span) is AttributeSyntax attributeNode))
+			if (root?.FindNode(context.Span) is not AttributeSyntax attributeNode)
 				return;
 
 			var propertyDeclaration = attributeNode.Parent<PropertyDeclarationSyntax>();
@@ -48,8 +52,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (propertyDeclaration == null)
 				return;
 
-			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
-																.ConfigureAwait(false);
+			SemanticModel? semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
+																 .ConfigureAwait(false);
 			if (semanticModel == null)
 				return;
 
@@ -110,7 +114,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				_attributesRegister = new FieldTypeAttributesRegister(pxContext);
 			}
 
-            public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
+            public override SyntaxNode? VisitAttributeList(AttributeListSyntax attributeListNode)
 			{
 				_cancellationToken.ThrowIfCancellationRequested();
 
@@ -159,7 +163,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				if (attributeNode.Equals(_remainingAttribute))
 					return false;
 
-				ITypeSymbol attributeType = _semanticModel.GetTypeInfo(attributeNode, _cancellationToken).Type;
+				ITypeSymbol? attributeType = _semanticModel.GetTypeInfo(attributeNode, _cancellationToken).Type;
 				_cancellationToken.ThrowIfCancellationRequested();
 
 				if (attributeType == null)
