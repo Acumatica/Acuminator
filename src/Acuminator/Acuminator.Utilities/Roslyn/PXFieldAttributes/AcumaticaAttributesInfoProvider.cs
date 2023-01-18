@@ -58,8 +58,16 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			attributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXDynamicAggregateAttribute);
 
 		/// <summary>
-		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. If non Acumatica attributes are passed then <c>flase</c> is returned.
+		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type or aggregates it.<br/>
+		/// If non Acumatica attributes are passed then <c>false</c> is returned.
 		/// </summary>
+		/// <remarks>
+		/// This check imitates Acumatica runtime processing of Acumatica attributes which can be dividen into two groups:<br/>
+		/// - Normal attributes that contain some shared functionality (usually in a form of event subscription) which can be reused between Acumatica graphs.<br/>
+		/// - Aggregate attributes that besides their own functionality also collect all attributes declared on them and merge logic from these aggregated attributes.<br/>
+		/// Since aggregate attributes are also Acumatica attributes they can also be aggregated by other aggregate attributes although such complex scenarios are rare.<br/>
+		/// Thus, the resolution of all attributes is a recursive process. 
+		/// </remarks>
 		/// <param name="attributeType">Type of the attribute.</param>
 		/// <param name="baseAttributeTypeToCheck">The base attribute type to check.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
@@ -75,9 +83,16 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		}
 
 		/// <summary>
-		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. <br/>
+		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type or aggregates it.<br/>
 		/// This is an internal unsafe version which for performance reasons doesn't check input types for being Acumatica attributes.
 		/// </summary>
+		///  <remarks>
+		/// This check imitates Acumatica runtime processing of Acumatica attributes which can be dividen into two groups:<br/>
+		/// - Normal attributes that contain some shared functionality (usually in a form of event subscription) which can be reused between Acumatica graphs.<br/>
+		/// - Aggregate attributes that besides their own functionality also collect all attributes declared on them and merge logic from these aggregated attributes.<br/>
+		/// Since aggregate attributes are also Acumatica attributes they can also be aggregated by other aggregate attributes although such complex scenarios are rare.<br/>
+		/// Thus, the resolution of all attributes is a recursive process.
+		/// </remarks>
 		/// <param name="attributeType">Type of the attribute.</param>
 		/// <param name="baseAttributeTypeToCheck">The base attribute type to check.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
@@ -112,6 +127,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <summary>
 		/// Get the flattened collection of Acumatica attributes defined by the <paramref name="attributeType"/> including attributes on aggregates and <paramref name="attributeType"/> itself.
 		/// </summary>
+		///  <remarks>
+		/// This check imitates Acumatica runtime processing of Acumatica attributes which can be dividen into two groups:<br/>
+		/// - Normal attributes that contain some shared functionality (usually in a form of event subscription) which can be reused between Acumatica graphs.<br/>
+		/// - Aggregate attributes that besides their own functionality also collect all attributes declared on them and merge logic from these aggregated attributes.<br/>
+		/// Since aggregate attributes are also Acumatica attributes they can also be aggregated by other aggregate attributes although such complex scenarios are rare.<br/>
+		/// Thus, the resolution of all attributes is a recursive process.
+		/// </remarks>
 		/// <param name="attributeType">Type of the attribute.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
 		/// <param name="includeBaseTypes">True to include, false to exclude the base Acumatica types.</param>
