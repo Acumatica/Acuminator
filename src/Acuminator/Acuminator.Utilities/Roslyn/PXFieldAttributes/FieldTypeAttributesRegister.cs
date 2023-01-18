@@ -74,9 +74,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private FieldTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol attribute)
 		{
-
-			var firstIdDbFieldAttribute = SortedAttributesContainingIsDBField
-							.FirstOrDefault(typeWithValue => attribute.AttributeClass.IsDerivedFromAttribute(typeWithValue.AttributeType, Context));
+			var firstMixedBoundnessAttribute = SortedAttributesContainingIsDBField
+															.FirstOrDefault(a => attribute.IsDerivedFromAttribute(a.AttributeType, _pxContext));
+			if (firstMixedBoundnessAttribute != null)
+				return firstMixedBoundnessAttribute;
 
 			var firstDacFieldTypeAttribute = attribute.GetBaseTypesAndThis()
 													  .FirstOrDefault(type => AllDacFieldTypeAttributes.Contains(type));
@@ -169,7 +170,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundAccountAttribute,				 context.SystemTypes.Int32, isDbBoundByDefault: false),
 				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.UnboundCashAccountAttribute,			 context.SystemTypes.Int32, isDbBoundByDefault: false),
 				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.APTranRecognizedInventoryItemAttribute, context.SystemTypes.Int32, isDbBoundByDefault: false),
-				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PXEntityAttribute, null, true)
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PXEntityAttribute,						 null,						isDbBoundByDefault: true),
+				MixedDbBoundnessAttributeInfo.Create(context.FieldAttributes.PXDBLocalizableStringAttribute,		 context.SystemTypes.String.Type, isDbBoundByDefault: true),
 			}
 			.Where(attributeTypeWithIsDbFieldValue => attributeTypeWithIsDbFieldValue != null)!;
 	}
