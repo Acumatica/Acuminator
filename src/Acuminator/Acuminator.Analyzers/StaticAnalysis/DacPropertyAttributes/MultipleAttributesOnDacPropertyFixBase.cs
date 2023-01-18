@@ -3,14 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Composition;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -20,7 +17,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
@@ -75,7 +71,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 																		 PropertyDeclarationSyntax propertyDeclaration, SemanticModel semanticModel,
 																		 Func<FieldTypeAttributeInfo, bool> removePredicate, CancellationToken cancellationToken)
 		{	
-			var rewriterWalker = new MultipleAttributesRemover(document, semanticModel, attributeNode, removePredicate, cancellationToken);
+			var rewriterWalker = new MultipleAttributesRemover(semanticModel, attributeNode, removePredicate, cancellationToken);
 			var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;
 
 			cancellationToken.ThrowIfCancellationRequested();
@@ -94,24 +90,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			private int _visitedAttributeListCounter;
 			private int _attributeListsRemovedCounter;
 			
-			private readonly Document _document;
 			private readonly SemanticModel _semanticModel;
-			private readonly FieldTypeAttributesRegister _attributesRegister;
+			private readonly FieldTypeAttributesMetadataProvider _attributesRegister;
 			private readonly AttributeSyntax _remainingAttribute;
 			private readonly Func<FieldTypeAttributeInfo, bool> _attributeToRemovePredicate;
 			private readonly CancellationToken _cancellationToken;
 
-			public MultipleAttributesRemover(Document document, SemanticModel semanticModel, AttributeSyntax remainingAttribute,
+			public MultipleAttributesRemover(SemanticModel semanticModel, AttributeSyntax remainingAttribute,
 											 Func<FieldTypeAttributeInfo, bool> attributeToRemovePredicate, CancellationToken cToken)
 			{
-				_document = document;
 				_semanticModel = semanticModel;
 				_cancellationToken = cToken;
 				_remainingAttribute = remainingAttribute;
 				_attributeToRemovePredicate = attributeToRemovePredicate;
 
 				PXContext pxContext = new PXContext(_semanticModel.Compilation, codeAnalysisSettings: null);
-				_attributesRegister = new FieldTypeAttributesRegister(pxContext);
+				_attributesRegister = new FieldTypeAttributesMetadataProvider(pxContext);
 			}
 
             public override SyntaxNode? VisitAttributeList(AttributeListSyntax attributeListNode)
