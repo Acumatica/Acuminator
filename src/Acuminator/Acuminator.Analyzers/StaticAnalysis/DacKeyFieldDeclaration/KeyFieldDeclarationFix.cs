@@ -131,8 +131,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 					return null;
 
 				bool isIdentityAttribute =
-					attributeType.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext) ||
-					attributeType.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext);
+					attributeType.IsDerivedFromOrAggregatesAttribute(pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext) ||
+					attributeType.IsDerivedFromOrAggregatesAttribute(pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext);
 
 				if ((mode == CodeFixModes.EditIdentityAttribute && isIdentityAttribute) ||
 					(mode == CodeFixModes.EditKeyFieldAttributes && !isIdentityAttribute))

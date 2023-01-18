@@ -179,7 +179,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				bool isDerivedFromOrAggregateForeignKeyAttribute =
 					foreignKeyAttributes.Exists(
-						foreignKeyAttribute => attribute.AttributeType.IsDerivedFromAttribute(foreignKeyAttribute, pxContext));
+						foreignKeyAttribute => attribute.AttributeType.IsDerivedFromOrAggregatesAttribute(foreignKeyAttribute, pxContext));
 
 				if (isDerivedFromOrAggregateForeignKeyAttribute)
 					return true;
@@ -200,8 +200,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				return selectorAttributeCandidateMemberTypes
 						.Any(memberType => memberType != null &&
-										   (memberType.IsDerivedFromAttribute(selectorAttribute, pxContext) ||
-											memberType.IsDerivedFromAttribute(dimensionSelectorAttribute, pxContext)));												 
+										   (memberType.IsDerivedFromOrAggregatesAttribute(selectorAttribute, pxContext) ||
+											memberType.IsDerivedFromOrAggregatesAttribute(dimensionSelectorAttribute, pxContext))); 
 			}
 		}
 

@@ -74,7 +74,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <returns>
 		/// True if attribute derived from <paramref name="baseAttributeTypeToCheck"/>, false if not.
 		/// </returns>
-		public static bool IsDerivedFromAttribute(this ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, PXContext pxContext)
+		public static bool IsDerivedFromOrAggregatesAttribute(this ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, PXContext pxContext)
 		{
 			if (!IsAcumaticaAttribute(attributeType, pxContext) || !IsAcumaticaAttribute(baseAttributeTypeToCheck, pxContext))
 				return false;
@@ -99,7 +99,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <returns>
 		/// True if attribute derived from <paramref name="baseAttributeTypeToCheck"/>, false if not.
 		/// </returns>
-		internal static bool IsDerivedFromAttributeUnsafe(this ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, PXContext pxContext) =>
+		internal static bool IsDerivedFromOrAggregatesAttributeUnsafe(this ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, 
+																	  PXContext pxContext) =>
 			 IsDerivedFromAttribute(attributeType, baseAttributeTypeToCheck, pxContext.CheckIfNull(nameof(pxContext)), recursionDepth: 0);
 
 		private static bool IsDerivedFromAttribute(ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, PXContext pxContext, int recursionDepth)
