@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -39,18 +41,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var rootTask = context.Document.GetSyntaxRootAsync(context.CancellationToken);
-			var semanticModelTask = context.Document.GetSemanticModelAsync(context.CancellationToken);
+			var (semanticModel, root) = await context.Document.GetSemanticModelAndRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-			await Task.WhenAll(rootTask, semanticModelTask).ConfigureAwait(false);
-
-			SyntaxNode root = rootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
-
-			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax dacNode))
+			if (semanticModel == null || root?.FindNode(context.Span) is not ClassDeclarationSyntax dacNode)
 				return;
 
-			INamedTypeSymbol dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, context.CancellationToken);
+			INamedTypeSymbol? dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
 			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ReferentialIntegrity.ForeignKeyClassName))
 				return;
