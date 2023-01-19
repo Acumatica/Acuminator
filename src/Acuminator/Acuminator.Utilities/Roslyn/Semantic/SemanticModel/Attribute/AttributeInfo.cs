@@ -54,15 +54,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			IsAutoNumberAttribute = isAutoNumberAttribute;
 		}
 
-		public static AttributeInfo Create(AttributeData attribute, DbBoundnessCalculator attributeInformation, int declarationOrder)
+		public static AttributeInfo Create(AttributeData attribute, DbBoundnessCalculator dbBoundnessCalculator, int declarationOrder)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
-			attributeInformation.ThrowOnNull(nameof(attributeInformation));
+			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
 
-			DbBoundnessType boundType = attributeInformation.GetBoundAttributeType(attribute);
-			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation.Context);
-			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation.Context);
-			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, attributeInformation.Context);
+			DbBoundnessType boundType = dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute);
+			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, dbBoundnessCalculator.Context);
+			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, dbBoundnessCalculator.Context);
+			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, dbBoundnessCalculator.Context);
 			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(PropertyNames.Attributes.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
@@ -71,16 +71,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		}
 
 		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext) =>
-			attribute.AttributeClass.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext) ||
-			attribute.AttributeClass.IsDerivedFromAttribute(pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext);
+			attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext) ||
+			attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext);
 
 		private static bool IsPXDefaultAttribute(AttributeData attribute, PXContext pxContext)
 		{
 			var pxDefaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
 			var pxUnboundDefaultAttribute = pxContext.AttributeTypes.PXUnboundDefaultAttribute;
 
-			return attribute.AttributeClass.IsDerivedFromAttribute(pxDefaultAttribute, pxContext) &&
-				   !attribute.AttributeClass.IsDerivedFromAttribute(pxUnboundDefaultAttribute, pxContext);
+			return attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxDefaultAttribute, pxContext) &&
+				   !attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxUnboundDefaultAttribute, pxContext);
 		}
 
 		private static bool CheckForAutoNumberAttribute(AttributeData attribute, PXContext pxContext)
@@ -90,7 +90,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			if (autoNumberAttribute == null)
 				return false;
 
-			return attribute.AttributeClass.IsDerivedFromAttribute(autoNumberAttribute, pxContext);
+			return attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(autoNumberAttribute, pxContext);
 		}
 	}
 }

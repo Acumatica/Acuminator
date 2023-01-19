@@ -62,7 +62,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 				foreach (var attribute in attributes)
 				{
-					actual.Add(attribute.AttributeClass.IsDerivedFromAttribute(pxdefaultAttribute, pxContext));
+					actual.Add(attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxdefaultAttribute, pxContext));
 				}
 			}
 
@@ -106,7 +106,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			List<DbBoundnessType> actual = new List<DbBoundnessType>();
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
-			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.DbBoundnessCalculator(pxContext);
+			var dbBoundnessCalculator = new DbBoundnessCalculator(pxContext);
 
 			foreach (var property in properties)
 			{
@@ -115,7 +115,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 				foreach (var attribute in attributes)
 				{
-					actual.Add(attributeInformation.GetBoundAttributeType(attribute));
+					actual.Add(dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute));
 				}
 			}
 
@@ -181,7 +181,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 				if (propertyAttributes.IsDefaultOrEmpty)
 					return false;
 
-				return propertyAttributes.Any(a => dbBoundnessCalculator!.GetBoundAttributeType(a) == DbBoundnessType.DbBound);
+				return propertyAttributes.Any(a => dbBoundnessCalculator!.GetAttributeApplicationDbBoundnessType(a) == DbBoundnessType.DbBound);
 			}
 		}
 

@@ -36,16 +36,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExt)
 		{
-			FieldTypeAttributesRegister fieldAttributesRegister = new FieldTypeAttributesRegister(pxContext);
+			var attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 
 			foreach (DacPropertyInfo property in dacOrDacExt.AllDeclaredProperties)
 			{
-				CheckDacProperty(property, context, pxContext, fieldAttributesRegister);
+				CheckDacProperty(property, context, pxContext, attributesMetadataProvider);
 			}	
 		}
 
 		private static void CheckDacProperty(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-											 FieldTypeAttributesRegister fieldAttributesRegister)
+											 FieldTypeAttributesMetadataProvider attributesMetadataProvider)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			ImmutableArray<AttributeInfo> attributes = property.Attributes;
@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributes.IsDefaultOrEmpty)
 				return;
 
-			var attributesWithInfos = GetFieldTypeAttributesInfos(attributes, fieldAttributesRegister, symbolContext.CancellationToken);
+			var attributesWithInfos = GetFieldTypeAttributesInfos(attributes, attributesMetadataProvider, symbolContext.CancellationToken);
 
 			if (attributesWithInfos.Count == 0)
 				return;
@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 	
 		private static List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> GetFieldTypeAttributesInfos(
 																													ImmutableArray<AttributeInfo> attributes,
-																													FieldTypeAttributesRegister fieldAttributesRegister,
+																													FieldTypeAttributesMetadataProvider attributesMetadataProvider,
 																													CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -79,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			foreach (AttributeInfo attribute in attributes)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				var attributeInfos = fieldAttributesRegister.GetDacFieldTypeAttributeInfos(attribute.AttributeData.AttributeClass);
+				var attributeInfos = attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attribute.AttributeData.AttributeClass);
 
 				if (attributeInfos.Count > 0)
 				{

@@ -98,9 +98,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				return document;
 			
 			PXContext pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
-			FieldTypeAttributesRegister typeAttributesRegister = new FieldTypeAttributesRegister(pxContext);
-			FieldTypeAttributeInfo? attributeInfo = typeAttributesRegister.GetDacFieldTypeAttributeInfos(attributeType)
-																		  .FirstOrDefault(attrInfo => attrInfo.IsFieldAttribute);
+			var attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
+			FieldTypeAttributeInfo? attributeInfo = attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType)
+																			  .FirstOrDefault(attrInfo => attrInfo.IsFieldAttribute);
 			if (attributeInfo?.FieldType == null)
 				return document;
 
