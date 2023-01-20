@@ -55,9 +55,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
                     AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, property);
                     return;
 
-                case DbBoundnessType.DbBound
-                when dacOrExtension.DacType == DacType.DacExtension: // Analyze bound property only for extensions
-                    AnalyzeBoundPropertyAttributes(symbolContext, pxContext, property);
+				case DbBoundnessType.DbBound:
+				case DbBoundnessType.PXDBCalced:
+				case DbBoundnessType.PXDBScalar:
+
+					if (dacOrExtension.DacType == DacType.DacExtension)
+					{
+						AnalyzeBoundPropertyAttributes(symbolContext, pxContext, property);         // Analyze bound property only for DAC extensions)
+					}
 					return;
             }
         }

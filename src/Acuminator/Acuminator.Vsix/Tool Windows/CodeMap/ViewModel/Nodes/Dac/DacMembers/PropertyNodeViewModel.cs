@@ -60,6 +60,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				case DbBoundnessType.DbBound:
 					yield return new TextViewModel(this, "Bound");
 					break;
+				case DbBoundnessType.PXDBCalced:
+					yield return new TextViewModel(this, "PXDBCalced");
+					break;
+				case DbBoundnessType.PXDBScalar:
+					yield return new TextViewModel(this, "PXDBScalar");
+					break;
 			}
 
 			if (PropertyInfo.IsAutoNumbering)
