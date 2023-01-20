@@ -1,16 +1,20 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿#nullable enable
+
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using Acuminator.Utilities.Roslyn.Constants;
+
 using Acuminator.Analyzers.StaticAnalysis.Dac;
-using System.Collections.Generic;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
@@ -70,7 +74,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
         private static void AnalyzeUnboundProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
 												   DacPropertyInfo property)
         {
-            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, property);
+            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(property);
 
             if (pxDefaultAttribute == null || hasPersistingCheckNothing)
                 return;
@@ -93,7 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
         private static void AnalyzeBoundPropertyAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, DacPropertyInfo property)
         {
-            var pxDefaultAttribute = GetInvalidPXDefaultAttributeFromBoundProperty(pxContext, property);
+            var pxDefaultAttribute = GetInvalidPXDefaultAttributeFromBoundProperty(property);
 
             if (pxDefaultAttribute == null)
                 return;
@@ -109,9 +113,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
-        private static AttributeData GetInvalidPXDefaultAttributeFromBoundProperty(PXContext pxContext, DacPropertyInfo property)
+        private static AttributeData? GetInvalidPXDefaultAttributeFromBoundProperty(DacPropertyInfo property)
         {
-            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, property);
+            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(property);
 
             if (pxDefaultAttribute == null || hasPersistingCheckNothing)
                 return null;
@@ -121,7 +125,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             // if base attribute is also doesn't contain PersistingCheck.Nothing it is legitimately
             foreach (DacPropertyInfo overridenProperty in property.JustOverridenItems())
             {
-                var (pxDefaultAttributeBase, hasPersistingCheckNothingBase) = GetPXDefaultInfo(pxContext, overridenProperty);
+                var (pxDefaultAttributeBase, hasPersistingCheckNothingBase) = GetPXDefaultInfo(overridenProperty);
 
                 if (pxDefaultAttributeBase == null)
                     continue;      
@@ -134,7 +138,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             return pxDefaultAttribute;
         }
 
-        private static (AttributeData PXDefaultAttribute, bool HasPersistingCheckNothing) GetPXDefaultInfo(PXContext pxContext, DacPropertyInfo property)
+        private static (AttributeData? PXDefaultAttribute, bool HasPersistingCheckNothing) GetPXDefaultInfo(DacPropertyInfo property)
         {
 			var defaultAttributes = property.Attributes.Where(a => a.IsDefaultAttribute).ToList();
 
@@ -151,7 +155,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             return (pxDefaultAttribute, hasPersistingCheckNothing);
         }
 
-        public static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
+        public static Location? GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
 			attribute.ApplicationSyntaxReference
 					?.GetSyntax(cancellationToken)
 					?.GetLocation();
