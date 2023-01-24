@@ -39,7 +39,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <summary>
 		/// The attribute application classification is unknown and cannot be deduced by means of static analysis.
 		/// </summary>
-		Unknown = 16
+		Unknown = 16,
+		
+		/// <summary>
+		/// The attribute application has self contradictory DB boundness proved by the code analysis.
+		/// </summary>
+		/// <remarks>
+		/// This flag is used to mark attributes and DAC properties with wrong boundness
+		/// </remarks>
+		Error = 32
 	}
 
 
@@ -49,16 +57,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			if (x == y)
 				return x;
-			else if (y == DbBoundnessType.Unknown)
+			else if (y == DbBoundnessType.Error)
 				return y;
 
 			switch (x) 
 			{
-				case DbBoundnessType.Unknown:
+				case DbBoundnessType.Error:
 					return x;
-
+		
 				case DbBoundnessType.NotDefined:
 				case DbBoundnessType.Unbound:
+				case DbBoundnessType.Unknown:
 					return x >= y ? x : y;
 
 				case DbBoundnessType.DbBound:
