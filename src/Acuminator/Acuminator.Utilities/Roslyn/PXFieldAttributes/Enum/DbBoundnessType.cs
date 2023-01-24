@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
@@ -55,49 +54,105 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	{
 		public static DbBoundnessType Combine(this DbBoundnessType x, DbBoundnessType y)
 		{
-			if (x == y)
+			// minor optimizations for frequent cases
+			if (x == y || y == DbBoundnessType.NotDefined)
 				return x;
-			else if (y == DbBoundnessType.Error)
-				return y;
-
+			
 			switch (x) 
 			{
-				case DbBoundnessType.Error:
-					return x;
-		
 				case DbBoundnessType.NotDefined:
+					return y;
+
 				case DbBoundnessType.Unbound:
-				case DbBoundnessType.Unknown:
-					return x >= y ? x : y;
+					return y.CombineWithUnbound();
 
 				case DbBoundnessType.DbBound:
-					return x >= y ? x : DbBoundnessType.Unknown;
+					return y.CombineWithDbBound();
 
 				case DbBoundnessType.PXDBScalar:
-					switch (y)
-					{
-						case DbBoundnessType.DbBound:
-						case DbBoundnessType.PXDBCalced:
-						case DbBoundnessType.Unknown:
-							return DbBoundnessType.Unknown;
-						default:
-							return x;
-					}
+					return y.CombineWithPXDBScalar();
 
 				case DbBoundnessType.PXDBCalced:
-					switch (y)
-					{
-						case DbBoundnessType.DbBound:
-						case DbBoundnessType.PXDBScalar:
-						case DbBoundnessType.Unknown:
-							return DbBoundnessType.Unknown;
-						default:
-							return x;
-					}
+					return y.CombineWithPXDBCalced();
 
+				case DbBoundnessType.Error:
+					return x;
+
+				case DbBoundnessType.Unknown:
+				default:
+					return y == DbBoundnessType.Error
+						? DbBoundnessType.Error
+						: DbBoundnessType.Unknown;
+			}
+		}
+
+		private static DbBoundnessType CombineWithUnbound(this DbBoundnessType y)
+		{
+			switch (y)
+			{
+				case DbBoundnessType.NotDefined:
+				case DbBoundnessType.Unbound:
+					return DbBoundnessType.Unbound;
+
+				case DbBoundnessType.DbBound:
+					return DbBoundnessType.DbBound;
+
+				case DbBoundnessType.PXDBCalced:
+					return DbBoundnessType.PXDBCalced;
+
+				case DbBoundnessType.PXDBScalar:
+				case DbBoundnessType.Error:
+					return DbBoundnessType.Error;
+
+				case DbBoundnessType.Unknown:
 				default:
 					return DbBoundnessType.Unknown;
 			}
-		}			
+		}
+
+		private static DbBoundnessType CombineWithDbBound(this DbBoundnessType y)
+		{
+			if (y <= DbBoundnessType.DbBound)
+				return DbBoundnessType.DbBound;
+			else if (y == DbBoundnessType.Unknown)
+				return DbBoundnessType.Unknown;
+			else
+				return DbBoundnessType.Error;
+		}
+
+		private static DbBoundnessType CombineWithPXDBScalar(this DbBoundnessType y)
+		{
+			switch (y)
+			{
+				case DbBoundnessType.Unbound:
+				case DbBoundnessType.DbBound:
+				case DbBoundnessType.PXDBCalced:
+				case DbBoundnessType.Error:
+					return DbBoundnessType.Error;
+
+				case DbBoundnessType.Unknown:
+					return DbBoundnessType.Unknown;
+
+				default:
+					return DbBoundnessType.PXDBScalar;
+			}
+		}
+
+		private static DbBoundnessType CombineWithPXDBCalced(this DbBoundnessType y)
+		{
+			switch (y)
+			{
+				case DbBoundnessType.DbBound:
+				case DbBoundnessType.PXDBScalar:
+				case DbBoundnessType.Error:
+					return DbBoundnessType.Error;
+
+				case DbBoundnessType.Unknown:
+					return DbBoundnessType.Unknown;
+
+				default:
+					return DbBoundnessType.PXDBCalced;
+			}
+		}
 	}
 }
