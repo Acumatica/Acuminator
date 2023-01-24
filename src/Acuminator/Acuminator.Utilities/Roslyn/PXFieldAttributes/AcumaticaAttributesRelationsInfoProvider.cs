@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
@@ -139,29 +140,33 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <param name="pxContext">The Acumatica context.</param>
 		/// <param name="includeBaseTypes">True to include, false to exclude the base Acumatica types.</param>
 		/// <returns/>
-		public static IReadOnlyCollection<ITypeSymbol> GetThisAndAllAggregatedAttributes(this ITypeSymbol? attributeType, PXContext pxContext, bool includeBaseTypes)
+		public static ImmutableHashSet<ITypeSymbol> GetThisAndAllAggregatedAttributes(this ITypeSymbol? attributeType, PXContext pxContext, bool includeBaseTypes)
 		{
 			var eventSubscriberAttribute = pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXEventSubscriberAttribute;
 
 			if (attributeType == null || attributeType.Equals(eventSubscriberAttribute))
-				return Array.Empty<ITypeSymbol>();
+				return ImmutableHashSet<ITypeSymbol>.Empty;
 
 			var baseAcumaticaAttributeTypes = attributeType.GetBaseTypesAndThis().ToList();
 
 			if (!baseAcumaticaAttributeTypes.Contains(eventSubscriberAttribute))
-				return Array.Empty<ITypeSymbol>();
+				return ImmutableHashSet<ITypeSymbol>.Empty;
 
 			INamedTypeSymbol pxAggregateAttribute = pxContext.AttributeTypes.PXAggregateAttribute;
 			INamedTypeSymbol pxDynamicAggregateAttribute = pxContext.AttributeTypes.PXDynamicAggregateAttribute;
 
-			var results = includeBaseTypes
-				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute)).ToHashSet()
-				: new HashSet<ITypeSymbol>() { attributeType };
-
 			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxAggregateAttribute) ||
 										baseAcumaticaAttributeTypes.Contains(pxDynamicAggregateAttribute);
 			if (!isAggregateAttribute)
-				return results;
+			{
+				return includeBaseTypes
+					? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute)).ToImmutableHashSet()
+					: ImmutableHashSet.Create(attributeType);
+			}
+
+			var results = includeBaseTypes
+				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute)).ToHashSet()
+				: new HashSet<ITypeSymbol>() { attributeType };
 
 			var allDeclaredAcumaticaAttributesOnClassHierarchy = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(attributeType, pxContext);
 
@@ -170,7 +175,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				CollectAggregatedAttributes(aggregatedAttribute, recursionDepth: 0);
 			}
 
-			return results;
+			return results.ToImmutableHashSet();
 
 			//--------------------------------------------------Local Function-----------------------------------------------------
 			void CollectAggregatedAttributes(ITypeSymbol aggregatedAttribute, int recursionDepth)
