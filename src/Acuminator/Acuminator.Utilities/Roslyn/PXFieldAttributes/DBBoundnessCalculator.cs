@@ -30,12 +30,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public PXContext Context { get; }
 
-		public FieldTypeAttributesMetadataProvider AttributesRegister { get; }
+		public FieldTypeAttributesMetadataProvider AttributesMetadataProvider { get; }
 
 		public DbBoundnessCalculator(PXContext pxContext)
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
-			AttributesRegister = new FieldTypeAttributesMetadataProvider(pxContext);
+			AttributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 					
 			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
 			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
@@ -46,8 +46,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// Get DB Boundness type of Acumatica attribute's application to a DAC field.
 		/// </summary>
 		/// <param name="attributeApplication">Attribute application data.</param>
-		/// <returns/>
-		public DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication)
+		/// <param name="preparedFlattenedAttributes">
+		/// The already prepared flattened attributes, the result of <see cref="AcumaticaAttributesRelationsInfoProvider.GetThisAndAllAggregatedAttributes"/> call.
+		/// Can be null.
+		/// </param>
+		/// <returns>
+		/// The attribute application database boundness type.
+		/// </returns>
+		internal DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication, ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributes,
+																		IReadOnlyCollection<FieldTypeAttributeInfo>? preparedAttributesMetadata)
 		{
 			attributeApplication.ThrowOnNull(nameof(attributeApplication));
 
@@ -61,55 +68,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				return explicitlySetDbBoundness;
 
 			// If the explicit DB boundness is not set we can query attribute's register for the metadata
-			var attributeInfos = AttributesRegister.GetDacFieldTypeAttributeInfos(attributeApplication.AttributeClass);
+			var flattenedAttributes = preparedFlattenedAttributes ?? attributeApplication.AttributeClass.GetThisAndAllAggregatedAttributes(Context, includeBaseTypes: true);
+			var attributesMetadata = preparedAttributesMetadata ?? AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(flattenedAttributes);
 
-			
+			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributesMetadata(attributesMetadata);
 
-
-
-			var flattenedAttributes = attributeApplication.AttributeClass.GetThisAndAllAggregatedAttributes(Context, includeBaseTypes: true);
-
-
-
-
-			//First check attribute for IsDBField property, it takes highest priority in attribute's boundability and can appear in all kinds of attributes like Account/Sub attributes
-			bool containsIsDbFieldproperty = attributeApplication.AttributeClass.GetBaseTypesAndThis()
-																	 .TakeWhile(attributeType => attributeType != _eventSubscriberAttribute)
-																	 .SelectMany(attributeType => attributeType.GetMembers())
-																	 .OfType<IPropertySymbol>()                                                                     //only properties are considered
-																	 .Any(property => String.Equals(property.Name, IsDBField, StringComparison.OrdinalIgnoreCase));
-			if (!containsIsDbFieldproperty)
-				return GetBoundTypeFromStandardBoundTypeAttributes(attributeApplication);
-
-			var isDbPropertyAttributeArgs = attributeApplication.NamedArguments.Where(arg => String.Equals(arg.Key, IsDBField, StringComparison.OrdinalIgnoreCase))
-																	.ToList(capacity: 1);
-			switch (isDbPropertyAttributeArgs.Count)
-			{
-				case 0:     //Case when there is IsDBField property but it isn't set explicitly in attribute's declaration
-					var (typeFromRegister, defaultIsDbFieldValue) = 
-						AttributesContainingIsDBField
-							.FirstOrDefault(typeWithValue => attributeApplication.AttributeClass.IsDerivedFromAttribute(typeWithValue.AttributeType, Context));
-
-					// Query hard-coded register with attributes which has IsDBField property with some initial assigned value
-					bool? dbFieldPreInitializedValue = typeFromRegister != null
-						? defaultIsDbFieldValue
-						: null;
-
-					return dbFieldPreInitializedValue == null
-						? GetBoundTypeFromStandardBoundTypeAttributes(attributeApplication)
-						: dbFieldPreInitializedValue.Value 
-							? DbBoundnessType.DbBound 
-							: DbBoundnessType.Unbound;
-						
-				case 1 when isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument:     //Case when IsDBField property is set explicitly with correct bool value
-					return isDbPropertyAttributeArgument
-						? DbBoundnessType.DbBound
-						: DbBoundnessType.Unbound;
-
-				case 1:                        
-				default:                       
-					return DbBoundnessType.Unknown;
-			}
+			if (dbBoundnessFromMetadata != DbBoundnessType.NotDefined)
+				return explicitlySetDbBoundness;
 
 			return DuckTypingCheckIfAttributeHasMixedDbBoundness(flattenedAttributes);
 		}
@@ -177,36 +142,49 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						: DbBoundnessType.DbBound;
 		}
 
-		private DbBoundnessType GetBoundTypeFromStandardBoundTypeAttributes(AttributeData attribute)
+		private DbBoundnessType GetDbBoundnessFromAttributesMetadata(IReadOnlyCollection<FieldTypeAttributeInfo> attributesMetadata)
 		{
-			if (StandardBoundBaseTypes.Any(boundBaseType => attribute.AttributeClass.IsDerivedFromOrAggregatesAttributeUnsafe(boundBaseType, Context)))
-			{
-				if (_pxDBLocalizableStringAttribute != null && 
-					attribute.AttributeClass.IsDerivedFromOrAggregatesAttributeUnsafe(_pxDBLocalizableStringAttribute, Context))
-				{
-					return GetBoundTypeFromLocalizableStringDerivedAttribute(attribute);
-				}
+			if (attributesMetadata.Count == 0)
+				return DbBoundnessType.NotDefined;
 
-				return DbBoundnessType.DbBound;
+			DbBoundnessType dbBoundnessFromAllMetadata = DbBoundnessType.NotDefined;
+			
+
+			foreach (var attributeInfo in attributesMetadata)
+			{
+				var attributeInfoDbBoundness = GetDbBoundnessFromAttributeInfo(attributeInfo);
+				dbBoundnessFromAllMetadata = dbBoundnessFromAllMetadata.Combine(attributeInfoDbBoundness);
 			}
 
-			return DbBoundnessType.Unbound;
+			return dbBoundnessFromAllMetadata;
 		}
 
-		private DbBoundnessType GetBoundTypeFromLocalizableStringDerivedAttribute(AttributeData attribute)
+		private DbBoundnessType GetDbBoundnessFromAttributeInfo(FieldTypeAttributeInfo attributeInfo)
 		{
-			var (nonDbArgKey, nonDbArgValue) = attribute.NamedArguments.FirstOrDefault(arg => arg.Key == NonDB);
-
-			if (nonDbArgKey == null)
-				return DbBoundnessType.DbBound;
-			else if (nonDbArgValue.Value is bool nonDbArgValueBool)
+			switch (attributeInfo.Kind)
 			{
-				return nonDbArgValueBool
-					? DbBoundnessType.Unbound
-					: DbBoundnessType.DbBound;
+				case FieldTypeAttributeKind.BoundTypeAttribute:
+					return DbBoundnessType.DbBound;
+				case FieldTypeAttributeKind.UnboundTypeAttribute:
+					return DbBoundnessType.Unbound;
+				case FieldTypeAttributeKind.MixedDbBoundnessTypeAttribute:
+					if (attributeInfo is not MixedDbBoundnessAttributeInfo mixedDbBoundnessAttributeInfo ||
+						!mixedDbBoundnessAttributeInfo.IsDbBoundByDefault.HasValue)
+					{
+						return DbBoundnessType.Unknown;
+					}
+
+					return mixedDbBoundnessAttributeInfo.IsDbBoundByDefault.Value
+						? DbBoundnessType.DbBound
+						: DbBoundnessType.Unbound;
+
+				case FieldTypeAttributeKind.PXDBScalarAttribute:
+					return DbBoundnessType.PXDBScalar;
+				case FieldTypeAttributeKind.PXDBCalcedAttribute:
+					return DbBoundnessType.PXDBCalced;
+				default:
+					return DbBoundnessType.NotDefined;
 			}
-			else
-				return DbBoundnessType.Unknown;
 		}
 
 		/// <summary>
