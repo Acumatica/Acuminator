@@ -91,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			private int _attributeListsRemovedCounter;
 			
 			private readonly SemanticModel _semanticModel;
-			private readonly FieldTypeAttributesMetadataProvider _attributesRegister;
+			private readonly FieldTypeAttributesMetadataProvider _attributesMetadataProvider;
 			private readonly AttributeSyntax _remainingAttribute;
 			private readonly Func<FieldTypeAttributeInfo, bool> _attributeToRemovePredicate;
 			private readonly CancellationToken _cancellationToken;
@@ -105,7 +105,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				_attributeToRemovePredicate = attributeToRemovePredicate;
 
 				PXContext pxContext = new PXContext(_semanticModel.Compilation, codeAnalysisSettings: null);
-				_attributesRegister = new FieldTypeAttributesMetadataProvider(pxContext);
+				_attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 			}
 
             public override SyntaxNode? VisitAttributeList(AttributeListSyntax attributeListNode)
@@ -163,7 +163,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				if (attributeType == null)
 					return false;
 				
-				var attributeInfos = _attributesRegister.GetDacFieldTypeAttributeInfos(attributeType);
+				var attributeInfos = _attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType);
 				return attributeInfos.Any(_attributeToRemovePredicate);
 			}
 		}
