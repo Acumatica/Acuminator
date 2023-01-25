@@ -99,7 +99,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			foreach (AttributeInfo attributeInfo in Attributes)
 			{
-				boundType = boundType.Combine(attributeInfo.BoundType);
+				boundType = boundType.Combine(attributeInfo.BoundnessType);
 				isIdentity = isIdentity || attributeInfo.IsIdentity;
 				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
 				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;

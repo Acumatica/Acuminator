@@ -152,7 +152,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				return;
 
 			bool hasUnboundTypeAttribute = attributesWithInfos.Any(attrWithInfos => !ReferenceEquals(attrWithInfos.Attribute, pxDBCalcedAttribute) &&
-																					attrWithInfos.Attribute.BoundType == DbBoundnessType.Unbound);
+																					attrWithInfos.Attribute.BoundnessType == DbBoundnessType.Unbound);
 			if (hasUnboundTypeAttribute)
 				return;
 

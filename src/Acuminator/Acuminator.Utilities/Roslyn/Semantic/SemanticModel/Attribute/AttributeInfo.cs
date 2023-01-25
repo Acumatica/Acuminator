@@ -1,10 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 {
@@ -15,11 +21,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 	public class AttributeInfo
 	{
 		/// <summary>
-		/// Information describing the attribute.
+		/// Information describing the attribute application.
 		/// </summary>
 		public AttributeData AttributeData { get; }
 
 		public INamedTypeSymbol AttributeType => AttributeData.AttributeClass;
+
+		/// <summary>
+		/// The flattened Acumatica attributes set - this attribute, its base attributes, aggregated attributes in case of an aggregate attribute, 
+		/// aggregates on aggregates and so on.
+		/// </summary>
+		public ImmutableHashSet<ITypeSymbol> FlattenedAcumaticaAttributes { get; }
+
+		/// <summary>
+		/// The aggregated attribute metadata collection - information from the flattened attributes set. 
+		/// It is mostly related to the attribute's relationship with database.
+		/// </summary>
+		public ImmutableArray<FieldTypeAttributeInfo> AggregatedAttributeMetadata { get; }
 
 		public virtual string Name => AttributeType.Name;
 
@@ -28,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// </summary>
 		public int DeclarationOrder { get; }
 
-		public DbBoundnessType BoundType { get; }
+		public DbBoundnessType BoundnessType { get; }
 
 		public bool IsIdentity { get; }
 
@@ -41,17 +59,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		protected virtual string DebuggerDisplay => $"{Name}";
 
-		protected AttributeInfo(AttributeData attributeData, DbBoundnessType boundType, int declarationOrder, bool isKey, bool isIdentity, 
-								bool isDefaultAttribute, bool isAutoNumberAttribute)
+		protected AttributeInfo(AttributeData attributeData, IEnumerable<ITypeSymbol> flattenedAttributes, IEnumerable<FieldTypeAttributeInfo> attributeInfos,
+								DbBoundnessType boundnessType, int declarationOrder, bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute)
 		{
-			attributeData.ThrowOnNull(nameof(attributeData));
-			AttributeData = attributeData;
-			BoundType = boundType;
-			DeclarationOrder = declarationOrder;
-			IsKey = isKey;
-			IsIdentity = isIdentity;
-			IsDefaultAttribute = isDefaultAttribute;
-			IsAutoNumberAttribute = isAutoNumberAttribute;
+			AttributeData                = attributeData.CheckIfNull(nameof(attributeData));
+			FlattenedAcumaticaAttributes = (flattenedAttributes as ImmutableHashSet<ITypeSymbol>) ?? flattenedAttributes.ToImmutableHashSet();
+			AggregatedAttributeMetadata  = attributeInfos.ToImmutableArray();
+			BoundnessType                = boundnessType;
+			DeclarationOrder             = declarationOrder;
+			IsKey                        = isKey;
+			IsIdentity                   = isIdentity;
+			IsDefaultAttribute           = isDefaultAttribute;
+			IsAutoNumberAttribute        = isAutoNumberAttribute;
 		}
 
 		public static AttributeInfo Create(AttributeData attribute, DbBoundnessCalculator dbBoundnessCalculator, int declarationOrder)
@@ -59,38 +78,36 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			attribute.ThrowOnNull(nameof(attribute));
 			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
 
-			DbBoundnessType boundType = dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute);
-			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, dbBoundnessCalculator.Context);
-			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, dbBoundnessCalculator.Context);
-			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, dbBoundnessCalculator.Context);
+			var flattenedAttributes = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(dbBoundnessCalculator.Context, includeBaseTypes: true);
+			var aggregatedMetadata = dbBoundnessCalculator.AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(flattenedAttributes);
+
+			DbBoundnessType boundType      = dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute, flattenedAttributes, aggregatedMetadata);
+			bool isPXDefaultAttribute      = IsPXDefaultAttribute(flattenedAttributes, dbBoundnessCalculator.Context);
+			bool isIdentityAttribute       = IsDerivedFromIdentityTypes(flattenedAttributes, dbBoundnessCalculator.Context);
+			bool isAutoNumberAttribute     = CheckForAutoNumberAttribute(flattenedAttributes, dbBoundnessCalculator.Context);
 			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(PropertyNames.Attributes.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
-			return new AttributeInfo(attribute, boundType, declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute,
-									 isPXDefaultAttribute, isAutoNumberAttribute);
+			return new AttributeInfo(attribute, flattenedAttributes, aggregatedMetadata, boundType, declarationOrder, isAttributeWithPrimaryKey,
+									 isIdentityAttribute, isPXDefaultAttribute, isAutoNumberAttribute);
 		}
 
-		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext) =>
-			attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext) ||
-			attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext);
+		private static bool IsDerivedFromIdentityTypes(ImmutableHashSet<ITypeSymbol> flattenedAttributes, PXContext pxContext) =>
+			flattenedAttributes.Contains(pxContext.FieldAttributes.PXDBIdentityAttribute) ||
+			flattenedAttributes.Contains(pxContext.FieldAttributes.PXDBLongIdentityAttribute);
 
-		private static bool IsPXDefaultAttribute(AttributeData attribute, PXContext pxContext)
-		{
-			var pxDefaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
-			var pxUnboundDefaultAttribute = pxContext.AttributeTypes.PXUnboundDefaultAttribute;
-
-			return attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxDefaultAttribute, pxContext) &&
-				   !attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxUnboundDefaultAttribute, pxContext);
-		}
-
-		private static bool CheckForAutoNumberAttribute(AttributeData attribute, PXContext pxContext)
+		private static bool IsPXDefaultAttribute(ImmutableHashSet<ITypeSymbol> flattenedAttributes, PXContext pxContext) =>
+			flattenedAttributes.Contains(pxContext.AttributeTypes.PXDefaultAttribute) && 
+			!flattenedAttributes.Contains(pxContext.AttributeTypes.PXUnboundDefaultAttribute);
+		
+		private static bool CheckForAutoNumberAttribute(ImmutableHashSet<ITypeSymbol> flattenedAttributes, PXContext pxContext)
 		{
 			var autoNumberAttribute = pxContext.AttributeTypes.AutoNumberAttribute.Type;
 
 			if (autoNumberAttribute == null)
 				return false;
 
-			return attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(autoNumberAttribute, pxContext);
+			return flattenedAttributes.Contains(autoNumberAttribute);
 		}
 	}
 }
