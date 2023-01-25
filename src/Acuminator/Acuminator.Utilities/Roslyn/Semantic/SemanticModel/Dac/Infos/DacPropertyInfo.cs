@@ -1,12 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -15,13 +19,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <summary>
 		/// The overriden property if any
 		/// </summary>
-		public DacPropertyInfo Base
+		public DacPropertyInfo? Base
 		{
 			get;
 			internal set;
 		}
 
-		DacPropertyInfo IWriteableBaseItem<DacPropertyInfo>.Base
+		DacPropertyInfo? IWriteableBaseItem<DacPropertyInfo>.Base
 		{
 			get => Base;
 			set
@@ -77,8 +81,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
 							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
 		{
-			baseInfo.ThrowOnNull(nameof(baseInfo));
-			Base = baseInfo;
+			Base = baseInfo.CheckIfNull(nameof(baseInfo));
 
 			// TODO - need to add support for PXMergeAttributesAttribute in the future
 			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
@@ -114,7 +117,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
 											 DbBoundnessCalculator attributesInformation, IDictionary<string, DacFieldInfo> dacFields,
-											 DacPropertyInfo baseInfo = null)
+											 DacPropertyInfo? baseInfo = null)
 		{
 			context.ThrowOnNull(nameof(context));
 			property.ThrowOnNull(nameof(property));
