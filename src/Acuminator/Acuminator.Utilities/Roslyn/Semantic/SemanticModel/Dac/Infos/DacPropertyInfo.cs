@@ -116,16 +116,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
-											 DbBoundnessCalculator attributesInformation, IDictionary<string, DacFieldInfo> dacFields,
+											 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacFieldInfo> dacFields,
 											 DacPropertyInfo? baseInfo = null)
 		{
 			context.ThrowOnNull(nameof(context));
 			property.ThrowOnNull(nameof(property));
-			attributesInformation.ThrowOnNull(nameof(attributesInformation));
+			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
 			dacFields.ThrowOnNull(nameof(dacFields));
 
 			bool isDacProperty = dacFields.ContainsKey(property.Name);
-			var attributeInfos = GetAttributeInfos(property, attributesInformation);
+			var attributeInfos = GetAttributeInfos(property, dbBoundnessCalculator);
 			var effectivePropertyType = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;
 
 			return baseInfo != null
@@ -133,13 +133,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos);
 		}
 
-		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator attributeInformation)
+		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator dbBoundnessCalculator)
 		{
 			int relativeDeclarationOrder = 0;
 
 			foreach (AttributeData attribute in property.GetAttributes())
 			{			
-				yield return AttributeInfo.Create(attribute, attributeInformation, relativeDeclarationOrder);
+				yield return AttributeInfo.Create(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
 
 				relativeDeclarationOrder++;
 			}
