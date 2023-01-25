@@ -28,9 +28,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				Base = value;
 				
-				if (value != null && DeclaredDbBoundness == DbBoundnessType.NotDefined) //Inherit BoundType from the base property only if we don't override it
+				if (value != null)
 				{
-					EffectiveDbBoundness = value.EffectiveDbBoundness;
+					// TODO - need to add support for PXMergeAttributesAttribute in the future
+					EffectiveDbBoundness = DeclaredDbBoundness.Combine(value.EffectiveDbBoundness);
 				}
 			}
 		}
@@ -79,10 +80,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 			Base = baseInfo;
 
-			if (DeclaredDbBoundness == DbBoundnessType.NotDefined)
-			{
-				EffectiveDbBoundness = baseInfo.EffectiveDbBoundness;
-			}
+			// TODO - need to add support for PXMergeAttributesAttribute in the future
+			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
 		}
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
@@ -92,20 +91,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Attributes = attributeInfos.ToImmutableArray();
 			IsDacProperty = isDacProperty;
 
-			DbBoundnessType boundType = DbBoundnessType.NotDefined;
+			DbBoundnessType dbBoundness = DbBoundnessType.NotDefined;
 			bool isIdentity = false;
 			bool isPrimaryKey = false;
 			bool isAutoNumbering = false;
 
 			foreach (AttributeInfo attributeInfo in Attributes)
 			{
-				boundType = boundType.Combine(attributeInfo.BoundnessType);
+				dbBoundness = dbBoundness.Combine(attributeInfo.BoundnessType);
 				isIdentity = isIdentity || attributeInfo.IsIdentity;
 				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
 				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
 			}
 
-			DeclaredDbBoundness = boundType;
+			DeclaredDbBoundness = dbBoundness;
 			EffectiveDbBoundness = DeclaredDbBoundness;
 			EffectivePropertyType = effectivePropertyType;
 			IsIdentity = isIdentity;
