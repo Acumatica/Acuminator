@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
 											DacPropertyInfo property)
         {         
-            switch (property.EffectiveBoundType)
+            switch (property.EffectiveDbBoundness)
             {
                 case DbBoundnessType.Unbound:
                     AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, property);

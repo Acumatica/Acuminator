@@ -161,7 +161,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacProperties
 				where !dacProperty.Attributes.IsDefaultOrEmpty && 
-					   dacProperty.BoundType == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
+					   dacProperty.DeclaredDbBoundness == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
 					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
 				orderby dacProperty.DeclarationOrder ascending
 				select dacProperty;

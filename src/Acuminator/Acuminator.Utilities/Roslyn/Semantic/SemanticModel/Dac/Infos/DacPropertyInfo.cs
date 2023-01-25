@@ -28,9 +28,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				Base = value;
 				
-				if (value != null && BoundType == DbBoundnessType.NotDefined) //Inherit BoundType from the base property only if we don't override it
+				if (value != null && DeclaredDbBoundness == DbBoundnessType.NotDefined) //Inherit BoundType from the base property only if we don't override it
 				{
-					EffectiveBoundType = value.EffectiveBoundType;
+					EffectiveDbBoundness = value.EffectiveDbBoundness;
 				}
 			}
 		}
@@ -53,14 +53,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ITypeSymbol EffectivePropertyType { get; }
 
 		/// <summary>
-		/// The bound type declared on this property.
+		/// The DB boundness calculated from attributes declared on this DAC property.
 		/// </summary>
-		public DbBoundnessType BoundType { get; }
+		public DbBoundnessType DeclaredDbBoundness { get; }
 
 		/// <summary>
-		/// The effective bound type for this property obtained by the combination of <see cref="BoundType"/>s of this propety's override chain. 
+		/// The effective bound type for this property obtained by the combination of <see cref="DeclaredDbBoundness"/>s of this propety's override chain. 
 		/// </summary>
-		public DbBoundnessType EffectiveBoundType
+		public DbBoundnessType EffectiveDbBoundness
 		{
 			get;
 			private set;
@@ -79,9 +79,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 			Base = baseInfo;
 
-			if (BoundType == DbBoundnessType.NotDefined)
+			if (DeclaredDbBoundness == DbBoundnessType.NotDefined)
 			{
-				EffectiveBoundType = baseInfo.EffectiveBoundType;
+				EffectiveDbBoundness = baseInfo.EffectiveDbBoundness;
 			}
 		}
 
@@ -105,8 +105,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
 			}
 
-			BoundType = boundType;
-			EffectiveBoundType = BoundType;
+			DeclaredDbBoundness = boundType;
+			EffectiveDbBoundness = DeclaredDbBoundness;
 			EffectivePropertyType = effectivePropertyType;
 			IsIdentity = isIdentity;
 			IsKey = isPrimaryKey;

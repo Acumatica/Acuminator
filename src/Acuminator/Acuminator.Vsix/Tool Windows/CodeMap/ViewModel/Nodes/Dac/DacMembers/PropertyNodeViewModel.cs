@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public bool IsIdentity => PropertyInfo.IsIdentity;
 
-		public DbBoundnessType EffectiveBoundType => PropertyInfo.EffectiveBoundType;
+		public DbBoundnessType EffectiveDbBoundness => PropertyInfo.EffectiveDbBoundness;
 
 		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
 								base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
@@ -68,7 +68,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private string? GetDbBoundnessLabelText() => EffectiveBoundType switch
+		private string? GetDbBoundnessLabelText() => EffectiveDbBoundness switch
 		{
 			DbBoundnessType.Unbound    => "Unbound",
 			DbBoundnessType.DbBound    => "Bound",
