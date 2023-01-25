@@ -156,7 +156,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (dacSemanticModel == null || dacSemanticModel.DacType != DacType.Dac)
 				return new List<DacPropertyInfo>();
 
-			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type;
+			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type!;
 			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacProperties
