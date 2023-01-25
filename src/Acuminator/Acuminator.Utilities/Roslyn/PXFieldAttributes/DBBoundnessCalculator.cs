@@ -24,9 +24,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private const string IsDBField = "IsDBField";
 		private const string NonDB = "NonDB";
 
-		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
-		private readonly INamedTypeSymbol _pxDBLocalizableStringAttribute;
 
 		public PXContext Context { get; }
 
@@ -37,21 +35,33 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			Context = pxContext.CheckIfNull(nameof(pxContext));
 			AttributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 					
-			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
 			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
-			_pxDBLocalizableStringAttribute = Context.FieldAttributes.PXDBLocalizableStringAttribute;
 		}
 
 		/// <summary>
 		/// Get DB Boundness type of Acumatica attribute's application to a DAC field.
 		/// </summary>
 		/// <param name="attributeApplication">Attribute application data.</param>
+		/// <returns>
+		/// The attribute application DB boundness type.
+		/// </returns>
+		public DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication) =>
+			GetAttributeApplicationDbBoundnessType(attributeApplication, preparedFlattenedAttributes: null, preparedAttributesMetadata: null);
+
+		/// <summary>
+		/// Get DB Boundness type of Acumatica attribute's application to a DAC field.
+		/// </summary>
+		/// <param name="attributeApplication">Attribute application data.</param>
 		/// <param name="preparedFlattenedAttributes">
-		/// The already prepared flattened attributes, the result of <see cref="AcumaticaAttributesRelationsInfoProvider.GetThisAndAllAggregatedAttributes"/> call.
-		/// Can be null.
+		/// The optional already prepared flattened attributes, the result of the <see cref="AcumaticaAttributesRelationsInfoProvider.GetThisAndAllAggregatedAttributes"/> call.<br/>
+		/// If <see langword="null"/> then the flattened attributes set will be calculated.
+		/// </param>
+		/// <param name="preparedAttributesMetadata">
+		/// The prepared attribute aggregated metadata, the result of the <see cref="FieldTypeAttributesMetadataProvider.GetDacFieldTypeAttributeInfos(ITypeSymbol)"/> call.
+		/// If <see langword="null"/> then the aggregated metadata will be calculated.
 		/// </param>
 		/// <returns>
-		/// The attribute application database boundness type.
+		/// The attribute application DB boundness type.
 		/// </returns>
 		internal DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication, ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributes,
 																		IReadOnlyCollection<FieldTypeAttributeInfo>? preparedAttributesMetadata)
