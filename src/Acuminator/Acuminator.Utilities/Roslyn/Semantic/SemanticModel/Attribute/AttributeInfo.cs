@@ -28,10 +28,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		public INamedTypeSymbol AttributeType => AttributeData.AttributeClass;
 
 		/// <summary>
-		/// The flattened Acumatica attributes set - this attribute, its base attributes, aggregated attributes in case of an aggregate attribute, 
+		/// The flattened Acumatica attributes with applications set - this attribute, its base attributes, aggregated attributes in case of an aggregate attribute, 
 		/// aggregates on aggregates and so on.
 		/// </summary>
-		public ImmutableHashSet<ITypeSymbol> FlattenedAcumaticaAttributes { get; }
+		public ImmutableHashSet<AttributeWithApplication> FlattenedAcumaticaAttributes { get; }
 
 		/// <summary>
 		/// The aggregated attribute metadata collection - information from the flattened attributes set. 
@@ -59,13 +59,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		protected virtual string DebuggerDisplay => $"{Name}";
 
-		protected AttributeInfo(AttributeData attributeData, IEnumerable<ITypeSymbol> flattenedAttributes, IEnumerable<DataTypeAttributeInfo> attributeInfos,
-								DbBoundnessType boundnessType, int declarationOrder, bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute)
+		protected AttributeInfo(AttributeData attributeData, IEnumerable<AttributeWithApplication> flattenedAttributeApplications, IEnumerable<DataTypeAttributeInfo> attributeInfos,
+								DbBoundnessType dbBoundness, int declarationOrder, bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute)
 		{
 			AttributeData                = attributeData.CheckIfNull(nameof(attributeData));
-			FlattenedAcumaticaAttributes = (flattenedAttributes as ImmutableHashSet<ITypeSymbol>) ?? flattenedAttributes.ToImmutableHashSet();
+			FlattenedAcumaticaAttributes = (flattenedAttributeApplications as ImmutableHashSet<AttributeWithApplication>) ?? flattenedAttributeApplications.ToImmutableHashSet();
 			AggregatedAttributeMetadata  = attributeInfos.ToImmutableArray();
-			BoundnessType                = boundnessType;
+			DbBoundness                  = dbBoundness;
 			DeclarationOrder             = declarationOrder;
 			IsKey                        = isKey;
 			IsIdentity                   = isIdentity;
@@ -78,17 +78,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			attribute.ThrowOnNull(nameof(attribute));
 			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
 
-			var flattenedAttributes = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(dbBoundnessCalculator.Context, includeBaseTypes: true);
-			var aggregatedMetadata = dbBoundnessCalculator.AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(attribute.AttributeClass, flattenedAttributes);
+			var flattenedAttributeApplications = attribute.GetThisAndAllAggregatedAttributesWithApplications(dbBoundnessCalculator.Context, includeBaseTypes: true);
+			var flattenedAttributeTypes = flattenedAttributeApplications.Select(attributeWithApplication => attributeWithApplication.Type).ToImmutableHashSet();
 
-			DbBoundnessType boundType      = dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute, flattenedAttributes, aggregatedMetadata);
-			bool isPXDefaultAttribute      = IsPXDefaultAttribute(flattenedAttributes, dbBoundnessCalculator.Context);
-			bool isIdentityAttribute       = IsDerivedFromIdentityTypes(flattenedAttributes, dbBoundnessCalculator.Context);
-			bool isAutoNumberAttribute     = CheckForAutoNumberAttribute(flattenedAttributes, dbBoundnessCalculator.Context);
+			var aggregatedMetadata	    = dbBoundnessCalculator.AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(attribute.AttributeClass, flattenedAttributeTypes);
+			DbBoundnessType dbBoundness = dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute, flattenedAttributeApplications, flattenedAttributeTypes, 
+																									   aggregatedMetadata);
+
+			bool isPXDefaultAttribute      = IsPXDefaultAttribute(flattenedAttributeTypes, dbBoundnessCalculator.Context);
+			bool isIdentityAttribute       = IsDerivedFromIdentityTypes(flattenedAttributeTypes, dbBoundnessCalculator.Context);
+			bool isAutoNumberAttribute     = CheckForAutoNumberAttribute(flattenedAttributeTypes, dbBoundnessCalculator.Context);
 			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(PropertyNames.Attributes.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
-			return new AttributeInfo(attribute, flattenedAttributes, aggregatedMetadata, boundType, declarationOrder, isAttributeWithPrimaryKey,
+			return new AttributeInfo(attribute, flattenedAttributeApplications, aggregatedMetadata, dbBoundness, declarationOrder, isAttributeWithPrimaryKey,
 									 isIdentityAttribute, isPXDefaultAttribute, isAutoNumberAttribute);
 		}
 
