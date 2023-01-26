@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private const string IsDBField = "IsDBField";
 		private const string NonDB = "NonDB";
 
-		private readonly INamedTypeSymbol _defaultAttribute;
+		private readonly ImmutableArray<INamedTypeSymbol> _wellKnownNonDataTypeAttributes;
 
 		public PXContext Context { get; }
 
@@ -34,8 +34,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			Context = pxContext.CheckIfNull(nameof(pxContext));
 			AttributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
-					
-			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
+
+			_wellKnownNonDataTypeAttributes = GetWellKnownNonDataTypeAttributes(pxContext);
+		}
+
+		private static ImmutableArray<INamedTypeSymbol> GetWellKnownNonDataTypeAttributes(PXContext pxContext)
+		{
+			var wellKnownNonDataTypeAttributes = ImmutableArray.CreateBuilder<INamedTypeSymbol>(initialCapacity: 5);
+
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXUIFieldAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXDefaultAttribute);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXStringListAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXIntListAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXSelectorAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXForeignReferenceAttribute);
+			
+			return wellKnownNonDataTypeAttributes.ToImmutable();
 		}
 
 		/// <summary>
@@ -68,16 +82,23 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributeApplication.ThrowOnNull(nameof(attributeApplication));
 
-			if (!attributeApplication.AttributeClass.IsAcumaticaAttribute(Context) || attributeApplication.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
+			if (!attributeApplication.AttributeClass.IsAcumaticaAttribute(Context))
 				return DbBoundnessType.NotDefined;
 
-			//First check if DB boundness is set explicitly on attribute application. In that case it will override all attribute metadata
+			// First, check if the attribute is present in the set of known non-data-type attributes or is derived from them
+			bool isKnownNonDataTypeAttribute = 
+				_wellKnownNonDataTypeAttributes.Any(nonDataTypeAttribute => attributeApplication.AttributeClass.InheritsFromOrEquals(nonDataTypeAttribute));
+
+			if (isKnownNonDataTypeAttribute)
+				return DbBoundnessType.NotDefined;
+
+			//Second, check if DB boundness is set explicitly on attribute application. In that case it will override all attribute metadata
 			DbBoundnessType explicitlySetDbBoundness = GetDbBoundnessSetExplicitlyByAttributeApplication(attributeApplication);
 
 			if (explicitlySetDbBoundness != DbBoundnessType.NotDefined)
 				return explicitlySetDbBoundness;
 
-			// If the explicit DB boundness is not set we can query attribute's register for the metadata
+			// Finally, if the explicit DB boundness is not set we can query attribute's register for the metadata
 			var flattenedAttributes = preparedFlattenedAttributes ?? attributeApplication.AttributeClass.GetThisAndAllAggregatedAttributes(Context, includeBaseTypes: true);
 			var attributesMetadata = preparedAttributesMetadata ?? AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(flattenedAttributes);
 
