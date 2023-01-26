@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -99,15 +100,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			
 			PXContext pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
 			var attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
-			FieldTypeAttributeInfo? attributeInfo = attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType)
-																			  .FirstOrDefault(attrInfo => attrInfo.IsFieldAttribute);
-			if (attributeInfo?.FieldType == null)
+			var fieldAttributeDataTypes = (from attrInfo in attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType)
+										   where attrInfo.IsFieldAttribute && attrInfo.FieldType != null
+										   select attrInfo.FieldType)
+										  .ToHashSet();
+
+			if (fieldAttributeDataTypes.Count != 1) 
 				return document;
 
+			ITypeSymbol attributeDataType = fieldAttributeDataTypes.First();
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			TypeSyntax? replacingTypeNode = generator.TypeExpression(attributeInfo.FieldType) as TypeSyntax;
+			TypeSyntax? replacingTypeNode = generator.TypeExpression(attributeDataType) as TypeSyntax;
 
-			if (attributeInfo.FieldType.IsValueType)
+			if (attributeDataType.IsValueType)
 			{
 				replacingTypeNode = generator.NullableTypeExpression(replacingTypeNode) as TypeSyntax;
 			}
