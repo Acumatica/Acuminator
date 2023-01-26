@@ -673,8 +673,8 @@
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\AggregateAttributeInformation.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\AttributeInformationSimpleDac.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\AggregateRecursiveAttributeInformation.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\AggregateAttributeFields.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\AggregateAttributeFields_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithAggregateAttributesOnFields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithAggregateAttributesOnFields_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\BqlParameterMismatch\BqlParameterMismatchTests.cs" />
     <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />

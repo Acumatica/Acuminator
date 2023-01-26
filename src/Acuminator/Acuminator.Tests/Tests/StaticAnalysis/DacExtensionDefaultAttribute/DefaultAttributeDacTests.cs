@@ -62,14 +62,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.CreateFor(line: 35, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("AggregateAttributeFields.cs", "SOOrder.cs")]
+		[EmbeddedFileData("DacExtensionWithAggregateAttributesOnFields.cs", "SOOrder.cs")]
 		public virtual Task DacExtensionWithAggregateAttributeFields(string source, string additionalSource) =>
 			VerifyCSharpDiagnosticAsync(new[] { source, additionalSource },
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.CreateFor(line: 36, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("AggregateAttributeFields.cs",
-						  "AggregateAttributeFields_Expected.cs")]
+		[EmbeddedFileData("DacExtensionWithAggregateAttributesOnFields.cs",
+						  "DacExtensionWithAggregateAttributesOnFields_Expected.cs")]
 		public virtual Task CodeFix_DacExtensionWithAggregateAttributeFields(string actual, string expected) =>
 			VerifyCSharpFixAsync(actual, expected);
 
