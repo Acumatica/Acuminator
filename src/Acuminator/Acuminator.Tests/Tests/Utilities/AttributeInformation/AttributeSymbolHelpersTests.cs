@@ -294,14 +294,21 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
 						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
 						"PX.Data.PXDefaultAttribute",
+						"PX.Data.PXIntListAttribute",
+						"PX.Objects.GL.PeriodIDAttribute"
+					},
+					new[]
+					{
+						"PX.Objects.HackathonDemo.DBBoundNonNullableIntListAttribute",
+						"PX.Objects.HackathonDemo.DBBoundNonNullableIntAttribute",
+						"PX.Data.PXDBIntAttribute",
 						"PX.Data.PXIntListAttribute"
 					},
 					new[]
 					{
-						"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
-						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
-						"PX.Data.PXDBIntAttribute",
-						"PX.Data.PXIntListAttribute"
+						"PX.Objects.HackathonDemo.UnknownBoundnessIntListAttribute",
+						"PX.Objects.HackathonDemo.UnknownBoundnessNonNullableIntAttribute",
+						"PX.Data.PXUIFieldAttribute",
 					}
 				},
 				includeBaseTypes: false);
@@ -317,16 +324,22 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
 						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
 						"PX.Data.PXDefaultAttribute",
+						"PX.Data.PXIntListAttribute",
+						"PX.Objects.GL.PeriodIDAttribute"
+					},
+					new[]
+					{
+						"PX.Objects.HackathonDemo.DBBoundNonNullableIntListAttribute",
+						"PX.Objects.HackathonDemo.DBBoundNonNullableIntAttribute",
+						"PX.Data.PXDBIntAttribute",
+						"PX.Data.PXDBFieldAttribute",
 						"PX.Data.PXIntListAttribute"
 					},
 					new[]
 					{
-						"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
-						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
-						"PX.Data.PXDBIntAttribute",
-						"PX.Data.PXDBFieldAttribute",
-						"PX.Data.PXIntListAttribute",
-						"PX.Objects.GL.PeriodIDAttribute"
+						"PX.Objects.HackathonDemo.UnknownBoundnessIntListAttribute",
+						"PX.Objects.HackathonDemo.UnknownBoundnessNonNullableIntAttribute",
+						"PX.Data.PXUIFieldAttribute"
 					}
 				},
 				includeBaseTypes: true);
