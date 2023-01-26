@@ -1,4 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
@@ -52,6 +58,37 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 	public static class DbBoundnessTypeCombiner
 	{
+		/// <summary>
+		/// Combines a collection of <see cref="DbBoundnessType"/> in a proper order.
+		/// </summary>
+		/// <remarks>
+		/// The <see cref="DbBoundnessTypeCombiner.Combine(DbBoundnessType, DbBoundnessType)"/> operation is commutative but is not associative.<br/>
+		/// The order of aggregation is important. For example, you may have attributes with DB boundnesses: <br/>
+		/// <see cref="DbBoundnessType.DbBound"/>, <see cref="DbBoundnessType.PXDBScalar"/> and <see cref="DbBoundnessType.Unknown"/>.<br/><br/>
+		/// Depending on the order of combination you may end up with either <see cref="DbBoundnessType.Error"/> or <see cref="DbBoundnessType.Unknown"/> DB boundness. <br/>
+		/// We wish to end up with rather <see cref="DbBoundnessType.Error"/> than <see cref="DbBoundnessType.Unknown"/> and to achieve these with combination rules <br/>
+		/// we should sort boundnesses in ascending order.
+		/// </remarks>
+		/// <param name="dbBoundnesses">The DB boundnesses to act on.</param>
+		/// <returns>
+		/// Combined DB Boundness.
+		/// </returns>
+		public static DbBoundnessType Combine(this IEnumerable<DbBoundnessType> dbBoundnesses)
+		{
+			var sortedDbBoundness = dbBoundnesses.CheckIfNull(nameof(dbBoundnesses)).OrderBy(b => b);
+			DbBoundnessType aggregatedBoundness = DbBoundnessType.NotDefined;
+
+			foreach (var dbBoundness in sortedDbBoundness)
+			{
+				aggregatedBoundness = aggregatedBoundness.Combine(dbBoundness);
+
+				if (aggregatedBoundness == DbBoundnessType.Error)
+					break;
+			}
+
+			return aggregatedBoundness;
+		}
+
 		public static DbBoundnessType Combine(this DbBoundnessType x, DbBoundnessType y)
 		{
 			// minor optimizations for frequent cases
