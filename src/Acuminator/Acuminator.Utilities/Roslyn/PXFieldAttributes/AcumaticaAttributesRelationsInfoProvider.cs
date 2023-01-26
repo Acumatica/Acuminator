@@ -165,7 +165,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			var results = includeBaseTypes
-				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute)).ToHashSet()
+				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute) && 
+															 !a.Equals(pxAggregateAttribute) && !a.Equals(pxDynamicAggregateAttribute))
+											 .ToHashSet()
 				: new HashSet<ITypeSymbol>() { attributeType };
 
 			var allDeclaredAcumaticaAttributesOnClassHierarchy = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(attributeType, pxContext);
@@ -188,7 +190,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				if (includeBaseTypes)
 				{
 					var aggregatedAttributeBaseAcumaticaAttributeTypes =
-						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute));
+						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute) && 
+																		   !baseType.Equals(pxAggregateAttribute) && 
+																		   !baseType.Equals(pxDynamicAggregateAttribute));
 
 					results.AddRange(aggregatedAttributeBaseAcumaticaAttributeTypes);
 				}
@@ -253,7 +257,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			var results = includeBaseTypes
-				? baseAcumaticaAttributeTypes.TakeWhile(type => !type.Equals(eventSubscriberAttribute))
+				? baseAcumaticaAttributeTypes.TakeWhile(type => !type.Equals(eventSubscriberAttribute) &&
+																!type.Equals(pxAggregateAttribute) && !type.Equals(pxDynamicAggregateAttribute))
 											 .Select(type => new AttributeWithApplication(attributeApplication, type))
 											 .ToHashSet()
 				: new HashSet<AttributeWithApplication>() { attributeWithApplication };
@@ -281,7 +286,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				if (includeBaseTypes)
 				{
 					var aggregatedAttributeBaseAcumaticaAttributeTypesWithApplications =
-						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute))
+						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute) &&
+																		   !baseType.Equals(pxAggregateAttribute) && !baseType.Equals(pxDynamicAggregateAttribute))
 													.Select(baseType => new AttributeWithApplication(aggregatedAttributeWithApplication.Application, baseType));
 
 					results.AddRange(aggregatedAttributeBaseAcumaticaAttributeTypesWithApplications);
