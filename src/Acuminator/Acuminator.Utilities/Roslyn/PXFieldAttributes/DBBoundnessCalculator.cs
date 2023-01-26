@@ -80,9 +80,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			// Finally, if the explicit DB boundness is not set we can query attribute's register for the metadata
 			var flattenedAttributes = preparedFlattenedAttributes ?? 
 									  attributeApplication.AttributeClass.GetThisAndAllAggregatedAttributes(Context, includeBaseTypes: true);
-			var attributesMetadata = preparedAttributesMetadata ?? 
-									 AttributesMetadataProvider.GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(flattenedAttributes);
-
+			var attributesMetadata = 
+				preparedAttributesMetadata ?? 
+				AttributesMetadataProvider.GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(attributeApplication.AttributeClass, 
+																											   flattenedAttributes);
 			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributesMetadata(attributesMetadata);
 
 			if (dbBoundnessFromMetadata != DbBoundnessType.NotDefined)

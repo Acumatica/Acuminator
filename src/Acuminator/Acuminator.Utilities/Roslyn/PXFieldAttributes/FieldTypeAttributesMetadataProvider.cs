@@ -7,6 +7,7 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 
 using Microsoft.CodeAnalysis;
 
@@ -33,12 +34,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private readonly INamedTypeSymbol _pxDBCalcedAttribute;
 		private readonly INamedTypeSymbol _pxDBScalarAttribute;
+		private readonly INamedTypeSymbol _pxDBFieldAttribute;
 
 		public FieldTypeAttributesMetadataProvider(PXContext pxContext)
 		{
 			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
 			_pxDBScalarAttribute = _pxContext.FieldAttributes.PXDBScalarAttribute;
 			_pxDBCalcedAttribute = _pxContext.FieldAttributes.PXDBCalcedAttribute;
+			_pxDBFieldAttribute = _pxContext.FieldAttributes.PXDBFieldAttribute;
 
 			var attributesCalcedOnDbSide = new List<INamedTypeSymbol>(capacity: 2) { _pxDBScalarAttribute, _pxDBCalcedAttribute };
 			AttributesCalcedOnDbSide = attributesCalcedOnDbSide.ToImmutableArray();
@@ -74,16 +77,24 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				return Array.Empty<DataTypeAttributeInfo>();
 
 			var flattenedAttributes = preparedFlattenedAttributes ?? attributeSymbol.GetThisAndAllAggregatedAttributes(_pxContext, includeBaseTypes: true);
-			return GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(flattenedAttributes);
+			return GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(attributeSymbol, flattenedAttributes);
 		}
 
-		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(
+		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(ITypeSymbol attributeSymbol,
 																										ImmutableHashSet<ITypeSymbol> flattenedAttributes)
 		{
 			if (flattenedAttributes.Count == 0)
 				return Array.Empty<DataTypeAttributeInfo>();
 
 			var typeAttributeInfos = GetMixedDbBoundnessAttributeInfosInFlattenedSet(flattenedAttributes);
+			var pxDbFieldAttributeDirectlyUsedInfo = GetPXDbFieldAttributeInfoIfItIsUsedDirectly(attributeSymbol);
+
+			if (pxDbFieldAttributeDirectlyUsedInfo != null)
+			{
+				typeAttributeInfos ??= new List<DataTypeAttributeInfo>(capacity: 4);
+				typeAttributeInfos.Add(pxDbFieldAttributeDirectlyUsedInfo);
+			}
+
 			var dacFieldTypeAttributesInHierarchy = AllDacFieldTypeAttributes.Intersect(flattenedAttributes);
 
 			if (dacFieldTypeAttributesInHierarchy.Count == 0)
@@ -143,6 +154,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return mixedDbBoundnessAttributeInfos;
 		}
 
+		private DataTypeAttributeInfo? GetPXDbFieldAttributeInfoIfItIsUsedDirectly(ITypeSymbol attributeSymbol) =>
+			attributeSymbol.EqualsOrAggregatesAttributeDirectly(_pxDBFieldAttribute, _pxContext)
+				? new DataTypeAttributeInfo(FieldTypeAttributeKind.BoundTypeAttribute, fieldType: null)
+				: null;
+
 		private DataTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol dacFieldTypeAttribute)
 		{
 			if (dacFieldTypeAttribute.Equals(_pxDBScalarAttribute))
@@ -180,7 +196,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			var types = new Dictionary<ITypeSymbol, ITypeSymbol?>
 			{
-				{ pxContext.FieldAttributes.PXDBFieldAttribute,		   null },
 				{ pxContext.FieldAttributes.PXDBLongAttribute,         pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXDBIntAttribute,          pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXDBShortAttribute,        pxContext.SystemTypes.Int16 },
