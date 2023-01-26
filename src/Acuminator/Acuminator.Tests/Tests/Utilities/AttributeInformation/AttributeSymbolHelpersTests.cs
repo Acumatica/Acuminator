@@ -42,7 +42,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public Task AttributesOnPropertiesAreDerivedFromPXDefault_AggregateOnAggregateAttribute(string source) =>
-			CheckIfAttributesOnPropertiesAreDerivedFromPXDefaultAsync(source, new List<bool> { true, false });
+			CheckIfAttributesOnPropertiesAreDerivedFromPXDefaultAsync(source, new List<bool> { true, false, false });
 
 		private async Task CheckIfAttributesOnPropertiesAreDerivedFromPXDefaultAsync(string source, List<bool> expected)
 		{
@@ -198,150 +198,143 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private Task ListOfParentsSimpleAsync(string source)
-		{
-			return ListOfParentsAsync(source,
-								new List<List<string>> {
-									new List<string>{ "PX.Data.PXBoolAttribute" },
-									new List<string>{ "PX.Data.PXDefaultAttribute" },
-									new List<string>{ "PX.Data.PXUIFieldAttribute" },
-									new List<string>{ "PX.Data.PXDBCalcedAttribute" },
-									new List<string>{ "PX.Data.PXDefaultAttribute"},
-									new List<string>{ "PX.Data.PXUIFieldAttribute"}
-								});
-		}
+		private Task FlattenedAttributesSets_SimpleDac_NoBaseTypes(string source) =>
+			ListOfFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[] { "PX.Data.PXBoolAttribute" },
+					new[] { "PX.Data.PXDefaultAttribute" },
+					new[] { "PX.Data.PXUIFieldAttribute" },
+					new[] { "PX.Data.PXDBCalcedAttribute" },
+					new[] { "PX.Data.PXDefaultAttribute"},
+					new[] { "PX.Data.PXUIFieldAttribute"}
+				},
+				includeBaseTypes: false);
 
 		[Theory]
 		[EmbeddedFileData(@"NotAcumaticaAttributeDac.cs")]
-		private Task DacWithNonAcumaticaAttribute(string source)
-		{
-			return ListOfParentsAsync(source,
-								new List<List<string>>
-								{
-									new List<string>{ "PX.Data.PXDBIntAttribute", },
-									new List<string>{ "PX.Data.PXDBIntAttribute", }
-								});
-		}
-
+		private Task FlattenedAttributesSets_DacWithNonAcumaticaAttribute_NoBaseTypes(string source) =>
+			ListOfFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[] { "PX.Data.PXDBIntAttribute", },
+					new[] { "PX.Data.PXDBIntAttribute", }
+				},
+				includeBaseTypes: false);
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private  Task ListOfParentsAggregateAsync(string source)
-		{
-			return ListOfParentsAsync(source,
-								new List<List<string>> {
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
-										"PX.Data.PXDBIntAttribute",
-										"PX.Data.PXDefaultAttribute",
-										"PX.Data.PXIntListAttribute"
-									},
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo.PXAccountAttribute",
-										"PX.Objects.HackathonDemo.PXCustomDefaultAttribute"
-									}
-								});
-
-		}
+		private  Task FlattenedAttributesSets_AggregatesOnAggregates_NoBaseTypes(string source) =>
+			ListOfFlattenedAttributesSetsAsync(source,
+				new[] {
+					new[]
+					{
+						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+						"PX.Data.PXDBIntAttribute",
+						"PX.Data.PXDefaultAttribute",
+						"PX.Data.PXIntListAttribute"
+					},
+					new[]
+					{
+						"PX.Objects.HackathonDemo.PXAccountAttribute",
+						"PX.Objects.HackathonDemo.PXCustomDefaultAttribute"
+					}
+				},
+				includeBaseTypes: false);
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private Task ListOfParentsAggregateRecursiveAsync(string source)
-		{
-			return ListOfParentsAsync(source, new List<List<string>> {
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
-										"PX.Data.PXDefaultAttribute",
-										"PX.Data.PXIntListAttribute"
-									},
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
-										"PX.Objects.HackathonDemo._NonNullableIntAttribute",
-										"PX.Data.PXDBIntAttribute",
-										"PX.Data.PXIntListAttribute"
-									}
-								});
-		}
+		private Task FlattenedAttributesSets_AggregateWithRecursion_NoBaseTypes(string source) =>
+			ListOfFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[]
+					{
+						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+						"PX.Data.PXDefaultAttribute",
+						"PX.Data.PXIntListAttribute"
+					},
+					new[]
+					{
+						"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
+						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
+						"PX.Data.PXDBIntAttribute",
+						"PX.Data.PXIntListAttribute"
+					}
+				},
+				includeBaseTypes: false);
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private Task ListOfParentsSimpleExpandedAsync(string source)
-		{
-			return ListOfParentsAsync(source,
-								new List<List<string>> {
-									new List<string>{ "PX.Data.PXBoolAttribute" },
-									new List<string>{ "PX.Data.PXDefaultAttribute" },
-									new List<string>{ "PX.Data.PXUIFieldAttribute" },
-									new List<string>{ "PX.Data.PXDBCalcedAttribute" },
-									new List<string>{ "PX.Data.PXDefaultAttribute" },
-									new List<string>{ "PX.Data.PXUIFieldAttribute" }
-								},
-								true);
-		}
-
+		private Task FlattenedAttributesSets_SimpleDac_WithBaseTypes(string source) =>
+			ListOfFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[] { "PX.Data.PXBoolAttribute" },
+					new[] { "PX.Data.PXDefaultAttribute" },
+					new[] { "PX.Data.PXUIFieldAttribute" },
+					new[] { "PX.Data.PXDBCalcedAttribute" },
+					new[] { "PX.Data.PXDefaultAttribute" },
+					new[] { "PX.Data.PXUIFieldAttribute" }
+				},
+				includeBaseTypes: true);
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private Task ListOfParentsAggregateExpandedAsync(string source)
-		{
-			return ListOfParentsAsync(source,
-								new List<List<string>> {
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-										"PX.Data.PXAggregateAttribute",
-										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
-										"PX.Data.PXDBIntAttribute",
-										"PX.Data.PXDBFieldAttribute",
-										"PX.Data.PXDefaultAttribute",
-										"PX.Data.PXIntListAttribute"
-									},
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo.PXAccountAttribute",
-										"PX.Data.PXAggregateAttribute",
-										"PX.Objects.HackathonDemo.PXCustomDefaultAttribute",
-										"PX.Data.PXDefaultAttribute"
-									}
-								},
-								expand: true);
-
-		}
+		private Task FlattenedAttributesSets_AggregatesOnAggregates_WithBaseTypes(string source) =>
+			ListOfFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[]
+					{
+						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+						"PX.Data.PXAggregateAttribute",
+						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+						"PX.Data.PXDBIntAttribute",
+						"PX.Data.PXDBFieldAttribute",
+						"PX.Data.PXDefaultAttribute",
+						"PX.Data.PXIntListAttribute"
+					},
+					new[]
+					{
+						"PX.Objects.HackathonDemo.PXAccountAttribute",
+						"PX.Data.PXAggregateAttribute",
+						"PX.Objects.HackathonDemo.PXCustomDefaultAttribute",
+						"PX.Data.PXDefaultAttribute"
+					}
+				},
+				includeBaseTypes: true);
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private Task ListOfParentsAggregateRecursiveExpandedAsync(string source)
-		{
-			return ListOfParentsAsync(source, new List<List<string>> {
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-										"PX.Data.PXAggregateAttribute",
-										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
-										"PX.Data.PXDefaultAttribute",
-										"PX.Data.PXIntListAttribute"
-									},
-									new List<string>
-									{
-										"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
-										"PX.Data.PXAggregateAttribute",
-										"PX.Objects.HackathonDemo._NonNullableIntAttribute",
-										"PX.Data.PXDBIntAttribute",
-										"PX.Data.PXDBFieldAttribute",
-										"PX.Data.PXIntListAttribute"
-									}
-								},
-								expand: true);
-		}
+		private Task FlattenedAttributesSets_AggregateWithRecursion_WithBaseTypes(string source) =>
+			ListOfFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[]
+					{
+						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+						"PX.Data.PXAggregateAttribute",
+						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+						"PX.Data.PXDefaultAttribute",
+						"PX.Data.PXIntListAttribute"
+					},
+					new[]
+					{
+						"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
+						"PX.Data.PXAggregateAttribute",
+						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
+						"PX.Data.PXDBIntAttribute",
+						"PX.Data.PXDBFieldAttribute",
+						"PX.Data.PXIntListAttribute"
+					}
+				},
+				includeBaseTypes: true);
 
 
-		private async Task ListOfParentsAsync(string source, List<List<string>> expected, bool expand = false)
+		private async Task ListOfFlattenedAttributesSetsAsync(string source, string[][] expectedFlattenedSets, bool includeBaseTypes)
 		{
 			Document document = CreateDocument(source);
 			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
@@ -349,7 +342,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
-			var expectedSymbols = ConvertSymbolNamesToTypeSymbols(expected, semanticModel);
+			var expectedSymbols = ConvertSymbolNamesToTypeSymbols(expectedFlattenedSets, semanticModel);
+
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
 			var actualResult = new List<IReadOnlyCollection<ITypeSymbol>>();
@@ -365,7 +359,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 				foreach (var attribute in attributes)
 				{
-					var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, expand);
+					var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, includeBaseTypes);
 
 					if (fullAttributesSet.Count > 0)
 					{
@@ -377,11 +371,11 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			Assert.Equal(expectedSymbols, actualResult);
 		}
 
-		private List<HashSet<ITypeSymbol>> ConvertSymbolNamesToTypeSymbols(List<List<string>> expectedSymbolNamesSets, SemanticModel semanticModel) =>
+		private List<HashSet<ITypeSymbol>> ConvertSymbolNamesToTypeSymbols(string[][] expectedSymbolNamesSets, SemanticModel semanticModel) =>
 			expectedSymbolNamesSets.Select(symbolNamesSet => GetTypeSymbolsFromNames(semanticModel, symbolNamesSet))
-								   .ToList(capacity: expectedSymbolNamesSets.Count);
+								   .ToList(capacity: expectedSymbolNamesSets.Length);
 
-		private HashSet<ITypeSymbol> GetTypeSymbolsFromNames(SemanticModel semanticModel, List<string> symbolNames) =>
+		private HashSet<ITypeSymbol> GetTypeSymbolsFromNames(SemanticModel semanticModel, IEnumerable<string> symbolNames) =>
 			symbolNames.Select(symbolName => semanticModel.Compilation.GetTypeByMetadataName(symbolName))
 					   .Where(typeSymbol => typeSymbol != null)
 					   .ToHashSet<ITypeSymbol>();
