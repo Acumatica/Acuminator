@@ -94,21 +94,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Attributes = attributeInfos.ToImmutableArray();
 			IsDacProperty = isDacProperty;
 
-			DbBoundnessType dbBoundness = DbBoundnessType.NotDefined;
+			DeclaredDbBoundness = Attributes.Select(a => a.DbBoundness).Combine();
+			EffectiveDbBoundness = DeclaredDbBoundness;
+
 			bool isIdentity = false;
 			bool isPrimaryKey = false;
 			bool isAutoNumbering = false;
 
 			foreach (AttributeInfo attributeInfo in Attributes)
 			{
-				dbBoundness = dbBoundness.Combine(attributeInfo.BoundnessType);
 				isIdentity = isIdentity || attributeInfo.IsIdentity;
 				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
 				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
 			}
-
-			DeclaredDbBoundness = dbBoundness;
-			EffectiveDbBoundness = DeclaredDbBoundness;
+	
 			EffectivePropertyType = effectivePropertyType;
 			IsIdentity = isIdentity;
 			IsKey = isPrimaryKey;
