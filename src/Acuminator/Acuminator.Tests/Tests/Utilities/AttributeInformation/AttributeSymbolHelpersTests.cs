@@ -213,6 +213,21 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 				includeBaseTypes: false);
 
 		[Theory]
+		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
+		private Task FlattenedAttributesSets_SimpleDac_WithBaseTypes(string source) =>
+			CompareFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[] { "PX.Data.PXBoolAttribute" },
+					new[] { "PX.Data.PXDefaultAttribute" },
+					new[] { "PX.Data.PXUIFieldAttribute" },
+					new[] { "PX.Data.PXDBCalcedAttribute" },
+					new[] { "PX.Data.PXDefaultAttribute" },
+					new[] { "PX.Data.PXUIFieldAttribute" }
+				},
+				includeBaseTypes: true);
+
+		[Theory]
 		[EmbeddedFileData(@"NotAcumaticaAttributeDac.cs")]
 		private Task FlattenedAttributesSets_DacWithNonAcumaticaAttribute_NoBaseTypes(string source) =>
 			CompareFlattenedAttributesSetsAsync(source,
@@ -245,44 +260,6 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 				includeBaseTypes: false);
 
 		[Theory]
-		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private Task FlattenedAttributesSets_AggregateWithRecursion_NoBaseTypes(string source) =>
-			CompareFlattenedAttributesSetsAsync(source,
-				new[]
-				{
-					new[]
-					{
-						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
-						"PX.Data.PXDefaultAttribute",
-						"PX.Data.PXIntListAttribute"
-					},
-					new[]
-					{
-						"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
-						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
-						"PX.Data.PXDBIntAttribute",
-						"PX.Data.PXIntListAttribute"
-					}
-				},
-				includeBaseTypes: false);
-
-		[Theory]
-		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private Task FlattenedAttributesSets_SimpleDac_WithBaseTypes(string source) =>
-			CompareFlattenedAttributesSetsAsync(source,
-				new[]
-				{
-					new[] { "PX.Data.PXBoolAttribute" },
-					new[] { "PX.Data.PXDefaultAttribute" },
-					new[] { "PX.Data.PXUIFieldAttribute" },
-					new[] { "PX.Data.PXDBCalcedAttribute" },
-					new[] { "PX.Data.PXDefaultAttribute" },
-					new[] { "PX.Data.PXUIFieldAttribute" }
-				},
-				includeBaseTypes: true);
-
-		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		private Task FlattenedAttributesSets_AggregatesOnAggregates_WithBaseTypes(string source) =>
 			CompareFlattenedAttributesSetsAsync(source,
@@ -308,6 +285,29 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
+		private Task FlattenedAttributesSets_AggregateWithRecursion_NoBaseTypes(string source) =>
+			CompareFlattenedAttributesSetsAsync(source,
+				new[]
+				{
+					new[]
+					{
+						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+						"PX.Data.PXDefaultAttribute",
+						"PX.Data.PXIntListAttribute"
+					},
+					new[]
+					{
+						"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
+						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
+						"PX.Data.PXDBIntAttribute",
+						"PX.Data.PXIntListAttribute"
+					}
+				},
+				includeBaseTypes: false);
+
+		[Theory]
+		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		private Task FlattenedAttributesSets_AggregateWithRecursion_WithBaseTypes(string source) =>
 			CompareFlattenedAttributesSetsAsync(source,
 				new[]
@@ -325,7 +325,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
 						"PX.Data.PXDBIntAttribute",
 						"PX.Data.PXDBFieldAttribute",
-						"PX.Data.PXIntListAttribute"
+						"PX.Data.PXIntListAttribute",
+						"PX.Objects.GL.PeriodIDAttribute"
 					}
 				},
 				includeBaseTypes: true);
