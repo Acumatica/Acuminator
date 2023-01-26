@@ -278,16 +278,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			//only IsDBField properties are considered in analysis for attributes that can be applied to both bound and unbound fields
 			foreach (var attributeType in flattenedAttributesSet)
 			{
-				var isDbFieldMembers = attributeType.GetMembers(IsDBField);
+				var members = attributeType.GetMembers();
 
-				if (isDbFieldMembers.IsDefaultOrEmpty)
+				if (members.IsDefaultOrEmpty)
 					continue;
 
-				foreach (var property in isDbFieldMembers.OfType<IPropertySymbol>())
-				{
-					if (!property.IsStatic && property.IsExplicitlyDeclared() && property.IsDeclaredInType(attributeType))
-						return DbBoundnessType.Unknown;
-				}
+				var hasIsDbFieldProperties = members.OfType<IPropertySymbol>()
+													.Any(property => !property.IsStatic && property.IsExplicitlyDeclared() && 
+																	  property.IsDeclaredInType(attributeType) &&
+																	  IsDBField.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
+				if (hasIsDbFieldProperties)
+					return DbBoundnessType.Unknown;
 			}
 
 			return DbBoundnessType.NotDefined;
