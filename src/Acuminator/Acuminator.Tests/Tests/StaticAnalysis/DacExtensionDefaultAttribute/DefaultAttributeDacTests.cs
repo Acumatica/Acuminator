@@ -69,7 +69,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 
 		[Theory]
 		[EmbeddedFileData("AggregateAttributeFields.cs",
-							"AggregateAttributeFields_Expected.cs")]
+						  "AggregateAttributeFields_Expected.cs")]
 		public virtual Task CodeFix_DacExtensionWithAggregateAttributeFields(string actual, string expected) =>
 			VerifyCSharpFixAsync(actual, expected);
 
@@ -100,7 +100,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 		public virtual Task FullyUnboundDacExtension_ShouldNotShow(string source) => VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("DacAggregateAttributeFields.cs")]
+		[EmbeddedFileData("DacWithAggregateAttributeOnFields.cs")]
 		public virtual Task DacWithAggregateAttributeFields(string source) =>
 			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.CreateFor(line: 36, column: 4));
@@ -111,7 +111,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
-		[EmbeddedFileData("DacAggregateAttributeFields.cs", "DacAggregateAttributeFields_Expected.cs")]
+		[EmbeddedFileData("DacWithAggregateAttributeOnFields.cs", "DacWithAggregateAttributeOnFields_Expected.cs")]
 		public virtual Task CodeFix_DacWithAggregateAttributeFields(string actual, string expected) =>
 			VerifyCSharpFixAsync(actual, expected);
 	}
