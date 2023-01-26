@@ -7,6 +7,7 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 
 using Microsoft.CodeAnalysis;
@@ -42,24 +43,29 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// The attribute application DB boundness type.
 		/// </returns>
 		public DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication) =>
-			GetAttributeApplicationDbBoundnessType(attributeApplication, preparedFlattenedAttributes: null, preparedAttributesMetadata: null);
+			GetAttributeApplicationDbBoundnessType(attributeApplication, preparedFlattenedAttributesWithApplications: null, 
+												   preparedFlattenedAttributesSet: null, preparedAttributesMetadata: null);
 
 		/// <summary>
 		/// Get DB Boundness type of Acumatica attribute's application to a DAC field.
 		/// </summary>
 		/// <param name="attributeApplication">Attribute application data.</param>
-		/// <param name="preparedFlattenedAttributes">
-		/// The optional already prepared flattened attributes, the result of the <see cref="AcumaticaAttributesRelationsInfoProvider.GetThisAndAllAggregatedAttributes"/> call.<br/>
-		/// If <see langword="null"/> then the flattened attributes set will be calculated.
+		/// <param name="preparedFlattenedAttributesWithApplications">
+		/// The optional already prepared flattened attributes with applications,<br/>
+		/// the result of the <see cref="AcumaticaAttributesRelationsInfoProvider.GetThisAndAllAggregatedAttributesWithApplications(AttributeData?, PXContext, bool)"/> call.<br/>
+		/// If <see langword="null"/> then the flattened attributes with applications set will be calculated.
 		/// </param>
+		/// <param name="preparedFlattenedAttributesSet">The prepared flattened attributes set. If <see langword="null"/> then the flattened attributes set will be calculated.</param>
 		/// <param name="preparedAttributesMetadata">
-		/// The prepared attribute aggregated metadata, the result of the <see cref="FieldTypeAttributesMetadataProvider.GetDacFieldTypeAttributeInfos(ITypeSymbol)"/> call.
-		/// If <see langword="null"/> then the aggregated metadata will be calculated.
+		/// The prepared attribute aggregated metadata, the result of the <see cref="FieldTypeAttributesMetadataProvider.GetDacFieldTypeAttributeInfos(ITypeSymbol)"/>
+		/// call. If <see langword="null"/> then the aggregated metadata will be calculated.
 		/// </param>
 		/// <returns>
 		/// The attribute application DB boundness type.
 		/// </returns>
-		internal DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication, ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributes,
+		internal DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication, 
+																		ImmutableHashSet<AttributeWithApplication>? preparedFlattenedAttributesWithApplications,
+																		ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributesSet,
 																		IReadOnlyCollection<DataTypeAttributeInfo>? preparedAttributesMetadata)
 		{
 			attributeApplication.ThrowOnNull(nameof(attributeApplication));
@@ -71,25 +77,90 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (AttributesMetadataProvider.IsWellKnownNonDataTypeAttribute(attributeApplication.AttributeClass))
 				return DbBoundnessType.NotDefined;
 
-			//Second, check if DB boundness is set explicitly on attribute application. In that case it will override all attribute metadata
-			DbBoundnessType explicitlySetDbBoundness = GetDbBoundnessSetExplicitlyByAttributeApplication(attributeApplication);
+			var flattenedAttributesWithApplications = preparedFlattenedAttributesWithApplications ??
+													  attributeApplication.GetThisAndAllAggregatedAttributesWithApplications(Context, includeBaseTypes: true);
 
-			if (explicitlySetDbBoundness != DbBoundnessType.NotDefined)
-				return explicitlySetDbBoundness;
+			if (flattenedAttributesWithApplications.Count == 0)
+				return GetDbBoundnessSetExplicitlyByAttributeApplication(attributeApplication);
 
-			// Finally, if the explicit DB boundness is not set we can query attribute's register for the metadata
-			var flattenedAttributes = preparedFlattenedAttributes ?? 
-									  attributeApplication.AttributeClass.GetThisAndAllAggregatedAttributes(Context, includeBaseTypes: true);
+			// Check combined information from attribute applications and metadata
+			var flattenedAttributesSet = preparedFlattenedAttributesSet ?? 
+										 flattenedAttributesWithApplications.Select(atrWithApp => atrWithApp.Type).ToImmutableHashSet();
 			var attributesMetadata = 
 				preparedAttributesMetadata ?? 
-				AttributesMetadataProvider.GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(attributeApplication.AttributeClass, 
-																											   flattenedAttributes);
-			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributesMetadata(attributesMetadata);
+				AttributesMetadataProvider.GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(attributeApplication.AttributeClass,
+																											   flattenedAttributesSet);
+			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributesApplicationsAndMetadata(flattenedAttributesWithApplications, attributesMetadata);
 
 			if (dbBoundnessFromMetadata != DbBoundnessType.NotDefined)
 				return dbBoundnessFromMetadata;
 
-			return DuckTypingCheckIfAttributeHasMixedDbBoundness(flattenedAttributes);
+			return DuckTypingCheckIfAttributeHasMixedDbBoundness(flattenedAttributesSet);
+		}
+
+		private DbBoundnessType GetDbBoundnessFromAttributesApplicationsAndMetadata(ImmutableHashSet<AttributeWithApplication> flattenedAttributesWithApplications,
+																					IReadOnlyCollection<DataTypeAttributeInfo> attributesMetadata)
+		{
+			if (attributesMetadata.Count == 0)
+			{
+				return flattenedAttributesWithApplications
+							.Select(attrWithApplication => GetDbBoundnessSetExplicitlyByAttributeApplication(attrWithApplication.Application))
+							.Combine();
+			}
+
+			var applicationsByAttribute = flattenedAttributesWithApplications.ToLookup(attrAppl => attrAppl.Type);
+			var combinedBoundness =
+				attributesMetadata.Select(attributeInfo => GetDbBoundnessFromMetadataAndApplications(attributeInfo, applicationsByAttribute))
+								  .Combine();
+			return combinedBoundness;
+		}
+
+		private DbBoundnessType GetDbBoundnessFromMetadataAndApplications(DataTypeAttributeInfo attributeInfo, 
+																		  ILookup<ITypeSymbol, AttributeWithApplication> applicationsByAttribute)
+		{
+			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributeInfo(attributeInfo);
+
+			if (dbBoundnessFromMetadata is DbBoundnessType.Error or DbBoundnessType.Unknown)
+				return dbBoundnessFromMetadata;
+
+			if (attributeInfo is not MixedDbBoundnessAttributeInfo mixedDbBoundnessAttributeInfo || 
+				!applicationsByAttribute.Contains(mixedDbBoundnessAttributeInfo.AttributeType))
+			{
+				return dbBoundnessFromMetadata;
+			}
+
+			var attributeApplications = applicationsByAttribute[mixedDbBoundnessAttributeInfo.AttributeType];
+			var dbBoundnessFromApplications = 
+				attributeApplications.Select(attrWithAppl => GetDbBoundnessSetExplicitlyByAttributeApplication(attrWithAppl.Application)).Combine();
+			return dbBoundnessFromMetadata.Combine(dbBoundnessFromApplications);
+		}
+
+		private DbBoundnessType GetDbBoundnessFromAttributeInfo(DataTypeAttributeInfo attributeInfo)
+		{
+			switch (attributeInfo.Kind)
+			{
+				case FieldTypeAttributeKind.BoundTypeAttribute:
+					return DbBoundnessType.DbBound;
+				case FieldTypeAttributeKind.UnboundTypeAttribute:
+					return DbBoundnessType.Unbound;
+				case FieldTypeAttributeKind.MixedDbBoundnessTypeAttribute:
+					if (attributeInfo is not MixedDbBoundnessAttributeInfo mixedDbBoundnessAttributeInfo ||
+						!mixedDbBoundnessAttributeInfo.IsDbBoundByDefault.HasValue)
+					{
+						return DbBoundnessType.Unknown;
+					}
+
+					return mixedDbBoundnessAttributeInfo.IsDbBoundByDefault.Value
+						? DbBoundnessType.DbBound
+						: DbBoundnessType.Unbound;
+
+				case FieldTypeAttributeKind.PXDBScalarAttribute:
+					return DbBoundnessType.PXDBScalar;
+				case FieldTypeAttributeKind.PXDBCalcedAttribute:
+					return DbBoundnessType.PXDBCalced;
+				default:
+					return DbBoundnessType.NotDefined;
+			}
 		}
 
 		private DbBoundnessType GetDbBoundnessSetExplicitlyByAttributeApplication(AttributeData attributeApplication)
@@ -122,9 +193,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			if (isDbFieldCounter > 1 || isNonDbCounter > 1)
 				return DbBoundnessType.Unknown;     //Strange case when there are multiple different "IsDBField"/"NonDB" properties set in attribute constructor (with different letters register case)
-			
+
 			bool isDbFieldPresent = isDbFieldCounter == 1;
-			bool isNonDbPresent   = isNonDbCounter == 1;
+			bool isNonDbPresent = isNonDbCounter == 1;
 
 			if (!isDbFieldPresent && !isNonDbPresent)
 				return DbBoundnessType.NotDefined;
@@ -142,7 +213,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			//------------------------------------Local function--------------------------------------------------------------------
 			static DbBoundnessType GetIsDbFieldBoundness(bool? isDbFieldValue) =>
 				!isDbFieldValue.HasValue
-					? DbBoundnessType.Unknown			//Strange rare case when IsDBField property is set explicitly with value of type other than bool. In this case we don't know if attribute is bound
+					? DbBoundnessType.Unknown           //Strange rare case when IsDBField property is set explicitly with value of type other than bool. In this case we don't know if attribute is bound
 					: isDbFieldValue.Value
 						? DbBoundnessType.DbBound
 						: DbBoundnessType.Unbound;
@@ -155,67 +226,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						: DbBoundnessType.DbBound;
 		}
 
-		private DbBoundnessType GetDbBoundnessFromAttributesMetadata(IReadOnlyCollection<DataTypeAttributeInfo> attributesMetadata)
-		{
-			if (attributesMetadata.Count == 0)
-				return DbBoundnessType.NotDefined;
-
-			DbBoundnessType dbBoundnessFromAllMetadata = DbBoundnessType.NotDefined;
-			
-
-			foreach (var attributeInfo in attributesMetadata)
-			{
-				var attributeInfoDbBoundness = GetDbBoundnessFromAttributeInfo(attributeInfo);
-				dbBoundnessFromAllMetadata = dbBoundnessFromAllMetadata.Combine(attributeInfoDbBoundness);
-			}
-
-			return dbBoundnessFromAllMetadata;
-		}
-
-		private DbBoundnessType GetDbBoundnessFromAttributeInfo(DataTypeAttributeInfo attributeInfo)
-		{
-			switch (attributeInfo.Kind)
-			{
-				case FieldTypeAttributeKind.BoundTypeAttribute:
-					return DbBoundnessType.DbBound;
-				case FieldTypeAttributeKind.UnboundTypeAttribute:
-					return DbBoundnessType.Unbound;
-				case FieldTypeAttributeKind.MixedDbBoundnessTypeAttribute:
-					if (attributeInfo is not MixedDbBoundnessAttributeInfo mixedDbBoundnessAttributeInfo ||
-						!mixedDbBoundnessAttributeInfo.IsDbBoundByDefault.HasValue)
-					{
-						return DbBoundnessType.Unknown;
-					}
-
-					return mixedDbBoundnessAttributeInfo.IsDbBoundByDefault.Value
-						? DbBoundnessType.DbBound
-						: DbBoundnessType.Unbound;
-
-				case FieldTypeAttributeKind.PXDBScalarAttribute:
-					return DbBoundnessType.PXDBScalar;
-				case FieldTypeAttributeKind.PXDBCalcedAttribute:
-					return DbBoundnessType.PXDBCalced;
-				default:
-					return DbBoundnessType.NotDefined;
-			}
-		}
-
 		/// <summary>
 		/// Duck typing check if attribute Has mixed database boundness. 
 		/// The check will look for a presence of IsDBField properties on the flattened Acumatica attributes set of the checked attribute.<br/>
 		/// If there is a suitable property - return <see cref="DbBoundnessType.Unknown"/> since we can only spot the known pattern but can't deduce
 		/// attribute's DB boundness. 
 		/// </summary>
-		/// <param name="flattenedAttributes">
+		/// <param name="flattenedAttributesSet">
 		/// Flattened Acumatica attributes of the checked attribute which includes aggregated attributes, aggregates on aggregates and their base types.
 		/// </param>
 		/// <returns>
 		/// DBBoundness deduced by the duck typing.
 		/// </returns>
-		private DbBoundnessType DuckTypingCheckIfAttributeHasMixedDbBoundness(IReadOnlyCollection<ITypeSymbol> flattenedAttributes)
+		private DbBoundnessType DuckTypingCheckIfAttributeHasMixedDbBoundness(IReadOnlyCollection<ITypeSymbol> flattenedAttributesSet)
 		{
 			//only IsDBField properties are considered in analysis for attributes that can be applied to both bound and unbound fields
-			foreach (var attributeType in flattenedAttributes)
+			foreach (var attributeType in flattenedAttributesSet)
 			{
 				var isDbFieldMembers = attributeType.GetMembers(IsDBField);
 
