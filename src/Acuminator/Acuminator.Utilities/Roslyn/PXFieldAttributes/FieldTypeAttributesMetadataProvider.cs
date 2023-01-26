@@ -54,36 +54,36 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 																.ToImmutableArray();
 		}
 
-		public IReadOnlyCollection<FieldTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
+		public IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
 		{
 			var flattenedAttributes = attributeSymbol.CheckIfNull(nameof(attributeSymbol))
 													 .GetThisAndAllAggregatedAttributes(_pxContext, includeBaseTypes: true);
 			return GetDacFieldTypeAttributeInfos(flattenedAttributes);
 		}
 
-		internal IReadOnlyCollection<FieldTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ImmutableHashSet<ITypeSymbol> flattenedAttributes)
+		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ImmutableHashSet<ITypeSymbol> flattenedAttributes)
 		{
 			if (flattenedAttributes.Count == 0)
-				return Array.Empty<FieldTypeAttributeInfo>();
+				return Array.Empty<DataTypeAttributeInfo>();
 
 			var typeAttributeInfos = GetMixedDbBoundnessAttributeInfosInFlattenedSet(flattenedAttributes);
 			var dacFieldTypeAttributesInHierarchy = AllDacFieldTypeAttributes.Intersect(flattenedAttributes);
 
 			if (dacFieldTypeAttributesInHierarchy.Count == 0)
-				return typeAttributeInfos as IReadOnlyCollection<FieldTypeAttributeInfo> ?? Array.Empty<FieldTypeAttributeInfo>();
+				return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? Array.Empty<DataTypeAttributeInfo>();
 
 			foreach (ITypeSymbol dacFieldTypeAttribute in dacFieldTypeAttributesInHierarchy)
 			{
-				FieldTypeAttributeInfo? attributeInfo = GetDacFieldTypeAttributeInfo(dacFieldTypeAttribute);
+				DataTypeAttributeInfo? attributeInfo = GetDacFieldTypeAttributeInfo(dacFieldTypeAttribute);
 
 				if (attributeInfo != null)
 				{
-					typeAttributeInfos ??= new List<FieldTypeAttributeInfo>(capacity: 4); 
+					typeAttributeInfos ??= new List<DataTypeAttributeInfo>(capacity: 4); 
 					typeAttributeInfos.Add(attributeInfo);
 				}
 			}
 
-			return typeAttributeInfos as IReadOnlyCollection<FieldTypeAttributeInfo> ?? Array.Empty<FieldTypeAttributeInfo>();
+			return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? Array.Empty<DataTypeAttributeInfo>();
 		}
 
 		/// <summary>
@@ -98,9 +98,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <returns>
 		/// The mixed database boundness attribute infos from the flattened set of attributes.
 		/// </returns>
-		private List<FieldTypeAttributeInfo>? GetMixedDbBoundnessAttributeInfosInFlattenedSet(ImmutableHashSet<ITypeSymbol> flattenedAttributes)
+		private List<DataTypeAttributeInfo>? GetMixedDbBoundnessAttributeInfosInFlattenedSet(ImmutableHashSet<ITypeSymbol> flattenedAttributes)
 		{
-			List<FieldTypeAttributeInfo>? mixedDbBoundnessAttributeInfos = null;
+			List<DataTypeAttributeInfo>? mixedDbBoundnessAttributeInfos = null;
 			HashSet<ITypeSymbol>? checkedMixedAttributes = null;
 
 			foreach (MixedDbBoundnessAttributeInfo mixedBoundnessAttribute in SortedDacFieldTypeAttributesWithMixedDbBoundness)
@@ -126,16 +126,16 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return mixedDbBoundnessAttributeInfos;
 		}
 
-		private FieldTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol dacFieldTypeAttribute)
+		private DataTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol dacFieldTypeAttribute)
 		{
 			if (dacFieldTypeAttribute.Equals(_pxDBScalarAttribute))
-				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
+				return new DataTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
 			else if (dacFieldTypeAttribute.Equals(_pxDBCalcedAttribute))
-				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
+				return new DataTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 			else if (BoundDacFieldTypeAttributesWithFieldType.TryGetValue(dacFieldTypeAttribute, out var boundFieldType))
-				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.BoundTypeAttribute, boundFieldType);
+				return new DataTypeAttributeInfo(FieldTypeAttributeKind.BoundTypeAttribute, boundFieldType);
 			else if (UnboundDacFieldTypeAttributesWithFieldType.TryGetValue(dacFieldTypeAttribute, out var unboundFieldType))
-				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.UnboundTypeAttribute, unboundFieldType);
+				return new DataTypeAttributeInfo(FieldTypeAttributeKind.UnboundTypeAttribute, unboundFieldType);
 
 			// TODO - some way of logging for Roslyn analyzers should be created with the support of out of process analysis
 			return null;

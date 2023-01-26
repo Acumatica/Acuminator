@@ -8,11 +8,11 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Information about the Acumatica field type attribute.
+	/// Information about the Acumatica data type attribute.
 	/// </summary>
-	public class FieldTypeAttributeInfo : IEquatable<FieldTypeAttributeInfo>
+	public class DataTypeAttributeInfo : IEquatable<DataTypeAttributeInfo>
 	{
-		public ITypeSymbol? FieldType { get; }
+		public ITypeSymbol? DataType { get; }
 
 		public FieldTypeAttributeKind Kind { get; }
 
@@ -24,20 +24,20 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			Kind == FieldTypeAttributeKind.UnboundTypeAttribute || 
 			Kind == FieldTypeAttributeKind.MixedDbBoundnessTypeAttribute;
 
-		public FieldTypeAttributeInfo(FieldTypeAttributeKind attributeKind, ITypeSymbol? fieldType)
+		public DataTypeAttributeInfo(FieldTypeAttributeKind attributeKind, ITypeSymbol? fieldType)
 		{
-			FieldType = fieldType;
+			DataType = fieldType;
 			Kind = attributeKind;
 		}
 
-		public override bool Equals(object obj) => Equals(obj as FieldTypeAttributeInfo);
+		public override bool Equals(object obj) => Equals(obj as DataTypeAttributeInfo);
 
-		public virtual bool Equals(FieldTypeAttributeInfo? other)
+		public virtual bool Equals(DataTypeAttributeInfo? other)
 		{
 			if (ReferenceEquals(this, other))
 				return true;
 
-			return Kind == other?.Kind && object.Equals(FieldType, other.FieldType) &&
+			return Kind == other?.Kind && object.Equals(DataType, other.DataType) &&
 				   GetType() == other.GetType();
 		}
 
@@ -48,7 +48,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			unchecked
 			{
 				hash = 23 * hash + Kind.GetHashCode();
-				hash = 23 * hash + (FieldType?.GetHashCode() ?? 0);
+				hash = 23 * hash + (DataType?.GetHashCode() ?? 0);
 			}
 
 			return hash;

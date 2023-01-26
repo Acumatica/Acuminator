@@ -64,7 +64,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// The attribute application DB boundness type.
 		/// </returns>
 		internal DbBoundnessType GetAttributeApplicationDbBoundnessType(AttributeData attributeApplication, ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributes,
-																		IReadOnlyCollection<FieldTypeAttributeInfo>? preparedAttributesMetadata)
+																		IReadOnlyCollection<DataTypeAttributeInfo>? preparedAttributesMetadata)
 		{
 			attributeApplication.ThrowOnNull(nameof(attributeApplication));
 
@@ -152,7 +152,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						: DbBoundnessType.DbBound;
 		}
 
-		private DbBoundnessType GetDbBoundnessFromAttributesMetadata(IReadOnlyCollection<FieldTypeAttributeInfo> attributesMetadata)
+		private DbBoundnessType GetDbBoundnessFromAttributesMetadata(IReadOnlyCollection<DataTypeAttributeInfo> attributesMetadata)
 		{
 			if (attributesMetadata.Count == 0)
 				return DbBoundnessType.NotDefined;
@@ -169,7 +169,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return dbBoundnessFromAllMetadata;
 		}
 
-		private DbBoundnessType GetDbBoundnessFromAttributeInfo(FieldTypeAttributeInfo attributeInfo)
+		private DbBoundnessType GetDbBoundnessFromAttributeInfo(DataTypeAttributeInfo attributeInfo)
 		{
 			switch (attributeInfo.Kind)
 			{

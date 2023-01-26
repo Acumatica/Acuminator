@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		protected override string GetCodeActionName() => nameof(Resources.PX1023TypeAttributesFix).GetLocalized().ToString();
 
-		protected override Func<FieldTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate() =>
+		protected override Func<DataTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate() =>
 			attributeInfo => attributeInfo.IsFieldAttribute;
 	}
 }

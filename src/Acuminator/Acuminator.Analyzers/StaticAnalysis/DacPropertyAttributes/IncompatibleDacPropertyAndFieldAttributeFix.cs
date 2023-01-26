@@ -101,8 +101,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			PXContext pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
 			var attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 			var fieldAttributeDataTypes = (from attrInfo in attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType)
-										   where attrInfo.IsFieldAttribute && attrInfo.FieldType != null
-										   select attrInfo.FieldType)
+										   where attrInfo.IsFieldAttribute && attrInfo.DataType != null
+										   select attrInfo.DataType)
 										  .ToHashSet();
 
 			if (fieldAttributeDataTypes.Count != 1) 

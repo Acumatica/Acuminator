@@ -37,7 +37,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// The aggregated attribute metadata collection - information from the flattened attributes set. 
 		/// It is mostly related to the attribute's relationship with database.
 		/// </summary>
-		public ImmutableArray<FieldTypeAttributeInfo> AggregatedAttributeMetadata { get; }
+		public ImmutableArray<DataTypeAttributeInfo> AggregatedAttributeMetadata { get; }
 
 		public virtual string Name => AttributeType.Name;
 
@@ -59,7 +59,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		protected virtual string DebuggerDisplay => $"{Name}";
 
-		protected AttributeInfo(AttributeData attributeData, IEnumerable<ITypeSymbol> flattenedAttributes, IEnumerable<FieldTypeAttributeInfo> attributeInfos,
+		protected AttributeInfo(AttributeData attributeData, IEnumerable<ITypeSymbol> flattenedAttributes, IEnumerable<DataTypeAttributeInfo> attributeInfos,
 								DbBoundnessType boundnessType, int declarationOrder, bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute)
 		{
 			AttributeData                = attributeData.CheckIfNull(nameof(attributeData));

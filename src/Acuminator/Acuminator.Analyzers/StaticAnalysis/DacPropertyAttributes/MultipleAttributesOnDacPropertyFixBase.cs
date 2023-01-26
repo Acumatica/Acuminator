@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			string codeActionName = GetCodeActionName();
-			Func<FieldTypeAttributeInfo, bool> removePredicate = GetRemoveAttributeByAttributeInfoPredicate();
+			Func<DataTypeAttributeInfo, bool> removePredicate = GetRemoveAttributeByAttributeInfoPredicate();
 
 			if (codeActionName.IsNullOrWhiteSpace() || removePredicate == null)
 				return;
@@ -65,11 +65,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		protected abstract string GetCodeActionName();
 
-		protected abstract Func<FieldTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate();
+		protected abstract Func<DataTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate();
 
 		private Task<Document> RemoveAllOtherAttributesFromPropertyAsync(Document document, SyntaxNode root, AttributeSyntax attributeNode,
 																		 PropertyDeclarationSyntax propertyDeclaration, SemanticModel semanticModel,
-																		 Func<FieldTypeAttributeInfo, bool> removePredicate, CancellationToken cancellationToken)
+																		 Func<DataTypeAttributeInfo, bool> removePredicate, CancellationToken cancellationToken)
 		{	
 			var rewriterWalker = new MultipleAttributesRemover(semanticModel, attributeNode, removePredicate, cancellationToken);
 			var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;
@@ -93,11 +93,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			private readonly SemanticModel _semanticModel;
 			private readonly FieldTypeAttributesMetadataProvider _attributesMetadataProvider;
 			private readonly AttributeSyntax _remainingAttribute;
-			private readonly Func<FieldTypeAttributeInfo, bool> _attributeToRemovePredicate;
+			private readonly Func<DataTypeAttributeInfo, bool> _attributeToRemovePredicate;
 			private readonly CancellationToken _cancellationToken;
 
 			public MultipleAttributesRemover(SemanticModel semanticModel, AttributeSyntax remainingAttribute,
-											 Func<FieldTypeAttributeInfo, bool> attributeToRemovePredicate, CancellationToken cToken)
+											 Func<DataTypeAttributeInfo, bool> attributeToRemovePredicate, CancellationToken cToken)
 			{
 				_semanticModel = semanticModel;
 				_cancellationToken = cToken;

@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// <summary>
 	/// Information about the Acumatica field type attributes with mixed DB boundness.
 	/// </summary>
-	public class MixedDbBoundnessAttributeInfo : FieldTypeAttributeInfo, IEquatable<MixedDbBoundnessAttributeInfo>
+	public class MixedDbBoundnessAttributeInfo : DataTypeAttributeInfo, IEquatable<MixedDbBoundnessAttributeInfo>
 	{
 		/// <summary>
 		/// The type of the attribute.
@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public override bool Equals(object obj) => Equals(obj as MixedDbBoundnessAttributeInfo);
 
-		public override bool Equals(FieldTypeAttributeInfo? other) => Equals(other as MixedDbBoundnessAttributeInfo);
+		public override bool Equals(DataTypeAttributeInfo? other) => Equals(other as MixedDbBoundnessAttributeInfo);
 
 		public bool Equals(MixedDbBoundnessAttributeInfo? other) =>
 			base.Equals(other) && IsDbBoundByDefault == other.IsDbBoundByDefault && AttributeType.Equals(other.AttributeType);
