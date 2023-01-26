@@ -53,5 +53,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			return hash;
 		}
+
+		public override string ToString() => Kind.ToString();
 	}
 }

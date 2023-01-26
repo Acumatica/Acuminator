@@ -70,5 +70,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			return hash;
 		}
+
+		public override string ToString() => IsDbBoundByDefault.HasValue
+			? $"{base.ToString()} {AttributeType} {IsDbBoundByDefault.Value}"
+			: $"{base.ToString()} {AttributeType}";
 	}
 }

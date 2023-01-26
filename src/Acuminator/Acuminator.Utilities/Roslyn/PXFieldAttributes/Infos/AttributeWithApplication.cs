@@ -51,5 +51,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			attributeType = Type;
 			attributeApplication = Application;
 		}
+
+		public override string ToString() => Application.ToString();
 	}
 }
