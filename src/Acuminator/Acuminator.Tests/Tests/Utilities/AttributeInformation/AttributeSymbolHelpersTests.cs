@@ -104,7 +104,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			semanticModel.ThrowOnNull(nameof(semanticModel));
 			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
-			List<DbBoundnessType> actual = new List<DbBoundnessType>();
+			var actual = new List<DbBoundnessType>(capacity: expected.Count);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var dbBoundnessCalculator = new DbBoundnessCalculator(pxContext);
 			var types = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>();
