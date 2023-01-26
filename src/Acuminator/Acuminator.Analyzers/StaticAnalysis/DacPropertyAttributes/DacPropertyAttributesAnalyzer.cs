@@ -50,23 +50,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributes.IsDefaultOrEmpty)
 				return;
 
-			var attributesWithInfos = attributes.Where(aInfo => !aInfo.AggregatedAttributeMetadata.IsDefaultOrEmpty)
-												.ToList(capacity: attributes.Length);
-			if (attributesWithInfos.Count == 0)
+			var attributesWithFieldTypeMetadata = attributes.Where(aInfo => !aInfo.AggregatedAttributeMetadata.IsDefaultOrEmpty)
+															.ToList(capacity: attributes.Length);
+			if (attributesWithFieldTypeMetadata.Count == 0)
 				return;
 
-			bool validAttributesCalcedOnDbSide = CheckForMultipleAttributesCalcedOnDbSide(symbolContext, pxContext, attributesWithInfos);
+			bool validAttributesCalcedOnDbSide = CheckForMultipleAttributesCalcedOnDbSide(symbolContext, pxContext, attributesWithFieldTypeMetadata);
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!validAttributesCalcedOnDbSide)
 				return;
 
-			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, property.Symbol, attributesWithInfos);
-			CheckForFieldTypeAttributes(property, symbolContext, pxContext, attributesWithInfos);
+			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, property.Symbol, attributesWithFieldTypeMetadata);
+			CheckForFieldTypeAttributes(property, symbolContext, pxContext, attributesWithFieldTypeMetadata);
 		}
 	
 		private static bool CheckForMultipleAttributesCalcedOnDbSide(SymbolAnalysisContext symbolContext, PXContext pxContext, 
-																	 List<AttributeInfo> attributesWithInfos)
+																	 List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			var (attributesCalcedOnDbSideDeclaredOnDacProperty, attributesCalcedOnDbSideWithConflictingAggregatorDeclarations) =
 				FilterAttributeInfosCalcedOnDbSide();
@@ -97,10 +97,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				List<AttributeInfo> attributesCalcedOnDbSideOnDacProperty = new List<AttributeInfo>(2);
 				List<AttributeInfo> attributesCalcedOnDbSideInvalidAggregatorDeclarations = new List<AttributeInfo>(2);
 
-				foreach (var attributeInfo in attributesWithInfos)
+				foreach (var attribute in attributesWithFieldTypeMetadata)
 				{
 					int counterOfCalcedOnDbSideAttributeInfos = 0;
-					var dbCalcedFieldTypeAttributes = attributeInfo.AggregatedAttributeMetadata.Where(atrMetadata => atrMetadata.IsCalculatedOnDbSide);
+					var dbCalcedFieldTypeAttributes = attribute.AggregatedAttributeMetadata.Where(atrMetadata => atrMetadata.IsCalculatedOnDbSide);
 
 					foreach (var dbCalcedAttributeInfo in dbCalcedFieldTypeAttributes)
 					{
@@ -111,10 +111,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 					}
 
 					if (counterOfCalcedOnDbSideAttributeInfos > 0)
-						attributesCalcedOnDbSideOnDacProperty.Add(attributeInfo);
+						attributesCalcedOnDbSideOnDacProperty.Add(attribute);
 
 					if (counterOfCalcedOnDbSideAttributeInfos > 1)
-						attributesCalcedOnDbSideInvalidAggregatorDeclarations.Add(attributeInfo);
+						attributesCalcedOnDbSideInvalidAggregatorDeclarations.Add(attribute);
 				}
 
 				return (attributesCalcedOnDbSideOnDacProperty, attributesCalcedOnDbSideInvalidAggregatorDeclarations);
@@ -122,21 +122,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, IPropertySymbol propertySymbol,
-															List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
+																	   List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+			bool hasPXDBCalcedAttribute =
+				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.BoundnessType == DbBoundnessType.PXDBCalced);
 
-			var (pxDBCalcedAttribute, _) = attributesWithInfos.FirstOrDefault(attrWithInfos => 
-																				attrWithInfos.Infos.Any(i => i.Kind == FieldTypeAttributeKind.PXDBCalcedAttribute));
-			if (pxDBCalcedAttribute == null)
+			if (!hasPXDBCalcedAttribute)
 				return;
 
-			bool hasUnboundTypeAttribute = attributesWithInfos.Any(attrWithInfos => !ReferenceEquals(attrWithInfos.Attribute, pxDBCalcedAttribute) &&
-																					attrWithInfos.Attribute.BoundnessType == DbBoundnessType.Unbound);
-			if (hasUnboundTypeAttribute)
-				return;
-
-			if (!(propertySymbol.GetSyntax(symbolContext.CancellationToken) is PropertyDeclarationSyntax propertyNode))
+			bool hasUnboundTypeAttribute =
+				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.BoundnessType == DbBoundnessType.Unbound);
+				
+			if (hasUnboundTypeAttribute || propertySymbol.GetSyntax(symbolContext.CancellationToken) is not PropertyDeclarationSyntax propertyNode)
 				return;
 
 			var diagnostic = Diagnostic.Create(Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute, propertyNode.Identifier.GetLocation());
@@ -144,7 +142,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-														List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
+														List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			var (typeAttributesDeclaredOnDacProperty, typeAttributesWithConflictingAggregatorDeclarations) = FilterTypeAttributes();
 
@@ -164,52 +162,52 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			} 
 			else if (typeAttributesWithConflictingAggregatorDeclarations.Count == 0)
 			{
-				var typeAttribute = typeAttributesDeclaredOnDacProperty[0];
-				var fieldType = attributesWithInfos.First(attrWithInfo => attrWithInfo.Attribute.Equals(typeAttribute))
-												   .Infos
-												   .Where(info => info.IsFieldAttribute)
-												   .Select(info => info.FieldType)
-												   .Distinct()
-												   .SingleOrDefault();
+				AttributeInfo typeAttribute = typeAttributesDeclaredOnDacProperty[0];
+				var attributeDataType = typeAttribute.AggregatedAttributeMetadata
+													 .Where(atrMetadata => atrMetadata.IsFieldAttribute && atrMetadata.DataType != null)
+													 .Select(atrMetadata => atrMetadata.DataType)
+													 .Distinct()
+													 .FirstOrDefault();
 		
-				CheckAttributeAndPropertyTypesForCompatibility(property, typeAttribute, fieldType, pxContext, symbolContext);
+				CheckAttributeAndPropertyTypesForCompatibility(property, typeAttribute, attributeDataType, pxContext, symbolContext);
 			}
 
 			//-----------------------------------------------Local Functions---------------------------------------
 			(List<AttributeInfo>, List<AttributeInfo>) FilterTypeAttributes()
 			{
-				List<AttributeInfo> typeAttributesOnDacProperty = new List<AttributeInfo>(2);
-				List<AttributeInfo> typeAttributesWithInvalidAggregatorDeclarations = new List<AttributeInfo>(2);
+				var typeAttributesOnDacProperty = new List<AttributeInfo>(2);
+				var typeAttributesWithInvalidAggregatorDeclarations = new List<AttributeInfo>();
 
-				foreach (var (attribute, infos) in attributesWithInfos)
+				foreach (var attribute in attributesWithFieldTypeMetadata)
 				{
-					int countOfTypeAttributeInfos = infos.Count(info => info.IsFieldAttribute);
+					var dataTypeAttributes = attribute.AggregatedAttributeMetadata
+													  .Where(atrMetadata => atrMetadata.IsFieldAttribute)
+													  .ToList();
 
-					if (countOfTypeAttributeInfos == 0)
+					if (dataTypeAttributes.Count == 0)
 						continue;
 
 					typeAttributesOnDacProperty.Add(attribute);
 
-					if (countOfTypeAttributeInfos == 1)
+					if (dataTypeAttributes.Count == 1)
 						continue;
 
-					int countOfDeclaredFieldTypes = infos.Select(info => info.FieldType)
-														 .Distinct()
-														 .Count();
-					if (countOfDeclaredFieldTypes > 1)
-					{
+					int countOfDeclaredDataTypes = dataTypeAttributes.Select(atrMetadata => atrMetadata.DataType)
+																	 .Distinct()
+																	 .Count();
+
+					if (countOfDeclaredDataTypes > 1 || dataTypeAttributes.Any(atrMetadata => atrMetadata.DataType == null))
 						typeAttributesWithInvalidAggregatorDeclarations.Add(attribute);
-					}
 				}
 
 				return (typeAttributesOnDacProperty, typeAttributesWithInvalidAggregatorDeclarations);
 			}
 		}
 
-		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo fieldAttribute, ITypeSymbol? fieldType,
+		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo fieldAttribute, ITypeSymbol? attributeDataType,
 																		   PXContext pxContext, SymbolAnalysisContext symbolContext)
 		{
-			if (fieldType == null)                           //PXDBFieldAttribute case
+			if (attributeDataType == null)                           //PXDBFieldAttribute case
 			{
 				ReportIncompatibleTypesDiagnostics(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: false);
 				return;
@@ -228,7 +226,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				typeToCompare = property.PropertyType;
 			}
 
-			if (!fieldType.Equals(typeToCompare))
+			if (!attributeDataType.Equals(typeToCompare))
 			{
 				ReportIncompatibleTypesDiagnostics(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: true);
 			}
