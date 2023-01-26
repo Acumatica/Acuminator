@@ -115,28 +115,32 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		}
 
 		/// <summary>
-		/// Gets mixed database boundness attribute infos in the flattened set with consideration of type hierarchy. 
-		/// If there are multiple mixed boundness attributes in the type hierarchy then only the most derived one should be included into results.
+		/// Gets mixed database boundness attribute infos in the flattened set with consideration of type hierarchy.<br/>
+		/// If there are multiple mixed boundness attributes in the type hierarchy then only the most derived one should be included into results <br/>
+		/// unless base mixed attribute is aggregated directly.
 		/// </summary>
-		/// <remarks>
-		/// At this moment only the resolution of mixed DB boundness attribute is supported only for classic .Net inheritance.
-		/// The scenario where one mixed boundness attribute is aggregated on another mixed boundness attribute is not supported.
-		/// </remarks>
+		/// <param name="attributeSymbol">The attribute symbol.</param>
 		/// <param name="flattenedAttributes">The flattened attributes.</param>
 		/// <returns>
 		/// The mixed database boundness attribute infos from the flattened set of attributes.
 		/// </returns>
-		private List<DataTypeAttributeInfo>? GetMixedDbBoundnessAttributeInfosInFlattenedSet(ImmutableHashSet<ITypeSymbol> flattenedAttributes)
+		private List<MixedDbBoundnessAttributeInfo>? GetMixedDbBoundnessAttributeInfosInFlattenedSet(ITypeSymbol attributeSymbol, 
+																									 ImmutableHashSet<ITypeSymbol> flattenedAttributes)
 		{
-			List<DataTypeAttributeInfo>? mixedDbBoundnessAttributeInfos = null;
+			List<MixedDbBoundnessAttributeInfo>? mixedDbBoundnessAttributeInfos = null;
 			HashSet<ITypeSymbol>? checkedMixedAttributes = null;
 
 			foreach (MixedDbBoundnessAttributeInfo mixedBoundnessAttribute in SortedDacFieldTypeAttributesWithMixedDbBoundness)
 			{
-				if (!flattenedAttributes.Contains(mixedBoundnessAttribute.AttributeType) ||
-					checkedMixedAttributes?.Contains(mixedBoundnessAttribute.AttributeType) == true)
-				{
+				if (!flattenedAttributes.Contains(mixedBoundnessAttribute.AttributeType))
 					continue;
+
+				bool isPartOfAnotherMixedAttributeHierarchy = checkedMixedAttributes?.Contains(mixedBoundnessAttribute.AttributeType) == true;
+
+				if (isPartOfAnotherMixedAttributeHierarchy)
+				{
+					if (!attributeSymbol.EqualsOrAggregatesAttributeDirectly(mixedBoundnessAttribute.AttributeType, _pxContext))
+						continue;
 				}
 
 				if (mixedDbBoundnessAttributeInfos == null)
