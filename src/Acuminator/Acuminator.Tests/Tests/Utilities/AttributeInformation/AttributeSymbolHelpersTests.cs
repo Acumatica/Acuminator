@@ -110,8 +110,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 			foreach (var property in properties)
 			{
-				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
-				var attributes = typeSymbol.GetAttributes();
+				var propertySymbol = semanticModel.GetDeclaredSymbol(property);
+				var attributes = propertySymbol.GetAttributes();
 
 				foreach (var attribute in attributes)
 				{
