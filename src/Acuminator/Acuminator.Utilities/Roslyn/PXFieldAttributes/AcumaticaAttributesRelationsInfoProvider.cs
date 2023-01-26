@@ -187,7 +187,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 				if (includeBaseTypes)
 				{
-					var aggregatedAttributeBaseAcumaticaAttributeTypes = 
+					var aggregatedAttributeBaseAcumaticaAttributeTypes =
 						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute));
 
 					results.AddRange(aggregatedAttributeBaseAcumaticaAttributeTypes);
@@ -207,10 +207,102 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 		}
 
-		private static IEnumerable<ITypeSymbol> GetAllDeclaredAcumaticaAttributesOnClassHierarchy(ITypeSymbol type, PXContext pxContext) =>
-			type.GetAllAttributesDefinedOnThisAndBaseTypes()
-				.Where(attribute => attribute.IsDerivedFromPXEventSubscriberAttribute(pxContext));
+		/// <summary>
+		/// Get the flattened collection of Acumatica attributes with application data defined by the <paramref name="attributeType"/> including attributes on aggregates 
+		/// and <paramref name="attributeType"/> itself.
+		/// </summary>
+		///  <remarks>
+		/// This check imitates Acumatica runtime processing of Acumatica attributes which can be dividen into two groups:<br/>
+		/// - Normal attributes that contain some shared functionality (usually in a form of event subscription) which can be reused between Acumatica graphs.<br/>
+		/// - Aggregate attributes that besides their own functionality also collect all attributes declared on them and merge logic from these aggregated attributes.<br/>
+		/// Since aggregate attributes are also Acumatica attributes they can also be aggregated by other aggregate attributes although such complex scenarios are rare.<br/>
+		/// Thus, the resolution of all attributes is a recursive process.
+		/// </remarks>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="pxContext">The Acumatica context.</param>
+		/// <param name="includeBaseTypes">True to include, false to exclude the base Acumatica types.</param>
+		/// <returns/>
+		public static ImmutableHashSet<AttributeWithApplication> GetThisAndAllAggregatedAttributesWithApplications(this AttributeData? attributeApplication,
+																												   PXContext pxContext, bool includeBaseTypes)
+		{
+			var eventSubscriberAttribute = pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXEventSubscriberAttribute;
 
+			if (attributeApplication?.AttributeClass == null || attributeApplication.AttributeClass.Equals(eventSubscriberAttribute))
+				return ImmutableHashSet<AttributeWithApplication>.Empty;
+
+			var attributeType = attributeApplication.AttributeClass;
+			var baseAcumaticaAttributeTypes = attributeType.GetBaseTypesAndThis().ToList();
+
+			if (!baseAcumaticaAttributeTypes.Contains(eventSubscriberAttribute))
+				return ImmutableHashSet<AttributeWithApplication>.Empty;
+
+			var attributeWithApplication = new AttributeWithApplication(attributeApplication);
+			INamedTypeSymbol pxAggregateAttribute = pxContext.AttributeTypes.PXAggregateAttribute;
+			INamedTypeSymbol pxDynamicAggregateAttribute = pxContext.AttributeTypes.PXDynamicAggregateAttribute;
+
+			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxAggregateAttribute) ||
+										baseAcumaticaAttributeTypes.Contains(pxDynamicAggregateAttribute);
+			if (!isAggregateAttribute)
+			{
+				// We can suppose that attribute types hierarchy shares the attribute application 
+				return includeBaseTypes
+					? baseAcumaticaAttributeTypes.TakeWhile(type => !type.Equals(eventSubscriberAttribute))
+												 .Select(type => new AttributeWithApplication(attributeApplication, type))
+												 .ToImmutableHashSet()
+					: ImmutableHashSet.Create(attributeWithApplication);
+			}
+
+			var results = includeBaseTypes
+				? baseAcumaticaAttributeTypes.TakeWhile(type => !type.Equals(eventSubscriberAttribute))
+											 .Select(type => new AttributeWithApplication(attributeApplication, type))
+											 .ToHashSet()
+				: new HashSet<AttributeWithApplication>() { attributeWithApplication };
+
+			var allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy = 
+				attributeType.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes()
+							 .Where(application => application.AttributeClass.InheritsFrom(eventSubscriberAttribute));
+
+			foreach (AttributeData aggregatedAttributeApplication in allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy)
+			{
+				var aggregatedAttributeWithApplication = new AttributeWithApplication(aggregatedAttributeApplication);
+				CollectAggregatedAttributeWithApplications(aggregatedAttributeWithApplication, recursionDepth: 0);
+			}
+
+			return results.ToImmutableHashSet();
+
+			//--------------------------------------------------Local Function-----------------------------------------------------
+			void CollectAggregatedAttributeWithApplications(AttributeWithApplication aggregatedAttributeWithApplication, int recursionDepth)
+			{
+				if (!results.Add(aggregatedAttributeWithApplication) || recursionDepth > MaxRecursionDepth)
+					return;
+
+				var aggregatedAttributeBaseTypes = aggregatedAttributeWithApplication.Type.GetBaseTypes().ToList();
+
+				if (includeBaseTypes)
+				{
+					var aggregatedAttributeBaseAcumaticaAttributeTypesWithApplications =
+						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute))
+													.Select(baseType => new AttributeWithApplication(aggregatedAttributeWithApplication.Application, baseType));
+
+					results.AddRange(aggregatedAttributeBaseAcumaticaAttributeTypesWithApplications);
+				}
+
+				bool isAggregateOnAggregateAttribute = aggregatedAttributeBaseTypes.Contains(pxAggregateAttribute) ||
+													   aggregatedAttributeBaseTypes.Contains(pxDynamicAggregateAttribute);
+				if (isAggregateOnAggregateAttribute)
+				{
+					var allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy =
+						aggregatedAttributeWithApplication.Type.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes()
+															   .Where(application => application.AttributeClass.InheritsFrom(eventSubscriberAttribute));
+
+					foreach (AttributeData aggregatedOnAggregateAttributeApplication in allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy)
+					{
+						var aggregatedOnAggregateAttributeWithApplication = new AttributeWithApplication(aggregatedOnAggregateAttributeApplication);
+						CollectAggregatedAttributeWithApplications(aggregatedOnAggregateAttributeWithApplication, recursionDepth + 1);
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Check if <paramref name="attribute"/> type equals to <paramref name="attributeToCheck"/> type or aggregates <paramref name="attributeToCheck"/>.<br/>
@@ -248,5 +340,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			return false;
 		}
+
+		private static IEnumerable<ITypeSymbol> GetAllDeclaredAcumaticaAttributesOnClassHierarchy(ITypeSymbol type, PXContext pxContext) =>
+			type.GetAllAttributesDefinedOnThisAndBaseTypes()
+				.Where(attribute => attribute.IsDerivedFromPXEventSubscriberAttribute(pxContext));
 	}
 }
