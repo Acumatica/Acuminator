@@ -30,8 +30,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 		[EmbeddedFileData("DacWithMultipleSpecialTypeAttributes.cs")]
 		public virtual void PropertyWithMultipleSpecialAttributes(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty.CreateFor(line: 16, column: 4),
-				Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty.CreateFor(line: 17, column: 4));
+				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty.CreateFor(line: 16, column: 4),
+				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty.CreateFor(line: 17, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleFieldTypeAttributes_Expected.cs")]
@@ -71,7 +71,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 		[EmbeddedFileData("DacWithInvalidAggregatorAttributes.cs")]
 		public virtual void DacPropertyWithInvalidAggregatorAttributes(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators.CreateFor(line: 41, column: 4),
+				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnAggregators.CreateFor(line: 41, column: 4),
 				Descriptors.PX1023_MultipleTypeAttributesOnAggregators.CreateFor(line: 55, column: 4));
 
 		[Theory]

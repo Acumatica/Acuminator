@@ -29,23 +29,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty,
 				Descriptors.PX1023_MultipleTypeAttributesOnAggregators,
-				Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty,
-				Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators,
+				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty,
+				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnAggregators,
 				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute
 			);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExt)
 		{
-			var attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
-
 			foreach (DacPropertyInfo property in dacOrDacExt.AllDeclaredProperties)
 			{
-				CheckDacProperty(property, context, pxContext, attributesMetadataProvider);
+				CheckDacProperty(property, context, pxContext);
 			}	
 		}
 
-		private static void CheckDacProperty(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-											 FieldTypeAttributesMetadataProvider attributesMetadataProvider)
+		private static void CheckDacProperty(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			ImmutableArray<AttributeInfo> attributes = property.Attributes;
@@ -53,8 +50,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributes.IsDefaultOrEmpty)
 				return;
 
-			var attributesWithInfos = GetFieldTypeAttributesInfos(attributes, attributesMetadataProvider, symbolContext.CancellationToken);
-
+			var attributesWithInfos = attributes.Where(aInfo => !aInfo.AggregatedAttributeMetadata.IsDefaultOrEmpty)
+												.ToList(capacity: attributes.Length);
 			if (attributesWithInfos.Count == 0)
 				return;
 
@@ -68,33 +65,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			CheckForFieldTypeAttributes(property, symbolContext, pxContext, attributesWithInfos);
 		}
 	
-		private static List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> GetFieldTypeAttributesInfos(
-																													ImmutableArray<AttributeInfo> attributes,
-																													FieldTypeAttributesMetadataProvider attributesMetadataProvider,
-																													CancellationToken cancellationToken)
+		private static bool CheckForMultipleAttributesCalcedOnDbSide(SymbolAnalysisContext symbolContext, PXContext pxContext, 
+																	 List<AttributeInfo> attributesWithInfos)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var fieldInfosList = new List<(AttributeInfo, IReadOnlyCollection<FieldTypeAttributeInfo>)>(capacity: attributes.Length);
-
-			foreach (AttributeInfo attribute in attributes)
-			{
-				cancellationToken.ThrowIfCancellationRequested();
-				var attributeInfos = attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attribute.AttributeData.AttributeClass);
-
-				if (attributeInfos.Count > 0)
-				{
-					fieldInfosList.Add((attribute, attributeInfos));
-				}
-			}
-
-			return fieldInfosList;
-		}
-
-		private static bool CheckForMultipleAttributesCalcedOnDbSide(SymbolAnalysisContext symbolContext, PXContext pxContext,
-																List<(AttributeInfo Attribute, IReadOnlyCollection<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
-		{
-			var (attributesCalcedOnDbSideDeclaredOnDacProperty, attributesCalcedOnDbSideWithConflictingAggregatorDeclarations) = 
-				FilterAttributesCalcedOnDbSide();
+			var (attributesCalcedOnDbSideDeclaredOnDacProperty, attributesCalcedOnDbSideWithConflictingAggregatorDeclarations) =
+				FilterAttributeInfosCalcedOnDbSide();
 
 			if (attributesCalcedOnDbSideDeclaredOnDacProperty.Count == 0 ||
 				(attributesCalcedOnDbSideDeclaredOnDacProperty.Count == 1 && attributesCalcedOnDbSideWithConflictingAggregatorDeclarations.Count == 0))
@@ -105,36 +80,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributesCalcedOnDbSideDeclaredOnDacProperty.Count > 1)
 			{
 				RegisterDiagnosticForAttributes(symbolContext, pxContext, attributesCalcedOnDbSideDeclaredOnDacProperty,
-												Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty);
+												Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty);
 			}
 
 			if (attributesCalcedOnDbSideWithConflictingAggregatorDeclarations.Count > 0)
 			{
 				RegisterDiagnosticForAttributes(symbolContext, pxContext, attributesCalcedOnDbSideDeclaredOnDacProperty,
-												Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators);
+												Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnAggregators);
 			}
 
 			return false;
 
 			//-----------------------------------------------Local Functions---------------------------------------
-			(List<AttributeInfo>, List<AttributeInfo>) FilterAttributesCalcedOnDbSide()
+			(List<AttributeInfo>, List<AttributeInfo>) FilterAttributeInfosCalcedOnDbSide()
 			{
 				List<AttributeInfo> attributesCalcedOnDbSideOnDacProperty = new List<AttributeInfo>(2);
 				List<AttributeInfo> attributesCalcedOnDbSideInvalidAggregatorDeclarations = new List<AttributeInfo>(2);
 
-				foreach (var (attribute, infos) in attributesWithInfos)
+				foreach (var attributeInfo in attributesWithInfos)
 				{
-					int countOfCalcedOnDbSideAttributeInfos = infos.Count(atrInfo => atrInfo.IsCalculatedOnDbSide);
+					int counterOfCalcedOnDbSideAttributeInfos = 0;
+					var dbCalcedFieldTypeAttributes = attributeInfo.AggregatedAttributeMetadata.Where(atrMetadata => atrMetadata.IsCalculatedOnDbSide);
 
-					if (countOfCalcedOnDbSideAttributeInfos > 0)
+					foreach (var dbCalcedAttributeInfo in dbCalcedFieldTypeAttributes)
 					{
-						attributesCalcedOnDbSideOnDacProperty.Add(attribute);
+						counterOfCalcedOnDbSideAttributeInfos++;
+
+						if (counterOfCalcedOnDbSideAttributeInfos > 1)
+							break;
 					}
 
-					if (countOfCalcedOnDbSideAttributeInfos > 1)
-					{
-						attributesCalcedOnDbSideInvalidAggregatorDeclarations.Add(attribute);
-					}
+					if (counterOfCalcedOnDbSideAttributeInfos > 0)
+						attributesCalcedOnDbSideOnDacProperty.Add(attributeInfo);
+
+					if (counterOfCalcedOnDbSideAttributeInfos > 1)
+						attributesCalcedOnDbSideInvalidAggregatorDeclarations.Add(attributeInfo);
 				}
 
 				return (attributesCalcedOnDbSideOnDacProperty, attributesCalcedOnDbSideInvalidAggregatorDeclarations);

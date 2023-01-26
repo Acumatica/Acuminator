@@ -497,9 +497,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\AssignmentInExternalMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\NotAcumaticaAttributeDac.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\FieldTypeAttributesOnDacPropertyTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleSpecialTypeAttributes.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleSpecialTypeAttributes_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesCodeFixTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleCalcedOnDbSideAttributes.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleCalcedOnDbSideAttributes_Expected.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\MultipleCalcedOnDbSideAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithInvalidAggregatorAttributes.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\ExternalAttributes1.cs" />

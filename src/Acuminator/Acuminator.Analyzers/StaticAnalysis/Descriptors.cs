@@ -141,12 +141,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnAggregatorsTitle).GetLocalized(), Category.Default, 
 				DiagnosticSeverity.Error,  DiagnosticsShortName.PX1023);
 
-        public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnProperty { get; } =
-            Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnPropertyTitle).GetLocalized(),
+        public static DiagnosticDescriptor PX1023_MultipleCalcedOnDbSideAttributesOnProperty { get; } =
+            Rule("PX1023", nameof(Resources.PX1023MultipleCalcedOnDbSideAttributesOnPropertyTitle).GetLocalized(),
                  Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1023);
 
-        public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnAggregators { get; } =
-			Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle).GetLocalized(),
+        public static DiagnosticDescriptor PX1023_MultipleCalcedOnDbSideAttributesOnAggregators { get; } =
+			Rule("PX1023", nameof(Resources.PX1023MultipleCalcedOnDbSideAttributesOnAggregatorsTitle).GetLocalized(),
 				 Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1023);
 
 		public static DiagnosticDescriptor PX1024_DacNonAbstractFieldType { get; } =

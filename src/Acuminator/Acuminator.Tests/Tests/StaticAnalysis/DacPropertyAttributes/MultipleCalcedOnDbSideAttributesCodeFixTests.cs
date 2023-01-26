@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 {
-	public class MultipleSpecialAttributesCodeFixTests : CodeFixVerifier
+	public class MultipleCalcedOnDbSideAttributesCodeFixTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacAnalyzersAggregator(
@@ -17,11 +17,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 											.WithSuppressionMechanismDisabled(),
 				new DacPropertyAttributesAnalyzer());
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleSpecialAttributesOnDacPropertyFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleCalcedOnDbSideAttributesOnDacPropertyFix();
 
 		[Theory]
-		[EmbeddedFileData("DacWithMultipleSpecialTypeAttributes.cs",
-						  "DacWithMultipleSpecialTypeAttributes_Expected.cs")]
+		[EmbeddedFileData("DacWithMultipleCalcedOnDbSideAttributes.cs",
+						  "DacWithMultipleCalcedOnDbSideAttributes_Expected.cs")]
 		public void DacProperty_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
