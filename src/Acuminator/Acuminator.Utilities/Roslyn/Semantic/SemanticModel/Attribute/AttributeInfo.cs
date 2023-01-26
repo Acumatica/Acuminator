@@ -79,7 +79,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
 
 			var flattenedAttributes = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(dbBoundnessCalculator.Context, includeBaseTypes: true);
-			var aggregatedMetadata = dbBoundnessCalculator.AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(flattenedAttributes);
+			var aggregatedMetadata = dbBoundnessCalculator.AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(attribute.AttributeClass, flattenedAttributes);
 
 			DbBoundnessType boundType      = dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute, flattenedAttributes, aggregatedMetadata);
 			bool isPXDefaultAttribute      = IsPXDefaultAttribute(flattenedAttributes, dbBoundnessCalculator.Context);
