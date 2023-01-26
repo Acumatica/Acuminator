@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -199,7 +200,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		private Task FlattenedAttributesSets_SimpleDac_NoBaseTypes(string source) =>
-			ListOfFlattenedAttributesSetsAsync(source,
+			CompareFlattenedAttributesSetsAsync(source,
 				new[]
 				{
 					new[] { "PX.Data.PXBoolAttribute" },
@@ -214,7 +215,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"NotAcumaticaAttributeDac.cs")]
 		private Task FlattenedAttributesSets_DacWithNonAcumaticaAttribute_NoBaseTypes(string source) =>
-			ListOfFlattenedAttributesSetsAsync(source,
+			CompareFlattenedAttributesSetsAsync(source,
 				new[]
 				{
 					new[] { "PX.Data.PXDBIntAttribute", },
@@ -225,7 +226,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		private  Task FlattenedAttributesSets_AggregatesOnAggregates_NoBaseTypes(string source) =>
-			ListOfFlattenedAttributesSetsAsync(source,
+			CompareFlattenedAttributesSetsAsync(source,
 				new[] {
 					new[]
 					{
@@ -246,7 +247,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		private Task FlattenedAttributesSets_AggregateWithRecursion_NoBaseTypes(string source) =>
-			ListOfFlattenedAttributesSetsAsync(source,
+			CompareFlattenedAttributesSetsAsync(source,
 				new[]
 				{
 					new[]
@@ -269,7 +270,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		private Task FlattenedAttributesSets_SimpleDac_WithBaseTypes(string source) =>
-			ListOfFlattenedAttributesSetsAsync(source,
+			CompareFlattenedAttributesSetsAsync(source,
 				new[]
 				{
 					new[] { "PX.Data.PXBoolAttribute" },
@@ -284,13 +285,12 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		private Task FlattenedAttributesSets_AggregatesOnAggregates_WithBaseTypes(string source) =>
-			ListOfFlattenedAttributesSetsAsync(source,
+			CompareFlattenedAttributesSetsAsync(source,
 				new[]
 				{
 					new[]
 					{
 						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-						"PX.Data.PXAggregateAttribute",
 						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
 						"PX.Data.PXDBIntAttribute",
 						"PX.Data.PXDBFieldAttribute",
@@ -300,7 +300,6 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 					new[]
 					{
 						"PX.Objects.HackathonDemo.PXAccountAttribute",
-						"PX.Data.PXAggregateAttribute",
 						"PX.Objects.HackathonDemo.PXCustomDefaultAttribute",
 						"PX.Data.PXDefaultAttribute"
 					}
@@ -310,13 +309,12 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		private Task FlattenedAttributesSets_AggregateWithRecursion_WithBaseTypes(string source) =>
-			ListOfFlattenedAttributesSetsAsync(source,
+			CompareFlattenedAttributesSetsAsync(source,
 				new[]
 				{
 					new[]
 					{
 						"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-						"PX.Data.PXAggregateAttribute",
 						"PX.Objects.HackathonDemo.NonNullableIntAttribute",
 						"PX.Data.PXDefaultAttribute",
 						"PX.Data.PXIntListAttribute"
@@ -324,7 +322,6 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 					new[]
 					{
 						"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
-						"PX.Data.PXAggregateAttribute",
 						"PX.Objects.HackathonDemo._NonNullableIntAttribute",
 						"PX.Data.PXDBIntAttribute",
 						"PX.Data.PXDBFieldAttribute",
@@ -334,7 +331,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 				includeBaseTypes: true);
 
 
-		private async Task ListOfFlattenedAttributesSetsAsync(string source, string[][] expectedFlattenedSets, bool includeBaseTypes)
+		private async Task CompareFlattenedAttributesSetsAsync(string source, string[][] expectedFlattenedSets, bool includeBaseTypes)
 		{
 			Document document = CreateDocument(source);
 			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
@@ -342,7 +339,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
 			var expectedSymbols = ConvertSymbolNamesToTypeSymbols(expectedFlattenedSets, semanticModel);
-			var actualResult = new List<IReadOnlyCollection<ITypeSymbol>>(expectedSymbols.Count);
+			var actualResult = new List<List<ITypeSymbol>>(expectedSymbols.Count);
 
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var types = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>();
@@ -365,11 +362,12 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 					foreach (var attribute in attributes)
 					{
-						var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, includeBaseTypes);
+						ImmutableHashSet<ITypeSymbol> fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, includeBaseTypes);
 
 						if (fullAttributesSet.Count > 0)
 						{
-							actualResult.Add(fullAttributesSet);
+							var actualSet = fullAttributesSet.OrderBy(t => t.ToString()).ToList(fullAttributesSet.Count);
+							actualResult.Add(actualSet);
 						}
 					}
 				}
@@ -378,13 +376,15 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			Assert.Equal(expectedSymbols, actualResult);
 		}
 
-		private List<HashSet<ITypeSymbol>> ConvertSymbolNamesToTypeSymbols(string[][] expectedSymbolNamesSets, SemanticModel semanticModel) =>
+		private List<List<ITypeSymbol>> ConvertSymbolNamesToTypeSymbols(string[][] expectedSymbolNamesSets, SemanticModel semanticModel) =>
 			expectedSymbolNamesSets.Select(symbolNamesSet => GetTypeSymbolsFromNames(semanticModel, symbolNamesSet))
 								   .ToList(capacity: expectedSymbolNamesSets.Length);
 
-		private HashSet<ITypeSymbol> GetTypeSymbolsFromNames(SemanticModel semanticModel, IEnumerable<string> symbolNames) =>
+		private List<ITypeSymbol> GetTypeSymbolsFromNames(SemanticModel semanticModel, IEnumerable<string> symbolNames) =>
 			symbolNames.Select(symbolName => semanticModel.Compilation.GetTypeByMetadataName(symbolName))
 					   .Where(typeSymbol => typeSymbol != null)
-					   .ToHashSet<ITypeSymbol>();
+					   .Distinct()
+					   .OrderBy(typeSymbol => typeSymbol.ToString())	
+					   .ToList<ITypeSymbol>();
 	}
 }
