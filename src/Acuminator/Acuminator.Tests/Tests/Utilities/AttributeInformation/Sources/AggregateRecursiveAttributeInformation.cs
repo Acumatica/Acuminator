@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
+using PX.Objects.GL;
 
 namespace PX.Objects.HackathonDemo
 {
@@ -15,28 +16,52 @@ namespace PX.Objects.HackathonDemo
 
 	[NonNullableInt]
 	[PXIntList(new[] { 1, 2, 3 }, new[] { "First", "Second", "Third" })]
+	[PeriodID(IsDBField = false)]
 	public class NonNullableIntListAttribute : PXAggregateAttribute
 	{
 	}
 
 	[PXDBInt]
-	public class _NonNullableIntAttribute : PXAggregateAttribute
+	[DBBoundNonNullableIntList]
+	public class DBBoundNonNullableIntAttribute : PXAggregateAttribute
 	{
 	}
 
-	[_NonNullableInt]
+	[DBBoundNonNullableInt]
 	[PXIntList(new[] { 1, 2, 3 }, new[] { "First", "Second", "Third" })]
-	public class _NonNullableIntListAttribute : PXAggregateAttribute
+	public class DBBoundNonNullableIntListAttribute : PXAggregateAttribute
 	{
 	}
+
+	[UnknownBoundnessIntList]
+	public class UnknownBoundnessNonNullableIntAttribute : PXAggregateAttribute
+	{
+		public bool IsDbField { get; set; }
+	}
+
+	[UnknownBoundnessNonNullableInt]
+	[PXUIField(DisplayName = "Some Name")]
+
+	public class UnknownBoundnessIntListAttribute : PXAggregateAttribute
+	{
+	}
+
+
 	public class Foo : IBqlTable
 	{
-		public abstract class someField : IBqlField { }
-		[NonNullableIntList]
-		public int? SomeField { get; set; }
+		public abstract class unboundField : IBqlField { }
 
-		public abstract class _someField : IBqlField { }
-		[_NonNullableIntList]
-		public int? _SomeField { get; set; }
+		[NonNullableIntList]
+		public int? UnboundField { get; set; }
+
+		public abstract class boundField : IBqlField { }
+
+		[DBBoundNonNullableIntList]
+		public int? BoundField { get; set; }
+
+		public abstract class unknownBoundnessField : IBqlField { }
+
+		[UnknownBoundnessIntList]
+		public int? UnknownBoundnessField { get; set; }
 	}
 }

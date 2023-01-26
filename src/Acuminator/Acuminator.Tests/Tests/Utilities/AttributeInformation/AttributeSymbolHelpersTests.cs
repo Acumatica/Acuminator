@@ -9,6 +9,7 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using FluentAssertions;
 
@@ -80,21 +81,21 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 											{
 												DbBoundnessType.Unbound,
 												DbBoundnessType.NotDefined,
-												DbBoundnessType.Unbound,
-												DbBoundnessType.DbBound,
 												DbBoundnessType.NotDefined,
-												DbBoundnessType.Unbound
+												DbBoundnessType.PXDBCalced,
+												DbBoundnessType.NotDefined,
+												DbBoundnessType.NotDefined
 											});
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		public Task AreBoundAggregateAttributesAsync(string source) =>
-			IsBoundAttributeAsync(source, new List<DbBoundnessType> { DbBoundnessType.DbBound, DbBoundnessType.Unbound });
+			IsBoundAttributeAsync(source, new List<DbBoundnessType> { DbBoundnessType.DbBound, DbBoundnessType.NotDefined });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public Task AreBoundAggregateRecursiveAttributeAsync(string source) =>
-			IsBoundAttributeAsync(source, new List<DbBoundnessType> { DbBoundnessType.Unbound, DbBoundnessType.DbBound });
+			IsBoundAttributeAsync(source, new List<DbBoundnessType> { DbBoundnessType.Unbound, DbBoundnessType.DbBound, DbBoundnessType.Unknown });
 
 		private async Task IsBoundAttributeAsync(string source, List<DbBoundnessType> expected)
 		{
@@ -105,17 +106,27 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 			List<DbBoundnessType> actual = new List<DbBoundnessType>();
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
-			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 			var dbBoundnessCalculator = new DbBoundnessCalculator(pxContext);
+			var types = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>();
 
-			foreach (var property in properties)
+			foreach (var type in types)
 			{
-				var propertySymbol = semanticModel.GetDeclaredSymbol(property);
-				var attributes = propertySymbol.GetAttributes();
+				INamedTypeSymbol typeSymbol = semanticModel.GetDeclaredSymbol(type).CheckIfNull(nameof(typeSymbol));
 
-				foreach (var attribute in attributes)
+				if (!typeSymbol.IsDacOrExtension(pxContext))
+					continue;
+
+				var properties = type.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+
+				foreach (var property in properties)
 				{
-					actual.Add(dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute));
+					var propertySymbol = semanticModel.GetDeclaredSymbol(property);
+					var attributes = propertySymbol.GetAttributes();
+
+					foreach (var attribute in attributes)
+					{
+						actual.Add(dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute));
+					}
 				}
 			}
 
