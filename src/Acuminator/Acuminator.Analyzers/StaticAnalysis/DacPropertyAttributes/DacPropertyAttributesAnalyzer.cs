@@ -126,13 +126,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			bool hasPXDBCalcedAttribute =
-				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.BoundnessType == DbBoundnessType.PXDBCalced);
+				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.DbBoundness == DbBoundnessType.PXDBCalced);
 
 			if (!hasPXDBCalcedAttribute)
 				return;
 
 			bool hasUnboundTypeAttribute =
-				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.BoundnessType == DbBoundnessType.Unbound);
+				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.DbBoundness == DbBoundnessType.Unbound);
 				
 			if (hasUnboundTypeAttribute || propertySymbol.GetSyntax(symbolContext.CancellationToken) is not PropertyDeclarationSyntax propertyNode)
 				return;

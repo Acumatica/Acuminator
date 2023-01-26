@@ -46,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// </summary>
 		public int DeclarationOrder { get; }
 
-		public DbBoundnessType BoundnessType { get; }
+		public DbBoundnessType DbBoundness { get; }
 
 		public bool IsIdentity { get; }
 
