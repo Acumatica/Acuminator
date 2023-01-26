@@ -383,12 +383,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
+		public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol) =>
+			typeSymbol.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes()
+					  .Select(a => a.AttributeClass);
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<AttributeData> GetAllAttributesApplicationsDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
 		{
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 			return typeSymbol.GetBaseTypesAndThis()
-							 .SelectMany(t => t.GetAttributes())
-							 .Select(a => a.AttributeClass);
+							 .SelectMany(t => t.GetAttributes());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
