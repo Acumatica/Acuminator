@@ -87,7 +87,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributesMetadata(attributesMetadata);
 
 			if (dbBoundnessFromMetadata != DbBoundnessType.NotDefined)
-				return explicitlySetDbBoundness;
+				return dbBoundnessFromMetadata;
 
 			return DuckTypingCheckIfAttributeHasMixedDbBoundness(flattenedAttributes);
 		}
