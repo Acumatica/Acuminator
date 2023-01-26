@@ -210,5 +210,43 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private static IEnumerable<ITypeSymbol> GetAllDeclaredAcumaticaAttributesOnClassHierarchy(ITypeSymbol type, PXContext pxContext) =>
 			type.GetAllAttributesDefinedOnThisAndBaseTypes()
 				.Where(attribute => attribute.IsDerivedFromPXEventSubscriberAttribute(pxContext));
+
+
+		/// <summary>
+		/// Check if <paramref name="attribute"/> type equals to <paramref name="attributeToCheck"/> type or aggregates <paramref name="attributeToCheck"/>.<br/>
+		/// No types derived from <paramref name="attributeToCheck"/> are checked, it must be either equal to <paramref name="attribute"/> or directly aggregated on it.
+		/// </summary>
+		/// <param name="attribute">Type of the attribute.</param>
+		/// <param name="attributeToCheck">The attribute type to check.</param>
+		/// <param name="pxContext">The Acumatica context.</param>
+		/// <returns>
+		/// True if equals or directly aggregates attribute, false if not.
+		/// </returns>
+		internal static bool EqualsOrAggregatesAttributeDirectly(this ITypeSymbol attribute, ITypeSymbol attributeToCheck, PXContext pxContext) =>
+			EqualsOrAggregatesAttributeDirectly(attribute.CheckIfNull(nameof(attribute)), 
+												attributeToCheck.CheckIfNull(nameof(attributeToCheck)), 
+												pxContext.CheckIfNull(nameof(pxContext)), recursionDepth: 0);
+
+		private static bool EqualsOrAggregatesAttributeDirectly(ITypeSymbol attribute, ITypeSymbol attributeToCheck, PXContext pxContext, int recursionDepth)
+		{
+			if (attribute.Equals(attributeToCheck))
+				return true;
+
+			if (recursionDepth > MaxRecursionDepth)
+				return false;
+
+			if (attribute.IsAggregatorAttribute(pxContext))
+			{
+				var aggregatedAcumaticaAttributes = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(attribute, pxContext);
+
+				foreach (var aggregatedAttribute in aggregatedAcumaticaAttributes)
+				{
+					if (EqualsOrAggregatesAttributeDirectly(aggregatedAttribute, attributeToCheck, pxContext, recursionDepth + 1))
+						return true;
+				}
+			}
+
+			return false;
+		}
 	}
 }
