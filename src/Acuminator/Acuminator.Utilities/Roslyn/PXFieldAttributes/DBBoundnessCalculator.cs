@@ -90,10 +90,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				preparedAttributesMetadata ?? 
 				AttributesMetadataProvider.GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(attributeApplication.AttributeClass,
 																											   flattenedAttributesSet);
-			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributesApplicationsAndMetadata(flattenedAttributesWithApplications, attributesMetadata);
+			DbBoundnessType combinedDbBoundness = GetDbBoundnessFromAttributesApplicationsAndMetadata(flattenedAttributesWithApplications, attributesMetadata);
 
-			if (dbBoundnessFromMetadata != DbBoundnessType.NotDefined)
-				return dbBoundnessFromMetadata;
+			if (combinedDbBoundness != DbBoundnessType.NotDefined)
+				return combinedDbBoundness;
 
 			return DuckTypingCheckIfAttributeHasMixedDbBoundness(flattenedAttributesSet);
 		}
@@ -118,11 +118,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private DbBoundnessType GetDbBoundnessFromMetadataAndApplications(DataTypeAttributeInfo attributeInfo, 
 																		  ILookup<ITypeSymbol, AttributeWithApplication> applicationsByAttribute)
 		{
+			// Even if the DB boundness is set explicitly at the application we have to calculate DB boundness from metadata
+			// Because it can be inconsistent in which case explicitly set boundness can't apply
 			DbBoundnessType dbBoundnessFromMetadata = GetDbBoundnessFromAttributeInfo(attributeInfo);
 
-			if (dbBoundnessFromMetadata is DbBoundnessType.Error or DbBoundnessType.Unknown)
+			if (dbBoundnessFromMetadata == DbBoundnessType.Error)
 				return dbBoundnessFromMetadata;
 
+			// For non-mixed DB boundness attributes there is nothing more to apply
 			if (attributeInfo is not MixedDbBoundnessAttributeInfo mixedDbBoundnessAttributeInfo || 
 				!applicationsByAttribute.Contains(mixedDbBoundnessAttributeInfo.AttributeType))
 			{
@@ -130,9 +133,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			var attributeApplications = applicationsByAttribute[mixedDbBoundnessAttributeInfo.AttributeType];
-			var dbBoundnessFromApplications = 
+			var explicitDbBoundnessFromApplications = 
 				attributeApplications.Select(attrWithAppl => GetDbBoundnessSetExplicitlyByAttributeApplication(attrWithAppl.Application)).Combine();
-			return dbBoundnessFromMetadata.Combine(dbBoundnessFromApplications);
+
+			var combinedBoundness = CombineExplictlySetAndMetadataBoundnesses(explicitDbBoundnessFromApplications, dbBoundnessFromMetadata);
+			return combinedBoundness;
 		}
 
 		private DbBoundnessType GetDbBoundnessFromAttributeInfo(DataTypeAttributeInfo attributeInfo)
@@ -224,6 +229,36 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					: isNonDbValue.Value
 						? DbBoundnessType.Unbound
 						: DbBoundnessType.DbBound;
+		}
+
+		private DbBoundnessType CombineExplictlySetAndMetadataBoundnesses(DbBoundnessType explicitDbBoundnessFromApplications, DbBoundnessType dbBoundnessFromMetadata)
+		{
+			// Custom combination rules
+			switch (explicitDbBoundnessFromApplications)
+			{
+				case DbBoundnessType.Unbound:
+					return dbBoundnessFromMetadata switch
+					{
+						DbBoundnessType.PXDBCalced							  => DbBoundnessType.PXDBCalced,
+						DbBoundnessType.PXDBScalar or DbBoundnessType.Error	  => DbBoundnessType.Error,
+						DbBoundnessType.NotDefined or DbBoundnessType.Unbound
+						or DbBoundnessType.DbBound or DbBoundnessType.Unknown => explicitDbBoundnessFromApplications,
+						_													  => explicitDbBoundnessFromApplications
+					};
+					
+				case DbBoundnessType.DbBound:
+					return dbBoundnessFromMetadata is DbBoundnessType.PXDBScalar or DbBoundnessType.PXDBCalced or DbBoundnessType.Error
+						? DbBoundnessType.Error
+						: explicitDbBoundnessFromApplications;
+					
+				case DbBoundnessType.Unknown:
+				case DbBoundnessType.Error:
+					return explicitDbBoundnessFromApplications;
+
+				case DbBoundnessType.NotDefined:
+				default:
+					return dbBoundnessFromMetadata;
+			}
 		}
 
 		/// <summary>
