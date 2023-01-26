@@ -341,29 +341,36 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			semanticModel.ThrowOnNull(nameof(semanticModel));
 			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
 
-			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var expectedSymbols = ConvertSymbolNamesToTypeSymbols(expectedFlattenedSets, semanticModel);
+			var actualResult = new List<IReadOnlyCollection<ITypeSymbol>>(expectedSymbols.Count);
 
-			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
+			var types = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>();
 
-			var actualResult = new List<IReadOnlyCollection<ITypeSymbol>>();
-
-			foreach (var property in properties)
+			foreach (var type in types)
 			{
-				var propertySymbol = semanticModel.GetDeclaredSymbol(property);
+				INamedTypeSymbol typeSymbol = semanticModel.GetDeclaredSymbol(type).CheckIfNull(nameof(typeSymbol));
 
-				if (propertySymbol == null)
+				if (!typeSymbol.IsDacOrExtension(pxContext))
 					continue;
 
-				var attributes = propertySymbol.GetAttributes();
+				var properties = type.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
-				foreach (var attribute in attributes)
+				foreach (var property in properties)
 				{
-					var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, includeBaseTypes);
+					if (semanticModel.GetDeclaredSymbol(property) is not IPropertySymbol propertySymbol)
+						continue;
 
-					if (fullAttributesSet.Count > 0)
+					var attributes = propertySymbol.GetAttributes();
+
+					foreach (var attribute in attributes)
 					{
-						actualResult.Add(fullAttributesSet);
+						var fullAttributesSet = attribute.AttributeClass.GetThisAndAllAggregatedAttributes(pxContext, includeBaseTypes);
+
+						if (fullAttributesSet.Count > 0)
+						{
+							actualResult.Add(fullAttributesSet);
+						}
 					}
 				}
 			}
