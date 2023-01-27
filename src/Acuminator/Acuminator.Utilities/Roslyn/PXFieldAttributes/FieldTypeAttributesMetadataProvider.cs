@@ -67,27 +67,32 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return attributeTypeHierarchy.Any(type => WellKnownNonDataTypeAttributes.Contains(type));
 		}
 
-		public IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol) =>
-			GetDacFieldTypeAttributeInfos(attributeSymbol, preparedFlattenedAttributes: null);
+		public IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol originalAttribute) =>
+			GetDacFieldTypeAttributeInfos(originalAttribute, preparedFlattenedAttributes: null);
 
-		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol attributeSymbol, 
+		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol originalAttribute, 
 																						  ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributes)
 		{
-			if (IsWellKnownNonDataTypeAttribute(attributeSymbol))
+			if (IsWellKnownNonDataTypeAttribute(originalAttribute))
 				return Array.Empty<DataTypeAttributeInfo>();
 
-			var flattenedAttributes = preparedFlattenedAttributes ?? attributeSymbol.GetThisAndAllAggregatedAttributes(_pxContext, includeBaseTypes: true);
-			return GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(attributeSymbol, flattenedAttributes);
+			var flattenedAttributes = preparedFlattenedAttributes ?? originalAttribute.GetThisAndAllAggregatedAttributes(_pxContext, includeBaseTypes: true);
+			return GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(originalAttribute, flattenedAttributes);
 		}
 
-		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(ITypeSymbol attributeSymbol,
+		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(ITypeSymbol originalAttribute,
 																										ImmutableHashSet<ITypeSymbol> flattenedAttributes)
 		{
 			if (flattenedAttributes.Count == 0)
 				return Array.Empty<DataTypeAttributeInfo>();
 
-			var typeAttributeInfos = GetMixedDbBoundnessAttributeInfosInFlattenedSet(flattenedAttributes);
-			var pxDbFieldAttributeDirectlyUsedInfo = GetPXDbFieldAttributeInfoIfItIsUsedDirectly(attributeSymbol);
+			var mixedDbBoundnessAttributeInfos = GetMixedDbBoundnessAttributeInfosInFlattenedSet(originalAttribute, flattenedAttributes);
+			bool hasMixedBoundnessAttributes = mixedDbBoundnessAttributeInfos?.Count > 0;
+			var typeAttributeInfos = hasMixedBoundnessAttributes
+				? new List<DataTypeAttributeInfo>(mixedDbBoundnessAttributeInfos)
+				: null;
+
+			var pxDbFieldAttributeDirectlyUsedInfo = GetPXDbFieldAttributeInfoIfItIsUsedDirectly(originalAttribute);
 
 			if (pxDbFieldAttributeDirectlyUsedInfo != null)
 			{
@@ -95,20 +100,24 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				typeAttributeInfos.Add(pxDbFieldAttributeDirectlyUsedInfo);
 			}
 
-			var dacFieldTypeAttributesInHierarchy = AllDacFieldTypeAttributes.Intersect(flattenedAttributes);
+			var dacFieldTypeAttributesInFlattenedSet = AllDacFieldTypeAttributes.Intersect(flattenedAttributes);
 
-			if (dacFieldTypeAttributesInHierarchy.Count == 0)
+			if (dacFieldTypeAttributesInFlattenedSet.Count == 0)
 				return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? Array.Empty<DataTypeAttributeInfo>();
 
-			foreach (ITypeSymbol dacFieldTypeAttribute in dacFieldTypeAttributesInHierarchy)
+			foreach (ITypeSymbol dacFieldTypeAttribute in dacFieldTypeAttributesInFlattenedSet)
 			{
 				DataTypeAttributeInfo? attributeInfo = GetDacFieldTypeAttributeInfo(dacFieldTypeAttribute);
 
-				if (attributeInfo != null)
+				if (attributeInfo == null || 
+					(hasMixedBoundnessAttributes && 
+					DacFieldTypeAttributeCapturedByMixedBoundnessAttributesTypeHierarchy(originalAttribute, dacFieldTypeAttribute, mixedDbBoundnessAttributeInfos!)))
 				{
-					typeAttributeInfos ??= new List<DataTypeAttributeInfo>(capacity: 4);
-					typeAttributeInfos.Add(attributeInfo);
+					continue;
 				}
+				
+				typeAttributeInfos ??= new List<DataTypeAttributeInfo>(capacity: 4);
+				typeAttributeInfos.Add(attributeInfo);
 			}
 
 			return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? Array.Empty<DataTypeAttributeInfo>();
@@ -119,12 +128,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// If there are multiple mixed boundness attributes in the type hierarchy then only the most derived one should be included into results <br/>
 		/// unless base mixed attribute is aggregated directly.
 		/// </summary>
-		/// <param name="attributeSymbol">The attribute symbol.</param>
+		/// <param name="originalAttribute">The original attribute symbol.</param>
 		/// <param name="flattenedAttributes">The flattened attributes.</param>
 		/// <returns>
 		/// The mixed database boundness attribute infos from the flattened set of attributes.
 		/// </returns>
-		private List<MixedDbBoundnessAttributeInfo>? GetMixedDbBoundnessAttributeInfosInFlattenedSet(ITypeSymbol attributeSymbol, 
+		private List<MixedDbBoundnessAttributeInfo>? GetMixedDbBoundnessAttributeInfosInFlattenedSet(ITypeSymbol originalAttribute, 
 																									 ImmutableHashSet<ITypeSymbol> flattenedAttributes)
 		{
 			List<MixedDbBoundnessAttributeInfo>? mixedDbBoundnessAttributeInfos = null;
@@ -139,7 +148,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 				if (isPartOfAnotherMixedAttributeHierarchy)
 				{
-					if (!attributeSymbol.EqualsOrAggregatesAttributeDirectly(mixedBoundnessAttribute.AttributeType, _pxContext))
+					if (!originalAttribute.EqualsOrAggregatesAttributeDirectly(mixedBoundnessAttribute.AttributeType, _pxContext))
 						continue;
 				}
 
@@ -156,6 +165,19 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			return mixedDbBoundnessAttributeInfos;
+		}
+
+		private bool DacFieldTypeAttributeCapturedByMixedBoundnessAttributesTypeHierarchy(ITypeSymbol originalAttribute, ITypeSymbol dacFieldTypeAttribute, 
+																						  List<MixedDbBoundnessAttributeInfo> mixedDbBoundnessAttributeInfos)
+		{
+			bool presentInMixedAttribuesHierarchy =
+				mixedDbBoundnessAttributeInfos.Any(info => info.AcumaticaAttributesHierarchy.Contains(dacFieldTypeAttribute));
+
+			// If data type attribute is present in the hierarchy of one of mixed boundness metadata attributes
+			// then we need to check if dacFieldTypeAttribute is also directly aggregated on originalAttribute
+			return presentInMixedAttribuesHierarchy
+				? !originalAttribute.EqualsOrAggregatesAttributeDirectly(dacFieldTypeAttribute, _pxContext)
+				: false;
 		}
 
 		private DataTypeAttributeInfo? GetPXDbFieldAttributeInfoIfItIsUsedDirectly(ITypeSymbol attributeSymbol) =>
