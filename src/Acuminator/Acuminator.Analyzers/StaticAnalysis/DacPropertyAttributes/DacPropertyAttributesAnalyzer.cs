@@ -150,25 +150,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
-			var (typeAttributesDeclaredOnDacProperty, typeAttributesWithConflictingAggregatorDeclarations) = FilterTypeAttributes();
+			var (typeAttributesOnDacPropertyInfos, typeAttributesWithDifferentDataTypesOnAggregatorInfos, typeAttributesWithNoDataTypeInfos) = FilterTypeAttributes();
 
-			if (typeAttributesDeclaredOnDacProperty.Count == 0)
+			if (typeAttributesOnDacPropertyInfos.IsNullOrEmpty())
 				return;
 
-			if (typeAttributesWithConflictingAggregatorDeclarations.Count > 0)
+			if (typeAttributesWithDifferentDataTypesOnAggregatorInfos?.Count > 0)
 			{
-				RegisterDiagnosticForAttributes(symbolContext, pxContext, typeAttributesWithConflictingAggregatorDeclarations,
+				RegisterDiagnosticForAttributes(symbolContext, pxContext, typeAttributesWithDifferentDataTypesOnAggregatorInfos,
 												Descriptors.PX1023_MultipleTypeAttributesOnAggregators);
 			}
 
-			if (typeAttributesDeclaredOnDacProperty.Count > 1)					
+			if (typeAttributesOnDacPropertyInfos.Count > 1)					
 			{
-				RegisterDiagnosticForAttributes(symbolContext, pxContext, typeAttributesDeclaredOnDacProperty,
+				RegisterDiagnosticForAttributes(symbolContext, pxContext, typeAttributesOnDacPropertyInfos,
 												Descriptors.PX1023_MultipleTypeAttributesOnProperty);
 			} 
-			else if (typeAttributesWithConflictingAggregatorDeclarations.Count == 0)
+			else if (typeAttributesWithDifferentDataTypesOnAggregatorInfos?.Count is null or 0)
 			{
-				AttributeInfo typeAttribute = typeAttributesDeclaredOnDacProperty[0];
+				AttributeInfo typeAttribute = typeAttributesOnDacPropertyInfos[0];
 				var attributeDataType = typeAttribute.AggregatedAttributeMetadata
 													 .Where(atrMetadata => atrMetadata.IsFieldAttribute && atrMetadata.DataType != null)
 													 .Select(atrMetadata => atrMetadata.DataType)
@@ -179,34 +179,47 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 
 			//-----------------------------------------------Local Functions---------------------------------------
-			(List<AttributeInfo>, List<AttributeInfo>) FilterTypeAttributes()
+			(List<AttributeInfo>?, List<AttributeInfo>?, List<AttributeInfo>?) FilterTypeAttributes()
 			{
-				var typeAttributesOnDacProperty = new List<AttributeInfo>(2);
-				var typeAttributesWithInvalidAggregatorDeclarations = new List<AttributeInfo>();
+				List<AttributeInfo>? typeAttributesOnDacProperty = null;
+				List<AttributeInfo>? typeAttributesWithDifferentDataTypesOnAggregator = null;
+				List<AttributeInfo>? typeAttributesWithNoDataType = null;
 
 				foreach (var attribute in attributesWithFieldTypeMetadata)
 				{
 					var dataTypeAttributes = attribute.AggregatedAttributeMetadata
 													  .Where(atrMetadata => atrMetadata.IsFieldAttribute)
 													  .ToList();
-
 					if (dataTypeAttributes.Count == 0)
 						continue;
 
+					typeAttributesOnDacProperty ??= new List<AttributeInfo>(capacity: 2); 
 					typeAttributesOnDacProperty.Add(attribute);
+
+					bool allDataTypesAreNull = dataTypeAttributes.All(atrMetadata => atrMetadata.DataType == null);
+
+					if (allDataTypesAreNull)
+					{
+						typeAttributesWithNoDataType ??= new List<AttributeInfo>(capacity: 2);
+						typeAttributesWithNoDataType.Add(attribute);
+						continue;
+					}	
 
 					if (dataTypeAttributes.Count == 1)
 						continue;
 
-					int countOfDeclaredDataTypes = dataTypeAttributes.Select(atrMetadata => atrMetadata.DataType)
-																	 .Distinct()
-																	 .Count();
-
-					if (countOfDeclaredDataTypes > 1 || dataTypeAttributes.Any(atrMetadata => atrMetadata.DataType == null))
-						typeAttributesWithInvalidAggregatorDeclarations.Add(attribute);
+					int countOfDeclaredNonNullDataTypes = dataTypeAttributes.Where(atrMetadata => atrMetadata.DataType != null)
+																			.Select(atrMetadata => atrMetadata.DataType)
+																			.Distinct()
+																			.Count();
+					if (countOfDeclaredNonNullDataTypes > 1)
+					{
+						typeAttributesWithDifferentDataTypesOnAggregator ??= new List<AttributeInfo>(capacity: 2);
+						typeAttributesWithDifferentDataTypesOnAggregator.Add(attribute);
+					}
 				}
 
-				return (typeAttributesOnDacProperty, typeAttributesWithInvalidAggregatorDeclarations);
+				return (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, typeAttributesWithNoDataType);
 			}
 		}
 
