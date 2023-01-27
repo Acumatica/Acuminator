@@ -31,7 +31,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				Descriptors.PX1023_MultipleTypeAttributesOnAggregators,
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty,
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnAggregators,
-				Descriptors.PX1025_NoDataTypeDefinedByDataTypeAttributes,
 				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute
 			);
 
@@ -151,21 +150,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
-			var (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, typeAttributesWithNoDataType, hasNonNullDataType) = 
+			var (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, hasNonNullDataType) = 
 				FilterTypeAttributes(attributesWithFieldTypeMetadata);
 
-			if (typeAttributesOnDacProperty.IsNullOrEmpty())
+			if (typeAttributesOnDacProperty.IsNullOrEmpty() || !hasNonNullDataType)
 				return;
 
 			if (typeAttributesWithDifferentDataTypesOnAggregator?.Count > 0)
 			{
 				RegisterDiagnosticForAttributes(symbolContext, pxContext, typeAttributesWithDifferentDataTypesOnAggregator,
 												Descriptors.PX1023_MultipleTypeAttributesOnAggregators);
-			}
-
-			if (typeAttributesWithNoDataType?.Count > 0 && !hasNonNullDataType)
-			{
-				return;
 			}
 
 			if (typeAttributesOnDacProperty.Count > 1)					
@@ -186,12 +180,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}			
 		}
 
-		private static (List<AttributeInfo>?, List<AttributeInfo>?, List<AttributeInfo>?, bool HasNonNullDataType) FilterTypeAttributes(
-																									List<AttributeInfo> attributesWithFieldTypeMetadata)
+		private static (List<AttributeInfo>?, List<AttributeInfo>?, bool HasNonNullDataType) FilterTypeAttributes(
+																								List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			List<AttributeInfo>? typeAttributesOnDacProperty = null;
 			List<AttributeInfo>? typeAttributesWithDifferentDataTypesOnAggregator = null;
-			List<AttributeInfo>? typeAttributesWithNoDataType = null;
 			bool hasNonNullDataType = false;
 
 			foreach (var attribute in attributesWithFieldTypeMetadata)
@@ -205,24 +198,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				typeAttributesOnDacProperty ??= new List<AttributeInfo>(capacity: 2);
 				typeAttributesOnDacProperty.Add(attribute);
 
-				bool allDataTypesAreNull = dataTypeAttributes.All(atrMetadata => atrMetadata.DataType == null);
-
-				if (allDataTypesAreNull)
+				if (dataTypeAttributes.Count == 1)
 				{
-					typeAttributesWithNoDataType ??= new List<AttributeInfo>(capacity: 2);
-					typeAttributesWithNoDataType.Add(attribute);
+					hasNonNullDataType = hasNonNullDataType || dataTypeAttributes[0].DataType != null;
 					continue;
 				}
-				else
-					hasNonNullDataType = true;
-
-				if (dataTypeAttributes.Count == 1)
-					continue;
 
 				int countOfDeclaredNonNullDataTypes = dataTypeAttributes.Where(atrMetadata => atrMetadata.DataType != null)
 																		.Select(atrMetadata => atrMetadata.DataType)
 																		.Distinct()
 																		.Count();
+				hasNonNullDataType = hasNonNullDataType || countOfDeclaredNonNullDataTypes > 0;
+
 				if (countOfDeclaredNonNullDataTypes > 1)
 				{
 					typeAttributesWithDifferentDataTypesOnAggregator ??= new List<AttributeInfo>(capacity: 2);
@@ -230,7 +217,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				}
 			}
 
-			return (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, typeAttributesWithNoDataType, hasNonNullDataType);
+			return (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, hasNonNullDataType);
 		}
 
 		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo fieldAttribute, ITypeSymbol? attributeDataType,
