@@ -71,8 +71,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			var (attributesCalcedOnDbSideDeclaredOnDacProperty, attributesCalcedOnDbSideWithConflictingAggregatorDeclarations) =
 				FilterAttributeInfosCalcedOnDbSide();
 
-			if (attributesCalcedOnDbSideDeclaredOnDacProperty.Count == 0 ||
-				(attributesCalcedOnDbSideDeclaredOnDacProperty.Count == 1 && attributesCalcedOnDbSideWithConflictingAggregatorDeclarations.Count == 0))
+			if (attributesCalcedOnDbSideDeclaredOnDacProperty.IsNullOrEmpty() ||
+				(attributesCalcedOnDbSideDeclaredOnDacProperty.Count == 1 && attributesCalcedOnDbSideWithConflictingAggregatorDeclarations.IsNullOrEmpty()))
 			{
 				return true;
 			}
@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 												Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty);
 			}
 
-			if (attributesCalcedOnDbSideWithConflictingAggregatorDeclarations.Count > 0)
+			if (attributesCalcedOnDbSideWithConflictingAggregatorDeclarations?.Count > 0)
 			{
 				RegisterDiagnosticForAttributes(symbolContext, pxContext, attributesCalcedOnDbSideDeclaredOnDacProperty,
 												Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnAggregators);
@@ -92,10 +92,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			return false;
 
 			//-----------------------------------------------Local Functions---------------------------------------
-			(List<AttributeInfo>, List<AttributeInfo>) FilterAttributeInfosCalcedOnDbSide()
+			(List<AttributeInfo>?, List<AttributeInfo>?) FilterAttributeInfosCalcedOnDbSide()
 			{
-				List<AttributeInfo> attributesCalcedOnDbSideOnDacProperty = new List<AttributeInfo>(2);
-				List<AttributeInfo> attributesCalcedOnDbSideInvalidAggregatorDeclarations = new List<AttributeInfo>(2);
+				List<AttributeInfo>? attributesCalcedOnDbSideOnDacProperty = null;
+				List<AttributeInfo>? attributesCalcedOnDbSideInvalidAggregatorDeclarations = null;
 
 				foreach (var attribute in attributesWithFieldTypeMetadata)
 				{
@@ -111,10 +111,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 					}
 
 					if (counterOfCalcedOnDbSideAttributeInfos > 0)
+					{
+						attributesCalcedOnDbSideOnDacProperty ??= new List<AttributeInfo>(capacity: 2);
 						attributesCalcedOnDbSideOnDacProperty.Add(attribute);
+					}
 
 					if (counterOfCalcedOnDbSideAttributeInfos > 1)
+					{
+						attributesCalcedOnDbSideInvalidAggregatorDeclarations ??= new List<AttributeInfo>(capacity: 2);
 						attributesCalcedOnDbSideInvalidAggregatorDeclarations.Add(attribute);
+					}
 				}
 
 				return (attributesCalcedOnDbSideOnDacProperty, attributesCalcedOnDbSideInvalidAggregatorDeclarations);
