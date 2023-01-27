@@ -1,12 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
@@ -21,15 +26,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleFieldTypeAttributes.cs")]
-		public virtual void PropertyWithMultipleFieldTypeAttributes(string source) =>
-			VerifyCSharpDiagnostic(source,
+		public virtual Task PropertyWithMultipleFieldTypeAttributes(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty.CreateFor(line: 24, column: 4),
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty.CreateFor(line: 25, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleCalcedOnDbSideAttributes.cs")]
-		public virtual void PropertyWithMultipleCalcedOnDbSideAttributes(string source) =>
-			VerifyCSharpDiagnostic(source,
+		public virtual Task PropertyWithMultipleCalcedOnDbSideAttributes(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty.CreateFor(line: 16, column: 4),
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty.CreateFor(line: 17, column: 4));
 
@@ -50,8 +55,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 
 		[Theory]
 		[EmbeddedFileData("DacFieldAttributesTypeMismatch.cs")]
-		public virtual void DacPropertyTypeNotMatchingAttributeType(string source) =>
-			VerifyCSharpDiagnostic(source,
+		public virtual Task DacPropertyTypeNotMatchingAttributeType(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 24, Column: 4), 
 					extraLocation: (Line: 26, Column: 10)),
 				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 26, Column: 10), 
@@ -69,14 +74,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 
 		[Theory]
 		[EmbeddedFileData("DacWithInvalidAggregatorAttributes.cs")]
-		public virtual void DacPropertyWithInvalidAggregatorAttributes(string source) =>
-			VerifyCSharpDiagnostic(source,
+		public virtual Task DacPropertyWithInvalidAggregatorAttributes(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnAggregators.CreateFor(line: 41, column: 4),
 				Descriptors.PX1023_MultipleTypeAttributesOnAggregators.CreateFor(line: 55, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacFieldTypeMismatchPXDBScalarAttr.cs")]
-		public virtual void DacPropertyWithPXDBScalarAttribute(string source) =>
-			VerifyCSharpDiagnostic(source);	
+		public virtual Task DacPropertyWithPXDBScalarAttribute(string source) =>
+			VerifyCSharpDiagnosticAsync(source);
 	}
 }
