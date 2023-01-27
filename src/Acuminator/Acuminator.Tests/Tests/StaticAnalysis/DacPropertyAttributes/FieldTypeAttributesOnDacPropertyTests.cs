@@ -83,5 +83,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 		[EmbeddedFileData("DacFieldTypeMismatchPXDBScalarAttr.cs")]
 		public virtual Task DacPropertyWithPXDBScalarAttribute(string source) =>
 			VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DacWithValidAggregatorAttributes.cs")]
+		public virtual Task DacWithValidAggregatorAttributes(string source) =>
+			VerifyCSharpDiagnosticAsync(source);
 	}
 }
