@@ -27,8 +27,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty.CreateFor(line: 25, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("DacWithMultipleSpecialTypeAttributes.cs")]
-		public virtual void PropertyWithMultipleSpecialAttributes(string source) =>
+		[EmbeddedFileData("DacWithMultipleCalcedOnDbSideAttributes.cs")]
+		public virtual void PropertyWithMultipleCalcedOnDbSideAttributes(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty.CreateFor(line: 16, column: 4),
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty.CreateFor(line: 17, column: 4));
@@ -39,8 +39,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 			VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("DacWithMultipleSpecialTypeAttributes_Expected.cs")]
-		public virtual Task MultipleSpecialAttributes_ShouldNotShowDiagnostic(string source) =>
+		[EmbeddedFileData("DacWithMultipleCalcedOnDbSideAttributes_Expected.cs")]
+		public virtual Task MultipleCalcedOnDbSideAttributes_ShouldNotShowDiagnostic(string source) =>
 			VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
