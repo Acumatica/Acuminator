@@ -14,7 +14,7 @@ namespace PX.Objects.HackathonDemo.Suppression.Comments
 		public abstract class companyMask : IBqlField { }
 		// Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
 		[PXDefault]
-		[PXUIField(DisplayName = "Company Mask")]
+		[PXString, PXUIField(DisplayName = "Company Mask")]
 		public string CompanyMask { get; set; }
 		#endregion
 
