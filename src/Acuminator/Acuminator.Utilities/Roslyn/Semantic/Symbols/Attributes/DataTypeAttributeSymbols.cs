@@ -23,6 +23,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXDateAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDateAttribute);
 		public INamedTypeSymbol PXGuidAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXGuidAttribute);
 		public INamedTypeSymbol PXBoolAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXBoolAttribute);
+
+		public INamedTypeSymbol? PXVariantAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXVariantAttribute);
 		#endregion
 
 		#region DBField Attributes
