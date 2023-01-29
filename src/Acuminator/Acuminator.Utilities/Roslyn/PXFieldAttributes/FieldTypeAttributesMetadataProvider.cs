@@ -202,7 +202,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private static Dictionary<ITypeSymbol, ITypeSymbol?> GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(PXContext pxContext)
 		{
-			return new Dictionary<ITypeSymbol, ITypeSymbol?>
+			var types = new Dictionary<ITypeSymbol, ITypeSymbol?>
 			{
 				{ pxContext.FieldAttributes.PXLongAttribute,    pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXIntAttribute,     pxContext.SystemTypes.Int32 },
@@ -216,6 +216,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{ pxContext.FieldAttributes.PXGuidAttribute,    pxContext.SystemTypes.Guid },
 				{ pxContext.FieldAttributes.PXBoolAttribute,    pxContext.SystemTypes.Bool },
 			};
+
+			var pxVariantAttribute = pxContext.FieldAttributes.PXVariantAttribute;
+
+			if (pxVariantAttribute != null)
+				types.Add(pxVariantAttribute, pxContext.SystemTypes.ByteArray);
+
+			return types;
 		}
 
 		private static Dictionary<ITypeSymbol, ITypeSymbol?> GetBoundDacFieldTypeAttributesWithCorrespondingTypes(PXContext pxContext)
