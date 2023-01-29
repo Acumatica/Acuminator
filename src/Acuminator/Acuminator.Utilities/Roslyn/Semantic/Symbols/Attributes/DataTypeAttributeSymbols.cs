@@ -5,9 +5,9 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class FieldAttributeSymbols : SymbolsSetBase
+	public class DataTypeAttributeSymbols : SymbolsSetBase
 	{
-		internal FieldAttributeSymbols(Compilation compilation) : base(compilation)
+		internal DataTypeAttributeSymbols(Compilation compilation) : base(compilation)
 		{ }
 
 		#region Field Unbound Attributes
