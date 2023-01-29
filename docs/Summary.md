@@ -56,10 +56,10 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1047](diagnostics/PX1047.md) | In the `FieldDefaulting`, `FieldVerifying`, and `RowSelected` event handlers, DAC instances passed to these event handlers cannot be modified. | Error | Unavailable |
 | [PX1048](diagnostics/PX1048.md) | For the `RowInserting` and `RowSelecting` events, only the DAC instance that is passed in the event arguments can be modified in the event handler. | Error | Unavailable |
 | [PX1049](diagnostics/PX1049.md) | In `RowSelected` event handlers, BQL statements and other database queries should be avoided. | Warning (ISV Level 1: Significant) | Unavailable |
-| [PX1050](diagnostics/PX1050.md) | Hardcoded strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Unavailable |
-| [PX1051](diagnostics/PX1051.md) | The strings defined in a class without the `PXLocalizable` attribute cannot be used as parameters for localization methods and `PXException` constructors. | Error | Unavailable |
+| [PX1050](diagnostics/PX1050.md) | Hardcoded strings cannot be used as parameters for localization methods, `PXException` and `PXExceptionInfo` constructors. | Error | Unavailable |
+| [PX1051](diagnostics/PX1051.md) | The strings defined in a class without the `PXLocalizable` attribute cannot be used as parameters for localization methods, `PXException` and `PXExceptionInfo` constructors. | Error | Unavailable |
 | [PX1052](diagnostics/PX1052.md) | Plain text strings cannot be used in the methods of the `LocalizeFormat` family. | Error | Unavailable |
-| [PX1053](diagnostics/PX1053.md) | Concatenated strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Unavailable |
+| [PX1053](diagnostics/PX1053.md) | Concatenated strings cannot be used as parameters for localization methods, `PXException` and `PXExceptionInfo` constructors. | Error | Unavailable |
 | [PX1054](diagnostics/PX1054.md) | A `PXGraph` instance cannot start a long-running operation during the `PXGraph` initialization. | Error | Unavailable |
 | [PX1055](diagnostics/PX1055.md) | An invalid primary key of the DAC is used. | Error | Available |
 | [PX1056](diagnostics/PX1056.md) | A PXGraph instance cannot be initialized inside the `IsActive` or `IsActiveForGraph<TGraph>` method. | Error | Unavailable |
