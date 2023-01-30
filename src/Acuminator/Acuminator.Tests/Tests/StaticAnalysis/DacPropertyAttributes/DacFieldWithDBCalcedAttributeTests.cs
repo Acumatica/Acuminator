@@ -29,6 +29,20 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 			await VerifyCSharpDiagnosticAsync(source, 
 				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute.CreateFor(19, 28),
 				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute.CreateFor(38, 25),
-				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute.CreateFor(49, 25));
+				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute.CreateFor(48, 25));
+
+		[Theory]
+		[EmbeddedFileData("DacWithPXDBScalarAndUnboundTypeAttributes.cs")]
+		public async Task DacFieldWithPXDBScalarAndNonDBAttribute_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DacWithPXDBScalarAndWithoutUnboundTypeAttributes.cs")]
+		public async Task DacFieldWithPXDBScalarAndWithoutNonDBAttribute_ReportsDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute.CreateFor(20, 23),
+				Descriptors.PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute.CreateFor(35, 25),
+				Descriptors.PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute.CreateFor(44, 27),
+				Descriptors.PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute.CreateFor(53, 25));
 	}
 }
