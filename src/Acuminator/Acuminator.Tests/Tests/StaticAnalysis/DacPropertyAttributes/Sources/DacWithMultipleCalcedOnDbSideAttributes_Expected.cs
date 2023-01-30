@@ -12,7 +12,7 @@ namespace PX.Objects.HackathonDemo
 		#region OrderType
 		public abstract class orderType : IBqlField { }
 
-		[PXDBString(IsKey = true, InputMask = "")]
+		[PXString(IsKey = true, InputMask = "")]
 		[PXDBScalar(typeof(Search<DacWithMultipleSpecialTypeAttributes.orderType>))]
 		public string OrderType { get; set; }
 		#endregion
