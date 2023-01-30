@@ -59,7 +59,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacFieldWithDBCalcedAttribute.So
 		#region MaxFinPeriodID
 		public abstract class maxFinPeriodID : PX.Data.BQL.BqlString.Field<maxFinPeriodID> { }
 
-		// Acuminator disable once PX1095 NoUnboundTypeAttributeWithPXDBCalced [Type field define with FinPeriod attribue]
 		[FinPeriodID(IsDBField = false)]
 		[PXDBCalced(typeof(IIf<Where<ARTranPostGL.type, Equal<ARTranPost.type.rgol>>
 			, Null

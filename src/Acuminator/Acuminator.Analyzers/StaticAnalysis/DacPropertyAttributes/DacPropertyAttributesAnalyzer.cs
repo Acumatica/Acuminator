@@ -31,7 +31,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				Descriptors.PX1023_MultipleTypeAttributesOnAggregators,
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty,
 				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnAggregators,
-				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute
+				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute,
+				Descriptors.PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute
 			);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExt)
@@ -61,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (!validAttributesCalcedOnDbSide)
 				return;
 
-			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, property.Symbol, attributesWithFieldTypeMetadata);
+			CheckForCalcedOnDbSideAndUnboundTypeAttributes(symbolContext, pxContext, property.Symbol, attributesWithFieldTypeMetadata);
 			CheckForFieldTypeAttributes(property, symbolContext, pxContext, attributesWithFieldTypeMetadata);
 		}
 	
@@ -127,24 +128,47 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, IPropertySymbol propertySymbol,
-																	   List<AttributeInfo> attributesWithFieldTypeMetadata)
+		private static void CheckForCalcedOnDbSideAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, IPropertySymbol propertySymbol,
+																		   List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			bool hasPXDBCalcedAttribute =
-				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.DbBoundness == DbBoundnessType.PXDBCalced);
 
-			if (!hasPXDBCalcedAttribute)
+			bool hasPXDBCalcedAttribute = false, hasPXDBScalarAttribute = false, hasUnboundTypeAttribute = false;
+
+			foreach (var attrInfo in attributesWithFieldTypeMetadata)
+			{
+				switch (attrInfo.DbBoundness)
+				{
+					case DbBoundnessType.Unbound:
+						hasUnboundTypeAttribute = true;
+						continue;	
+					case DbBoundnessType.PXDBScalar:
+						hasPXDBScalarAttribute = true;
+						continue;
+					case DbBoundnessType.PXDBCalced:
+						hasPXDBCalcedAttribute = true;
+						continue;			
+				}
+			}
+
+			if (hasUnboundTypeAttribute || (!hasPXDBCalcedAttribute && !hasPXDBScalarAttribute) ||
+				propertySymbol.GetSyntax(symbolContext.CancellationToken) is not PropertyDeclarationSyntax propertyNode ||
+				propertyNode.Identifier.GetLocation() is not Location location)
+			{
 				return;
+			}
 
-			bool hasUnboundTypeAttribute =
-				attributesWithFieldTypeMetadata.Any(attrInfo => attrInfo.DbBoundness == DbBoundnessType.Unbound);
-				
-			if (hasUnboundTypeAttribute || propertySymbol.GetSyntax(symbolContext.CancellationToken) is not PropertyDeclarationSyntax propertyNode)
-				return;
+			if (hasPXDBCalcedAttribute)
+			{
+				var diagnostic = Diagnostic.Create(Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute, location);
+				symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+			}
 
-			var diagnostic = Diagnostic.Create(Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute, propertyNode.Identifier.GetLocation());
-			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+			if (hasPXDBScalarAttribute)
+			{
+				var diagnostic = Diagnostic.Create(Descriptors.PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute, location);
+				symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+			}
 		}
 
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,

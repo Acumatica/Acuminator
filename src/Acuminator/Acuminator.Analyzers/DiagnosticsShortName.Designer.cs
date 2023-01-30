@@ -846,9 +846,18 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NoUnboundTypeAttributeWithPXDBCalced.
         /// </summary>
-        public static string PX1095 {
+        public static string PX1095PXDBCalced {
             get {
-                return ResourceManager.GetString("PX1095", resourceCulture);
+                return ResourceManager.GetString("PX1095PXDBCalced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NoUnboundTypeAttributeWithPXDBScalar.
+        /// </summary>
+        public static string PX1095PXDBScalar {
+            get {
+                return ResourceManager.GetString("PX1095PXDBScalar", resourceCulture);
             }
         }
     }

@@ -408,6 +408,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1094", nameof(Resources.PX1094Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1094);
 
 		public static DiagnosticDescriptor PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute { get; } =
-			Rule("PX1095", nameof(Resources.PX1095Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1095);
+			Rule("PX1095", nameof(Resources.PX1095Title_PXDBCalced).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1095PXDBCalced);
+
+		public static DiagnosticDescriptor PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute { get; } =
+			Rule("PX1095", nameof(Resources.PX1095Title_PXDBScalar).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1095PXDBScalar);
 	}
 }

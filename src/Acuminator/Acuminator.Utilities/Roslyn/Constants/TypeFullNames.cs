@@ -45,6 +45,9 @@
 		internal const string PXDateAttribute = "PX.Data.PXDateAttribute";
 		internal const string PXGuidAttribute = "PX.Data.PXGuidAttribute";
 		internal const string PXBoolAttribute = "PX.Data.PXBoolAttribute";
+		internal const string PXVariantAttribute = "PX.Data.PXVariantAttribute";
+
+
 		internal const string PXDBFieldAttribute = "PX.Data.PXDBFieldAttribute";
 
 		internal const string PXDBLongAttribute              = "PX.Data.PXDBLongAttribute";

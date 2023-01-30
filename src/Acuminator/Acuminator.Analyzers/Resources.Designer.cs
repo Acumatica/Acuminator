@@ -1660,9 +1660,18 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to A field with the PXDBCalced attribute must have an unbound type attribute, such as PXDate, PXDecimal.
         /// </summary>
-        public static string PX1095Title {
+        public static string PX1095Title_PXDBCalced {
             get {
-                return ResourceManager.GetString("PX1095Title", resourceCulture);
+                return ResourceManager.GetString("PX1095Title_PXDBCalced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A field with the PXDBScalar attribute must have an unbound type attribute, such as PXDate, PXDecimal.
+        /// </summary>
+        public static string PX1095Title_PXDBScalar {
+            get {
+                return ResourceManager.GetString("PX1095Title_PXDBScalar", resourceCulture);
             }
         }
         
