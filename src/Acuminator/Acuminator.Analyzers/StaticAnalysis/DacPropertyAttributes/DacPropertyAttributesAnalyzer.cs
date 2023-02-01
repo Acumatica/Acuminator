@@ -56,19 +56,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributesWithFieldTypeMetadata.Count == 0)
 				return;
 
-			bool validAttributesCalcedOnDbSide = CheckForMultipleAttributesCalcedOnDbSide(symbolContext, pxContext, attributesWithFieldTypeMetadata);
+			bool validAttributesCalcedOnDbSide = CheckForMultipleAttributesCalcedOnDbSide(symbolContext, pxContext, property, 
+																						  attributesWithFieldTypeMetadata);
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!validAttributesCalcedOnDbSide)
 				return;
 
-			CheckForCalcedOnDbSideAndUnboundTypeAttributes(symbolContext, pxContext, property.Symbol, attributesWithFieldTypeMetadata);
+			CheckForCalcedOnDbSideAndUnboundTypeAttributes(symbolContext, pxContext, property, attributesWithFieldTypeMetadata);
 			CheckForFieldTypeAttributes(property, symbolContext, pxContext, attributesWithFieldTypeMetadata);
 		}
 	
-		private static bool CheckForMultipleAttributesCalcedOnDbSide(SymbolAnalysisContext symbolContext, PXContext pxContext, 
-																	 List<AttributeInfo> attributesWithFieldTypeMetadata)
+		private static bool CheckForMultipleAttributesCalcedOnDbSide(SymbolAnalysisContext symbolContext, PXContext pxContext,
+																	 DacPropertyInfo property, List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+			// Optimization - properties with the following DB boudnesses defintely don't have attributes calced on DB side
+			if (property.EffectiveDbBoundness is DbBoundnessType.DbBound or DbBoundnessType.Unbound or DbBoundnessType.NotDefined)
+				return true;
+
 			var (attributesCalcedOnDbSideDeclaredOnDacProperty, attributesCalcedOnDbSideWithConflictingAggregatorDeclarations) =
 				FilterAttributeInfosCalcedOnDbSide();
 
@@ -128,10 +135,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static void CheckForCalcedOnDbSideAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, IPropertySymbol propertySymbol,
-																		   List<AttributeInfo> attributesWithFieldTypeMetadata)
+		private static void CheckForCalcedOnDbSideAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
+																		   DacPropertyInfo property, List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+			// Optimization - properties with the following DB boudnesses defintely don't have attributes calced on DB side
+			if (property.EffectiveDbBoundness is DbBoundnessType.DbBound or DbBoundnessType.Unbound or DbBoundnessType.NotDefined)
+				return;
 
 			bool hasPXDBCalcedAttribute = false, hasPXDBScalarAttribute = false, hasUnboundTypeAttribute = false;
 
@@ -152,8 +163,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 
 			if (hasUnboundTypeAttribute || (!hasPXDBCalcedAttribute && !hasPXDBScalarAttribute) ||
-				propertySymbol.GetSyntax(symbolContext.CancellationToken) is not PropertyDeclarationSyntax propertyNode ||
-				propertyNode.Identifier.GetLocation() is not Location location)
+				property.Node.Identifier.GetLocation() is not Location location)
 			{
 				return;
 			}
@@ -174,6 +184,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														List<AttributeInfo> attributesWithFieldTypeMetadata)
 		{
+			if (property.EffectiveDbBoundness == DbBoundnessType.NotDefined)
+				return;
+
 			var (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, hasNonNullDataType) = 
 				FilterTypeAttributes(attributesWithFieldTypeMetadata);
 
@@ -193,14 +206,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			} 
 			else if (typeAttributesWithDifferentDataTypesOnAggregator?.Count is null or 0)
 			{
-				AttributeInfo typeAttribute = typeAttributesOnDacProperty[0];
-				var attributeDataType = typeAttribute.AggregatedAttributeMetadata
-													 .Where(atrMetadata => atrMetadata.IsFieldAttribute && atrMetadata.DataType != null)
-													 .Select(atrMetadata => atrMetadata.DataType)
-													 .Distinct()
-													 .FirstOrDefault();
+				AttributeInfo dataTypeAttribute = typeAttributesOnDacProperty[0];
+				var dataTypeFromAttribute = dataTypeAttribute.AggregatedAttributeMetadata
+															 .Where(atrMetadata => atrMetadata.IsFieldAttribute && atrMetadata.DataType != null)
+															 .Select(atrMetadata => atrMetadata.DataType)
+															 .Distinct()
+															 .FirstOrDefault();
 		
-				CheckAttributeAndPropertyTypesForCompatibility(property, typeAttribute, attributeDataType, pxContext, symbolContext);
+				CheckAttributeAndPropertyTypesForCompatibility(property, dataTypeAttribute, dataTypeFromAttribute, pxContext, symbolContext);
 			}			
 		}
 
@@ -244,31 +257,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			return (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, hasNonNullDataType);
 		}
 
-		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo fieldAttribute, ITypeSymbol? attributeDataType,
-																		   PXContext pxContext, SymbolAnalysisContext symbolContext)
+		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo dataTypeAttribute, 
+																		   ITypeSymbol? dataTypeFromAttribute, PXContext pxContext, 
+																		   SymbolAnalysisContext symbolContext)
 		{
-			if (attributeDataType == null)                           //PXDBFieldAttribute case
+			if (dataTypeFromAttribute == null)             //PXDBFieldAttribute and PXEntityAttribute without data type case
 			{
-				ReportIncompatibleTypesDiagnostics(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: false);
+				ReportIncompatibleTypesDiagnostics(property, dataTypeAttribute, symbolContext, pxContext, registerCodeFix: false);
 				return;
 			}
 
-			ITypeSymbol? typeToCompare;
-
-			if (property.PropertyType.IsValueType)
+			if (!dataTypeFromAttribute.Equals(property.EffectivePropertyType))
 			{
-				typeToCompare = property.PropertyType.IsNullable(pxContext)
-					? property.PropertyType.GetUnderlyingTypeFromNullable(pxContext)
-					: property.PropertyType;
-			}
-			else
-			{
-				typeToCompare = property.PropertyType;
-			}
-
-			if (!attributeDataType.Equals(typeToCompare))
-			{
-				ReportIncompatibleTypesDiagnostics(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: true);
+				ReportIncompatibleTypesDiagnostics(property, dataTypeAttribute, symbolContext, pxContext, registerCodeFix: true);
 			}
 		}
 
