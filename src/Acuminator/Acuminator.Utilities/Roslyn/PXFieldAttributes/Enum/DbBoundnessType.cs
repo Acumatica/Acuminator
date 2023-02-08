@@ -98,19 +98,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			switch (x) 
 			{
 				case DbBoundnessType.NotDefined:
-					return y;
-
 				case DbBoundnessType.Unbound:
-					return y.CombineWithUnbound();
+					return y;		// y can't be NotDefined here
 
 				case DbBoundnessType.DbBound:
 					return y.CombineWithDbBound();
 
 				case DbBoundnessType.PXDBScalar:
-					return y.CombineWithPXDBScalar();
+					return y.CombineWithPXDBCalcedOrDBScalar(isDbScalar: true);
 
 				case DbBoundnessType.PXDBCalced:
-					return y.CombineWithPXDBCalced();
+					return y.CombineWithPXDBCalcedOrDBScalar(isDbScalar: false);
 
 				case DbBoundnessType.Error:
 					return x;
@@ -120,30 +118,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					return y == DbBoundnessType.Error
 						? DbBoundnessType.Error
 						: DbBoundnessType.Unknown;
-			}
-		}
-
-		private static DbBoundnessType CombineWithUnbound(this DbBoundnessType y)
-		{
-			switch (y)
-			{
-				case DbBoundnessType.NotDefined:
-				case DbBoundnessType.Unbound:
-					return DbBoundnessType.Unbound;
-
-				case DbBoundnessType.DbBound:
-					return DbBoundnessType.DbBound;
-
-				case DbBoundnessType.PXDBCalced:
-					return DbBoundnessType.PXDBCalced;
-
-				case DbBoundnessType.PXDBScalar:
-				case DbBoundnessType.Error:
-					return DbBoundnessType.Error;
-
-				case DbBoundnessType.Unknown:
-				default:
-					return DbBoundnessType.Unknown;
 			}
 		}
 
@@ -157,12 +131,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				return DbBoundnessType.Error;
 		}
 
-		private static DbBoundnessType CombineWithPXDBScalar(this DbBoundnessType y)
+		private static DbBoundnessType CombineWithPXDBCalcedOrDBScalar(this DbBoundnessType y, bool isDbScalar)
 		{
 			switch (y)
 			{
-				case DbBoundnessType.Unbound:
 				case DbBoundnessType.DbBound:
+				case DbBoundnessType.PXDBScalar:		// Multiple calced on DB side attributes should result in error
 				case DbBoundnessType.PXDBCalced:
 				case DbBoundnessType.Error:
 					return DbBoundnessType.Error;
@@ -170,25 +144,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				case DbBoundnessType.Unknown:
 					return DbBoundnessType.Unknown;
 
+				case DbBoundnessType.Unbound:
 				default:
-					return DbBoundnessType.PXDBScalar;
-			}
-		}
-
-		private static DbBoundnessType CombineWithPXDBCalced(this DbBoundnessType y)
-		{
-			switch (y)
-			{
-				case DbBoundnessType.DbBound:
-				case DbBoundnessType.PXDBScalar:
-				case DbBoundnessType.Error:
-					return DbBoundnessType.Error;
-
-				case DbBoundnessType.Unknown:
-					return DbBoundnessType.Unknown;
-
-				default:
-					return DbBoundnessType.PXDBCalced;
+					return isDbScalar
+						? DbBoundnessType.PXDBScalar
+						: DbBoundnessType.PXDBCalced;
 			}
 		}
 	}

@@ -69,7 +69,7 @@ namespace Acuminator.Vsix
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
-		public const string PackageVersion = "3.2.0";
+		public const string PackageVersion = "3.1.1";
 
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.

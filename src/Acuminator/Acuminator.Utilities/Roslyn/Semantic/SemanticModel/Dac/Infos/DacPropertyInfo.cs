@@ -53,7 +53,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ITypeSymbol PropertyType => Symbol.Type;
 
 		/// <value>
-		/// The effective type of the property.
+		/// The effective type of the property. For reference types and non nullable value types it is the same as <see cref="PropertyType"/>. 
+		/// For nulable value types it is the underlying type extracted from nullable. It is <c>T</c> for <see cref="Nullable{T}"/>.
 		/// </value>
 		public ITypeSymbol EffectivePropertyType { get; }
 

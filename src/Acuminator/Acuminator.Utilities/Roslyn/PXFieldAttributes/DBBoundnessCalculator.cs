@@ -231,7 +231,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						: DbBoundnessType.DbBound;
 		}
 
-		private DbBoundnessType CombineExplictlySetAndMetadataBoundnesses(DbBoundnessType explicitDbBoundnessFromApplications, DbBoundnessType dbBoundnessFromMetadata)
+		private DbBoundnessType CombineExplictlySetAndMetadataBoundnesses(DbBoundnessType explicitDbBoundnessFromApplications, 
+																		  DbBoundnessType dbBoundnessFromMetadata)
 		{
 			// Custom combination rules
 			switch (explicitDbBoundnessFromApplications)
@@ -239,16 +240,18 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				case DbBoundnessType.Unbound:
 					return dbBoundnessFromMetadata switch
 					{
-						DbBoundnessType.PXDBCalced							  => DbBoundnessType.PXDBCalced,
-						DbBoundnessType.PXDBScalar or DbBoundnessType.Error	  => DbBoundnessType.Error,
-						DbBoundnessType.NotDefined or DbBoundnessType.Unbound
-						or DbBoundnessType.DbBound or DbBoundnessType.Unknown => explicitDbBoundnessFromApplications,
-						_													  => explicitDbBoundnessFromApplications
+						// normal boundness resolution
+						DbBoundnessType.PXDBCalced or DbBoundnessType.PXDBScalar
+						or DbBoundnessType.Error or DbBoundnessType.NotDefined	 => dbBoundnessFromMetadata.Combine(explicitDbBoundnessFromApplications),
+						// explicit boundndess takes priority
+						DbBoundnessType.Unbound or DbBoundnessType.DbBound or 
+						DbBoundnessType.Unknown									 => explicitDbBoundnessFromApplications,
+						_														 => dbBoundnessFromMetadata.Combine(explicitDbBoundnessFromApplications)
 					};
 					
 				case DbBoundnessType.DbBound:
 					return dbBoundnessFromMetadata is DbBoundnessType.PXDBScalar or DbBoundnessType.PXDBCalced or DbBoundnessType.Error
-						? DbBoundnessType.Error
+						? dbBoundnessFromMetadata.Combine(explicitDbBoundnessFromApplications)
 						: explicitDbBoundnessFromApplications;
 					
 				case DbBoundnessType.Unknown:
