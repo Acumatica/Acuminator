@@ -250,7 +250,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to long run operation.
+        ///   Looks up a localized string similar to long-running operation.
         /// </summary>
         public static string PX1008Title_LongRunDelegateFormatArg {
             get {
@@ -520,20 +520,29 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property.
+        /// </summary>
+        public static string PX1023MultipleCalcedOnDbSideAttributesFix {
+            get {
+                return ResourceManager.GetString("PX1023MultipleCalcedOnDbSideAttributesFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The attribute aggregates multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
-        public static string PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle {
+        public static string PX1023MultipleCalcedOnDbSideAttributesOnAggregatorsTitle {
             get {
-                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleCalcedOnDbSideAttributesOnAggregatorsTitle", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
-        public static string PX1023MultipleSpecialTypeAttributesOnPropertyTitle {
+        public static string PX1023MultipleCalcedOnDbSideAttributesOnPropertyTitle {
             get {
-                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnPropertyTitle", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleCalcedOnDbSideAttributesOnPropertyTitle", resourceCulture);
             }
         }
         
@@ -552,15 +561,6 @@ namespace Acuminator.Analyzers {
         public static string PX1023MultipleTypeAttributesOnPropertyTitle {
             get {
                 return ResourceManager.GetString("PX1023MultipleTypeAttributesOnPropertyTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property.
-        /// </summary>
-        public static string PX1023SpecialAttributesFix {
-            get {
-                return ResourceManager.GetString("PX1023SpecialAttributesFix", resourceCulture);
             }
         }
         
@@ -1352,7 +1352,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The declaration of the exception class does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
+        ///   Looks up a localized string similar to The declaration of the exception class does not contain a serialization constructor. This will cause incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
         /// </summary>
         public static string PX1063Title {
             get {
@@ -1370,7 +1370,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
+        ///   Looks up a localized string similar to The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP..
         /// </summary>
         public static string PX1064Title {
             get {

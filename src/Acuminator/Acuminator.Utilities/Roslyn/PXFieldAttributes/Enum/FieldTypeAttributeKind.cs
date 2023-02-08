@@ -16,6 +16,11 @@
 		UnboundTypeAttribute,
 
 		/// <summary>
+		/// Type attribute that could be used both with bound and unbound DAC fields.
+		/// </summary>
+		MixedDbBoundnessTypeAttribute,
+
+		/// <summary>
 		/// PXDBScalarAttribute attribute.
 		/// </summary>
 		PXDBScalarAttribute,

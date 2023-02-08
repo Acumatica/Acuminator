@@ -26,5 +26,27 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacFieldWithDBCalcedAttribute.So
 		[PXDBDate]
 		public virtual DateTime? LastOutgoingActivityDate { get; set; }
 		public abstract class lastOutgoingActivityDate : IBqlField { }
+
+		#region MaxFinPeriodID
+		public abstract class maxFinPeriodID : PX.Data.BQL.BqlString.Field<maxFinPeriodID> { }
+
+		// Acuminator disable once PX1095 NoUnboundTypeAttributeWithPXDBCalced [Type field define with FinPeriod attribue]
+		[FinPeriodID(IsDBField = true)]
+		[PXDBCalced(typeof(IIf<Where<ARTranPostGL.type, Equal<ARTranPost.type.rgol>>
+			, Null
+			, ARTranPostGL.finPeriodID>), typeof(string))]
+		public virtual string MaxFinPeriodID { get; set; }
+		#endregion
+
+		#region MaxFinPeriodID2
+		public abstract class maxFinPeriodID2 : PX.Data.BQL.BqlString.Field<maxFinPeriodID2> { }
+
+		// Acuminator disable once PX1095 NoUnboundTypeAttributeWithPXDBCalced [Type field define with FinPeriod attribue]
+		[FinPeriodID]
+		[PXDBCalced(typeof(IIf<Where<ARTranPostGL.type, Equal<ARTranPost.type.rgol>>
+			, Null
+			, ARTranPostGL.finPeriodID>), typeof(string))]
+		public virtual string MaxFinPeriodID2 { get; set; }
+		#endregion
 	}
 }

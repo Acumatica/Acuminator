@@ -1,22 +1,22 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Composition;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
@@ -32,15 +32,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			string codeActionName = GetCodeActionName();
-			Func<FieldTypeAttributeInfo, bool> removePredicate = GetRemoveAttributeByAttributeInfoPredicate();
+			Func<DataTypeAttributeInfo, bool> removePredicate = GetRemoveAttributeByAttributeInfoPredicate();
 
 			if (codeActionName.IsNullOrWhiteSpace() || removePredicate == null)
 				return;
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(root?.FindNode(context.Span) is AttributeSyntax attributeNode))
+			if (root?.FindNode(context.Span) is not AttributeSyntax attributeNode)
 				return;
 
 			var propertyDeclaration = attributeNode.Parent<PropertyDeclarationSyntax>();
@@ -48,8 +48,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (propertyDeclaration == null)
 				return;
 
-			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
-																.ConfigureAwait(false);
+			SemanticModel? semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
+																 .ConfigureAwait(false);
 			if (semanticModel == null)
 				return;
 
@@ -65,13 +65,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		protected abstract string GetCodeActionName();
 
-		protected abstract Func<FieldTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate();
+		protected abstract Func<DataTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate();
 
 		private Task<Document> RemoveAllOtherAttributesFromPropertyAsync(Document document, SyntaxNode root, AttributeSyntax attributeNode,
 																		 PropertyDeclarationSyntax propertyDeclaration, SemanticModel semanticModel,
-																		 Func<FieldTypeAttributeInfo, bool> removePredicate, CancellationToken cancellationToken)
+																		 Func<DataTypeAttributeInfo, bool> removePredicate, CancellationToken cancellationToken)
 		{	
-			var rewriterWalker = new MultipleAttributesRemover(document, semanticModel, attributeNode, removePredicate, cancellationToken);
+			var rewriterWalker = new MultipleAttributesRemover(semanticModel, attributeNode, removePredicate, cancellationToken);
 			var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;
 
 			cancellationToken.ThrowIfCancellationRequested();
@@ -90,27 +90,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			private int _visitedAttributeListCounter;
 			private int _attributeListsRemovedCounter;
 			
-			private readonly Document _document;
 			private readonly SemanticModel _semanticModel;
-			private readonly FieldTypeAttributesRegister _attributesRegister;
+			private readonly FieldTypeAttributesMetadataProvider _attributesMetadataProvider;
 			private readonly AttributeSyntax _remainingAttribute;
-			private readonly Func<FieldTypeAttributeInfo, bool> _attributeToRemovePredicate;
+			private readonly Func<DataTypeAttributeInfo, bool> _attributeToRemovePredicate;
 			private readonly CancellationToken _cancellationToken;
 
-			public MultipleAttributesRemover(Document document, SemanticModel semanticModel, AttributeSyntax remainingAttribute,
-											 Func<FieldTypeAttributeInfo, bool> attributeToRemovePredicate, CancellationToken cToken)
+			public MultipleAttributesRemover(SemanticModel semanticModel, AttributeSyntax remainingAttribute,
+											 Func<DataTypeAttributeInfo, bool> attributeToRemovePredicate, CancellationToken cToken)
 			{
-				_document = document;
 				_semanticModel = semanticModel;
 				_cancellationToken = cToken;
 				_remainingAttribute = remainingAttribute;
 				_attributeToRemovePredicate = attributeToRemovePredicate;
 
 				PXContext pxContext = new PXContext(_semanticModel.Compilation, codeAnalysisSettings: null);
-				_attributesRegister = new FieldTypeAttributesRegister(pxContext);
+				_attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 			}
 
-            public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
+            public override SyntaxNode? VisitAttributeList(AttributeListSyntax attributeListNode)
 			{
 				_cancellationToken.ThrowIfCancellationRequested();
 
@@ -159,13 +157,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				if (attributeNode.Equals(_remainingAttribute))
 					return false;
 
-				ITypeSymbol attributeType = _semanticModel.GetTypeInfo(attributeNode, _cancellationToken).Type;
+				ITypeSymbol? attributeType = _semanticModel.GetTypeInfo(attributeNode, _cancellationToken).Type;
 				_cancellationToken.ThrowIfCancellationRequested();
 
 				if (attributeType == null)
 					return false;
 				
-				var attributeInfos = _attributesRegister.GetFieldTypeAttributeInfos(attributeType);
+				var attributeInfos = _attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType);
 				return attributeInfos.Any(_attributeToRemovePredicate);
 			}
 		}

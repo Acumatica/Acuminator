@@ -14,7 +14,7 @@ namespace PX.Objects.HackathonDemo
 	}
 
 	[NonNullableInt]
-	[PXIntList(new[] { 1, 2, 3 }, new[] { "First", "Second", "Third" })]
+	[PXInt, PXIntList(new[] { 1, 2, 3 }, new[] { "First", "Second", "Third" })]
 	public class NonNullableIntListAttribute : PXAggregateAttribute
 	{
 	}

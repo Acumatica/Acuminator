@@ -13,17 +13,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public sealed class MultipleFieldTypeAttributesOnDacPropertyFix : MultipleAttributesOnDacPropertyFixBase
+	public sealed class MultipleCalcedOnDbSideAttributesOnDacPropertyFix : MultipleAttributesOnDacPropertyFixBase
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds => 
 			ImmutableArray.Create
 			(
-				Descriptors.PX1023_MultipleTypeAttributesOnProperty.Id
+				Descriptors.PX1023_MultipleCalcedOnDbSideAttributesOnProperty.Id
 			);
 
-		protected override string GetCodeActionName() => nameof(Resources.PX1023TypeAttributesFix).GetLocalized().ToString();
+		protected override string GetCodeActionName() => nameof(Resources.PX1023MultipleCalcedOnDbSideAttributesFix).GetLocalized().ToString();
 
-		protected override Func<DataTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate() =>
-			attributeInfo => attributeInfo.IsFieldAttribute;
+		protected override Func<DataTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate() => 
+			attributeInfo => attributeInfo.IsCalculatedOnDbSide;
+		
 	}
 }

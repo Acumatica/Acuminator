@@ -18,7 +18,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class LocalizationPXExceptionAndPXexceptionInfoAnalyzer : PXDiagnosticAnalyzer
+	public class LocalizationPXExceptionAndPXExceptionInfoAnalyzer : PXDiagnosticAnalyzer
 	{
 		private static readonly string[] _pxExceptionMessageArgNames =  
 		{ 
@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 				Descriptors.PX1053_ConcatenationPriorLocalization
 			);
 
-		public LocalizationPXExceptionAndPXexceptionInfoAnalyzer() : base()
+		public LocalizationPXExceptionAndPXExceptionInfoAnalyzer() : base()
 		{
 		}
 
@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 		/// Constructor for tests.
 		/// </summary>
 		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
-		public LocalizationPXExceptionAndPXexceptionInfoAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public LocalizationPXExceptionAndPXExceptionInfoAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
 		{
 		}
 

@@ -17,7 +17,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 	public class LocalizationExceptionTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new LocalizationPXExceptionAndPXexceptionInfoAnalyzer(
+			new LocalizationPXExceptionAndPXExceptionInfoAnalyzer(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled()
 											.WithRecursiveAnalysisEnabled());

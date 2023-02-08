@@ -1,10 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 {
@@ -15,11 +21,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 	public class AttributeInfo
 	{
 		/// <summary>
-		/// Information describing the attribute.
+		/// Information describing the attribute application.
 		/// </summary>
 		public AttributeData AttributeData { get; }
 
 		public INamedTypeSymbol AttributeType => AttributeData.AttributeClass;
+
+		/// <summary>
+		/// The flattened Acumatica attributes with applications set - this attribute, its base attributes, aggregated attributes in case of an aggregate attribute, 
+		/// aggregates on aggregates and so on.
+		/// </summary>
+		public ImmutableHashSet<AttributeWithApplication> FlattenedAcumaticaAttributes { get; }
+
+		/// <summary>
+		/// The aggregated attribute metadata collection - information from the flattened attributes set. 
+		/// It is mostly related to the attribute's relationship with database.
+		/// </summary>
+		public ImmutableArray<DataTypeAttributeInfo> AggregatedAttributeMetadata { get; }
 
 		public virtual string Name => AttributeType.Name;
 
@@ -28,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// </summary>
 		public int DeclarationOrder { get; }
 
-		public BoundType BoundType { get; }
+		public DbBoundnessType DbBoundness { get; }
 
 		public bool IsIdentity { get; }
 
@@ -41,56 +59,58 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		protected virtual string DebuggerDisplay => $"{Name}";
 
-		protected AttributeInfo(AttributeData attributeData, BoundType boundType, int declarationOrder, bool isKey, bool isIdentity, 
-								bool isDefaultAttribute, bool isAutoNumberAttribute)
+		protected AttributeInfo(AttributeData attributeData, IEnumerable<AttributeWithApplication> flattenedAttributeApplications, IEnumerable<DataTypeAttributeInfo> attributeInfos,
+								DbBoundnessType dbBoundness, int declarationOrder, bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute)
 		{
-			attributeData.ThrowOnNull(nameof(attributeData));
-			AttributeData = attributeData;
-			BoundType = boundType;
-			DeclarationOrder = declarationOrder;
-			IsKey = isKey;
-			IsIdentity = isIdentity;
-			IsDefaultAttribute = isDefaultAttribute;
-			IsAutoNumberAttribute = isAutoNumberAttribute;
+			AttributeData                = attributeData.CheckIfNull(nameof(attributeData));
+			FlattenedAcumaticaAttributes = (flattenedAttributeApplications as ImmutableHashSet<AttributeWithApplication>) ?? flattenedAttributeApplications.ToImmutableHashSet();
+			AggregatedAttributeMetadata  = attributeInfos.ToImmutableArray();
+			DbBoundness                  = dbBoundness;
+			DeclarationOrder             = declarationOrder;
+			IsKey                        = isKey;
+			IsIdentity                   = isIdentity;
+			IsDefaultAttribute           = isDefaultAttribute;
+			IsAutoNumberAttribute        = isAutoNumberAttribute;
 		}
 
-		public static AttributeInfo Create(AttributeData attribute, AttributeInformation attributeInformation, int declarationOrder)
+		public static AttributeInfo Create(AttributeData attribute, DbBoundnessCalculator dbBoundnessCalculator, int declarationOrder)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
-			attributeInformation.ThrowOnNull(nameof(attributeInformation));
+			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
 
-			BoundType boundType = attributeInformation.GetBoundAttributeType(attribute);
-			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation);
-			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation);
-			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, attributeInformation);
-			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(DelegateNames.IsKey) &&
+			var flattenedAttributeApplications = attribute.GetThisAndAllAggregatedAttributesWithApplications(dbBoundnessCalculator.Context, includeBaseTypes: true);
+			var flattenedAttributeTypes = flattenedAttributeApplications.Select(attributeWithApplication => attributeWithApplication.Type).ToImmutableHashSet();
+
+			var aggregatedMetadata	    = dbBoundnessCalculator.AttributesMetadataProvider.GetDacFieldTypeAttributeInfos(attribute.AttributeClass, flattenedAttributeTypes);
+			DbBoundnessType dbBoundness = dbBoundnessCalculator.GetAttributeApplicationDbBoundnessType(attribute, flattenedAttributeApplications, flattenedAttributeTypes, 
+																									   aggregatedMetadata);
+
+			bool isPXDefaultAttribute      = IsPXDefaultAttribute(flattenedAttributeTypes, dbBoundnessCalculator.Context);
+			bool isIdentityAttribute       = IsDerivedFromIdentityTypes(flattenedAttributeTypes, dbBoundnessCalculator.Context);
+			bool isAutoNumberAttribute     = CheckForAutoNumberAttribute(flattenedAttributeTypes, dbBoundnessCalculator.Context);
+			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(PropertyNames.Attributes.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
-			return new AttributeInfo(attribute, boundType, declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute,
-									 isPXDefaultAttribute, isAutoNumberAttribute);
+			return new AttributeInfo(attribute, flattenedAttributeApplications, aggregatedMetadata, dbBoundness, declarationOrder, isAttributeWithPrimaryKey,
+									 isIdentityAttribute, isPXDefaultAttribute, isAutoNumberAttribute);
 		}
 
-		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, AttributeInformation attributeInformation) =>
-			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, attributeInformation.Context.FieldAttributes.PXDBIdentityAttribute) ||
-			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, attributeInformation.Context.FieldAttributes.PXDBLongIdentityAttribute);
+		private static bool IsDerivedFromIdentityTypes(ImmutableHashSet<ITypeSymbol> flattenedAttributes, PXContext pxContext) =>
+			flattenedAttributes.Contains(pxContext.FieldAttributes.PXDBIdentityAttribute) ||
+			flattenedAttributes.Contains(pxContext.FieldAttributes.PXDBLongIdentityAttribute);
 
-		private static bool IsPXDefaultAttribute(AttributeData attribute, AttributeInformation attributeInformation)
+		private static bool IsPXDefaultAttribute(ImmutableHashSet<ITypeSymbol> flattenedAttributes, PXContext pxContext) =>
+			flattenedAttributes.Contains(pxContext.AttributeTypes.PXDefaultAttribute) && 
+			!flattenedAttributes.Contains(pxContext.AttributeTypes.PXUnboundDefaultAttribute);
+		
+		private static bool CheckForAutoNumberAttribute(ImmutableHashSet<ITypeSymbol> flattenedAttributes, PXContext pxContext)
 		{
-			var pxDefaultAttribute = attributeInformation.Context.AttributeTypes.PXDefaultAttribute;
-			var pxUnboundDefaultAttribute = attributeInformation.Context.AttributeTypes.PXUnboundDefaultAttribute;
-
-			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxDefaultAttribute) &&
-				   !attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxUnboundDefaultAttribute);
-		}
-
-		private static bool CheckForAutoNumberAttribute(AttributeData attribute, AttributeInformation attributeInformation)
-		{
-			var autoNumberAttribute = attributeInformation.Context.AttributeTypes.AutoNumberAttribute.Type;
+			var autoNumberAttribute = pxContext.AttributeTypes.AutoNumberAttribute.Type;
 
 			if (autoNumberAttribute == null)
 				return false;
 
-			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, autoNumberAttribute);
+			return flattenedAttributes.Contains(autoNumberAttribute);
 		}
 	}
 }

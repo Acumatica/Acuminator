@@ -1,12 +1,17 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
@@ -34,8 +39,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 
         [Theory]
 		[EmbeddedFileData("DacExtensionWithBoundFields.cs")]
-		public virtual void DacExtensionWithBoundAttribute(string source) =>
-			VerifyCSharpDiagnostic(new[] { source },
+		public virtual Task DacExtensionWithBoundAttribute(string source) =>
+			VerifyCSharpDiagnosticAsync(new[] { source },
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.CreateFor(line: 23, column: 4),
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.CreateFor(line: 30, column: 4),
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.CreateFor(line: 44, column: 4),
@@ -45,69 +50,69 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithUnboundFields.cs")]
-		public virtual void DacExtensionWithUnboundFields(string source) =>
-			VerifyCSharpDiagnostic(new[] { source },
+		public virtual Task DacExtensionWithUnboundFields(string source) =>
+			VerifyCSharpDiagnosticAsync(new[] { source },
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.CreateFor(line: 35, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithBoundAndUnboundFields.cs", "SOOrder.cs")]
-		public virtual void DacExtensionWithBoundAndUnboundAttribute(string source, string additionalSource) =>
-			VerifyCSharpDiagnostic(new[] { source, additionalSource },
+		public virtual Task DacExtensionWithBoundAndUnboundAttribute(string source, string additionalSource) =>
+			VerifyCSharpDiagnosticAsync(new[] { source, additionalSource },
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.CreateFor(line: 16, column: 4),
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.CreateFor(line: 35, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("AggregateAttributeFields.cs", "SOOrder.cs")]
-		public virtual void DacExtensionWithAggregateAttributeFields(string source, string additionalSource) =>
-			VerifyCSharpDiagnostic(new[] { source, additionalSource },
+		[EmbeddedFileData("DacExtensionWithAggregateAttributesOnFields.cs", "SOOrder.cs")]
+		public virtual Task DacExtensionWithAggregateAttributeFields(string source, string additionalSource) =>
+			VerifyCSharpDiagnosticAsync(new[] { source, additionalSource },
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.CreateFor(line: 36, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("AggregateAttributeFields.cs",
-							"AggregateAttributeFields_Expected.cs")]
-		public virtual void CodeFix_DacExtensionWithAggregateAttributeFields(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		[EmbeddedFileData("DacExtensionWithAggregateAttributesOnFields.cs",
+						  "DacExtensionWithAggregateAttributesOnFields_Expected.cs")]
+		public virtual Task CodeFix_DacExtensionWithAggregateAttributeFields(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithBoundFields.cs",
 						  "DacExtensionWithBoundFields_Expected.cs")]
-		public virtual void CodeFix_DacExtensionWithBoundAttribute(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task CodeFix_DacExtensionWithBoundAttribute(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithUnboundFields.cs",
 						  "DacExtensionWithUnboundFields_Expected.cs")]
-		public virtual void CodeFix_DacExtensionWithUnboundAttribute(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected, 1);
+		public virtual Task CodeFix_DacExtensionWithUnboundAttribute(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected, 1);
 
 		[Theory]
 		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs")]
-		public virtual void DacWithBoundAndUnboundAttribute(string source) =>
-			VerifyCSharpDiagnostic(source,
+		public virtual Task DacWithBoundAndUnboundAttribute(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				 Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.CreateFor(line: 16, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("FullyUnboundDac.cs")]
-		public virtual void FullyUnboundDac_ShouldNotShow(string source) => VerifyCSharpDiagnostic(source);
+		public virtual Task FullyUnboundDac_ShouldNotShow(string source) => VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("FullyUnboundDacExtension.cs")]
-		public virtual void FullyUnboundDacExtension_ShouldNotShow(string source) => VerifyCSharpDiagnostic(source);
+		public virtual Task FullyUnboundDacExtension_ShouldNotShow(string source) => VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("DacAggregateAttributeFields.cs")]
-		public virtual void DacWithAggregateAttributeFields(string source) =>
-			VerifyCSharpDiagnostic(source,
+		[EmbeddedFileData("DacWithAggregateAttributeOnFields.cs")]
+		public virtual Task DacWithAggregateAttributeFields(string source) =>
+			VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.CreateFor(line: 36, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs", "DacWithBoundAndUnboundFields_Expected.cs")]
-		public virtual void CodeFix_DacWithBoundAndUnboundAttribute(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		public virtual Task CodeFix_DacWithBoundAndUnboundAttribute(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
-		[EmbeddedFileData("DacAggregateAttributeFields.cs", "DacAggregateAttributeFields_Expected.cs")]
-		public virtual void CodeFix_DacWithAggregateAttributeFields(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+		[EmbeddedFileData("DacWithAggregateAttributeOnFields.cs", "DacWithAggregateAttributeOnFields_Expected.cs")]
+		public virtual Task CodeFix_DacWithAggregateAttributeFields(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
 	}
 }

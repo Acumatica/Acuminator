@@ -35,8 +35,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private readonly Lazy<EventSymbols> _events;
 		public EventSymbols Events => _events.Value;
 
-		private readonly Lazy<FieldAttributeSymbols> _fieldAttributes;
-		public FieldAttributeSymbols FieldAttributes => _fieldAttributes.Value;
+		private readonly Lazy<DataTypeAttributeSymbols> _fieldAttributes;
+		public DataTypeAttributeSymbols FieldAttributes => _fieldAttributes.Value;
 
 		private readonly Lazy<PXSystemActionSymbols> _systemActionTypes;
 		public PXSystemActionSymbols PXSystemActions => _systemActionTypes.Value;
@@ -134,7 +134,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_bql                         = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_bqlTypes                    = new Lazy<BqlDataTypeSymbols>(() => new BqlDataTypeSymbols(Compilation));
 			_events                      = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
-			_fieldAttributes             = new Lazy<FieldAttributeSymbols>(() => new FieldAttributeSymbols(Compilation));
+			_fieldAttributes             = new Lazy<DataTypeAttributeSymbols>(() => new DataTypeAttributeSymbols(Compilation));
 			_systemActionTypes           = new Lazy<PXSystemActionSymbols>(() => new PXSystemActionSymbols(Compilation));
 			_attributes                  = new Lazy<AttributeSymbols>(() => new AttributeSymbols(Compilation));
 			_systemTypes                 = new Lazy<SystemTypeSymbols>(() => new SystemTypeSymbols(Compilation));

@@ -1,12 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -15,22 +19,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <summary>
 		/// The overriden property if any
 		/// </summary>
-		public DacPropertyInfo Base
+		public DacPropertyInfo? Base
 		{
 			get;
 			internal set;
 		}
 
-		DacPropertyInfo IWriteableBaseItem<DacPropertyInfo>.Base
+		DacPropertyInfo? IWriteableBaseItem<DacPropertyInfo>.Base
 		{
 			get => Base;
 			set
 			{
 				Base = value;
 				
-				if (value != null && BoundType == BoundType.NotDefined) //Inherit BoundType from the base property only if we don't override it
+				if (value != null)
 				{
-					EffectiveBoundType = value.EffectiveBoundType;
+					// TODO - need to add support for PXMergeAttributesAttribute in the future
+					EffectiveDbBoundness = DeclaredDbBoundness.Combine(value.EffectiveDbBoundness);
 				}
 			}
 		}
@@ -53,14 +58,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ITypeSymbol EffectivePropertyType { get; }
 
 		/// <summary>
-		/// The bound type declared on this property.
+		/// The DB boundness calculated from attributes declared on this DAC property.
 		/// </summary>
-		public BoundType BoundType { get; }
+		public DbBoundnessType DeclaredDbBoundness { get; }
 
 		/// <summary>
-		/// The effective bound type for this property obtained by the combination of <see cref="BoundType"/>s of this propety's override chain. 
+		/// The effective bound type for this property obtained by the combination of <see cref="DeclaredDbBoundness"/>s of this propety's override chain. 
 		/// </summary>
-		public BoundType EffectiveBoundType
+		public DbBoundnessType EffectiveDbBoundness
 		{
 			get;
 			private set;
@@ -76,13 +81,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
 							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
 		{
-			baseInfo.ThrowOnNull(nameof(baseInfo));
-			Base = baseInfo;
+			Base = baseInfo.CheckIfNull(nameof(baseInfo));
 
-			if (BoundType == BoundType.NotDefined)
-			{
-				EffectiveBoundType = baseInfo.EffectiveBoundType;
-			}
+			// TODO - need to add support for PXMergeAttributesAttribute in the future
+			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
 		}
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
@@ -92,21 +94,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Attributes = attributeInfos.ToImmutableArray();
 			IsDacProperty = isDacProperty;
 
-			BoundType boundType = BoundType.NotDefined;
+			DeclaredDbBoundness = Attributes.Select(a => a.DbBoundness).Combine();
+			EffectiveDbBoundness = DeclaredDbBoundness;
+
 			bool isIdentity = false;
 			bool isPrimaryKey = false;
 			bool isAutoNumbering = false;
 
 			foreach (AttributeInfo attributeInfo in Attributes)
 			{
-				boundType = boundType.Combine(attributeInfo.BoundType);
 				isIdentity = isIdentity || attributeInfo.IsIdentity;
 				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
 				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
 			}
-
-			BoundType = boundType;
-			EffectiveBoundType = BoundType;
+	
 			EffectivePropertyType = effectivePropertyType;
 			IsIdentity = isIdentity;
 			IsKey = isPrimaryKey;
@@ -114,16 +115,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
-											 AttributeInformation attributesInformation, IDictionary<string, DacFieldInfo> dacFields,
-											 DacPropertyInfo baseInfo = null)
+											 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacFieldInfo> dacFields,
+											 DacPropertyInfo? baseInfo = null)
 		{
 			context.ThrowOnNull(nameof(context));
 			property.ThrowOnNull(nameof(property));
-			attributesInformation.ThrowOnNull(nameof(attributesInformation));
+			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
 			dacFields.ThrowOnNull(nameof(dacFields));
 
 			bool isDacProperty = dacFields.ContainsKey(property.Name);
-			var attributeInfos = GetAttributeInfos(property, attributesInformation);
+			var attributeInfos = GetAttributeInfos(property, dbBoundnessCalculator);
 			var effectivePropertyType = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;
 
 			return baseInfo != null
@@ -131,13 +132,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos);
 		}
 
-		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, AttributeInformation attributeInformation)
+		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator dbBoundnessCalculator)
 		{
 			int relativeDeclarationOrder = 0;
 
 			foreach (AttributeData attribute in property.GetAttributes())
 			{			
-				yield return AttributeInfo.Create(attribute, attributeInformation, relativeDeclarationOrder);
+				yield return AttributeInfo.Create(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
 
 				relativeDeclarationOrder++;
 			}

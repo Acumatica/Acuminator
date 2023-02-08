@@ -84,7 +84,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					continue;
 
 				var unboundDacFieldsInKey = usedDacFields.Where(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo dacProperty) &&
-																			dacProperty.BoundType == BoundType.Unbound);
+																			dacProperty.DeclaredDbBoundness == DbBoundnessType.Unbound);
 				ClassDeclarationSyntax keyNode = null;
 
 				foreach (ITypeSymbol unboundDacFieldInKey in unboundDacFieldsInKey)

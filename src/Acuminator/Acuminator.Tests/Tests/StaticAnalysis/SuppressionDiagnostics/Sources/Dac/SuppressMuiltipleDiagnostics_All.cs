@@ -12,7 +12,7 @@ namespace PX.Objects.HackathonDemo.Suppression.Comments
 		#region CompanyMask
 		public abstract class companyMask : IBqlField { }
 		[PXDefault]
-		[PXUIField(DisplayName = "Company Mask")]
+		[PXString, PXUIField(DisplayName = "Company Mask")]
 		public string CompanyMask { get; set; }
 		#endregion
 
