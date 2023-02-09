@@ -1,6 +1,75 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 3.1.1
+Acuminator 3.1.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 3.1.1, the following enhancements have been implemented:
+- The [PX1042](diagnostics/PX1042.md) diagnostic has been changed to reflect the changes in Acumatica Platform. Starting with Acumatica ERP 2023 R1, Acumatica runtime has been changed to allow execution of database queries in the `RowSelecting` event handler without a separate connection scope. Therefore, in Acumatica ERP 2023 R1 and later versions, this diagnostic is disabled.
+- Localization diagnostics [PX1050](diagnostics/PX1050.md), [PX1051](diagnostics/PX1051.md), and [PX1053](diagnostics/PX1053.md) have been enhanced to support the `PX.Objects.Common.Exceptions.PXExceptionInfo` class. This class represents a data transfer object frequently used in Acumatica code to store data about exceptions. Localization diagnostics will treat this data the same way they treat Acumatica Framework exceptions derived from `PXException` as follows:
+   - Check that hard-coded strings are not passed as arguments to the `PXExceptionInfo` constructor calls. Only localizable string constants can be passed to the `PXExceptionInfo` constructor.
+   - Do not report error when the `PXExceptionInfo.MessageFormat` property is passed to APIs checked by Acuminator localization diagnostics, such as `PXException` constructor calls.
+- The [PX1016](diagnostics/PX1016.md) diagnostic has been changed to not check for the `IsActive` method in graph extensions that invlude the override of the `Configure` method with the screen configuration and workflows. Information about the `Configure` method has been added to the graph semantic model.
+- The [PX1018](diagnostics/PX1018.md) diagnostic has been added to not show a warning about abstract graphs and generic graphs that have a generic type parameter as their primary DAC.
+
+#### Analysis of Data Type Attributes and DAC Field DB Boundness Calculation
+The Acuminator analysis of Acumatica data type attributes has been significantly reworked:
+- Calculation of relationships between Acumatica attributes has been improved.
+- The unbound [PXVariantAttribute](https://help.acumatica.com/(W(98))/Help?ScreenId=ShowWiki&pageid=92f5623d-eebb-e5e7-db17-5aa98633b219) is now supported.
+
+The heuristic calculation of DAC field's relationship with a database (which we call _DB boundness_) has been significantly improved:
+- The set of possible DB boundness values has been extended. Previously, Acuminator could calculate only four types of DAC field's DB boundness: _NotDefined_, _Unbound_, _DbBound_, and _Unknown_.<br/> 
+	Now Acuminator displays three more values: 
+	- _PXDBScalar_
+	- _PXDBCalced_
+	- _Error_ (for the case when Acuminator can prove that the data type attributes on a DAC field property are declared incorrectly)
+	These new values are displayed in the Code Map for DACs and DAC extensions. The _Error_ value is displayed in the Code Map as __"Inconsistent"__.
+- Support for Acumatica aggregator attributes in the DB boundness calculation has been improved.<br/> 
+Aggregator attributes are attributes derived from the [PXAggregateAttribute](https://help.acumatica.com/(W(98))/Help?ScreenId=ShowWiki&pageid=9c64f185-b2a4-14ee-eef1-d78c0e05d100) class. They can combine functionality from several attributes:
+  ```C#
+  [PXDBInt]
+  [PXUIField(DisplayName = "Customer")]
+  [PXDefault]
+  [PXSelector(typeof(Search<BAccountR.bAccountID,
+              Where<BAccountR.status, Equal<BAccount.status.active>>>))]
+  public class CustomerActiveAttribute : PXAggregateAttribute { }
+          
+  public class ARInvoice : IBqlTable
+  {
+    [CustomerActive]
+    public override Int32? CustomerID { get; set; }
+  }
+  ``` 
+- Calculation of DB boundness has been improved to support hybrid data type attributes with mixed DB boundnesses. Such attributes can be placed on both bound and unbound DAC field properties. They usually have the `IsDBField` (or `NonDB` in case of `PXDBLocalizableStringAttribute`) flag which configures the attribute's DB boundness. The flag may have a default value, also it could be explicitly set on the attribute's declaration on a DAC field property or an aggregator attribute. Acumatica code includes a number of such attributes: `PeriodIDAttribute`, `PXEntityAttribute`, and attributes derived from them. They are supported in the new release.
+- The DB boundness calculation now supports combinations of hybrid and aggregator attributes and combines the default DB boundness with the DB boundness explicitly set on attribute's application on a DAC field property or an aggregator attribute.
+- The calculated attribute's DB boundness and information about the attribute's data type is now cached in the DAC semantic model and shared between Acuminator DAC analyzers.
+
+The changes in the attribute analysis provided an ability to make significant improvements in the following diagnostics:
+- The [PX1095](diagnostics/PX1095.md) diagnostic now supports both `PXDBCalcedAttribute` and `PXDBScalarAttribute` attributes. Any of them, when used on a DAC field property, requires an unbound data type attribute like `PXStringAttribute` placed on the same DAC field property. Previously, the PX1095 diagnostic checked only `PXDBCalcedAttribute` but starting from this release both attributes are checked.
+- The precision and performance of the following diagnostics has been improved:
+  - [PX1019](diagnostics/PX1019.md)
+  - [PX1020](diagnostics/PX1020.md)
+  - [PX1021](diagnostics/PX1021.md)
+  - [PX1023](diagnostics/PX1023.md)
+  - [PX1030](diagnostics/PX1030.md)
+  - [PX1095](diagnostics/PX1095.md)
+  
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+- The published version 3.1 of the `Acuminator.Analyzers` nuget package was corrupted and did not work. The nuget package is fixed in this release.
+- Graph Semantic Model incorrectly collected actions, action delegates, views, and view delegates for non-generic graph extensions derived from other graph extensions. This led to different possible bugs in static code analysis of graphs and graph extensions. The Code Map also displayed incorrect data. 
+- The [PX1091](diagnostics/PX1091.md) diagnostic did not report error in a scenarios involving a graph action witn an action delegate and a class hierarchy of graph extensions. In particular, the error was not reported in a scenario with a `Base` and `Derived` graph extensions when the action delegate was re-declared in `Base` and overridden in `Derived`, and the override calls the base action delegate from the graph via extension's `Base` property.  
+- The false alert in the [PX1091](diagnostics/PX1091.md) diagnostic for a call to the base action delegate method via `base` keyword in the action delegate method C# override.
+- The incorrect resolution of C# property and method overrides which resulted in the incorrect collection of data for the graph extension's `Initialize` method in case of several method overrides.
+- Minor bugfixes in code analysis and performance optimizations.
+
+### Other Changes
+Stability of the Acuminator tests infrastructure has been improved in the following ways:
+  - Validation of the test initial state has been added
+  - Error processing for failed tests has been enhanced
+ 
+
 ## Acuminator 3.1
 Acuminator 3.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
