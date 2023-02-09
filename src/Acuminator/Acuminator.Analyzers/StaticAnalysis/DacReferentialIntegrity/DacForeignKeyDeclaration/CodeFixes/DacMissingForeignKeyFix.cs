@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -39,18 +41,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var rootTask = context.Document.GetSyntaxRootAsync(context.CancellationToken);
-			var semanticModelTask = context.Document.GetSemanticModelAsync(context.CancellationToken);
+			var (semanticModel, root) = await context.Document.GetSemanticModelAndRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-			await Task.WhenAll(rootTask, semanticModelTask).ConfigureAwait(false);
-
-			SyntaxNode root = rootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
-
-			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax dacNode))
+			if (semanticModel == null || root?.FindNode(context.Span) is not ClassDeclarationSyntax dacNode)
 				return;
 
-			INamedTypeSymbol dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, context.CancellationToken);
+			INamedTypeSymbol? dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
 			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ReferentialIntegrity.ForeignKeyClassName))
 				return;
@@ -160,13 +156,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (dacSemanticModel == null || dacSemanticModel.DacType != DacType.Dac)
 				return new List<DacPropertyInfo>();
 
-			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type;
+			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type!;
 			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
-			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacProperties
 				where !dacProperty.Attributes.IsDefaultOrEmpty && 
-					   dacProperty.BoundType == BoundType.DbBound &&								//only Bound FKs should work correctly
+					   dacProperty.DeclaredDbBoundness == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
 					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
 				orderby dacProperty.DeclarationOrder ascending
 				select dacProperty;
@@ -180,7 +175,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				bool isDerivedFromOrAggregateForeignKeyAttribute =
 					foreignKeyAttributes.Exists(
-						foreignKeyAttribute => attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeType, foreignKeyAttribute));
+						foreignKeyAttribute => attribute.AttributeType.IsDerivedFromOrAggregatesAttribute(foreignKeyAttribute, pxContext));
 
 				if (isDerivedFromOrAggregateForeignKeyAttribute)
 					return true;
@@ -188,21 +183,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				var selectorAttributeMembers = attribute.AttributeType.GetBaseTypesAndThis()
 																	  .SelectMany(type => type.GetMembers(selectorAttributeProperty));
 
-
-				var selectorAttributeCandidateMemberTypes = from type in attribute.AttributeType.GetBaseTypesAndThis()
-																								.TakeWhile(attrType => attrType != pxContext.AttributeTypes.PXEventSubscriberAttribute)
-															from member in type.GetMembers(selectorAttributeProperty)
-															select member switch
-															{
-																IPropertySymbol property => property.Type,
-																IFieldSymbol field => field.Type,
-																_ => null
-															};
+				var selectorAttributeCandidateMemberTypes = 
+					from type in attribute.AttributeType.GetBaseTypesAndThis()
+														.TakeWhile(attrType => attrType != pxContext.AttributeTypes.PXEventSubscriberAttribute)
+					from member in type.GetMembers(selectorAttributeProperty)
+					select member switch
+					{
+						IPropertySymbol property => property.Type,
+						IFieldSymbol field => field.Type,
+						_ => null
+					};
 
 				return selectorAttributeCandidateMemberTypes
 						.Any(memberType => memberType != null &&
-										   (attributeInformation.IsAttributeDerivedFromClass(memberType, selectorAttribute) ||
-											attributeInformation.IsAttributeDerivedFromClass(memberType, dimensionSelectorAttribute)));												 
+										   (memberType.IsDerivedFromOrAggregatesAttribute(selectorAttribute, pxContext) ||
+											memberType.IsDerivedFromOrAggregatesAttribute(dimensionSelectorAttribute, pxContext))); 
 			}
 		}
 

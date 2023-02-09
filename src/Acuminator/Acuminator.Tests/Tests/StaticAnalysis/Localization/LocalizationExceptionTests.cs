@@ -17,7 +17,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 	public class LocalizationExceptionTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new LocalizationPXExceptionAnalyzer(
+			new LocalizationPXExceptionAndPXExceptionInfoAnalyzer(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled()
 											.WithRecursiveAnalysisEnabled());
@@ -27,9 +27,25 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		public async Task Localization_PXException_WithHardcodedMessageArgument(string source)
 		{
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(9, 45),
-				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(16, 75),
-				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(24, 20));
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(10, 45),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(17, 75),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(22, 36),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(30, 67),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(35, 36),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(43, 67),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(66, 20),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(72, 11));
+		}
+
+		[Theory]
+		[EmbeddedFileData("LocalizationPXExceptionInfoWithHardcodedStrings.cs")]
+		public async Task Localization_PXExceptionInfo_WithHardcodedMessageArgument(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(11, 53),
+				Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(17, 64),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(25, 44),
+				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(28, 67));
 		}
 
 		[Theory]
@@ -72,6 +88,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		[Theory]
 		[EmbeddedFileData("LocalizationCorrect_MessagePassedFromAnotherPXException.cs")]
 		public async Task MessagePassedFromAnotherPXException_Exception(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("LocalizationCorrect_MessagePassedFromPXExceptionInfo.cs")]
+		public async Task MessagePassedFromPXExceptionInfo_Exception(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]

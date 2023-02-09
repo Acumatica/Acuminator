@@ -4,7 +4,6 @@ namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class DelegateNames
 	{
-		public const string IsKey = "IsKey";
 		public const string IsActive = "IsActive";
 		public const string IsActiveForGraph = "IsActiveForGraph";
 
@@ -88,6 +87,11 @@ namespace Acuminator.Utilities.Roslyn.Constants
 
 			public const string ReflectionSerializer_GetObjectData      = "GetObjectData";
 			public const string ReflectionSerializer_RestoreObjectProps = "RestoreObjectProps";
+		}
+
+		internal static class Workflow
+		{
+			public const string Configure = "Configure";
 		}
 	}
 }

@@ -1,7 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
@@ -31,24 +32,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			var autoNumberProperties = dacOrDacExt.DeclaredDacProperties.Where(property => property.IsAutoNumbering);
-			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
 			foreach (DacPropertyInfo dacProperty in autoNumberProperties)
 			{
-				CheckDacProperty(context, attributeInformation, dacProperty);
+				CheckDacProperty(context, pxContext, dacProperty);
 			}		
 		}
 
-		private void CheckDacProperty(SymbolAnalysisContext context, AttributeInformation attributeInformation, DacPropertyInfo dacProperty)
+		private void CheckDacProperty(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
 		{
 			if (dacProperty.PropertyType.SpecialType != SpecialType.System_String)
 			{
-				ReportDacPropertyTypeIsNotString(context, attributeInformation.Context, dacProperty);
+				ReportDacPropertyTypeIsNotString(context, pxContext, dacProperty);
 				return;
 			}
 
 			context.CancellationToken.ThrowIfCancellationRequested();
-			CheckIfStringLengthIsSufficientForAutoNumbering(context, attributeInformation, dacProperty);
+			CheckIfStringLengthIsSufficientForAutoNumbering(context, pxContext, dacProperty);
 		}
 
 		private void ReportDacPropertyTypeIsNotString(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
@@ -73,34 +73,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			}
 		}
 
-		private void CheckIfStringLengthIsSufficientForAutoNumbering(SymbolAnalysisContext context, AttributeInformation attributeInformation,
-																	 DacPropertyInfo dacProperty)
+		private void CheckIfStringLengthIsSufficientForAutoNumbering(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
 		{
-			var dbBoundStringAttribute = attributeInformation.Context.FieldAttributes.PXDBStringAttribute;
-			var unboundStringAttribute = attributeInformation.Context.FieldAttributes.PXStringAttribute;
+			var dbBoundStringAttribute = pxContext.FieldAttributes.PXDBStringAttribute;
+			var unboundStringAttribute = pxContext.FieldAttributes.PXStringAttribute;
 			var stringAttributes = dacProperty.Attributes
-											  .Where(a => IsStringAttribute(a, attributeInformation, dbBoundStringAttribute, unboundStringAttribute))
+											  .Where(a => IsStringAttribute(a, pxContext, dbBoundStringAttribute, unboundStringAttribute))
 											  .ToList();
 			if (stringAttributes.Count != 1)
 				return;
 
 			AttributeInfo stringAttribute = stringAttributes[0];
 			int? stringLength = GetStringLengthFromStringAttribute(stringAttribute);
-			int minAllowedLength = attributeInformation.Context.AttributeTypes.AutoNumberAttribute.MinAutoNumberLength;
+			int minAllowedLength = pxContext.AttributeTypes.AutoNumberAttribute.MinAutoNumberLength;
 
 			if (stringLength.HasValue && stringLength < minAllowedLength)
 			{
 				var attributeLocation = GetLocationToReportInsufficientStringLength(context, stringAttribute, stringLength.Value);
+
+				if (attributeLocation == null) 
+					return;
+
 				var diagnostic = Diagnostic.Create(Descriptors.PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering, attributeLocation, minAllowedLength);
-				context.ReportDiagnosticWithSuppressionCheck(diagnostic, attributeInformation.Context.CodeAnalysisSettings);
+				context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 			}
 		}
 
-		private bool IsStringAttribute(AttributeInfo attribute, AttributeInformation attributeInformation, 
+		private bool IsStringAttribute(AttributeInfo attribute, PXContext pxContext, 
 									   INamedTypeSymbol dbBoundStringAttribute, INamedTypeSymbol unboundStringAttribute) =>
-			attribute.BoundType != BoundType.NotDefined &&
-			(attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeType, dbBoundStringAttribute) ||
-			 attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeType, unboundStringAttribute));
+			attribute.DbBoundness != DbBoundnessType.NotDefined &&
+			(attribute.AttributeType.IsDerivedFromOrAggregatesAttribute(dbBoundStringAttribute, pxContext) ||
+			 attribute.AttributeType.IsDerivedFromOrAggregatesAttribute(unboundStringAttribute, pxContext));
 
 		private int? GetStringLengthFromStringAttribute(AttributeInfo stringAttribute)
 		{
@@ -126,7 +129,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			return stringLength;
 		}
 
-		private static Location GetLocationToReportInsufficientStringLength(SymbolAnalysisContext context, AttributeInfo stringAttribute, int stringLength)
+		private static Location? GetLocationToReportInsufficientStringLength(SymbolAnalysisContext context, AttributeInfo stringAttribute, int stringLength)
 		{
 			var syntaxNode = stringAttribute.AttributeData.ApplicationSyntaxReference?.GetSyntax(context.CancellationToken);
 

@@ -82,8 +82,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>
 		/// The overrides of <paramref name="methodSymbol"/>.
 		/// </returns>
-		public static IEnumerable<IMethodSymbol> GetOverrides(this IMethodSymbol methodSymbol) =>
-			GetOverridesImpl(methodSymbol.CheckIfNull(nameof(methodSymbol)), includeThis: false);
+		public static IEnumerable<IMethodSymbol> GetOverrides(this IMethodSymbol methodSymbol)
+		{
+			if (methodSymbol.CheckIfNull(nameof(methodSymbol)).IsOverride)
+				return GetOverridesImpl(methodSymbol, includeThis: false);
+			else
+				return Enumerable.Empty<IMethodSymbol>();
+		}
 
 		private static IEnumerable<IMethodSymbol> GetOverridesImpl(IMethodSymbol methodSymbol, bool includeThis)
 		{
@@ -98,7 +103,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				IMethodSymbol current = includeThis ? methodSymbol : methodSymbol.OverriddenMethod;
 
-				while (current?.IsOverride == true)
+				while (current != null)
 				{
 					yield return current;
 					current = current.OverriddenMethod;
@@ -123,8 +128,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>
 		/// The overrides of <paramref name="propertySymbol"/>.
 		/// </returns>
-		public static IEnumerable<IPropertySymbol> GetOverrides(this IPropertySymbol propertySymbol) =>
-			GetOverridesImpl(propertySymbol.CheckIfNull(nameof(propertySymbol)), includeThis: false);
+		public static IEnumerable<IPropertySymbol> GetOverrides(this IPropertySymbol propertySymbol)
+		{
+			if (propertySymbol.CheckIfNull(nameof(propertySymbol)).IsOverride)
+				return GetOverridesImpl(propertySymbol, includeThis: false);
+			else
+				return Enumerable.Empty<IPropertySymbol>();
+		}
 
 		private static IEnumerable<IPropertySymbol> GetOverridesImpl(IPropertySymbol propertySymbol, bool includeThis)
 		{
@@ -139,7 +149,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				IPropertySymbol current = includeThis ? propertySymbol : propertySymbol.OverriddenProperty;
 
-				while (current?.IsOverride == true)
+				while (current != null)
 				{
 					yield return current;
 					current = current.OverriddenProperty;

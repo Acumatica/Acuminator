@@ -48,7 +48,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1036](diagnostics/PX1036.md) | The DAC must have one primary key which should be named `PK`. The class containing DAC foreign keys should be named `FK`. The single unique key in the DAC should be named `UK`. All unique keys in the DAC should be declared in a public static class named `UK`.  | Warning (ISV Level 3: Informational) | Available | 
 | [PX1037](diagnostics/PX1037.md) | An unbound DAC field cannot be used in a key declaration. | Error (ISV Level 3: Informational) | Unavailable | 
 | [PX1040](diagnostics/PX1040.md) | Instance constructors in BLC extensions are strictly prohibited. You should use the `Initialize()` method instead. | Error | Available |
-| [PX1042](diagnostics/PX1042.md) | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available |
+| [PX1042](diagnostics/PX1042.md) | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. In Acumatica ERP 2023 R1 and later versions, this diagnostic is disabled. | Error | Available |
 | [PX1043](diagnostics/PX1043.md) | Changes cannot be saved to the database from event handlers. | Error | Unavailable |
 | [PX1044](diagnostics/PX1044.md) | Changes to `PXCache` cannot be performed in event handlers. | Error | Unavailable |
 | [PX1045](diagnostics/PX1045.md) | `PXGraph` instances cannot be created in event handlers. | Error | Unavailable |
@@ -56,10 +56,10 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1047](diagnostics/PX1047.md) | In the `FieldDefaulting`, `FieldVerifying`, and `RowSelected` event handlers, DAC instances passed to these event handlers cannot be modified. | Error | Unavailable |
 | [PX1048](diagnostics/PX1048.md) | For the `RowInserting` and `RowSelecting` events, only the DAC instance that is passed in the event arguments can be modified in the event handler. | Error | Unavailable |
 | [PX1049](diagnostics/PX1049.md) | In `RowSelected` event handlers, BQL statements and other database queries should be avoided. | Warning (ISV Level 1: Significant) | Unavailable |
-| [PX1050](diagnostics/PX1050.md) | Hardcoded strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Unavailable |
-| [PX1051](diagnostics/PX1051.md) | The strings defined in a class without the `PXLocalizable` attribute cannot be used as parameters for localization methods and `PXException` constructors. | Error | Unavailable |
+| [PX1050](diagnostics/PX1050.md) | Hardcoded strings cannot be used as parameters for localization methods, `PXException` and `PXExceptionInfo` constructors. | Error | Unavailable |
+| [PX1051](diagnostics/PX1051.md) | The strings defined in a class without the `PXLocalizable` attribute cannot be used as parameters for localization methods, `PXException` and `PXExceptionInfo` constructors. | Error | Unavailable |
 | [PX1052](diagnostics/PX1052.md) | Plain text strings cannot be used in the methods of the `LocalizeFormat` family. | Error | Unavailable |
-| [PX1053](diagnostics/PX1053.md) | Concatenated strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Unavailable |
+| [PX1053](diagnostics/PX1053.md) | Concatenated strings cannot be used as parameters for localization methods, `PXException` and `PXExceptionInfo` constructors. | Error | Unavailable |
 | [PX1054](diagnostics/PX1054.md) | A `PXGraph` instance cannot start a long-running operation during the `PXGraph` initialization. | Error | Unavailable |
 | [PX1055](diagnostics/PX1055.md) | An invalid primary key of the DAC is used. | Error | Available |
 | [PX1056](diagnostics/PX1056.md) | A PXGraph instance cannot be initialized inside the `IsActive` or `IsActiveForGraph<TGraph>` method. | Error | Unavailable |
@@ -92,7 +92,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and with the `PXButton` attribute or its successors. | Error | Available |
 | [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be the graph type. | Error | Available |
 | [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute. | Warning (ISV Level 3: Informational) | Available |
-| [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error | Unavailable |
+| [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` or `PXDBScalar` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error | Unavailable |
 
 ## Code Refactoring
 Acuminator suggest the following code refactoring:

@@ -147,11 +147,8 @@ namespace Acuminator.Utilities.Common
 		/// <typeparam name="TItem">Type of the item.</typeparam>
 		/// <param name="sourceList">The source list to act on.</param>
 		/// <param name="listToConcat">The list to concat.</param>
-		/// <returns>
-		/// An enumerator that allows foreach to be used to process concatenated arrays.
-		/// </returns>
+		/// <returns/>
 		[DebuggerStepThrough]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<TItem> Concat<TItem>(this ImmutableArray<TItem> sourceList, ImmutableArray<TItem> listToConcat)
 		{
 			for (int i = 0; i < sourceList.Length; i++)
@@ -316,6 +313,17 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void AddRange<T>(this HashSet<T> hashset, IEnumerable<T> items)
+		{
+			hashset.ThrowOnNull(nameof(hashset));
+			items.ThrowOnNull(nameof(items));
+
+			foreach (var item in items)
+				hashset.Add(item);
+		}
+
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsEmpty<T>(this IEnumerable<T> source) =>
 			source.CheckIfNull(nameof(source)) switch
 			{
@@ -393,6 +401,28 @@ namespace Acuminator.Utilities.Common
 			}
 
 			return -1;
+		}
+
+		/// <summary>
+		/// An <see cref="IReadOnlyCollection{T}"/> extension method that converts a source to an immutable array a bit more optimally.
+		/// </summary>
+		/// <typeparam name="T">Generic type parameter.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <returns>
+		/// Source as an <see cref="ImmutableArray{T}"/>
+		/// </returns>
+		[DebuggerStepThrough]
+		public static ImmutableArray<T> ToImmutableArray<T>(this IReadOnlyCollection<T> source)
+		{
+			source.ThrowOnNull(nameof(source));
+
+			if (source.Count == 0)
+				return ImmutableArray<T>.Empty;
+
+			var builder = ImmutableArray.CreateBuilder<T>(initialCapacity: source.Count);
+			builder.AddRange(source);
+
+			return builder.ToImmutable();
 		}
 
 		[DebuggerStepThrough]
@@ -473,5 +503,7 @@ namespace Acuminator.Utilities.Common
 
 			return false;
 		}
+
+
 	}
 }

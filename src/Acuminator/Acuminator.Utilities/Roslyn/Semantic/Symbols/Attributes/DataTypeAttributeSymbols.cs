@@ -1,11 +1,13 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class FieldAttributeSymbols : SymbolsSetBase
+	public class DataTypeAttributeSymbols : SymbolsSetBase
 	{
-		internal FieldAttributeSymbols(Compilation compilation) : base(compilation)
+		internal DataTypeAttributeSymbols(Compilation compilation) : base(compilation)
 		{ }
 
 		#region Field Unbound Attributes
@@ -21,6 +23,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXDateAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDateAttribute);
 		public INamedTypeSymbol PXGuidAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXGuidAttribute);
 		public INamedTypeSymbol PXBoolAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXBoolAttribute);
+
+		public INamedTypeSymbol? PXVariantAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXVariantAttribute);
 		#endregion
 
 		#region DBField Attributes
@@ -60,8 +64,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		#region DBBound  attributes defined by IsDBField 
 
-		public INamedTypeSymbol PeriodIDAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PeriodIDAttribute);
-		public INamedTypeSymbol AcctSubAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.AcctSubAttribute);
+		public INamedTypeSymbol? PeriodIDAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PeriodIDAttribute);
+		public INamedTypeSymbol? AcctSubAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.AcctSubAttribute);
+		public INamedTypeSymbol? PXEntityAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXEntityAttribute);
+		public INamedTypeSymbol? UnboundAccountAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.UnboundAccountAttribute);
+		public INamedTypeSymbol? UnboundCashAccountAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.UnboundCashAccountAttribute);
+		public INamedTypeSymbol? APTranRecognizedInventoryItemAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.APTranRecognizedInventoryItemAttribute);
 
 		#endregion
 	}

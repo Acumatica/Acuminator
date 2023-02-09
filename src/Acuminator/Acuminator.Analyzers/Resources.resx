@@ -219,16 +219,16 @@
   <data name="PX1023MultipleTypeAttributesOnAggregatorsTitle" xml:space="preserve">
     <value>The attribute aggregates incompatible field type attributes</value>
   </data>
-  <data name="PX1023MultipleSpecialTypeAttributesOnPropertyTitle" xml:space="preserve">
+  <data name="PX1023MultipleCalcedOnDbSideAttributesOnPropertyTitle" xml:space="preserve">
     <value>The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes</value>
   </data>
-  <data name="PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle" xml:space="preserve">
+  <data name="PX1023MultipleCalcedOnDbSideAttributesOnAggregatorsTitle" xml:space="preserve">
     <value>The attribute aggregates multiple PXDBScalar or PXDBCalced attributes</value>
   </data>
   <data name="PX1023TypeAttributesFix" xml:space="preserve">
     <value>Leave the selected attribute and remove other field type attributes from the property</value>
   </data>
-  <data name="PX1023SpecialAttributesFix" xml:space="preserve">
+  <data name="PX1023MultipleCalcedOnDbSideAttributesFix" xml:space="preserve">
     <value>Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property</value>
   </data>
   <data name="PX1024Title" xml:space="preserve">
@@ -468,7 +468,7 @@
   <data name="PX1094PXCacheNameDefaultArgumentValue" xml:space="preserve">
     <value>Enter a cache name for this DAC</value>
   </data>
-  <data name="PX1095Title" xml:space="preserve">
+  <data name="PX1095Title_PXDBCalced" xml:space="preserve">
     <value>A field with the PXDBCalced attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
   </data>
   <data name="PX1013Fix" xml:space="preserve">
@@ -666,5 +666,8 @@
   </data>
   <data name="PX1063Fix" xml:space="preserve">
     <value>Add a serialization constructor to the exception declaration</value>
+  </data>
+  <data name="PX1095Title_PXDBScalar" xml:space="preserve">
+    <value>A field with the PXDBScalar attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
   </data>
 </root>

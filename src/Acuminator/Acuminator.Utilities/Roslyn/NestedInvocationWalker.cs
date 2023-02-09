@@ -103,14 +103,14 @@ namespace Acuminator.Utilities.Roslyn
 		protected virtual HashSet<INamedTypeSymbol> GetTypesToBypass() =>
 			new HashSet<INamedTypeSymbol>()
 			{
-				PxContext.PXGraph.Type,
-				PxContext.PXView.Type,
-				PxContext.PXCache.Type,
-				PxContext.PXCache.GenericType,
-				PxContext.PXAction.Type,
-				PxContext.PXSelectBaseGeneric.Type,
+				PxContext.PXGraph.Type!,
+				PxContext.PXView.Type!,
+				PxContext.PXCache.Type!,
+				PxContext.PXCache.GenericType!,
+				PxContext.PXAction.Type!,
+				PxContext.PXSelectBaseGeneric.Type!,
 				PxContext.PXAdapterType,
-				PxContext.PXDatabase.Type
+				PxContext.PXDatabase.Type!
 			};
 
 		protected void ThrowIfCancellationRequested() => CancellationToken.ThrowIfCancellationRequested();

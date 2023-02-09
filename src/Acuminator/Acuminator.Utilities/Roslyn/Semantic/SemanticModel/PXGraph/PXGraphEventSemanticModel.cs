@@ -45,7 +45,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 
 		/// <inheritdoc cref="PXGraphSemanticModel.GraphSymbol"/>
-		public ITypeSymbol GraphSymbol => BaseGraphModel.GraphSymbol;
+		public ITypeSymbol? GraphSymbol => BaseGraphModel.GraphSymbol;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.StaticConstructors"/>
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors => BaseGraphModel.StaticConstructors;
@@ -79,10 +79,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 
 		/// <inheritdoc cref="PXGraphSemanticModel.IsActiveMethodInfo"/>
-		public IsActiveMethodInfo IsActiveMethodInfo => BaseGraphModel.IsActiveMethodInfo;
+		public IsActiveMethodInfo? IsActiveMethodInfo => BaseGraphModel.IsActiveMethodInfo;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.IsActiveForGraphMethodInfo"/>
-		public IsActiveForGraphMethodInfo IsActiveForGraphMethodInfo => BaseGraphModel.IsActiveForGraphMethodInfo;
+		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo => BaseGraphModel.IsActiveForGraphMethodInfo;
 		#endregion
 
 		#region Events

@@ -13,8 +13,12 @@
 		internal const string AutoNumberAttribute = "PX.Objects.CS.AutoNumberAttribute";
 		internal const string NumberingSequence = "PX.Objects.CS.NumberingSequence";
 
+		internal const string PXEntityAttribute = "PX.Data.PXEntityAttribute";
 		internal const string PeriodIDAttribute = "PX.Objects.GL.PeriodIDAttribute";
 		internal const string AcctSubAttribute = "PX.Objects.GL.AcctSubAttribute";
+		internal const string UnboundAccountAttribute = "PX.Objects.GL.UnboundAccountAttribute";
+		internal const string UnboundCashAccountAttribute = "PX.Objects.PR.UnboundCashAccountAttribute";
+		internal const string APTranRecognizedInventoryItemAttribute = "PX.Objects.AP.InvoiceRecognition.APTranRecognizedInventoryItemAttribute";
 		internal const string PXDBCalcedAttribute = "PX.Data.PXDBCalcedAttribute";
 		internal const string PXDBScalarAttribute = "PX.Data.PXDBScalarAttribute";
 		internal const string PXDBUserPasswordAttribute = "PX.Data.PXDBUserPasswordAttribute";
@@ -41,6 +45,9 @@
 		internal const string PXDateAttribute = "PX.Data.PXDateAttribute";
 		internal const string PXGuidAttribute = "PX.Data.PXGuidAttribute";
 		internal const string PXBoolAttribute = "PX.Data.PXBoolAttribute";
+		internal const string PXVariantAttribute = "PX.Data.PXVariantAttribute";
+
+
 		internal const string PXDBFieldAttribute = "PX.Data.PXDBFieldAttribute";
 
 		internal const string PXDBLongAttribute              = "PX.Data.PXDBLongAttribute";
@@ -200,12 +207,18 @@
 			public const string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
 			public const string PXRowPersistedException    = "PX.Data.PXRowPersistedException";
 			public const string PXLockViolationException   = "PX.Data.PXLockViolationException";
+			public const string PXExceptionInfo            = "PX.Objects.Common.Exceptions.PXExceptionInfo";
 		}
 
 		internal static class Serialization
 		{
 			public const string ReflectionSerializer = "PX.Common.ReflectionSerializer";
 			public const string PXReflectionSerializer = "PX.Common.PXReflectionSerializer";
+		}
+
+		internal static class Workflow
+		{
+			public const string PXScreenConfiguration = "PX.Data.WorkflowAPI.PXScreenConfiguration";
 		}
 	}
 }

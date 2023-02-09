@@ -53,5 +53,8 @@ namespace PX.Objects.HackathonDemo
 		{
 		}
 		#endregion
+
+		// Check that there is no alert for constant fields
+		public const int DASHBOARD_TYPE = 7; 
 	}
 }

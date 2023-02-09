@@ -1,9 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -51,13 +55,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 			var newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-			var generator = SyntaxGenerator.GetGenerator(document);
+			if (semanticModel == null || newRoot == null)
+				return document;
+
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
-			var usingNode = (UsingStatementSyntax) generator.UsingStatement(
-				SyntaxFactory.ObjectCreationExpression((TypeSyntax) generator.TypeExpression(pxContext.PXConnectionScope),
-					SyntaxFactory.ArgumentList(), default(InitializerExpressionSyntax)),
-				methodNode.Body.Statements)
-				.WithAdditionalAnnotations(Formatter.Annotation);
+
+			if (!ShouldGenerateConnectionScope(pxContext))
+				return document;
+
+			var usingNode = CreateUsingStatementNode(document, pxContext, methodNode);
 			var newMethodNode = methodNode.Body.WithStatements(new SyntaxList<StatementSyntax>().Add(usingNode));
 
 			newRoot = newRoot.ReplaceNode(
@@ -65,6 +71,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 				newMethodNode);
 
 			return document.WithSyntaxRoot(newRoot);
+		}
+
+		protected virtual bool ShouldGenerateConnectionScope(PXContext pxContext) =>
+			!pxContext.IsAcumatica2023R1_OrGreater;
+
+		private UsingStatementSyntax CreateUsingStatementNode(Document document, PXContext pxContext, MethodDeclarationSyntax methodNode)
+		{
+			var generator = SyntaxGenerator.GetGenerator(document);
+			var usingNode = 
+				generator.UsingStatement(
+					SyntaxFactory.ObjectCreationExpression(
+										(TypeSyntax)generator.TypeExpression(pxContext.PXConnectionScope),
+										SyntaxFactory.ArgumentList(),
+										default(InitializerExpressionSyntax)),
+					methodNode.Body.Statements)
+				.WithAdditionalAnnotations(Formatter.Annotation);
+
+			return (UsingStatementSyntax)usingNode;
 		}
 	}
 }

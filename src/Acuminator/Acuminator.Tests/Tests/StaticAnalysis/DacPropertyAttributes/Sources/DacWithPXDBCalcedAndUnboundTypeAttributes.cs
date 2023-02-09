@@ -1,6 +1,7 @@
 ﻿using PX.Data;
 using PX.Objects.CA;
 using PX.Objects.AR;
+using PX.Objects.GL;
 
 using System;
 
@@ -42,6 +43,27 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacFieldWithDBCalcedAttribute.So
 			typeof(string))]
 		public virtual string Descr { get; set; }
 
+		#endregion
+
+		#region CalcRGOL
+		public abstract class calcRGOL : PX.Data.BQL.BqlDecimal.Field<calcRGOL> { }
+
+		[PXDecimal]
+		[PXDBCalced(typeof(IIf<
+			Where<ARTranPostGL.type, Equal<ARTranPost.type.application>>,
+				ARTranPostGL.rGOLAmt,
+				Zero>), typeof(decimal))]
+		public virtual decimal? CalcRGOL { get; set; }
+		#endregion
+
+		#region MaxFinPeriodID
+		public abstract class maxFinPeriodID : PX.Data.BQL.BqlString.Field<maxFinPeriodID> { }
+
+		[FinPeriodID(IsDBField = false)]
+		[PXDBCalced(typeof(IIf<Where<ARTranPostGL.type, Equal<ARTranPost.type.rgol>>
+			, Null
+			, ARTranPostGL.finPeriodID>), typeof(string))]
+		public virtual string MaxFinPeriodID { get; set; }
 		#endregion
 	}
 }

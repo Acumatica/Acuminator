@@ -67,7 +67,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraph.Type);
 
-			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
+			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return null;
 
 			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(pxContext, graphOrGraphExtension, 

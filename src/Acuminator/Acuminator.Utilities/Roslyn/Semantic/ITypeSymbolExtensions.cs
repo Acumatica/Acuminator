@@ -1,13 +1,17 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -23,57 +27,40 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
-		{
-			type.ThrowOnNull(nameof(type));
-
-			if (type is ITypeParameterSymbol typeParameter)
-			{
-				IEnumerable<ITypeSymbol> constraintTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
-																	    .SelectMany(GetBaseTypesImplementation)
-																	    .Distinct();
-				return typeParameter.ToEnumerable()
-									.Concat(constraintTypes);
-			}
-			else
-			{
-				return type.GetBaseTypesAndThisImplementation();
-			}		
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type) =>
+			type.GetBaseTypesImplementation(includeThis: true);
 
 		/// <summary>
 		/// Gets the base types and this in this collection. The types are returned from the most derived ones to the most base <see cref="Object"/> type
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<INamedTypeSymbol> GetBaseTypes(this ITypeSymbol type)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetBaseTypes(this ITypeSymbol type) =>
+			type.GetBaseTypesImplementation(includeThis: false);
+
+		private static IEnumerable<ITypeSymbol> GetBaseTypesImplementation(this ITypeSymbol type, bool includeThis)
 		{
 			type.ThrowOnNull(nameof(type));
 
 			if (type is ITypeParameterSymbol typeParameter)
 			{
-				return typeParameter.GetAllConstraintTypes(includeInterfaces: false)
-									.SelectMany(GetBaseTypesImplementation)
-									.Distinct();
+				// for a type parameter we can consider its generic constraints like "where T : SomeClass" as its base types
+				IEnumerable<ITypeSymbol> constraintTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
+																	    .SelectMany(constraint => constraint.GetBaseTypesIterator(includeThis: true))
+																	    .Distinct();
+				return includeThis 
+					? constraintTypes.PrependItem(typeParameter)
+					: constraintTypes;
 			}
 
-			return type.GetBaseTypesImplementation();			
+			return type.GetBaseTypesIterator(includeThis);
 		}
 
-		private static IEnumerable<ITypeSymbol> GetBaseTypesAndThisImplementation(this ITypeSymbol typeToUse)
+		private static IEnumerable<ITypeSymbol> GetBaseTypesIterator(this ITypeSymbol typeToUse, bool includeThis)
 		{
-			var current = typeToUse;
-
-			while (current != null)
-			{
-				yield return current;
-				current = current.BaseType;
-			}
-		}
-
-		private static IEnumerable<INamedTypeSymbol> GetBaseTypesImplementation(this ITypeSymbol typeToUse)
-		{
-			var current = typeToUse.BaseType;
+			var current = includeThis ? typeToUse : typeToUse.BaseType;
 
 			while (current != null)
 			{
@@ -89,7 +76,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return type.GetFlattenedNestedTypesImplementation(shouldWalkThroughNestedTypesPredicate: null, cancellationToken);			
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypes(this ITypeSymbol type, Func<ITypeSymbol, bool> shouldWalkThroughNestedTypesPredicate, 
+		public static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypes(this ITypeSymbol type, Func<ITypeSymbol, bool>? shouldWalkThroughNestedTypesPredicate, 
 																			CancellationToken cancellationToken)
 		{
 			type.ThrowOnNull(nameof(type));
@@ -100,7 +87,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		private static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypesImplementation(this ITypeSymbol type, 
-																						   Func<ITypeSymbol, bool> shouldWalkThroughNestedTypesPredicate,
+																						   Func<ITypeSymbol, bool>? shouldWalkThroughNestedTypesPredicate,
 																						   CancellationToken cancellationToken)
 		{
 			var nestedTypes = type.GetTypeMembers();
@@ -155,7 +142,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
-		public static INamedTypeSymbol TopMostContainingType(this ITypeSymbol type)
+		public static INamedTypeSymbol? TopMostContainingType(this ITypeSymbol type)
 		{
 			INamedTypeSymbol current = type.CheckIfNull(nameof(type)).ContainingType;
 
@@ -170,7 +157,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return null;
 		}
 
-		public static IEnumerable<INamespaceSymbol> GetContainingNamespaces(this ITypeSymbol type)
+		public static IEnumerable<INamespaceSymbol> GetContainingNamespaces(this ITypeSymbol? type)
 		{
 			var currentNamespace = type?.ContainingNamespace;
 
@@ -257,6 +244,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				throw new ArgumentException("Invalid interface type", nameof(interfaceType));
 			}
 
+			// Interface types themselves are not included into AllInterfaces set, they do not implement themselves from Roslyn POV.
+			// However, for simplicity in Acuminator analysis we can assume equality of type and interfaceType as a special case of type implementing interfaceType interface.
+			// Therefore, we need to check type if it's an interface if it equals to the interfaceType
+			if (type.TypeKind == TypeKind.Interface && type.Equals(interfaceType))
+				return true;
+
 			return type.AllInterfaces.Any(t => t.Equals(interfaceType));
 		}
 
@@ -278,7 +271,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <param name="baseTypeName">Name of the base type.</param>
 		/// <param name="includeInterfaces">(Optional) True to include, false to exclude the interfaces.</param>
 		/// <returns/>
-		public static bool InheritsOrImplementsOrEquals(this ITypeSymbol type, string baseTypeName,
+		public static bool InheritsOrImplementsOrEquals(this ITypeSymbol? type, string baseTypeName,
 														bool includeInterfaces = true)
 		{
 			if (type == null)
@@ -295,7 +288,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName)
+		public static bool ImplementsInterface(this ITypeSymbol? type, string interfaceName)
 		{
 			if (type == null)
 				return false;
@@ -316,8 +309,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 																			 bool includeInterfaces = true)
 		{
 			var constraintTypes = typeParameterSymbol.GetAllConstraintTypes(includeInterfaces);
-			return typeParameterSymbol.ToEnumerable()
-									  .Concat(constraintTypes);
+			return constraintTypes.PrependItem(typeParameterSymbol);
 		}
 
 		/// <summary>
@@ -391,16 +383,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
+		public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol) =>
+			typeSymbol.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes()
+					  .Select(a => a.AttributeClass);
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<AttributeData> GetAllAttributesApplicationsDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
 		{
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 			return typeSymbol.GetBaseTypesAndThis()
-							 .SelectMany(t => t.GetAttributes())
-							 .Select(a => a.AttributeClass);
+							 .SelectMany(t => t.GetAttributes());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ITypeSymbol GetUnderlyingTypeFromNullable(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static ITypeSymbol? GetUnderlyingTypeFromNullable(this ITypeSymbol? typeSymbol, PXContext pxContext)
 		{
 			if (!typeSymbol.IsNullable(pxContext) || typeSymbol is not INamedTypeSymbol namedTypeSymbol)
 				return null;
@@ -412,7 +408,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullable(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsNullable(this ITypeSymbol? typeSymbol, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable) ?? false;
@@ -423,7 +419,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </summary>
 		/// <param name="typeSymbol">The typeSymbol to act on.</param>
 		/// <returns/>
-		public static string GetCLRTypeNameFromType(this ITypeSymbol typeSymbol)
+		public static string GetCLRTypeNameFromType(this ITypeSymbol? typeSymbol)
 		{
 			if (typeSymbol == null)
 				return string.Empty;

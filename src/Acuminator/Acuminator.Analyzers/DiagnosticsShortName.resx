@@ -318,7 +318,7 @@
   <data name="PX1094" xml:space="preserve">
     <value>NoPXHiddenOrPXCacheNameOnDac</value>
   </data>
-  <data name="PX1095" xml:space="preserve">
+  <data name="PX1095PXDBCalced" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBCalced</value>
   </data>
   <data name="PX1007" xml:space="preserve">
@@ -380,5 +380,8 @@
   </data>
   <data name="PX1064" xml:space="preserve">
     <value>ExceptionWithNewFieldsAndNoGetObjectDataOverride</value>
+  </data>
+  <data name="PX1095PXDBScalar" xml:space="preserve">
+    <value>NoUnboundTypeAttributeWithPXDBScalar</value>
   </data>
 </root>

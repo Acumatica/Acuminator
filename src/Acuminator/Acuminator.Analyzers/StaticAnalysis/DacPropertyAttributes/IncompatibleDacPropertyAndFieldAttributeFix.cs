@@ -1,13 +1,18 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -33,31 +38,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
 				return;
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			SyntaxNode codeFixNode = root?.FindNode(context.Span);
+			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode? codeFixNode = root?.FindNode(context.Span);
 
 			if (codeFixNode == null)
 				return;
 			
 			if (codeFixNode is AttributeSyntax attribute)
 			{
-				RegisterCodeFix(root, attribute, context);
+				RegisterCodeFix(root!, attribute, context);
 			}
 			else
 			{
-				RegisterCodeFixForPropertyType(root, codeFixNode, context, diagnostic);
+				RegisterCodeFixForPropertyType(root!, codeFixNode, context, diagnostic);
 			}		
 		}
 
 		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			Location attributeLocation = diagnostic.AdditionalLocations.FirstOrDefault();
+			Location? attributeLocation = diagnostic.AdditionalLocations.FirstOrDefault();
 
 			if (attributeLocation == null)
 				return;
 
-			AttributeSyntax attributeNode = root.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
+			AttributeSyntax? attributeNode = root.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
 			
 			if (attributeNode == null)
 				return;
@@ -67,7 +72,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context)
 		{
-			PropertyDeclarationSyntax propertyNode = attributeNode.Parent<PropertyDeclarationSyntax>();
+			PropertyDeclarationSyntax? propertyNode = attributeNode.Parent<PropertyDeclarationSyntax>();
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (propertyNode == null)
@@ -86,25 +91,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private async Task<Document> ChangePropertyTypeToAttributeType(Document document, SyntaxNode root, AttributeSyntax attributeNode,
 																	   PropertyDeclarationSyntax propertyNode, CancellationToken cancellationToken)
 		{		
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-			ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
+			SemanticModel? semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			ITypeSymbol? attributeType = semanticModel?.GetTypeInfo(attributeNode, cancellationToken).Type;
 			cancellationToken.ThrowIfCancellationRequested();
 
 			if (attributeType == null)
 				return document;
 			
-			PXContext pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
-			FieldTypeAttributesRegister typeAttributesRegister = new FieldTypeAttributesRegister(pxContext);
-			FieldTypeAttributeInfo? attributeInfo = typeAttributesRegister.GetFieldTypeAttributeInfos(attributeType)
-																		  .FirstOrDefault(attrInfo => attrInfo.IsFieldAttribute);
+			PXContext pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
+			var attributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
+			var fieldAttributeDataTypes = (from attrInfo in attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType)
+										   where attrInfo.IsFieldAttribute && attrInfo.DataType != null
+										   select attrInfo.DataType)
+										  .ToHashSet();
 
-			if (attributeInfo?.FieldType == null)
+			if (fieldAttributeDataTypes.Count != 1) 
 				return document;
 
+			ITypeSymbol attributeDataType = fieldAttributeDataTypes.First();
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			TypeSyntax replacingTypeNode = generator.TypeExpression(attributeInfo.Value.FieldType) as TypeSyntax;
+			TypeSyntax? replacingTypeNode = generator.TypeExpression(attributeDataType) as TypeSyntax;
 
-			if (attributeInfo.Value.FieldType.IsValueType)
+			if (attributeDataType.IsValueType)
 			{
 				replacingTypeNode = generator.NullableTypeExpression(replacingTypeNode) as TypeSyntax;
 			}

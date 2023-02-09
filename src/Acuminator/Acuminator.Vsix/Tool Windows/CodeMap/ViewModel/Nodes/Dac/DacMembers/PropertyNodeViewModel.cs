@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
@@ -20,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
-		public DacPropertyInfo PropertyInfo => MemberInfo as DacPropertyInfo;
+		public DacPropertyInfo PropertyInfo => (MemberInfo as DacPropertyInfo)!;
 
 		public bool IsDacProperty => PropertyInfo.IsDacProperty;
 
@@ -28,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public bool IsIdentity => PropertyInfo.IsIdentity;
 
-		public BoundType EffectiveBoundType => PropertyInfo.EffectiveBoundType;
+		public DbBoundnessType EffectiveDbBoundness => PropertyInfo.EffectiveDbBoundness;
 
 		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
 								base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
@@ -52,15 +54,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											  };
 			}
 
-			switch (EffectiveBoundType)
-			{		
-				case BoundType.Unbound:
-					yield return new TextViewModel(this, "Unbound");
-					break;
-				case BoundType.DbBound:
-					yield return new TextViewModel(this, "Bound");
-					break;
-			}
+			string? boundLabelText = GetDbBoundnessLabelText();
+
+			if (boundLabelText != null)
+				yield return new TextViewModel(this, boundLabelText);
 
 			if (PropertyInfo.IsAutoNumbering)
 			{
@@ -71,13 +68,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		private string? GetDbBoundnessLabelText() => EffectiveDbBoundness switch
+		{
+			DbBoundnessType.Unbound    => "Unbound",
+			DbBoundnessType.DbBound    => "Bound",
+			DbBoundnessType.PXDBCalced => "PXDBCalced",
+			DbBoundnessType.PXDBScalar => "PXDBScalar",
+			DbBoundnessType.Unknown    => "Unknown",
+			DbBoundnessType.Error      => "Inconsistent",
+			_                          => null
+		};
+
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 
-		TooltipInfo IElementWithTooltip.CalculateTooltip()
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
 			var attributeStrings = Children.OfType<AttributeNodeViewModel>()
 										   .Select(attribute => attribute.CalculateTooltip().Tooltip);

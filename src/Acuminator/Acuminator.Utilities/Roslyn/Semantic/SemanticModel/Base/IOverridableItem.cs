@@ -1,4 +1,6 @@
-﻿using Acuminator.Utilities.Common;
+﻿#nullable enable
+
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -11,7 +13,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	{
 		string Name { get; }
 
-		T Base { get; }
+		T? Base { get; }
 
 		int DeclarationOrder { get; }
 	}
@@ -19,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	internal interface IWriteableBaseItem<T> : IOverridableItem<T>
 	where T : IOverridableItem<T>
 	{
-		new T Base
+		new T? Base
 		{
 			get;
 			set;

@@ -258,7 +258,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																						AddViewInfoWithOrderDelegate<TInfo> addGraphExtensionViewInfo)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
+			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return new OverridableItemsCollection<TInfo>();
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);
