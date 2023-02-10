@@ -11,7 +11,7 @@ In Acuminator 3.1.1, the following enhancements have been implemented:
    - Check that hard-coded strings are not passed as arguments to the `PXExceptionInfo` constructor calls. Only localizable string constants can be passed to the `PXExceptionInfo` constructor.
    - Do not report error when the `PXExceptionInfo.MessageFormat` property is passed to APIs checked by Acuminator localization diagnostics, such as `PXException` constructor calls.
 - The [PX1016](diagnostics/PX1016.md) diagnostic has been changed to not check for the `IsActive` method in graph extensions that include the override of the `Configure` method with the screen configuration and workflows. Information about the `Configure` method has been added to the graph semantic model.
-- The [PX1018](diagnostics/PX1018.md) diagnostic has been added to not show a warning about abstract graphs and generic graphs that have a generic type parameter as their primary DAC.
+- The [PX1018](diagnostics/PX1018.md) diagnostic has been updated to not show a warning about abstract graphs and generic graphs that have a generic type parameter as their primary DAC.
 
 #### Analysis of Data Type Attributes and DAC Field DB Boundness Calculation
 The Acuminator analysis of Acumatica data type attributes has been significantly reworked:
