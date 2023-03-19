@@ -38,5 +38,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 		[EmbeddedFileData("WorkflowGraphExtension_WithoutIsActive.cs")]
 		public async Task WorkflowGraphExtension_WithoutIsActive_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData("GenericGraphExtension_WithoutIsActive.cs")]
+		public async Task GenericGraphExtension_WithoutIsActive_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 	}
 }
