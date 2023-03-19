@@ -29,7 +29,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 		public bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dacExtension) =>
 			dacExtension?.DacType == DacType.DacExtension && 
 			dacExtension.IsActiveMethodInfo == null &&
-			!dacExtension.IsMappedCacheExtension && !dacExtension.Symbol.IsAbstract && !dacExtension.Symbol.IsStatic;
+			!dacExtension.IsMappedCacheExtension && !dacExtension.Symbol.IsAbstract && 
+			!dacExtension.Symbol.IsStatic && !dacExtension.Symbol.IsGenericType;
 
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacExtension)
 		{
