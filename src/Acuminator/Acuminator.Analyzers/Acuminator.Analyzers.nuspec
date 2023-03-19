@@ -15,7 +15,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Code analyzers that help to find and fix common developer issues related to Acumatica Framework</description>
     <releaseNotes>https://github.com/Acumatica/Acuminator/blob/master/docs/ReleaseNotes.md</releaseNotes>
-    <copyright>Copyright © 2017-2019 Acumatica, Inc.</copyright>
+    <copyright>Copyright © 2017-2023 Acumatica, Inc.</copyright>
     <tags>Acumatica, Acuminator, roslyn</tags>
     <developmentDependency>true</developmentDependency>
   </metadata>
