@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Acuminator")]
-[assembly: AssemblyCopyright("Copyright © 2017-2022 Acumatica Ltd.")]
+[assembly: AssemblyCopyright("Copyright © 2017-2023 Acumatica Ltd.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
