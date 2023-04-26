@@ -88,5 +88,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 		[EmbeddedFileData("DacWithValidAggregatorAttributes.cs")]
 		public virtual Task DacWithValidAggregatorAttributes(string source) =>
 			VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DacFieldWithINUnitAttribute.cs")]
+		public virtual Task DacFieldWithINUnitAttribute(string source) =>
+			VerifyCSharpDiagnosticAsync(source);
 	}
 }
