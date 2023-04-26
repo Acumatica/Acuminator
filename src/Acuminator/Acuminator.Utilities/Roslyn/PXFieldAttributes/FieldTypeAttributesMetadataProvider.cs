@@ -273,10 +273,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			new List<MixedDbBoundnessAttributeInfo?>()
 			{
 				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.PeriodIDAttribute,					   pxContext.SystemTypes.String.Type, isDbBoundByDefault: true),
-				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.AcctSubAttribute,					   pxContext.SystemTypes.Int32, isDbBoundByDefault: true),
 				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.UnboundAccountAttribute,				   pxContext.SystemTypes.Int32, isDbBoundByDefault: false),
 				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.UnboundCashAccountAttribute,			   pxContext.SystemTypes.Int32, isDbBoundByDefault: false),
 				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.APTranRecognizedInventoryItemAttribute, pxContext.SystemTypes.Int32, isDbBoundByDefault: false),
+				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.AcctSubAttribute,					   null,						isDbBoundByDefault: true),
 				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.PXEntityAttribute,					   null,						isDbBoundByDefault: true),
 				MixedDbBoundnessAttributeInfo.Create(pxContext.FieldAttributes.PXDBLocalizableStringAttribute,		   pxContext.SystemTypes.String.Type, isDbBoundByDefault: true),
 			}
