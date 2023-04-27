@@ -321,7 +321,7 @@
   <data name="PX1095PXDBCalced" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBCalced</value>
   </data>
-  <data name="PX1007" xml:space="preserve">
+  <data name="PX1007NoXmlComment" xml:space="preserve">
     <value>NoXmlCommentForPublicEntityOrDacProperty</value>
   </data>
   <data name="PX1019" xml:space="preserve">
@@ -383,5 +383,11 @@
   </data>
   <data name="PX1095PXDBScalar" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBScalar</value>
+  </data>
+  <data name="PX1007MultipleXmlComments" xml:space="preserve">
+    <value>MultipleXmlComments</value>
+  </data>
+  <data name="PX1007IncorrectProjectionDacFieldComment" xml:space="preserve">
+    <value>IncorrectProjectionDacFieldComment</value>
   </data>
 </root>

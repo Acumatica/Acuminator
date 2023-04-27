@@ -162,8 +162,8 @@
   <data name="PX1007FixExcludeClass" xml:space="preserve">
     <value>Exclude the class from the API Reference</value>
   </data>
-  <data name="PX1007Title" xml:space="preserve">
-    <value>The DAC, DAC extension, or DAC property should have a description in the summary XML tag</value>
+  <data name="PX1007Title_MissingDescription" xml:space="preserve">
+    <value>The DAC, DAC extension, or DAC property should have a description in the "summary" XML tag or "inheritdoc" XML tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
     <value>The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues.</value>
@@ -669,5 +669,17 @@
   </data>
   <data name="PX1095Title_PXDBScalar" xml:space="preserve">
     <value>A field with the PXDBScalar attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
+  </data>
+  <data name="PX1007Title_MultipleDocumentationTags" xml:space="preserve">
+    <value>Multiple XML documentation tags are forbidden. You can use only one "summary" or "inheritdoc" tag.</value>
+    
+  </data>
+  <data name="PX1007Title_IncorrectProjectionDacFieldDescription" xml:space="preserve">
+    <value>Incorrect XML documentation of the projection DAC field property. The "inheritdoc" tag with "cref" attribute should be used for a mapped DAC field property of the projection DAC.
+The "cref" attribute should reference the original DAC field property from the projection field's mapping:
+
+/// &lt;inheritdoc cref="OriginalDac.SomeDacField"/&gt;
+[PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
+public virtual int? SomeDacField{ get; set; }</value>
   </data>
 </root>

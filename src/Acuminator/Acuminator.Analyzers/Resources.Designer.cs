@@ -214,11 +214,34 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the summary XML tag.
+        ///   Looks up a localized string similar to Incorrect XML documentation of the projection DAC field property. The &quot;inheritdoc&quot; tag with &quot;cref&quot; attribute should be used for a mapped DAC field property of the projection DAC.
+        ///The &quot;cref&quot; attribute should reference the original DAC field property from the projection field&apos;s mapping:
+        ///
+        ////// &lt;inheritdoc cref=&quot;OriginalDac.SomeDacField&quot;/&gt;
+        ///[PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
+        ///public virtual int? SomeDacField{ get; set; }.
         /// </summary>
-        public static string PX1007Title {
+        public static string PX1007Title_IncorrectProjectionDacFieldDescription {
             get {
-                return ResourceManager.GetString("PX1007Title", resourceCulture);
+                return ResourceManager.GetString("PX1007Title_IncorrectProjectionDacFieldDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the &quot;summary&quot; XML tag or &quot;inheritdoc&quot; XML tag.
+        /// </summary>
+        public static string PX1007Title_MissingDescription {
+            get {
+                return ResourceManager.GetString("PX1007Title_MissingDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiple XML documentation tags are forbidden. You can use only one &quot;summary&quot; or &quot;inheritdoc&quot; tag..
+        /// </summary>
+        public static string PX1007Title_MultipleDocumentationTags {
+            get {
+                return ResourceManager.GetString("PX1007Title_MultipleDocumentationTags", resourceCulture);
             }
         }
         
