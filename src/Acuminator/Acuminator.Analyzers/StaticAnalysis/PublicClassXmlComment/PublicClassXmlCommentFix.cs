@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.Model;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
@@ -89,9 +90,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			var description = GenerateDescriptionFromCamelCase(className);
 			return parseResult switch
 			{
-				XmlCommentParseResult.NoXmlComment    => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
-				XmlCommentParseResult.NoSummaryTag    => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
-				XmlCommentParseResult.EmptySummaryTag => AddDescription(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.NoXmlComment			   => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.NoSummaryOrInheritdocTag => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.EmptySummaryTag		   => AddDescription(rootNode, memberDeclaration, description, cancellation),
 				_ => memberDeclaration
 			};
 		}

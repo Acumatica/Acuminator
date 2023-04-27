@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -20,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment);
 
-		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings codeAnalysisSettings) :
+		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) :
 										base(codeAnalysisSettings)
 		{
 		}
@@ -47,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!(syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax))
 				return;
 
-			var commentsWalker = new XmlCommentsWalker(syntaxContext, pxContext, CodeAnalysisSettings);
+			var commentsWalker = new XmlCommentsWalker(syntaxContext, pxContext, CodeAnalysisSettings!);
 			compilationUnitSyntax.Accept(commentsWalker);
 		}
 	}
