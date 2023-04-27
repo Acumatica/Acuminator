@@ -1,11 +1,5 @@
-﻿using Acuminator.Utilities.Roslyn.Syntax;
-using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
+﻿#nullable enable
+
 using System;
 using System.Collections.Immutable;
 using System.Composition;
@@ -13,8 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
+
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.Model;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
@@ -67,18 +71,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			cancellation.ThrowIfCancellationRequested();
 
 			var rootNode = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
-			if (!(rootNode?.FindNode(span) is MemberDeclarationSyntax memberDeclaration))
-			{
+			if (rootNode?.FindNode(span) is not MemberDeclarationSyntax memberDeclaration)
 				return document;
-			}
 
 			string memberName = memberDeclaration.GetIdentifiers().FirstOrDefault().ToString();
 			if (memberName.IsNullOrWhiteSpace())
 				return document;
 
 			var newRootNode = GetRootNodeSyntaxWithDescription(rootNode, memberDeclaration, memberName, parseResult, cancellation);
-			var newDocument = document.WithSyntaxRoot(newRootNode);
+			if (newRootNode == null)
+				return document;
 
+			var newDocument = document.WithSyntaxRoot(newRootNode);
 			return newDocument;
 		}
 
@@ -93,7 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				XmlCommentParseResult.NoXmlComment			   => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
 				XmlCommentParseResult.NoSummaryOrInheritdocTag => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
 				XmlCommentParseResult.EmptySummaryTag		   => AddDescription(rootNode, memberDeclaration, description, cancellation),
-				_ => memberDeclaration
+				_											   => memberDeclaration
 			};
 		}
 
