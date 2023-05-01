@@ -20,7 +20,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	public class PublicClassXmlCommentAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment);
+			new[]
+			{
+				Descriptors.PX1007_PublicClassNoXmlComment,
+				Descriptors.PX1007_MultipleDocumentationTags,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription
+			}
+			.ToImmutableArray();
 
 		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) :
 										base(codeAnalysisSettings)
