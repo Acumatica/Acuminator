@@ -101,11 +101,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			{
 				string? tagName = xmlNode.StartTag?.Name?.ToString();
 
-				if (XmlCommentConstants.XmlCommentSummaryTag.Equals(tagName, StringComparison.Ordinal))
+				if (XmlCommentsConstants.SummaryTag.Equals(tagName, StringComparison.Ordinal))
 					summaryTag = xmlNode;
-				else if (XmlCommentConstants.XmlInheritDocTag.Equals(tagName, StringComparison.Ordinal))
+				else if (XmlCommentsConstants.InheritdocTag.Equals(tagName, StringComparison.Ordinal))
 					inheritDocTag = xmlNode;
-				else if (XmlCommentConstants.XmlCommentExcludeTag.Equals(tagName, StringComparison.Ordinal))
+				else if (XmlCommentsConstants.ExcludeTag.Equals(tagName, StringComparison.Ordinal))
 					excludeTag = xmlNode;
 			}
 
