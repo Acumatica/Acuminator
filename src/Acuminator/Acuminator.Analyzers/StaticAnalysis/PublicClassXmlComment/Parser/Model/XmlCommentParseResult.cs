@@ -5,7 +5,7 @@ using Acuminator;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
-	internal enum XmlCommentParseResult
+	internal enum XmlCommentParseResult : byte
 	{
 		NoXmlComment,
 		NoSummaryOrInheritdocTag,
