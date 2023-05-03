@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
-	public static class XmlAnalyzerConstants
+	public static class XmlCommentConstants
 	{
 		public const string XmlCommentExcludeTag = "exclude";
 		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
