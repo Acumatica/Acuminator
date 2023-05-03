@@ -184,80 +184,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		private XmlCommentParseResult AnalyzeDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration)
-		{
-			if (!memberDeclaration.HasStructuredTrivia)
-				return XmlCommentParseResult.NoXmlComment;
-
-			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
-			bool hasXmlComment = false, hasSummaryTag = false, nonEmptySummaryTag = false;
-
-			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
-			{
-				hasXmlComment = true;
-				var excludeTag = GetXmlExcludeTag(xmlComment);
-
-				if (excludeTag != null)
-					return XmlCommentParseResult.HasExcludeTag;
-				else if (hasSummaryTag)
-					continue;
-
-				XmlElementSyntax summaryTag = GetSummaryTag(xmlComment);
-
-				if (summaryTag == null)
-					continue;
-
-				hasSummaryTag = true;
-				nonEmptySummaryTag = IsNonEmptySummaryTag(summaryTag);
-			}
-
-			if (!hasXmlComment)
-				return XmlCommentParseResult.NoXmlComment;
-			else if (!hasSummaryTag)
-				return XmlCommentParseResult.NoSummaryTag;
-			else if (!nonEmptySummaryTag)
-				return XmlCommentParseResult.EmptySummaryTag;
-			else
-				return XmlCommentParseResult.HasNonEmptySummaryTag;
-
-			//-------------------------------------------------Local function--------------------------------------------------------
-			bool IsNonEmptySummaryTag(XmlElementSyntax summaryTag)
-			{
-				var summaryContent = summaryTag.Content;
-
-				if (summaryContent.Count == 0)
-					return false;
-
-				foreach (XmlNodeSyntax contentNode in summaryContent)
-				{
-					var contentString = contentNode.ToFullString();
-					if (contentString.IsNullOrWhiteSpace())
-						continue;
-
-					var contentHasText = contentString.Split(_xmlCommentSummarySeparators, StringSplitOptions.RemoveEmptyEntries)
-													  .Any(CommentContentIsNotEmpty);
-					if (contentHasText)
-						return true;
-				}
-
-				return false;
-			}
-		}
-
-		private (DiagnosticDescriptor? DiagnosticToReport, bool CheckChildNodes) AnalyzeCommentParseResult(XmlCommentParseResult parseResult) =>
-			parseResult switch
-			{
-				XmlCommentParseResult.HasExcludeTag			   => (null,													CheckChildNodes: false),
-				XmlCommentParseResult.HasNonEmptySummaryTag	   => (null,													CheckChildNodes: true),
-				XmlCommentParseResult.CorrectInheritdocTag	   => (null,													CheckChildNodes: true),
-				XmlCommentParseResult.NoXmlComment			   => (Descriptors.PX1007_PublicClassNoXmlComment,				CheckChildNodes: true),
-				XmlCommentParseResult.EmptySummaryTag		   => (Descriptors.PX1007_PublicClassNoXmlComment,				CheckChildNodes: true),
-				XmlCommentParseResult.NoSummaryOrInheritdocTag => (Descriptors.PX1007_PublicClassNoXmlComment,				CheckChildNodes: true),
-				XmlCommentParseResult.SummaryAndInheritdocTags => (Descriptors.PX1007_MultipleDocumentationTags,			CheckChildNodes: true),
-				XmlCommentParseResult.IncorrectInheritdocTag   => (Descriptors.PX1007_InvalidProjectionDacFieldDescription, CheckChildNodes: true),
-				_											   => (null,													CheckChildNodes: true)
-			};
-
 		private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member)
 		{
 			var shortAttributeNames = member.GetAttributes()
@@ -265,35 +191,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			return CheckAttributeNames(shortAttributeNames);
 		}
-
-		private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>
-			member.GetLeadingTrivia()
-				  .Select(t => t.GetStructure())
-				  .OfType<DocumentationCommentTriviaSyntax>();
-
-		private XmlCommentTagsInfo GetDocumentationTags(DocumentationCommentTriviaSyntax xmlComment)
-		{
-			var xmlNodes = xmlComment.ChildNodes().OfType<XmlElementSyntax>();
-			XmlElementSyntax? summaryTag = null, inheritDocTag = null, excludeTag = null;
-
-			foreach (XmlElementSyntax xmlNode in xmlNodes)
-			{
-				string? tagName = xmlNode.StartTag?.Name?.ToString();
-
-				if (XmlAnalyzerConstants.XmlCommentSummaryTag.Equals(tagName, StringComparison.Ordinal))
-					summaryTag = xmlNode;
-				else if (XmlAnalyzerConstants.XmlInheritDocTag.Equals(tagName, StringComparison.Ordinal))
-					inheritDocTag = xmlNode;
-				else if (XmlAnalyzerConstants.XmlCommentExcludeTag.Equals(tagName, StringComparison.Ordinal))
-					excludeTag = xmlNode;
-			}
-
-			return new XmlCommentTagsInfo(summaryTag, inheritDocTag, excludeTag);
 		}
-
-		private bool CommentContentIsNotEmpty(string content) =>
-			!content.IsNullOrEmpty() &&
-			 content.Any(char.IsLetterOrDigit);
 
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, Location location, XmlCommentParseResult parseResult)
 		{
