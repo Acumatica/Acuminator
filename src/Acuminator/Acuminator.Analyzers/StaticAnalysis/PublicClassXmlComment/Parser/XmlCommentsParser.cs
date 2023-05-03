@@ -137,17 +137,70 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private static bool CommentContentIsNotEmpty(string content) =>
 			!content.IsNullOrEmpty() && content.Any(char.IsLetterOrDigit);
 
-		private bool IsCorrectInheritDocTag(XmlElementSyntax inheritdocTag)
+		private bool IsCorrectInheritdocTag(InheritdocTagInfo inheritdocTagInfo, ITypeSymbol? mappedBqlField)
 		{
-			if (inheritdocTag.StartTag == null) 
+			bool isProjectionDacProperty = mappedBqlField != null;
+
+			if (!inheritdocTagInfo.InheritdocTagHasCrefAttributes)
+				return !isProjectionDacProperty;
+			else if (inheritdocTagInfo.CrefAttributes.Length > 1)
 				return false;
 
-			var attributes = inheritdocTag.StartTag.Attributes;
+			XmlCrefAttributeSyntax crefAttribute = inheritdocTagInfo.CrefAttributes[0];
 
-			if (attributes.Count == 0) 
+			if (crefAttribute?.Cref == null) 
+				return false;
+			else if (!isProjectionDacProperty)
 				return true;
 
-			attributes.FirstOrDefault(xmlAttribute =>  xmlAttribute.Name == )
+			var mappedPropertySymbol = GetDacPropertyCorrespondingToTheMappedBqlField(mappedBqlField!);
+
+			if (mappedPropertySymbol == null) 
+				return false;
+
+			SymbolInfo crefSymbolInfo = _semanticModel.GetSymbolInfo(crefAttribute.Cref, _cancellation);
+			ISymbol? crefSymbol = crefSymbolInfo.Symbol ?? crefSymbolInfo.CandidateSymbols.FirstOrDefault();
+
+			return crefSymbol is IPropertySymbol referencedProperty && 
+				   mappedPropertySymbol.Equals(referencedProperty);
+		}
+
+		private IPropertySymbol? GetDacPropertyCorrespondingToTheMappedBqlField(ITypeSymbol mappedBqlField)
+		{
+			if (mappedBqlField.ContainingType == null)
+				return null;
+
+			DacType? dacType = mappedBqlField.ContainingType.GetDacType(_pxContext);
+
+			if (dacType == null)
+				return null;
+			else if (dacType == DacType.DacExtension)
+				return GetDacPropertySymbol(mappedBqlField.ContainingType, mappedBqlField.Name);
+
+			INamedTypeSymbol? currentDac = mappedBqlField.ContainingType;
+
+			while (currentDac != null)
+			{
+				var property = GetDacPropertySymbol(currentDac, mappedBqlField.Name);
+
+				if (property != null)
+					return property;
+
+				currentDac = currentDac.BaseType;
+			}
+
+			return null;
+		}
+
+		private IPropertySymbol? GetDacPropertySymbol(INamedTypeSymbol type, string caseInsensitivePropertyName)
+		{
+			var members = type.GetMembers();
+
+			if (members.IsDefaultOrEmpty)
+				return null;
+
+			return members.OfType<IPropertySymbol>()
+						  .FirstOrDefault(property => caseInsensitivePropertyName.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
 		private (DiagnosticDescriptor? DiagnosticToReport, bool CheckChildNodes) AnalyzeCommentParseResult(XmlCommentParseResult parseResult) =>
