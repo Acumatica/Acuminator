@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -14,29 +15,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	{
 		public XmlElementSyntax? Tag { get; }
 
-		public XmlAttributeSyntax? CrefAttribute { get; }
+		public ImmutableArray<XmlCrefAttributeSyntax> CrefAttributes { get; }
 
 		[MemberNotNullWhen(returnValue: true, member: nameof(Tag))]
 		public bool HasInheritdocTag => Tag != null;
 
-		[MemberNotNullWhen(returnValue: true, member: nameof(CrefAttribute))]
-		public bool InheritdocTagHasCrefAttribute => CrefAttribute != null;
+		public bool InheritdocTagHasCrefAttributes => !CrefAttributes.IsDefaultOrEmpty;
 
 		public InheritdocTagInfo(XmlElementSyntax? inheritdocTag)
 		{
 			Tag = inheritdocTag;
-			CrefAttribute = GetCrefAttribute(inheritdocTag);
+			CrefAttributes = GetCrefAttribute(inheritdocTag);
 		}
 
-		private static XmlAttributeSyntax? GetCrefAttribute(XmlElementSyntax? inheritdocTag)
+		private static ImmutableArray<XmlCrefAttributeSyntax> GetCrefAttribute(XmlElementSyntax? inheritdocTag)
 		{
 			if (inheritdocTag?.StartTag == null)
-				return null;
+				return ImmutableArray<XmlCrefAttributeSyntax>.Empty;
 
 			var attributes = inheritdocTag.StartTag.Attributes;
 			return attributes.Count > 0
-				? attributes.FirstOrDefault(xmlAttribute => xmlAttribute.IsKind(SyntaxKind.XmlCrefAttribute))
-				: null;
+				? attributes.OfType<XmlCrefAttributeSyntax>().ToImmutableArray()
+				: ImmutableArray<XmlCrefAttributeSyntax>.Empty;
 		}
 
 		public override string ToString() => Tag?.ToString() ?? string.Empty;
