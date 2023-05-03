@@ -11,15 +11,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	{
 		public XmlElementSyntax? SummaryTag { get; }
 
-		public XmlElementSyntax? InheritdocTag { get; }
+		public InheritdocTagInfo InheritdocTagInfo { get; }
 
 		public XmlElementSyntax? ExcludeTag { get; }
 
 		[MemberNotNullWhen(returnValue: true, member: nameof(SummaryTag))]
 		public bool HasSummaryTag => SummaryTag != null;
 
-		[MemberNotNullWhen(returnValue: true, member: nameof(InheritdocTag))]
-		public bool HasInheritdocTag => InheritdocTag != null;
+		public bool HasInheritdocTag => InheritdocTagInfo.HasInheritdocTag;
 
 		[MemberNotNullWhen(returnValue: true, member: nameof(ExcludeTag))]
 		public bool HasExcludeTag => ExcludeTag != null;
@@ -27,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public XmlCommentTagsInfo(XmlElementSyntax? summaryTag, XmlElementSyntax? inheritdocTag, XmlElementSyntax? excludeTag)
 		{
 			SummaryTag = summaryTag;
-			InheritdocTag = inheritdocTag;
+			InheritdocTagInfo = new InheritdocTagInfo(inheritdocTag);
 			ExcludeTag = excludeTag;
 		}
 	}
