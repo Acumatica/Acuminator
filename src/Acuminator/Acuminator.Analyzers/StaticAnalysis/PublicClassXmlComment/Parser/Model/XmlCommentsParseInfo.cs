@@ -14,39 +14,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	{
 		public XmlCommentParseResult ParseResult { get; }
 
-		public XmlCommentTagsInfo TagsInfo { get; }
-
 		public DiagnosticDescriptor? DiagnosticToReport { get; }
 
-		public bool StepIntoChildNodes { get; }
+		public bool StepIntoChildren { get; }
 
-		public ImmutableArray<SyntaxNode> NodesWithErrors { get; }
+		public ImmutableArray<SyntaxNode> DocCommentNodesWithErrors { get; }
 
 		[MemberNotNullWhen(returnValue: true, member: nameof(DiagnosticToReport))]
 		public bool HasError => DiagnosticToReport != null;
 
-		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, XmlCommentTagsInfo tagsInfo, DiagnosticDescriptor? diagnosticToReport,
-									bool stepIntoChildNodes, SyntaxNode? nodeWithErrors) :
-							   this(parseResult, tagsInfo, diagnosticToReport, stepIntoChildNodes,
+		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, bool stepIntoChildren) :
+							   this(parseResult, diagnosticToReport: null, stepIntoChildren,
+									nodesWithErrors: ImmutableArray<SyntaxNode>.Empty)
+		{ }
+
+		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren,
+									SyntaxNode? nodeWithErrors) :
+							   this(parseResult, diagnosticToReport, stepIntoChildren,
 									nodeWithErrors != null
 										? ImmutableArray.Create(nodeWithErrors)
 										: ImmutableArray<SyntaxNode>.Empty)
 		{ }
 
-		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, XmlCommentTagsInfo tagsInfo, DiagnosticDescriptor? diagnosticToReport,
-									bool stepIntoChildNodes, IEnumerable<SyntaxNode>? nodesWithErrors) :
-							   this(parseResult, tagsInfo, diagnosticToReport, stepIntoChildNodes,
+		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren, 
+									IEnumerable<SyntaxNode>? nodesWithErrors) :
+							   this(parseResult, diagnosticToReport, stepIntoChildren,
 									nodesWithErrors?.ToImmutableArray() ?? ImmutableArray<SyntaxNode>.Empty)
 		{ }
 
-		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, XmlCommentTagsInfo tagsInfo, DiagnosticDescriptor? diagnosticToReport,
-									bool stepIntoChildNodes, ImmutableArray<SyntaxNode> nodesWithErrors)
+		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport,
+									bool stepIntoChildren, ImmutableArray<SyntaxNode> nodesWithErrors)
 		{
-			ParseResult = parseResult;
-			TagsInfo = tagsInfo;
-			DiagnosticToReport = diagnosticToReport;
-			StepIntoChildNodes = stepIntoChildNodes;
-			NodesWithErrors = nodesWithErrors;
+			ParseResult               = parseResult;
+			DiagnosticToReport        = diagnosticToReport;
+			StepIntoChildren          = stepIntoChildren;
+			DocCommentNodesWithErrors = nodesWithErrors;
 		}
 	}
 }

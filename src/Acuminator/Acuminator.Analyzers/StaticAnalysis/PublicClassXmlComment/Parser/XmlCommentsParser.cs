@@ -2,10 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,75 +20,95 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	internal partial class XmlCommentsParser
 	{
 		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
+
+		private readonly SemanticModel _semanticModel;
+		private readonly PXContext _pxContext;
+		
 		private readonly CancellationToken _cancellation;
 
-		public XmlCommentsParser(CancellationToken cancellation)
+		public XmlCommentsParser(SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
 		{
+			_semanticModel = semanticModel;
+			_pxContext = pxContext;
 			_cancellation = cancellation;
 		}
 
-		public (DiagnosticDescriptor? DiagnosticToReport, bool CheckChildNodes) AnalyzeDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration)
+		public XmlCommentsParseInfo AnalyzeXmlComments(MemberDeclarationSyntax memberDeclaration, ITypeSymbol? mappedBqlField)
 		{
-			XmlCommentParseResult parseResult = ParseDeclarationXmlComments(memberDeclaration);
+			var (parseResult, tagsInfos) = ParseDeclarationXmlComments(memberDeclaration, mappedBqlField);
 
 			_cancellation.ThrowIfCancellationRequested();
-			return AnalyzeCommentParseResult(parseResult);
+
+			var (diagnosticToReport, stepIntoChildren) = AnalyzeCommentParseResult(parseResult);
+			return CreateParseInfo(parseResult, tagsInfos, diagnosticToReport, stepIntoChildren);
 		}
 
-		private XmlCommentParseResult ParseDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration)
+		private (XmlCommentParseResult ParseResult, List<XmlCommentTagsInfo>? TagsInfos) ParseDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration,
+																													 ITypeSymbol? mappedBqlField)
 		{
 			_cancellation.ThrowIfCancellationRequested();
 
 			if (!memberDeclaration.HasStructuredTrivia)
-				return XmlCommentParseResult.NoXmlComment;
+				return (XmlCommentParseResult.NoXmlComment, TagsInfos: null);
 
 			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
-			bool hasXmlComment = false, hasSummaryTag = false, nonEmptySummaryTag = false,
-				 hasInheritdocTag = false, correctInheritdocTag = false;
+			bool hasXmlComment = false;
+			int summaryTagCount = 0, inheritdocCount = 0;
+			bool nonEmptySummaryTag = false, correctInheritdocTag = false;
+
+			List<XmlCommentTagsInfo>? tagsInfos = null;
 
 			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
 			{
 				_cancellation.ThrowIfCancellationRequested();
+				XmlCommentTagsInfo commentTagsInfo = GetDocumentationTags(xmlComment);
+
+				if (commentTagsInfo.NoXmlComments)
+					continue;
+				else if (commentTagsInfo.HasExcludeTag)
+					return (XmlCommentParseResult.HasExcludeTag, TagsInfos: null);
 
 				hasXmlComment = true;
-				XmlCommentTagsInfo tagsInfo = GetDocumentationTags(xmlComment);
+				tagsInfos ??= new List<XmlCommentTagsInfo>(capacity: 1);
+				tagsInfos.Add(commentTagsInfo);
 
-				if (tagsInfo.HasExcludeTag)
-					return XmlCommentParseResult.HasExcludeTag;
-				else if (!tagsInfo.HasSummaryTag && !tagsInfo.HasInheritdocTag)
+				if (!commentTagsInfo.HasSummaryTag && !commentTagsInfo.HasInheritdocTag)
 					continue;
 
-				if (tagsInfo.HasSummaryTag)
+				if (commentTagsInfo.HasSummaryTag)
 				{
-					hasSummaryTag = true;
-					nonEmptySummaryTag = IsNonEmptySummaryTag(tagsInfo.SummaryTag);
+					summaryTagCount++;
+					nonEmptySummaryTag = nonEmptySummaryTag || IsNonEmptySummaryTag(commentTagsInfo.SummaryTag);
 				}
 
-				if (tagsInfo.HasInheritdocTag)
+				if (commentTagsInfo.HasInheritdocTag)
 				{
-					hasInheritdocTag = true;
-					correctInheritdocTag = IsCorrectInheritDocTag(tagsInfo.InheritdocTag);
+					inheritdocCount++;
+					correctInheritdocTag = inheritdocCount == 1 && 
+										   IsCorrectInheritdocTag(commentTagsInfo.InheritdocTagInfo, mappedBqlField);
 				}
 			}
 
 			if (!hasXmlComment)
-				return XmlCommentParseResult.NoXmlComment;
+				return (XmlCommentParseResult.NoXmlComment, TagsInfos: null);
+			else if (summaryTagCount > 1 || inheritdocCount > 1)
+				return (XmlCommentParseResult.MultipleDocTags, tagsInfos);
 
-			switch ((hasSummaryTag, hasInheritdocTag))
+			bool hasSummaryTag    = summaryTagCount == 0;
+			bool hasInheritdocTag = inheritdocCount == 0;
+			var parseResult = (hasSummaryTag, hasInheritdocTag) switch
 			{
-				case (true, true):
-					return XmlCommentParseResult.SummaryAndInheritdocTags;
-				case (false, false):
-					return XmlCommentParseResult.NoSummaryOrInheritdocTag;
-				case (true, false):
-					return nonEmptySummaryTag
-						? XmlCommentParseResult.HasNonEmptySummaryTag
-						: XmlCommentParseResult.EmptySummaryTag;
-				case (false, true):
-					return correctInheritdocTag
-						? XmlCommentParseResult.IncorrectInheritdocTag
-						: XmlCommentParseResult.CorrectInheritdocTag;
-			}
+				(true, true)   => XmlCommentParseResult.MultipleDocTags,
+				(false, false) => XmlCommentParseResult.NoSummaryOrInheritdocTag,
+				(true, false)  => nonEmptySummaryTag
+									? XmlCommentParseResult.HasNonEmptySummaryTag
+									: XmlCommentParseResult.EmptySummaryTag,
+				(false, true)  => correctInheritdocTag
+									? XmlCommentParseResult.IncorrectInheritdocTag
+									: XmlCommentParseResult.CorrectInheritdocTag
+			};
+
+			return (parseResult, tagsInfos);
 		}
 
 		private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>
@@ -203,18 +227,55 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 						  .FirstOrDefault(property => caseInsensitivePropertyName.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
-		private (DiagnosticDescriptor? DiagnosticToReport, bool CheckChildNodes) AnalyzeCommentParseResult(XmlCommentParseResult parseResult) =>
+		private (DiagnosticDescriptor? DiagnosticToReport, bool StepIntoChildNodes) AnalyzeCommentParseResult(XmlCommentParseResult parseResult) =>
 			parseResult switch
 			{
-				XmlCommentParseResult.HasExcludeTag => (null, CheckChildNodes: false),
-				XmlCommentParseResult.HasNonEmptySummaryTag => (null, CheckChildNodes: true),
-				XmlCommentParseResult.CorrectInheritdocTag => (null, CheckChildNodes: true),
-				XmlCommentParseResult.NoXmlComment => (Descriptors.PX1007_PublicClassNoXmlComment, CheckChildNodes: true),
-				XmlCommentParseResult.EmptySummaryTag => (Descriptors.PX1007_PublicClassNoXmlComment, CheckChildNodes: true),
-				XmlCommentParseResult.NoSummaryOrInheritdocTag => (Descriptors.PX1007_PublicClassNoXmlComment, CheckChildNodes: true),
-				XmlCommentParseResult.SummaryAndInheritdocTags => (Descriptors.PX1007_MultipleDocumentationTags, CheckChildNodes: true),
-				XmlCommentParseResult.IncorrectInheritdocTag => (Descriptors.PX1007_InvalidProjectionDacFieldDescription, CheckChildNodes: true),
-				_ => (null, CheckChildNodes: true)
+				XmlCommentParseResult.HasExcludeTag            => (null, StepIntoChildNodes: false),
+				XmlCommentParseResult.HasNonEmptySummaryTag    => (null, StepIntoChildNodes: true),
+				XmlCommentParseResult.CorrectInheritdocTag     => (null, StepIntoChildNodes: true),
+				XmlCommentParseResult.NoXmlComment             => (Descriptors.PX1007_PublicClassNoXmlComment, StepIntoChildNodes: true),
+				XmlCommentParseResult.EmptySummaryTag          => (Descriptors.PX1007_PublicClassNoXmlComment, StepIntoChildNodes: true),
+				XmlCommentParseResult.NoSummaryOrInheritdocTag => (Descriptors.PX1007_PublicClassNoXmlComment, StepIntoChildNodes: true),
+				XmlCommentParseResult.MultipleDocTags          => (Descriptors.PX1007_MultipleDocumentationTags, StepIntoChildNodes: true),
+				XmlCommentParseResult.IncorrectInheritdocTag   => (Descriptors.PX1007_InvalidProjectionDacFieldDescription, StepIntoChildNodes: true),
+				_                                              => (null, StepIntoChildNodes: true)
 			};
+
+		private XmlCommentsParseInfo CreateParseInfo(XmlCommentParseResult parseResult, List<XmlCommentTagsInfo>? tagsInfos, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren)
+		{
+			if (diagnosticToReport == null)
+				return new XmlCommentsParseInfo(parseResult, stepIntoChildren);
+			else if (tagsInfos?.Count is null or 0)
+				return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors: null);
+
+			switch (parseResult)
+			{
+				case XmlCommentParseResult.NoXmlComment:
+				case XmlCommentParseResult.NoSummaryOrInheritdocTag:
+					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors: null);
+
+				case XmlCommentParseResult.EmptySummaryTag:
+					XmlCommentTagsInfo summaryTagInfo = tagsInfos.FirstOrDefault(tagInfo => tagInfo.HasSummaryTag);
+					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, summaryTagInfo.SummaryTag);
+
+				case XmlCommentParseResult.IncorrectInheritdocTag:
+					XmlCommentTagsInfo inheritdocTagInfo = tagsInfos.FirstOrDefault(tagInfo => tagInfo.HasInheritdocTag);
+					var crefAttributes = inheritdocTagInfo.InheritdocTagInfo.CrefAttributes;
+
+					return crefAttributes.Length switch
+					{
+						0 => new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, inheritdocTagInfo.InheritdocTagInfo.Tag),
+						1 => new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, crefAttributes[0]),
+						_ => new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, crefAttributes)
+					}; ;
+
+				case XmlCommentParseResult.MultipleDocTags:
+					var nodesWithErrors = tagsInfos.SelectMany(tagInfo => tagInfo.GetAllTagNodes());
+					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors);
+
+				default:
+					return new XmlCommentsParseInfo(parseResult, stepIntoChildren);
+			}
+		}
 	}
 }
