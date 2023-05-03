@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1007_MultipleDocumentationTags { get; } =
 			Rule("PX1007", nameof(Resources.PX1007Title_MultipleDocumentationTags).GetLocalized(), Category.Documentation,
-				DiagnosticSeverity.Error, DiagnosticsShortName.PX1007MultipleXmlComments);
+				DiagnosticSeverity.Error, DiagnosticsShortName.PX1007MultipleXmlDocTags);
 
 		public static DiagnosticDescriptor PX1007_InvalidProjectionDacFieldDescription { get; } =
 			Rule("PX1007", nameof(Resources.PX1007Title_IncorrectProjectionDacFieldDescription).GetLocalized(), Category.Documentation,

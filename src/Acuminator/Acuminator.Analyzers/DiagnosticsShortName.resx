@@ -384,8 +384,8 @@
   <data name="PX1095PXDBScalar" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBScalar</value>
   </data>
-  <data name="PX1007MultipleXmlComments" xml:space="preserve">
-    <value>MultipleXmlComments</value>
+  <data name="PX1007MultipleXmlDocTags" xml:space="preserve">
+    <value>MultipleXmlDocTags</value>
   </data>
   <data name="PX1007IncorrectProjectionDacFieldComment" xml:space="preserve">
     <value>IncorrectProjectionDacFieldComment</value>
