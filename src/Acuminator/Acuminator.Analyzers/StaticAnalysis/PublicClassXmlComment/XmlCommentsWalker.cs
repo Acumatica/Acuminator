@@ -1,3 +1,5 @@
+﻿#nullable enable
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -25,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly CodeAnalysisSettings _codeAnalysisSettings;
-		private readonly Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
+		private readonly Stack<(INamedTypeSymbol? Type, DacType? DacTypeKind)> _containingTypesStack = new(capacity: 2);
 
 		public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
 								 CodeAnalysisSettings codeAnalysisSettings)
@@ -35,6 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			_codeAnalysisSettings = codeAnalysisSettings;
 		}
 
+		#region Optimization - skipping visit of some subtrees
 		public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
 		{
 			// stop visitor for going into methods to improve performance
@@ -93,34 +96,44 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
-			INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
-			bool isDacOrDacExtension = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
-			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, reportDiagnostic: isDacOrDacExtension, out bool checkChildNodes, typeSymbol);
+			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			INamedTypeSymbol? typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
+			DacType? dacType = typeSymbol?.GetDacType(_pxContext);
+
+			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, typeSymbol, dacType, out bool checkChildNodes);
 
 			if (!checkChildNodes)
 				return;
-			
+
 			try
 			{
-				_isInsideDacContextStack.Push(isDacOrDacExtension);
+				_containingTypesStack.Push((typeSymbol, dacType));
 				base.VisitClassDeclaration(classDeclaration);
 			}
 			finally
 			{
-				_isInsideDacContextStack.Pop();
+				_containingTypesStack.Pop();
 			}
 		}
 
 		public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
 		{
-			bool isInsideDacOrDacExt = _isInsideDacContextStack.Count > 0
-				? _isInsideDacContextStack.Peek()
-				: false;
+			var (contaningType, dacTypeKind) = _containingTypesStack.Count > 0
+				? _containingTypesStack.Peek()
+				: default;
 
-			if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
+			bool isInsideDacOrDacExt = dacTypeKind.HasValue;
+
+			if (!isInsideDacOrDacExt)
 				return;
 
-			AnalyzeTypeMemberDeclarationForMissingXmlComments(propertyDeclaration, propertyDeclaration.Modifiers, 
+			string propertyName = propertyDeclaration.Identifier.Text;
+
+			if (DacFieldNames.System.All.Contains(propertyName) || DacFieldNames.WellKnown.Selected.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
+				return;
+
+			AnalyzeMemberDeclarationForMissingXmlComments(propertyDeclaration, propertyDeclaration.Modifiers, 
 															 propertyDeclaration.Identifier, reportDiagnostic: true, out _);
 		}
 
