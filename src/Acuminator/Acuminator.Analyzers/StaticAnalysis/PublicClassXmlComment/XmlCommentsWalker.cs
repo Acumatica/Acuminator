@@ -45,16 +45,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			// stop visitor for going into methods to improve performance
 		}
 
-		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
-		{
-			// stop visitor for going into structs to improve performance
-		}
-
-		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration)
-		{
-			// stop visitor for going into interfaces to improve performance
-		}
-
 		public override void VisitDelegateDeclaration(DelegateDeclarationSyntax delegateDeclaration)
 		{
 			// stop visitor for going into delegates to improve performance
