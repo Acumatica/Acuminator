@@ -55,6 +55,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			// stop visitor for going into enums to improve performance
 		}
 
+		public override void VisitEventDeclaration(EventDeclarationSyntax node)
+		{
+			// stop visitor for going into events to improve performance
+		}
+
+		public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+		{
+			// stop visitor for going into fields to improve performance
+		}
+
+		public override void VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
+		{
+			// stop visitor for going into events to improve performance
+		}
+
+		public override void VisitOperatorDeclaration(OperatorDeclarationSyntax node)
+		{
+			// stop visitor for going into operators to improve performance
+		}
+
+		public override void VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
+		{
+			// stop visitor for going into operators to improve performance
+		}
+
+		public override void VisitDestructorDeclaration(DestructorDeclarationSyntax node)
+		{
+			// stop visitor for going into finalyzers to improve performance
+		}
+
+		public override void VisitIndexerDeclaration(IndexerDeclarationSyntax node)
+		{
+			// stop visitor for going into indexers to improve performance
+		}
+		#endregion
+
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
 			INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
