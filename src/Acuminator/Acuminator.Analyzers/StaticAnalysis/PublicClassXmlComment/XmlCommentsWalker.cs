@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -20,7 +20,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
-	internal class XmlCommentsWalker : CSharpSyntaxWalker
+	internal partial class XmlCommentsWalker : CSharpSyntaxWalker
 	{
 		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
 
