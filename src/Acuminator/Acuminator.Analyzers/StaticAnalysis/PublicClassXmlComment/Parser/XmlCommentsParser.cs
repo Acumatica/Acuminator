@@ -29,13 +29,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public XmlCommentsParser(SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
 		{
 			_semanticModel = semanticModel;
-			_pxContext = pxContext;
-			_cancellation = cancellation;
+			_pxContext 	   = pxContext;
+			_cancellation  = cancellation;
 		}
 
-		public XmlCommentsParseInfo AnalyzeXmlComments(MemberDeclarationSyntax memberDeclaration, ITypeSymbol? mappedBqlField)
+		public XmlCommentsParseInfo AnalyzeXmlComments(MemberDeclarationSyntax memberDeclaration, IPropertySymbol? mappedDacProperty)
 		{
-			var (parseResult, tagsInfos) = ParseDeclarationXmlComments(memberDeclaration, mappedBqlField);
+			var (parseResult, tagsInfos) = ParseDeclarationXmlComments(memberDeclaration, mappedDacProperty);
 
 			_cancellation.ThrowIfCancellationRequested();
 
@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		}
 
 		private (XmlCommentParseResult ParseResult, List<XmlCommentTagsInfo>? TagsInfos) ParseDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration,
-																													 ITypeSymbol? mappedBqlField)
+																													 IPropertySymbol? mappedDacProperty)
 		{
 			_cancellation.ThrowIfCancellationRequested();
 
@@ -87,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				{
 					inheritdocCount++;
 					correctInheritdocTag = inheritdocCount == 1 && 
-										   IsCorrectInheritdocTag(commentTagsInfo.InheritdocTagInfo, mappedBqlField);
+										   IsCorrectInheritdocTag(commentTagsInfo.InheritdocTagInfo, mappedDacProperty);
 				}
 			}
 
@@ -163,9 +163,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private static bool CommentContentIsNotEmpty(string content) =>
 			!content.IsNullOrEmpty() && content.Any(char.IsLetterOrDigit);
 
-		private bool IsCorrectInheritdocTag(InheritdocTagInfo inheritdocTagInfo, ITypeSymbol? mappedBqlField)
+		private bool IsCorrectInheritdocTag(InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
 		{
-			bool isProjectionDacProperty = mappedBqlField != null;
+			bool isProjectionDacProperty = mappedDacProperty != null;
 
 			if (!inheritdocTagInfo.InheritdocTagHasCrefAttributes)
 				return !isProjectionDacProperty;
@@ -179,31 +179,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			else if (!isProjectionDacProperty)
 				return true;
 
-			var mappedPropertySymbol = GetDacPropertyCorrespondingToTheMappedBqlField(mappedBqlField!);
-
-			if (mappedPropertySymbol == null) 
-				return false;
-
 			SymbolInfo crefSymbolInfo = _semanticModel.GetSymbolInfo(crefAttribute.Cref, _cancellation);
 			ISymbol? crefSymbol = crefSymbolInfo.Symbol ?? crefSymbolInfo.CandidateSymbols.FirstOrDefault();
 
-			return crefSymbol is IPropertySymbol referencedProperty && 
-				   mappedPropertySymbol.Equals(referencedProperty);
+			return crefSymbol is IPropertySymbol referencedProperty && mappedDacProperty!.Equals(referencedProperty);
 		}
 
 		private DiagnosticDescriptor? GetDiagnosticFromParseResult(XmlCommentParseResult parseResult) =>
 			parseResult switch
 			{
-				XmlCommentParseResult.HasExcludeTag                           => null,
-				XmlCommentParseResult.HasNonEmptySummaryTag                   => null,
-				XmlCommentParseResult.CorrectInheritdocTag                    => null,
-				XmlCommentParseResult.NoXmlComment                            => Descriptors.PX1007_PublicClassNoXmlComment,
-				XmlCommentParseResult.EmptySummaryTag                         => Descriptors.PX1007_PublicClassNoXmlComment,
-				XmlCommentParseResult.NoSummaryOrInheritdocTag                => Descriptors.PX1007_PublicClassNoXmlComment,
-				XmlCommentParseResult.MultipleDocTags                         => Descriptors.PX1007_MultipleDocumentationTags,
-				XmlCommentParseResult.IncorrectInheritdocTag                  => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
+				XmlCommentParseResult.HasExcludeTag 						  => null,
+				XmlCommentParseResult.HasNonEmptySummaryTag 				  => null,
+				XmlCommentParseResult.CorrectInheritdocTag 					  => null,
+				XmlCommentParseResult.NoXmlComment 							  => Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.EmptySummaryTag 						  => Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.NoSummaryOrInheritdocTag 				  => Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.MultipleDocTags 						  => Descriptors.PX1007_MultipleDocumentationTags,
+				XmlCommentParseResult.IncorrectInheritdocTag 				  => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
 				XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
-				_                                                             => null
+				_ 															  => null
 			};
 
 		private XmlCommentsParseInfo CreateParseInfo(XmlCommentParseResult parseResult, List<XmlCommentTagsInfo>? tagsInfos, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren)
