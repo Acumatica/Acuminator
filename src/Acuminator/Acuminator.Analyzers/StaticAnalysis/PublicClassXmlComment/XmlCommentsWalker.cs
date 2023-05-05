@@ -94,6 +94,34 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		}
 		#endregion
 
+		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration) =>
+			VisitNonDacTypeDeclaration(structDeclaration, base.VisitStructDeclaration);
+
+		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration) =>
+			VisitNonDacTypeDeclaration(interfaceDeclaration, base.VisitInterfaceDeclaration);
+
+		private void VisitNonDacTypeDeclaration<TTypeDeclaration>(TTypeDeclaration typeDeclaration, Action<TTypeDeclaration> visitSubtreeAction)
+		where TTypeDeclaration : TypeDeclarationSyntax
+		{
+			var attributesLists = typeDeclaration.AttributeLists;
+
+			if (attributesLists.Count > 0 &&
+				_attributesChecker.CheckIfAttributesDisableDiagnostic(typeDeclaration, checkForPXHidden: false))
+			{
+				return;
+			}
+
+			try
+			{
+				_containingTypesStack.Push(ContainingTypeInfo.NonDacContainingTypeInfo);
+				visitSubtreeAction(typeDeclaration);
+			}
+			finally
+			{
+				_containingTypesStack.Pop();
+			}
+		}
+
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
