@@ -219,13 +219,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		private bool CheckIfTypeAttributesDisableDiagnostic(INamedTypeSymbol typeSymbol)
-		{
-			var shortAttributeNames = typeSymbol.GetAttributes()
-												.Select(attr => GetAttributeShortName(attr.AttributeClass.Name));
+		
 
-			return CheckAttributeNames(shortAttributeNames);
-		}
+		
 
 		private void AnalyzeTypeMemberDeclarationForMissingXmlComments(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
 																	   SyntaxToken identifier, bool reportDiagnostic, out bool checkChildNodes)
@@ -251,15 +247,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member)
-		{
-			var shortAttributeNames = member.GetAttributes()
-											.Select(attr => GetAttributeShortName(attr));
-
-			return CheckAttributeNames(shortAttributeNames);
-		}
-		}
-
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, Location location, XmlCommentParseResult parseResult)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
@@ -271,40 +258,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
 		}
 
-		private bool CheckAttributeNames(IEnumerable<string> attributeNames)
-		{
-			const string ObsoleteAttributeShortName = "Obsolete";
-			const string PXHiddenAttributeShortName = "PXHidden";
-			const string PXInternalUseOnlyAttributeShortName = "PXInternalUseOnly";
+		
 
-			return attributeNames.Any(attrName => attrName == ObsoleteAttributeShortName ||
-												  attrName == PXHiddenAttributeShortName ||
-												  attrName == PXInternalUseOnlyAttributeShortName);
+		private ImmutableArray<Location> GetErrorLocationsFromTagNodesWithFallbackToMemberDeclaration(List<XmlCommentTagsInfo> tagsInfos,
+																									  MemberDeclarationSyntax memberDeclaration)
+		{
+			var errorLocations = tagsInfos.SelectMany(tagInfo => tagInfo.GetAllTagNodes())
+										  .Select(tagNode => tagNode.GetLocation())
+										  .Where(location => location != null)
+										  .ToImmutableArray();
+
+			return errorLocations.IsDefaultOrEmpty
+				? GetErrorLocationsFromMemberDeclaration(memberDeclaration)
+				: errorLocations;
 		}
 
-		private static string GetAttributeShortName(AttributeSyntax attribute)
+		private ImmutableArray<Location> GetErrorLocationsFromMemberDeclaration(MemberDeclarationSyntax memberDeclaration)
 		{
-			string shortName = attribute.Name is QualifiedNameSyntax qualifiedName
-				? qualifiedName.Right.ToString()
-				: attribute.Name.ToString();
+			var errorLocations = memberDeclaration.GetIdentifiers()
+												  .Select(identifier => identifier.GetLocation())
+												  .Where(location => location != null)
+												  .ToImmutableArray();
+			if (!errorLocations.IsDefaultOrEmpty)
+				return errorLocations;
 
-			return GetAttributeShortName(shortName);
-		}
+			var memberDeclarationLocation = memberDeclaration.GetLocation();
 
-		private static string GetAttributeShortName(string attributeName)
-		{
-			const string AttributeSuffix = "Attribute";
-			const int minLengthWithSuffix = 17;
-
-			// perfomance optimization to avoid checking the suffix of attribute names 
-			// which are definitely shorter than any of the attributes we search with "Attribute" suffix
-			if (attributeName.Length >= minLengthWithSuffix && attributeName.EndsWith(AttributeSuffix))
-			{
-				const int suffixLength = 9;
-				return attributeName.Substring(0, attributeName.Length - suffixLength);
-			}
-
-			return attributeName;
+			return memberDeclarationLocation != null
+				? ImmutableArray.Create(memberDeclarationLocation)
+				: ImmutableArray<Location>.Empty;
 		}
 	}
 }
