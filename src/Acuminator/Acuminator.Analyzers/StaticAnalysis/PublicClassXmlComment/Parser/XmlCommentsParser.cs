@@ -2,14 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -98,16 +96,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			bool hasSummaryTag    = summaryTagCount == 0;
 			bool hasInheritdocTag = inheritdocCount == 0;
-			var parseResult = (hasSummaryTag, hasInheritdocTag) switch
+			bool isProjectionDacProperty = mappedDacProperty != null;
+
+			var parseResult = (hasSummaryTag, hasInheritdocTag, isProjectionDacProperty) switch
 			{
-				(true, true)   => XmlCommentParseResult.MultipleDocTags,
-				(false, false) => XmlCommentParseResult.NoSummaryOrInheritdocTag,
-				(true, false)  => nonEmptySummaryTag
-									? XmlCommentParseResult.HasNonEmptySummaryTag
-									: XmlCommentParseResult.EmptySummaryTag,
-				(false, true)  => correctInheritdocTag
-									? XmlCommentParseResult.IncorrectInheritdocTag
-									: XmlCommentParseResult.CorrectInheritdocTag
+				(true, true, _)   	 => XmlCommentParseResult.MultipleDocTags,
+				(false, false, _) 	 => XmlCommentParseResult.NoSummaryOrInheritdocTag,
+				(true, false, true)  => XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty,
+				(true, false, false) => nonEmptySummaryTag
+											? XmlCommentParseResult.HasNonEmptySummaryTag
+											: XmlCommentParseResult.EmptySummaryTag,
+				(false, true, _)  	 => correctInheritdocTag
+											? XmlCommentParseResult.IncorrectInheritdocTag
+											: XmlCommentParseResult.CorrectInheritdocTag
 			};
 
 			return (parseResult, tagsInfos);
@@ -127,12 +128,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			{
 				string? tagName = xmlNode.StartTag?.Name?.ToString();
 
-				if (XmlCommentsConstants.SummaryTag.Equals(tagName, StringComparison.Ordinal))
-					summaryTag = xmlNode;
-				else if (XmlCommentsConstants.InheritdocTag.Equals(tagName, StringComparison.Ordinal))
-					inheritDocTag = xmlNode;
-				else if (XmlCommentsConstants.ExcludeTag.Equals(tagName, StringComparison.Ordinal))
-					excludeTag = xmlNode;
+				switch (tagName)
+				{
+					case XmlCommentsConstants.SummaryTag:
+						summaryTag = xmlNode;
+						break;
+
+					case XmlCommentsConstants.InheritdocTag:
+						inheritDocTag = xmlNode;
+						break;
+
+					case XmlCommentsConstants.ExcludeTag:
+						excludeTag = xmlNode;
+						break;
+				}
 			}
 
 			return new XmlCommentTagsInfo(summaryTag, inheritDocTag, excludeTag);
@@ -200,7 +209,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				_ 															  => null
 			};
 
-		private XmlCommentsParseInfo CreateParseInfo(XmlCommentParseResult parseResult, List<XmlCommentTagsInfo>? tagsInfos, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren)
+		private XmlCommentsParseInfo CreateParseInfo(XmlCommentParseResult parseResult, List<XmlCommentTagsInfo>? tagsInfos, 
+													 DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren)
 		{
 			if (diagnosticToReport == null)
 				return new XmlCommentsParseInfo(parseResult, stepIntoChildren);
