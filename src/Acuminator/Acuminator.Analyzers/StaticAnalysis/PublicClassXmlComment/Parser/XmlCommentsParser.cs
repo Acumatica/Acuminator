@@ -189,44 +189,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				   mappedPropertySymbol.Equals(referencedProperty);
 		}
 
-		private IPropertySymbol? GetDacPropertyCorrespondingToTheMappedBqlField(ITypeSymbol mappedBqlField)
-		{
-			if (mappedBqlField.ContainingType == null)
-				return null;
-
-			DacType? dacType = mappedBqlField.ContainingType.GetDacType(_pxContext);
-
-			if (dacType == null)
-				return null;
-			else if (dacType == DacType.DacExtension)
-				return GetDacPropertySymbol(mappedBqlField.ContainingType, mappedBqlField.Name);
-
-			INamedTypeSymbol? currentDac = mappedBqlField.ContainingType;
-
-			while (currentDac != null)
-			{
-				var property = GetDacPropertySymbol(currentDac, mappedBqlField.Name);
-
-				if (property != null)
-					return property;
-
-				currentDac = currentDac.BaseType;
-			}
-
-			return null;
-		}
-
-		private IPropertySymbol? GetDacPropertySymbol(INamedTypeSymbol type, string caseInsensitivePropertyName)
-		{
-			var members = type.GetMembers();
-
-			if (members.IsDefaultOrEmpty)
-				return null;
-
-			return members.OfType<IPropertySymbol>()
-						  .FirstOrDefault(property => caseInsensitivePropertyName.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
-		}
-
+		private DiagnosticDescriptor? GetDiagnosticFromParseResult(XmlCommentParseResult parseResult) =>
 		private (DiagnosticDescriptor? DiagnosticToReport, bool StepIntoChildNodes) AnalyzeCommentParseResult(XmlCommentParseResult parseResult) =>
 			parseResult switch
 			{
