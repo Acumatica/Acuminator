@@ -27,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly CodeAnalysisSettings _codeAnalysisSettings;
-		private readonly Stack<(INamedTypeSymbol? Type, DacType? DacTypeKind)> _containingTypesStack = new(capacity: 2);
+		private readonly Stack<TypeInfo> _containingTypesStack = new(capacity: 2);
 
 		public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
 								 CodeAnalysisSettings codeAnalysisSettings)
@@ -113,7 +113,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			try
 			{
-				_containingTypesStack.Push(ContainingTypeInfo.NonDacContainingTypeInfo);
+				_containingTypesStack.Push(TypeInfo.NonDacTypeInfo);
 				visitSubtreeAction(typeDeclaration);
 			}
 			finally
@@ -127,7 +127,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			INamedTypeSymbol? typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
-			DacType? dacType = typeSymbol?.GetDacType(_pxContext);
+			var containingTypeInfo = new TypeInfo(typeSymbol, _pxContext);
 
 			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, typeSymbol, dacType, out bool checkChildNodes);
 
@@ -136,7 +136,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			try
 			{
-				_containingTypesStack.Push((typeSymbol, dacType));
+				_containingTypesStack.Push(containingTypeInfo);
 				base.VisitClassDeclaration(classDeclaration);
 			}
 			finally

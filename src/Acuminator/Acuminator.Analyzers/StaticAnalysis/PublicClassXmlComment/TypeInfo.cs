@@ -13,8 +13,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal partial class XmlCommentsWalker : CSharpSyntaxWalker
 	{
-		private class ContainingTypeInfo
+		private class TypeInfo
 		{
+			public static TypeInfo NonDacTypeInfo { get; } = new();
+
 			public INamedTypeSymbol? ContainingType { get; }
 
 			public DacType? DacKind { get; }
@@ -23,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			public bool IsDacOrDacExtension => DacKind.HasValue;
 
-			public ContainingTypeInfo(INamedTypeSymbol? containingType, PXContext pxContext)
+			public TypeInfo(INamedTypeSymbol? containingType, PXContext pxContext)
 			{
 				ContainingType = containingType;	
 				DacKind = containingType?.GetDacType(pxContext);
@@ -36,15 +38,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					IsProjectionDac = false;
 			}
 
-			private ContainingTypeInfo(INamedTypeSymbol? containingType)
+			private TypeInfo()
 			{
-				ContainingType = containingType;
+				ContainingType = null;
 				DacKind = null;
 				IsProjectionDac = false;
 			}
-
-			public static ContainingTypeInfo MakeInfoForNonDacType(INamedTypeSymbol? nonDacAndNonDacExtType) =>
-				new(nonDacAndNonDacExtType);
 		}
 	}
 }
