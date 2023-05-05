@@ -39,7 +39,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			_cancellation.ThrowIfCancellationRequested();
 
-			var (diagnosticToReport, stepIntoChildren) = AnalyzeCommentParseResult(parseResult);
+			DiagnosticDescriptor? diagnosticToReport = GetDiagnosticFromParseResult(parseResult);
+			bool stepIntoChildren = memberDeclaration is TypeDeclarationSyntax && parseResult != XmlCommentParseResult.HasExcludeTag;
+
 			return CreateParseInfo(parseResult, tagsInfos, diagnosticToReport, stepIntoChildren);
 		}
 
@@ -190,18 +192,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		}
 
 		private DiagnosticDescriptor? GetDiagnosticFromParseResult(XmlCommentParseResult parseResult) =>
-		private (DiagnosticDescriptor? DiagnosticToReport, bool StepIntoChildNodes) AnalyzeCommentParseResult(XmlCommentParseResult parseResult) =>
 			parseResult switch
 			{
-				XmlCommentParseResult.HasExcludeTag            => (null, StepIntoChildNodes: false),
-				XmlCommentParseResult.HasNonEmptySummaryTag    => (null, StepIntoChildNodes: true),
-				XmlCommentParseResult.CorrectInheritdocTag     => (null, StepIntoChildNodes: true),
-				XmlCommentParseResult.NoXmlComment             => (Descriptors.PX1007_PublicClassNoXmlComment, StepIntoChildNodes: true),
-				XmlCommentParseResult.EmptySummaryTag          => (Descriptors.PX1007_PublicClassNoXmlComment, StepIntoChildNodes: true),
-				XmlCommentParseResult.NoSummaryOrInheritdocTag => (Descriptors.PX1007_PublicClassNoXmlComment, StepIntoChildNodes: true),
-				XmlCommentParseResult.MultipleDocTags          => (Descriptors.PX1007_MultipleDocumentationTags, StepIntoChildNodes: true),
-				XmlCommentParseResult.IncorrectInheritdocTag   => (Descriptors.PX1007_InvalidProjectionDacFieldDescription, StepIntoChildNodes: true),
-				_                                              => (null, StepIntoChildNodes: true)
+				XmlCommentParseResult.HasExcludeTag                           => null,
+				XmlCommentParseResult.HasNonEmptySummaryTag                   => null,
+				XmlCommentParseResult.CorrectInheritdocTag                    => null,
+				XmlCommentParseResult.NoXmlComment                            => Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.EmptySummaryTag                         => Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.NoSummaryOrInheritdocTag                => Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.MultipleDocTags                         => Descriptors.PX1007_MultipleDocumentationTags,
+				XmlCommentParseResult.IncorrectInheritdocTag                  => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
+				XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
+				_                                                             => null
 			};
 
 		private XmlCommentsParseInfo CreateParseInfo(XmlCommentParseResult parseResult, List<XmlCommentTagsInfo>? tagsInfos, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren)
