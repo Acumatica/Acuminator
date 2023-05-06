@@ -583,7 +583,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Display the PX1007 diagnostic, which is shown for the public classes, interfaces, structs, enumerations, delegates, and DAC properties that do not have XML comments..
+        ///   Looks up a localized string similar to Enable Acuminator PX1007 diagnostic that checks DACs, DAC extensions and DAC field properties for the presence of valid XML documentation comments..
         /// </summary>
         public static string Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description {
             get {
