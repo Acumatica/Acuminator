@@ -13,8 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		HasExcludeTag,
 		HasNonEmptySummaryTag,
 		CorrectInheritdocTag,
-		IncorrectInheritdocTag,
-		MultipleDocTags,
+		IncorrectInheritdocTagOnProjectionDacProperty,
 		NonInheritdocTagOnProjectionDacProperty
 	}
 }

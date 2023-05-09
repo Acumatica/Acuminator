@@ -133,15 +133,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MultipleXmlDocTags.
-        /// </summary>
-        public static string PX1007MultipleXmlDocTags {
-            get {
-                return ResourceManager.GetString("PX1007MultipleXmlDocTags", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to NoXmlCommentForPublicEntityOrDacProperty.
         /// </summary>
         public static string PX1007NoXmlComment {

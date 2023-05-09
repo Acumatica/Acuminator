@@ -237,15 +237,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Multiple XML documentation tags are forbidden. You can use only one &quot;summary&quot; or &quot;inheritdoc&quot; tag..
-        /// </summary>
-        public static string PX1007Title_MultipleDocumentationTags {
-            get {
-                return ResourceManager.GetString("PX1007Title_MultipleDocumentationTags", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues..
         /// </summary>
         public static string PX1008Title {
