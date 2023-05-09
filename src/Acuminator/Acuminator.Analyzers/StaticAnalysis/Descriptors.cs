@@ -412,5 +412,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute { get; } =
 			Rule("PX1095", nameof(Resources.PX1095Title_PXDBScalar).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1095PXDBScalar);
+
+		public static DiagnosticDescriptor PX1096_PXOverrideMustMatchSignature { get; } =
+			Rule("PX1096", nameof(Resources.PX1096Title_SignatureMismatch).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1096SignatureMismatch);
+
+		public static DiagnosticDescriptor PX1096_PXOverrideContainerIsNotPXGraphExtension { get; } =
+			Rule("PX1096", nameof(Resources.PX1096Title_ContainerTypeError).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1096ContainerTypeError);
 	}
 }

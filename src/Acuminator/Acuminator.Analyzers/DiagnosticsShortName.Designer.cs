@@ -860,5 +860,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1095PXDBScalar", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXOverrideContainerTypeError.
+        /// </summary>
+        public static string PX1096ContainerTypeError {
+            get {
+                return ResourceManager.GetString("PX1096ContainerTypeError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXOverrideSignatureMismatch.
+        /// </summary>
+        public static string PX1096SignatureMismatch {
+            get {
+                return ResourceManager.GetString("PX1096SignatureMismatch", resourceCulture);
+            }
+        }
     }
 }
