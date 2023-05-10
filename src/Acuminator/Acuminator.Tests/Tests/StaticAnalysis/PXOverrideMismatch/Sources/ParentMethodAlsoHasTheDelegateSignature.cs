@@ -4,7 +4,7 @@ namespace Acuminator.Tests.Sources
 {
 	public class SuperBaseClass : PX.Data.PXGraphExtension<int, int>
 	{
-		public object TestMethod(int x, bool drilldown, double y)
+		public virtual object TestMethod(int x, bool drilldown, double y)
 		{
 			return new object();
 		}
@@ -13,7 +13,7 @@ namespace Acuminator.Tests.Sources
 	public class BaseClass : PX.Data.PXGraphExtension<SuperBaseClass>
 	{
 		[PX.Data.PXOverride]
-		public object TestMethod(int x, bool drilldown, double y, Func<int, bool, double, object> del)
+		public virtual object TestMethod(int x, bool drilldown, double y, Func<int, bool, double, object> del)
 		{
 			return new object();
 		}
@@ -35,12 +35,16 @@ namespace PX.Data
 	{
 	}
 
-	public abstract class PXGraphExtension<Graph>
+	public abstract class PXGraphExtension
+	{
+	}
+
+	public abstract class PXGraphExtension<Graph> : PXGraphExtension
 	{
 		internal Graph _Base;
 	}
 
-	public abstract class PXGraphExtension<Extension1, Graph>
+	public abstract class PXGraphExtension<Extension1, Graph> : PXGraphExtension
 	{
 		internal Extension1 MyExt;
 

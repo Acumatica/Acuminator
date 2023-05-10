@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -10,10 +11,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 {
 	public class PXOverrideMismatchTests : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new PXOverrideMismatchAnalyzer(
-				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
-											.WithSuppressionMechanismDisabled());
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphAnalyzer(
+				CodeAnalysisSettings.Default
+									.WithRecursiveAnalysisEnabled()
+									.WithStaticAnalysisEnabled()
+									.WithSuppressionMechanismDisabled(),
+				new PXOverrideMismatchAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("ArgumentsExactlyMatch.cs")]
@@ -47,15 +50,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		{
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(16, 26)
-			);
-		}
-
-		[Theory]
-		[EmbeddedFileData("PxOverrideInADifferentBaseType.cs")]
-		public void PxOverrideInADifferentBaseType(string source)
-		{
-			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1096_PXOverrideContainerIsNotPXGraphExtension.CreateFor(16, 26)
 			);
 		}
 

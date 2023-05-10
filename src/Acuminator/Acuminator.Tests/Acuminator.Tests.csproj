@@ -313,7 +313,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsMatchWithDelegate.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DelegateSignatureDoesNotMatch.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\PxOverrideInADifferentType.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\PxOverrideInADifferentBaseType.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ParentMethodAlsoHasTheDelegateSignature.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\NoOverridenMethodDoesNotCrash.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\NoPxOverrideAttributeDoNotCrash.cs" />

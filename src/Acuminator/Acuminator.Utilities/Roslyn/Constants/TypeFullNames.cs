@@ -66,8 +66,6 @@
 		internal const string PXViewNameAttribute = "PX.Data.PXViewNameAttribute";
 
 		internal const string PXGraphExtension = "PX.Data.PXGraphExtension";
-		internal const string PXGraphExtensionGeneric1 = "PX.Data.PXGraphExtension`1";
-		internal const string PXGraphExtensionGeneric2 = "PX.Data.PXGraphExtension`2";
 		internal const string PXCacheExtension = "PX.Data.PXCacheExtension";
 		internal const string PXMappedCacheExtension = "PX.Data.PXMappedCacheExtension";
 		internal const string PXLongOperation = "PX.Data.PXLongOperation";

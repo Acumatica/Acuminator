@@ -414,9 +414,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1095", nameof(Resources.PX1095Title_PXDBScalar).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1095PXDBScalar);
 
 		public static DiagnosticDescriptor PX1096_PXOverrideMustMatchSignature { get; } =
-			Rule("PX1096", nameof(Resources.PX1096Title_SignatureMismatch).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1096SignatureMismatch);
+			Rule("PX1096", nameof(Resources.PX1096Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1096);
 
-		public static DiagnosticDescriptor PX1096_PXOverrideContainerIsNotPXGraphExtension { get; } =
-			Rule("PX1096", nameof(Resources.PX1096Title_ContainerTypeError).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1096ContainerTypeError);
+		public static DiagnosticDescriptor PX1097_PXOverrideContainerIsNotPXGraphExtension { get; } =
+			Rule("PX1096", nameof(Resources.PX1097Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1097);
 	}
 }

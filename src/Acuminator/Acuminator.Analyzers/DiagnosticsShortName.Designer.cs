@@ -862,20 +862,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXOverrideContainerTypeError.
+        ///   Looks up a localized string similar to PXOverrideSignatureMismatch.
         /// </summary>
-        public static string PX1096ContainerTypeError {
+        public static string PX1096 {
             get {
-                return ResourceManager.GetString("PX1096ContainerTypeError", resourceCulture);
+                return ResourceManager.GetString("PX1096", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXOverrideSignatureMismatch.
+        ///   Looks up a localized string similar to PXOverrideContainerTypeError.
         /// </summary>
-        public static string PX1096SignatureMismatch {
+        public static string PX1097 {
             get {
-                return ResourceManager.GetString("PX1096SignatureMismatch", resourceCulture);
+                return ResourceManager.GetString("PX1097", resourceCulture);
             }
         }
     }

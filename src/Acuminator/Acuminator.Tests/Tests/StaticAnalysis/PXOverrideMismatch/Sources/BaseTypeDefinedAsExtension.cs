@@ -6,7 +6,7 @@ namespace Acuminator.Tests.Sources
 	{
 		public abstract class ScanExtension : PX.Data.PXGraphExtension<TSelf, TGraph>
 		{
-			public object TestMethod(int x, bool drilldown)
+			public virtual object TestMethod(int x, bool drilldown)
 			{
 				return new object();
 			}
@@ -37,12 +37,16 @@ namespace PX.Data
 	{
 	}
 
-	public abstract class PXGraphExtension<Graph>
+	public abstract class PXGraphExtension
+	{
+	}
+
+	public abstract class PXGraphExtension<Graph> : PXGraphExtension
 	{
 		internal Graph _Base;
 	}
 
-	public abstract class PXGraphExtension<Extension1, Graph>
+	public abstract class PXGraphExtension<Extension1, Graph> : PXGraphExtension
 	{
 		internal Extension1 MyExt;
 

@@ -1676,20 +1676,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXOverride method container does not implement PXGraphExtension.
+        ///   Looks up a localized string similar to PXOverride method signature must match the overriden method.
         /// </summary>
-        public static string PX1096Title_ContainerTypeError {
+        public static string PX1096Title {
             get {
-                return ResourceManager.GetString("PX1096Title_ContainerTypeError", resourceCulture);
+                return ResourceManager.GetString("PX1096Title", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXOverride method signature must match the overriden method.
+        ///   Looks up a localized string similar to PXOverride method container does not implement PXGraphExtension.
         /// </summary>
-        public static string PX1096Title_SignatureMismatch {
+        public static string PX1097Title {
             get {
-                return ResourceManager.GetString("PX1096Title_SignatureMismatch", resourceCulture);
+                return ResourceManager.GetString("PX1097Title", resourceCulture);
             }
         }
         

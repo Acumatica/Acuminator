@@ -7,7 +7,6 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
-using System.Collections.Generic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -95,9 +94,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXCacheExtension);
 		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXGraphExtension);
-		public INamedTypeSymbol PXGraphExtensionType1 => Compilation.GetTypeByMetadataName(TypeFullNames.PXGraphExtensionGeneric1);
-		public INamedTypeSymbol PXGraphExtensionType2 => Compilation.GetTypeByMetadataName(TypeFullNames.PXGraphExtensionGeneric2);
-		public List<INamedTypeSymbol> PXGraphExtensionTypes => new List<INamedTypeSymbol> { PXGraphExtensionType, PXGraphExtensionType1, PXGraphExtensionType2 }.Where(t => t != null).ToList();
 		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXMappedCacheExtension);
 		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(TypeFullNames.PXLongOperation);
 
