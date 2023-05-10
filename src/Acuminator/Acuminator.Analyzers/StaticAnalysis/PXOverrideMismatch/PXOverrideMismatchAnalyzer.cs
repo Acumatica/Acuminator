@@ -34,14 +34,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 		{
 			// Here we know that the method is not static and has the correct attribute.
 
-			var extensionType = methodSymbol.ContainingType.GetPXGraphExtension(pxContext.PXGraphExtensionType);
+			var extensionType = methodSymbol.ContainingType.GetPXGraphExtension(pxContext.PXGraphExtension.Type);
 			var graphType = extensionType.GetFirstTypeArgument();
 
 			if (graphType != null)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				var allTypes = PXOverrideExtensions.GetAllBaseTypes(pxContext.PXGraphExtensionType, extensionType, graphType);
+				var allTypes = PXOverrideExtensions.GetAllBaseTypes(pxContext.PXGraphExtension.Type, extensionType, graphType);
 
 				context.CancellationToken.ThrowIfCancellationRequested();
 

@@ -93,7 +93,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public PXGraphExtensionSymbols PXGraphExtension => _pxGraphExtensionSymbols.Value;
 
 		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXCacheExtension);
-		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXGraphExtension);
 		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXMappedCacheExtension);
 		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(TypeFullNames.PXLongOperation);
 
