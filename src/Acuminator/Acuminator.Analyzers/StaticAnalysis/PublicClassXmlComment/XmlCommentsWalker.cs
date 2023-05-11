@@ -129,7 +129,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			INamedTypeSymbol? typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
 			var containingTypeInfo = new TypeInfo(typeSymbol, _pxContext);
 
-			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, typeSymbol, dacType, out bool checkChildNodes);
+			if (CheckIfTypeIsExcludedFromDocumentation(containingTypeInfo, classDeclaration))
+				return;
+
+			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, containingTypeInfo, out bool checkChildNodes);
 
 			if (!checkChildNodes)
 				return;
@@ -145,24 +148,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
+		private bool CheckIfTypeIsExcludedFromDocumentation(TypeInfo typeInfo, ClassDeclarationSyntax classDeclaration)
 		{
-			var (contaningType, dacTypeKind) = _containingTypesStack.Count > 0
-				? _containingTypesStack.Peek()
-				: default;
+			if (typeInfo.ContainingType != null)
+			{
+				if (typeInfo.ContainingType.DeclaredAccessibility != Accessibility.Public)
+					return false;
 
-			bool isInsideDacOrDacExt = dacTypeKind.HasValue;
+				return _attributesChecker.CheckIfAttributesDisableDiagnostic(typeInfo.ContainingType,
+																			 checkForPXHidden: typeInfo.DacKind == DacType.Dac);
+			}
+			else
+			{
+				if (!classDeclaration.IsPublic())
+					return false;
 
-			if (!isInsideDacOrDacExt)
-				return;
-
-			string propertyName = propertyDeclaration.Identifier.Text;
-
-			if (DacFieldNames.System.All.Contains(propertyName) || DacFieldNames.WellKnown.Selected.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
-				return;
-
-			AnalyzeMemberDeclarationForMissingXmlComments(propertyDeclaration, propertyDeclaration.Modifiers, 
-															 propertyDeclaration.Identifier, reportDiagnostic: true, out _);
+				return _attributesChecker.CheckIfAttributesDisableDiagnostic(classDeclaration, checkForPXHidden: false);
+			}
 		}
 
 		private void AnalyzeTypeDeclarationForMissingXmlComments(TypeDeclarationSyntax typeDeclaration, bool reportDiagnostic, out bool checkChildNodes, 
@@ -219,7 +221,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		
+
+		public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
+		{
+			var containingTypeInfo = _containingTypesStack.Count > 0
+				? _containingTypesStack.Peek()
+				: null;
+
+			bool isInsideDacOrDacExt = containingTypeInfo?.IsDacOrDacExtension ?? false;
+
+			if (!isInsideDacOrDacExt)
+				return;
+
+			string propertyName = propertyDeclaration.Identifier.Text;
+
+			if (DacFieldNames.System.All.Contains(propertyName) || DacFieldNames.WellKnown.Selected.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
+				return;
+
+			AnalyzePropertyDeclarationForMissingXmlComments(propertyDeclaration, propertyDeclaration.Modifiers,
+															 propertyDeclaration.Identifier, reportDiagnostic: true, out _);
+		}
 
 		
 
