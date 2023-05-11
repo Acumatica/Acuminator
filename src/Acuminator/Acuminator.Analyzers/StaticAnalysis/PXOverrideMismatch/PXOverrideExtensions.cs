@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using System.Linq;
@@ -8,7 +10,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 {
 	public static class PXOverrideExtensions
 	{
-		public static INamedTypeSymbol GetFirstTypeArgument(this INamedTypeSymbol type)
+		internal static INamedTypeSymbol? GetFirstTypeArgument(this INamedTypeSymbol type)
 		{
 			if (type == null)
 			{
@@ -23,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			return type.ContainingType.GetFirstTypeArgument();
 		}
 
-		public static INamedTypeSymbol GetPXGraphExtension(this INamedTypeSymbol typeSymbol, INamedTypeSymbol pxGraphExtensionType)
+		internal static INamedTypeSymbol? GetPXGraphExtension(this INamedTypeSymbol typeSymbol, INamedTypeSymbol pxGraphExtensionType)
 		{
 			if (typeSymbol == null)
 			{
@@ -38,23 +40,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			return typeSymbol.BaseType.GetPXGraphExtension(pxGraphExtensionType);
 		}
 
-		public static HashSet<INamedTypeSymbol> GetAllBaseTypes(
+		internal static void GetBaseTypes(
+			this INamedTypeSymbol typeSymbol,
 			INamedTypeSymbol pxGraphExtensionType,
-			params INamedTypeSymbol[] types)
-		{
-			var allBaseTypes = new HashSet<INamedTypeSymbol>();
-
-			foreach (var type in types)
-			{
-				GetBaseTypes(pxGraphExtensionType, type, allBaseTypes);
-			}
-
-			return allBaseTypes;
-		}
-
-		private static void GetBaseTypes(
-			INamedTypeSymbol pxGraphExtensionType,
-			INamedTypeSymbol typeSymbol,
 			HashSet<INamedTypeSymbol> allBaseTypes)
 		{
 			if (typeSymbol == null || typeSymbol.SpecialType != SpecialType.None)
@@ -68,14 +56,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			}
 
 			var extensionType = typeSymbol.BaseType.GetPXGraphExtension(pxGraphExtensionType);
-			var graphType = extensionType.GetFirstTypeArgument();
+			var graphType = extensionType?.GetFirstTypeArgument();
 
 			if (graphType != null)
 			{
-				GetBaseTypes(pxGraphExtensionType, graphType, allBaseTypes);
+				graphType.GetBaseTypes(pxGraphExtensionType, allBaseTypes);
 			}
 
-			GetBaseTypes(pxGraphExtensionType, typeSymbol.BaseType, allBaseTypes);
+			typeSymbol.BaseType.GetBaseTypes(pxGraphExtensionType, allBaseTypes);
 		}
 	}
 }

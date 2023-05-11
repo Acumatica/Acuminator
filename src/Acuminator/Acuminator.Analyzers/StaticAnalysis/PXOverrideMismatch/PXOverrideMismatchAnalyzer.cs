@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
@@ -7,6 +9,7 @@ using System.Linq;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Common;
+using System.Collections.Generic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 {
@@ -23,41 +26,61 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			pxGraphExtension.Symbol
+			var methodsWithPxOverrideAttribute = pxGraphExtension.Symbol
 				.GetMembers()
 				.OfType<IMethodSymbol>()
-				.Where(m => !m.IsStatic && m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, false))
-				.ForEach(m => AnalyzeMethod(context, pxContext, m));
+				.Where(m => !m.IsStatic && m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, false));
+
+			if (methodsWithPxOverrideAttribute.Any())
+			{
+				var allBaseTypes = GetAllBaseTypesToBeChecked(pxGraphExtension.Symbol, pxContext.PXGraphExtension.Type);
+
+				methodsWithPxOverrideAttribute.ForEach(m => AnalyzeMethod(context, pxContext, allBaseTypes, m!));
+			}
 		}
 
-		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext, IMethodSymbol methodSymbol)
+		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext, IEnumerable<INamedTypeSymbol> allBaseTypes, IMethodSymbol methodSymbol)
 		{
 			// Here we know that the method is not static and has the correct attribute.
 
-			var extensionType = methodSymbol.ContainingType.GetPXGraphExtension(pxContext.PXGraphExtension.Type);
-			var graphType = extensionType.GetFirstTypeArgument();
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (graphType != null)
+			var hasMatchingMethod = allBaseTypes
+				.SelectMany(t => t.GetMethods(methodSymbol.Name))
+				.Any(m => PXOverrideMethodSymbolComparer.Instance.Equals(m, methodSymbol));
+
+			if (!hasMatchingMethod)
 			{
-				context.CancellationToken.ThrowIfCancellationRequested();
+				var location = methodSymbol.Locations.FirstOrDefault();
 
-				var allTypes = PXOverrideExtensions.GetAllBaseTypes(pxContext.PXGraphExtension.Type, extensionType, graphType);
-
-				context.CancellationToken.ThrowIfCancellationRequested();
-
-				var hasMatchingMethod = allTypes
-					.SelectMany(t => t.GetMethods(methodSymbol.Name))
-					.Any(m => PXOverrideMethodSymbolComparer.Instance.Equals(m, methodSymbol));
-
-				if (!hasMatchingMethod)
+				if (location != null)
 				{
-					var diagnostic = Diagnostic.Create(
-						Descriptors.PX1096_PXOverrideMustMatchSignature,
-						methodSymbol.Locations.First());
+					var diagnostic = Diagnostic.Create(Descriptors.PX1096_PXOverrideMustMatchSignature, location);
 
 					context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 				}
 			}
+		}
+
+		private static HashSet<INamedTypeSymbol> GetAllBaseTypesToBeChecked(INamedTypeSymbol containerType, INamedTypeSymbol? pxGraphExtensionType)
+		{
+			var allBaseTypes = new HashSet<INamedTypeSymbol>();
+
+			if (pxGraphExtensionType == null)
+			{
+				return allBaseTypes;
+			}
+
+			var extensionType = containerType.GetPXGraphExtension(pxGraphExtensionType);
+			var graphType = extensionType?.GetFirstTypeArgument();
+
+			if (graphType != null)
+			{
+				extensionType!.GetBaseTypes(pxGraphExtensionType, allBaseTypes);
+				graphType.GetBaseTypes(pxGraphExtensionType, allBaseTypes);
+			}
+
+			return allBaseTypes;
 		}
 	}
 }

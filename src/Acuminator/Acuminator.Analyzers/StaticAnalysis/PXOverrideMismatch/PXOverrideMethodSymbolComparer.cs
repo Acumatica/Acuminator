@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using System.Linq;
@@ -8,32 +10,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 {
 	public class PXOverrideMethodSymbolComparer : IEqualityComparer<IMethodSymbol>
 	{
-		public static PXOverrideMethodSymbolComparer Instance = new PXOverrideMethodSymbolComparer();
+		public static readonly PXOverrideMethodSymbolComparer Instance = new();
 
-		public bool Equals(IMethodSymbol src, IMethodSymbol ext)
+		public bool Equals(IMethodSymbol sourceMethod, IMethodSymbol extensionMethod)
 		{
-			var srcParams = src.Parameters.Select(p => p.Type).ToImmutableArray();
-			var extParams = ext.Parameters.Select(p => p.Type).ToImmutableArray();
-
-			var isSimple = srcParams.Length == extParams.Length;
-			var isComplex = srcParams.Length + 1 == extParams.Length;
+			var isSimple = sourceMethod.Parameters.Length == extensionMethod.Parameters.Length;
+			var isComplex = sourceMethod.Parameters.Length + 1 == extensionMethod.Parameters.Length;
 
 			if (!isSimple && !isComplex)
 			{
 				return false;
 			}
 
-			if (!HasCorrectOverrideSignature(src) || !HasCorrectAccessibility(src))
+			if (!HasCorrectOverrideSignature(sourceMethod) || !HasCorrectAccessibility(sourceMethod))
 			{
 				return false;
 			}
 
-			if (!src.ReturnType.Equals(ext.ReturnType))
+			if (!sourceMethod.ReturnType.Equals(extensionMethod.ReturnType))
 			{
 				return false;
 			}
 
-			if (!DoParametersMatch(srcParams, extParams))
+			var sourceMethodParameterTypes = sourceMethod.Parameters.Select(p => p.Type);
+			var extensionMethodParameterTypes = extensionMethod.Parameters.Select(p => p.Type);
+
+			if (!sourceMethodParameterTypes.SequenceEqual(isSimple ? extensionMethodParameterTypes : extensionMethodParameterTypes.Take(extensionMethod.Parameters.Length - 1)))
 			{
 				return false;
 			}
@@ -43,12 +45,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 				return true;
 			}
 
-			if (extParams.Last() is not INamedTypeSymbol del)
+			if (extensionMethodParameterTypes.Last() is not INamedTypeSymbol @delegate)
 			{
 				return false;
 			}
 
-			return IsDelegateCompatible(src.ReturnType, srcParams, del);
+			return IsDelegateCompatible(sourceMethod.ReturnType, sourceMethodParameterTypes, @delegate);
 		}
 
 		public int GetHashCode(IMethodSymbol obj) => obj == null ? 0 : obj.GetHashCode();
@@ -60,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			methodSymbol.DeclaredAccessibility == Accessibility.Protected ||
 			methodSymbol.DeclaredAccessibility == Accessibility.ProtectedOrInternal;
 
-		private static bool IsDelegateCompatible(ITypeSymbol srcReturnType, ImmutableArray<ITypeSymbol> srcParameters, INamedTypeSymbol targetDelegate)
+		private static bool IsDelegateCompatible(ITypeSymbol sourceMethodReturnType, IEnumerable<ITypeSymbol> sourceMethodParameterTypes, INamedTypeSymbol targetDelegate)
 		{
 			if (!targetDelegate.IsGenericType && targetDelegate.TypeKind != TypeKind.Delegate)
 			{
@@ -69,7 +71,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 			var returnType = targetDelegate.TypeKind == TypeKind.Delegate ? targetDelegate.DelegateInvokeMethod.ReturnType : targetDelegate.TypeArguments.Last();
 
-			if (!returnType.Equals(srcReturnType))
+			if (!returnType.Equals(sourceMethodReturnType))
 			{
 				return false;
 			}
@@ -78,27 +80,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 				targetDelegate.DelegateInvokeMethod.Parameters.Select(p => p.Type).ToImmutableArray() :
 				targetDelegate.TypeArguments.Take(targetDelegate.TypeArguments.Length - 1).ToImmutableArray();
 
-			if (srcParameters.Length != delegateArguments.Length)
+			if (!sourceMethodParameterTypes.SequenceEqual(delegateArguments))
 			{
 				return false;
-			}
-
-			if (!DoParametersMatch(srcParameters, delegateArguments))
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		private static bool DoParametersMatch(ImmutableArray<ITypeSymbol> srcParameters, ImmutableArray<ITypeSymbol> targetParameters)
-		{
-			for (var i = 0; i < srcParameters.Length; i++)
-			{
-				if (!srcParameters[i].Equals(targetParameters[i]))
-				{
-					return false;
-				}
 			}
 
 			return true;

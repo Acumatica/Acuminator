@@ -2,7 +2,7 @@
 
 namespace Acuminator.Tests.Sources
 {
-	public class SuperBaseClass : PX.Data.PXGraphExtension<int, int>
+	public class SuperBaseClass : PX.Data.PXGraphExtension<MyGraph>
 	{
 		public virtual object TestMethod(int x, bool drilldown, double y)
 		{
@@ -10,7 +10,7 @@ namespace Acuminator.Tests.Sources
 		}
 	}
 
-	public class BaseClass : PX.Data.PXGraphExtension<SuperBaseClass>
+	public class BaseClass : PX.Data.PXGraphExtension<SuperBaseClass, MyGraph>
 	{
 		[PX.Data.PXOverride]
 		public virtual object TestMethod(int x, bool drilldown, double y, Func<int, bool, double, object> del)
@@ -19,13 +19,18 @@ namespace Acuminator.Tests.Sources
 		}
 	}
 
-	public class ExtClass : PX.Data.PXGraphExtension<BaseClass, int>
+	public class ExtClass : PX.Data.PXGraphExtension<BaseClass, MyGraph>
 	{
 		[PX.Data.PXOverride]
 		public object TestMethod(int x, bool drilldown, double y, Func<int, bool, double, object> del)
 		{
 			return new object();
 		}
+	}
+
+	public class MyGraph : PX.Data.PXGraph
+	{
+
 	}
 }
 
@@ -35,16 +40,23 @@ namespace PX.Data
 	{
 	}
 
+	public abstract class PXGraph
+	{
+	}
+
 	public abstract class PXGraphExtension
 	{
 	}
 
 	public abstract class PXGraphExtension<Graph> : PXGraphExtension
+		where Graph : PXGraph
 	{
 		internal Graph _Base;
 	}
 
 	public abstract class PXGraphExtension<Extension1, Graph> : PXGraphExtension
+		where Graph : PXGraph
+		where Extension1 : PXGraphExtension<Graph>
 	{
 		internal Extension1 MyExt;
 
