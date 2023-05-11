@@ -7,7 +7,6 @@ using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -20,14 +19,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
 
 		private readonly SemanticModel _semanticModel;
-		private readonly PXContext _pxContext;
-		
 		private readonly CancellationToken _cancellation;
 
-		public XmlCommentsParser(SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
+		public XmlCommentsParser(SemanticModel semanticModel, CancellationToken cancellation)
 		{
 			_semanticModel = semanticModel;
-			_pxContext 	   = pxContext;
 			_cancellation  = cancellation;
 		}
 
@@ -51,11 +47,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!memberDeclaration.HasStructuredTrivia)
 				return (XmlCommentParseResult.NoXmlComment, TagsInfos: null);
 
-			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
-			bool hasXmlComment = false;
-			int summaryTagCount = 0, inheritdocCount = 0;
-			bool nonEmptySummaryTag = false, correctInheritdocTag = false;
+			bool isProjectionDacProperty = mappedDacProperty != null;			
+			bool hasXmlComment = false, hasSummaryTag = false, hasInheritdocTag = false, 
+				 nonEmptySummaryTag = false, correctInheritdocTagOfProjectionProperty = false;
 
+			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
 			List<XmlCommentTagsInfo>? tagsInfos = null;
 
 			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
@@ -77,37 +73,46 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 				if (commentTagsInfo.HasSummaryTag)
 				{
-					summaryTagCount++;
+					hasSummaryTag = true;
 					nonEmptySummaryTag = nonEmptySummaryTag || IsNonEmptySummaryTag(commentTagsInfo.SummaryTag);
 				}
 
 				if (commentTagsInfo.HasInheritdocTag)
 				{
-					inheritdocCount++;
-					correctInheritdocTag = inheritdocCount == 1 && 
-										   IsCorrectInheritdocTag(commentTagsInfo.InheritdocTagInfo, mappedDacProperty);
+					hasInheritdocTag = true;
+
+					// To determine if the inheritdoc tag is correct we check these things:
+					// 1. We only check inheritdoc for the projection DAC properties, for all other APIs inheritdoc tag is considered to be correct by default
+					// 2. If there already was a correct inheritdoc tag (there could be multiple inheritdoc tags), then no need to check this tag
+					// 3. If none of above is true check that inherit doc is referencing the DAC field property to which the projection property is mapped to.
+					correctInheritdocTagOfProjectionProperty = 
+						!isProjectionDacProperty || correctInheritdocTagOfProjectionProperty ||
+						IsCorrectInheritdocTagOfProjectionDacProperty(commentTagsInfo.InheritdocTagInfo, mappedDacProperty);
 				}
 			}
 
 			if (!hasXmlComment)
 				return (XmlCommentParseResult.NoXmlComment, TagsInfos: null);
-			else if (summaryTagCount > 1 || inheritdocCount > 1)
-				return (XmlCommentParseResult.MultipleDocTags, tagsInfos);
-
-			bool hasSummaryTag    = summaryTagCount == 0;
-			bool hasInheritdocTag = inheritdocCount == 0;
-			bool isProjectionDacProperty = mappedDacProperty != null;
 
 			var parseResult = (hasSummaryTag, hasInheritdocTag, isProjectionDacProperty) switch
 			{
-				(true, true, _)   	 => XmlCommentParseResult.MultipleDocTags,
+				(true, true, true)	 => correctInheritdocTagOfProjectionProperty
+											? XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty
+											: XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty,
+
+				(true, true, false)  => nonEmptySummaryTag
+											? XmlCommentParseResult.HasNonEmptySummaryAndCorrectInheritdocTags
+											: XmlCommentParseResult.EmptySummaryTag,
+
 				(false, false, _) 	 => XmlCommentParseResult.NoSummaryOrInheritdocTag,
 				(true, false, true)  => XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty,
+
 				(true, false, false) => nonEmptySummaryTag
 											? XmlCommentParseResult.HasNonEmptySummaryTag
 											: XmlCommentParseResult.EmptySummaryTag,
-				(false, true, _)  	 => correctInheritdocTag
-											? XmlCommentParseResult.IncorrectInheritdocTag
+
+				(false, true, _)  	 => correctInheritdocTagOfProjectionProperty
+											? XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty
 											: XmlCommentParseResult.CorrectInheritdocTag
 			};
 
@@ -172,21 +177,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private static bool CommentContentIsNotEmpty(string content) =>
 			!content.IsNullOrEmpty() && content.Any(char.IsLetterOrDigit);
 
-		private bool IsCorrectInheritdocTag(InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
+		private bool IsCorrectInheritdocTagOfProjectionDacProperty(InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
 		{
 			bool isProjectionDacProperty = mappedDacProperty != null;
 
-			if (!inheritdocTagInfo.InheritdocTagHasCrefAttributes)
-				return !isProjectionDacProperty;
-			else if (inheritdocTagInfo.CrefAttributes.Length > 1)
+			if (!isProjectionDacProperty)
+				return true;
+			else if (!inheritdocTagInfo.InheritdocTagHasCrefAttributes || inheritdocTagInfo.CrefAttributes.Length > 1)
 				return false;
-
+			
 			XmlCrefAttributeSyntax crefAttribute = inheritdocTagInfo.CrefAttributes[0];
 
 			if (crefAttribute?.Cref == null) 
 				return false;
-			else if (!isProjectionDacProperty)
-				return true;
 
 			SymbolInfo crefSymbolInfo = _semanticModel.GetSymbolInfo(crefAttribute.Cref, _cancellation);
 			ISymbol? crefSymbol = crefSymbolInfo.Symbol ?? crefSymbolInfo.CandidateSymbols.FirstOrDefault();
@@ -197,16 +200,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private DiagnosticDescriptor? GetDiagnosticFromParseResult(XmlCommentParseResult parseResult) =>
 			parseResult switch
 			{
-				XmlCommentParseResult.HasExcludeTag 						  => null,
-				XmlCommentParseResult.HasNonEmptySummaryTag 				  => null,
-				XmlCommentParseResult.CorrectInheritdocTag 					  => null,
-				XmlCommentParseResult.NoXmlComment 							  => Descriptors.PX1007_PublicClassNoXmlComment,
-				XmlCommentParseResult.EmptySummaryTag 						  => Descriptors.PX1007_PublicClassNoXmlComment,
-				XmlCommentParseResult.NoSummaryOrInheritdocTag 				  => Descriptors.PX1007_PublicClassNoXmlComment,
-				XmlCommentParseResult.MultipleDocTags 						  => Descriptors.PX1007_MultipleDocumentationTags,
-				XmlCommentParseResult.IncorrectInheritdocTag 				  => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
-				XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
-				_ 															  => null
+				XmlCommentParseResult.HasExcludeTag 								=> null,
+				XmlCommentParseResult.HasNonEmptySummaryTag 						=> null,
+				XmlCommentParseResult.CorrectInheritdocTag 							=> null,
+				XmlCommentParseResult.HasNonEmptySummaryAndCorrectInheritdocTags 	=> null,
+				XmlCommentParseResult.NoXmlComment 									=> Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.EmptySummaryTag 								=> Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.NoSummaryOrInheritdocTag 						=> Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
+				XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty 		=> Descriptors.PX1007_InvalidProjectionDacFieldDescription,
+				_ 																	=> null
 			};
 
 		private XmlCommentsParseInfo CreateParseInfo(XmlCommentParseResult parseResult, List<XmlCommentTagsInfo>? tagsInfos, 
@@ -227,7 +230,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					XmlCommentTagsInfo summaryTagInfo = tagsInfos.FirstOrDefault(tagInfo => tagInfo.HasSummaryTag);
 					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, summaryTagInfo.SummaryTag);
 
-				case XmlCommentParseResult.IncorrectInheritdocTag:
+				case XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty:
 					XmlCommentTagsInfo inheritdocTagInfo = tagsInfos.FirstOrDefault(tagInfo => tagInfo.HasInheritdocTag);
 					var crefAttributes = inheritdocTagInfo.InheritdocTagInfo.CrefAttributes;
 
@@ -238,12 +241,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 						_ => new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, crefAttributes)
 					}; ;
 
-				case XmlCommentParseResult.MultipleDocTags:
-					var nodesWithErrors = tagsInfos.SelectMany(tagInfo => tagInfo.GetAllTagNodes());
+				case XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty:
+					var nodesWithErrors = tagsInfos.Where(tagInfo => tagInfo.HasSummaryTag)
+												   .Select(tagInfo => tagInfo.SummaryTag!);			//Only summary tag can be among error nodes at this step
 					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors);
 
 				default:
-					return new XmlCommentsParseInfo(parseResult, stepIntoChildren);
+					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors: null);
 			}
 		}
 	}

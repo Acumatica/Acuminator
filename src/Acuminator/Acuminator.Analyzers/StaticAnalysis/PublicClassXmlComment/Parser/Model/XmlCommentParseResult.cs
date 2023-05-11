@@ -14,6 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		HasNonEmptySummaryTag,
 		CorrectInheritdocTag,
 		IncorrectInheritdocTagOnProjectionDacProperty,
-		NonInheritdocTagOnProjectionDacProperty
+		NonInheritdocTagOnProjectionDacProperty,
+		HasNonEmptySummaryAndCorrectInheritdocTags
 	}
 }

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -33,15 +34,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			ExcludeTag = excludeTag;
 		}
 
-		public IEnumerable<XmlElementSyntax> GetAllTagNodes()
+		public IEnumerable<XmlElementSyntax> GetTagNodes(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
 		{
-			if (HasSummaryTag)
+			if (NoXmlComments || (!includeSummaryTag && !includeInheritdocTag && !includeExcludeTag))
+				return Enumerable.Empty<XmlElementSyntax>();
+
+			return GetTagNodesImplementation(includeSummaryTag, includeInheritdocTag, includeExcludeTag);
+		}
+
+		private IEnumerable<XmlElementSyntax> GetTagNodesImplementation(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
+		{
+			if (HasSummaryTag && includeSummaryTag)
 				yield return SummaryTag;
 
-			if (InheritdocTagInfo.HasInheritdocTag)
+			if (InheritdocTagInfo.HasInheritdocTag && includeInheritdocTag)
 				yield return InheritdocTagInfo.Tag;
 
-			if (HasExcludeTag)
+			if (HasExcludeTag && includeExcludeTag)
 				yield return ExcludeTag;
 		}
 	}
