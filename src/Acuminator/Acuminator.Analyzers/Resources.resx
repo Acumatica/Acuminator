@@ -670,9 +670,6 @@
   <data name="PX1095Title_PXDBScalar" xml:space="preserve">
     <value>A field with the PXDBScalar attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
   </data>
-  <data name="PX1097Title" xml:space="preserve">
-    <value>PXOverride method container does not implement PXGraphExtension</value>
-  </data>
   <data name="PX1096Title" xml:space="preserve">
     <value>PXOverride method signature must match the overriden method</value>
   </data>

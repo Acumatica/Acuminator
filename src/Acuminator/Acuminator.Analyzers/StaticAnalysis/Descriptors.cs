@@ -415,8 +415,5 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1096_PXOverrideMustMatchSignature { get; } =
 			Rule("PX1096", nameof(Resources.PX1096Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1096);
-
-		public static DiagnosticDescriptor PX1097_PXOverrideContainerIsNotPXGraphExtension { get; } =
-			Rule("PX1096", nameof(Resources.PX1097Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1097);
 	}
 }

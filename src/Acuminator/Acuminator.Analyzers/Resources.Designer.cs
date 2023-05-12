@@ -1685,15 +1685,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXOverride method container does not implement PXGraphExtension.
-        /// </summary>
-        public static string PX1097Title {
-            get {
-                return ResourceManager.GetString("PX1097Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Suppress the {0} diagnostic with Acuminator.
         /// </summary>
         public static string SuppressDiagnosticGroupCodeActionTitle {

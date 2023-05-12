@@ -1,10 +1,11 @@
 ﻿using System;
+using PX.Data;
 
 namespace Acuminator.Tests.Sources
 {
-	public abstract class WarehouseManagementSystem<TSelf, TGraph> : PX.Data.PXGraphExtension<TGraph>
+	public abstract class WarehouseManagementSystem<TSelf, TGraph> : PXGraphExtension<TGraph>
 	{
-		public abstract class ScanExtension : PX.Data.PXGraphExtension<TSelf, TGraph>
+		public abstract class ScanExtension : PXGraphExtension<TSelf, TGraph>
 		{
 			public virtual object TestMethod(int x, bool drilldown)
 			{
@@ -16,52 +17,17 @@ namespace Acuminator.Tests.Sources
 	public class PickPackShip : WarehouseManagementSystem<PickPackShip, PickPackShip.Host>
 	{
 
-		public class Host : PX.Data.PXGraph
+		public class Host : PXGraph<Host>
 		{
 		}
 	}
 
 	public class PickPackShipExt : PickPackShip.ScanExtension
 	{
-		[PX.Data.PXOverride]
+		[PXOverride]
 		public virtual object TestMethod(int x, bool drilldown)
 		{
 			return new object();
 		}
-	}
-
-	public class MyGraph : PX.Data.PXGraph
-	{
-
-	}
-}
-
-namespace PX.Data
-{
-	public class PXOverrideAttribute : Attribute
-	{
-	}
-
-	public abstract class PXGraph
-	{
-	}
-
-	public abstract class PXGraphExtension
-	{
-	}
-
-	public abstract class PXGraphExtension<Graph> : PXGraphExtension
-		where Graph : PXGraph
-	{
-		internal Graph _Base;
-	}
-
-	public abstract class PXGraphExtension<Extension1, Graph> : PXGraphExtension
-		where Graph : PXGraph
-		where Extension1 : PXGraphExtension<Graph>
-	{
-		internal Extension1 MyExt;
-
-		internal Graph MyGraph;
 	}
 }

@@ -26,16 +26,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodsWithPxOverrideAttribute = pxGraphExtension.Symbol
-				.GetMembers()
-				.OfType<IMethodSymbol>()
-				.Where(m => !m.IsStatic && m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, false));
+			var allMembers = pxGraphExtension.Symbol.GetMembers();
 
-			if (methodsWithPxOverrideAttribute.Any())
+			if (!allMembers.IsDefaultOrEmpty)
 			{
-				var allBaseTypes = GetAllBaseTypesToBeChecked(pxGraphExtension.Symbol, pxContext.PXGraphExtension.Type);
+				var methodsWithPxOverrideAttribute = allMembers
+					.OfType<IMethodSymbol>()
+					.Where(m => !m.IsStatic && !m.IsGenericMethod && m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, false))
+					.ToList();
 
-				methodsWithPxOverrideAttribute.ForEach(m => AnalyzeMethod(context, pxContext, allBaseTypes, m!));
+				if (methodsWithPxOverrideAttribute.Any())
+				{
+					var allBaseTypes = pxGraphExtension.Symbol
+						.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, true)
+						.OfType<INamedTypeSymbol>()
+						.Where(s => !s.Equals(pxGraphExtension.Symbol));
+
+					methodsWithPxOverrideAttribute.ForEach(m => AnalyzeMethod(context, pxContext, allBaseTypes, m!));
+				}
 			}
 		}
 
@@ -45,42 +53,114 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var hasMatchingMethod = allBaseTypes
-				.SelectMany(t => t.GetMethods(methodSymbol.Name))
-				.Any(m => PXOverrideMethodSymbolComparer.Equals(m, methodSymbol));
-
-			if (!hasMatchingMethod)
+			foreach (var baseType in allBaseTypes)
 			{
-				var location = methodSymbol.Locations.FirstOrDefault();
+				var allMembers = baseType.GetMembers(methodSymbol.Name);
 
-				if (location != null)
+				if (!allMembers.IsDefaultOrEmpty)
 				{
-					var diagnostic = Diagnostic.Create(Descriptors.PX1096_PXOverrideMustMatchSignature, location);
-
-					context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+					if (allMembers.OfType<IMethodSymbol>().Any(m => PXOverrideHelper.IsSuitable(methodSymbol, m)))
+					{
+						return;
+					}
 				}
+			}
+
+			var location = methodSymbol.Locations.FirstOrDefault();
+
+			if (location != null)
+			{
+				var diagnostic = Diagnostic.Create(Descriptors.PX1096_PXOverrideMustMatchSignature, location);
+
+				context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 			}
 		}
 
-		private static HashSet<INamedTypeSymbol> GetAllBaseTypesToBeChecked(INamedTypeSymbol containerType, INamedTypeSymbol? pxGraphExtensionType)
+		private class PXOverrideHelper
 		{
-			var allBaseTypes = new HashSet<INamedTypeSymbol>();
-
-			if (pxGraphExtensionType == null)
+			/// <summary>
+			/// Special signature check between a derived method with the PXOverride attribute and the base method.
+			/// </summary>
+			/// <param name="baseMethod">The method from the derived class, with the PXOverride attribute</param>
+			/// <param name="pxOverrideMethod">The method from the base</param>
+			/// <returns></returns>
+			public static bool IsSuitable(IMethodSymbol baseMethod, IMethodSymbol pxOverrideMethod)
 			{
-				return allBaseTypes;
+				var methodsCompatibility = GetMethodsCompatibility(baseMethod.Parameters.Length, pxOverrideMethod.Parameters.Length);
+
+				if (methodsCompatibility == MethodsCompatibility.NotCompatible)
+				{
+					return false;
+				}
+
+				if (!pxOverrideMethod.CanBeOverriden() || !pxOverrideMethod.IsAccessibleOutsideOfAssembly())
+				{
+					return false;
+				}
+
+				if (methodsCompatibility == MethodsCompatibility.ParametersMatch)
+				{
+					return CheckExactMatch(pxOverrideMethod, baseMethod);
+				}
+
+				if (methodsCompatibility == MethodsCompatibility.ParametersMatchWithDelegate)
+				{
+					if (baseMethod.Parameters[baseMethod.Parameters.Length - 1].Type is not INamedTypeSymbol @delegate || @delegate.TypeKind != TypeKind.Delegate)
+					{
+						return false;
+					}
+
+					return CheckExactMatch(pxOverrideMethod, @delegate.DelegateInvokeMethod);
+				}
+
+				return false;
 			}
 
-			var extensionType = containerType.GetPXGraphExtension(pxGraphExtensionType);
-			var graphType = extensionType?.GetFirstTypeArgument();
-
-			if (graphType != null)
+			private static bool CheckExactMatch(IMethodSymbol pxOverrideMethod, IMethodSymbol delegateInvokeMethod)
 			{
-				extensionType!.GetBaseTypes(pxGraphExtensionType, allBaseTypes);
-				graphType.GetBaseTypes(pxGraphExtensionType, allBaseTypes);
+				if (!pxOverrideMethod.ReturnType.Equals(delegateInvokeMethod.ReturnType))
+				{
+					return false;
+				}
+
+				if (pxOverrideMethod.Parameters.Length != delegateInvokeMethod.Parameters.Length)
+				{
+					return false;
+				}
+
+				if (!DoParametersMatch(pxOverrideMethod.Parameters, delegateInvokeMethod.Parameters))
+				{
+					return false;
+				}
+
+				return true;
 			}
 
-			return allBaseTypes;
+			private static bool DoParametersMatch(ImmutableArray<IParameterSymbol> sourceParameters, ImmutableArray<IParameterSymbol> targetParameters)
+			{
+				for (var i = 0; i < sourceParameters.Length; i++)
+				{
+					if (i >= targetParameters.Length || !sourceParameters[i].Type.Equals(targetParameters[i].Type))
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+
+			private static MethodsCompatibility GetMethodsCompatibility(int baseMethodParametersCount, int pxOverrideMethodParametersCount)
+			{
+				return baseMethodParametersCount == pxOverrideMethodParametersCount ? MethodsCompatibility.ParametersMatch :
+					baseMethodParametersCount == pxOverrideMethodParametersCount + 1 ? MethodsCompatibility.ParametersMatchWithDelegate : MethodsCompatibility.NotCompatible;
+			}
+
+			private enum MethodsCompatibility
+			{
+				NotCompatible,
+				ParametersMatch,
+				ParametersMatchWithDelegate
+			}
 		}
 	}
 }

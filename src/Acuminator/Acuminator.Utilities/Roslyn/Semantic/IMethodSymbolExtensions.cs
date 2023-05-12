@@ -347,5 +347,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			return methodDeclaration.IsStatic();
 		}
+
+		/// <summary>
+		/// Check if <paramref name="method"/> has either virtual or override signature.
+		/// </summary>
+		/// <param name="method">The method to act on.</param>
+		/// <returns>True if <paramref name="method"/> </returns>
+		public static bool CanBeOverriden(this IMethodSymbol method) => method.IsVirtual || method.IsOverride;
+
 	}
 }

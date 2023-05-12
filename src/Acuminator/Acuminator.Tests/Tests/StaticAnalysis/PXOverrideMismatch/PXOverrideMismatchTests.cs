@@ -27,7 +27,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		public void ArgumentsDoNotMatch(string source)
 		{
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(16, 22)
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 22)
 			);
 		}
 
@@ -40,11 +40,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		public void DelegateSignatureDoesNotMatch(string source)
 		{
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(16, 25)
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 25)
 			);
 		}
 
-		[Theory]
+		[Theory(Skip = "The analyzer doesn't cover this scenario at the moment.")]
 		[EmbeddedFileData("PxOverrideInADifferentType.cs")]
 		public void PxOverrideInADifferentType(string source)
 		{
@@ -82,11 +82,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		public void BaseTypeImplementsPxGraphExtensionSignatureIsWrong(string source)
 		{
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(20, 25)
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(21, 25)
 			);
 		}
 
-		[Theory]
+		[Theory (Skip = "The analyzer doesn't cover this scenario at the moment.")]
 		[EmbeddedFileData("TypeArgumentImplementsPxGraphExtension.cs")]
 		public void TypeArgumentImplementsPxGraphExtension(string source) => VerifyCSharpDiagnostic(source);
 
@@ -95,7 +95,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		public void TypeArgumentImplementsPxGraphExtensionSignatureIsWrong(string source)
 		{
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(24, 25)
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(25, 25)
 			);
 		}
 

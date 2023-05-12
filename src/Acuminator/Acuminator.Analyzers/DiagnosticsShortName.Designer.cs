@@ -869,14 +869,5 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1096", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PXOverrideContainerTypeError.
-        /// </summary>
-        public static string PX1097 {
-            get {
-                return ResourceManager.GetString("PX1097", resourceCulture);
-            }
-        }
     }
 }
