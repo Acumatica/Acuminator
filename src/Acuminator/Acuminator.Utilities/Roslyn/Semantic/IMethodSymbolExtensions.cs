@@ -41,7 +41,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			attributeType.ThrowOnNull(nameof(attributeType));
 
 			Func<IMethodSymbol, bool> attributeCheck = checkForDerivedAttributes
-				? (Func<IMethodSymbol, bool>)HasDerivedAttribute
+				? HasDerivedAttribute
 				: HasAttribute;
 
 			if (attributeCheck(methodSymbol))
