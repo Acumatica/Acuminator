@@ -60,12 +60,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 
 		protected virtual void RunAggregatedAnalyzersInParallel(SymbolAnalysisContext context, Action<int> aggregatedAnalyserAction, ParallelOptions? parallelOptions = null)
 		{
+#if DEBUG
+			for (int innerAnalyzerIndex = 0; innerAnalyzerIndex < _innerAnalyzers.Length; innerAnalyzerIndex++)
+			{
+				aggregatedAnalyserAction(innerAnalyzerIndex);
+			}
+#else
 			parallelOptions = parallelOptions ?? new ParallelOptions
 			{
 				CancellationToken = context.CancellationToken
 			};
 
 			Parallel.For(0, _innerAnalyzers.Length, parallelOptions, aggregatedAnalyserAction);
+#endif
 		}
 	}
 }
