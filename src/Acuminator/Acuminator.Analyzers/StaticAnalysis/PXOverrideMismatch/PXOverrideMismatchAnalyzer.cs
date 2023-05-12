@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 			var hasMatchingMethod = allBaseTypes
 				.SelectMany(t => t.GetMethods(methodSymbol.Name))
-				.Any(m => PXOverrideMethodSymbolComparer.Instance.Equals(m, methodSymbol));
+				.Any(m => PXOverrideMethodSymbolComparer.Equals(m, methodSymbol));
 
 			if (!hasMatchingMethod)
 			{

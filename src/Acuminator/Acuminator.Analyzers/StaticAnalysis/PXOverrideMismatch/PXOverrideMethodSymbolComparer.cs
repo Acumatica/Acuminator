@@ -1,18 +1,28 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 {
-	public class PXOverrideMethodSymbolComparer : IEqualityComparer<IMethodSymbol>
+	public static class PXOverrideMethodSymbolComparer
 	{
-		public static readonly PXOverrideMethodSymbolComparer Instance = new();
-
-		public bool Equals(IMethodSymbol sourceMethod, IMethodSymbol extensionMethod)
+		/// <summary>
+		/// Special signature check between a derived method with the PXOverride attribute and the base method.
+		/// There are two cases:
+		/// 1. Simple case: Method signatures are identical.
+		/// 2. Complex case: Method signatures are identical, but there is an additional method parameter that is a delegate type that points to the base implementation.
+		/// 
+		/// In both cases, PXOverride dictates that the base method must be
+		///     1) virtual (having either a virtual or an override signature),
+		///     2) public, protected or protected internal.
+		/// </summary>
+		/// <param name="sourceMethod">The method from the base</param>
+		/// <param name="extensionMethod">The method from the derived class, with the PXOverride attribute</param>
+		/// <returns></returns>
+		public static bool Equals(IMethodSymbol sourceMethod, IMethodSymbol extensionMethod)
 		{
 			var isSimple = sourceMethod.Parameters.Length == extensionMethod.Parameters.Length;
 			var isComplex = sourceMethod.Parameters.Length + 1 == extensionMethod.Parameters.Length;
@@ -35,14 +45,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			var sourceMethodParameterTypes = sourceMethod.Parameters.Select(p => p.Type);
 			var extensionMethodParameterTypes = extensionMethod.Parameters.Select(p => p.Type);
 
-			if (!sourceMethodParameterTypes.SequenceEqual(isSimple ? extensionMethodParameterTypes : extensionMethodParameterTypes.Take(extensionMethod.Parameters.Length - 1)))
+			if (isSimple)
 			{
-				return false;
-			}
-
-			if (!isComplex)
-			{
-				return true;
+				return sourceMethodParameterTypes.SequenceEqual(extensionMethodParameterTypes);
 			}
 
 			if (extensionMethodParameterTypes.Last() is not INamedTypeSymbol @delegate)
@@ -50,10 +55,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 				return false;
 			}
 
-			return IsDelegateCompatible(sourceMethod.ReturnType, sourceMethodParameterTypes, @delegate);
-		}
+			if (!sourceMethodParameterTypes.SequenceEqual(extensionMethodParameterTypes.Take(extensionMethod.Parameters.Length - 1)))
+			{
+				return false;
+			}
 
-		public int GetHashCode(IMethodSymbol obj) => obj == null ? 0 : obj.GetHashCode();
+			return DelegateSignatureMatches(sourceMethod.ReturnType, sourceMethodParameterTypes, @delegate);
+		}
 
 		private static bool HasCorrectOverrideSignature(IMethodSymbol methodSymbol) => methodSymbol.IsVirtual || methodSymbol.IsOverride;
 
@@ -62,25 +70,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			methodSymbol.DeclaredAccessibility == Accessibility.Protected ||
 			methodSymbol.DeclaredAccessibility == Accessibility.ProtectedOrInternal;
 
-		private static bool IsDelegateCompatible(ITypeSymbol sourceMethodReturnType, IEnumerable<ITypeSymbol> sourceMethodParameterTypes, INamedTypeSymbol targetDelegate)
+		private static bool DelegateSignatureMatches(ITypeSymbol sourceMethodReturnType, IEnumerable<ITypeSymbol> sourceMethodParameterTypes, INamedTypeSymbol targetDelegate)
 		{
-			if (!targetDelegate.IsGenericType && targetDelegate.TypeKind != TypeKind.Delegate)
+			if (targetDelegate.TypeKind != TypeKind.Delegate)
 			{
 				return false;
 			}
 
-			var returnType = targetDelegate.TypeKind == TypeKind.Delegate ? targetDelegate.DelegateInvokeMethod.ReturnType : targetDelegate.TypeArguments.Last();
-
-			if (!returnType.Equals(sourceMethodReturnType))
+			if (!sourceMethodReturnType.Equals(targetDelegate.DelegateInvokeMethod.ReturnType))
 			{
 				return false;
 			}
 
-			var delegateArguments = targetDelegate.TypeKind == TypeKind.Delegate ?
-				targetDelegate.DelegateInvokeMethod.Parameters.Select(p => p.Type).ToImmutableArray() :
-				targetDelegate.TypeArguments.Take(targetDelegate.TypeArguments.Length - 1).ToImmutableArray();
-
-			if (!sourceMethodParameterTypes.SequenceEqual(delegateArguments))
+			if (!sourceMethodParameterTypes.SequenceEqual(targetDelegate.DelegateInvokeMethod.Parameters.Select(p => p.Type)))
 			{
 				return false;
 			}
