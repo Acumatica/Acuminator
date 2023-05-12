@@ -22,12 +22,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal partial class XmlCommentsWalker : CSharpSyntaxWalker
 	{
-		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
-
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly CodeAnalysisSettings _codeAnalysisSettings;
 		private readonly Stack<TypeInfo> _containingTypesStack = new(capacity: 2);
+
+		private readonly ExcludeFromDocsAttributesChecker _attributesChecker = new();
+		private readonly XmlCommentsParser _xmlCommentsParser;
 
 		public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
 								 CodeAnalysisSettings codeAnalysisSettings)
@@ -35,6 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			_syntaxContext = syntaxContext;
 			_pxContext = pxContext;
 			_codeAnalysisSettings = codeAnalysisSettings;
+			_xmlCommentsParser = new XmlCommentsParser(syntaxContext.SemanticModel, syntaxContext.CancellationToken);
 		}
 
 		#region Optimization - skipping visit of some subtrees
@@ -132,9 +134,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (CheckIfTypeIsExcludedFromDocumentation(containingTypeInfo, classDeclaration))
 				return;
 
-			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, containingTypeInfo, out bool checkChildNodes);
+			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, containingTypeInfo, out bool stepIntoChildren);
 
-			if (!checkChildNodes)
+			if (!stepIntoChildren)
 				return;
 
 			try
@@ -167,60 +169,95 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		private void AnalyzeTypeDeclarationForMissingXmlComments(TypeDeclarationSyntax typeDeclaration, bool reportDiagnostic, out bool checkChildNodes, 
-																 INamedTypeSymbol typeSymbol = null)
+		private void AnalyzeTypeDeclarationForMissingXmlComments(TypeDeclarationSyntax typeDeclaration, TypeInfo typeInfo, out bool stepIntoChildren)
 		{
-			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+			bool hasMultipleDeclarations = typeDeclaration.IsPartial() && typeInfo.ContainingType?.DeclaringSyntaxReferences.Length > 1;
 
-			if (!typeDeclaration.IsPartial())
+			if (hasMultipleDeclarations)
+				AnalyzeSingleTypeDeclaration(typeDeclaration, typeInfo, out stepIntoChildren);
+			else
+				AnalizeMultipleTypeDeclarations(typeDeclaration, typeInfo, out stepIntoChildren);
+		}
+
+		private void AnalizeMultipleTypeDeclarations(TypeDeclarationSyntax typeDeclaration, TypeInfo typeInfo, out bool stepIntoChildren)
+		{
+			if (typeInfo.ContainingType == null || typeInfo.ContainingType.DeclaringSyntaxReferences.Length < 2)
 			{
-				AnalyzeTypeMemberDeclarationForMissingXmlComments(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier,
-																 reportDiagnostic, out checkChildNodes);
+				AnalyzeSingleTypeDeclaration(typeDeclaration, typeInfo, out stepIntoChildren);
 				return;
 			}
 
-			typeSymbol = typeSymbol ?? _syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken);
+			// First, look for the comments in the declaration being analyzed because we already have its syntax node
+			XmlCommentsParseInfo thisDeclarationCommentsParseInfo = _xmlCommentsParser.AnalyzeXmlComments(typeDeclaration, mappedDacProperty: null);
 
-			if (typeSymbol == null || typeSymbol.DeclaringSyntaxReferences.Length < 2)      //Case when type marked as partial but has only one declaration
+			// If the parser found some XML comments then we use this result and don't check other declarations
+			if (thisDeclarationCommentsParseInfo.ParseResult != XmlCommentParseResult.NoXmlComment)
 			{
-				AnalyzeTypeMemberDeclarationForMissingXmlComments(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier,
-																  reportDiagnostic, out checkChildNodes);
-				return;
-			}
-			else if (typeSymbol.DeclaredAccessibility != Accessibility.Public || CheckIfTypeAttributesDisableDiagnostic(typeSymbol))
-			{
-				checkChildNodes = false;
+				var locationToReport = typeDeclaration.Identifier.GetLocation();
+				AnalyzeSingleTypeDeclaration(thisDeclarationCommentsParseInfo, locationToReport, typeInfo, out stepIntoChildren);
 				return;
 			}
 
-			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(typeDeclaration);
-			bool commentsAreValid;
-			(commentsAreValid, checkChildNodes) = AnalyzeCommentParseResult(thisDeclarationParseResult);
+			List<Location>? partialDeclarationIdentifiersLocations = null;
 
-			if (commentsAreValid)
-				return;
-
-			foreach (SyntaxReference reference in typeSymbol.DeclaringSyntaxReferences)
+			// Check other partial type declarations
+			foreach (SyntaxReference reference in typeInfo.ContainingType.DeclaringSyntaxReferences)
 			{
+				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
 				if (reference.SyntaxTree == typeDeclaration.SyntaxTree ||
-					!(reference.GetSyntax(_syntaxContext.CancellationToken) is TypeDeclarationSyntax partialTypeDeclaration))
+					reference.GetSyntax(_syntaxContext.CancellationToken) is not TypeDeclarationSyntax partialTypeDeclaration)
 				{
 					continue;
 				}
+				
+				XmlCommentsParseInfo partialDeclarationParseInfo = _xmlCommentsParser.AnalyzeXmlComments(partialTypeDeclaration, mappedDacProperty: null);
 
-				XmlCommentParseResult parseResult = AnalyzeDeclarationXmlComments(partialTypeDeclaration);
-				(commentsAreValid, checkChildNodes) = AnalyzeCommentParseResult(parseResult);
-
-				if (commentsAreValid)
+				if (partialDeclarationParseInfo.ParseResult != XmlCommentParseResult.NoXmlComment)
+				{
+					var locationToReport = typeDeclaration.Identifier.GetLocation();
+					AnalyzeSingleTypeDeclaration(partialDeclarationParseInfo, locationToReport, typeInfo, out stepIntoChildren);
 					return;
+				}
+
+				var partialDeclarationIdentifierLocation = partialTypeDeclaration.Identifier.GetLocation();
+
+				if (partialDeclarationIdentifierLocation != null)
+				{
+					partialDeclarationIdentifiersLocations ??= new List<Location>(capacity: 4);
+					partialDeclarationIdentifiersLocations.Add(partialDeclarationIdentifierLocation);
+				}
 			}
 
-			if (reportDiagnostic)
+			// Reaching this part of code means there are no XML doc comments on any partial type declaration
+			stepIntoChildren = true;
+
+			if (typeInfo.IsDacOrDacExtension)
 			{
-				ReportDiagnostic(_syntaxContext, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
+				ReportDiagnostic(_syntaxContext, Descriptors.PX1007_PublicClassNoXmlComment, typeDeclaration.Identifier.GetLocation(),
+								 XmlCommentParseResult.NoXmlComment, extraLocations: partialDeclarationIdentifiersLocations);
 			}
 		}
 
+		private void AnalyzeSingleTypeDeclaration(TypeDeclarationSyntax typeDeclaration, TypeInfo typeInfo, out bool stepIntoChildren)
+		{
+			XmlCommentsParseInfo typeCommentsParseInfo = _xmlCommentsParser.AnalyzeXmlComments(typeDeclaration, mappedDacProperty: null);
+			AnalyzeSingleTypeDeclaration(typeCommentsParseInfo, typeDeclaration.Identifier.GetLocation(), typeInfo, out stepIntoChildren);
+		}
+
+		private void AnalyzeSingleTypeDeclaration(XmlCommentsParseInfo typeCommentsParseInfo, Location primaryLocationToReport, TypeInfo typeInfo,
+												  out bool stepIntoChildren)
+		{
+			stepIntoChildren = typeCommentsParseInfo.StepIntoChildren;
+
+			if (typeCommentsParseInfo.HasError && typeInfo.IsDacOrDacExtension)
+			{
+				var extraLocations = typeCommentsParseInfo.DocCommentLocationsWithErrors;
+
+				ReportDiagnostic(_syntaxContext, typeCommentsParseInfo.DiagnosticToReport, primaryLocationToReport, 
+								 typeCommentsParseInfo.ParseResult, extraLocations);
+			}
+		}
 
 		public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
 		{
@@ -242,7 +279,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 															 propertyDeclaration.Identifier, reportDiagnostic: true, out _);
 		}
 
-		
 
 		private void AnalyzeTypeMemberDeclarationForMissingXmlComments(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
 																	   SyntaxToken identifier, bool reportDiagnostic, out bool checkChildNodes)
