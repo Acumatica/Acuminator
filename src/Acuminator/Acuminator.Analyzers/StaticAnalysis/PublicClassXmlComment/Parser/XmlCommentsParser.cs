@@ -218,13 +218,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (diagnosticToReport == null)
 				return new XmlCommentsParseInfo(parseResult, stepIntoChildren);
 			else if (tagsInfos?.Count is null or 0)
-				return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors: null);
+				return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, locationsWithErrors: null);
 
 			switch (parseResult)
 			{
 				case XmlCommentParseResult.NoXmlComment:
 				case XmlCommentParseResult.NoSummaryOrInheritdocTag:
-					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors: null);
+					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, locationsWithErrors: null);
 
 				case XmlCommentParseResult.EmptySummaryTag:
 					XmlCommentTagsInfo summaryTagInfo = tagsInfos.FirstOrDefault(tagInfo => tagInfo.HasSummaryTag);
@@ -247,7 +247,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors);
 
 				default:
-					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors: null);
+					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, locationsWithErrors: null);
 			}
 		}
 	}

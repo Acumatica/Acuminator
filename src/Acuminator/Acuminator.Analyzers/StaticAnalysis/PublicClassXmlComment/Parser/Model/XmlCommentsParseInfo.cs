@@ -18,37 +18,47 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public bool StepIntoChildren { get; }
 
-		public ImmutableArray<SyntaxNode> DocCommentNodesWithErrors { get; }
+		public IReadOnlyCollection<Location> DocCommentLocationsWithErrors { get; }
 
 		[MemberNotNullWhen(returnValue: true, member: nameof(DiagnosticToReport))]
 		public bool HasError => DiagnosticToReport != null;
 
 		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, bool stepIntoChildren) :
-							   this(parseResult, diagnosticToReport: null, stepIntoChildren,
-									nodesWithErrors: ImmutableArray<SyntaxNode>.Empty)
+							   this(parseResult, diagnosticToReport: null, stepIntoChildren, locationsWithErrors: null)
 		{ }
 
 		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren,
 									SyntaxNode? nodeWithErrors) :
+							   this(parseResult, diagnosticToReport, stepIntoChildren, locationWithErrors: nodeWithErrors?.GetLocation())
+		{ }
+
+		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren,
+									IEnumerable<SyntaxNode>? nodeWithErrors) :
 							   this(parseResult, diagnosticToReport, stepIntoChildren,
-									nodeWithErrors != null
-										? ImmutableArray.Create(nodeWithErrors)
-										: ImmutableArray<SyntaxNode>.Empty)
+									locationsWithErrors: nodeWithErrors?.Select(node => node.GetLocation())
+																		.Where(location => location != null))
+		{ }
+
+		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren,
+									Location? locationWithErrors) :
+							   this(parseResult, diagnosticToReport, stepIntoChildren,
+									locationWithErrors != null
+										? new[] { locationWithErrors }
+										: Array.Empty<Location>())
 		{ }
 
 		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren, 
-									IEnumerable<SyntaxNode>? nodesWithErrors) :
-							   this(parseResult, diagnosticToReport, stepIntoChildren,
-									nodesWithErrors?.ToImmutableArray() ?? ImmutableArray<SyntaxNode>.Empty)
+									IEnumerable<Location>? locationsWithErrors) :
+									this(parseResult, diagnosticToReport, stepIntoChildren, locationsWithErrors: locationsWithErrors?.ToList())
 		{ }
 
-		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport,
-									bool stepIntoChildren, ImmutableArray<SyntaxNode> nodesWithErrors)
+		public XmlCommentsParseInfo(XmlCommentParseResult parseResult, DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren,
+									IReadOnlyCollection<Location>? locationsWithErrors)
 		{
-			ParseResult               = parseResult;
-			DiagnosticToReport        = diagnosticToReport;
-			StepIntoChildren          = stepIntoChildren;
-			DocCommentNodesWithErrors = nodesWithErrors;
+			ParseResult 				  = parseResult;
+			DiagnosticToReport 			  = diagnosticToReport;
+			StepIntoChildren 			  = stepIntoChildren;
+			DocCommentLocationsWithErrors = locationsWithErrors ?? Array.Empty<Location>();
 		}
 	}
 }
