@@ -105,10 +105,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private void VisitNonDacTypeDeclaration<TTypeDeclaration>(TTypeDeclaration typeDeclaration, Action<TTypeDeclaration> visitSubtreeAction)
 		where TTypeDeclaration : TypeDeclarationSyntax
 		{
-			var attributesLists = typeDeclaration.AttributeLists;
+			if (!typeDeclaration.IsPartial() ||
+				_syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken) is not INamedTypeSymbol partialTypeSymbol)
+			{
+				if (!typeDeclaration.IsPublic())
+					return;
 
-			if (attributesLists.Count > 0 &&
-				_attributesChecker.CheckIfAttributesDisableDiagnostic(typeDeclaration, checkForPXHidden: false))
+				var attributesLists = typeDeclaration.AttributeLists;
+
+				if (attributesLists.Count > 0 &&
+					_attributesChecker.CheckIfAttributesDisableDiagnostic(typeDeclaration, checkForPXHidden: false))
+				{
+					return;
+				}
+			}
+			else if (partialTypeSymbol.DeclaredAccessibility != Accessibility.Public ||
+					 _attributesChecker.CheckIfAttributesDisableDiagnostic(partialTypeSymbol, checkForPXHidden: false))
 			{
 				return;
 			}
@@ -127,6 +139,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			if (!classDeclaration.IsPublic())
+				return;
 
 			INamedTypeSymbol? typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
 			var containingTypeInfo = new TypeInfo(typeSymbol, _pxContext);
@@ -149,6 +164,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				_containingTypesStack.Pop();
 			}
 		}
+
+		
 
 		private bool CheckIfTypeIsExcludedFromDocumentation(TypeInfo typeInfo, ClassDeclarationSyntax classDeclaration)
 		{
@@ -275,23 +292,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (DacFieldNames.System.All.Contains(propertyName) || DacFieldNames.WellKnown.Selected.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
 				return;
 
-			AnalyzePropertyDeclarationForMissingXmlComments(propertyDeclaration, propertyDeclaration.Modifiers,
-															 propertyDeclaration.Identifier, reportDiagnostic: true, out _);
+			AnalyzePropertyDeclarationXmlComments(propertyDeclaration, containingTypeInfo!);
 		}
 
-
-		private void AnalyzeTypeMemberDeclarationForMissingXmlComments(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
-																	   SyntaxToken identifier, bool reportDiagnostic, out bool checkChildNodes)
+		private void AnalyzePropertyDeclarationXmlComments(PropertyDeclarationSyntax propertyDeclaration, TypeInfo containingTypeInfo)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(memberDeclaration))
+			if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(propertyDeclaration))
 			{
 				checkChildNodes = false;
 				return;
 			}
 
-			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(memberDeclaration);
+			XmlCommentParseResult thisDeclarationParseResult = _xmlCommentsParser.AnalyzeXmlComments(propertyDeclaration, );
 			bool commentsAreValid;
 			(commentsAreValid, checkChildNodes) = AnalyzeCommentParseResult(thisDeclarationParseResult);
 
@@ -304,18 +318,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, Location location, XmlCommentParseResult parseResult)
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, DiagnosticDescriptor diagnosticDescriptor, Location primaryLocation, 
+									  XmlCommentParseResult parseResult, IEnumerable<Location>? extraLocations)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			var properties = ImmutableDictionary<string, string>.Empty
-																.Add(XmlAnalyzerConstants.XmlCommentParseResultKey, parseResult.ToString());
-			var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties);
+																.Add(AnalysisConstants.ParseResultKey, parseResult.ToString());
+			var diagnostic = extraLocations.IsNullOrEmpty()
+				? Diagnostic.Create(diagnosticDescriptor, primaryLocation, properties)
+				: Diagnostic.Create(diagnosticDescriptor, primaryLocation, extraLocations, properties);
 
-			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
+			syntaxContext.ReportDiagnosticWithSuppressionCheck(diagnostic, _codeAnalysisSettings);
 		}
-
-		
 
 		private ImmutableArray<Location> GetErrorLocationsFromTagNodesWithFallbackToMemberDeclaration(List<XmlCommentTagsInfo> tagsInfos,
 																									  MemberDeclarationSyntax memberDeclaration)
