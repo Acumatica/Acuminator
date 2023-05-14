@@ -279,6 +279,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
 		{
+			if (!propertyDeclaration.IsPublic())
+				return;
+
 			var containingTypeInfo = _containingTypesStack.Count > 0
 				? _containingTypesStack.Peek()
 				: null;
@@ -300,22 +303,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(propertyDeclaration))
-			{
-				checkChildNodes = false;
-				return;
-			}
-
-			XmlCommentParseResult thisDeclarationParseResult = _xmlCommentsParser.AnalyzeXmlComments(propertyDeclaration, );
-			bool commentsAreValid;
-			(commentsAreValid, checkChildNodes) = AnalyzeCommentParseResult(thisDeclarationParseResult);
-
-			if (commentsAreValid)
+			if (_attributesChecker.CheckIfAttributesDisableDiagnostic(propertyDeclaration, checkForPXHidden: false))
 				return;
 
-			if (reportDiagnostic)
+			IPropertySymbol? mappedOriginalDacProperty = null;
+			XmlCommentsParseInfo propertyCommentsParseInfo = _xmlCommentsParser.AnalyzeXmlComments(propertyDeclaration, mappedOriginalDacProperty);
+			
+			if (propertyCommentsParseInfo.HasError)
 			{
-				ReportDiagnostic(_syntaxContext, identifier.GetLocation(), thisDeclarationParseResult);
+				ReportDiagnostic(_syntaxContext, propertyCommentsParseInfo.DiagnosticToReport, propertyDeclaration.Identifier.GetLocation(), 
+								 propertyCommentsParseInfo.ParseResult, propertyCommentsParseInfo.DocCommentLocationsWithErrors);
 			}
 		}
 
@@ -331,35 +328,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				: Diagnostic.Create(diagnosticDescriptor, primaryLocation, extraLocations, properties);
 
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(diagnostic, _codeAnalysisSettings);
-		}
-
-		private ImmutableArray<Location> GetErrorLocationsFromTagNodesWithFallbackToMemberDeclaration(List<XmlCommentTagsInfo> tagsInfos,
-																									  MemberDeclarationSyntax memberDeclaration)
-		{
-			var errorLocations = tagsInfos.SelectMany(tagInfo => tagInfo.GetAllTagNodes())
-										  .Select(tagNode => tagNode.GetLocation())
-										  .Where(location => location != null)
-										  .ToImmutableArray();
-
-			return errorLocations.IsDefaultOrEmpty
-				? GetErrorLocationsFromMemberDeclaration(memberDeclaration)
-				: errorLocations;
-		}
-
-		private ImmutableArray<Location> GetErrorLocationsFromMemberDeclaration(MemberDeclarationSyntax memberDeclaration)
-		{
-			var errorLocations = memberDeclaration.GetIdentifiers()
-												  .Select(identifier => identifier.GetLocation())
-												  .Where(location => location != null)
-												  .ToImmutableArray();
-			if (!errorLocations.IsDefaultOrEmpty)
-				return errorLocations;
-
-			var memberDeclarationLocation = memberDeclaration.GetLocation();
-
-			return memberDeclarationLocation != null
-				? ImmutableArray.Create(memberDeclarationLocation)
-				: ImmutableArray<Location>.Empty;
 		}
 	}
 }
