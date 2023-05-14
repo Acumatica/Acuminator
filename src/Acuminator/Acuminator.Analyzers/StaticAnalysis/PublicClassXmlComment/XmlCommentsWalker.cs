@@ -140,10 +140,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!classDeclaration.IsPublic())
+			bool hasPublicAccessibility = classDeclaration.IsPublic();
+
+			if (!classDeclaration.IsPartial() && !hasPublicAccessibility)
 				return;
 
 			INamedTypeSymbol? typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
+
+			if ((typeSymbol == null && !hasPublicAccessibility) ||
+				 typeSymbol != null && typeSymbol?.DeclaredAccessibility != Accessibility.Public)
+			{
+				return;
+			}
+
 			var containingTypeInfo = new TypeInfo(typeSymbol, _pxContext);
 
 			if (CheckIfTypeIsExcludedFromDocumentation(containingTypeInfo, classDeclaration))
@@ -165,23 +174,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		
-
 		private bool CheckIfTypeIsExcludedFromDocumentation(TypeInfo typeInfo, ClassDeclarationSyntax classDeclaration)
 		{
 			if (typeInfo.ContainingType != null)
 			{
-				if (typeInfo.ContainingType.DeclaredAccessibility != Accessibility.Public)
-					return false;
-
 				return _attributesChecker.CheckIfAttributesDisableDiagnostic(typeInfo.ContainingType,
 																			 checkForPXHidden: typeInfo.DacKind == DacType.Dac);
 			}
 			else
 			{
-				if (!classDeclaration.IsPublic())
-					return false;
-
 				return _attributesChecker.CheckIfAttributesDisableDiagnostic(classDeclaration, checkForPXHidden: false);
 			}
 		}
