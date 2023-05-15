@@ -323,8 +323,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var properties = ImmutableDictionary<string, string>.Empty
-																.Add(AnalysisConstants.ParseResultKey, parseResult.ToString());
+			var properties = new Dictionary<string, string>
+			{
+				{ DocumentationDiagnosticProperties.ParseResultKey, parseResult.ToString() }
+			}
+			.ToImmutableDictionary();
+
 			var diagnostic = extraLocations.IsNullOrEmpty()
 				? Diagnostic.Create(diagnosticDescriptor, primaryLocation, properties)
 				: Diagnostic.Create(diagnosticDescriptor, primaryLocation, extraLocations, properties);
