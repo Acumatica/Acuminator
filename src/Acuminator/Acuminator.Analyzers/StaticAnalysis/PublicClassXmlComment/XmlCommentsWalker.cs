@@ -107,6 +107,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private void VisitNonDacTypeDeclaration<TTypeDeclaration>(TTypeDeclaration typeDeclaration, Action<TTypeDeclaration> visitSubtreeAction)
 		where TTypeDeclaration : TypeDeclarationSyntax
 		{
+			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
 			if (!typeDeclaration.IsPartial() ||
 				_syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken) is not INamedTypeSymbol partialTypeSymbol)
 			{
@@ -210,6 +212,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			// First, look for the comments in the declaration being analyzed because we already have its syntax node
 			XmlCommentsParseInfo thisDeclarationCommentsParseInfo = _xmlCommentsParser.AnalyzeXmlComments(typeDeclaration, mappedDacProperty: null);
 
+			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
 			// If the parser found some XML comments then we use this result and don't check other declarations
 			if (thisDeclarationCommentsParseInfo.ParseResult != XmlCommentParseResult.NoXmlComment)
 			{
@@ -255,12 +259,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (typeInfo.IsDacOrDacExtension)
 			{
 				ReportDiagnostic(_syntaxContext, Descriptors.PX1007_PublicClassNoXmlComment, typeDeclaration.Identifier.GetLocation(),
-								 XmlCommentParseResult.NoXmlComment, extraLocations: partialDeclarationIdentifiersLocations);
+								 XmlCommentParseResult.NoXmlComment, extraLocations: partialDeclarationIdentifiersLocations, mappedOriginalDacProperty: null);
 			}
 		}
 
 		private void AnalyzeSingleTypeDeclaration(TypeDeclarationSyntax typeDeclaration, TypeInfo typeInfo, out bool stepIntoChildren)
 		{
+			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
 			XmlCommentsParseInfo typeCommentsParseInfo = _xmlCommentsParser.AnalyzeXmlComments(typeDeclaration, mappedDacProperty: null);
 			AnalyzeSingleTypeDeclaration(typeCommentsParseInfo, typeDeclaration.Identifier.GetLocation(), typeInfo, out stepIntoChildren);
 		}
@@ -275,12 +281,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				var extraLocations = typeCommentsParseInfo.DocCommentLocationsWithErrors;
 
 				ReportDiagnostic(_syntaxContext, typeCommentsParseInfo.DiagnosticToReport, primaryLocationToReport, 
-								 typeCommentsParseInfo.ParseResult, extraLocations);
+								 typeCommentsParseInfo.ParseResult, extraLocations, mappedOriginalDacProperty: null);
 			}
 		}
 
 		public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
 		{
+			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
 			if (!propertyDeclaration.IsPublic())
 				return;
 
@@ -314,24 +322,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (propertyCommentsParseInfo.HasError)
 			{
 				ReportDiagnostic(_syntaxContext, propertyCommentsParseInfo.DiagnosticToReport, propertyDeclaration.Identifier.GetLocation(), 
-								 propertyCommentsParseInfo.ParseResult, propertyCommentsParseInfo.DocCommentLocationsWithErrors);
+								 propertyCommentsParseInfo.ParseResult, propertyCommentsParseInfo.DocCommentLocationsWithErrors, mappedOriginalDacProperty);
 			}
 		}
 
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, DiagnosticDescriptor diagnosticDescriptor, Location primaryLocation, 
-									  XmlCommentParseResult parseResult, IEnumerable<Location>? extraLocations)
+									  XmlCommentParseResult parseResult, IEnumerable<Location>? extraLocations, IPropertySymbol? mappedOriginalDacProperty)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
+			bool isDiagnosticForProjectionDacProperty = mappedOriginalDacProperty != null;
 			var properties = new Dictionary<string, string>
 			{
-				{ DocumentationDiagnosticProperties.ParseResultKey, parseResult.ToString() }
+				{ DocumentationDiagnosticProperties.ParseResult, parseResult.ToString() },
+				{ DocumentationDiagnosticProperties.IsProjectionDacProperty, isDiagnosticForProjectionDacProperty.ToString() }
+			};
+
+			if (isDiagnosticForProjectionDacProperty)
+			{
+				var mappedBqlField = mappedOriginalDacProperty!.GetCorrespondingBqlField(_pxContext, checkContainingTypeIsDac: false);
+
+				if (mappedBqlField != null)
+					properties.Add(DocumentationDiagnosticProperties.MappedDacBqlFieldMetadataName, mappedBqlField.ToString());
 			}
-			.ToImmutableDictionary();
 
 			var diagnostic = extraLocations.IsNullOrEmpty()
-				? Diagnostic.Create(diagnosticDescriptor, primaryLocation, properties)
-				: Diagnostic.Create(diagnosticDescriptor, primaryLocation, extraLocations, properties);
+				? Diagnostic.Create(diagnosticDescriptor, primaryLocation, properties.ToImmutableDictionary())
+				: Diagnostic.Create(diagnosticDescriptor, primaryLocation, extraLocations, properties.ToImmutableDictionary());
 
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(diagnostic, _codeAnalysisSettings);
 		}

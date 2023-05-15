@@ -6,8 +6,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal static class DocumentationDiagnosticProperties
 	{
-		public const string ParseResultKey			   		 = nameof(ParseResultKey);
-		public const string IsProjectionDacPropertyKey 		 = nameof(IsProjectionDacPropertyKey);
-		public const string MappedDacPropertyMetadataNameKey = nameof(MappedDacPropertyMetadataNameKey);
+		public const string ParseResult					  = nameof(ParseResult);
+		public const string IsProjectionDacProperty		  = nameof(IsProjectionDacProperty);
+		public const string MappedDacBqlFieldMetadataName = nameof(MappedDacBqlFieldMetadataName);
 	}
 }
