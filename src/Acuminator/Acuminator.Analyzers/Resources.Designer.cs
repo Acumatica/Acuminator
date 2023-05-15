@@ -196,11 +196,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add a description.
+        ///   Looks up a localized string similar to Add a inheritdoc tag with description.
         /// </summary>
-        public static string PX1007FixAddDescription {
+        public static string PX1007FixAddInheritdocTag {
             get {
-                return ResourceManager.GetString("PX1007FixAddDescription", resourceCulture);
+                return ResourceManager.GetString("PX1007FixAddInheritdocTag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a summary tag with description.
+        /// </summary>
+        public static string PX1007FixAddSummaryTag {
+            get {
+                return ResourceManager.GetString("PX1007FixAddSummaryTag", resourceCulture);
             }
         }
         

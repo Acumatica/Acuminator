@@ -480,8 +480,8 @@
   <data name="PX1043TitleRowPersistedNonISV" xml:space="preserve">
     <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisted event handler</value>
   </data>
-  <data name="PX1007FixAddDescription" xml:space="preserve">
-    <value>Add a description</value>
+  <data name="PX1007FixAddSummaryTag" xml:space="preserve">
+    <value>Add a summary tag with description</value>
   </data>
   <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
     <value>Suppress the {0} diagnostic with Acuminator</value>
@@ -677,5 +677,8 @@ The "cref" attribute should reference the original DAC field property from the p
 /// &lt;inheritdoc cref="OriginalDac.SomeDacField"/&gt;
 [PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
 public virtual int? SomeDacField{ get; set; }</value>
+  </data>
+  <data name="PX1007FixAddInheritdocTag" xml:space="preserve">
+    <value>Add a inheritdoc tag with description</value>
   </data>
 </root>
