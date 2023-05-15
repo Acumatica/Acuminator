@@ -328,6 +328,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseMethodIsNotAccessible.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DerivedMethodIsGeneric.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DerivedMethodIsStatic.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseTypeDefinedAsExtensionNoError.cs" />
     <Compile Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\StaticFieldOrPropertyInGraphTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />

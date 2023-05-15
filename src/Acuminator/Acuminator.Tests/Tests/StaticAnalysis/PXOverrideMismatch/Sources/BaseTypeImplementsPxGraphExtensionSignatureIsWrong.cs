@@ -11,7 +11,7 @@ namespace Acuminator.Tests.Sources
 		}
 	}
 
-	public class AuxiliaryExtension<T1, T2> : PXGraphExtension<T1, T2>
+	public class AuxiliaryExtension<T1, T2> : PXGraphExtension<T1, T2> where T1 : PXGraphExtension<T2> where T2 : PXGraph
 	{
 	}
 

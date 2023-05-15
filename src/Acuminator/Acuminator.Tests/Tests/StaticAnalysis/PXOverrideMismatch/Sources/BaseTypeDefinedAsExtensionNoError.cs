@@ -7,6 +7,13 @@ namespace Acuminator.Tests.Sources
 	{
 		public abstract class ScanExtension : PXGraphExtension<TSelf, TGraph>
 		{
+		}
+	}
+
+	public class PickPackShip : WarehouseManagementSystem<PickPackShip, PickPackShip.Host>
+	{
+		public class Host : PXGraph<Host>
+		{
 			public virtual object TestMethod(int x, bool drilldown)
 			{
 				return new object();
@@ -14,18 +21,10 @@ namespace Acuminator.Tests.Sources
 		}
 	}
 
-	public class PickPackShip : WarehouseManagementSystem<PickPackShip, PickPackShip.Host>
-	{
-
-		public class Host : PXGraph<Host>
-		{
-		}
-	}
-
 	public class PickPackShipExt : PickPackShip.ScanExtension
 	{
 		[PXOverride]
-		public override object TestMethod(int x, bool drilldown)
+		public object TestMethod(int x, bool drilldown)
 		{
 			return new object();
 		}

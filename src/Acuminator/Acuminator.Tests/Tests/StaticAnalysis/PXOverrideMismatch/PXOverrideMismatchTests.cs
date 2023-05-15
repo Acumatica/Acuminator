@@ -89,12 +89,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 			);
 		}
 
-		[Theory(Skip = "The analyzer doesn't cover this scenario at the moment.")]
+		[Theory]
 		[EmbeddedFileData("PxOverrideInADifferentType.cs")]
 		public void PxOverrideInADifferentType(string source)
 		{
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(16, 26)
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 26)
 			);
 		}
 
@@ -146,6 +146,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 
 		[Theory]
 		[EmbeddedFileData("BaseTypeDefinedAsExtension.cs")]
-		public void BaseTypeDefinedAsExtension(string source) => VerifyCSharpDiagnostic(source);
+		public void BaseTypeDefinedAsExtension(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(28, 26)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("BaseTypeDefinedAsExtensionNoError.cs")]
+		public void BaseTypeDefinedAsExtensionNoError(string source) => VerifyCSharpDiagnostic(source);
 	}
 }

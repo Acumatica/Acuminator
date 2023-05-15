@@ -13,7 +13,7 @@ namespace Acuminator.Tests.Sources
 
 	public class SecondLevelExtension : PXGraphExtension<BaseExtension, MyGraph>
 	{
-		[PX.Data.PXOverride]
+		[PXOverride]
 		public virtual void TestMethod(int x, bool drilldown, double y)
 		{
 			return;
