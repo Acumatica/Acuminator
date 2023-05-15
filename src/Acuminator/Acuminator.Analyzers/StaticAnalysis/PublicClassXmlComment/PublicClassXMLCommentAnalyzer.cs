@@ -7,7 +7,6 @@ using System.Linq;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -23,7 +22,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			new[]
 			{
 				Descriptors.PX1007_PublicClassNoXmlComment,
-				Descriptors.PX1007_MultipleDocumentationTags,
 				Descriptors.PX1007_InvalidProjectionDacFieldDescription
 			}
 			.ToImmutableArray();
@@ -52,11 +50,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax))
-				return;
-
-			var commentsWalker = new XmlCommentsWalker(syntaxContext, pxContext, CodeAnalysisSettings!);
-			compilationUnitSyntax.Accept(commentsWalker);
+			if (syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax)
+			{
+				var commentsWalker = new XmlCommentsWalker(syntaxContext, pxContext, CodeAnalysisSettings!);
+				compilationUnitSyntax.Accept(commentsWalker);
+			}
 		}
 	}
 }
