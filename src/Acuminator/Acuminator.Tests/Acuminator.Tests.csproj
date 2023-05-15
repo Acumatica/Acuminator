@@ -323,6 +323,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\TypeArgumentImplementsPxGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\TypeArgumentImplementsPxGraphExtensionSignatureIsWrong.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseTypeDefinedAsExtension.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatchBaseHasMoreParameters.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseMethodIsNotVirtual.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseMethodIsNotAccessible.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DerivedMethodIsGeneric.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DerivedMethodIsStatic.cs" />
     <Compile Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\StaticFieldOrPropertyInGraphTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />

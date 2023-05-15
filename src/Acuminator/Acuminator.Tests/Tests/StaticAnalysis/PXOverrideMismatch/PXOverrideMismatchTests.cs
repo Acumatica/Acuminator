@@ -32,6 +32,51 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		}
 
 		[Theory]
+		[EmbeddedFileData("ArgumentsDoNotMatchBaseHasMoreParameters.cs")]
+		public void ArgumentsDoNotMatchBaseHasMoreParameters(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 22)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("BaseMethodIsNotVirtual.cs")]
+		public void BaseMethodIsNotVirtual(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 22)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("BaseMethodIsNotAccessible.cs")]
+		public void BaseMethodIsNotAccessible(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 22)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("DerivedMethodIsGeneric.cs")]
+		public void DerivedMethodIsGeneric(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 15)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("DerivedMethodIsStatic.cs")]
+		public void DerivedMethodIsStatic(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 21)
+			);
+		}
+
+		[Theory]
 		[EmbeddedFileData("ArgumentsMatchWithDelegate.cs")]
 		public void ArgumentsMatchWithDelegate(string source) => VerifyCSharpDiagnostic(source);
 

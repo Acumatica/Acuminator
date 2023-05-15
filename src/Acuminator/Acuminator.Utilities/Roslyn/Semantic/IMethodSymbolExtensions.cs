@@ -353,7 +353,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </summary>
 		/// <param name="method">The method to act on.</param>
 		/// <returns>True if <paramref name="method"/> </returns>
-		public static bool CanBeOverriden(this IMethodSymbol method) => method.IsVirtual || method.IsOverride;
+		public static bool CanBeOverriden(this IMethodSymbol method)
+		{
+			method.ThrowOnNull(nameof(method));
+
+			return method.IsVirtual || method.IsOverride;
+		}
 
 	}
 }

@@ -32,13 +32,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			{
 				var methodsWithPxOverrideAttribute = allMembers
 					.OfType<IMethodSymbol>()
-					.Where(m => !m.IsStatic && !m.IsGenericMethod && m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, false))
+					.Where(m => m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, checkOverrides: false))
 					.ToList();
 
 				if (methodsWithPxOverrideAttribute.Any())
 				{
 					var allBaseTypes = pxGraphExtension.Symbol
-						.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, true)
+						.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
 						.OfType<INamedTypeSymbol>()
 						.Where(s => !s.Equals(pxGraphExtension.Symbol));
 
@@ -49,19 +49,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext, IEnumerable<INamedTypeSymbol> allBaseTypes, IMethodSymbol methodSymbol)
 		{
-			// Here we know that the method is not static and has the correct attribute.
-
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			foreach (var baseType in allBaseTypes)
+			if (!methodSymbol.IsStatic && !methodSymbol.IsGenericMethod)
 			{
-				var allMembers = baseType.GetMembers(methodSymbol.Name);
-
-				if (!allMembers.IsDefaultOrEmpty)
+				foreach (var baseType in allBaseTypes)
 				{
-					if (allMembers.OfType<IMethodSymbol>().Any(m => PXOverrideHelper.IsSuitable(methodSymbol, m)))
+					var allMembers = baseType.GetMembers(methodSymbol.Name);
+
+					if (!allMembers.IsDefaultOrEmpty)
 					{
-						return;
+						if (allMembers.OfType<IMethodSymbol>().Any(m => PXOverrideHelper.IsSuitable(methodSymbol, m)))
+						{
+							return;
+						}
 					}
 				}
 			}
@@ -81,10 +82,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			/// <summary>
 			/// Special signature check between a derived method with the PXOverride attribute and the base method.
 			/// </summary>
-			/// <param name="baseMethod">The method from the derived class, with the PXOverride attribute</param>
-			/// <param name="pxOverrideMethod">The method from the base</param>
+			/// <param name="pxOverrideMethod">The method from the derived class, with the PXOverride attribute</param>
+			/// <param name="baseMethod">The method from the base</param>
 			/// <returns></returns>
-			public static bool IsSuitable(IMethodSymbol baseMethod, IMethodSymbol pxOverrideMethod)
+			public static bool IsSuitable(IMethodSymbol pxOverrideMethod, IMethodSymbol baseMethod)
 			{
 				var methodsCompatibility = GetMethodsCompatibility(baseMethod.Parameters.Length, pxOverrideMethod.Parameters.Length);
 
@@ -93,7 +94,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 					return false;
 				}
 
-				if (!pxOverrideMethod.CanBeOverriden() || !pxOverrideMethod.IsAccessibleOutsideOfAssembly())
+				if (!baseMethod.CanBeOverriden() || !baseMethod.IsAccessibleOutsideOfAssembly())
 				{
 					return false;
 				}
@@ -105,12 +106,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 				if (methodsCompatibility == MethodsCompatibility.ParametersMatchWithDelegate)
 				{
-					if (baseMethod.Parameters[baseMethod.Parameters.Length - 1].Type is not INamedTypeSymbol @delegate || @delegate.TypeKind != TypeKind.Delegate)
+					if (pxOverrideMethod.Parameters[pxOverrideMethod.Parameters.Length - 1].Type is not INamedTypeSymbol @delegate || @delegate.TypeKind != TypeKind.Delegate)
 					{
 						return false;
 					}
 
-					return CheckExactMatch(pxOverrideMethod, @delegate.DelegateInvokeMethod);
+					return CheckExactMatch(baseMethod, @delegate.DelegateInvokeMethod);
 				}
 
 				return false;
@@ -140,7 +141,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			{
 				for (var i = 0; i < sourceParameters.Length; i++)
 				{
-					if (i >= targetParameters.Length || !sourceParameters[i].Type.Equals(targetParameters[i].Type))
+					if (!sourceParameters[i].Type.Equals(targetParameters[i].Type))
 					{
 						return false;
 					}
@@ -152,7 +153,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			private static MethodsCompatibility GetMethodsCompatibility(int baseMethodParametersCount, int pxOverrideMethodParametersCount)
 			{
 				return baseMethodParametersCount == pxOverrideMethodParametersCount ? MethodsCompatibility.ParametersMatch :
-					baseMethodParametersCount == pxOverrideMethodParametersCount + 1 ? MethodsCompatibility.ParametersMatchWithDelegate : MethodsCompatibility.NotCompatible;
+					baseMethodParametersCount + 1 == pxOverrideMethodParametersCount ? MethodsCompatibility.ParametersMatchWithDelegate : MethodsCompatibility.NotCompatible;
 			}
 
 			private enum MethodsCompatibility
