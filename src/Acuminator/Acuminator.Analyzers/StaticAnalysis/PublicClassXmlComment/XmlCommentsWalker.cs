@@ -20,7 +20,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
-	internal partial class XmlCommentsWalker : CSharpSyntaxWalker
+	internal class XmlCommentsWalker : CSharpSyntaxWalker
 	{
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
@@ -29,6 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		private readonly ExcludeFromDocsAttributesChecker _attributesChecker = new();
 		private readonly XmlCommentsParser _xmlCommentsParser;
+		private readonly MappedDacPropertyFinder _mappedDacPropertyFinder;
 
 		public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
 								 CodeAnalysisSettings codeAnalysisSettings)
@@ -37,6 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			_pxContext = pxContext;
 			_codeAnalysisSettings = codeAnalysisSettings;
 			_xmlCommentsParser = new XmlCommentsParser(syntaxContext.SemanticModel, syntaxContext.CancellationToken);
+			_mappedDacPropertyFinder = new MappedDacPropertyFinder(pxContext, syntaxContext.SemanticModel, syntaxContext.CancellationToken);
 		}
 
 		#region Optimization - skipping visit of some subtrees
@@ -306,7 +308,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (_attributesChecker.CheckIfAttributesDisableDiagnostic(propertyDeclaration, checkForPXHidden: false))
 				return;
 
-			IPropertySymbol? mappedOriginalDacProperty = null;
+			IPropertySymbol? mappedOriginalDacProperty = _mappedDacPropertyFinder.GetMappedPropertyFromTheOriginalDac(containingTypeInfo, propertyDeclaration);
 			XmlCommentsParseInfo propertyCommentsParseInfo = _xmlCommentsParser.AnalyzeXmlComments(propertyDeclaration, mappedOriginalDacProperty);
 			
 			if (propertyCommentsParseInfo.HasError)
