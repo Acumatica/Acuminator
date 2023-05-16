@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -306,5 +308,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				ElementBindingExpressionSyntax elementBinding                   => elementBinding.ArgumentList,
 				_                                                               => null
 			};
+
+		public static string? GetDocTagName(this XmlNodeSyntax docTagNode) => docTagNode switch
+		{
+			XmlElementSyntax docTagWithContent	 => docTagWithContent.StartTag?.Name?.ToString(),
+			XmlEmptyElementSyntax oneLinerDocTag => oneLinerDocTag.Name?.ToString(),
+			_									 => null
+		};
 	}
 }

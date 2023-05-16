@@ -320,7 +320,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (_attributesChecker.CheckIfAttributesDisableDiagnostic(propertyDeclaration, checkForPXHidden: false))
 				return;
 
-			IPropertySymbol? mappedOriginalDacProperty = _mappedDacPropertyFinder.GetMappedPropertyFromTheOriginalDac(containingTypeInfo, propertyDeclaration);
+			IPropertySymbol? mappedOriginalDacProperty	   = _mappedDacPropertyFinder.GetMappedPropertyFromTheOriginalDac(containingTypeInfo, propertyDeclaration);
 			XmlCommentsParseInfo propertyCommentsParseInfo = _xmlCommentsParser.AnalyzeXmlComments(propertyDeclaration, mappedOriginalDacProperty);
 			
 			if (propertyCommentsParseInfo.HasError)

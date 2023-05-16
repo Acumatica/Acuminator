@@ -7,6 +7,7 @@ using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -133,12 +134,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			
 			foreach (XmlNodeSyntax xmlNode in xmlComment.Content)
 			{
-				string? tagName = xmlNode switch
-				{
-					XmlElementSyntax docTagWithContent   => docTagWithContent.StartTag?.Name?.ToString(),
-					XmlEmptyElementSyntax oneLinerDocTag => oneLinerDocTag.Name?.ToString(),
-					_									 => null
-				};
+				string? tagName = xmlNode.GetDocTagName();
 				
 				switch (tagName)
 				{
