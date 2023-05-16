@@ -94,45 +94,84 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			var description = GenerateDescriptionFromCamelCase(className);
 			return parseResult switch
 			{
-				XmlCommentParseResult.NoXmlComment			   => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
-				XmlCommentParseResult.NoSummaryOrInheritdocTag => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
-				XmlCommentParseResult.EmptySummaryTag		   => AddDescription(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.NoXmlComment			   => AddXmlCommentWithSummaryTag(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.NoSummaryOrInheritdocTag => AddXmlCommentWithSummaryTag(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.EmptySummaryTag		   => AddDescriptionToSummaryTag(rootNode, memberDeclaration, description, cancellation),
 				_											   => memberDeclaration
 			};
 		}
 
-		private SyntaxNode AddDescription(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
-										  string description, CancellationToken cancellation)
+		private SyntaxNode AddDescriptionToSummaryTag(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
+													  string description, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var summaryTag = memberDeclaration
-				.GetLeadingTrivia()
-				.Select(t => t.GetStructure())
-				.OfType<DocumentationCommentTriviaSyntax>()
-				.SelectMany(d => d.ChildNodes())
-				.OfType<XmlElementSyntax>()
-				.First(n => XmlAnalyzerConstants.XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
+			XmlNodeSyntax? summaryTag = FindSummaryTag(memberDeclaration);
+			if (summaryTag == null)
+				return AddXmlCommentWithSummaryTag(rootNode, memberDeclaration, description, cancellation);
 
-			var xmlDescription = new[]
+			switch (summaryTag)
 			{
-				XmlText(
-					XmlTextNewLine(Environment.NewLine, true)
-				),
-				XmlText(
-					XmlTextNewLine(description + Environment.NewLine, true)
-				)
-			};
-			var newContent = new SyntaxList<XmlNodeSyntax>(xmlDescription);
-			var newSummaryTag = summaryTag
-				.WithContent(newContent)
-				.WithAdditionalAnnotations(Formatter.Annotation);
+				case XmlElementSyntax summaryTagWithEmptyContent:
+				{
+					var newSummaryTag = AddDescriptionToEmptySummaryTag(summaryTagWithEmptyContent, description);
+					return rootNode.ReplaceNode(summaryTag, newSummaryTag);
+				}
+				case XmlEmptyElementSyntax oneLinerSummaryTag:
+				{
+					var newSummaryTag = CreateNonEmptySummaryNode(description).WithAdditionalAnnotations(Formatter.Annotation);
+					return rootNode.ReplaceNode(oneLinerSummaryTag, newSummaryTag);
+				}
 
-			return rootNode.ReplaceNode(summaryTag, newSummaryTag);
+				default:
+					return rootNode;
+			}
+
+			//---------------------------------------------------------Local Function--------------------------------------------------
+			static XmlNodeSyntax? FindSummaryTag(MemberDeclarationSyntax memberDeclaration)
+			{
+				var triviaList = memberDeclaration.GetLeadingTrivia();
+
+				if (triviaList.Count == 0)
+					return null;
+
+				foreach (var trivia in triviaList)
+				{
+					if (trivia.GetStructure() is not DocumentationCommentTriviaSyntax documentationComment || documentationComment.Content.Count == 0)
+						continue;
+
+					foreach (XmlNodeSyntax docTagNode in documentationComment.Content)
+					{
+						string? docTagName = docTagNode.GetDocTagName();
+
+						if (XmlCommentsConstants.SummaryTag.Equals(docTagName, StringComparison.Ordinal))
+							return docTagNode;
+					}
+				}
+
+				return null;
+			}
+
+			static XmlElementSyntax AddDescriptionToEmptySummaryTag(XmlElementSyntax summaryTagWithEmptyContent, string description)
+			{
+				var xmlDescription = new[]
+				{
+					XmlText(
+						XmlTextNewLine(Environment.NewLine, continueXmlDocumentationComment: true)
+					),
+					XmlText(
+						XmlTextNewLine(description + Environment.NewLine, continueXmlDocumentationComment: true)
+					)
+				};
+
+				var newContent = new SyntaxList<XmlNodeSyntax>(xmlDescription);
+				return summaryTagWithEmptyContent.WithContent(newContent)
+												 .WithAdditionalAnnotations(Formatter.Annotation);
+			}
 		}
 
-		private SyntaxNode AddXmlCommentDescription(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
-													string description, CancellationToken cancellation)
+		private SyntaxNode AddXmlCommentWithSummaryTag(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
+													   string description, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
@@ -154,7 +193,98 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			return AddDocumentationTrivia(rootNode, memberDeclaration, xmlDescriptionTrivia, cancellation);
 		}
 
-		private async Task<Document> ExcludeClassAsync(Document document, TextSpan span, CancellationToken cancellation)
+		private static XmlElementSyntax CreateNonEmptySummaryNode(string description) =>
+			XmlSummaryElement(
+				XmlText(
+					XmlTextNewLine(Environment.NewLine, continueXmlDocumentationComment: true)
+				),
+				XmlText(
+					XmlTextNewLine(description + Environment.NewLine, continueXmlDocumentationComment: true)
+				)
+			);
+
+		private async Task<Document> AddInheritdocTagAsync(Document document, TextSpan span, XmlCommentParseResult parseResult, 
+														   INamedTypeSymbol projectionDacOriginalBqlFieldName, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
+
+			var rootNode = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
+			if (rootNode?.FindNode(span) is not MemberDeclarationSyntax memberDeclaration)
+				return document;
+
+			string memberName = memberDeclaration.GetIdentifiers().FirstOrDefault().ToString();
+			if (memberName.IsNullOrWhiteSpace())
+				return document;
+
+			cancellation.ThrowIfCancellationRequested();
+
+			var syntaxGenerator = SyntaxGenerator.GetGenerator(document);
+			bool removeOldTrivia = parseResult != XmlCommentParseResult.NoXmlComment;
+
+			var newRootNode = AddXmlCommentWithInheritdocTag(rootNode, memberDeclaration, removeOldTrivia, projectionDacOriginalBqlFieldName, syntaxGenerator);
+			if (newRootNode == null)
+				return document;
+
+			var newDocument = document.WithSyntaxRoot(newRootNode);
+			return newDocument;
+		}
+
+		private SyntaxNode? AddXmlCommentWithInheritdocTag(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration, bool removeOldTrivia,
+														   INamedTypeSymbol projectionDacOriginalBqlFieldName, SyntaxGenerator syntaxGenerator)
+		{
+			if (syntaxGenerator.TypeExpression(projectionDacOriginalBqlFieldName) is not TypeSyntax bqlDacFieldNode)
+				return null;
+
+			var crefAttributeList = SingletonList<XmlAttributeSyntax>(
+											XmlCrefAttribute(
+												TypeCref(bqlDacFieldNode)));
+			XmlEmptyElementSyntax inheritdocTag = XmlEmptyElement(XmlName(XmlCommentsConstants.InheritdocTag), crefAttributeList);
+
+			var xmlInheritdocTrivia = 
+				Trivia(
+					DocumentationCommentTrivia(
+						SyntaxKind.SingleLineDocumentationCommentTrivia,
+						SingletonList<XmlNodeSyntax>(inheritdocTag)
+					)
+					.WithAdditionalAnnotations(Formatter.Annotation));
+
+			var newTrivia = memberDeclaration.GetLeadingTrivia().Add(xmlInheritdocTrivia);
+			var newClassDeclarationSyntax = memberDeclaration.WithLeadingTrivia(newTrivia);
+
+			return rootNode.ReplaceNode(memberDeclaration, newClassDeclarationSyntax);
+		}
+
+		private SyntaxNode RemoveWrongDocTagsFromDeclaration(MemberDeclarationSyntax memberDeclaration) 
+		{
+			var triviaList = memberDeclaration.GetLeadingTrivia();
+
+			if (triviaList.Count == 0)
+				return memberDeclaration;
+			
+			foreach (SyntaxTrivia trivia in triviaList)
+			{
+				if (trivia.GetStructure() is not DocumentationCommentTriviaSyntax documentationNode || documentationNode.Content.Count == 0)
+					continue;
+
+				foreach (var docXmlNode in documentationNode.Content)
+				{
+					docXmlNode.Star
+				}
+			}
+
+			XmlEmptyElement
+
+			XmlElementSyntax
+
+			var summaryTag =
+											  .Select(t => t.GetStructure())
+											  .OfType<DocumentationCommentTriviaSyntax>()
+											  .SelectMany(d => d.ChildNodes())
+											  .OfType<XmlElementSyntax>()
+											  .FirstOrDefault(n => XmlCommentsConstants.SummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
+		}
+
+		private async Task<Document> AddExcludeTagAsync(Document document, TextSpan span, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
