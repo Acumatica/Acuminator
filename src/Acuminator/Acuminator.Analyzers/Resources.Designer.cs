@@ -196,7 +196,16 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add a inheritdoc tag with description.
+        ///   Looks up a localized string similar to Add an &quot;exclude&quot; tag to exclude this API from the API Reference.
+        /// </summary>
+        public static string PX1007FixAddExcludeTag {
+            get {
+                return ResourceManager.GetString("PX1007FixAddExcludeTag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add an &quot;inheritdoc&quot; tag for the projection DAC property with &quot;cref&quot; attribute referencing the mapped original DAC property.
         /// </summary>
         public static string PX1007FixAddInheritdocTag {
             get {
@@ -205,20 +214,11 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add a summary tag with description.
+        ///   Looks up a localized string similar to Add a &quot;summary&quot; tag with description generated from the API name.
         /// </summary>
         public static string PX1007FixAddSummaryTag {
             get {
                 return ResourceManager.GetString("PX1007FixAddSummaryTag", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Exclude the class from the API Reference.
-        /// </summary>
-        public static string PX1007FixExcludeClass {
-            get {
-                return ResourceManager.GetString("PX1007FixExcludeClass", resourceCulture);
             }
         }
         
