@@ -349,7 +349,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
-		/// Check if <paramref name="method"/> has either virtual or override signature.
+		/// Check if <paramref name="method"/> has either virtual, override or abstract signature.
 		/// </summary>
 		/// <param name="method">The method to act on.</param>
 		/// <returns>True if <paramref name="method"/> </returns>
@@ -357,7 +357,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			method.ThrowOnNull(nameof(method));
 
-			return method.IsVirtual || method.IsOverride;
+			return method.IsVirtual || method.IsOverride || method.IsAbstract;
 		}
 
 	}
