@@ -25,7 +25,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string LastModifiedDateTime   = "LastModifiedDateTime";
 			public const string Timestamp              = "tstamp";
 
-			public static ImmutableHashSet<string> All = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+			public static ImmutableHashSet<string> All { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
 				NoteID,
 				CreatedByID,
@@ -37,6 +37,24 @@ namespace Acuminator.Utilities.Roslyn.Constants
 				Timestamp,
 			}
 			.ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
+		}
+
+		/// <summary>
+		/// Names of restricted system DAC fields.
+		/// </summary>
+		public static class Restricted
+		{
+			public const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
+			public const string CompanyID 			  = "CompanyID";
+			public const string CompanyMask 		  = "CompanyMask";
+
+			public static ImmutableArray<string> All { get; } = new[]
+			{
+				DeletedDatabaseRecord,
+				CompanyID,
+				CompanyMask
+			}
+			.ToImmutableArray();
 		}
 
 		/// <summary>
