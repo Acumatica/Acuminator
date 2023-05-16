@@ -13,7 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal readonly struct InheritdocTagInfo
 	{
-		public XmlElementSyntax? Tag { get; }
+		public XmlNodeSyntax? Tag { get; }
 
 		public ImmutableArray<XmlCrefAttributeSyntax> CrefAttributes { get; }
 
@@ -22,21 +22,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public bool InheritdocTagHasCrefAttributes => !CrefAttributes.IsDefaultOrEmpty;
 
-		public InheritdocTagInfo(XmlElementSyntax? inheritdocTag)
+		public InheritdocTagInfo(XmlNodeSyntax? inheritdocTag)
 		{
 			Tag = inheritdocTag;
 			CrefAttributes = GetCrefAttribute(inheritdocTag);
 		}
 
-		private static ImmutableArray<XmlCrefAttributeSyntax> GetCrefAttribute(XmlElementSyntax? inheritdocTag)
+		private static ImmutableArray<XmlCrefAttributeSyntax> GetCrefAttribute(XmlNodeSyntax? inheritdocTag)
 		{
-			if (inheritdocTag?.StartTag == null)
+			var attributes = GetInheritdocTagAttributes(inheritdocTag);
+
+			if (attributes == null || attributes.Value.Count == 0)
 				return ImmutableArray<XmlCrefAttributeSyntax>.Empty;
 
-			var attributes = inheritdocTag.StartTag.Attributes;
-			return attributes.Count > 0
-				? attributes.OfType<XmlCrefAttributeSyntax>().ToImmutableArray()
-				: ImmutableArray<XmlCrefAttributeSyntax>.Empty;
+			return attributes.Value.OfType<XmlCrefAttributeSyntax>().ToImmutableArray();
+		}
+
+		private static SyntaxList<XmlAttributeSyntax>? GetInheritdocTagAttributes(XmlNodeSyntax? inheritdocTag)
+		{
+			switch (inheritdocTag)
+			{
+				case XmlEmptyElementSyntax oneLineTag:
+					return oneLineTag.Attributes;
+				case XmlElementSyntax tagWithContent when tagWithContent.StartTag != null:
+					return tagWithContent.StartTag.Attributes;
+				default:
+					return null;
+			}
 		}
 
 		public override string ToString() => Tag?.ToString() ?? string.Empty;

@@ -126,13 +126,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		private XmlCommentTagsInfo GetDocumentationTags(DocumentationCommentTriviaSyntax xmlComment)
 		{
-			var xmlNodes = xmlComment.ChildNodes().OfType<XmlElementSyntax>();
-			XmlElementSyntax? summaryTag = null, inheritDocTag = null, excludeTag = null;
+			if (xmlComment.Content.Count == 0)
+				return new XmlCommentTagsInfo(summaryTag: null, inheritdocTag: null, excludeTag: null);
 
-			foreach (XmlElementSyntax xmlNode in xmlNodes)
+			XmlNodeSyntax? summaryTag = null, inheritDocTag = null, excludeTag = null;
+			
+			foreach (XmlNodeSyntax xmlNode in xmlComment.Content)
 			{
-				string? tagName = xmlNode.StartTag?.Name?.ToString();
-
+				string? tagName = xmlNode switch
+				{
+					XmlElementSyntax docTagWithContent   => docTagWithContent.StartTag?.Name?.ToString(),
+					XmlEmptyElementSyntax oneLinerDocTag => oneLinerDocTag.Name?.ToString(),
+					_									 => null
+				};
+				
 				switch (tagName)
 				{
 					case XmlCommentsConstants.SummaryTag:
@@ -152,9 +159,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			return new XmlCommentTagsInfo(summaryTag, inheritDocTag, excludeTag);
 		}
 
-		private bool IsNonEmptySummaryTag(XmlElementSyntax summaryTag)
+		private bool IsNonEmptySummaryTag(XmlNodeSyntax summaryTag)
 		{
-			var summaryContent = summaryTag.Content;
+			if (summaryTag is not XmlElementSyntax summaryTagWithContent)
+				return false;
+
+			var summaryContent = summaryTagWithContent.Content;
 
 			if (summaryContent.Count == 0)
 				return false;

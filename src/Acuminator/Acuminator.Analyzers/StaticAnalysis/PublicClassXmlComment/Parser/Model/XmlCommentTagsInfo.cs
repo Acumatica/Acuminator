@@ -11,11 +11,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal readonly struct XmlCommentTagsInfo
 	{
-		public XmlElementSyntax? SummaryTag { get; }
+		public XmlNodeSyntax? SummaryTag { get; }
 
 		public InheritdocTagInfo InheritdocTagInfo { get; }
 
-		public XmlElementSyntax? ExcludeTag { get; }
+		public XmlNodeSyntax? ExcludeTag { get; }
 
 		[MemberNotNullWhen(returnValue: true, member: nameof(SummaryTag))]
 		public bool HasSummaryTag => SummaryTag != null;
@@ -27,22 +27,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public bool NoXmlComments => !HasExcludeTag && !HasSummaryTag && !HasInheritdocTag;
 
-		public XmlCommentTagsInfo(XmlElementSyntax? summaryTag, XmlElementSyntax? inheritdocTag, XmlElementSyntax? excludeTag)
+		public XmlCommentTagsInfo(XmlNodeSyntax? summaryTag, XmlNodeSyntax? inheritdocTag, XmlNodeSyntax? excludeTag)
 		{
 			SummaryTag = summaryTag;
 			InheritdocTagInfo = new InheritdocTagInfo(inheritdocTag);
 			ExcludeTag = excludeTag;
 		}
 
-		public IEnumerable<XmlElementSyntax> GetTagNodes(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
+		public IEnumerable<XmlNodeSyntax> GetTagNodes(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
 		{
 			if (NoXmlComments || (!includeSummaryTag && !includeInheritdocTag && !includeExcludeTag))
-				return Enumerable.Empty<XmlElementSyntax>();
+				return Enumerable.Empty<XmlNodeSyntax>();
 
 			return GetTagNodesImplementation(includeSummaryTag, includeInheritdocTag, includeExcludeTag);
 		}
 
-		private IEnumerable<XmlElementSyntax> GetTagNodesImplementation(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
+		private IEnumerable<XmlNodeSyntax> GetTagNodesImplementation(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
 		{
 			if (HasSummaryTag && includeSummaryTag)
 				yield return SummaryTag;
