@@ -16,14 +16,16 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		/// </summary>
 		public static class System
 		{
-			public const string NoteID                 = "NoteID";
-			public const string CreatedByID            = "CreatedByID";
-			public const string CreatedByScreenID      = "CreatedByScreenID";
-			public const string CreatedDateTime        = "CreatedDateTime";
-			public const string LastModifiedByID       = "LastModifiedByID";
+			public const string NoteID 				   = "NoteID";
+			public const string CreatedByID 		   = "CreatedByID";
+			public const string CreatedByScreenID 	   = "CreatedByScreenID";
+			public const string CreatedDateTime 	   = "CreatedDateTime";
+			public const string LastModifiedByID 	   = "LastModifiedByID";
 			public const string LastModifiedByScreenID = "LastModifiedByScreenID";
 			public const string LastModifiedDateTime   = "LastModifiedDateTime";
-			public const string Timestamp              = "tstamp";
+			public const string Timestamp 			   = "tstamp";
+			public const string GroupMask 			   = "GroupMask";
+			public const string Attributes 			   = "Attributes";
 
 			public static ImmutableHashSet<string> All { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
@@ -35,6 +37,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 				LastModifiedByScreenID,
 				LastModifiedDateTime,
 				Timestamp,
+				GroupMask,
+				Attributes
 			}
 			.ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
 		}

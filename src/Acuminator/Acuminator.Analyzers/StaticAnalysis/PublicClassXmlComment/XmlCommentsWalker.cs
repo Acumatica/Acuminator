@@ -22,6 +22,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal class XmlCommentsWalker : CSharpSyntaxWalker
 	{
+		private static readonly HashSet<string> _systemDacPropertiesExcludedFromDocumentation =
+			DacFieldNames.System.All
+								.ConcatStructList(DacFieldNames.Restricted.All)
+								.AppendItem(DacFieldNames.WellKnown.Selected)
+								.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly CodeAnalysisSettings _codeAnalysisSettings;
@@ -301,9 +307,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!isInsideDacOrDacExt)
 				return;
 
-			string propertyName = propertyDeclaration.Identifier.Text;
-
-			if (DacFieldNames.System.All.Contains(propertyName) || DacFieldNames.WellKnown.Selected.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
+			if (_systemDacPropertiesExcludedFromDocumentation.Contains(propertyDeclaration.Identifier.Text))
 				return;
 
 			AnalyzePropertyDeclarationXmlComments(propertyDeclaration, containingTypeInfo!);
@@ -343,7 +347,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				var mappedBqlField = mappedOriginalDacProperty!.GetCorrespondingBqlField(_pxContext, checkContainingTypeIsDac: false);
 
 				if (mappedBqlField != null)
-					properties.Add(DocumentationDiagnosticProperties.MappedDacBqlFieldMetadataName, mappedBqlField.ToString());
+					properties.Add(DocumentationDiagnosticProperties.MappedDacBqlFieldMetadataName, mappedBqlField.GetCLRTypeNameFromType());
 			}
 
 			var diagnostic = extraLocations.IsNullOrEmpty()
