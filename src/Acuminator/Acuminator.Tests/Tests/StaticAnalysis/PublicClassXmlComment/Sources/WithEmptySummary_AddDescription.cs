@@ -19,6 +19,9 @@ namespace PX.Objects
 	/// <summary>
 	/// With empty one liner summary
 	/// </summary>
+	/// <remarks>
+	/// Check that remark is not lost by the code fix.
+	/// </remarks>
 	[PXCacheName("With Empty One Liner Summary")]
 	public class WithEmptyOneLinerSummary : IBqlTable
 	{

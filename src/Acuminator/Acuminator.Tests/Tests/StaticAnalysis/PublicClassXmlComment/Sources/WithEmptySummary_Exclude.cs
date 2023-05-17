@@ -18,6 +18,9 @@ namespace PX.Objects
 	}
 
 	/// <summary/>
+	/// <remarks>
+	/// Check that remark is not lost by the code fix.
+	/// </remarks>
 	/// <exclude/>
 	[PXCacheName("With Empty One Liner Summary")]
 	public class WithEmptyOneLinerSummary : IBqlTable
