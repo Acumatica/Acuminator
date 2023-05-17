@@ -12,7 +12,7 @@ namespace PX.Objects
 		#region OrderType
 		public abstract class orderType : IBqlField { }
 
-		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later
+		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty [Justification]
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
@@ -23,7 +23,7 @@ namespace PX.Objects
 		public abstract class orderNbr : IBqlField { }
 
 		///
-		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later
+		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty [Justification]
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
@@ -36,7 +36,7 @@ namespace PX.Objects
 		/// <summary>
 		///
 		/// </summary>
-		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later
+		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty [Justification]
 		[PXString]
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }
