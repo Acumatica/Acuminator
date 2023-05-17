@@ -11,9 +11,10 @@ using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -23,13 +24,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 	internal class AddInheritdocTagCodeAction : AddDocumentationTagCodeAction
 	{
 		private readonly XmlCommentParseResult _parseResult;
-		private readonly IPropertySymbol _mappedOriginalDacProperty;
+		private readonly string _mappedOriginalDacName;
+		private readonly string _mappedPropertyName;
 
-		public AddInheritdocTagCodeAction(Document document, TextSpan span, XmlCommentParseResult parseResult, IPropertySymbol mappedOriginalDacProperty) : 
+		public AddInheritdocTagCodeAction(Document document, TextSpan span, XmlCommentParseResult parseResult, 
+										  string mappedOriginalDacName, string mappedPropertyName) : 
 									 base(nameof(Resources.PX1007FixAddInheritdocTag).GetLocalized().ToString(), document, span)
 		{
-			_parseResult = parseResult;
-			_mappedOriginalDacProperty = mappedOriginalDacProperty;
+			_parseResult 		   = parseResult;
+			_mappedOriginalDacName = mappedOriginalDacName;
+			_mappedPropertyName    = mappedPropertyName;
 		}
 
 		protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellation)
@@ -56,15 +60,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 		private SyntaxNode? AddXmlCommentWithInheritdocTag(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration, CancellationToken cancellation)
 		{
-			
-			var syntaxGenerator = SyntaxGenerator.GetGenerator(Document);
-
-			if (syntaxGenerator.TypeExpression(projectionDacOriginalBqlFieldName) is not TypeSyntax bqlDacFieldNode)
-				return null;
+			var mapppedPropertyCref = QualifiedCref(
+										IdentifierName(_mappedOriginalDacName),
+										NameMemberCref(
+											IdentifierName(_mappedPropertyName)))
+									  .WithAdditionalAnnotations(Simplifier.Annotation);
 
 			var crefAttributeList = SingletonList<XmlAttributeSyntax>(
-											XmlCrefAttribute(
-												TypeCref(bqlDacFieldNode)));
+										XmlCrefAttribute(
+											mapppedPropertyCref));
 
 			XmlEmptyElementSyntax inheritdocTag = XmlEmptyElement(XmlName(XmlCommentsConstants.InheritdocTag), crefAttributeList);
 			bool removeOldDocTags = _parseResult != XmlCommentParseResult.NoXmlComment;

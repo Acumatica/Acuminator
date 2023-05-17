@@ -344,10 +344,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (isDiagnosticForProjectionDacProperty)
 			{
-				var mappedBqlField = mappedOriginalDacProperty!.GetCorrespondingBqlField(_pxContext, checkContainingTypeIsDac: false);
+				string mappedDacMetadataName = mappedOriginalDacProperty!.ContainingType.GetCLRTypeNameFromType();
 
-				if (mappedBqlField != null)
-					properties.Add(DocumentationDiagnosticProperties.MappedDacBqlFieldMetadataName, mappedBqlField.GetCLRTypeNameFromType());
+				properties.Add(DocumentationDiagnosticProperties.MappedDacMetadataName, mappedDacMetadataName);
+				properties.Add(DocumentationDiagnosticProperties.MappedDacPropertyName, mappedOriginalDacProperty.Name);		
 			}
 
 			var diagnostic = extraLocations.IsNullOrEmpty()
