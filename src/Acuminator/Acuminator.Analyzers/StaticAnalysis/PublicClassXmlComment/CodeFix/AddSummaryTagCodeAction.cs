@@ -119,10 +119,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var summaryNode = CreateNonEmptySummaryNode(description);
+			var summaryTagNode = CreateNonEmptySummaryNode(description);
 			DocumentationCommentTriviaSyntax summaryTag = DocumentationComment(
 															XmlText(string.Empty),
-															summaryNode);	
+															summaryTagNode);	
 			var xmlDescriptionTrivia = Trivia(summaryTag);			
 			var newMemberDeclaration = AddDocumentationTrivia(memberDeclaration, index: 0, xmlDescriptionTrivia);
 			return rootNode.ReplaceNode(memberDeclaration, newMemberDeclaration);

@@ -10,6 +10,7 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -31,17 +32,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 			if (rootNode?.FindNode(Span) is not MemberDeclarationSyntax memberDeclaration)
 				return Document;
 
+			var excludeTagNode = XmlEmptyElement(XmlCommentsConstants.ExcludeTag);
 			var xmlExcludeTrivia = Trivia(
 				DocumentationComment(
-					XmlEmptyElement(XmlCommentsConstants.ExcludeTag),
-					XmlText(XmlTextNewLine)
-				)
+					XmlText(string.Empty),
+					excludeTagNode)
 			);
 
 			cancellation.ThrowIfCancellationRequested();
 
-			var newRootNode = AddDocumentationTrivia(rootNode, memberDeclaration, xmlExcludeTrivia, index: 0);
-			var newDocument = Document.WithSyntaxRoot(newRootNode);
+			var newMemberDeclaration = AddDocumentationTrivia(memberDeclaration, index: 0, xmlExcludeTrivia);
+			var newRootNode 		 = rootNode.ReplaceNode(memberDeclaration, newMemberDeclaration);
+			var newDocument 		 = Document.WithSyntaxRoot(newRootNode);
 
 			return newDocument;
 		}
