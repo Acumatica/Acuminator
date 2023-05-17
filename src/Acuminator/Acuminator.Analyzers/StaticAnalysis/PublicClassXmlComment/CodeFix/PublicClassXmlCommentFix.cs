@@ -36,7 +36,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 			if (diagnostics.IsDefaultOrEmpty)
 				return Task.CompletedTask;
 			else if (diagnostics.Length == 1)
-				return RegisterCodeFixesForDiagnosticAsync(context, diagnostics[0]);
+			{
+				var diagnostic = diagnostics[0];
+				
+				if (diagnostic.Id != Descriptors.PX1007_PublicClassNoXmlComment.Id && diagnostic.Id != Descriptors.PX1007_InvalidProjectionDacFieldDescription.Id)
+					return Task.CompletedTask;
+
+				return RegisterCodeFixesForDiagnosticAsync(context, diagnostic);
+			}
 
 			List<Task> allTasks = new(capacity: diagnostics.Length);
 
