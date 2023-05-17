@@ -119,8 +119,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 			var xmlDescriptionTrivia = Trivia(
 				DocumentationComment(
-					CreateNonEmptySummaryNode(description),
-					XmlText(XmlTextNewLine)
+					XmlText(XmlTextNewLine),
+					CreateNonEmptySummaryNode(description)
 				)
 				.WithAdditionalAnnotations(Formatter.Annotation)
 			);

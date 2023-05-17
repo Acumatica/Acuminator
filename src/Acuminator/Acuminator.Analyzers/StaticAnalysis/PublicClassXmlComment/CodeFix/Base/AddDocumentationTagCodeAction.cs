@@ -34,13 +34,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 		}
 
 		protected SyntaxNode AddDocumentationTrivia(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
-												    SyntaxTrivia documentationTrivia, int index)
+												    in SyntaxTrivia documentationTrivia, int index)
+		{
+			var newMemberDeclaration = AddDocumentationTrivia(memberDeclaration, documentationTrivia, index);
+			return rootNode.ReplaceNode(memberDeclaration, newMemberDeclaration);
+		}
+
+		protected MemberDeclarationSyntax AddDocumentationTrivia(MemberDeclarationSyntax memberDeclaration, in SyntaxTrivia documentationTrivia, int index)
 		{
 			var newTrivia = memberDeclaration.GetLeadingTrivia()
 											 .Insert(index, documentationTrivia);
-			var newClassDeclarationSyntax = memberDeclaration.WithLeadingTrivia(newTrivia);
-
-			return rootNode.ReplaceNode(memberDeclaration, newClassDeclarationSyntax);
+			return memberDeclaration.WithLeadingTrivia(newTrivia);
 		}
 	}
 }
