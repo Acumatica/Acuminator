@@ -3,10 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+
+using Acuminator.Utilities.Common;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
@@ -14,7 +16,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 {
 	internal abstract class AddDocumentationTagCodeAction : CodeAction
 	{
-		protected const string XmlTextNewLine = "\n";
+		protected const string CommentPrefix = "/// ";
 
 		private readonly string _title;
 
@@ -26,6 +28,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 		protected TextSpan Span { get; }
 
+		protected Workspace Workspace => Document.Project.Solution.Workspace;
+
 		public AddDocumentationTagCodeAction(string title, Document document, TextSpan span)
 		{
 			_title 	 = title;
@@ -33,18 +37,34 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 			Span 	 = span;
 		}
 
-		protected SyntaxNode AddDocumentationTrivia(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
-												    in SyntaxTrivia documentationTrivia, int index)
+		protected MemberDeclarationSyntax AddDocumentationTrivia(MemberDeclarationSyntax memberDeclaration, int index, 
+																 in SyntaxTrivia documentationTrivia)
 		{
-			var newMemberDeclaration = AddDocumentationTrivia(memberDeclaration, documentationTrivia, index);
-			return rootNode.ReplaceNode(memberDeclaration, newMemberDeclaration);
+			SyntaxTrivia lineFeed 		 			 = SyntaxFactory.LineFeed;
+			bool isFirstMemberOfTypeOrNamespace 	 = IsFirstMemberOfTypeOrNamespace(memberDeclaration);
+			SyntaxTriviaList leadingTrivia 	 		 = memberDeclaration.GetLeadingTrivia();
+			bool appendLineFeedToEndOfInsertedTrivia = isFirstMemberOfTypeOrNamespace;
+			bool prependLineFeedBeforeInsertedTrivia = !isFirstMemberOfTypeOrNamespace;
+
+			SyntaxTriviaList newTrivia = appendLineFeedToEndOfInsertedTrivia
+				? leadingTrivia.Insert(index, lineFeed)
+				: leadingTrivia;
+
+			newTrivia = newTrivia.Insert(index, documentationTrivia);
+
+			if (prependLineFeedBeforeInsertedTrivia)
+				newTrivia = newTrivia.Insert(index, lineFeed);
+
+			var newMemberDeclaration = memberDeclaration.WithLeadingTrivia(newTrivia);
+			return newMemberDeclaration;
 		}
 
-		protected MemberDeclarationSyntax AddDocumentationTrivia(MemberDeclarationSyntax memberDeclaration, in SyntaxTrivia documentationTrivia, int index)
-		{
-			var newTrivia = memberDeclaration.GetLeadingTrivia()
-											 .Insert(index, documentationTrivia);
-			return memberDeclaration.WithLeadingTrivia(newTrivia);
-		}
+		private bool IsFirstMemberOfTypeOrNamespace(MemberDeclarationSyntax memberDeclaration) =>
+			memberDeclaration.Parent switch
+			{
+				TypeDeclarationSyntax containingType 			=> memberDeclaration.Equals(containingType.Members[0]),
+				NamespaceDeclarationSyntax namespaceDeclaration => memberDeclaration.Equals(namespaceDeclaration.Members[0]),
+				_ 												=> false,
+			};
 	}
 }

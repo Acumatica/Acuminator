@@ -12,8 +12,8 @@ using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -85,7 +85,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 					}
 				case XmlEmptyElementSyntax oneLinerSummaryTag:
 					{
-						var newSummaryTag = CreateNonEmptySummaryNode(description).WithAdditionalAnnotations(Formatter.Annotation);
+						var newSummaryTag = CreateNonEmptySummaryNode(description);
 						return rootNode.ReplaceNode(oneLinerSummaryTag, newSummaryTag);
 					}
 
@@ -107,25 +107,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 				};
 
 				var newContent = new SyntaxList<XmlNodeSyntax>(xmlDescription);
-				return summaryTagWithEmptyContent.WithContent(newContent)
-												 .WithAdditionalAnnotations(Formatter.Annotation);
+				return summaryTagWithEmptyContent.WithContent(newContent);
 			}
 		}
 
+		/// <summary>
+		/// Adds an XML comment with summary tag.
+		/// </summary>
 		private SyntaxNode AddXmlCommentWithSummaryTag(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
 													   string description, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var xmlDescriptionTrivia = Trivia(
-				DocumentationComment(
-					XmlText(XmlTextNewLine),
-					CreateNonEmptySummaryNode(description)
-				)
-				.WithAdditionalAnnotations(Formatter.Annotation)
-			);
-
-			return AddDocumentationTrivia(rootNode, memberDeclaration, xmlDescriptionTrivia, index: 0);
+			var summaryNode = CreateNonEmptySummaryNode(description);
+			DocumentationCommentTriviaSyntax summaryTag = DocumentationComment(
+															XmlText(string.Empty),
+															summaryNode);	
+			var xmlDescriptionTrivia = Trivia(summaryTag);			
+			var newMemberDeclaration = AddDocumentationTrivia(memberDeclaration, index: 0, xmlDescriptionTrivia);
+			return rootNode.ReplaceNode(memberDeclaration, newMemberDeclaration);
 		}
 
 		private static XmlElementSyntax CreateNonEmptySummaryNode(string description) =>
@@ -134,7 +134,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 					XmlTextNewLine(Environment.NewLine, continueXmlDocumentationComment: true)
 				),
 				XmlText(
-					XmlTextNewLine(description + Environment.NewLine, continueXmlDocumentationComment: true)
+					XmlTextNewLine(description + Environment.NewLine)
 				)
 			);
 
