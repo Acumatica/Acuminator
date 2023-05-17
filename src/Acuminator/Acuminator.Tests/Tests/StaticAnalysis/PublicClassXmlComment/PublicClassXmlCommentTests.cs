@@ -1,6 +1,7 @@
 ﻿using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment;
+using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
