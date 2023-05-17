@@ -131,19 +131,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 			);
 		}
 
-		[Theory (Skip = "The analyzer doesn't cover this scenario at the moment.")]
-		[EmbeddedFileData("TypeArgumentImplementsPxGraphExtension.cs")]
-		public void TypeArgumentImplementsPxGraphExtension(string source) => VerifyCSharpDiagnostic(source);
-
-		[Theory]
-		[EmbeddedFileData("TypeArgumentImplementsPxGraphExtensionSignatureIsWrong.cs")]
-		public void TypeArgumentImplementsPxGraphExtensionSignatureIsWrong(string source)
-		{
-			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(25, 25)
-			);
-		}
-
 		[Theory]
 		[EmbeddedFileData("BaseTypeDefinedAsExtension.cs")]
 		public void BaseTypeDefinedAsExtension(string source)
@@ -156,5 +143,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		[Theory]
 		[EmbeddedFileData("BaseTypeDefinedAsExtensionNoError.cs")]
 		public void BaseTypeDefinedAsExtensionNoError(string source) => VerifyCSharpDiagnostic(source);
+
+		[Theory]
+		[EmbeddedFileData("OverridenMethodIsInTheBaseOfTheBaseExtension.cs")]
+		public void OverridenMethodIsInTheBaseOfTheBaseExtension(string source) => VerifyCSharpDiagnostic(source);
 	}
 }

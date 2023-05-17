@@ -41,7 +41,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 					var allBaseTypes = pxGraphExtension.Symbol
 						.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
+						.SelectMany(t => t.GetBaseTypesAndThis())
 						.OfType<INamedTypeSymbol>()
+						.Distinct()
 						.Where(baseType => !directBaseTypesAndThis.Contains(baseType));
 
 					methodsWithPxOverrideAttribute.ForEach(m => AnalyzeMethod(context, pxContext, allBaseTypes, m!));
