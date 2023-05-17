@@ -35,6 +35,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 			if (diagnostics.IsDefaultOrEmpty)
 				return Task.CompletedTask;
+			else if (diagnostics.Length == 1)
+				return RegisterCodeFixesForDiagnosticAsync(context, diagnostics[0]);
 
 			List<Task> allTasks = new(capacity: diagnostics.Length);
 
