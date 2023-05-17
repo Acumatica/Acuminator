@@ -12,7 +12,15 @@ namespace PX.Objects
 	/// 
 	/// </summary>
 	/// <exclude/>
+	[PXCacheName("With Empty Summary")]
 	public class WithEmptySummary : IBqlTable
+	{
+	}
+
+	/// <summary/>
+	/// <exclude/>
+	[PXCacheName("With Empty One Liner Summary")]
+	public class WithEmptyOneLinerSummary : IBqlTable
 	{
 	}
 }
