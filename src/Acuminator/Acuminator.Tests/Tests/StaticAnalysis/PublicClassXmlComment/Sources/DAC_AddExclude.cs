@@ -26,8 +26,8 @@ namespace PX.Objects
 		#region OrderNbr
 		public abstract class orderNbr : IBqlField { }
 
-		///
 		/// <exclude/>
+		///
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
@@ -37,10 +37,10 @@ namespace PX.Objects
 		#region Status
 		public abstract class status : IBqlField { }
 
+		/// <exclude/>
 		/// <summary>
 		///
 		/// </summary>
-		/// <exclude/>
 		[PXString]
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }

@@ -28,10 +28,10 @@ namespace PX.Objects
 		#region OrderNbr
 		public abstract class orderNbr : IBqlField { }
 
-		///
 		/// <summary>
 		/// Order nbr
 		/// </summary>
+		///
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
