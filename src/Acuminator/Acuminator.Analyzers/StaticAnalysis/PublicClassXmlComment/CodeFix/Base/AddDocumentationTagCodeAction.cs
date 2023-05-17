@@ -28,17 +28,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 		public AddDocumentationTagCodeAction(string title, Document document, TextSpan span)
 		{
-			_title = title;
+			_title 	 = title;
 			Document = document;
-			Span = span;
+			Span 	 = span;
 		}
 
 		protected SyntaxNode AddDocumentationTrivia(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
-												    SyntaxTrivia documentationTrivia, CancellationToken cancellation)
+												    SyntaxTrivia documentationTrivia, int index)
 		{
-			cancellation.ThrowIfCancellationRequested();
-
-			var newTrivia = memberDeclaration.GetLeadingTrivia().Add(documentationTrivia);
+			var newTrivia = memberDeclaration.GetLeadingTrivia()
+											 .Insert(index, documentationTrivia);
 			var newClassDeclarationSyntax = memberDeclaration.WithLeadingTrivia(newTrivia);
 
 			return rootNode.ReplaceNode(memberDeclaration, newClassDeclarationSyntax);

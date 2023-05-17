@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 			cancellation.ThrowIfCancellationRequested();
 
-			var newRootNode = AddDocumentationTrivia(rootNode, memberDeclaration, xmlExcludeTrivia, cancellation);
+			var newRootNode = AddDocumentationTrivia(rootNode, memberDeclaration, xmlExcludeTrivia, index: 0);
 			var newDocument = Document.WithSyntaxRoot(newRootNode);
 
 			return newDocument;

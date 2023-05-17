@@ -125,7 +125,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 				.WithAdditionalAnnotations(Formatter.Annotation)
 			);
 
-			return AddDocumentationTrivia(rootNode, memberDeclaration, xmlDescriptionTrivia, cancellation);
+			return AddDocumentationTrivia(rootNode, memberDeclaration, xmlDescriptionTrivia, index: 0);
 		}
 
 		private static XmlElementSyntax CreateNonEmptySummaryNode(string description) =>
