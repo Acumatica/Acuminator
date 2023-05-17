@@ -14,4 +14,15 @@ namespace PX.Objects
 	public class WithoutDescription : IBqlTable
 	{
 	}
+
+	/// <summary>
+	/// Without description but with remark
+	/// </summary>
+	/// <remarks>
+	/// Test remark is not lost
+	/// </remarks>
+	[PXCacheName("Without description but with remark")]
+	public class WithoutDescriptionButWithRemark : IBqlTable
+	{
+	}
 }
