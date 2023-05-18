@@ -16,8 +16,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 {
 	internal abstract class AddDocumentationTagCodeAction : CodeAction
 	{
-		protected const string CommentPrefix = "/// ";
-
 		private readonly string _title;
 
 		public sealed override string Title => _title;

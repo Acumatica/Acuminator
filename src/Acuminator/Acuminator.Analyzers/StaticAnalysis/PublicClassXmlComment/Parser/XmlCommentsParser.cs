@@ -183,7 +183,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private static bool CommentContentIsNotEmpty(string content) =>
 			!content.IsNullOrEmpty() && content.Any(char.IsLetterOrDigit);
 
-		private bool IsCorrectInheritdocTagOfProjectionDacProperty(InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
+		private bool IsCorrectInheritdocTagOfProjectionDacProperty(in InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
 		{
 			bool isProjectionDacProperty = mappedDacProperty != null;
 

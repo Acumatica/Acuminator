@@ -202,9 +202,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			bool hasMultipleDeclarations = typeDeclaration.IsPartial() && typeInfo.ContainingType?.DeclaringSyntaxReferences.Length > 1;
 
 			if (hasMultipleDeclarations)
-				AnalyzeSingleTypeDeclaration(typeDeclaration, typeInfo, out stepIntoChildren);
+				AnalizeMultipleTypeDeclarations(typeDeclaration, typeInfo, out stepIntoChildren);	
 			else
-				AnalizeMultipleTypeDeclarations(typeDeclaration, typeInfo, out stepIntoChildren);
+				AnalyzeSingleTypeDeclaration(typeDeclaration, typeInfo, out stepIntoChildren);
 		}
 
 		private void AnalizeMultipleTypeDeclarations(TypeDeclarationSyntax typeDeclaration, TypeInfo typeInfo, out bool stepIntoChildren)
@@ -277,7 +277,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			AnalyzeSingleTypeDeclaration(typeCommentsParseInfo, typeDeclaration.Identifier.GetLocation(), typeInfo, out stepIntoChildren);
 		}
 
-		private void AnalyzeSingleTypeDeclaration(XmlCommentsParseInfo typeCommentsParseInfo, Location primaryLocationToReport, TypeInfo typeInfo,
+		private void AnalyzeSingleTypeDeclaration(in XmlCommentsParseInfo typeCommentsParseInfo, Location primaryLocationToReport, TypeInfo typeInfo,
 												  out bool stepIntoChildren)
 		{
 			stepIntoChildren = typeCommentsParseInfo.StepIntoChildren;
