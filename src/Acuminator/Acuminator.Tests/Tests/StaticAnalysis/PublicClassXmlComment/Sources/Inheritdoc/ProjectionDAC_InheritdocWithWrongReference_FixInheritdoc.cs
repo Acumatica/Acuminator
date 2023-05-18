@@ -20,18 +20,17 @@ namespace PX.Objects
 		#region TranID
 		public abstract class tranID : BqlInt.Field<tranID> { }
 
-
 		/// <inheritdoc cref="GLTran.TranID"/>
 		[PXDBInt(IsKey = true, BqlField = typeof(GLTran.tranID))]
 		public virtual int? TranID { get; set; }
 		#endregion
 
 		#region Module
-		public abstract class module : BqlInt.Field<module> { }
+		public abstract class module : BqlString.Field<module> { }
 
 		/// <inheritdoc cref="GLTran.Module"/>
-		[PXDBInt(IsKey = true, BqlField = typeof(GLTran.module))]
-		public virtual int? Module { get; set; }
+		[PXDBString(2, IsKey = true, BqlField = typeof(GLTran.module))]
+		public virtual string Module { get; set; }
 		#endregion
 
 		#region BatchNbr

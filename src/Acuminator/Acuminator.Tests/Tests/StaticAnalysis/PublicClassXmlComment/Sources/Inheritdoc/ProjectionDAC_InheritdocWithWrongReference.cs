@@ -29,7 +29,7 @@ namespace PX.Objects
 		public abstract class module : BqlString.Field<module> { }
 
 		/// <inheritdoc cref="GLTran.module"/>
-		[PXDBInt(IsKey = true, BqlField = typeof(GLTran.module))]
+		[PXDBString(2, IsKey = true, BqlField = typeof(GLTran.module))]
 		public virtual string Module { get; set; }
 		#endregion
 
