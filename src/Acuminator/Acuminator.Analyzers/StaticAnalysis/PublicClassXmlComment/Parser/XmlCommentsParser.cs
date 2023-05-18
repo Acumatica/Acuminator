@@ -108,8 +108,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 											: XmlCommentParseResult.EmptySummaryTag,
 
 				(false, true, _) => correctInheritdocTagOfProjectionProperty
-											? XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty
-											: XmlCommentParseResult.CorrectInheritdocTag
+											? XmlCommentParseResult.CorrectInheritdocTag
+											: XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty
 			};
 
 			return parseResult;
