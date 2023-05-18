@@ -25,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public XmlCommentsParser(SemanticModel semanticModel, CancellationToken cancellation)
 		{
 			_semanticModel = semanticModel;
-			_cancellation  = cancellation;
+			_cancellation = cancellation;
 		}
 
 		public XmlCommentsParseInfo AnalyzeXmlComments(MemberDeclarationSyntax memberDeclaration, IPropertySymbol? mappedDacProperty)
@@ -48,8 +48,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!memberDeclaration.HasStructuredTrivia)
 				return (XmlCommentParseResult.NoXmlComment, TagsInfos: null);
 
-			bool isProjectionDacProperty = mappedDacProperty != null;			
-			bool hasXmlComment = false, hasSummaryTag = false, hasInheritdocTag = false, 
+			bool isProjectionDacProperty = mappedDacProperty != null;
+			bool hasXmlComment = false, hasSummaryTag = false, hasInheritdocTag = false,
 				 nonEmptySummaryTag = false, correctInheritdocTagOfProjectionProperty = false;
 
 			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
@@ -86,9 +86,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					// 1. We only check inheritdoc for the projection DAC properties, for all other APIs inheritdoc tag is considered to be correct by default
 					// 2. If there already was a correct inheritdoc tag (there could be multiple inheritdoc tags), then no need to check this tag
 					// 3. If none of above is true check that inherit doc is referencing the DAC field property to which the projection property is mapped to.
-					correctInheritdocTagOfProjectionProperty = 
-						!isProjectionDacProperty || correctInheritdocTagOfProjectionProperty ||
-						IsCorrectInheritdocTagOfProjectionDacProperty(commentTagsInfo.InheritdocTagInfo, mappedDacProperty);
+					correctInheritdocTagOfProjectionProperty =
+						correctInheritdocTagOfProjectionProperty ||
+						IsCorrectInheritdocTag(commentTagsInfo.InheritdocTagInfo, mappedDacProperty);
 				}
 			}
 
@@ -97,22 +97,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			var parseResult = (hasSummaryTag, hasInheritdocTag, isProjectionDacProperty) switch
 			{
-				(true, true, true)	 => correctInheritdocTagOfProjectionProperty
+				(true, true, true) => correctInheritdocTagOfProjectionProperty
 											? XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty
 											: XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty,
 
-				(true, true, false)  => nonEmptySummaryTag
+				(true, true, false) => nonEmptySummaryTag
 											? XmlCommentParseResult.HasNonEmptySummaryAndCorrectInheritdocTags
 											: XmlCommentParseResult.EmptySummaryTag,
 
-				(false, false, _) 	 => XmlCommentParseResult.NoSummaryOrInheritdocTag,
-				(true, false, true)  => XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty,
+				(false, false, _) => XmlCommentParseResult.NoSummaryOrInheritdocTag,
+				(true, false, true) => XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty,
 
 				(true, false, false) => nonEmptySummaryTag
 											? XmlCommentParseResult.HasNonEmptySummaryTag
 											: XmlCommentParseResult.EmptySummaryTag,
 
-				(false, true, _)  	 => correctInheritdocTagOfProjectionProperty
+				(false, true, _) => correctInheritdocTagOfProjectionProperty
 											? XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty
 											: XmlCommentParseResult.CorrectInheritdocTag
 			};
@@ -131,11 +131,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				return new XmlCommentTagsInfo(summaryTag: null, inheritdocTag: null, excludeTag: null);
 
 			XmlNodeSyntax? summaryTag = null, inheritDocTag = null, excludeTag = null;
-			
+
 			foreach (XmlNodeSyntax xmlNode in xmlComment.Content)
 			{
 				string? tagName = xmlNode.GetDocTagName();
-				
+
 				switch (tagName)
 				{
 					case XmlCommentsConstants.SummaryTag:
@@ -183,15 +183,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private static bool CommentContentIsNotEmpty(string content) =>
 			!content.IsNullOrEmpty() && content.Any(char.IsLetterOrDigit);
 
-		private bool IsCorrectInheritdocTagOfProjectionDacProperty(in InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
+		/// <summary>
+		/// Query if <paramref name="inheritdocTagInfo"/> is correct inheritdoc tag.
+		/// </summary>
+		/// <remarks>
+		///  To determine if the inheritdoc tag is correct we check these things:
+		/// 1. We only check inheritdoc for the projection DAC properties, for all other APIs inheritdoc tag is considered to be correct by default
+		/// 2. If there already was a correct inheritdoc tag (there could be multiple inheritdoc tags), then no need to check this tag
+		/// 3. If none of above is true check that inherit doc is referencing the DAC field property to which the projection property is mapped to.  
+		/// 4. </remarks>
+		/// <param name="inheritdocTagInfo">Information describing the inheritdoc tag.</param>
+		/// <param name="mappedDacProperty">The mapped DAC property.</param>
+		/// <returns>
+		/// True if correct inheritdoc tag, false if not.
+		/// </returns>
+		private bool IsCorrectInheritdocTag(in InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
 		{
 			bool isProjectionDacProperty = mappedDacProperty != null;
 
 			if (!isProjectionDacProperty)
 				return true;
-			else if (!inheritdocTagInfo.InheritdocTagHasCrefAttributes || inheritdocTagInfo.CrefAttributes.Length > 1)
+
+			bool allowEmptyInheritdocTag = !isProjectionDacProperty || mappedDacProperty!.IsOverride;
+
+			if ((!inheritdocTagInfo.InheritdocTagHasCrefAttributes && !allowEmptyInheritdocTag) || inheritdocTagInfo.CrefAttributes.Length > 1)
 				return false;
-			
+
 			XmlCrefAttributeSyntax crefAttribute = inheritdocTagInfo.CrefAttributes[0];
 
 			if (crefAttribute?.Cref == null) 
