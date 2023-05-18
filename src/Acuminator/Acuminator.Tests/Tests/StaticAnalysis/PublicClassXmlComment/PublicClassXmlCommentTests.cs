@@ -150,10 +150,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task ProjectionDac_NoInheritdoc(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(25, 23),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(36, 25),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(47, 23),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(61, 28)
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(24, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(35, 25),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(46, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(60, 28)
 				);
 
 		[Theory]

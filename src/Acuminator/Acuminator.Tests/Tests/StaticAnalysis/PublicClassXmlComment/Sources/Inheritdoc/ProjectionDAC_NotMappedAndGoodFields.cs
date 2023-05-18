@@ -33,7 +33,7 @@ namespace PX.Objects
 		#region TranID
 		public abstract class tranID : BqlInt.Field<tranID> { }
 
-		/// <inheritdoc cref="GLTran.tranID"/>
+		/// <inheritdoc cref="GLTran.TranID"/>
 		/// <remarks>
 		/// Described field.
 		/// </remarks>
