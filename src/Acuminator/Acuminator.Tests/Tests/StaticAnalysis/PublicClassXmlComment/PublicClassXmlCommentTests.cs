@@ -122,6 +122,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
+		[EmbeddedFileData("DacExtension_Hidden_Obsolete_InternalUse.cs")]
+		public async Task PublicDacExtensions_With_Hidden_Obsolete_PXInternalUseOnly_Attributes(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(13, 22),
+					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 23, Column: 17),
+						extraLocation: (Line: 18, Column: 7)));
+
+		[Theory]
 		[EmbeddedFileData("DAC_System_Fields.cs")]
 		public async Task PublicDac_WithSystemFields_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);

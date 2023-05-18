@@ -307,6 +307,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticProperty_ReadOnlyFix.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\AbstractGraphNoPrimaryViewForPrimaryDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\GenericGraphNoPrimaryViewForPrimaryDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Projection_DAC_AddInheritdoc.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DacExtension_Hidden_Obsolete_InternalUse.cs" />
+    <Compile Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Projection_DAC.cs" />
     <Compile Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\StaticFieldOrPropertyInGraphTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
