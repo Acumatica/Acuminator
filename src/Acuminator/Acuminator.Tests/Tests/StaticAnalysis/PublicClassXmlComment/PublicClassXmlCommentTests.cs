@@ -1,13 +1,17 @@
-﻿using Acuminator.Analyzers;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment;
 using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
@@ -115,6 +119,27 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[EmbeddedFileData("DAC_AddDescription.cs")]
 		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("Projection_DAC.cs")]
+		public async Task PublicProjectionDac_MultipleScenarios(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(26, 24),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(37, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(57, 25),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor((Line: 68, Column: 23),
+					extraLocation: (Line: 63, Column: 7)),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor((Line: 81, Column: 25),
+					extraLocation: (Line: 74, Column: 7)),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor((Line: 96, Column: 28),
+					extraLocations: new[] { (Line: 87, Column: 7), (Line: 90, Column: 7) })
+				);
+
+		[Theory]
+		[EmbeddedFileData("Projection_DAC.cs", "Projection_DAC_AddInheritdoc.cs")]
+		public async Task ProjectionDac_AddInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
 		[EmbeddedFileData("DAC_Hidden_Obsolete_InternalUse.cs")]
