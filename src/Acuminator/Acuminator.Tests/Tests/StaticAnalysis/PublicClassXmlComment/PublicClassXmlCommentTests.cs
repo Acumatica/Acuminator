@@ -171,6 +171,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task Dac_AddExclude_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 
+		#region Inheritdoc tests
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\NonProjectionDAC_Inhertitdoc.cs")]
+		public async Task PublicNonProjectionDAC_WithInhertitdocTags_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+		#endregion
 		#region Partial class tests		
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs")]
