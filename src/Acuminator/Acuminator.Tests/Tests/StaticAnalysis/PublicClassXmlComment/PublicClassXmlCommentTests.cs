@@ -81,24 +81,24 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
-		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_AddDescription.cs")]
-		public async Task NoSummaryTag_AddDescription_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
-
-		[Theory]
-		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_AddDescription.cs")]
-		public async Task EmptySummaryTag_AddDescription_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
-
-		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs", "WithoutDescription_Exclude.cs")]
 		public async Task NoXmlComment_Exclude_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 
 		[Theory]
+		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_AddDescription.cs")]
+		public async Task NoSummaryOrInheritdocTag_AddDescription_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_Exclude.cs")]
-		public async Task NoSummaryTag_Exclude_Works(string actual, string expected) =>
+		public async Task NoSummaryOrInheritdocTag_Exclude_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
+
+		[Theory]
+		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_AddDescription.cs")]
+		public async Task EmptySummaryTag_AddDescription_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_Exclude.cs")]
@@ -114,11 +114,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(32, 17),
 				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 43, Column: 17),
 					extraLocation: (Line: 38, Column: 7)));
-
-		[Theory]
-		[EmbeddedFileData("DAC_AddDescription.cs")]
-		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("Projection_DAC.cs")]
@@ -164,10 +159,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicDacExtension_WithSystemFields_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
-		[Theory]
-		[EmbeddedFileData("DAC_AddExclude.cs")]
-		public async Task PublicDac_WithExclude_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
+		
 
 		[Theory]
 		[EmbeddedFileData("DAC.cs", "DAC_AddDescription.cs")]
@@ -221,6 +213,48 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicPartialHelper_WithBadComment_CommantOnAnotherDeclaration_DoesntReportDiagnostic(string checkedSource,
 																												string badCommentSource, string sourceWithComment) =>
 			await VerifyCSharpDiagnosticAsync(checkedSource, badCommentSource, sourceWithComment);
+		#endregion
+
+		#region Generated tags tests
+		[Theory]
+		[EmbeddedFileData("WithoutDescription_AddDescription.cs")]
+		public async Task GeneratedDescription_ForApiWithoutDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithoutDescription_Exclude.cs")]
+		public async Task GeneratedExclude_ForApiWithoutDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithEmptySummary_AddDescription.cs")]
+		public async Task GeneratedDescription_ForApiWithEmptySummary_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithEmptySummary_Exclude.cs")]
+		public async Task GeneratedExclude_ForApiWithEmptySummary_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithoutSummary_AddDescription.cs")]
+		public async Task GeneratedDescription_ForApiWithoutSummaryOrInheritdocTag_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithoutSummary_Exclude.cs")]
+		public async Task GeneratedExclude_ForApiWithoutSummaryOrInheritdocTag_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_AddExclude.cs")]
+		public async Task PublicDac_WithExclude_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_AddDescription.cs")]
+		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
 		#endregion
 	}
 }
