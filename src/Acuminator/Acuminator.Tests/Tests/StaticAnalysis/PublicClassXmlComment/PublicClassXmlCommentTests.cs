@@ -298,7 +298,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[Theory]
 		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference_FixInheritdoc.cs")]
 		public async Task ProjectionDac_WithInheritdocWithWrongReference_AfterCodeFix_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);	 
+			await VerifyCSharpDiagnosticAsync(source);
+			
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
 		#endregion
 	}
 }
