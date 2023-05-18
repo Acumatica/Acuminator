@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			_cancellation.ThrowIfCancellationRequested();
 
-			DiagnosticDescriptor? diagnosticToReport = GetDiagnosticFromParseResult(parseResult);
+			DiagnosticDescriptor? diagnosticToReport = GetDiagnosticFromParseResult(parseResult, isProjectionProperty: mappedDacProperty != null);
 			bool stepIntoChildren = memberDeclaration is TypeDeclarationSyntax && parseResult != XmlCommentParseResult.HasExcludeTag;
 			return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren);
 		}
@@ -227,14 +227,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			return crefSymbol is IPropertySymbol referencedProperty && mappedDacProperty!.Equals(referencedProperty);
 		}
 
-		private DiagnosticDescriptor? GetDiagnosticFromParseResult(XmlCommentParseResult parseResult) =>
+		private DiagnosticDescriptor? GetDiagnosticFromParseResult(XmlCommentParseResult parseResult, bool isProjectionProperty) =>
 			parseResult switch
 			{
 				XmlCommentParseResult.HasExcludeTag 								=> null,
 				XmlCommentParseResult.HasNonEmptySummaryTag 						=> null,
 				XmlCommentParseResult.CorrectInheritdocTag 							=> null,
 				XmlCommentParseResult.HasNonEmptySummaryAndCorrectInheritdocTags 	=> null,
-				XmlCommentParseResult.NoXmlComment 									=> Descriptors.PX1007_PublicClassNoXmlComment,
+				XmlCommentParseResult.NoXmlComment 									=> isProjectionProperty 
+																						? Descriptors.PX1007_InvalidProjectionDacFieldDescription
+																						: Descriptors.PX1007_PublicClassNoXmlComment,
 				XmlCommentParseResult.EmptySummaryTag 								=> Descriptors.PX1007_PublicClassNoXmlComment,
 				XmlCommentParseResult.NoSummaryOrInheritdocTag 						=> Descriptors.PX1007_PublicClassNoXmlComment,
 				XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty => Descriptors.PX1007_InvalidProjectionDacFieldDescription,
