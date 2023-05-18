@@ -228,8 +228,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				return;
 			}
 
-			List<Location>? partialDeclarationIdentifiersLocations = null;
-
 			// Check other partial type declarations
 			foreach (SyntaxReference reference in typeInfo.ContainingType.DeclaringSyntaxReferences)
 			{
@@ -249,14 +247,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					AnalyzeSingleTypeDeclaration(partialDeclarationParseInfo, locationToReport, typeInfo, out stepIntoChildren);
 					return;
 				}
-
-				var partialDeclarationIdentifierLocation = partialTypeDeclaration.Identifier.GetLocation();
-
-				if (partialDeclarationIdentifierLocation != null)
-				{
-					partialDeclarationIdentifiersLocations ??= new List<Location>(capacity: 4);
-					partialDeclarationIdentifiersLocations.Add(partialDeclarationIdentifierLocation);
-				}
 			}
 
 			// Reaching this part of code means there are no XML doc comments on any partial type declaration
@@ -265,7 +255,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (typeInfo.IsDacOrDacExtension)
 			{
 				ReportDiagnostic(_syntaxContext, Descriptors.PX1007_PublicClassNoXmlComment, typeDeclaration.Identifier.GetLocation(),
-								 XmlCommentParseResult.NoXmlComment, extraLocations: partialDeclarationIdentifiersLocations, mappedOriginalDacProperty: null);
+								 XmlCommentParseResult.NoXmlComment, extraLocations: null, mappedOriginalDacProperty: null);
 			}
 		}
 
