@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
@@ -40,17 +42,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var rootNode = await Document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
-			if (rootNode?.FindNode(Span) is not MemberDeclarationSyntax memberDeclaration)
+			var (semanticModel, rootNode) = await Document.GetSemanticModelAndRootAsync(cancellation).ConfigureAwait(false);
+
+			if (semanticModel == null || rootNode?.FindNode(Span) is not MemberDeclarationSyntax memberDeclaration)
 				return Document;
 
 			string memberName = memberDeclaration.GetIdentifiers().FirstOrDefault().ToString();
 			if (memberName.IsNullOrWhiteSpace())
 				return Document;
 
+			if (semanticModel.Compilation.GetTypeByMetadataName(_mappedOriginalDacName) is not INamedTypeSymbol mappedOriginalDac)
+				return Document;
+
 			cancellation.ThrowIfCancellationRequested();
 
-			var newRootNode = AddXmlCommentWithInheritdocTag(rootNode, memberDeclaration, cancellation);
+			var newRootNode = AddXmlCommentWithInheritdocTag(rootNode, memberDeclaration, mappedOriginalDac, cancellation);
 			if (newRootNode == null)
 				return Document;
 
@@ -58,13 +64,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 			return newDocument;
 		}
 
-		private SyntaxNode? AddXmlCommentWithInheritdocTag(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration, CancellationToken cancellation)
+		private SyntaxNode? AddXmlCommentWithInheritdocTag(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration, INamedTypeSymbol mappedOriginalDac, 
+														   CancellationToken cancellation)
 		{
+			SyntaxGenerator syntaxGenerator = SyntaxGenerator.GetGenerator(Document);
+
+			if (syntaxGenerator.TypeExpression(mappedOriginalDac) is not TypeSyntax typeSyntax)
+				return null;
+
 			var mapppedPropertyCref = QualifiedCref(
-										IdentifierName(_mappedOriginalDacName),
+										typeSyntax,
 										NameMemberCref(
-											IdentifierName(_mappedPropertyName)))
-									  .WithAdditionalAnnotations(Simplifier.Annotation);
+											IdentifierName(_mappedPropertyName)));
 
 			var crefAttributeList = SingletonList<XmlAttributeSyntax>(
 										XmlCrefAttribute(
@@ -99,88 +110,82 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 		private MemberDeclarationSyntax ReplaceWrongDocTagsFromDeclaration(MemberDeclarationSyntax memberDeclaration, XmlEmptyElementSyntax inheritdocTag,
 																		   CancellationToken cancellation)
 		{
-			var triviaList = memberDeclaration.GetLeadingTrivia();
+			var allDocTagsToDelete = GetAllDocTagsToDeleteFromMemberDeclaration(memberDeclaration, cancellation);
 
-			if (triviaList.Count == 0)
-				return memberDeclaration;
+			if (allDocTagsToDelete?.Count is null or 0)
+				return AddInheritdocTagToDeclaration(memberDeclaration, inheritdocTag);
 
-			var newLeadingTrivias = UpdateTriviaDocCommentNodesWithNewContent(triviaList, inheritdocTag, cancellation);
-			var newMemberDeclaration = memberDeclaration.WithLeadingTrivia(newLeadingTrivias);
+			var removeOptions = SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives;
+			var memberDeclarationWithRemovedTags = memberDeclaration.RemoveNodes(allDocTagsToDelete, removeOptions);
+			var newMemberDeclaration = AddInheritdocTagToDeclaration(memberDeclarationWithRemovedTags, inheritdocTag);
 
 			return newMemberDeclaration;
 		}
 
-		private List<SyntaxTrivia> UpdateTriviaDocCommentNodesWithNewContent(in SyntaxTriviaList triviaList, XmlEmptyElementSyntax inheritdocTag,
-																			 CancellationToken cancellation)
+		private List<XmlNodeSyntax>? GetAllDocTagsToDeleteFromMemberDeclaration(MemberDeclarationSyntax memberDeclaration, CancellationToken cancellation)
 		{
-			List<SyntaxTrivia> newTriviaList = new(capacity: triviaList.Count);
-			bool addInheritdocTag = true;
+			var triviaList = memberDeclaration.GetLeadingTrivia();
+
+			if (triviaList.Count == 0)
+				return null;
+
+			List<XmlNodeSyntax>? allDocTagsToDelete = null;
 
 			foreach (SyntaxTrivia trivia in triviaList)
 			{
 				cancellation.ThrowIfCancellationRequested();
 
 				if (trivia.GetStructure() is not DocumentationCommentTriviaSyntax docCommentParentNode)
-				{
-					newTriviaList.Add(trivia);
 					continue;
-				}
 
-				var newContent = GetNewContentForDocComment(docCommentParentNode, addInheritdocTag, inheritdocTag);
-				addInheritdocTag = false;
+				var docTagsToDelete = GetTagsToDeleteFromDocComment(docCommentParentNode);
 
-				if (newContent == null)
-				{
-					newTriviaList.Add(trivia);
+				if (docTagsToDelete.IsNullOrEmpty())
 					continue;
-				}
 
-				var newContentSyntaxList = newContent?.Count switch
-				{
-					0 => List<XmlNodeSyntax>(),
-					1 => SingletonList(newContent[0]),
-					_ => List(newContent)
-				};
-
-				var docCommentWithNewContent = docCommentParentNode.WithContent(newContentSyntaxList);
-				var newTrivia = Trivia(docCommentWithNewContent).WithAdditionalAnnotations(Formatter.Annotation);
-
-				newTriviaList.Add(newTrivia);
+				if (allDocTagsToDelete == null)
+					allDocTagsToDelete = new List<XmlNodeSyntax>(docTagsToDelete);
+				else
+					allDocTagsToDelete.AddRange(docTagsToDelete);				
 			}
 
-			return newTriviaList;
+			return allDocTagsToDelete;
 		}
 
-		private List<XmlNodeSyntax>? GetNewContentForDocComment(DocumentationCommentTriviaSyntax docCommentParentNode, bool addInheritdocTag,
-																XmlEmptyElementSyntax inheritdocTag)
+		private List<XmlNodeSyntax>? GetTagsToDeleteFromDocComment(DocumentationCommentTriviaSyntax docCommentParentNode)
 		{
-			List<XmlNodeSyntax>? newDocCommentContent = addInheritdocTag
-				? new List<XmlNodeSyntax>(capacity: 4) { inheritdocTag }
-				: null;
-
 			if (docCommentParentNode.Content.Count == 0)
-				return newDocCommentContent;
+				return null;
 
-			bool hasTagsToDelete = false;
+			List<XmlNodeSyntax>? tagsToDeleteFromDocComment = null;
+			bool collectEmptyTags = false;
 
 			foreach (XmlNodeSyntax docXmlNode in docCommentParentNode.Content)
 			{
+				if (docXmlNode is XmlTextSyntax textNode)
+				{
+					if (collectEmptyTags)
+					{
+						tagsToDeleteFromDocComment ??= new List<XmlNodeSyntax>(capacity: 4);
+						tagsToDeleteFromDocComment.Add(textNode);
+					}
+
+					continue;
+				}
+
 				string? tagName = docXmlNode.GetDocTagName();
 
-				// Add all doc tags except summary and inheritdoc tags to the new content
-				if (tagName != XmlCommentsConstants.SummaryTag && tagName != XmlCommentsConstants.InheritdocTag)
+				if (tagName == XmlCommentsConstants.SummaryTag || tagName == XmlCommentsConstants.InheritdocTag)
 				{
-					newDocCommentContent ??= new List<XmlNodeSyntax>(capacity: 2);
-					newDocCommentContent.Add(docXmlNode);
+					tagsToDeleteFromDocComment ??= new List<XmlNodeSyntax>(capacity: 4);
+					tagsToDeleteFromDocComment.Add(docXmlNode);
+					collectEmptyTags = true;
 				}
 				else
-					hasTagsToDelete = true;
+					collectEmptyTags = false;
 			}
 
-			bool shouldReplaceDocCommentContent = addInheritdocTag || hasTagsToDelete;
-			return shouldReplaceDocCommentContent
-				? newDocCommentContent
-				: null;
+			return tagsToDeleteFromDocComment;
 		}
 	}
 }
