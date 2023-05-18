@@ -95,17 +95,5 @@ namespace PX.Objects
 		[PXUIField(DisplayName = "Transaction Date", Visibility = PXUIVisibility.Visible, Enabled = false)]
 		public virtual DateTime? TranDate { get; set; }
 		#endregion
-
-		//System field can be not documented
-		#region tstamp
-		public abstract class Tstamp : BqlByteArray.Field<Tstamp> { }
-
-		[PXDBTimestamp(BqlField = typeof(GLTran.Tstamp))]
-		public virtual Byte[] tstamp
-		{
-			get;
-			set;
-		}
-		#endregion
 	}
 }

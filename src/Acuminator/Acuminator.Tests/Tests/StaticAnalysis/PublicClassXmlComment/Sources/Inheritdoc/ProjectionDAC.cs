@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -94,18 +95,6 @@ namespace PX.Objects
 		[PXDBDate(BqlField = typeof(GLTran.tranDate))]
 		[PXUIField(DisplayName = "Transaction Date", Visibility = PXUIVisibility.Visible, Enabled = false)]
 		public virtual DateTime? TranDate { get; set; }
-		#endregion
-
-		//System field can be not documented
-		#region tstamp
-		public abstract class Tstamp : BqlByteArray.Field<Tstamp> { }
-
-		[PXDBTimestamp(BqlField = typeof(GLTran.Tstamp))]
-		public virtual Byte[] tstamp
-		{
-			get;
-			set;
-		}
 		#endregion
 	}
 }
