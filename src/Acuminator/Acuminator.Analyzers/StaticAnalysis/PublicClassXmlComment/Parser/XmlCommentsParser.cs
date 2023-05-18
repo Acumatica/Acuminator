@@ -30,30 +30,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public XmlCommentsParseInfo AnalyzeXmlComments(MemberDeclarationSyntax memberDeclaration, IPropertySymbol? mappedDacProperty)
 		{
-			var (parseResult, tagsInfos) = ParseDeclarationXmlComments(memberDeclaration, mappedDacProperty);
+			var parseResult = ParseDeclarationXmlComments(memberDeclaration, mappedDacProperty);
 
 			_cancellation.ThrowIfCancellationRequested();
 
 			DiagnosticDescriptor? diagnosticToReport = GetDiagnosticFromParseResult(parseResult);
 			bool stepIntoChildren = memberDeclaration is TypeDeclarationSyntax && parseResult != XmlCommentParseResult.HasExcludeTag;
-
-			return CreateParseInfo(parseResult, tagsInfos, diagnosticToReport, stepIntoChildren);
+			return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren);
 		}
 
-		private (XmlCommentParseResult ParseResult, List<XmlCommentTagsInfo>? TagsInfos) ParseDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration,
-																													 IPropertySymbol? mappedDacProperty)
+		private XmlCommentParseResult ParseDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration, IPropertySymbol? mappedDacProperty)
 		{
 			_cancellation.ThrowIfCancellationRequested();
 
 			if (!memberDeclaration.HasStructuredTrivia)
-				return (XmlCommentParseResult.NoXmlComment, TagsInfos: null);
+				return XmlCommentParseResult.NoXmlComment;
 
 			bool isProjectionDacProperty = mappedDacProperty != null;
 			bool hasXmlComment = false, hasSummaryTag = false, hasInheritdocTag = false,
 				 nonEmptySummaryTag = false, correctInheritdocTagOfProjectionProperty = false;
 
 			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
-			List<XmlCommentTagsInfo>? tagsInfos = null;
 
 			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
 			{
@@ -63,19 +60,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				if (commentTagsInfo.NoXmlComments)
 					continue;
 				else if (commentTagsInfo.HasExcludeTag)
-					return (XmlCommentParseResult.HasExcludeTag, TagsInfos: null);
+					return XmlCommentParseResult.HasExcludeTag;
 
 				hasXmlComment = true;
-				tagsInfos ??= new List<XmlCommentTagsInfo>(capacity: 1);
-				tagsInfos.Add(commentTagsInfo);
-
+				
 				if (!commentTagsInfo.HasSummaryTag && !commentTagsInfo.HasInheritdocTag)
 					continue;
 
 				if (commentTagsInfo.HasSummaryTag)
 				{
 					hasSummaryTag = true;
-					nonEmptySummaryTag = nonEmptySummaryTag || IsNonEmptySummaryTag(commentTagsInfo.SummaryTag);
+					nonEmptySummaryTag = nonEmptySummaryTag || commentTagsInfo.SummaryTags.Any(IsNonEmptySummaryTag);
 				}
 
 				if (commentTagsInfo.HasInheritdocTag)
@@ -88,12 +83,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					// 3. If none of above is true check that inherit doc is referencing the DAC field property to which the projection property is mapped to.
 					correctInheritdocTagOfProjectionProperty =
 						correctInheritdocTagOfProjectionProperty ||
-						IsCorrectInheritdocTag(commentTagsInfo.InheritdocTagInfo, mappedDacProperty);
+						commentTagsInfo.InheritdocTagInfos.Any(info => IsCorrectInheritdocTag(info, mappedDacProperty));
 				}
 			}
 
 			if (!hasXmlComment)
-				return (XmlCommentParseResult.NoXmlComment, TagsInfos: null);
+				return XmlCommentParseResult.NoXmlComment;
 
 			var parseResult = (hasSummaryTag, hasInheritdocTag, isProjectionDacProperty) switch
 			{
@@ -117,7 +112,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 											: XmlCommentParseResult.CorrectInheritdocTag
 			};
 
-			return (parseResult, tagsInfos);
+			return parseResult;
 		}
 
 		private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>
@@ -128,9 +123,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private XmlCommentTagsInfo GetDocumentationTags(DocumentationCommentTriviaSyntax xmlComment)
 		{
 			if (xmlComment.Content.Count == 0)
-				return new XmlCommentTagsInfo(summaryTag: null, inheritdocTag: null, excludeTag: null);
+				return new XmlCommentTagsInfo(summaryTags: null, inheritdocTags: null, excludeTags: null);
 
-			XmlNodeSyntax? summaryTag = null, inheritDocTag = null, excludeTag = null;
+			List<XmlNodeSyntax>? summaryTags = null, inheritDocTags = null, excludeTags = null;
 
 			foreach (XmlNodeSyntax xmlNode in xmlComment.Content)
 			{
@@ -139,20 +134,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				switch (tagName)
 				{
 					case XmlCommentsConstants.SummaryTag:
-						summaryTag = xmlNode;
+						summaryTags = AddTagToList(summaryTags, xmlNode);
 						break;
 
 					case XmlCommentsConstants.InheritdocTag:
-						inheritDocTag = xmlNode;
+						inheritDocTags = AddTagToList(inheritDocTags, xmlNode);
 						break;
 
 					case XmlCommentsConstants.ExcludeTag:
-						excludeTag = xmlNode;
+						excludeTags = AddTagToList(excludeTags, xmlNode);
 						break;
 				}
 			}
 
-			return new XmlCommentTagsInfo(summaryTag, inheritDocTag, excludeTag);
+			return new XmlCommentTagsInfo(summaryTags, inheritDocTags, excludeTags);
+
+			//-------------------------------------------Local Function-----------------------------------------------------------
+			static List<XmlNodeSyntax> AddTagToList(List<XmlNodeSyntax>? list, XmlNodeSyntax tagNode)
+			{
+				list ??= new List<XmlNodeSyntax>(capacity: 1);
+				list.Add(tagNode);
+				return list;
+			}
 		}
 
 		private bool IsNonEmptySummaryTag(XmlNodeSyntax summaryTag)
@@ -234,44 +237,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty 		=> Descriptors.PX1007_InvalidProjectionDacFieldDescription,
 				_ 																	=> null
 			};
-
-		private XmlCommentsParseInfo CreateParseInfo(XmlCommentParseResult parseResult, List<XmlCommentTagsInfo>? tagsInfos, 
-													 DiagnosticDescriptor? diagnosticToReport, bool stepIntoChildren)
-		{
-			if (diagnosticToReport == null)
-				return new XmlCommentsParseInfo(parseResult, stepIntoChildren);
-			else if (tagsInfos?.Count is null or 0)
-				return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, locationsWithErrors: null);
-
-			switch (parseResult)
-			{
-				case XmlCommentParseResult.NoXmlComment:
-				case XmlCommentParseResult.NoSummaryOrInheritdocTag:
-					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, locationsWithErrors: null);
-
-				case XmlCommentParseResult.EmptySummaryTag:
-					XmlCommentTagsInfo summaryTagInfo = tagsInfos.FirstOrDefault(tagInfo => tagInfo.HasSummaryTag);
-					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, summaryTagInfo.SummaryTag);
-
-				case XmlCommentParseResult.IncorrectInheritdocTagOnProjectionDacProperty:
-					XmlCommentTagsInfo inheritdocTagInfo = tagsInfos.FirstOrDefault(tagInfo => tagInfo.HasInheritdocTag);
-					var crefAttributes = inheritdocTagInfo.InheritdocTagInfo.CrefAttributes;
-
-					return crefAttributes.Length switch
-					{
-						0 => new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, inheritdocTagInfo.InheritdocTagInfo.Tag),
-						1 => new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, crefAttributes[0]),
-						_ => new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, crefAttributes)
-					}; ;
-
-				case XmlCommentParseResult.NonInheritdocTagOnProjectionDacProperty:
-					var nodesWithErrors = tagsInfos.Where(tagInfo => tagInfo.HasSummaryTag)
-												   .Select(tagInfo => tagInfo.SummaryTag!);			//Only summary tag can be among error nodes at this step
-					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, nodesWithErrors);
-
-				default:
-					return new XmlCommentsParseInfo(parseResult, diagnosticToReport, stepIntoChildren, locationsWithErrors: null);
-			}
-		}
 	}
 }

@@ -5,33 +5,36 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal readonly struct XmlCommentTagsInfo
 	{
-		public XmlNodeSyntax? SummaryTag { get; }
+		public List<XmlNodeSyntax>? SummaryTags { get; }
 
-		public InheritdocTagInfo InheritdocTagInfo { get; }
+		public List<InheritdocTagInfo>? InheritdocTagInfos { get; }
 
-		public XmlNodeSyntax? ExcludeTag { get; }
+		public List<XmlNodeSyntax>? ExcludeTags { get; }
 
-		[MemberNotNullWhen(returnValue: true, member: nameof(SummaryTag))]
-		public bool HasSummaryTag => SummaryTag != null;
+		[MemberNotNullWhen(returnValue: true, member: nameof(SummaryTags))]
+		public bool HasSummaryTag => SummaryTags?.Count > 0;
 
-		public bool HasInheritdocTag => InheritdocTagInfo.HasInheritdocTag;
+		[MemberNotNullWhen(returnValue: true, member: nameof(InheritdocTagInfos))]
+		public bool HasInheritdocTag => InheritdocTagInfos?.Count > 0;
 
-		[MemberNotNullWhen(returnValue: true, member: nameof(ExcludeTag))]
-		public bool HasExcludeTag => ExcludeTag != null;
+		[MemberNotNullWhen(returnValue: true, member: nameof(ExcludeTags))]
+		public bool HasExcludeTag => ExcludeTags?.Count > 0;
 
 		public bool NoXmlComments => !HasExcludeTag && !HasSummaryTag && !HasInheritdocTag;
 
-		public XmlCommentTagsInfo(XmlNodeSyntax? summaryTag, XmlNodeSyntax? inheritdocTag, XmlNodeSyntax? excludeTag)
+		public XmlCommentTagsInfo(List<XmlNodeSyntax>? summaryTags, List<XmlNodeSyntax>? inheritdocTags, List<XmlNodeSyntax>? excludeTags)
 		{
-			SummaryTag = summaryTag;
-			InheritdocTagInfo = new InheritdocTagInfo(inheritdocTag);
-			ExcludeTag = excludeTag;
+			SummaryTags 	   = summaryTags;
+			InheritdocTagInfos = inheritdocTags?.Select(inheritdocTag => new InheritdocTagInfo(inheritdocTag)).ToList(capacity: inheritdocTags.Count);
+			ExcludeTags 	   = excludeTags;
 		}
 
 		public IEnumerable<XmlNodeSyntax> GetTagNodes(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
@@ -44,14 +47,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		private IEnumerable<XmlNodeSyntax> GetTagNodesImplementation(bool includeSummaryTag, bool includeInheritdocTag, bool includeExcludeTag)
 		{
-			if (HasSummaryTag && includeSummaryTag)
-				yield return SummaryTag;
+			var tags = HasSummaryTag && includeSummaryTag
+				? SummaryTags
+				: Enumerable.Empty<XmlNodeSyntax>();
 
-			if (InheritdocTagInfo.HasInheritdocTag && includeInheritdocTag)
-				yield return InheritdocTagInfo.Tag;
+			if (HasInheritdocTag && includeInheritdocTag)
+				tags.Concat(InheritdocTagInfos.Select(info => info.Tag));
 
 			if (HasExcludeTag && includeExcludeTag)
-				yield return ExcludeTag;
+				tags.Concat(ExcludeTags);
+
+			return tags;
 		}
 	}
 }

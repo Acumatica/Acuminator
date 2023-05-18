@@ -255,7 +255,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (typeInfo.IsDacOrDacExtension)
 			{
 				ReportDiagnostic(_syntaxContext, Descriptors.PX1007_PublicClassNoXmlComment, typeDeclaration.Identifier.GetLocation(),
-								 XmlCommentParseResult.NoXmlComment, extraLocations: null, mappedOriginalDacProperty: null);
+								 XmlCommentParseResult.NoXmlComment, mappedOriginalDacProperty: null);
 			}
 		}
 
@@ -274,10 +274,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (typeCommentsParseInfo.HasError && typeInfo.IsDacOrDacExtension)
 			{
-				var extraLocations = typeCommentsParseInfo.DocCommentLocationsWithErrors;
-
 				ReportDiagnostic(_syntaxContext, typeCommentsParseInfo.DiagnosticToReport, primaryLocationToReport, 
-								 typeCommentsParseInfo.ParseResult, extraLocations, mappedOriginalDacProperty: null);
+								 typeCommentsParseInfo.ParseResult, mappedOriginalDacProperty: null);
 			}
 		}
 
@@ -316,12 +314,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (propertyCommentsParseInfo.HasError)
 			{
 				ReportDiagnostic(_syntaxContext, propertyCommentsParseInfo.DiagnosticToReport, propertyDeclaration.Identifier.GetLocation(), 
-								 propertyCommentsParseInfo.ParseResult, propertyCommentsParseInfo.DocCommentLocationsWithErrors, mappedOriginalDacProperty);
+								 propertyCommentsParseInfo.ParseResult, mappedOriginalDacProperty);
 			}
 		}
 
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, DiagnosticDescriptor diagnosticDescriptor, Location primaryLocation, 
-									  XmlCommentParseResult parseResult, IEnumerable<Location>? extraLocations, IPropertySymbol? mappedOriginalDacProperty)
+									  XmlCommentParseResult parseResult, IPropertySymbol? mappedOriginalDacProperty)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -340,10 +338,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				properties.Add(DocumentationDiagnosticProperties.MappedDacPropertyName, mappedOriginalDacProperty.Name);		
 			}
 
-			var diagnostic = extraLocations.IsNullOrEmpty()
-				? Diagnostic.Create(diagnosticDescriptor, primaryLocation, properties.ToImmutableDictionary())
-				: Diagnostic.Create(diagnosticDescriptor, primaryLocation, extraLocations, properties.ToImmutableDictionary());
-
+			var diagnostic = Diagnostic.Create(diagnosticDescriptor, primaryLocation, properties.ToImmutableDictionary());
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(diagnostic, _codeAnalysisSettings);
 		}
 	}
