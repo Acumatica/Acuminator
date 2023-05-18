@@ -47,10 +47,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicClass_WithEmptySummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 15, Column: 15),
-					extraLocation: (Line: 11, Column: 6)),
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 24, Column: 15),
-					extraLocation: (Line: 19, Column: 6)));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(15, 15),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(24, 15));
 
 		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
@@ -112,29 +110,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 				source,
 				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(22, 17),
 				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(32, 17),
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 43, Column: 17),
-					extraLocation: (Line: 38, Column: 7)));
-
-		[Theory]
-		[EmbeddedFileData("Projection_DAC.cs")]
-		public async Task PublicProjectionDac_MultipleScenarios(string source) =>
-			await VerifyCSharpDiagnosticAsync(
-				source,
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(26, 24),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(37, 23),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(57, 25),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor((Line: 68, Column: 23),
-					extraLocation: (Line: 63, Column: 7)),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor((Line: 81, Column: 25),
-					extraLocation: (Line: 74, Column: 7)),
-				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor((Line: 96, Column: 28),
-					extraLocations: new[] { (Line: 87, Column: 7), (Line: 90, Column: 7) })
-				);
-
-		[Theory]
-		[EmbeddedFileData("Projection_DAC.cs", "Projection_DAC_AddInheritdoc.cs")]
-		public async Task ProjectionDac_AddInheritdocTag(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(43, 17));
 
 		[Theory]
 		[EmbeddedFileData("DAC_Hidden_Obsolete_InternalUse.cs")]
@@ -146,8 +122,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicDacExtensions_With_Hidden_Obsolete_PXInternalUseOnly_Attributes(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(13, 22),
-					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 23, Column: 17),
-						extraLocation: (Line: 18, Column: 7)));
+					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(23, 17));
 
 		[Theory]
 		[EmbeddedFileData("DAC_System_Fields.cs")]
@@ -158,8 +133,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[EmbeddedFileData("DacExtension_System_Fields.cs")]
 		public async Task PublicDacExtension_WithSystemFields_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
-
-		
 
 		[Theory]
 		[EmbeddedFileData("DAC.cs", "DAC_AddDescription.cs")]
@@ -173,10 +146,65 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 
 		#region Inheritdoc tests
 		[Theory]
-		[EmbeddedFileData(@"Inheritdoc\NonProjectionDAC_Inhertitdoc.cs")]
-		public async Task PublicNonProjectionDAC_WithInhertitdocTags_DoesntReportDiagnostic(string source) =>
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc.cs")]
+		public async Task ProjectionDac_NoInheritdoc(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(25, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(36, 25),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(47, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(61, 28)
+				);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc.cs", @"Inheritdoc\ProjectionDAC_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoInheritdoc_AddInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_EmptyInheritdoc.cs")]
+		public async Task ProjectionDac_EmptyInheritdocTags(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(34, 25));
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_EmptyInheritdoc.cs", @"Inheritdoc\ProjectionDAC_EmptyInheritdoc_FixInheritdoc.cs")]
+		public async Task ProjectionDac_EmptyInheritdocTags_FixInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference.cs")]
+		public async Task ProjectionDac_InhertidocWithWrongReference(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(25, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(33, 25),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(45, 25));
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference.cs",
+						  @"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference_FixInheritdoc.cs")]
+		public async Task ProjectionDac_InhertidocWithWrongReference_FixInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NotMappedAndGoodFields.cs")]
+		public async Task ProjectionDAC_NotMapped_Described_Excluded_Fields(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(26, 24));
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_SystemFields.cs")]
+		public async Task ProjectionDAC_SystemFields_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\NonProjectionDAC_Inheritdoc.cs")]
+		public async Task NonProjectionDAC_WithInhertitdocTags_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 		#endregion
+
 		#region Partial class tests		
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs")]
@@ -261,6 +289,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[EmbeddedFileData("DAC_AddDescription.cs")]
 		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_EmptyInheritdoc_FixInheritdoc.cs")]
+		public async Task ProjectionDac_WithEmptyInheritdocs_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference_FixInheritdoc.cs")]
+		public async Task ProjectionDac_WithInheritdocWithWrongReference_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);	 
 		#endregion
 	}
 }
