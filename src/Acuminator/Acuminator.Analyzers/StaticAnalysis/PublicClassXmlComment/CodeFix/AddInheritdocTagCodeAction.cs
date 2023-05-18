@@ -87,12 +87,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 			var xmlInheritdocTrivia =
 				Trivia(
 					DocumentationComment(
-						XmlText(XmlTextNewLine),
+						XmlText(string.Empty),
 						inheritdocTag
 					)
-					.WithAdditionalAnnotations(Formatter.Annotation));
+				);
 
-			var newMemberDeclaration = AddDocumentationTrivia(memberDeclaration, xmlInheritdocTrivia, index: 0);
+			var newMemberDeclaration = AddDocumentationTrivia(memberDeclaration, index: 0, xmlInheritdocTrivia);
 			return newMemberDeclaration;
 		}
 
