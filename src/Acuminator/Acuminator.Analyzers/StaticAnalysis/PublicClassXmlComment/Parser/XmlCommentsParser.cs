@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					// 3. If none of above is true check that inherit doc is referencing the DAC field property to which the projection property is mapped to.
 					correctInheritdocTagOfProjectionProperty =
 						correctInheritdocTagOfProjectionProperty ||
-						commentTagsInfo.InheritdocTagInfos.Any(info => IsCorrectInheritdocTag(info, mappedDacProperty));
+						commentTagsInfo.InheritdocTagInfos.Any(info => IsCorrectInheritdocTag(info, memberDeclaration, mappedDacProperty));
 				}
 			}
 
@@ -200,16 +200,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		/// <returns>
 		/// True if correct inheritdoc tag, false if not.
 		/// </returns>
-		private bool IsCorrectInheritdocTag(in InheritdocTagInfo inheritdocTagInfo, IPropertySymbol? mappedDacProperty)
+		private bool IsCorrectInheritdocTag(in InheritdocTagInfo inheritdocTagInfo, MemberDeclarationSyntax memberDeclaration,
+											IPropertySymbol? mappedDacProperty)
 		{
 			bool isProjectionDacProperty = mappedDacProperty != null;
 
 			if (!isProjectionDacProperty)
 				return true;
 
-			bool allowEmptyInheritdocTag = !isProjectionDacProperty || mappedDacProperty!.IsOverride;
-
-			if ((!inheritdocTagInfo.InheritdocTagHasCrefAttributes && !allowEmptyInheritdocTag) || inheritdocTagInfo.CrefAttributes.Length > 1)
+			if (!inheritdocTagInfo.InheritdocTagHasCrefAttributes)
+			{
+				bool allowEmptyInheritdocTag = !isProjectionDacProperty || memberDeclaration.IsOverride();
+				return allowEmptyInheritdocTag;
+			}
+			else if(inheritdocTagInfo.CrefAttributes.Length > 1)
 				return false;
 
 			XmlCrefAttributeSyntax crefAttribute = inheritdocTagInfo.CrefAttributes[0];
