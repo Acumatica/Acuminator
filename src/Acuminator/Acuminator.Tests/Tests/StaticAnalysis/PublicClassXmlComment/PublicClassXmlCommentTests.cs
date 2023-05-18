@@ -36,15 +36,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicClass_WithoutSummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(12, 15));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(9, 15));
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs")]
 		public async Task PublicClass_WithEmptySummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(15, 15),
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(24, 15));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 15, Column: 15),
+					extraLocation: (Line: 11, Column: 6)),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 24, Column: 15),
+					extraLocation: (Line: 19, Column: 6)));
 
 		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
@@ -106,7 +108,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 				source,
 				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(22, 17),
 				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(32, 17),
-				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(43, 17));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor((Line: 43, Column: 17),
+					extraLocation: (Line: 38, Column: 7)));
 
 		[Theory]
 		[EmbeddedFileData("DAC_AddDescription.cs")]
