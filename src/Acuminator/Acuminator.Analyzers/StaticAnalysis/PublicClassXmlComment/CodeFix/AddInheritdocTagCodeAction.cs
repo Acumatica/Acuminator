@@ -15,8 +15,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -110,26 +108,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 		private MemberDeclarationSyntax ReplaceWrongDocTagsFromDeclaration(MemberDeclarationSyntax memberDeclaration, XmlEmptyElementSyntax inheritdocTag,
 																		   CancellationToken cancellation)
 		{
-			var allDocTagsToDelete = GetAllDocTagsToDeleteFromMemberDeclaration(memberDeclaration, cancellation);
+			var allNodesToDelete = GetAllNodesToDeleteFromMemberDeclaration(memberDeclaration, cancellation);
 
-			if (allDocTagsToDelete?.Count is null or 0)
+			if (allNodesToDelete?.Count is null or 0)
 				return AddInheritdocTagToDeclaration(memberDeclaration, inheritdocTag);
 
 			var removeOptions = SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives;
-			var memberDeclarationWithRemovedTags = memberDeclaration.RemoveNodes(allDocTagsToDelete, removeOptions);
+			var memberDeclarationWithRemovedTags = memberDeclaration.RemoveNodes(allNodesToDelete, removeOptions);
 			var newMemberDeclaration = AddInheritdocTagToDeclaration(memberDeclarationWithRemovedTags, inheritdocTag);
 
 			return newMemberDeclaration;
 		}
 
-		private List<XmlNodeSyntax>? GetAllDocTagsToDeleteFromMemberDeclaration(MemberDeclarationSyntax memberDeclaration, CancellationToken cancellation)
+		private List<SyntaxNode>? GetAllNodesToDeleteFromMemberDeclaration(MemberDeclarationSyntax memberDeclaration, CancellationToken cancellation)
 		{
 			var triviaList = memberDeclaration.GetLeadingTrivia();
 
 			if (triviaList.Count == 0)
 				return null;
 
-			List<XmlNodeSyntax>? allDocTagsToDelete = null;
+			List<SyntaxNode>? allDocTagsToDelete = null;
 
 			foreach (SyntaxTrivia trivia in triviaList)
 			{
@@ -138,27 +136,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 				if (trivia.GetStructure() is not DocumentationCommentTriviaSyntax docCommentParentNode)
 					continue;
 
-				var docTagsToDelete = GetTagsToDeleteFromDocComment(docCommentParentNode);
+				var docCommentNodesToDelete = GetNodesToDeleteFromDocComment(docCommentParentNode);
 
-				if (docTagsToDelete.IsNullOrEmpty())
+				if (docCommentNodesToDelete?.Count is null or 0)
 					continue;
 
 				if (allDocTagsToDelete == null)
-					allDocTagsToDelete = new List<XmlNodeSyntax>(docTagsToDelete);
+					allDocTagsToDelete = new List<SyntaxNode>(docCommentNodesToDelete);
 				else
-					allDocTagsToDelete.AddRange(docTagsToDelete);				
+					allDocTagsToDelete.AddRange(docCommentNodesToDelete);
 			}
 
 			return allDocTagsToDelete;
 		}
 
-		private List<XmlNodeSyntax>? GetTagsToDeleteFromDocComment(DocumentationCommentTriviaSyntax docCommentParentNode)
+		/// <summary>
+		/// Gets tags to delete from document comment.
+		/// </summary>
+		private IReadOnlyCollection<SyntaxNode>? GetNodesToDeleteFromDocComment(DocumentationCommentTriviaSyntax docCommentParentNode)
 		{
 			if (docCommentParentNode.Content.Count == 0)
 				return null;
 
 			List<XmlNodeSyntax>? tagsToDeleteFromDocComment = null;
 			bool collectEmptyTags = false;
+			bool allTagsAreDeleted = true;
 
 			foreach (XmlNodeSyntax docXmlNode in docCommentParentNode.Content)
 			{
@@ -182,10 +184,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 					collectEmptyTags = true;
 				}
 				else
+				{
 					collectEmptyTags = false;
+					allTagsAreDeleted = false;
+				}
 			}
 
-			return tagsToDeleteFromDocComment;
+			return allTagsAreDeleted 
+				? new[] { docCommentParentNode }
+				: tagsToDeleteFromDocComment;
 		}
 	}
 }
