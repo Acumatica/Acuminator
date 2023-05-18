@@ -146,7 +146,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				return null;
 
 			return members.OfType<IPropertySymbol>()
-						  .FirstOrDefault(property => caseInsensitivePropertyName.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
+						  .FirstOrDefault(property => caseInsensitivePropertyName.Equals(property.Name, StringComparison.OrdinalIgnoreCase) && 
+													  !property.IsStatic && !property.IsIndexer && !property.IsAbstract);
 		}
 	}
 }
