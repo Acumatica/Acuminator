@@ -222,6 +222,42 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpDiagnosticAsync(source);
 		#endregion
 
+		#region No Empty Line Separator Tests
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc.cs")]
+		public async Task ProjectionDac_NoEmptyLineSeparator_NoInheritdoc(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(23, 23));
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc.cs",
+						  @"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoEmptyLineSeparator_NoInheritdoc_AddInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml.cs")]
+		public async Task PublicDac_NoEmptyLineSeparator_WithoutDescription(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(21, 17),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(30, 17),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(40, 17));
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml.cs",
+						  @"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddSummary.cs")]
+		public async Task PublicDac_NoEmptyLineSeparator_AddDescription_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml.cs",
+								  @"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddExclude.cs")]
+		public async Task PublicDac_NoEmptyLineSeparator_AddExclude_Works(string actual, string expected) =>
+					await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
+		#endregion
+
 		#region Partial class tests		
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs")]
@@ -325,6 +361,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[Theory]
 		[EmbeddedFileData(@"Inheritdoc\ProjectionDacExtension_NoInheritdoc_AddInheritdoc.cs")]
 		public async Task ProjectionDacExtension_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddSummary.cs")]
+		public async Task DAC_NoEmptyLine_NoXml_AfterSummaryAdd_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddExclude.cs")]
+		public async Task DAC_NoEmptyLine_NoXml_AfterExcludeAdd_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoEmptyLine_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 		#endregion
 	}

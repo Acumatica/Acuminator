@@ -319,6 +319,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_InheritdocWithWrongReference.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDacExtension_NoInheritdoc_AddInheritdoc.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDacExtension_NoInheritdoc.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc_AddInheritdoc.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml_AddSummary.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml_AddExclude.cs" />
     <Compile Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\StaticFieldOrPropertyInGraphTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
