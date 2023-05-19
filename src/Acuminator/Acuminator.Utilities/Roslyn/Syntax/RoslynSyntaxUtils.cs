@@ -321,5 +321,18 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			XmlEmptyElementSyntax oneLinerDocTag => oneLinerDocTag.Name?.ToString(),
 			_									 => null
 		};
+
+		public static bool ContainsNewLine(this in SyntaxTriviaList trivias)
+		{
+			for (int i = 0; i < trivias.Count; i++)
+			{
+				SyntaxTrivia trivia = trivias[i];
+
+				if (trivia.Kind() is SyntaxKind.EndOfLineTrivia or SyntaxKind.XmlTextLiteralNewLineToken)
+					return true;
+			}
+
+			return false;
+		}
 	}
 }
