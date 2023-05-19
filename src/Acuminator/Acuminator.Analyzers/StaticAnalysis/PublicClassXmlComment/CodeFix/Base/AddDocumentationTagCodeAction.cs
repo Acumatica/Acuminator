@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -39,10 +40,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 																 in SyntaxTrivia documentationTrivia)
 		{
 			SyntaxTrivia lineFeed 		 			 = SyntaxFactory.LineFeed;
-			bool isFirstMemberOfTypeOrNamespace 	 = IsFirstMemberOfTypeOrNamespace(memberDeclaration);
 			SyntaxTriviaList leadingTrivia 	 		 = memberDeclaration.GetLeadingTrivia();
-			bool appendLineFeedToEndOfInsertedTrivia = isFirstMemberOfTypeOrNamespace;
-			bool prependLineFeedBeforeInsertedTrivia = !isFirstMemberOfTypeOrNamespace;
+			bool appendLineFeedToEndOfInsertedTrivia = !leadingTrivia.ContainsNewLine();
+			bool prependLineFeedBeforeInsertedTrivia = !IsFirstMemberOfTypeOrNamespace(memberDeclaration);
 
 			SyntaxTriviaList newTrivia = appendLineFeedToEndOfInsertedTrivia
 				? leadingTrivia.Insert(index, lineFeed)
