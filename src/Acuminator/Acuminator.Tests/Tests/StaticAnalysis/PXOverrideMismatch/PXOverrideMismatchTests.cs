@@ -32,6 +32,43 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverrideMismatch
 		}
 
 		[Theory]
+		[EmbeddedFileData("LastArgumentIsNotDelegate.cs")]
+		public void LastArgumentIsNotDelegate(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 22),
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(23, 22)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("ArgumentTypesDoNotMatch.cs")]
+		public void ArgumentTypesDoNotMatch(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 22)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("ReturnTypesDoNotMatch.cs")]
+		public void ReturnTypesDoNotMatch(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 23)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("ArgumentsDoNotMatchWithDelegate.cs")]
+		public void ArgumentsDoNotMatchWithDelegate(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1096_PXOverrideMustMatchSignature.CreateFor(17, 25)
+			);
+		}
+
+		[Theory]
 		[EmbeddedFileData("ArgumentsDoNotMatchBaseHasMoreParameters.cs")]
 		public void ArgumentsDoNotMatchBaseHasMoreParameters(string source)
 		{

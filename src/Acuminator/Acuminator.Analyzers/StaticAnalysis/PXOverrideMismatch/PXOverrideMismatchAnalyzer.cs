@@ -115,7 +115,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 						return false;
 					}
 
-					return CheckExactMatch(baseMethod, @delegate.DelegateInvokeMethod);
+					return
+						DoParametersMatch(baseMethod.Parameters, pxOverrideMethod.Parameters) &&
+						CheckExactMatch(baseMethod, @delegate.DelegateInvokeMethod);
 				}
 
 				return false;
