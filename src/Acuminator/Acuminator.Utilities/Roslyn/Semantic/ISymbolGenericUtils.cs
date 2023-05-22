@@ -70,6 +70,48 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
+		/// Check if the <paramref name="symbol"/> has an attribute of a given <paramref name="attributeType"/>.
+		/// </summary>
+		/// <param name="symbol">The property to act on.</param>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="checkOverrides">True to check method overrides.</param>
+		/// <param name="checkForDerivedAttributes">(Optional) True to check for attributes derived from <paramref name="attributeType"/>.</param>
+		/// <returns>
+		/// True if <paramref name="symbol"/> has attribute of <paramref name="attributeType"/>, false if not.
+		/// </returns>
+		public static bool HasAttribute<TSymbol>(this TSymbol symbol, INamedTypeSymbol attributeType, bool checkOverrides,
+												 bool checkForDerivedAttributes = true)
+		where TSymbol : class, ISymbol
+		{
+			symbol.ThrowOnNull(nameof(symbol));
+			attributeType.ThrowOnNull(nameof(attributeType));
+
+			Func<TSymbol, bool> attributeCheck = checkForDerivedAttributes
+				? HasDerivedAttribute
+				: HasAttribute;
+
+			if (attributeCheck(symbol))
+				return true;
+
+			if (checkOverrides && symbol.IsOverride)
+			{
+				var overrides = symbol.GetOverrides();
+				return overrides.Any(attributeCheck);
+			}
+
+			return false;
+
+			//-----------------------------------------------------------
+			bool HasAttribute(TSymbol symbolToCheck) =>
+				symbolToCheck.GetAttributes()
+							 .Any(a => a.AttributeClass.Equals(attributeType));
+
+			bool HasDerivedAttribute(TSymbol symbolToCheck) =>
+				symbolToCheck.GetAttributes()
+							 .Any(a => a.AttributeClass.InheritsFromOrEquals(attributeType));
+		}
+
+		/// <summary>
 		/// Gets the <paramref name="symbol"/> and its overrides.
 		/// </summary>
 		/// <param name="symbol">The symbol to act on.</param>
@@ -82,7 +124,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
 				return GetOverridesImpl(symbol, includeThis: true);
 			else
-				return new[] { symbol };	
+				return new[] { symbol };
 		}
 
 		/// <summary>
