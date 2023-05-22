@@ -68,5 +68,62 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			return symbol.ContainingType == type || symbol.ContainingType == type.OriginalDefinition;
 		}
+
+		/// <summary>
+		/// Gets the <paramref name="symbol"/> and its overrides.
+		/// </summary>
+		/// <param name="symbol">The symbol to act on.</param>
+		/// <returns>
+		/// The <paramref name="symbol"/> and its overrides.
+		/// </returns>
+		public static IEnumerable<TSymbol> GetOverridesAndThis<TSymbol>(this TSymbol symbol)
+		where TSymbol : class, ISymbol
+		{
+			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
+				return GetOverridesImpl(symbol, includeThis: true);
+			else
+				return new[] { symbol };	
+		}
+
+		/// <summary>
+		/// Gets the overrides of <paramref name="symbol"/>.
+		/// </summary>
+		/// <param name="symbol">The symbol to act on.</param>
+		/// <returns>
+		/// The overrides of <paramref name="symbol"/>.
+		/// </returns>
+		public static IEnumerable<TSymbol> GetOverrides<TSymbol>(this TSymbol symbol)
+		where TSymbol : class, ISymbol
+		{
+			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
+				return GetOverridesImpl(symbol, includeThis: false);
+			else
+				return Enumerable.Empty<TSymbol>();
+		}
+
+		private static IEnumerable<TSymbol> GetOverridesImpl<TSymbol>(TSymbol symbol, bool includeThis)
+		where TSymbol : class, ISymbol
+		{
+			TSymbol? current = includeThis ? symbol : symbol.OverriddenSymbol();
+
+			while (current != null)
+			{
+				yield return current;
+				current = current.OverriddenSymbol();
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static TSymbol? OverriddenSymbol<TSymbol>(this TSymbol symbol)
+		where TSymbol : class, ISymbol
+		{
+			return symbol switch
+			{
+				IMethodSymbol method	 => method.OverriddenMethod as TSymbol,
+				IPropertySymbol property => property.OverriddenProperty as TSymbol,
+				IEventSymbol @event		 => @event.OverriddenEvent as TSymbol,
+				_						 => null
+			};
+		}
 	}
 }
