@@ -140,7 +140,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			IMethodSymbol? initialize = (from method in initializeCandidates.OfType<IMethodSymbol>()
 										 where method.IsOverride && method.IsDeclaredInType(typeSymbol) &&
-											  method.GetOverrides().Any(@override => @override.Equals(pxContext.PXGraphExtension.Initialize))
+											  method.GetOverridden().Any(@override => @override.Equals(pxContext.PXGraphExtension.Initialize))
 										 select method)
 									   .FirstOrDefault();
 

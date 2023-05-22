@@ -95,7 +95,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			if (checkOverrides && symbol.IsOverride)
 			{
-				var overrides = symbol.GetOverrides();
+				var overrides = symbol.GetOverridden();
 				return overrides.Any(attributeCheck);
 			}
 
@@ -112,38 +112,38 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
-		/// Gets the <paramref name="symbol"/> and its overrides.
+		/// Gets the <paramref name="symbol"/> and its overriden symbols.
 		/// </summary>
 		/// <param name="symbol">The symbol to act on.</param>
 		/// <returns>
-		/// The <paramref name="symbol"/> and its overrides.
+		/// The <paramref name="symbol"/> and its overriden symbols.
 		/// </returns>
-		public static IEnumerable<TSymbol> GetOverridesAndThis<TSymbol>(this TSymbol symbol)
+		public static IEnumerable<TSymbol> GetOverriddenAndThis<TSymbol>(this TSymbol symbol)
 		where TSymbol : class, ISymbol
 		{
 			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
-				return GetOverridesImpl(symbol, includeThis: true);
+				return GetOverriddenImpl(symbol, includeThis: true);
 			else
 				return new[] { symbol };
 		}
 
 		/// <summary>
-		/// Gets the overrides of <paramref name="symbol"/>.
+		/// Gets the overriden symbols of <paramref name="symbol"/>.
 		/// </summary>
 		/// <param name="symbol">The symbol to act on.</param>
 		/// <returns>
-		/// The overrides of <paramref name="symbol"/>.
+		/// The overriden symbols of <paramref name="symbol"/>.
 		/// </returns>
-		public static IEnumerable<TSymbol> GetOverrides<TSymbol>(this TSymbol symbol)
+		public static IEnumerable<TSymbol> GetOverridden<TSymbol>(this TSymbol symbol)
 		where TSymbol : class, ISymbol
 		{
 			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
-				return GetOverridesImpl(symbol, includeThis: false);
+				return GetOverriddenImpl(symbol, includeThis: false);
 			else
 				return Enumerable.Empty<TSymbol>();
 		}
 
-		private static IEnumerable<TSymbol> GetOverridesImpl<TSymbol>(TSymbol symbol, bool includeThis)
+		private static IEnumerable<TSymbol> GetOverriddenImpl<TSymbol>(TSymbol symbol, bool includeThis)
 		where TSymbol : class, ISymbol
 		{
 			TSymbol? current = includeThis ? symbol : symbol.OverriddenSymbol();
