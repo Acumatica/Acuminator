@@ -1,6 +1,33 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 3.1.2
+Acuminator 3.1.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 3.1.2, the following enhancements have been implemented:
+ - The [PX1096](diagnostics/PX1096.md) diagnostic has been added to check signature of methods with the `PXOverride` attribute.
+ - The [PX1007](diagnostics/PX1007.md) diagnostic no longer checks the following DAC fields for a code annotation:
+   - `Selected`
+   - `Attributes`
+   - `GroupMask`
+   - `CompanyID`
+   - `CompanyMask`
+   - `DeletedDatabaseRecord`
+ - The [PX1007](diagnostics/PX1007.md) diagnostic now checks that mapped DAC fields of projection DACs have the `inheritoc` XML tag
+ 
+ 
+  
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - The [PX1023](diagnostics/PX1023.md) diagnostic showed false alert for the `INUnit` attribute.
+ - In Visual Studio 2022, Acuminator analysis did not work in the out-of-process mode (the **Run code analysis in separate process** check box in Visual Studio options)
+ - It was possible to suppress the [PX1007](diagnostics/PX1007.md) diagnostic for a class with the `PXCacheExtension` attribute by marking the class with the `PXHidden` attribute
+ - The [PX1016](diagnostics/PX1016.md) diagnostic showed a false alert for generic non-abstract graph extensions.
+
+### Other Changes
+
+
 ## Acuminator 3.1.1
 Acuminator 3.1.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
