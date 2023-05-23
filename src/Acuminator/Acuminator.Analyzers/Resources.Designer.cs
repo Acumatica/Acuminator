@@ -1676,7 +1676,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXOverride method signature must match the overriden method.
+        ///   Looks up a localized string similar to The signature of the method with the PXOverride attribute must match the overriden method.
         /// </summary>
         public static string PX1096Title {
             get {

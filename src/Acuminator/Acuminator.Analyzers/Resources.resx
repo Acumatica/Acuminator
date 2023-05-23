@@ -671,6 +671,6 @@
     <value>A field with the PXDBScalar attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
   </data>
   <data name="PX1096Title" xml:space="preserve">
-    <value>PXOverride method signature must match the overriden method</value>
+    <value>The signature of the method with the PXOverride attribute must match the overriden method</value>
   </data>
 </root>
