@@ -322,7 +322,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			{
 				containsComment = CheckSuppressionCommentOnNode(diagnostic, shortName, node, cancellation);
 
-				if (node is (StatementSyntax or MemberDeclarationSyntax) || containsComment)
+				if (node is (StatementSyntax or MemberDeclarationSyntax or UsingDirectiveSyntax) || containsComment)
 					break;
 
 				node = node.Parent;
