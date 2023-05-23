@@ -417,5 +417,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1095_PXDBScalarMustBeAccompaniedNonDBTypeAttribute { get; } =
 			Rule("PX1095", nameof(Resources.PX1095Title_PXDBScalar).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1095PXDBScalar);
+
+		public static DiagnosticDescriptor PX1096_PXOverrideMustMatchSignature { get; } =
+			Rule("PX1096", nameof(Resources.PX1096Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1096);
 	}
 }

@@ -1699,6 +1699,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The signature of the method with the PXOverride attribute must match the overriden method.
+        /// </summary>
+        public static string PX1096Title {
+            get {
+                return ResourceManager.GetString("PX1096Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Suppress the {0} diagnostic with Acuminator.
         /// </summary>
         public static string SuppressDiagnosticGroupCodeActionTitle {
