@@ -16,8 +16,6 @@ In Acuminator 3.1.2, the following enhancements have been implemented:
    - `DeletedDatabaseRecord`
  - The [PX1007](diagnostics/PX1007.md) diagnostic now checks that mapped DAC fields of projection DACs have the `inheritoc` XML tag
  
- 
-  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - The [PX1023](diagnostics/PX1023.md) diagnostic showed false alert for the `INUnit` attribute.
@@ -25,7 +23,8 @@ In this version of Acuminator, the following bugs have been fixed:
  - It was possible to suppress the [PX1007](diagnostics/PX1007.md) diagnostic for a class with the `PXCacheExtension` attribute by marking the class with the `PXHidden` attribute
  - The [PX1016](diagnostics/PX1016.md) diagnostic showed a false alert for generic non-abstract graph extensions.
 
-### Other Changes
+## Gratitudes 
+The Acuminator team would like to thank our open source contributor @taskinkemal. We are grateful for your input and hope you stay with us.
 
 
 ## Acuminator 3.1.1
