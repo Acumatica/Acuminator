@@ -860,5 +860,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1095PXDBScalar", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXOverrideSignatureMismatch.
+        /// </summary>
+        public static string PX1096 {
+            get {
+                return ResourceManager.GetString("PX1096", resourceCulture);
+            }
+        }
     }
 }

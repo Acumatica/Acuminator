@@ -384,4 +384,7 @@
   <data name="PX1095PXDBScalar" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBScalar</value>
   </data>
+  <data name="PX1096" xml:space="preserve">
+    <value>PXOverrideSignatureMismatch</value>
+  </data>
 </root>
