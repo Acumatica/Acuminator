@@ -104,7 +104,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(TypeFullNames.PXAdapter);
 		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlTable);
 		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlField);
-		public INamedTypeSymbol BqlConstantType => Compilation.GetTypeByMetadataName(TypeFullNames.Constant);
+		public INamedTypeSymbol? BqlConstantType => Compilation.GetTypeByMetadataName(TypeFullNames.Constant);
 
 		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(TypeFullNames.IPXResultset);
 		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(TypeFullNames.PXResult);
