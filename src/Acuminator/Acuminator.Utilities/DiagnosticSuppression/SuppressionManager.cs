@@ -315,14 +315,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			SyntaxNode? root = diagnostic.Location.SourceTree?.GetRoot(cancellation);
 			SyntaxNode? node = root?.FindNode(diagnostic.Location.SourceSpan);
 			bool containsComment = false;
-			string shortName = diagnostic.Descriptor.CustomTags.FirstOrDefault();
+			string? shortName = diagnostic.Descriptor.CustomTags.FirstOrDefault()?.NullIfWhiteSpace();
 
 			// Climb to the hill. Looking for comment on parents nodes.
 			while (node != null && node != root)
 			{
 				containsComment = CheckSuppressionCommentOnNode(diagnostic, shortName, node, cancellation);
 
-				if (node is StatementSyntax || node is MemberDeclarationSyntax || containsComment)
+				if (node is (StatementSyntax or MemberDeclarationSyntax or UsingDirectiveSyntax) || containsComment)
 					break;
 
 				node = node.Parent;
@@ -331,16 +331,19 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return containsComment;
 		}
 
-		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, string diagnosticShortName, SyntaxNode node, CancellationToken cancellation)
+		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, string? diagnosticShortName, SyntaxNode node, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
-			var successfulMatch = node?.GetLeadingTrivia()
-									   .Where(x => x.IsKind(SyntaxKind.SingleLineCommentTrivia))
-									   .Select(trivia => _suppressPattern.Match(trivia.ToString()))
-									   .FirstOrDefault(match => match.Success &&
-																diagnostic.Id == match.Groups[1].Value &&
-																diagnosticShortName == match.Groups[2].Value);
 
+			var trivias = node.GetLeadingTrivia();
+
+			if (trivias.Count == 0)
+				return false;
+
+			var successfulMatch = trivias.Where(x => x.IsKind(SyntaxKind.SingleLineCommentTrivia))
+										 .Select(trivia => _suppressPattern.Match(trivia.ToString()))
+										 .FirstOrDefault(match => match.Success && diagnostic.Id == match.Groups[1].Value &&
+																  (diagnosticShortName == null || diagnosticShortName == match.Groups[2].Value));
 			return successfulMatch != null;
 		}
 
