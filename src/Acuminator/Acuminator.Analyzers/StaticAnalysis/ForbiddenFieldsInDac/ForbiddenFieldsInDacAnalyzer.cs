@@ -6,6 +6,7 @@ using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -21,18 +22,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 	/// </summary>
 	public class ForbiddenFieldsInDacAnalyzer : DacAggregatedAnalyzerBase
 	{
-		private const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
-		private const string CompanyID = "CompanyID";
-		private const string CompanyMask = "CompanyMask";
-
-		public static string[] GetForbiddenFieldsNames() => 
-			new string[]
-			{
-				DeletedDatabaseRecord,
-				CompanyID,
-				CompanyMask
-			};
-		
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -44,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			string[] forbiddenNames = GetForbiddenFieldsNames();
+			var forbiddenNames = DacFieldNames.Restricted.All;
 			var invalidProperties = from forbiddenFieldName in forbiddenNames
 									where dacOrDacExtension.PropertiesByNames.ContainsKey(forbiddenFieldName)
 									select dacOrDacExtension.PropertiesByNames[forbiddenFieldName];
@@ -68,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 		private void RegisterDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
 		{
-			bool isDeletedDatabaseRecord = string.Equals(identifier.ValueText, DeletedDatabaseRecord, StringComparison.OrdinalIgnoreCase);
+			bool isDeletedDatabaseRecord = DacFieldNames.Restricted.DeletedDatabaseRecord.Equals(identifier.ValueText, StringComparison.OrdinalIgnoreCase);
 			DiagnosticDescriptor descriptorToShow = 
 				isDeletedDatabaseRecord && !pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
 					? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV

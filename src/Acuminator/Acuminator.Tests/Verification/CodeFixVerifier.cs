@@ -1,13 +1,22 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
+
 using Xunit;
+
 using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Verification
@@ -22,10 +31,7 @@ namespace Acuminator.Tests.Verification
 		/// Returns the codefix being tested (C#) - to be implemented in non-abstract class
 		/// </summary>
 		/// <returns>The CodeFixProvider to be used for CSharp code</returns>
-		protected virtual CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return null;
-		}
+		protected abstract CodeFixProvider GetCSharpCodeFixProvider();
 
 		/// <summary>
 		/// Called to test a C# codefix when applied on the inputted string as a source
@@ -47,6 +53,7 @@ namespace Acuminator.Tests.Verification
 		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
+		[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "Ok in unit tests")]
 		protected void VerifyCSharpFix(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
 		{
 			VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource,
@@ -85,8 +92,7 @@ namespace Acuminator.Tests.Verification
 					break;
 				}
 
-				document = await ApplyCodeActionAsync(document, actions.ElementAt(codeFixIndex)).ConfigureAwait(false);
-				
+				document = await ApplyCodeActionAsync(document, actions.ElementAt(codeFixIndex)).ConfigureAwait(false);		
 				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }, checkOnlyFirstDocument: true).ConfigureAwait(false);
 
 				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
@@ -95,14 +101,20 @@ namespace Acuminator.Tests.Verification
 				if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
 				{
 					// Format and get the compiler diagnostics again so that the locations make sense in the output
-					document = document.WithSyntaxRoot(Formatter.Format(await document.GetSyntaxRootAsync().ConfigureAwait(false), 
-						Formatter.Annotation, document.Project.Solution.Workspace));
+					var changedRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+					var formattedRoot = Formatter.Format(changedRoot, Formatter.Annotation, document.Project.Solution.Workspace);
+
+					document = document.WithSyntaxRoot(formattedRoot);
 					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
 
+					var formattedDocumentRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+					var documentString = formattedDocumentRoot?.ToFullString() ?? "Failed to obtain the changed document";
+
 					Assert.True(false,
-						string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
-							string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
-							(await document.GetSyntaxRootAsync().ConfigureAwait(false)).ToFullString()));
+						string.Format($"Fix introduced new compiler diagnostics:{Environment.NewLine}{{0}}{Environment.NewLine}{Environment.NewLine}"+
+									  $"New document:{Environment.NewLine}{{1}}{Environment.NewLine}",
+									  newCompilerDiagnostics.Select(d => d.ToString()).Join(Environment.NewLine),
+									  documentString));
 				}
 
 				//check if there are analyzer diagnostics left after the code fix

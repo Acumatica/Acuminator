@@ -1,15 +1,38 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
     public static class DacSymbolsUtils
     {
+		/// <summary>
+		/// Get the DAC type for a type symbol. Return <c>null</c> if <paramref name="type"/> is not a DAC and not a DAC extension.
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <param name="pxContext">The Acumatica context.</param>
+		/// <returns>
+		/// The DAC type or <c>null</c> if <paramref name="type"/> is not a DAC and not a DAC extension.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static DacType? GetDacType(this ITypeSymbol type, PXContext pxContext)
+		{
+			return type.CheckIfNull(nameof(type)).IsDAC(pxContext)
+				? DacType.Dac
+				: type.IsDacExtension(pxContext)
+					? DacType.DacExtension
+					: null;
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDAC(this ITypeSymbol typeSymbol)
 		{
@@ -103,11 +126,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns>
 		/// The DAC from view.
 		/// </returns>
-		public static ITypeSymbol GetDacFromView(this ITypeSymbol pxView, PXContext pxContext)
+		public static ITypeSymbol? GetDacFromView(this ITypeSymbol pxView, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type) != true)
+			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type!) != true)
 				return null;
 
 			INamedTypeSymbol baseViewType;
@@ -144,7 +167,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns>
 		/// The DAC from action.
 		/// </returns>
-		public static ITypeSymbol GetDacFromAction(this INamedTypeSymbol pxAction)
+		public static ITypeSymbol? GetDacFromAction(this INamedTypeSymbol pxAction)
 		{
 			if (pxAction?.IsPXAction() != true)
 				return null;
@@ -168,7 +191,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns>
 		/// The DAC from DAC extension.
 		/// </returns>
-		public static ITypeSymbol GetDacFromDacExtension(this ITypeSymbol dacExtension, PXContext pxContext)
+		public static ITypeSymbol? GetDacFromDacExtension(this ITypeSymbol dacExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -207,6 +230,50 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				   typeSymbol.TypeKind == TypeKind.TypeParameter ||
 				   typeSymbol.TypeKind == TypeKind.Interface ||
 				   typeSymbol.TypeKind == TypeKind.Unknown;
+		}
+
+
+		/// <summary>
+		/// Check if <paramref name="dac"/> is projection DAC.
+		/// </summary>
+		/// <param name="dac">The DAC type to act on.</param>
+		/// <param name="pxContext">The Acumatica context.</param>
+		/// <param name="checkTypeIsDac">True to check that type is DAC.</param>
+		/// <returns>
+		/// True if <paramref name="dac"/> is a projection dac, false if not.
+		/// </returns>
+		public static bool IsProjectionDac(this ITypeSymbol dac, PXContext pxContext, bool checkTypeIsDac)
+		{
+			var projectionAttributeApplication = GetProjectionAttributeApplication(dac, pxContext, checkTypeIsDac);
+			return projectionAttributeApplication != null;
+		}
+
+
+		/// <summary>
+		/// Get the projection attribute application from <paramref name="dac"/>.
+		/// </summary>
+		/// <param name="dac">The DAC type to act on.</param>
+		/// <param name="pxContext">The Acumatica context.</param>
+		/// <param name="checkTypeIsDac">True to check that type is DAC.</param>
+		/// <returns>
+		/// The application of a projection attribute.
+		/// </returns>
+		public static AttributeData? GetProjectionAttributeApplication(this ITypeSymbol dac, PXContext pxContext, bool checkTypeIsDac)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
+			dac.ThrowOnNull(nameof(dac));
+
+			if (checkTypeIsDac && !dac.IsDAC(pxContext))
+				return null;
+
+			var projectionAttribute = pxContext.AttributeTypes.PXProjectionAttribute;
+
+			if (projectionAttribute == null)
+				return null;
+
+			var attributes = dac.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes();
+			var projectionAttributeApplication = attributes.FirstOrDefault(a => a.AttributeClass != null && a.AttributeClass.InheritsFromOrEquals(projectionAttribute));
+			return projectionAttributeApplication;
 		}
 	}
 }

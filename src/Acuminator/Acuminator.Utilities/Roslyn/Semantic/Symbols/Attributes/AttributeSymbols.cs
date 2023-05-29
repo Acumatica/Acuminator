@@ -28,6 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         public INamedTypeSymbol PXDBDefaultAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBDefaultAttribute);
         public INamedTypeSymbol PXForeignReferenceAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXForeignReferenceAttribute);
         public INamedTypeSymbol PXDimensionSelectorAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDimensionSelectorAttribute);
+        public INamedTypeSymbol PXProjectionAttribute		 => Compilation.GetTypeByMetadataName(TypeFullNames.PXProjectionAttribute);
 
 		private readonly Lazy<PXUIFieldAttributeSymbols> _pxUiFieldAttribute;
 		public PXUIFieldAttributeSymbols PXUIFieldAttribute => _pxUiFieldAttribute.Value;

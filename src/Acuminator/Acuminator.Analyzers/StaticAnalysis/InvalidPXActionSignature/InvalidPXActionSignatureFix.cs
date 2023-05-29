@@ -1,12 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -103,7 +107,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				return _document.WithSyntaxRoot(newRoot);
 			}
 
-			private TypeSyntax GetNewReturnType(SyntaxGenerator generator, SemanticModel semanticModel, CancellationToken cancellationToken)
+			private TypeSyntax? GetNewReturnType(SyntaxGenerator generator, SemanticModel semanticModel, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 					return null;
@@ -113,7 +117,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				return ienumerableTypeNode;
 			}
 
-			private ParameterListSyntax GetNewParametersList(SyntaxGenerator generator, PXContext pxContext, CancellationToken cancellationToken)
+			private ParameterListSyntax? GetNewParametersList(SyntaxGenerator generator, PXContext pxContext, CancellationToken cancellationToken)
 			{
 				var pxAdapterTypeNode = generator.TypeExpression(pxContext.PXAdapterType);
 
@@ -147,7 +151,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 
 			private SyntaxNode AddCollectionsUsing(SyntaxNode root, SyntaxGenerator generator, CancellationToken cancellationToken)
 			{
-				if (!(root is CompilationUnitSyntax compilationUnit))
+				if (root is not CompilationUnitSyntax compilationUnit)
 					return root;
 
 				var oldUsings = compilationUnit.Usings;

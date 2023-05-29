@@ -1,19 +1,23 @@
-﻿using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Utilities.DiagnosticSuppression.IO;
-using Acuminator.Utilities.DiagnosticSuppression.BuildAction;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
+﻿#nullable enable
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Xml.Linq;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression.BuildAction;
+using Acuminator.Utilities.DiagnosticSuppression.IO;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Xml.Linq;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -22,7 +26,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
 		private static object _initializationLocker = new object();
 
-		internal static SuppressionManager Instance
+		internal static SuppressionManager? Instance
 		{
 			get;
 			private set;
@@ -30,13 +34,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private readonly FilesStore _fileByAssembly = new FilesStore();
 
-		internal ICustomBuildActionSetter BuildActionSetter { get; }
+		internal ICustomBuildActionSetter? BuildActionSetter { get; }
 
 		
 		private readonly ISuppressionFileSystemService _fileSystemService;
 		private readonly SuppressionFileCreator _suppressionFileCreator;
 
-		private SuppressionManager(ISuppressionFileSystemService fileSystemService, ICustomBuildActionSetter buildActionSetter)
+		private SuppressionManager(ISuppressionFileSystemService fileSystemService, ICustomBuildActionSetter? buildActionSetter)
 		{
 			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
 			_suppressionFileCreator = new SuppressionFileCreator(this);
@@ -45,35 +49,35 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
-									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
-									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
+									   Func<ISuppressionFileSystemService>? fileSystemServiceFabric = null,
+									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(additionalFiles, fileSystemServiceFabric, null, buildActionSetterFabric);
 
 		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
-									   Func<IIOErrorProcessor> errorProcessorFabric = null,
-									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
+									   Func<IIOErrorProcessor>? errorProcessorFabric = null,
+									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(additionalFiles, null, errorProcessorFabric, buildActionSetterFabric);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
-									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
-									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
+									   Func<ISuppressionFileSystemService>? fileSystemServiceFabric = null,
+									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfo(generateSuppressionBase),
 						fileSystemServiceFabric, null, buildActionSetterFabric);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase,
-									   Func<IIOErrorProcessor> errorProcessorFabric = null,
-									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null)
+									   Func<IIOErrorProcessor>? errorProcessorFabric = null,
+									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null)
 		{
 			var suppressionFileInfos = workspace?.CurrentSolution?.GetSuppressionInfo(generateSuppressionBase);
 			InitOrReset(suppressionFileInfos, null, errorProcessorFabric, buildActionSetterFabric);
 		}
 
-		private static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> suppressionFileInfos,
-										Func<ISuppressionFileSystemService> fileSystemServiceFabric,
-										Func<IIOErrorProcessor> errorProcessorFabric,
-										Func<ICustomBuildActionSetter> buildActionSetterFabric)
+		private static void InitOrReset(IEnumerable<SuppressionManagerInitInfo>? suppressionFileInfos,
+										Func<ISuppressionFileSystemService>? fileSystemServiceFabric,
+										Func<IIOErrorProcessor>? errorProcessorFabric,
+										Func<ICustomBuildActionSetter>? buildActionSetterFabric)
 		{
-			suppressionFileInfos = suppressionFileInfos ?? Enumerable.Empty<SuppressionManagerInitInfo>();
+			suppressionFileInfos ??= Enumerable.Empty<SuppressionManagerInitInfo>();
 
 			lock (_initializationLocker)
 			{
@@ -83,7 +87,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 					if (fileSystemServiceFabric == null)
 					{
-						IIOErrorProcessor errorProcessor = errorProcessorFabric?.Invoke();
+						IIOErrorProcessor? errorProcessor = errorProcessorFabric?.Invoke();
 						fileSystemService = new SuppressionFileWithChangesTrackingSystemService(errorProcessor);
 					}
 					else
@@ -91,7 +95,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 						fileSystemService = fileSystemServiceFabric();
 					}
 
-					ICustomBuildActionSetter customBuildActionSetter = buildActionSetterFabric?.Invoke();
+					ICustomBuildActionSetter? customBuildActionSetter = buildActionSetterFabric?.Invoke();
 					Instance = new SuppressionManager(fileSystemService, customBuildActionSetter);
 				}
 				else
@@ -182,7 +186,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return suppressionFile;
 		}
 
-		public SuppressionFile GetSuppressionFile(string assemblyName) =>
+		public SuppressionFile? GetSuppressionFile(string assemblyName) =>
 			_fileByAssembly.TryGetValue(assemblyName.CheckIfNullOrWhiteSpace(nameof(assemblyName)), out var existingSuppressionFile)
 				? existingSuppressionFile
 				: null;
@@ -193,7 +197,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return Instance._suppressionFileCreator.CreateSuppressionFileForProjectFromCommand(project);
 		}
 
-		public static TextDocument CreateRoslynAdditionalFile(Project project) =>
+		public static TextDocument? CreateRoslynAdditionalFile(Project project) =>
 			CheckIfInstanceIsInitialized(throwOnNotInitialized: false)
 				? Instance._suppressionFileCreator.AddAdditionalSuppressionDocumentToProject(project)
 				: null;
@@ -224,7 +228,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return true;
 		}
 
-		public static bool CheckIfInstanceIsInitialized(bool throwOnNotInitialized)
+		[System.Diagnostics.CodeAnalysis.MemberNotNullWhen(returnValue: true, nameof(Instance))]
+		public static bool CheckIfInstanceIsInitialized([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(true)] bool throwOnNotInitialized)
 		{
 			if (Instance == null)
 			{
@@ -307,8 +312,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			SyntaxNode root = diagnostic.Location.SourceTree?.GetRoot();
-			SyntaxNode node = root?.FindNode(diagnostic.Location.SourceSpan);
+			SyntaxNode? root = diagnostic.Location.SourceTree?.GetRoot(cancellation);
+			SyntaxNode? node = root?.FindNode(diagnostic.Location.SourceSpan);
 			bool containsComment = false;
 			string shortName = diagnostic.Descriptor.CustomTags.FirstOrDefault();
 
@@ -348,7 +353,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			if (assembly == null)
 				return false;
 
-			SuppressionFile file = GetSuppressionFile(assembly);
+			SuppressionFile? file = GetSuppressionFile(assembly);
 
 			if (file == null)
 				return false;

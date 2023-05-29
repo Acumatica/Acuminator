@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -201,6 +203,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return modifiers.Any(SyntaxKind.ReadOnlyKeyword);
 		}
 
+		public static bool IsOverride(this MemberDeclarationSyntax member)
+		{
+			SyntaxTokenList modifiers = member.GetModifiers();
+			return modifiers.Any(SyntaxKind.OverrideKeyword);
+		}
+
 		public static bool IsPartial(this TypeDeclarationSyntax typeDeclaration) =>
 			typeDeclaration.CheckIfNull(nameof(typeDeclaration))
 						   .Modifiers
@@ -306,5 +314,25 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				ElementBindingExpressionSyntax elementBinding                   => elementBinding.ArgumentList,
 				_                                                               => null
 			};
+
+		public static string? GetDocTagName(this XmlNodeSyntax docTagNode) => docTagNode switch
+		{
+			XmlElementSyntax docTagWithContent	 => docTagWithContent.StartTag?.Name?.ToString(),
+			XmlEmptyElementSyntax oneLinerDocTag => oneLinerDocTag.Name?.ToString(),
+			_									 => null
+		};
+
+		public static bool ContainsNewLine(this in SyntaxTriviaList trivias)
+		{
+			for (int i = 0; i < trivias.Count; i++)
+			{
+				SyntaxTrivia trivia = trivias[i];
+
+				if (trivia.Kind() is SyntaxKind.EndOfLineTrivia or SyntaxKind.XmlTextLiteralNewLineToken)
+					return true;
+			}
+
+			return false;
+		}
 	}
 }

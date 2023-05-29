@@ -1,11 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -18,9 +19,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	public class PublicClassXmlCommentAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment);
+			new[]
+			{
+				Descriptors.PX1007_PublicClassNoXmlComment,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription
+			}
+			.ToImmutableArray();
 
-		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings codeAnalysisSettings) :
+		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) :
 										base(codeAnalysisSettings)
 		{
 		}
@@ -44,11 +50,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax))
-				return;
-
-			var commentsWalker = new XmlCommentsWalker(syntaxContext, pxContext, CodeAnalysisSettings);
-			compilationUnitSyntax.Accept(commentsWalker);
+			if (syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax)
+			{
+				var commentsWalker = new XmlCommentsWalker(syntaxContext, pxContext, CodeAnalysisSettings!);
+				compilationUnitSyntax.Accept(commentsWalker);
+			}
 		}
 	}
 }

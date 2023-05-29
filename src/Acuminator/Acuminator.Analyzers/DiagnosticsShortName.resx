@@ -321,7 +321,7 @@
   <data name="PX1095PXDBCalced" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBCalced</value>
   </data>
-  <data name="PX1007" xml:space="preserve">
+  <data name="PX1007NoXmlComment" xml:space="preserve">
     <value>NoXmlCommentForPublicEntityOrDacProperty</value>
   </data>
   <data name="PX1019" xml:space="preserve">
@@ -386,5 +386,8 @@
   </data>
   <data name="PX1096" xml:space="preserve">
     <value>PXOverrideSignatureMismatch</value>
+  </data>
+  <data name="PX1007IncorrectProjectionDacFieldComment" xml:space="preserve">
+    <value>IncorrectProjectionDacFieldComment</value>
   </data>
 </root>

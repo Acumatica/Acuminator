@@ -159,11 +159,11 @@
   <data name="PX1006Title" xml:space="preserve">
     <value>This order of view declarations will cause creation of one cache instance for the following DACs: {0} and {1}</value>
   </data>
-  <data name="PX1007FixExcludeClass" xml:space="preserve">
-    <value>Exclude the class from the API Reference</value>
+  <data name="PX1007FixAddExcludeTag" xml:space="preserve">
+    <value>Add the <exclude/> tag to exclude this API from the API Reference</value>
   </data>
-  <data name="PX1007Title" xml:space="preserve">
-    <value>The DAC, DAC extension, or DAC property should have a description in the summary XML tag</value>
+  <data name="PX1007Title_MissingDescription" xml:space="preserve">
+    <value>The DAC, DAC extension, or DAC property should have a description in the <summary> tag or <inheritdoc/> tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
     <value>The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues.</value>
@@ -480,8 +480,8 @@
   <data name="PX1043TitleRowPersistedNonISV" xml:space="preserve">
     <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisted event handler</value>
   </data>
-  <data name="PX1007FixAddDescription" xml:space="preserve">
-    <value>Add a description</value>
+  <data name="PX1007FixAddSummaryTag" xml:space="preserve">
+    <value>Add the <summary> tag with the description generated from the API name</value>
   </data>
   <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
     <value>Suppress the {0} diagnostic with Acuminator</value>
@@ -672,5 +672,16 @@
   </data>
   <data name="PX1096Title" xml:space="preserve">
     <value>The signature of the method with the PXOverride attribute must match the overriden method</value>
+  </data>
+  <data name="PX1007Title_IncorrectProjectionDacFieldDescription" xml:space="preserve">
+    <value>Incorrect XML documentation of the projection DAC field property. The <inheritdoc/> tag with `cref` attribute should be used for a mapped DAC field property of the projection DAC.
+The `cref` attribute should reference the original DAC field property from the projection field's mapping:
+
+/// &lt;inheritdoc cref="OriginalDac.SomeDacField"/&gt;
+[PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
+public virtual int? SomeDacField{ get; set; }</value>
+  </data>
+  <data name="PX1007FixAddInheritdocTag" xml:space="preserve">
+    <value>Add the <inheritdoc/> tag for the projection DAC property with `cref` attribute referencing the mapped original DAC property</value>
   </data>
 </root>

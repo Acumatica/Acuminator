@@ -152,6 +152,7 @@
 
 		public const string PXStringListAttribute = "PX.Data.PXStringListAttribute";
 
+		public const string PXProjectionAttribute = "PX.Data.PXProjectionAttribute";
 		public const string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
 		public const string PXDimensionSelectorAttribute = "PX.Data.PXDimensionSelectorAttribute";
 		public const string PXParentAttribute = "PX.Data.PXParentAttribute";
