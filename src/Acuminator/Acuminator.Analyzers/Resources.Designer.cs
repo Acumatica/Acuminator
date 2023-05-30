@@ -196,7 +196,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add an &quot;exclude&quot; tag to exclude this API from the API Reference.
+        ///   Looks up a localized string similar to Add the &lt;exclude/&gt; tag to exclude this API from the API Reference.
         /// </summary>
         public static string PX1007FixAddExcludeTag {
             get {
@@ -205,7 +205,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add an &quot;inheritdoc&quot; tag for the projection DAC property with &quot;cref&quot; attribute referencing the mapped original DAC property.
+        ///   Looks up a localized string similar to Add the &lt;inheritdoc/&gt; tag for the projection DAC property with `cref` attribute referencing the mapped original DAC property.
         /// </summary>
         public static string PX1007FixAddInheritdocTag {
             get {
@@ -214,7 +214,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add a &quot;summary&quot; tag with description generated from the API name.
+        ///   Looks up a localized string similar to Add the &lt;summary&gt; tag with the description generated from the API name.
         /// </summary>
         public static string PX1007FixAddSummaryTag {
             get {
@@ -223,8 +223,8 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Incorrect XML documentation of the projection DAC field property. The &quot;inheritdoc&quot; tag with &quot;cref&quot; attribute should be used for a mapped DAC field property of the projection DAC.
-        ///The &quot;cref&quot; attribute should reference the original DAC field property from the projection field&apos;s mapping:
+        ///   Looks up a localized string similar to Incorrect XML documentation of the projection DAC field property. The &lt;inheritdoc/&gt; tag with `cref` attribute should be used for a mapped DAC field property of the projection DAC.
+        ///The `cref` attribute should reference the original DAC field property from the projection field&apos;s mapping:
         ///
         ////// &lt;inheritdoc cref=&quot;OriginalDac.SomeDacField&quot;/&gt;
         ///[PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
@@ -237,7 +237,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the &quot;summary&quot; XML tag or &quot;inheritdoc&quot; XML tag.
+        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the &lt;summary&gt; tag or &lt;inheritdoc/&gt; tag.
         /// </summary>
         public static string PX1007Title_MissingDescription {
             get {
