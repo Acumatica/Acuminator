@@ -18,7 +18,7 @@ In Acuminator 3.1.2, the following enhancements have been implemented:
    - The diagnostic now supports the `inheritdoc` tag for DACs, DAC extensions, and their properties. The diagnostic also checks that mapped DAC field properties of projection DACs have the `inheritdoc` tag with the `cref` attribute pointing to the corresponding DAC field property of the original DAC. 
    - A new code fix can generate the `inheritdoc` tag for a mapped DAC property of a projection DAC.
    - Code fixes of the diagnostic can now generate documentation correctly even for a badly formatted code and remove incorrect documentation tags in case of mapped projection DAC field properties. The code fixes also support doc tags declared as empty XML elements such as `<summary/>`.
-   - The default justification "to be documented later" has been removed from the diagnostic. To remove the DAC or its property from the documentation, use the `exclude` tag.
+   - The default justification "to be documented later" has been removed from the diagnostic. To exclude a DAC, DAC extension or DAC field property from the documentation, use the `exclude` tag.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
