@@ -17,8 +17,11 @@ In Acuminator 3.1.2, the following enhancements have been implemented:
  - The [PX1007](diagnostics/PX1007.md) diagnostic has been updated in the following ways:
    - The diagnostic now supports the `inheritdoc` tag for DACs, DAC extensions, and their properties. The diagnostic also checks that mapped DAC field properties have the `inheritdoc` tag with the `cref` attribute pointing to the mapped DAC field property of the original DAC. 
    - A new code fix can generate the `inheritdoc` tag for a mapped DAC property of a projection DAC.
-   - Code fixes of the diagnostic can now generate documentation correctly even for a badly formatted code and remove incorrect documentation tags. The code fixes also support doc tags declared as empty XML elements such as `<summary/>`.
+     This code fix also removes incorrect documentation tags such as `summary` or incorrectly declared `inheritdoc`.
+   - Code fixes of the diagnostic can now generate documentation correctly even for a badly formatted code (such as no extra spaces between the property and the abstract class) and remove incorrect documentation tags. The code fixes also support doc tags declared as empty XML elements such as `<summary/>`.
    - The default justification "to be documented later" has been removed from the diagnostic. To remove the DAC or its property from the documentation, use the `exclude` tag.
+   > **Note:** 
+   > To apply multiple code fixes quickly, you can now use the **Fix All** button of the code fix menu in Visual Studio.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
