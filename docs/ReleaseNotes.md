@@ -6,7 +6,7 @@ Acuminator 3.1.2 includes the bug fixes and enhancements described in this secti
 
 ### Enhancements
 In Acuminator 3.1.2, the following enhancements have been implemented:
- - The [PX1096](diagnostics/PX1096.md) diagnostic has been added to check signature of methods with the `PXOverride` attribute: The diagnostic checks that the base graph or base graph extensions contains a base method that is compatible with the method with the `PXOverride` attribute. 
+ - The [PX1096](diagnostics/PX1096.md) diagnostic has been added to check signature of methods with the `PXOverride` attribute: The diagnostic checks whether the base graph or base graph extensions contain a base method  compatible with the method with the `PXOverride` attribute. 
  - The [PX1007](diagnostics/PX1007.md) diagnostic no longer checks the following DAC fields for a code annotation:
    - `Selected`
    - `Attributes`
