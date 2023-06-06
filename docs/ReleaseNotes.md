@@ -6,7 +6,7 @@ Acuminator 3.1.2 includes the bug fixes and enhancements described in this secti
 
 ### Enhancements
 In Acuminator 3.1.2, the following enhancements have been implemented:
- - The [PX1096](diagnostics/PX1096.md) diagnostic has been added to check signature of methods with the `PXOverride` attribute: The diagnostic checks that the base graph or base graph extensions contains a base method that is compatible with the method with the `PXOverride` attribute. 
+ - The [PX1096](diagnostics/PX1096.md) diagnostic has been added to check signature of methods with the `PXOverride` attribute: The diagnostic checks whether the base graph or base graph extensions contain a base method  compatible with the method with the `PXOverride` attribute. 
  - The [PX1007](diagnostics/PX1007.md) diagnostic no longer checks the following DAC fields for a code annotation:
    - `Selected`
    - `Attributes`
@@ -15,11 +15,11 @@ In Acuminator 3.1.2, the following enhancements have been implemented:
    - `CompanyMask`
    - `DeletedDatabaseRecord`
  - The [PX1007](diagnostics/PX1007.md) diagnostic has been updated in the following ways:
-   - The diagnostic now supports the `inheritdoc` tag for DACs, DAC extensions, and their properties. The diagnostic also checks that mapped DAC field properties have the `inheritdoc` tag with the `cref` attribute pointing to the mapped DAC field property of the original DAC. 
+   - The diagnostic now supports the `inheritdoc` tag for DACs, DAC extensions, and their properties. The diagnostic also checks that mapped DAC field properties of projection DACs have the `inheritdoc` tag with the `cref` attribute pointing to the corresponding DAC field property of the original DAC. 
    - A new code fix can generate the `inheritdoc` tag for a mapped DAC property of a projection DAC.
      This code fix also removes incorrect documentation tags such as `summary` or incorrectly declared `inheritdoc`.
    - Code fixes of the diagnostic can now generate documentation correctly even for a badly formatted code (such as no extra spaces between the property and the abstract class) and remove incorrect documentation tags. The code fixes also support doc tags declared as empty XML elements such as `<summary/>`.
-   - The default justification "to be documented later" has been removed from the diagnostic. To remove the DAC or its property from the documentation, use the `exclude` tag.
+   - The default justification "to be documented later" has been removed from the diagnostic. To remove the DAC, DAC extension, or its property from the documentation, use the `exclude` tag.
    > **Note:** 
    > To apply multiple code fixes quickly, you can now use the **Fix All** button of the code fix menu in Visual Studio.
  
