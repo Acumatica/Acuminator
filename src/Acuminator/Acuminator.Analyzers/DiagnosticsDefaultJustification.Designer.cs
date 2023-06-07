@@ -70,6 +70,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to to be documented later.
+        /// </summary>
+        public static string PX1007 {
+            get {
+                return ResourceManager.GetString("PX1007", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to extension should be constantly active.
         /// </summary>
         public static string PX1016 {
