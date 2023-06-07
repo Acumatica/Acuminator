@@ -62,12 +62,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1007_PublicClassNoXmlComment { get; } =
             Rule("PX1007", nameof(Resources.PX1007Title_MissingDescription).GetLocalized(), Category.Documentation, 
-				DiagnosticSeverity.Warning, DiagnosticsShortName.PX1007NoXmlComment);
+				DiagnosticSeverity.Warning, DiagnosticsShortName.PX1007NoXmlComment,
+				diagnosticDefaultJustification: DiagnosticsDefaultJustification.PX1007);
 
 		public static DiagnosticDescriptor PX1007_InvalidProjectionDacFieldDescription { get; } =
 			Rule("PX1007", nameof(Resources.PX1007Title_IncorrectProjectionDacFieldDescription).GetLocalized(), Category.Documentation,
 				DiagnosticSeverity.Error, DiagnosticsShortName.PX1007IncorrectProjectionDacFieldComment, 
-				DiagnosticsDefaultJustification.PX1007);
+				diagnosticDefaultJustification: DiagnosticsDefaultJustification.PX1007);
 
 		public static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = 
             Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, 
