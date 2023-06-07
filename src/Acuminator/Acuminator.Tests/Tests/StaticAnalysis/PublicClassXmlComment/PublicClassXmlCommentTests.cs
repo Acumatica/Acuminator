@@ -1,12 +1,17 @@
-﻿using Acuminator.Analyzers;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment;
+using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
@@ -27,21 +32,23 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicClass_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(11, 15));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(8, 15),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(16, 15));
 
 		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs")]
 		public async Task PublicClass_WithoutSummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(12, 15));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(9, 15));
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs")]
 		public async Task PublicClass_WithEmptySummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(14, 15));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(15, 15),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(24, 15));
 
 		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
@@ -62,23 +69,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[EmbeddedFileData("DAC_ExcludedWithNested.cs")]
 		public async Task ExcludedWithNested_PublicClasses_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(18, 15),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 16),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(39, 16));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(18, 15),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(27, 16),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(39, 16));
 
 		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs", "WithoutDescription_AddDescription.cs")]
 		public async Task NoXmlComment_AddDescription_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
-
-		[Theory]
-		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_AddDescription.cs")]
-		public async Task NoSummaryTag_AddDescription_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
-
-		[Theory]
-		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_AddDescription.cs")]
-		public async Task EmptySummaryTag_AddDescription_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
@@ -87,9 +84,19 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 
 		[Theory]
+		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_AddDescription.cs")]
+		public async Task NoSummaryOrInheritdocTag_AddDescription_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_Exclude.cs")]
-		public async Task NoSummaryTag_Exclude_Works(string actual, string expected) =>
+		public async Task NoSummaryOrInheritdocTag_Exclude_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
+
+		[Theory]
+		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_AddDescription.cs")]
+		public async Task EmptySummaryTag_AddDescription_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_Exclude.cs")]
@@ -101,19 +108,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicDac_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(22, 17),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 17),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(43, 17));
-
-		[Theory]
-		[EmbeddedFileData("DAC_AddDescription.cs")]
-		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(22, 17),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(32, 17),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(43, 17));
 
 		[Theory]
 		[EmbeddedFileData("DAC_Hidden_Obsolete_InternalUse.cs")]
 		public async Task PublicDACs_With_Hidden_Obsolete_PXInternalUseOnly_Attributes_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DacExtension_Hidden_Obsolete_InternalUse.cs")]
+		public async Task PublicDacExtensions_With_Hidden_Obsolete_PXInternalUseOnly_Attributes(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(13, 22),
+					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(23, 17));
 
 		[Theory]
 		[EmbeddedFileData("DAC_System_Fields.cs")]
@@ -126,11 +135,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("DAC_AddExclude.cs")]
-		public async Task PublicDac_WithExclude_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
-
-		[Theory]
 		[EmbeddedFileData("DAC.cs", "DAC_AddDescription.cs")]
 		public async Task Dac_AddDescription_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
@@ -140,20 +144,134 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task Dac_AddExclude_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 
+		#region Inheritdoc tests
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc.cs")]
+		public async Task ProjectionDac_NoInheritdoc(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(24, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(35, 25),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(46, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(60, 28)
+				);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc.cs", @"Inheritdoc\ProjectionDAC_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoInheritdoc_AddInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDacExtension_NoInheritdoc.cs")]
+		public async Task ProjectionDacExtension_NoInheritdoc(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(21, 15),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(32, 17),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(43, 15),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(57, 20)
+				);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDacExtension_NoInheritdoc.cs",
+						  @"Inheritdoc\ProjectionDacExtension_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDacExtension_NoInheritdoc_AddInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_EmptyInheritdoc.cs")]
+		public async Task ProjectionDac_EmptyInheritdocTags(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(34, 25));
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_EmptyInheritdoc.cs", @"Inheritdoc\ProjectionDAC_EmptyInheritdoc_FixInheritdoc.cs")]
+		public async Task ProjectionDac_EmptyInheritdocTags_FixInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference.cs")]
+		public async Task ProjectionDac_InhertidocWithWrongReference(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(25, 23),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(33, 25),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(45, 25));
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference.cs",
+						  @"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference_FixInheritdoc.cs")]
+		public async Task ProjectionDac_InhertidocWithWrongReference_FixInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NotMappedAndGoodFields.cs")]
+		public async Task ProjectionDAC_NotMapped_Described_Excluded_Fields(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+					Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(26, 24));
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_SystemFields.cs")]
+		public async Task ProjectionDAC_SystemFields_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\NonProjectionDAC_Inheritdoc.cs")]
+		public async Task NonProjectionDAC_WithInhertitdocTags_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+		#endregion
+
+		#region No Empty Line Separator Tests
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc.cs")]
+		public async Task ProjectionDac_NoEmptyLineSeparator_NoInheritdoc(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(23, 23));
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc.cs",
+						  @"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoEmptyLineSeparator_NoInheritdoc_AddInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml.cs")]
+		public async Task PublicDac_NoEmptyLineSeparator_WithoutDescription(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(21, 17),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(30, 17),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(40, 17));
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml.cs",
+						  @"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddSummary.cs")]
+		public async Task PublicDac_NoEmptyLineSeparator_AddDescription_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml.cs",
+								  @"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddExclude.cs")]
+		public async Task PublicDac_NoEmptyLineSeparator_AddExclude_Works(string actual, string expected) =>
+					await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
+		#endregion
+
 		#region Partial class tests		
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs")]
 		public async Task PublicPartialHelper_SingleWithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(10, 23));
 
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithBadComment.cs")]
 		public async Task PublicPartialHelper_BadCommentOnOtherDeclaration(string source, string badCommentSource) =>
 			await VerifyCSharpDiagnosticAsync(
 				source, badCommentSource,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23));
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(10, 23));
 
 		[Theory]
 		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithComment.cs")]
@@ -182,6 +300,83 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicPartialHelper_WithBadComment_CommantOnAnotherDeclaration_DoesntReportDiagnostic(string checkedSource,
 																												string badCommentSource, string sourceWithComment) =>
 			await VerifyCSharpDiagnosticAsync(checkedSource, badCommentSource, sourceWithComment);
+		#endregion
+
+		#region Generated tags tests
+		[Theory]
+		[EmbeddedFileData("WithoutDescription_AddDescription.cs")]
+		public async Task GeneratedDescription_ForApiWithoutDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithoutDescription_Exclude.cs")]
+		public async Task GeneratedExclude_ForApiWithoutDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithEmptySummary_AddDescription.cs")]
+		public async Task GeneratedDescription_ForApiWithEmptySummary_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithEmptySummary_Exclude.cs")]
+		public async Task GeneratedExclude_ForApiWithEmptySummary_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithoutSummary_AddDescription.cs")]
+		public async Task GeneratedDescription_ForApiWithoutSummaryOrInheritdocTag_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("WithoutSummary_Exclude.cs")]
+		public async Task GeneratedExclude_ForApiWithoutSummaryOrInheritdocTag_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_AddExclude.cs")]
+		public async Task PublicDac_WithExclude_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_AddDescription.cs")]
+		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_EmptyInheritdoc_FixInheritdoc.cs")]
+		public async Task ProjectionDac_WithEmptyInheritdocs_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_InheritdocWithWrongReference_FixInheritdoc.cs")]
+		public async Task ProjectionDac_WithInheritdocWithWrongReference_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+			
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDacExtension_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDacExtension_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddSummary.cs")]
+		public async Task DAC_NoEmptyLine_NoXml_AfterSummaryAdd_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\DAC_NoEmptyLine_NoXml_AddExclude.cs")]
+		public async Task DAC_NoEmptyLine_NoXml_AfterExcludeAdd_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_NoEmptyLine_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
 		#endregion
 	}
 }

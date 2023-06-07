@@ -68,5 +68,104 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			return symbol.ContainingType == type || symbol.ContainingType == type.OriginalDefinition;
 		}
+
+		/// <summary>
+		/// Check if the <paramref name="symbol"/> has an attribute of a given <paramref name="attributeType"/>.
+		/// </summary>
+		/// <param name="symbol">The property to act on.</param>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="checkOverrides">True to check method overrides.</param>
+		/// <param name="checkForDerivedAttributes">(Optional) True to check for attributes derived from <paramref name="attributeType"/>.</param>
+		/// <returns>
+		/// True if <paramref name="symbol"/> has attribute of <paramref name="attributeType"/>, false if not.
+		/// </returns>
+		public static bool HasAttribute<TSymbol>(this TSymbol symbol, INamedTypeSymbol attributeType, bool checkOverrides,
+												 bool checkForDerivedAttributes = true)
+		where TSymbol : class, ISymbol
+		{
+			symbol.ThrowOnNull(nameof(symbol));
+			attributeType.ThrowOnNull(nameof(attributeType));
+
+			Func<TSymbol, bool> attributeCheck = checkForDerivedAttributes
+				? HasDerivedAttribute
+				: HasAttribute;
+
+			if (attributeCheck(symbol))
+				return true;
+
+			if (checkOverrides && symbol.IsOverride)
+			{
+				var overrides = symbol.GetOverridden();
+				return overrides.Any(attributeCheck);
+			}
+
+			return false;
+
+			//-----------------------------------------------------------
+			bool HasAttribute(TSymbol symbolToCheck) =>
+				symbolToCheck.GetAttributes()
+							 .Any(a => a.AttributeClass.Equals(attributeType));
+
+			bool HasDerivedAttribute(TSymbol symbolToCheck) =>
+				symbolToCheck.GetAttributes()
+							 .Any(a => a.AttributeClass.InheritsFromOrEquals(attributeType));
+		}
+
+		/// <summary>
+		/// Gets the <paramref name="symbol"/> and its overriden symbols.
+		/// </summary>
+		/// <param name="symbol">The symbol to act on.</param>
+		/// <returns>
+		/// The <paramref name="symbol"/> and its overriden symbols.
+		/// </returns>
+		public static IEnumerable<TSymbol> GetOverriddenAndThis<TSymbol>(this TSymbol symbol)
+		where TSymbol : class, ISymbol
+		{
+			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
+				return GetOverriddenImpl(symbol, includeThis: true);
+			else
+				return new[] { symbol };
+		}
+
+		/// <summary>
+		/// Gets the overriden symbols of <paramref name="symbol"/>.
+		/// </summary>
+		/// <param name="symbol">The symbol to act on.</param>
+		/// <returns>
+		/// The overriden symbols of <paramref name="symbol"/>.
+		/// </returns>
+		public static IEnumerable<TSymbol> GetOverridden<TSymbol>(this TSymbol symbol)
+		where TSymbol : class, ISymbol
+		{
+			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
+				return GetOverriddenImpl(symbol, includeThis: false);
+			else
+				return Enumerable.Empty<TSymbol>();
+		}
+
+		private static IEnumerable<TSymbol> GetOverriddenImpl<TSymbol>(TSymbol symbol, bool includeThis)
+		where TSymbol : class, ISymbol
+		{
+			TSymbol? current = includeThis ? symbol : symbol.OverriddenSymbol();
+
+			while (current != null)
+			{
+				yield return current;
+				current = current.OverriddenSymbol();
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static TSymbol? OverriddenSymbol<TSymbol>(this TSymbol symbol)
+		where TSymbol : class, ISymbol
+		{
+			return symbol switch
+			{
+				IMethodSymbol method	 => method.OverriddenMethod as TSymbol,
+				IPropertySymbol property => property.OverriddenProperty as TSymbol,
+				IEventSymbol @event		 => @event.OverriddenEvent as TSymbol,
+				_						 => null
+			};
+		}
 	}
 }

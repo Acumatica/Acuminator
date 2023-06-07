@@ -289,7 +289,7 @@
     <value>Loading the Acuminator package</value>
   </data>
   <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description" xml:space="preserve">
-    <value>Display the PX1007 diagnostic, which is shown for the public classes, interfaces, structs, enumerations, delegates, and DAC properties that do not have XML comments.</value>
+    <value>Enable Acuminator PX1007 diagnostic which checks DACs, DAC extensions, and DAC field properties for the valid XML documentation comments.</value>
   </data>
   <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title" xml:space="preserve">
     <value>Enable PX1007 diagnostic</value>

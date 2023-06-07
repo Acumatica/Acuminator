@@ -1,16 +1,73 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
 	public static partial class DacPropertyAndFieldSymbolUtils
-	{	
+	{
+		/// <summary>
+		/// Get corresponding DAC BQL field for a DAC field property <paramref name="property"/>.
+		/// </summary>
+		/// <param name="property">The property to act on. Must be a dac property.</param>
+		/// <param name="pxContext">Acumatica Context.</param>
+		/// <param name="checkContainingTypeIsDac">True for extra safety check that containing type is DAC or DAC extension.</param>
+		/// <returns>
+		/// The corresponding BQL field or null.
+		/// </returns>
+		public static INamedTypeSymbol? GetCorrespondingBqlField(this IPropertySymbol property, PXContext pxContext, bool checkContainingTypeIsDac)
+		{
+			property.ThrowOnNull(nameof(property));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			var containingDacOrDacExt = property.ContainingType;
+
+			if (containingDacOrDacExt == null ||
+				(checkContainingTypeIsDac && !containingDacOrDacExt.IsDacOrExtension(pxContext)))
+			{
+				return null;
+			}
+
+			var mappedBqlField = GetBqlFieldFromTypeByName(containingDacOrDacExt, property.Name);
+
+			if (mappedBqlField != null)
+				return mappedBqlField;
+
+			var currentType = containingDacOrDacExt.BaseType;
+
+			while (currentType != null && currentType.IsDAC(pxContext))
+			{
+				mappedBqlField = GetBqlFieldFromTypeByName(currentType, property.Name);
+
+				if (mappedBqlField != null)
+					return mappedBqlField;
+
+				currentType = currentType.BaseType;
+			}
+
+			return null;
+		}
+
+		private static INamedTypeSymbol? GetBqlFieldFromTypeByName(INamedTypeSymbol type, string caseInsensitiveName)
+		{
+			var members = type.GetMembers();
+
+			if (members.IsDefaultOrEmpty)
+				return null;
+
+			return members.OfType<INamedTypeSymbol>()
+						  .FirstOrDefault(bqlField => caseInsensitiveName.Equals(bqlField.Name, StringComparison.OrdinalIgnoreCase));
+		}
+
 		/// <summary>
 		/// Get the DAC fields symbols and syntax nodes from the DAC.
 		/// </summary>

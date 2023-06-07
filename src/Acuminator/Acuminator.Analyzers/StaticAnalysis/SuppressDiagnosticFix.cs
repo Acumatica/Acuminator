@@ -1,19 +1,24 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reflection;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.DiagnosticSuppression.CodeActions;
+using Acuminator.Utilities.Roslyn.CodeActions;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.DiagnosticSuppression.CodeActions;
-using Acuminator.Utilities.Roslyn.CodeActions;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -21,8 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class SuppressDiagnosticFix : CodeFixProvider
 	{
-		private const string _comment = @"// Acuminator disable once {0} {1} {2}";
-
+		private const string SuppressionCommentFormat = @"// Acuminator disable once {0} {1} {2}";
 		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
 
 		static SuppressDiagnosticFix()
@@ -38,13 +42,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 					return descriptor?.Id;
 				})
 				.Where(id => id != null)
-				.ToImmutableArray();
+				.ToImmutableArray()!;
 		}
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			_fixableDiagnosticIds;
 
-		public override FixAllProvider GetFixAllProvider() => null;		//explicitly disable fix all support
+		public override FixAllProvider? GetFixAllProvider() => null;		//explicitly disable fix all support
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
@@ -61,7 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private void RegisterCodeActionForDiagnostic(Diagnostic diagnostic, CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			CodeAction groupCodeAction = GetCodeActionToRegister(diagnostic, context);
+			CodeAction? groupCodeAction = GetCodeActionToRegister(diagnostic, context);
 
 			if (groupCodeAction != null)
 			{
@@ -69,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			}	
 		}
 
-		protected virtual CodeAction GetCodeActionToRegister(Diagnostic diagnostic, CodeFixContext context)
+		protected virtual CodeAction? GetCodeActionToRegister(Diagnostic diagnostic, CodeFixContext context)
 		{
 			if (!SuppressionManager.CheckIfInstanceIsInitialized(throwOnNotInitialized: false))
 			{
@@ -124,39 +128,58 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		private async Task<Document> AddSuppressionCommentAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
-			var document = context.Document;
-			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			var node = root?.FindNode(context.Span);
+			cancellationToken.ThrowIfCancellationRequested();
 
-			if (diagnostic == null || node == null || cancellationToken.IsCancellationRequested)
+			var document = context.Document;
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? reportedNode = root?.FindNode(context.Span);
+
+			if (diagnostic == null || reportedNode == null)
 				return document;
+
+			cancellationToken.ThrowIfCancellationRequested();
 
 			var (diagnosticShortName, diagnosticJustification) = GetDiagnosticShortNameAndJustification(diagnostic);
 
-			if (!string.IsNullOrWhiteSpace(diagnosticShortName))
+			if (diagnosticShortName.IsNullOrWhiteSpace())
+				return document;
+
+			string suppressionComment = string.Format(SuppressionCommentFormat, diagnostic.Id, diagnosticShortName, diagnosticJustification);
+			var suppressionCommentTrivias = new SyntaxTrivia[]
 			{
-				SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
-					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia,
-											   string.Format(_comment, diagnostic.Id, diagnosticShortName, diagnosticJustification)),
-					SyntaxFactory.ElasticEndOfLine(""));
+				SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, suppressionComment),
+				SyntaxFactory.ElasticEndOfLine("")
+			};
 
-				while (!(node == null || node is StatementSyntax || node is MemberDeclarationSyntax))
-				{
-					node = node.Parent;
-				}
+			SyntaxNode? nodeToPlaceComment = reportedNode;
 
-				SyntaxTriviaList leadingTrivia = node.GetLeadingTrivia();
-				var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
-
-				return document.WithSyntaxRoot(modifiedRoot);
+			while (nodeToPlaceComment is not (StatementSyntax or MemberDeclarationSyntax or UsingDirectiveSyntax or null))
+			{
+				nodeToPlaceComment = nodeToPlaceComment.Parent;
 			}
 
-			return document;
+			if (nodeToPlaceComment == null)
+				return document;
+
+			SyntaxTriviaList leadingTrivia = nodeToPlaceComment.GetLeadingTrivia();
+			SyntaxNode? modifiedRoot;
+
+			if (leadingTrivia.Count > 0)
+				modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), suppressionCommentTrivias);
+			else
+			{
+				var nodeWithSuppressionComment = nodeToPlaceComment.WithLeadingTrivia(suppressionCommentTrivias);
+				modifiedRoot = root.ReplaceNode(nodeToPlaceComment, nodeWithSuppressionComment);
+			}
+
+			return modifiedRoot != null
+				? document.WithSyntaxRoot(modifiedRoot)
+				: document;
 		}
 
-		private (string DiagnosticShortName, string DiagnosticJustification) GetDiagnosticShortNameAndJustification(Diagnostic diagnostic)
+		private (string? DiagnosticShortName, string? DiagnosticJustification) GetDiagnosticShortNameAndJustification(Diagnostic diagnostic)
 		{
-			string[] customTags = diagnostic.Descriptor.CustomTags?.ToArray();
+			string[]? customTags = diagnostic.Descriptor.CustomTags?.ToArray();
 
 			if (customTags.IsNullOrEmpty())
 				return default;

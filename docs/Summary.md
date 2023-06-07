@@ -93,6 +93,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be the graph type. | Error | Available |
 | [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute. | Warning (ISV Level 3: Informational) | Available |
 | [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` or `PXDBScalar` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error | Unavailable |
+| [PX1096](diagnostics/PX1096.md) | Signature of a method with the `PXOverride` attribute must match the overriden method. | Error | Unavailable |
 
 ## Code Refactoring
 Acuminator suggest the following code refactoring:

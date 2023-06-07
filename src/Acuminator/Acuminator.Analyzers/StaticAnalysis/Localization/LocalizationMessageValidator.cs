@@ -192,7 +192,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			}
 
 			return messageProperty.ContainingType.InheritsFromOrEquals(_pxContext.Exceptions.PXException) &&
-				   messageProperty.GetOverridesAndThis()
+				   messageProperty.GetOverriddenAndThis()
 								  .Contains(_pxContext.Exceptions.PXException_Message);
 		}
 

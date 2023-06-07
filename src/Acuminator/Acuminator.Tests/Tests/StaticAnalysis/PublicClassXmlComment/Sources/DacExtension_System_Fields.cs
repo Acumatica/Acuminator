@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.Contracts;
 
 namespace PX.Objects
 {
@@ -16,8 +17,16 @@ namespace PX.Objects
 	/// <summary>
 	/// A DAC extension with system fields. Description is present to avoid diagnostic alert.
 	/// </summary>
-	public class DacExtensionWithSystemFields : PXCacheExtension<BaseDAC>
+	public sealed class DacExtensionWithSystemFields : PXCacheExtension<BaseDAC>
 	{
+		#region Selected
+		public abstract class selected : PX.Data.BQL.BqlBool.Field<selected> { }
+
+		[PXBool]
+		[PXUIField(DisplayName = "Selected", Visible = false)]
+		public virtual bool? Selected { get; set; }
+		#endregion
+
 		#region CreatedByID
 		public abstract class createdByID : PX.Data.BQL.BqlGuid.Field<createdByID> { }
 
@@ -65,6 +74,32 @@ namespace PX.Objects
 
 		[PXDBTimestamp]
 		public virtual byte[] tstamp { get; set; }
+		#endregion
+
+		#region GroupMask
+		public abstract class groupMask : PX.Data.BQL.BqlByteArray.Field<groupMask> { }
+
+		[PXDBGroupMask]
+		public virtual Byte[] GroupMask
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region Attributes
+		public abstract class attributes : BqlAttributes.Field<attributes> { }
+
+		[CRAttributesField(typeof(Contract.templateID))]
+		public virtual string[] Attributes { get; set; }
+		#endregion
+
+		#region DeletedDatabaseRecord
+		public abstract class deletedDatabaseRecord : PX.Data.BQL.BqlBool.Field<deletedDatabaseRecord> { }
+
+		[PXDBBool]
+		[PXDefault(false)]
+		public virtual bool? DeletedDatabaseRecord { get; set; }
 		#endregion
 	}
 }

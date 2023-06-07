@@ -196,29 +196,52 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add a description.
+        ///   Looks up a localized string similar to Add the &lt;exclude/&gt; tag to exclude this API from the API Reference.
         /// </summary>
-        public static string PX1007FixAddDescription {
+        public static string PX1007FixAddExcludeTag {
             get {
-                return ResourceManager.GetString("PX1007FixAddDescription", resourceCulture);
+                return ResourceManager.GetString("PX1007FixAddExcludeTag", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exclude the class from the API Reference.
+        ///   Looks up a localized string similar to Add the &lt;inheritdoc/&gt; tag for the projection DAC property with `cref` attribute referencing the mapped original DAC property.
         /// </summary>
-        public static string PX1007FixExcludeClass {
+        public static string PX1007FixAddInheritdocTag {
             get {
-                return ResourceManager.GetString("PX1007FixExcludeClass", resourceCulture);
+                return ResourceManager.GetString("PX1007FixAddInheritdocTag", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the summary XML tag.
+        ///   Looks up a localized string similar to Add the &lt;summary&gt; tag with the description generated from the API name.
         /// </summary>
-        public static string PX1007Title {
+        public static string PX1007FixAddSummaryTag {
             get {
-                return ResourceManager.GetString("PX1007Title", resourceCulture);
+                return ResourceManager.GetString("PX1007FixAddSummaryTag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect XML documentation of the projection DAC field property. The &lt;inheritdoc/&gt; tag with `cref` attribute should be used for a mapped DAC field property of the projection DAC.
+        ///The `cref` attribute should reference the original DAC field property from the projection field&apos;s mapping:
+        ///
+        ////// &lt;inheritdoc cref=&quot;OriginalDac.SomeDacField&quot;/&gt;
+        ///[PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
+        ///public virtual int? SomeDacField{ get; set; }.
+        /// </summary>
+        public static string PX1007Title_IncorrectProjectionDacFieldDescription {
+            get {
+                return ResourceManager.GetString("PX1007Title_IncorrectProjectionDacFieldDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC, DAC extension, or DAC property should have a description in the &lt;summary&gt; tag or &lt;inheritdoc/&gt; tag.
+        /// </summary>
+        public static string PX1007Title_MissingDescription {
+            get {
+                return ResourceManager.GetString("PX1007Title_MissingDescription", resourceCulture);
             }
         }
         
@@ -1672,6 +1695,15 @@ namespace Acuminator.Analyzers {
         public static string PX1095Title_PXDBScalar {
             get {
                 return ResourceManager.GetString("PX1095Title_PXDBScalar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The signature of the method with the PXOverride attribute must match the overriden method.
+        /// </summary>
+        public static string PX1096Title {
+            get {
+                return ResourceManager.GetString("PX1096Title", resourceCulture);
             }
         }
         

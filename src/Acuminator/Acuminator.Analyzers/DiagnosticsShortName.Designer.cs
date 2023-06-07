@@ -124,11 +124,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IncorrectProjectionDacFieldComment.
+        /// </summary>
+        public static string PX1007IncorrectProjectionDacFieldComment {
+            get {
+                return ResourceManager.GetString("PX1007IncorrectProjectionDacFieldComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NoXmlCommentForPublicEntityOrDacProperty.
         /// </summary>
-        public static string PX1007 {
+        public static string PX1007NoXmlComment {
             get {
-                return ResourceManager.GetString("PX1007", resourceCulture);
+                return ResourceManager.GetString("PX1007NoXmlComment", resourceCulture);
             }
         }
         
@@ -858,6 +867,15 @@ namespace Acuminator.Analyzers {
         public static string PX1095PXDBScalar {
             get {
                 return ResourceManager.GetString("PX1095PXDBScalar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXOverrideSignatureMismatch.
+        /// </summary>
+        public static string PX1096 {
+            get {
+                return ResourceManager.GetString("PX1096", resourceCulture);
             }
         }
     }
