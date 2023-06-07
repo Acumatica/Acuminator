@@ -17,14 +17,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class SuppressDiagnosticWithFixAll : SuppressDiagnosticFixBase
 	{
-		public override ImmutableArray<string> FixableDiagnosticIds { get; }
-
-		public override FixAllProvider? GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+		public override ImmutableArray<string> FixableDiagnosticIds { get; }	
 
 		public SuppressDiagnosticWithFixAll()
 		{
 			FixableDiagnosticIds = AllCollectedFixableDiagnosticIds.Where(id => DiagnosticIdsWithFixAllEnabled.Contains(id))
 																   .ToImmutableArray();
 		}
+
+		public override FixAllProvider? GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 	}
 }
