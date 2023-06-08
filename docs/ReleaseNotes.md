@@ -1,33 +1,34 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
-## Acuminator 3.1.2 - 2023-06-08
+## Acuminator 3.1.2: June 8, 2023
 Acuminator 3.1.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
 ### Enhancements
 In Acuminator 3.1.2, the following enhancements have been implemented:
- - The [PX1096](diagnostics/PX1096.md) diagnostic has been added to check signature of methods with the `PXOverride` attribute: The diagnostic checks whether the base graph or base graph extensions contain a base method  compatible with the method with the `PXOverride` attribute. 
- - The [PX1007](diagnostics/PX1007.md) diagnostic no longer checks the following DAC fields for a code annotation:
-   - `Selected`
-   - `Attributes`
-   - `GroupMask`
-   - `CompanyID`
-   - `CompanyMask`
-   - `DeletedDatabaseRecord`
+ - The [PX1096](diagnostics/PX1096.md) diagnostic has been added to check the signature of methods with the `PXOverride` attribute: The diagnostic checks whether the base graph or base graph extensions contain a base method that is compatible with the `PXOverride` method. 
  - The [PX1007](diagnostics/PX1007.md) diagnostic has been updated in the following ways:
    - The diagnostic now supports the `inheritdoc` tag for DACs, DAC extensions, and their properties. The diagnostic also checks that mapped DAC field properties of projection DACs have the `inheritdoc` tag with the `cref` attribute pointing to the corresponding DAC field property of the original DAC. 
    - A new code fix can generate the `inheritdoc` tag for a mapped DAC property of a projection DAC.
-   - Code fixes of the diagnostic can now generate documentation correctly even for a badly formatted code and remove incorrect documentation tags in case of mapped projection DAC field properties. The code fixes also support doc tags declared as empty XML elements such as `<summary/>`.
+     This code fix also removes incorrect documentation tags such as `summary` or incorrectly declared `inheritdoc`.
+   - Code fixes of the diagnostic can now generate documentation correctly even for badly formatted code. Also, in the properties of mapped fields of projection DACs, incorrect documentation tags can be removed. The code fixes also support documentation tags declared as empty XML elements, such as `<summary/>`.
+   - The diagnostic no longer checks the following DAC fields for a code annotation:
+     - `Selected`
+     - `Attributes`
+     - `GroupMask`
+     - `CompanyID`
+     - `CompanyMask`
+     - `DeletedDatabaseRecord`
    - The **Suppress with a local comment** code fix of Acuminator now supports the **Fix All** functionality of Visual Studio for the [PX1007](diagnostics/PX1007.md) diagnostic. The diagnostic can be suppressed for a whole DAC. Suppressing the diagnostic could be useful when you do not plan to write the documentation immediately and want to leave it to the documentation team.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
- - In Visual Studio 2022, Acuminator analysis did not work in the out-of-process mode (the **Run code analysis in separate process** check box in Visual Studio options). 
- - The [PX1023](diagnostics/PX1023.md) diagnostic showed false alert for the `INUnit` attribute.
+ - In Visual Studio 2022, Acuminator analysis did not work in the out-of-process mode (that is, when the **Run code analysis in separate process** check box is selected in Visual Studio options). 
+ - The [PX1023](diagnostics/PX1023.md) diagnostic showed a false alert for the `INUnit` attribute.
  - It was possible to suppress the [PX1007](diagnostics/PX1007.md) diagnostic for DAC extensions by marking the class with the `PXHidden` attribute.
  - The [PX1016](diagnostics/PX1016.md) diagnostic showed a false alert for generic non-abstract graph extensions.
 
-## Gratitudes 
+## Acknowledgements
 The Acuminator team would like to thank our open source contributor [Kemal Taskin](@taskinkemal). We are grateful for your input and hope you stay with us.
 
 
