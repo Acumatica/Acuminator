@@ -671,7 +671,7 @@
     <value>A field with the PXDBScalar attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
   </data>
   <data name="PX1096Title" xml:space="preserve">
-    <value>The signature of the method with the PXOverride attribute must match the overriden method</value>
+    <value>The signature of a method with the PXOverride attribute must match the overridden method</value>
   </data>
   <data name="PX1007Title_IncorrectProjectionDacFieldDescription" xml:space="preserve">
     <value>Incorrect XML documentation of the projection DAC field property. The &lt;inheritdoc/&gt; tag with `cref` attribute should be used for a mapped DAC field property of the projection DAC.
