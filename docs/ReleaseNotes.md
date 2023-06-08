@@ -1,7 +1,7 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
-## Acuminator 3.1.2: June 6, 2023
+## Acuminator 3.1.2: June 8, 2023
 Acuminator 3.1.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
 ### Enhancements
@@ -12,8 +12,6 @@ In Acuminator 3.1.2, the following enhancements have been implemented:
    - A new code fix can generate the `inheritdoc` tag for a mapped DAC property of a projection DAC.
      This code fix also removes incorrect documentation tags such as `summary` or incorrectly declared `inheritdoc`.
    - Code fixes of the diagnostic can now generate documentation correctly even for badly formatted code. Also, in the properties of mapped fields of projection DACs, incorrect documentation tags can be removed. The code fixes also support documentation tags declared as empty XML elements, such as `<summary/>`.
-   - The default justification "to be documented later" has been removed from the diagnostic. To exclude the DAC, DAC extension, or DAC field property from the documentation, use the `exclude` tag.
-     > **Note:** To apply multiple code fixes quickly, you can now use the **Fix All** button of the code fix menu in Visual Studio.
    - The diagnostic no longer checks the following DAC fields for a code annotation:
      - `Selected`
      - `Attributes`
@@ -21,6 +19,7 @@ In Acuminator 3.1.2, the following enhancements have been implemented:
      - `CompanyID`
      - `CompanyMask`
      - `DeletedDatabaseRecord`
+   - The **Suppress with a local comment** code fix of Acuminator now supports the **Fix All** functionality of Visual Studio for the [PX1007](diagnostics/PX1007.md) diagnostic. The diagnostic can be suppressed for a whole DAC. Suppressing the diagnostic could be useful when you do not plan to write the documentation immediately and want to leave it to the documentation team.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:

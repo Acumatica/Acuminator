@@ -1,4 +1,6 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿using System.Collections.Immutable;
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -8,8 +10,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 	/// <summary>
 	/// The test code fix to verify diagnostic suppression with a comment code fix .
 	/// </summary>
-	internal class SuppressDiagnosticTestCodeFix : SuppressDiagnosticFix
+	internal class SuppressDiagnosticTestCodeFix : SuppressDiagnosticFixBase
 	{
+		public override ImmutableArray<string> FixableDiagnosticIds => AllCollectedFixableDiagnosticIds;
+
+		public override FixAllProvider GetFixAllProvider() => null;
+
 		/// <summary>
 		/// Gets code action to register. OVerrides the default method that returns code action with nested code actions. 
 		/// The override returns just one code action with a "suppress with comment" code fix.

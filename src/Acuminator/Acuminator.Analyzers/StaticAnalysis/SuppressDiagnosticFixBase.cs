@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Composition;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -22,19 +21,23 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
-	[Shared]
-	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class SuppressDiagnosticFix : CodeFixProvider
+	public abstract class SuppressDiagnosticFixBase : CodeFixProvider
 	{
-		private const string SuppressionCommentFormat = @"// Acuminator disable once {0} {1} {2}";
-		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
+		protected const string PX1007_ID = "PX1007";
+		protected const string SuppressionCommentFormat = @"// Acuminator disable once {0} {1} {2}";
+		protected static ImmutableArray<string> AllCollectedFixableDiagnosticIds { get; }
 
-		static SuppressDiagnosticFix()
+		protected static HashSet<string> DiagnosticIdsWithFixAllEnabled { get; } = new(StringComparer.OrdinalIgnoreCase)
+		{
+			PX1007_ID
+		};
+
+		static SuppressDiagnosticFixBase()
 		{
 			Type diagnosticsType = typeof(Descriptors);
 			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
 
-			_fixableDiagnosticIds = propertiesInfo
+			AllCollectedFixableDiagnosticIds = propertiesInfo
 				.Where(property => property.PropertyType == typeof(DiagnosticDescriptor))
 				.Select(property =>
 				{
@@ -45,10 +48,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				.ToImmutableArray()!;
 		}
 
-		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			_fixableDiagnosticIds;
-
-		public override FixAllProvider? GetFixAllProvider() => null;		//explicitly disable fix all support
+		/// <summary>
+		/// Derived code fixes need to specify Fix All provider explicitly.
+		/// </summary>
+		/// <returns>
+		/// The Fix All provider.
+		/// </returns>
+		public abstract override FixAllProvider? GetFixAllProvider();
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
@@ -62,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			return Task.CompletedTask;
 		}
 
-		private void RegisterCodeActionForDiagnostic(Diagnostic diagnostic, CodeFixContext context)
+		protected virtual void RegisterCodeActionForDiagnostic(Diagnostic diagnostic, CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			CodeAction? groupCodeAction = GetCodeActionToRegister(diagnostic, context);
@@ -123,10 +129,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
 			return new SuppressWithSuppressionFileCodeAction(context, diagnostic, suppressionFileCodeActionName,
-															 equivalenceKey: suppressionFileCodeActionName + diagnostic.Id); 														 
+															 equivalenceKey: suppressionFileCodeActionName + diagnostic.Id); 
 		}
 
-		private async Task<Document> AddSuppressionCommentAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
+		protected virtual async Task<Document> AddSuppressionCommentAsync(CodeFixContext context, Diagnostic diagnostic, 
+																		  CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -177,7 +184,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				: document;
 		}
 
-		private (string? DiagnosticShortName, string? DiagnosticJustification) GetDiagnosticShortNameAndJustification(Diagnostic diagnostic)
+		protected (string? DiagnosticShortName, string? DiagnosticJustification) GetDiagnosticShortNameAndJustification(Diagnostic diagnostic)
 		{
 			string[]? customTags = diagnostic.Descriptor.CustomTags?.ToArray();
 
