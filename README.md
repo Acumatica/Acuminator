@@ -86,14 +86,7 @@ Acumatica Code Snippets provide templates for the following:
 All code snippets are located in the Acumatica [Code Snippets](https://github.com/Acumatica/CodeSnippets) repository and can be downloaded separately.
 
 ## The Process of Building the Solution
-To build the solution, do the following:
-1. Create the _lib_ folder in the root folder. 
-2. Add _PX.Data.dll_, _PX.Data.BQL.Fluent.dll_, _PX.Common.dll_, _PX.Common.Std.dll_, _PX.BulkInsert.dll_, _PX.Objects.dll_, and _PX.DbServices.dll_ (from Acumatica ERP 2022 R2 or higher) to the _lib_ folder.   
-   You can use older versions of Acumatica ERP DLLs but there is no guarantee that Acuminator will work correctly. The current recommended version is Acumatica ERP 2022 R2 GA.
-3. Configure assembly signing in one of the following ways:
-    * Add your strong-name key file as _src/key.snk_. If you don't have one, run Developer Command Prompt and generate the key by using the following command: _sn.exe -k "src\key.snk"_.
-    * Turn off assembly signing for all projects in the solution. (To turn off assembly signing for a project, open the project properties and, in the **Signing** pane, clear the **Sign the assembly** check box.)
-4. Build _Acuminator.sln_.
+* [Build Guidelines](docs/dev/BuildGuidelines/BuildGuidelines.md)
 
 ## Documentation
 * [Diagnostics](docs/Summary.md#diagnostics)
