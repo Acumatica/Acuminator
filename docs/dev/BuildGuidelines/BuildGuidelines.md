@@ -25,7 +25,7 @@ To build Acuminator, you need to perform the following preparatory steps:
 3. Configure assembly signing in one of the following ways:
     * Add your strong-name key file as _src/key.snk_. If you don't have it, run Developer Command Prompt and generate the key by using the following command: 
       ``` 
-      _sn.exe -k "src\key.snk"_
+      sn.exe -k "src\key.snk"
       ```
     * Turn off assembly signing for all projects in the solution. 
       (To turn off assembly signing for a project, open the project properties and, in the **Signing** pane, clear the **Sign the assembly** check box.)
