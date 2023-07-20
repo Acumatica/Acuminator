@@ -61,13 +61,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NameConventionEventsInGraphsAndG
 			VerifyCSharpDiagnosticAsync(actual);
 		
 		[Theory]
-		[EmbeddedFileData("Override.cs")]
-		public Task Override_ShouldNotSuggestRefactoring(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual);
+		[EmbeddedFileData("Override.cs", "Override_DacAndBaseGraph.cs")]
+		public Task Override_ShouldNotSuggestRefactoring(string actual, string dacAndBaseGraphSourceFile) =>
+			VerifyCSharpDiagnosticAsync(actual, dacAndBaseGraphSourceFile);
 
 		[Theory]
-		[EmbeddedFileData("PXOverride.cs")]
-		public Task PXOverride_ShouldNotSuggestRefactoring(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual);	
+		[EmbeddedFileData("PXOverride.cs", "Override_DacAndBaseGraph.cs")]
+		public Task PXOverride_ShouldNotSuggestRefactoring(string actual, string dacAndBaseGraphSourceFile) =>
+			VerifyCSharpDiagnosticAsync(actual, dacAndBaseGraphSourceFile);	
 	}
 }

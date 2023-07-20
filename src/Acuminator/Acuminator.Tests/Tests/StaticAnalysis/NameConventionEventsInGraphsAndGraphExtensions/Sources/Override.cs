@@ -1,34 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PX.Data;
+﻿using PX.Data;
 
-namespace PX.Objects
+namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions.Sources
 {
-	public class SOInvoiceEntry : SOInvoiceEntryBase
+	public class SOInvoiceDerivedEntry : SOInvoiceCustomEntry
 	{
-		protected override void SOInvoice_RowSelected(PXCache cache, PXRowSelectedEventArgs e)
+		protected override void SOInvoice_RowSelected(PXCache cache, PXRowSelectedEventArgs e)	// Should not show PX1041
 		{
 			
 		}
-	}
-
-	public class SOInvoiceEntryBase : PXGraph<SOInvoiceEntryBase, SOInvoice>
-	{
-		protected virtual void SOInvoice_RowSelected(PXCache cache, PXRowSelectedEventArgs e)
-		{
-
-		}
-	}
-
-	public class SOInvoice : IBqlTable
-	{
-		#region RefNbr
-		[PXDBString(8, IsKey = true, InputMask = "")]
-		public string RefNbr { get; set; }
-		public abstract class refNbr : IBqlField { }
-		#endregion	
 	}
 }
