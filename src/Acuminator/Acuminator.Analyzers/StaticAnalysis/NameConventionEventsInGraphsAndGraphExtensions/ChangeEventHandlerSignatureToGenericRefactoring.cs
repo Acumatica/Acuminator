@@ -23,7 +23,7 @@ using Microsoft.CodeAnalysis.Editing;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
+namespace Acuminator.Analyzers.Refactorings.NameConventionEventsInGraphsAndGraphExtensions
 {
 	[ExportCodeRefactoringProvider(LanguageNames.CSharp), Shared]
 	public class ChangeEventHandlerSignatureToGenericRefactoring : PXCodeRefactoringProvider

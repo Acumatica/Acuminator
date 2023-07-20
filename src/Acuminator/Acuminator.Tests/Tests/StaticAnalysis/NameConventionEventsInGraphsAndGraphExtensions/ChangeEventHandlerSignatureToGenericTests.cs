@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric;
+using Acuminator.Analyzers.Refactorings.NameConventionEventsInGraphsAndGraphExtensions;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Xunit;
 
-namespace Acuminator.Tests.Tests.Refactorings.ChangeEventHandlerSignatureToGeneric
+namespace Acuminator.Tests.Tests.Refactorings.NameConventionEventsInGraphsAndGraphExtensions
 {
 	public class ChangeEventHandlerSignatureToGenericTests : CodeRefactoringVerifier
 	{
