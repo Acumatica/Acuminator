@@ -48,6 +48,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1036](diagnostics/PX1036.md) | The DAC must have one primary key which should be named `PK`. The class containing DAC foreign keys should be named `FK`. The single unique key in the DAC should be named `UK`. All unique keys in the DAC should be declared in a public static class named `UK`.  | Warning (ISV Level 3: Informational) | Available | 
 | [PX1037](diagnostics/PX1037.md) | An unbound DAC field cannot be used in a key declaration. | Error (ISV Level 3: Informational) | Unavailable | 
 | [PX1040](diagnostics/PX1040.md) | Instance constructors in BLC extensions are strictly prohibited. You should use the `Initialize()` method instead. | Error | Available |
+| [PX1041](diagnostics/PX1041.md) | Graph event handlers with a weekly typed signature that relies on naming conventions can be converted to graph event handlers with strongly typed generic signature. | Information | Available |
 | [PX1042](diagnostics/PX1042.md) | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. In Acumatica ERP 2023 R1 and later versions, this diagnostic is disabled. | Error | Available |
 | [PX1043](diagnostics/PX1043.md) | Changes cannot be saved to the database from event handlers. | Error | Unavailable |
 | [PX1044](diagnostics/PX1044.md) | Changes to `PXCache` cannot be performed in event handlers. | Error | Unavailable |
@@ -94,8 +95,3 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute. | Warning (ISV Level 3: Informational) | Available |
 | [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` or `PXDBScalar` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error | Unavailable |
 | [PX1096](diagnostics/PX1096.md) | The signature of a method with the `PXOverride` attribute must match the overridden method. | Error | Unavailable |
-
-## Code Refactoring
-Acuminator suggest the following code refactoring:
- - [Replacement of the Standard Event Handler Signature with the Generic Signature](refactoring/GenericEventHandlerSignature.md)
-
