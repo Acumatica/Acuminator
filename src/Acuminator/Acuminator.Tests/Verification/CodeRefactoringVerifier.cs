@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CodeRefactorings;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
+
 using Xunit;
+
 using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Verification
@@ -31,15 +31,6 @@ namespace Acuminator.Tests.Verification
 		}
 
 		/// <summary>
-		/// Returns the refactoring being tested (VB) - to be implemented in non-abstract class
-		/// </summary>
-		/// <returns>The CodeFixRefactoring to be used for CSharp code</returns>
-		protected virtual CodeRefactoringProvider GetBasicCodeRefactoringProvider()
-		{
-			return null;
-		}
-
-		/// <summary>
 		/// Called to test a C# refactoring when applied on the inputted string as a source
 		/// </summary>
 		/// <param name="oldSource">A class in the form of a string before the refactoring was applied to it</param>
@@ -52,22 +43,6 @@ namespace Acuminator.Tests.Verification
 			int? codeRefactoringIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
 			return VerifyRefactoringAsync(LanguageNames.CSharp, GetCSharpCodeRefactoringProvider(), oldSource, newSource, nodeToRefactor, 
-				codeRefactoringIndex, allowNewCompilerDiagnostics);
-		}
-
-		/// <summary>
-		/// Called to test a VB refactoring when applied on the inputted string as a source
-		/// </summary>
-		/// <param name="oldSource">A class in the form of a string before the refactoring was applied to it</param>
-		/// <param name="newSource">A class in the form of a string after the refactoring was applied to it</param>
-		/// <param name="nodeToRefactor">A function that finds selected node for refactoring accepting the root node as an argument</param>
-		/// <param name="codeRefactoringIndex">Index determining which refactoring to apply if there are multiple</param>
-		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the refactoring introduces other warnings after being applied</param>
-		protected Task VerifyBasicRefactoringAsync(string oldSource, string newSource,
-			Func<SyntaxNode, SyntaxNode> nodeToRefactor,
-			int? codeRefactoringIndex = null, bool allowNewCompilerDiagnostics = false)
-		{
-			return VerifyRefactoringAsync(LanguageNames.VisualBasic, GetBasicCodeRefactoringProvider(), oldSource, newSource, nodeToRefactor, 
 				codeRefactoringIndex, allowNewCompilerDiagnostics);
 		}
 
