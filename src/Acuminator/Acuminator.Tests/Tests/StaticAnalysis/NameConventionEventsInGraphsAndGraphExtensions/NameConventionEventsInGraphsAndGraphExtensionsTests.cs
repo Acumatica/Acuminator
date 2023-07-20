@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Acuminator.Analyzers.Refactorings.NameConventionEventsInGraphsAndGraphExtensions;
+using Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
@@ -14,12 +14,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Xunit;
 
-namespace Acuminator.Tests.Tests.Refactorings.NameConventionEventsInGraphsAndGraphExtensions
+namespace Acuminator.Tests.Tests.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions
 {
-	public class ChangeEventHandlerSignatureToGenericTests : CodeRefactoringVerifier
+	public class NameConventionEventsInGraphsAndGraphExtensionsTests : CodeFixVerifier
 	{
 		protected override CodeRefactoringProvider GetCSharpCodeRefactoringProvider() => 
-			new ChangeEventHandlerSignatureToGenericRefactoring(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+			new NameConventionEventsInGraphsAndGraphExtensionsAnalyzer(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 																							.WithSuppressionMechanismDisabled());
 
 		[Theory]

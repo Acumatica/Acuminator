@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
@@ -23,19 +24,19 @@ using Microsoft.CodeAnalysis.Editing;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace Acuminator.Analyzers.Refactorings.NameConventionEventsInGraphsAndGraphExtensions
+namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions
 {
 	[ExportCodeRefactoringProvider(LanguageNames.CSharp), Shared]
-	public class ChangeEventHandlerSignatureToGenericRefactoring : PXCodeRefactoringProvider
+	public class NameConventionEventsInGraphsAndGraphExtensionsAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		private const string ArgsParameterName = "e";
 		private const string EventHandlerMethodName = "_";
 		private const string EventArgsCachePropertyName = "Cache"; // Events.[EventType]<T>.Cache
 
-		public ChangeEventHandlerSignatureToGenericRefactoring() : this(null)
+		public NameConventionEventsInGraphsAndGraphExtensionsAnalyzer() : this(null)
 		{ }
 
-		public ChangeEventHandlerSignatureToGenericRefactoring(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public NameConventionEventsInGraphsAndGraphExtensionsAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		protected override async Task ComputeRefactoringsAsync(CodeRefactoringContext context, SemanticModel semanticModel, PXContext pxContext)
