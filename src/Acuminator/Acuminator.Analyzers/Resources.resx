@@ -684,4 +684,10 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1007FixAddInheritdocTag" xml:space="preserve">
     <value>Add the &lt;inheritdoc/&gt; tag for the projection DAC property with `cref` attribute referencing the mapped original DAC property</value>
   </data>
+  <data name="PX1041Title" xml:space="preserve">
+    <value>The graph event has a weekly typed signature that relies on a naming convention. Consider converting it to a strongly typed generic signature for a better type safety enforced by the C# compiler.</value>
+  </data>
+  <data name="PX1041Fix" xml:space="preserve">
+    <value>Convert the graph event to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else.</value>
+  </data>
 </root>
