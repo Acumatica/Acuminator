@@ -970,7 +970,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Convert the graph event to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else..
+        ///   Looks up a localized string similar to Convert the graph event handler to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else..
         /// </summary>
         public static string PX1041Fix {
             get {
@@ -979,7 +979,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The graph event has a weekly typed signature that relies on a naming convention. Consider converting it to a strongly typed generic signature for a better type safety enforced by the C# compiler..
+        ///   Looks up a localized string similar to The graph event handler has a weekly typed signature that relies on a naming convention. Consider converting it to a strongly typed generic signature for a better type safety enforced by the C# compiler..
         /// </summary>
         public static string PX1041Title {
             get {
