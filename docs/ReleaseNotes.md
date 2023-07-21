@@ -28,7 +28,7 @@ In this version of Acuminator, the following bugs have been fixed:
  - It was possible to suppress the [PX1007](diagnostics/PX1007.md) diagnostic for DAC extensions by marking the class with the `PXHidden` attribute.
  - The [PX1016](diagnostics/PX1016.md) diagnostic showed a false alert for generic non-abstract graph extensions.
 
-## Acknowledgements
+### Acknowledgements
 The Acuminator team would like to thank our open source contributor [Kemal Taskin](@taskinkemal). We are grateful for your input and hope you stay with us.
 
 
@@ -214,10 +214,10 @@ In this version of Acuminator, the following bugs have been fixed:
  Previously, you could disable suppression of only globally suppressed diagnostic alerts. Alerts that have been suppressed locally via suppression comments could not be displayed even when the suppression mechanism was turned off. Now Acuminator diagnostics that have been suppressed locally can also be displayed when suppression is disabled. Thus, you can see all errors, including the ones that were suppressed with a comment in the code editor or in the **Error List** tool window. 
  For details on diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
  
-## Other Changes 
+### Other Changes 
  - The [PX1088](diagnostics/PX1088.md) diagnostic has been removed because its function is covered by the [PX1008](diagnostics/PX1008.md) diagnostic.
  
-## Gratitudes 
+### Gratitudes 
 The Acuminator team would like to thank our open source contributors: @ShadowFiendZX and @shawnburt. We are grateful for your input and hope you stay with us.
 
 ## Acuminator 2.3.2
