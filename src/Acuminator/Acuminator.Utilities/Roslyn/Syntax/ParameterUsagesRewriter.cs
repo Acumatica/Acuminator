@@ -1,9 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,21 +21,21 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		private readonly SyntaxNode _replaceWith;
 		private readonly SemanticModel _semanticModel;
 
-		public ParameterUsagesRewriter(IParameterSymbol parameter, SyntaxNode replaceWith,
-			SemanticModel semanticModel)
-		{
-			parameter.ThrowOnNull(nameof(parameter));
-			replaceWith.ThrowOnNull(nameof(replaceWith));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
+		private readonly CancellationToken _cancellation;
 
-			_parameter = parameter;
-			_replaceWith = replaceWith;
-			_semanticModel = semanticModel;
+		public ParameterUsagesRewriter(IParameterSymbol parameter, SyntaxNode replaceWith, SemanticModel semanticModel, CancellationToken cancellation)
+		{
+			_parameter = parameter.CheckIfNull(nameof(parameter));
+			_replaceWith = replaceWith.CheckIfNull(nameof(replaceWith));
+			_semanticModel = semanticModel.CheckIfNull(nameof(semanticModel));
+			_cancellation = cancellation;
 		}
 
 		public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
 		{
-			var symbolInfo = _semanticModel.GetSymbolInfo(node);
+			_cancellation.ThrowIfCancellationRequested();
+
+			var symbolInfo = _semanticModel.GetSymbolInfo(node, _cancellation);
 
 			if (symbolInfo.Symbol != null && symbolInfo.Symbol.Equals(_parameter))
 			{
