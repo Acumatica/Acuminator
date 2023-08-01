@@ -41,13 +41,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 
 				if (IsSuitableForConversionToGenericSignature(eventInfo, pxContext, pxOverrideAttribute))
 				{
-					var graphEventLocation = eventInfo.Node.Identifier.GetLocation();
-
-					symbolContext.ReportDiagnosticWithSuppressionCheck(
-							Diagnostic.Create(Descriptors.PX1041_NameConventionEventsInGraphsAndGraphExtensions, graphEventLocation),
-							pxContext.CodeAnalysisSettings);
+					ReportDiagnosticForEvent(symbolContext, pxContext, eventInfo);
 				}
 			}
+		}
+
+		private static void ReportDiagnosticForEvent(SymbolAnalysisContext symbolContext, PXContext pxContext, GraphEventInfoBase eventInfo)
+		{
+			var graphEventLocation = eventInfo.Node.Identifier.GetLocation();
+			var properties = new Dictionary<string, string>
+			{
+				{ NameConventionEventsInGraphsAndGraphExtensionsDiagnosticProperties.EventType, eventInfo.EventType.ToString() },
+				{ DiagnosticProperty.DacName, eventInfo.DacName }
+			};
+
+			if (eventInfo is GraphFieldEventInfo graphFieldEvent)
+				properties.Add(DiagnosticProperty.DacFieldName, graphFieldEvent.DacFieldName);
+
+			symbolContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1041_NameConventionEventsInGraphsAndGraphExtensions, graphEventLocation,
+									  properties: properties.ToImmutableDictionary()),
+					pxContext.CodeAnalysisSettings);
 		}
 
 		private bool IsSuitableForConversionToGenericSignature(GraphEventInfoBase eventInfo, PXContext pxContext, INamedTypeSymbol pxOverrideAttribute)
