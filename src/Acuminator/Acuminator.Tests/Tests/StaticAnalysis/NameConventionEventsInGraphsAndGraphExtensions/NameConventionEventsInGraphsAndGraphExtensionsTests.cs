@@ -22,7 +22,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NameConventionEventsInGraphsAndG
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PXGraphAnalyzer(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 															.WithSuppressionMechanismDisabled(),
-								new NameConventionEventsInGraphsAndGraphExtensionsAnalyzer());
+				new PXGraphWithGraphEventsAggregatorAnalyzer
+				(
+					new NameConventionEventsInGraphsAndGraphExtensionsAnalyzer()
+				));
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() =>
 			new NameConventionEventsInGraphsAndGraphExtensionsFix();
