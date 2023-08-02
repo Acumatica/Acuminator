@@ -54,6 +54,21 @@ namespace Acuminator.Utilities.Common
 				: char.ToUpperInvariant(s[0]).ToString();
 		}
 
+		// <summary>
+		/// A string extension method that converts the string to a camel case (first letter to lower case).
+		/// </summary>
+		/// <param name="s">The string to act on.</param>
+		/// <returns/>
+		public static string? ToCamelCase(this string? s)
+		{
+			if (s.IsNullOrWhiteSpace() || char.IsLower(s[0]))
+				return s;
+
+			return s.Length > 1
+				? char.ToLowerInvariant(s[0]).ToString() + s.Substring(1)
+				: char.ToLowerInvariant(s[0]).ToString();
+		}
+
 		/// <summary>
 		/// Joins strings in <paramref name="strings"/> with a <paramref name="separator"/>. 
 		/// This extension method is just a shortcut for the call to <see cref="String.Join(string, IEnumerable{string})"/> which allows to use API in a fluent way. 
