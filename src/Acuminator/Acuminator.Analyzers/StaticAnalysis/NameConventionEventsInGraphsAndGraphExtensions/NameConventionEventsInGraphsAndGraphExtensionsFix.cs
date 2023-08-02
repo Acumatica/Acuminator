@@ -110,16 +110,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			if (!pxContext.Events.EventHandlerSignatureTypeMap.TryGetValue(genericEventInfoKey, out INamedTypeSymbol genericArgsSymbol))
 				return Task.FromResult(document);
 
-			SeparatedSyntaxList<ParameterSyntax> methodParameters = methodNode.ParameterList.Parameters;
-
-			var cacheParameterSymbol 		   = methodSymbol.Parameters[0];
-			ParameterSyntax cacheParameterNode = methodParameters[0];
-			SyntaxToken parameterName 		   = cacheParameterNode.Identifier;
-			ParameterSyntax eventArgsParameter = CreateArgsParameter(genericArgsSymbol, parameterName, dacName, dacFieldName);
+			IParameterSymbol cacheParameterSymbol = methodSymbol.Parameters[0];
+			string newEventInfoParameterName	  = GetNewEventsParameterName(methodSymbol);
+			SyntaxToken parameterName 			  = Identifier(newEventInfoParameterName);
+			ParameterSyntax eventArgsParameter	  = CreateArgsParameter(genericArgsSymbol, parameterName, dacName, dacFieldName);
 
 			var newParametersList = methodNode.ParameterList.WithParameters(
 																SingletonSeparatedList(eventArgsParameter));
-			SyntaxNode cacheParameterReplacement = GetCacheParameterReplacement(methodSymbol);
+			SyntaxNode cacheParameterReplacement = GetCacheParameterReplacement(newEventInfoParameterName);
 			var newMethodDeclaration = 
 				ReplaceParameterUsages(methodNode, cacheParameterSymbol, cacheParameterReplacement, semanticModel, cancellationToken)
 					.WithIdentifier(Identifier(EventHandlerMethodName))
@@ -130,17 +128,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			return Task.FromResult(modifiedDocument);
 		}
 
-		private SyntaxNode GetCacheParameterReplacement(IMethodSymbol methodSymbol)
+		private string GetNewEventsParameterName(IMethodSymbol methodSymbol)
 		{
 			var parameters = methodSymbol.Parameters;
-			IParameterSymbol? eventInfoParameter = parameters.Length > 1 
-				? parameters[1] 
+			IParameterSymbol? eventInfoParameter = parameters.Length > 1
+				? parameters[1]
 				: null;
 
-			string newEventInfoName		  = eventInfoParameter?.Name.NullIfWhiteSpace() ?? ArgsParameterName;
+			string newEventInfoParameterName = eventInfoParameter?.Name.NullIfWhiteSpace() ?? ArgsParameterName;
+			return newEventInfoParameterName;
+		}
+
+		private SyntaxNode GetCacheParameterReplacement(string newEventInfoParameterName)
+		{		
 			var cacheParameterReplacement = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-																IdentifierName(newEventInfoName), 
-																IdentifierName(EventArgsCachePropertyName));
+												IdentifierName(newEventInfoParameterName), 
+												IdentifierName(EventArgsCachePropertyName));
 			return cacheParameterReplacement;
 		}
 
