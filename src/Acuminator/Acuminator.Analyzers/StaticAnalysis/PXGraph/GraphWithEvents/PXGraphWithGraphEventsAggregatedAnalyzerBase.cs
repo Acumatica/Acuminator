@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 		public abstract ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
 		/// <inheritdoc cref="IPXGraphWithGraphEventsAnalyzer.ShouldAnalyze(PXContext, PXGraphSemanticModel)"/>
-		public bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel pxGraph) =>
+		public virtual bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel pxGraph) =>
 			pxGraph != null;
 
 		/// <inheritdoc cref="IPXGraphWithGraphEventsAnalyzer.ShouldAnalyze(PXContext, PXGraphEventSemanticModel)"/>

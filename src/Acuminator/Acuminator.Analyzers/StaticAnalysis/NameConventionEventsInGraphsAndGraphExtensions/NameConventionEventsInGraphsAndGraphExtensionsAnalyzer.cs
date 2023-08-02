@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions
 {
-	public class NameConventionEventsInGraphsAndGraphExtensionsAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class NameConventionEventsInGraphsAndGraphExtensionsAnalyzer : PXGraphWithGraphEventsAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1041_NameConventionEventsInGraphsAndGraphExtensions);
@@ -23,14 +23,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => 
 			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None;
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraphOrExtension)
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphOrExtensionWithEvents)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var graphOrExtensionWithEvents = PXGraphEventSemanticModel.EnrichGraphModelWithEvents(pxGraphOrExtension, symbolContext.CancellationToken);
 			var allDeclaredNamingConventionEvents = from @event in graphOrExtensionWithEvents.GetAllEvents()
 													where @event.SignatureType == EventHandlerSignatureType.Default &&
-														  @event.Symbol.IsDeclaredInType(pxGraphOrExtension.Symbol)
+														  @event.Symbol.IsDeclaredInType(graphOrExtensionWithEvents.Symbol)
 													select @event;
 
 			INamedTypeSymbol pxOverrideAttribute = pxContext.AttributeTypes.PXOverrideAttribute;
