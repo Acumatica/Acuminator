@@ -59,7 +59,7 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		/// <param name="s">The string to act on.</param>
 		/// <returns/>
-		public static string? ToCamelCase(this string? s)
+		public static string? FirstCharToLower(this string? s)
 		{
 			if (s.IsNullOrWhiteSpace() || char.IsLower(s[0]))
 				return s;

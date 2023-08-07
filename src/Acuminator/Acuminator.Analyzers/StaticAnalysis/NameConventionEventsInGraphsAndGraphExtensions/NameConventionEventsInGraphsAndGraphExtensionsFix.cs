@@ -157,7 +157,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			}
 			else
 			{
-				dacFieldName = dacFieldName.ToCamelCase();
+				dacFieldName = dacFieldName.FirstCharToLower();
 
 				if (genericArgsSymbol.TypeParameters.Length == 2)
 				{
