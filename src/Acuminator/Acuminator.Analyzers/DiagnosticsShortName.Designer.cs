@@ -439,6 +439,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string PX1041 {
+            get {
+                return ResourceManager.GetString("PX1041", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DatabaseQueriesInRowSelecting.
         /// </summary>
         public static string PX1042 {

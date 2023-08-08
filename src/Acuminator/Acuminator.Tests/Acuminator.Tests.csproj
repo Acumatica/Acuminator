@@ -80,20 +80,20 @@
     <Compile Include="Tests\DiagnosticSuppression\SuppressionFileTestService.cs" />
     <Compile Include="Tests\DiagnosticSuppression\SuppressionFileIO\SuppressionFileIOTests.cs" />
     <Compile Include="Tests\Fixer\AngleBracesBqlRewriterTests.cs" />
-    <Compile Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericTests.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\RowEventHandler.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\RowEventHandler_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\FieldEventHandler.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\FieldEventHandler_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttachedWithArgUsages.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttachedWithArgUsages_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\EventHandlerWithArgsUsages.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\EventHandlerWithArgsUsages_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
+    <Compile Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\NameConventionEventsInGraphsAndGraphExtensionsTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\RowEventHandler.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\RowEventHandler_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\FieldEventHandler.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\FieldEventHandler_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttachedWithArgUsages.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttachedWithArgUsages_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\EventHandlerWithArgsUsages.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\EventHandlerWithArgsUsages_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\Override.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\PXOverride.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\AdditionalParameters.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithAggregateAttributeOnFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ExternalCache.cs" />
@@ -273,6 +273,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\ExceptionWithConstStringFieldPassedToBaseConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationCorrect_MessagePassedFromPXExceptionInfo.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationPXExceptionInfoWithHardcodedStrings.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\Override_DacAndBaseGraph.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
@@ -885,6 +886,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Tests\Refactorings\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

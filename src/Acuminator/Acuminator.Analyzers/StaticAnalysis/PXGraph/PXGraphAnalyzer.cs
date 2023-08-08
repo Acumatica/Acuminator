@@ -13,6 +13,7 @@ using Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
 using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
@@ -50,8 +51,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new DatabaseQueriesInPXGraphInitializationAnalyzer(),
             new ThrowingExceptionsInLongRunningOperationAnalyzer(),
             new ThrowingExceptionsInActionHandlersAnalyzer(),
-            new ThrowingExceptionsInEventHandlersAnalyzer(),
-            new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
+
+			new PXGraphWithGraphEventsAggregatorAnalyzer
+			(
+				new NameConventionEventsInGraphsAndGraphExtensionsAnalyzer(),
+				new ThrowingExceptionsInEventHandlersAnalyzer()
+			),
+
+			new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
             new CallingBaseActionHandlerFromOverrideHandlerAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
 			new ViewDeclarationOrderAnalyzer(),
@@ -78,10 +85,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(context.Symbol is INamedTypeSymbol type))
-			{
+			if (context.Symbol is not INamedTypeSymbol type)
 				return;
-			}
 
 			ParallelOptions parallelOptions = new ParallelOptions
 			{

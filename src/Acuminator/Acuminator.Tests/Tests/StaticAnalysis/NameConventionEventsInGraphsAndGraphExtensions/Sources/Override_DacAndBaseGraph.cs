@@ -5,24 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace PX.Objects
+namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions.Sources
 {
-	public class SOInvoiceEntry : SOInvoiceEntryBase
+	public class SOInvoiceCustomEntry : PXGraph<SOInvoiceCustomEntry>
 	{
-		protected override void SOInvoice_RowSelected(PXCache cache, PXRowSelectedEventArgs e)
+		protected virtual void SOInvoice_RowSelected(PXCache cache, PXRowSelectedEventArgs e)
 		{
 			
 		}
 	}
 
-	public class SOInvoiceEntryBase : PXGraph<SOInvoiceEntryBase, SOInvoice>
-	{
-		protected virtual void SOInvoice_RowSelected(PXCache cache, PXRowSelectedEventArgs e)
-		{
-
-		}
-	}
-
+	[PXCacheName("SO Invoice")]
 	public class SOInvoice : IBqlTable
 	{
 		#region RefNbr

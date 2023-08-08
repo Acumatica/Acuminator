@@ -61,15 +61,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.
-        /// </summary>
-        public static string EventHandlerSignatureCodeActionTitle {
-            get {
-                return ResourceManager.GetString("EventHandlerSignatureCodeActionTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         public static string PX1000Fix {
@@ -970,6 +961,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Convert the graph event handler to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else..
+        /// </summary>
+        public static string PX1041Fix {
+            get {
+                return ResourceManager.GetString("PX1041Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The graph event handler has a weekly typed signature that relies on a naming convention. Consider converting it to a strongly typed generic signature for a better type safety enforced by the C# compiler..
+        /// </summary>
+        public static string PX1041Title {
+            get {
+                return ResourceManager.GetString("PX1041Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Surround the BQL statement or database query execution with a connection scope.
         /// </summary>
         public static string PX1042Fix {
@@ -1699,7 +1708,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The signature of the method with the PXOverride attribute must match the overriden method.
+        ///   Looks up a localized string similar to The signature of a method with the PXOverride attribute must match the overridden method.
         /// </summary>
         public static string PX1096Title {
             get {

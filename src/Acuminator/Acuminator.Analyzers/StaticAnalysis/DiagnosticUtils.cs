@@ -21,13 +21,35 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsFlagSet(this Diagnostic diagnostic, string flagName)
+		public static bool IsFlagSet(this Diagnostic diagnostic, string flagName, bool? defaultValueForMissingFlag = null)
 		{
 			diagnostic.ThrowOnNull(nameof(diagnostic));
 			flagName.ThrowOnNullOrWhiteSpace(nameof(flagName));
 
-			return diagnostic.Properties?.Count > 0 && diagnostic.Properties.TryGetValue(flagName, out string value) &&
-				   bool.TrueString.Equals(value, StringComparison.OrdinalIgnoreCase);
+			bool defaultValue = defaultValueForMissingFlag ?? false;
+
+			if (!TryGetPropertyValueInternal(diagnostic, flagName, out string? flagValueStr))
+				return defaultValue;
+			else
+				return bool.TrueString.Equals(flagValueStr, StringComparison.OrdinalIgnoreCase);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool TryGetPropertyValue(this Diagnostic diagnostic, string propertyName, out string? propertyValue) =>
+			TryGetPropertyValueInternal(diagnostic.CheckIfNull(nameof(diagnostic)), 
+										propertyName.CheckIfNullOrWhiteSpace(nameof(propertyName)), 
+										out propertyValue);
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool TryGetPropertyValueInternal(Diagnostic diagnostic, string propertyName, out string? propertyValue)
+		{
+			if (diagnostic.Properties?.Count > 0 && diagnostic.Properties.TryGetValue(propertyName, out propertyValue))
+				return true;
+			else
+			{
+				propertyValue = null;
+				return false;
+			}
 		}
 	}
 }

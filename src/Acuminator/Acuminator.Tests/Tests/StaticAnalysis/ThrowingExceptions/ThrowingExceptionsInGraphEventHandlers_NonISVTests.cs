@@ -21,7 +21,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 													.WithIsvSpecificAnalyzersDisabled()
 													.WithRecursiveAnalysisEnabled()
 													.WithSuppressionMechanismDisabled(),
-				new ThrowingExceptionsInEventHandlersAnalyzer());
+				new PXGraphWithGraphEventsAggregatorAnalyzer
+				(
+					new ThrowingExceptionsInEventHandlersAnalyzer()
+				));
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInRowPersisted.cs")]
