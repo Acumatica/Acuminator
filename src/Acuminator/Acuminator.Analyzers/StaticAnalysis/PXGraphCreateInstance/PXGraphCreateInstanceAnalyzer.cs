@@ -79,8 +79,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
-            compilationStartContext.RegisterSymbolAction(c => AnalyzeGraphCreation(c, pxContext), 
-                SymbolKind.Method, SymbolKind.Field, SymbolKind.Property);
+            compilationStartContext.RegisterSymbolAction(c => Analyze(c, pxContext), 
+                SymbolKind.Method, SymbolKind.Field);
         }
 
         private void AnalyzeGraphCreation(SymbolAnalysisContext context, PXContext pxContext)
