@@ -84,11 +84,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
                 SymbolKind.Method, SymbolKind.Field, SymbolKind.Property);
         }
 
-        private async void Analyze(SymbolAnalysisContext context, PXContext pxContext)
+        private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
         {
+			context.CancellationToken.ThrowIfCancellationRequested();
+
             var symbol = context.Symbol;
 	        var declaration = symbol.DeclaringSyntaxReferences[0];
-			var syntaxTree = await declaration.GetSyntaxAsync(context.CancellationToken).ConfigureAwait(false);
+			var syntaxTree = declaration.GetSyntax(context.CancellationToken);
             var semanticModel = context.Compilation.GetSemanticModel(declaration.SyntaxTree);
             var walker = new Walker(context, pxContext, semanticModel);
             walker.Visit(syntaxTree);
