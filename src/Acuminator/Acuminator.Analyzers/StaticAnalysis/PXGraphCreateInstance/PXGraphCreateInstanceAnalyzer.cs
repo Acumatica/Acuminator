@@ -79,8 +79,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
-            compilationStartContext.RegisterSymbolAction(c => Analyze(c, pxContext), 
-                SymbolKind.Method, SymbolKind.Field);
+            compilationStartContext.RegisterSymbolAction(c => AnalyzeGraphCreation(c, pxContext), 
+                SymbolKind.Method, SymbolKind.Field);	// analysis of properties is already covered by method analysis which will analyze property accessors
         }
 
         private void AnalyzeGraphCreation(SymbolAnalysisContext context, PXContext pxContext)
