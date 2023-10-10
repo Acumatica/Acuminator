@@ -1,6 +1,21 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 3.1.3: October 12, 2023
+Acuminator 3.1.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 3.1.3, the following enhancements have been implemented:
+ - The existing Acuminator code refactoring that changed weekly typed old graph event handlers into strongly typed generic event handlers has been converted into a new diagnostic [PX1041](diagnostics/PX1041.md).  
+   The default severity of the new diagnostic is **Information** because Acumatica supports both types of event handlers. Now you can use the new diagnostic to convert graph event handlers to a newer syntax for whole documents, projects and solutions.
+ - Changed the category of diagnostics to **"Acuminator"**. You can see this in Visual Studio Error List window, if you group diagnostics by **Category** like this:
+  
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+- Fixed Visual Studio crashes that appeared for Visual Studio 17.7.* when the static code analysis is configured to be executed in the Visual Studio process (*in process mode*). 
+ The crashes were caused by the asynchonous code in old Acuminator analyzers. 
+
+
 ## Acuminator 3.1.2: June 8, 2023
 Acuminator 3.1.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
