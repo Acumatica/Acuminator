@@ -8,7 +8,8 @@ Acuminator 3.1.3 includes the bug fixes and enhancements described in this secti
 In Acuminator 3.1.3, the following enhancements have been implemented:
  - The existing Acuminator code refactoring that changed weekly typed old graph event handlers into strongly typed generic event handlers has been converted into a new diagnostic [PX1041](diagnostics/PX1041.md).  
    The default severity of the new diagnostic is **Information** because Acumatica supports both types of event handlers. Now you can use the new diagnostic to convert graph event handlers to a newer syntax for whole documents, projects and solutions.
- - Changed the category of diagnostics to **"Acuminator"**. You can see this in Visual Studio Error List window, if you group diagnostics by **Category** like this:
+ - Changed the category of diagnostics to **"Acuminator"**. You can see this in Visual Studio Error List window, if you group diagnostics by **Category** like this:<br/>
+ ![Errors grouped by category](images/ErrorList_GroupedByCategory.png)<br/>
   
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
