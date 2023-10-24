@@ -1,7 +1,7 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
-## Acuminator 3.1.3: October 12, 2023
+## Acuminator 3.1.3: October 24, 2023
 Acuminator 3.1.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
 ### Enhancements
