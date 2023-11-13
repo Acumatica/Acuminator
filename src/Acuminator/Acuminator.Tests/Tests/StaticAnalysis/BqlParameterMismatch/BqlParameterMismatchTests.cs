@@ -53,8 +53,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(46, 6, "Search", 3));
 
 		[Theory]
-		[EmbeddedFileData("FbqlCalls.cs", "SOOrder.cs")]
-		public virtual async Task FBQL_Calls(string source, string dacSource) =>
+		[EmbeddedFileData("FbqlStyleParametersCalls.cs", "SOOrder.cs")]
+		public virtual async Task FbqlStyleParameters_Calls(string source, string dacSource) =>
+			await VerifyCSharpDiagnosticAsync(new[] { source, dacSource },
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(30, 30, "SelectSingle", 1, 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(31, 30, "SelectSingle", 1, 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(70, 6, "SelectSingleBound", 1, 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(79, 6, "SelectSingleBound", 1, 2));
+
 			await VerifyCSharpDiagnosticAsync(new[] { source, dacSource },
 				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(30, 30, "SelectSingle", 1, 2),
 				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(31, 30, "SelectSingle", 1, 2),
