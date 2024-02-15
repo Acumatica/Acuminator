@@ -63,7 +63,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				if (!existingValue.Equals(info))
 				{
-					info.Base = existingValue;
+					// HACK the assignment below is required due to the issue with C# compiler, see details here:
+					// https://developercommunity.visualstudio.com/t/False-compiler-Error-CS0229-with-intende/10560802
+					IWriteableBaseItem<TInfo> infoWithWriteableBaseItem = info;
+					infoWithWriteableBaseItem.Base = existingValue;
 					base[info.Name] = info;
 				}
 			}
