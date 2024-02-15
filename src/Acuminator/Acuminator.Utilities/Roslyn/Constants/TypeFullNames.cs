@@ -181,6 +181,7 @@
 		public const string IBqlFunction = "PX.Data.IBqlFunction";
 		public const string IBqlPredicateChain = "PX.Data.IBqlPredicateChain";
 		public const string IBqlTable = "PX.Data.IBqlTable";
+		public const string PXBqlTable = "PX.Data.PXBqlTable";
 
 		public const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
 		public const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
