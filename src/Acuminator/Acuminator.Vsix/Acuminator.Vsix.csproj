@@ -690,6 +690,9 @@
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.v110_xp">
       <Version>1.1.2</Version>
     </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.5</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
