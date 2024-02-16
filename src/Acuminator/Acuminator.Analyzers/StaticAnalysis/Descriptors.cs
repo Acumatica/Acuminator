@@ -165,15 +165,15 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get; } =
 			Rule("PX1027", nameof(Resources.PX1027ForbiddenFieldsTitle).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, 
-				DiagnosticsShortName.PX1027, nameof(Resources.PX1027ForbiddenFieldsMessageFormat).GetLocalized());
+				DiagnosticsShortName.PX1027ForbiddenFieldsInDac, nameof(Resources.PX1027ForbiddenFieldsMessageFormat).GetLocalized());
 
 		public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration_NonISV { get; } =
 			Rule("PX1027", nameof(Resources.PX1027ForbiddenFieldsTitle).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, 
-				DiagnosticsShortName.PX1027, nameof(Resources.PX1027ForbiddenFieldsMessageFormat).GetLocalized());
+				DiagnosticsShortName.PX1027ForbiddenFieldsInDac, nameof(Resources.PX1027ForbiddenFieldsMessageFormat).GetLocalized());
 
 		public static DiagnosticDescriptor PX1027_ForbiddenCompanyPrefixInDacFieldName { get; } =
 			Rule("PX1027", nameof(Resources.PX1027ForbiddenCompanyPrefixInDacFieldTitle).GetLocalized(), Category.Acuminator,
-				DiagnosticSeverity.Error, DiagnosticsShortName.PX1027);
+				DiagnosticSeverity.Error, DiagnosticsShortName.PX1027ForbiddenCompanyPrefixInDacField);
 
 		public static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =
 			Rule("PX1028", nameof(Resources.PX1028Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, 

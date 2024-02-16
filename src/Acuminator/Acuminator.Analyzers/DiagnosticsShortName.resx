@@ -177,7 +177,7 @@
   <data name="PX1026" xml:space="preserve">
     <value>UnderscoresInDacDeclaration</value>
   </data>
-  <data name="PX1027" xml:space="preserve">
+  <data name="PX1027ForbiddenFieldsInDac" xml:space="preserve">
     <value>ForbiddenFieldsInDacDeclaration</value>
   </data>
   <data name="PX1028" xml:space="preserve">
@@ -392,5 +392,8 @@
   </data>
   <data name="PX1041" xml:space="preserve">
     <value>NameConventionEventsInGraphsAndGraphExtensions</value>
+  </data>
+  <data name="PX1027ForbiddenCompanyPrefixInDacField" xml:space="preserve">
+    <value>ForbiddenCompanyPrefixInDacField</value>
   </data>
 </root>

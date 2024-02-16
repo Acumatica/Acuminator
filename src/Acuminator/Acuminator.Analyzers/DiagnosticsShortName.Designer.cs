@@ -304,11 +304,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ForbiddenCompanyPrefixInDacField.
+        /// </summary>
+        public static string PX1027ForbiddenCompanyPrefixInDacField {
+            get {
+                return ResourceManager.GetString("PX1027ForbiddenCompanyPrefixInDacField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ForbiddenFieldsInDacDeclaration.
         /// </summary>
-        public static string PX1027 {
+        public static string PX1027ForbiddenFieldsInDac {
             get {
-                return ResourceManager.GetString("PX1027", resourceCulture);
+                return ResourceManager.GetString("PX1027ForbiddenFieldsInDac", resourceCulture);
             }
         }
         
