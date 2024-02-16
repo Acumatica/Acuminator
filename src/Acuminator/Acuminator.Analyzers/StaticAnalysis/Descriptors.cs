@@ -164,11 +164,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				DiagnosticSeverity.Error, DiagnosticsShortName.PX1026);
 
 		public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get; } =
-			Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, 
-				DiagnosticsShortName.PX1027, nameof(Resources.PX1027MessageFormat).GetLocalized());
+			Rule("PX1027", nameof(Resources.PX1027ForbiddenFieldsTitle).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, 
+				DiagnosticsShortName.PX1027, nameof(Resources.PX1027ForbiddenFieldsMessageFormat).GetLocalized());
 
 		public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration_NonISV { get; } =
-			Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, 
+			Rule("PX1027", nameof(Resources.PX1027ForbiddenFieldsTitle).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, 
+				DiagnosticsShortName.PX1027, nameof(Resources.PX1027ForbiddenFieldsMessageFormat).GetLocalized());
 				DiagnosticsShortName.PX1027, nameof(Resources.PX1027MessageFormat).GetLocalized());
 		
 		public static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =

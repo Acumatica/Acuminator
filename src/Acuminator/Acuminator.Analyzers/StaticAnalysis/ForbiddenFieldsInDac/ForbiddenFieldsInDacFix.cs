@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 				if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
 					return;
 
-				string codeActionName = nameof(Resources.PX1027Fix).GetLocalized().ToString();
+				string codeActionName = nameof(Resources.PX1027ForbiddenFieldsFix).GetLocalized().ToString();
 				CodeAction codeAction = CodeAction.Create(codeActionName,
 														  cToken => DeleteForbiddenFieldsAsync(context.Document, context.Span, cToken),
 														  equivalenceKey: codeActionName);
