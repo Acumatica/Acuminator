@@ -51,7 +51,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
         }
 
 		/// <summary>
-		/// Gets the DAC type with its base types up to the <see cref="System.Object"/>.
+		/// Gets the DAC type with its base types up to the <see cref="System.Object"/> or up to the <c>PX.Data.PXBqlTable</c> DAC base type introduced in Acumatica 2024r1.
 		/// </summary>
 		/// <param name="dacType">The DAC type to act on.</param>
 		/// <returns/>
