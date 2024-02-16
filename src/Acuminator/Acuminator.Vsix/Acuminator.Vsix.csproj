@@ -62,7 +62,7 @@
     <DeployExtension>False</DeployExtension>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>11.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Roslyn</StartArguments>
