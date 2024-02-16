@@ -439,7 +439,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to NameConventionEventsInGraphsAndGraphExtensions.
         /// </summary>
         public static string PX1041 {
             get {
