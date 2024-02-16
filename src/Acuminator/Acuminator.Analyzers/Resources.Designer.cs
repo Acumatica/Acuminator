@@ -624,6 +624,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DAC fields cannot start with the &quot;Company&quot; prefix because company masks work incorrectly with such fields.
+        /// </summary>
+        public static string PX1027ForbiddenCompanyPrefixInDacFieldTitle {
+            get {
+                return ResourceManager.GetString("PX1027ForbiddenCompanyPrefixInDacFieldTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove the forbidden field from the DAC declaration.
         /// </summary>
         public static string PX1027ForbiddenFieldsFix {
