@@ -47,10 +47,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			CheckDacBqlFieldsForForbiddenNames(pxContext, context, forbiddenNames, allNestedTypes);
 
 			context.CancellationToken.ThrowIfCancellationRequested();
-			CheckDacPropertiesForCompanyPrefix(dacOrDacExtension, pxContext, context);
+			CheckDacPropertiesForCompanyPrefix(dacOrDacExtension, forbiddenNames, pxContext, context);
 
 			context.CancellationToken.ThrowIfCancellationRequested();
-			CheckDacBqlFieldsForCompanyPrefix(allNestedTypes, pxContext, context);
+			CheckDacBqlFieldsForCompanyPrefix(allNestedTypes, pxContext, forbiddenNames, context);
 		}
 		
 		private void CheckDacPropertiesForForbiddenNames(DacSemanticModel dacOrDacExtension, PXContext pxContext, SymbolAnalysisContext context,
@@ -93,10 +93,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 				pxContext.CodeAnalysisSettings);
 		}
 
-		private void CheckDacPropertiesForCompanyPrefix(DacSemanticModel dacOrDacExtension, PXContext pxContext, SymbolAnalysisContext context)
+		private void CheckDacPropertiesForCompanyPrefix(DacSemanticModel dacOrDacExtension, ImmutableArray<string> forbiddenNames, 
+														PXContext pxContext, SymbolAnalysisContext context)
 		{
 			var propertiesWithInvalidPrefix = 
-				dacOrDacExtension.DeclaredDacProperties.Where(property => property.Name.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase));
+				dacOrDacExtension.DeclaredDacProperties
+								 .Where(property => property.Name.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase) &&
+													forbiddenNames.All(field => !field.Equals(property.Name, StringComparison.OrdinalIgnoreCase)));
 
 			foreach (DacPropertyInfo property in propertiesWithInvalidPrefix)
 			{
@@ -105,11 +108,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			}
 		}
 
-		private void CheckDacBqlFieldsForCompanyPrefix(ILookup<string, ClassDeclarationSyntax> allNestedTypes, PXContext pxContext, 
-													   SymbolAnalysisContext context)
+		private void CheckDacBqlFieldsForCompanyPrefix(ILookup<string, ClassDeclarationSyntax> allNestedTypes, PXContext pxContext,
+													   ImmutableArray<string> forbiddenNames, SymbolAnalysisContext context)
 		{
 			var fieldsWithInvalidPrefix = 
-				allNestedTypes.Where(groupedByName => groupedByName.Key.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase))
+				allNestedTypes.Where(groupedByName => groupedByName.Key.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase) &&
+													  forbiddenNames.All(field => !field.Equals(groupedByName.Key, StringComparison.OrdinalIgnoreCase)))
 							  .SelectMany(groupedByName => groupedByName);
 
 			foreach (ClassDeclarationSyntax fieldNode in fieldsWithInvalidPrefix)
