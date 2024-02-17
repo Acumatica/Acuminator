@@ -11,10 +11,8 @@ using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -25,11 +23,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 	/// </summary>
 	public class ForbiddenFieldsInDacAnalyzer : DacAggregatedAnalyzerBase
 	{
+		private const string CompanyPrefix = "Company";
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
-				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV,
+				Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName
 			);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExtension)
@@ -39,10 +40,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			var forbiddenNames = DacFieldNames.Restricted.All;
 			CheckDacPropertiesForForbiddenNames(dacOrDacExtension, pxContext, context, forbiddenNames);
 
+			var allNestedTypes = dacOrDacExtension.GetMemberNodes<ClassDeclarationSyntax>()
+												  .ToLookup(node => node.Identifier.ValueText, StringComparer.OrdinalIgnoreCase);
+
 			context.CancellationToken.ThrowIfCancellationRequested();
-			CheckDacBqlFieldsForForbiddenNames(dacOrDacExtension, pxContext, context, forbiddenNames);
+			CheckDacBqlFieldsForForbiddenNames(pxContext, context, forbiddenNames, allNestedTypes);
 
+			context.CancellationToken.ThrowIfCancellationRequested();
+			CheckDacPropertiesForCompanyPrefix(dacOrDacExtension, pxContext, context);
 
+			context.CancellationToken.ThrowIfCancellationRequested();
+			CheckDacBqlFieldsForCompanyPrefix(allNestedTypes, pxContext, context);
 		}
 		
 		private void CheckDacPropertiesForForbiddenNames(DacSemanticModel dacOrDacExtension, PXContext pxContext, SymbolAnalysisContext context,
@@ -55,26 +63,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			foreach (DacPropertyInfo property in invalidProperties.Where(p => p.Symbol.ContainingSymbol == dacOrDacExtension.Symbol))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				RegisterDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
+				RegisterForbiddenFieldDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
 			}
 		}
 
-		private void CheckDacBqlFieldsForForbiddenNames(DacSemanticModel dacOrDacExtension, PXContext pxContext, SymbolAnalysisContext context,
-														in ImmutableArray<string> forbiddenNames)
+		private void CheckDacBqlFieldsForForbiddenNames(PXContext pxContext, SymbolAnalysisContext context, in ImmutableArray<string> forbiddenNames,
+														ILookup<string, ClassDeclarationSyntax> allNestedTypes)
 		{
-			var allNestedTypesDictionary = dacOrDacExtension.GetMemberNodes<ClassDeclarationSyntax>()
-															.ToLookup(node => node.Identifier.ValueText, StringComparer.OrdinalIgnoreCase);
-			var allInvalidFields = forbiddenNames.Where(forbiddenClassName => allNestedTypesDictionary.Contains(forbiddenClassName))
-												 .SelectMany(forbiddenClassName => allNestedTypesDictionary[forbiddenClassName]);
+			var allInvalidFields = forbiddenNames.Where(forbiddenClassName		=> allNestedTypes.Contains(forbiddenClassName))
+												 .SelectMany(forbiddenClassName => allNestedTypes[forbiddenClassName]);
 
 			foreach (ClassDeclarationSyntax fieldNode in allInvalidFields)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				RegisterDiagnosticForIdentifier(fieldNode.Identifier, pxContext, context);
+				RegisterForbiddenFieldDiagnosticForIdentifier(fieldNode.Identifier, pxContext, context);
 			}
 		}
 
-		private void RegisterDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
+		private void RegisterForbiddenFieldDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
 		{
 			bool isDeletedDatabaseRecord = DacFieldNames.Restricted.DeletedDatabaseRecord.Equals(identifier.ValueText, StringComparison.OrdinalIgnoreCase);
 			DiagnosticDescriptor descriptorToShow = 
@@ -84,6 +90,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 			context.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(descriptorToShow, identifier.GetLocation(), identifier.ValueText), 
+				pxContext.CodeAnalysisSettings);
+		}
+
+		private void CheckDacPropertiesForCompanyPrefix(DacSemanticModel dacOrDacExtension, PXContext pxContext, SymbolAnalysisContext context)
+		{
+			var propertiesWithInvalidPrefix = 
+				dacOrDacExtension.DeclaredDacProperties.Where(property => property.Name.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase));
+
+			foreach (DacPropertyInfo property in propertiesWithInvalidPrefix)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
+				RegisterCompanyPrefixDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
+			}
+		}
+
+		private void CheckDacBqlFieldsForCompanyPrefix(ILookup<string, ClassDeclarationSyntax> allNestedTypes, PXContext pxContext, 
+													   SymbolAnalysisContext context)
+		{
+			var fieldsWithInvalidPrefix = 
+				allNestedTypes.Where(groupedByName => groupedByName.Key.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase))
+							  .SelectMany(groupedByName => groupedByName);
+
+			foreach (ClassDeclarationSyntax fieldNode in fieldsWithInvalidPrefix)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
+				RegisterCompanyPrefixDiagnosticForIdentifier(fieldNode.Identifier, pxContext, context);
+			}
+		}
+
+		private void RegisterCompanyPrefixDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
+		{
+			var diagnosticProperties = ImmutableDictionary<string, string>.Empty
+																		  .Add(DiagnosticProperty.RegisterCodeFix, bool.FalseString);
+			context.ReportDiagnosticWithSuppressionCheck(
+				Diagnostic.Create(
+					Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName, identifier.GetLocation(), diagnosticProperties),
 				pxContext.CodeAnalysisSettings);
 		}
 	}
