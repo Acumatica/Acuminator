@@ -1,12 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -51,18 +55,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 		private async Task<Document> DeleteForbiddenFieldsAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode diagnosticNode = root?.FindNode(span);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? diagnosticNode = root?.FindNode(span);
 
 			if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			ClassDeclarationSyntax dacDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
-			string identifierToRemove = diagnosticNode is ClassDeclarationSyntax dacFieldDeclaration
+			ClassDeclarationSyntax? dacDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
+			string? identifierToRemove = diagnosticNode is ClassDeclarationSyntax dacFieldDeclaration
 											? dacFieldDeclaration.Identifier.Text
 											: (diagnosticNode as PropertyDeclarationSyntax)?.Identifier.Text;
 
-			if (identifierToRemove.IsNullOrWhiteSpace())
+			if (dacDeclaration == null || identifierToRemove.IsNullOrWhiteSpace())
 				return document;
 
 			var regionsVisitor = new RegionsVisitor(identifierToRemove, cancellationToken);
