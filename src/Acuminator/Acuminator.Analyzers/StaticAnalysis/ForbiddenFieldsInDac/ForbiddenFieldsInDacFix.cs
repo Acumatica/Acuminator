@@ -35,22 +35,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			return Task.Run(() =>
-			{
-				var diagnostic = context.Diagnostics.FirstOrDefault(d => 
-											d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id ||
-											d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.Id);
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
-					return;
+			var diagnostics = context.Diagnostics.Where(d => d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id &&
+															 d.IsRegisteredForCodeFix());
+			foreach (Diagnostic diagnostic in diagnostics)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
 
 				string codeActionName = nameof(Resources.PX1027ForbiddenFieldsFix).GetLocalized().ToString();
 				CodeAction codeAction = CodeAction.Create(codeActionName,
 														  cToken => DeleteForbiddenFieldsAsync(context.Document, context.Span, cToken),
 														  equivalenceKey: codeActionName);
-
 				context.RegisterCodeFix(codeAction, context.Diagnostics);
-			}, context.CancellationToken);
+			}
+
+			return Task.CompletedTask;
 		}
 
 		private async Task<Document> DeleteForbiddenFieldsAsync(Document document, TextSpan span, CancellationToken cancellationToken)
