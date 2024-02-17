@@ -34,5 +34,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ForbiddenFieldsInDac
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.CreateFor(30, 17, "DeletedDatabaseRecord"),
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(39, 25, "companyMask"),
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(42, 17, "CompanyMask"));
+
+		[Theory]
+		[EmbeddedFileData("DacFieldsWithCompanyPrefix.cs")]
+		public virtual void DacField_WithCompanyPrefix(string source) =>
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName.CreateFor(11, 25),
+				Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName.CreateFor(15, 17),
+				Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName.CreateFor(26, 25),
+				Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName.CreateFor(30, 17));
 	}
 }
