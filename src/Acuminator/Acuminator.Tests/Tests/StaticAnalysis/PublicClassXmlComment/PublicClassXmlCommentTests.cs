@@ -146,6 +146,24 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 
 		#region Inheritdoc tests
 		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc.cs")]
+		public async Task ProjectionDAC_MappingWithInheritance_NoInheritdoc(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(24, 24),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(35, 26),
+				Descriptors.PX1007_PublicClassNoXmlComment.CreateFor(43, 28),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(54, 24),
+				Descriptors.PX1007_InvalidProjectionDacFieldDescription.CreateFor(65, 23)
+				);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc.cs", 
+						  @"Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_MappingWithInheritance_NoInheritdoc_AddInheritdocTag(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
 		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc.cs")]
 		public async Task ProjectionDac_NoInheritdoc(string source) =>
 			await VerifyCSharpDiagnosticAsync(
@@ -356,6 +374,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[Theory]
 		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_NoInheritdoc_AddInheritdoc.cs")]
 		public async Task ProjectionDac_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData(@"Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc_AddInheritdoc.cs")]
+		public async Task ProjectionDac_MappingWithInheritance_NoInheritdoc_AfterCodeFix_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
