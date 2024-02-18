@@ -131,7 +131,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			if (includeFromInheritanceChain)
 			{
-				return dac.GetDacWithBaseTypes(pxContext)
+				return dac.GetDacWithBaseTypesThatMayStoreDacProperties(pxContext)
 						  .Reverse()
 						  .SelectMany(baseDac => baseDac.GetRawPropertiesFromDacOrDacExtensionImpl(pxContext, cancellation));
 			}
