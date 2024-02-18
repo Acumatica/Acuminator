@@ -48,6 +48,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
 
+		public ImmutableArray<PXOverrideInfo> PXOverrides { get; }
+
 		/// <summary>
 		/// Actions which are declared in a graph/graph extension represented by this semantic model instance.
 		/// </summary>
@@ -97,30 +99,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			PXContext = pxContext;
-			Type = type;
-			Symbol = symbol;
-			_cancellation = cancellation;
+			PXContext 			 = pxContext;
+			Type 				 = type;
+			Symbol 				 = symbol;
+			_cancellation 		 = cancellation;
 			ModelCreationOptions = modelCreationOptions;
 
 			GraphSymbol = Type switch
 			{
-				GraphType.PXGraph => Symbol,
+				GraphType.PXGraph 		   => Symbol,
 				GraphType.PXGraphExtension => Symbol.GetGraphFromGraphExtension(PXContext),
-				_ => null,
+				_ 						   => null,
 			};
 
-			StaticConstructors = Symbol.GetStaticConstructors(_cancellation);
-			ViewsByNames = GetDataViews();
+			StaticConstructors 	 = Symbol.GetStaticConstructors(_cancellation);
+			ViewsByNames 		 = GetDataViews();
 			ViewDelegatesByNames = GetDataViewDelegates();
 
-			ActionsByNames = GetActions();
+			ActionsByNames 		  = GetActions();
 			ActionHandlersByNames = GetActionHandlers();
+
 			InitProcessingDelegatesInfo();
-			Initializers = GetDeclaredInitializers().ToImmutableArray();
-			IsActiveMethodInfo = GetIsActiveMethodInfo();
+
+			Initializers 			   = GetDeclaredInitializers().ToImmutableArray();
+			IsActiveMethodInfo 		   = GetIsActiveMethodInfo();
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
-			ConfigureMethodOverrides = GetConfigureMethodOverrides();
+			ConfigureMethodOverrides   = GetConfigureMethodOverrides();
+			PXOverrides 			   = GetDeclaredPXOverrideInfos();
 		}
 
 		private void InitProcessingDelegatesInfo()
@@ -347,6 +352,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var configureOverrides = ConfigureMethodInfo.GetConfigureMethodInfos(Symbol, Type, PXContext, _cancellation);
 			return configureOverrides.ToImmutableArray();
+		}
+
+		private ImmutableArray<PXOverrideInfo> GetDeclaredPXOverrideInfos()
+		{
+			if (Type == GraphType.None)
+				return ImmutableArray<PXOverrideInfo>.Empty;
+
+			var pxOverrides = PXOverrideInfo.GetPXOverrides(Symbol, PXContext, _cancellation);
+			return pxOverrides.ToImmutableArray();
 		}
 	}
 }

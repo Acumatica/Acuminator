@@ -37,6 +37,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.IsProcessing"/>
 		public bool IsProcessing => BaseGraphModel.IsProcessing;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.ConfiguresWorkflow"/>
+		public bool ConfiguresWorkflow => BaseGraphModel.ConfiguresWorkflow;
+
 		/// <inheritdoc cref="PXGraphSemanticModel.Type"/>
 		public GraphType Type => BaseGraphModel.Type;
 
@@ -77,12 +80,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.ActionHandlers"/>
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => BaseGraphModel.ActionHandlers;
 
-
 		/// <inheritdoc cref="PXGraphSemanticModel.IsActiveMethodInfo"/>
 		public IsActiveMethodInfo? IsActiveMethodInfo => BaseGraphModel.IsActiveMethodInfo;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.IsActiveForGraphMethodInfo"/>
 		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo => BaseGraphModel.IsActiveForGraphMethodInfo;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.ConfigureMethodOverrides"/>
+		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides => BaseGraphModel.ConfigureMethodOverrides;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.PXOverrides"/>
+		public ImmutableArray<PXOverrideInfo> PXOverrides => BaseGraphModel.PXOverrides;
 		#endregion
 
 		#region Events
