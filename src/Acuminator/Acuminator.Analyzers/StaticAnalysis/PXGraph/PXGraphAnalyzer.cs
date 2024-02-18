@@ -54,6 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
 			new PXGraphWithGraphEventsAggregatorAnalyzer
 			(
+				new NoIsActiveMethodForExtensionAnalyzer(),
 				new NameConventionEventsInGraphsAndGraphExtensionsAnalyzer(),
 				new ThrowingExceptionsInEventHandlersAnalyzer()
 			),
@@ -66,7 +67,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			new ActionHandlerAttributesAnalyzer(),
             new ActionHandlerReturnTypeAnalyzer(),
 			new NonPublicGraphAndDacExtensionAnalyzer(),
-			new NoIsActiveMethodForExtensionAnalyzer(),
 			new InvalidPXActionSignatureAnalyzer(),
 			new StaticFieldOrPropertyInGraphAnalyzer(),
 			new TypoInViewDelegateNameAnalyzer(),
