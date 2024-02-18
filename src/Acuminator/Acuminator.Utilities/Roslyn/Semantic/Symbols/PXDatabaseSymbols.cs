@@ -19,12 +19,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	        Select = Type.GetMethods()
 		        .Where(m => m.Name.StartsWith(DelegateNames.Select, StringComparison.Ordinal))
 		        .ToImmutableArray();
-	        Insert = Type.GetMethods(DelegateNames.Insert);
-	        Update = Type.GetMethods(DelegateNames.Update);
+	        Insert = Type.GetMethods(DelegateNames.Insert).ToImmutableArray();
+	        Update = Type.GetMethods(DelegateNames.Update).ToImmutableArray();
 	        Delete = Type.GetMethods(DelegateNames.Delete)
 		        .Concat(Type.GetMethods(DelegateNames.ForceDelete))
 		        .ToImmutableArray();
-	        Ensure = Type.GetMethods(DelegateNames.Ensure);
+	        Ensure = Type.GetMethods(DelegateNames.Ensure).ToImmutableArray();
         }
     }
 }

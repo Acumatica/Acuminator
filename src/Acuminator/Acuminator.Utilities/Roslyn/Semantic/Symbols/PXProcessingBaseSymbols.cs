@@ -14,7 +14,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         internal PXProcessingBaseSymbols(Compilation compilation) : base(compilation, typeName: TypeFullNames.PXProcessingBase)
         {
             SetParametersDelegate = Type.GetMethods(DelegateNames.SetParameters).First();
-            SetProcessDelegate = Type.GetMethods(DelegateNames.SetProcessDelegate);
+            SetProcessDelegate = Type.GetMethods(DelegateNames.SetProcessDelegate).ToImmutableArray();
         }
     }
 }

@@ -123,9 +123,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(TypeFullNames.IPXLocalizableList);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(TypeFullNames.PXConnectionScope);
 
-        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMembers(DelegateNames.StartOperation)
-                                                               .OfType<IMethodSymbol>()
-                                                               .ToImmutableArray();
+        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMethods(DelegateNames.StartOperation).ToImmutableArray();
 
 		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(TypeFullNames.IImplementType);
 

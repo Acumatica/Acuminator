@@ -45,8 +45,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (pxOverrideAttribute == null)
 				yield break;
 
-			var declaredMethods = graphOrExtension.GetMembers()
-												  .OfType<IMethodSymbol>()
+			var declaredMethods = graphOrExtension.GetMethods()
 												  .Where(method => method.ContainingType.Equals(graphOrExtension));
 			int declarationOrder = 0;
 

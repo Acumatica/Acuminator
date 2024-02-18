@@ -3,6 +3,8 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -52,8 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 			var newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			var initializeSymbol = methodSymbol.ContainingType
-				.GetMembers("Initialize")
-				.OfType<IMethodSymbol>()
+				.GetMethods("Initialize")
 				.FirstOrDefault(m => m.IsOverride
 				                     && m.DeclaredAccessibility == Accessibility.Public
 				                     && m.ReturnsVoid

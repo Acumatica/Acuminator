@@ -134,11 +134,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (pxContext.PXGraphExtension.Initialize == null)
 				return default;
 
-			var initializeCandidates = typeSymbol.GetMembers(DelegateNames.Initialize);
-			if (initializeCandidates.IsDefaultOrEmpty)
-				return default;
-
-			IMethodSymbol? initialize = (from method in initializeCandidates.OfType<IMethodSymbol>()
+			var initializeCandidates  = typeSymbol.GetMethods(DelegateNames.Initialize);
+			IMethodSymbol? initialize = (from method in initializeCandidates
 										 where method.IsOverride && method.IsDeclaredInType(typeSymbol) &&
 											  method.GetOverridden().Any(@override => @override.Equals(pxContext.PXGraphExtension.Initialize))
 										 select method)
@@ -209,13 +206,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (pxScreenConfiguration == null)
 				return null;
 
-			var configureMethods = pxGraphOrPXGraphExtension!.GetMembers(DelegateNames.Workflow.Configure);
-
-			if (configureMethods.IsDefaultOrEmpty)
-				return null;
-
-			return configureMethods.OfType<IMethodSymbol>()
-								   .FirstOrDefault(method => method.ReturnsVoid && method.IsVirtual && method.DeclaredAccessibility == Accessibility.Public &&
+			var configureMethods = pxGraphOrPXGraphExtension!.GetMethods(DelegateNames.Workflow.Configure);
+			return configureMethods.FirstOrDefault(method => method.ReturnsVoid && method.IsVirtual && method.DeclaredAccessibility == Accessibility.Public &&
 															 method.Parameters.Length == 1 && pxScreenConfiguration.Equals(method.Parameters[0].Type));
 		}
 	}

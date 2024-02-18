@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	        Select = Type.GetMethods()
 		        .Where(m => m.Name.StartsWith(DelegateNames.Select, StringComparison.Ordinal))
 		        .ToImmutableArray();
-	        GetItem = Type.GetMethods(DelegateNames.GetItem);
+	        GetItem = Type.GetMethods(DelegateNames.GetItem).ToImmutableArray();
         }
     }
 }

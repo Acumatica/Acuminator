@@ -14,11 +14,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXActionSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXAction)
         {
-	        SetVisible = Type.GetMethods(DelegateNames.SetVisible);
-	        SetEnabled = Type.GetMethods(DelegateNames.SetEnabled);
-	        SetCaption = Type.GetMethods(DelegateNames.SetCaption);
-	        SetTooltip = Type.GetMethods(DelegateNames.SetTooltip);
-	        Press      = Type.GetMethods(DelegateNames.Press);
+	        SetVisible = Type.GetMethods(DelegateNames.SetVisible).ToImmutableArray();
+	        SetEnabled = Type.GetMethods(DelegateNames.SetEnabled).ToImmutableArray();
+	        SetCaption = Type.GetMethods(DelegateNames.SetCaption).ToImmutableArray();
+	        SetTooltip = Type.GetMethods(DelegateNames.SetTooltip).ToImmutableArray();
+	        Press      = Type.GetMethods(DelegateNames.Press).ToImmutableArray();
         }
     }
 }

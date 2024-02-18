@@ -70,7 +70,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 																																		  string[] simpleMethodNames,
 																																		  string[] formatMethodNames)
 		{
-			var methods		  = type.GetMembers().OfType<IMethodSymbol>();
+			var methods		  = type.GetMethods();
 			var simpleMethods = ImmutableArray.CreateBuilder<IMethodSymbol>(initialCapacity: simpleMethodNames.Length);
 			var formatMethods = ImmutableArray.CreateBuilder<IMethodSymbol>(initialCapacity: formatMethodNames.Length);
 

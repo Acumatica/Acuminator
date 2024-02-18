@@ -517,32 +517,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return staticCtrs.ToImmutableArray();
 		}
 
-		/// <summary>Get all the methods of this symbol.</summary>
-		/// <returns>An ImmutableArray containing all the methods of this symbol. If this symbol has no methods,
-		/// returns an empty ImmutableArray. Never returns Null.</returns>
-		public static ImmutableArray<IMethodSymbol> GetMethods(this ITypeSymbol type)
-		{
-			type.ThrowOnNull(nameof(type));
-
-			return type
-				.GetMembers()
-				.OfType<IMethodSymbol>()
-				.ToImmutableArray();
-		}
-
 		/// <summary>
-		/// Get all the methods of this symbol that have a particular name.
+		/// Get all the methods of this <paramref name="type"/>.
 		/// </summary>
-		/// <returns>An ImmutableArray containing all the methods of this symbol with the given name. If there are
-		/// no methods with this name, returns an empty ImmutableArray. Never returns Null.</returns>
-		public static ImmutableArray<IMethodSymbol> GetMethods(this ITypeSymbol type, string methodName)
-		{
-			type.ThrowOnNull(nameof(type));
+		/// <param name="type">The type to act on.</param>
+		/// <param name="methodName">(Optional) Name of the method to look for.</param>
+		/// <returns>
+		/// Returns a collection containing all the methods of this symbol. Never returns Null.
+		/// </returns>
+		public static IEnumerable<IMethodSymbol> GetMethods(this ITypeSymbol type, string? methodName = null) 
 
-			return type
-				.GetMembers(methodName)
-				.OfType<IMethodSymbol>()
-				.ToImmutableArray();
+		{
+			ImmutableArray<ISymbol> members = methodName != null
+				? type.GetMembers(methodName)
+				: type.GetMembers();
+
+			return members.IsDefaultOrEmpty
+				? Array.Empty<IMethodSymbol>()
+				: members.OfType<IMethodSymbol>();
 		}
 
 		/// <summary>

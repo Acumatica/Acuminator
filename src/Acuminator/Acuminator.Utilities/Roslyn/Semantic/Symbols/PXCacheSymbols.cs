@@ -27,11 +27,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 			GenericType = Compilation.GetTypeByMetadataName(TypeFullNames.PXCache1);
 
-			Insert = Type.GetMethods(DelegateNames.Insert);
-			Update = Type.GetMethods(DelegateNames.Update);
-			Delete = Type.GetMethods(DelegateNames.Delete);
+			Insert = Type.GetMethods(DelegateNames.Insert).ToImmutableArray();
+			Update = Type.GetMethods(DelegateNames.Update).ToImmutableArray();
+			Delete = Type.GetMethods(DelegateNames.Delete).ToImmutableArray();
 
-			RaiseExceptionHandling = Type.GetMethods(DelegateNames.RaiseExceptionHandling);
+			RaiseExceptionHandling   = Type.GetMethods(DelegateNames.RaiseExceptionHandling).ToImmutableArray();
 			RowSelectingWhileReading = Type.GetMembers(EventsNames.PXCache.RowSelectingWhileReading)
 										   .OfType<IEventSymbol>()
 										   .FirstOrDefault();
