@@ -148,12 +148,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			var dacHierarchy = dacType.GetBaseTypes();
 
 			// This filter takes all DAC types with a check for the base PXBqlTable type of System.Object type 
-			// instead of checking if the type implements IBqlTable interface. This was done for two reasons:
-			// 1. Direct comparison will be much more performant than the check for the IBqlTable interface implementation 
-			//    and this method is called rather frequently in code analysis of DACs. 
-			//    Moreover, it is possible to optimize check a bit for Acumatica versions before 2024r1.
-			// 2. The check for IBqlTable interface maybe more general but it will also exclude part of a useful type hierarchy in a scenario 
-			//    with a base non DAC type which declares some shared fields, for instance, PX.Objects.TX.TaxDetail class.
+			// instead of checking if the type implements IBqlTable interface. This is done to include a useful part of type hierarchy in a scenario 
+			// where the base non DAC type which declares some shared fields, for instance, PX.Objects.TX.TaxDetail class.
 			if (pxBqlTable != null)
 				dacHierarchy = dacHierarchy.TakeWhile(type => !type.Equals(pxBqlTable) && type.SpecialType != SpecialType.System_Object);
 			else
