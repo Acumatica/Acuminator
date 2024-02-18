@@ -518,23 +518,51 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
-		/// Get all the methods of this <paramref name="type"/>.
+		/// Get all methods of this <paramref name="type"/>. If <paramref name="methodName"/> is specified then all methods with this name are returned.
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
 		/// <param name="methodName">(Optional) Name of the method to look for.</param>
 		/// <returns>
 		/// Returns a collection containing all the methods of this symbol. Never returns Null.
 		/// </returns>
-		public static IEnumerable<IMethodSymbol> GetMethods(this ITypeSymbol type, string? methodName = null) 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<IMethodSymbol> GetMethods(this ITypeSymbol type, string? methodName = null) =>
+			GetMembersInternal<IMethodSymbol>(type, methodName);
 
+		/// <summary>
+		/// Get all properties of this <paramref name="type"/>. If <paramref name="propertyName"/> is specified then all properties with this name are returned.
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <param name="propertyName">(Optional) Name of the property to look for.</param>
+		/// <returns>
+		/// Returns a collection containing all the properties of this symbol. Never returns Null.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<IPropertySymbol> GetProperties(this ITypeSymbol type, string? propertyName = null) =>
+			GetMembersInternal<IPropertySymbol>(type, propertyName);
+
+		/// <summary>
+		/// Get all fields of this <paramref name="type"/>. If <paramref name="fieldName"/> is specified then all fields with this name are returned.
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <param name="fieldName">(Optional) Name of the field to look for.</param>
+		/// <returns>
+		/// Returns a collection containing all the fields of this symbol. Never returns Null.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<IFieldSymbol> GetFields(this ITypeSymbol type, string? fieldName = null) =>
+			GetMembersInternal<IFieldSymbol>(type, fieldName);
+
+		private static IEnumerable<TSymbol> GetMembersInternal<TSymbol>(this ITypeSymbol type, string? memberName = null)
+		where TSymbol : ISymbol
 		{
-			ImmutableArray<ISymbol> members = methodName != null
-				? type.GetMembers(methodName)
+			ImmutableArray<ISymbol> members = memberName != null
+				? type.GetMembers(memberName)
 				: type.GetMembers();
 
 			return members.IsDefaultOrEmpty
-				? Array.Empty<IMethodSymbol>()
-				: members.OfType<IMethodSymbol>();
+				? Array.Empty<TSymbol>()
+				: members.OfType<TSymbol>();
 		}
 
 		/// <summary>
