@@ -55,15 +55,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None
 			? Enumerable.Empty<ActionInfo>()
-			: Actions.Where(action => Symbol?.Equals(action.Symbol?.ContainingType) ?? false);
+			: Actions.Where(action => action.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
-		/// Action handlers which are declared in a graph represented by an instance of the class.
-		/// Use this property for diagnostics of graph action handlers
+		/// Action handlers which are declared in a graph/graph extension represented by this semantic model instance.
 		/// </summary>
-		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None ?
-			Enumerable.Empty<ActionHandlerInfo>() :
-			ActionHandlers.Where(h => h?.Symbol?.ContainingType?.Equals(Symbol) ?? false);
+		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None
+			? Enumerable.Empty<ActionHandlerInfo>()
+			: ActionHandlers.Where(handler => handler.Symbol.IsDeclaredInType(Symbol));
+
+		/// <summary>
+		/// Views which are declared in a graph/graph extension represented by this semantic model instance.
+		/// </summary>
+		public IEnumerable<DataViewInfo> DeclaredViews => Type == GraphType.None
+			? Enumerable.Empty<DataViewInfo>()
+			: Views.Where(view => view.Symbol.IsDeclaredInType(Symbol));
+
+		/// <summary>
+		/// View delegates which are declared in a graph/graph extension represented by this semantic model instance.
+		/// </summary>
+		public IEnumerable<DataViewDelegateInfo> DeclaredViewDelegates => Type == GraphType.None
+			? Enumerable.Empty<DataViewDelegateInfo>()
+			: ViewDelegates.Where(viewDelegate => viewDelegate.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// Gets the info about IsActive method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
