@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: NotNullIfNotNull("obj")]
-		public static T CheckIfNull<T>(this T? obj, string? paramName = null, string? message = null)
+		public static T CheckIfNull<T>([NotNull] this T? obj, string? paramName = null, string? message = null)
 		{
 			obj.ThrowOnNull(paramName, message);
 			return obj;
@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: NotNullIfNotNull("collection")]
-		public static IEnumerable<T> CheckIfNullOrEmpty<T>(this IEnumerable<T>? collection, string? paramName = null, string? message = null)
+		public static IEnumerable<T> CheckIfNullOrEmpty<T>([NotNull] this IEnumerable<T>? collection, string? paramName = null, string? message = null)
 		{
 			collection.ThrowOnNullOrEmpty(paramName, message);
 			return collection;
@@ -96,7 +96,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: NotNullIfNotNull("str")]
-		public static string CheckIfNullOrWhiteSpace(this string? str, string? paramName = null, string? message = null)
+		public static string CheckIfNullOrWhiteSpace([NotNull] this string? str, string? paramName = null, string? message = null)
 		{
 			str.ThrowOnNullOrWhiteSpace(paramName, message);
 			return str;
