@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -61,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 			// ShouldAnalyze already filtered everything and left only graph extensions without IsActive
 			// We just need to report them
 			var syntaxNode = graphExtension.Symbol.GetSyntax(symbolContext.CancellationToken);
-			Location location = (syntaxNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? syntaxNode?.GetLocation();
+			Location? location = (syntaxNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? syntaxNode?.GetLocation();
 
 			if (location == null)
 				return;
