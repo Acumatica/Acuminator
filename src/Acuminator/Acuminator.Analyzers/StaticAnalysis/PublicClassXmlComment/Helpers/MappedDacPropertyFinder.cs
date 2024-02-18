@@ -77,12 +77,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				(mappingType, TypedConstant mappingInfo) = propertyMappingInfoFromAttribute.Value;
 				originalDacOrDacBqlField				 = mappingInfo.Value as INamedTypeSymbol;
 			}
-			else if (typeInfo.PropertiesFromBaseDacs.TryGetValue(projectionDacProperty.Name, out mappedPropertyFromBaseDacTypes))
+			else
 			{
+				// The projection DAC property needs to be overridden to support binding to a property of a base DAC
+				if (!projectionDacProperty.IsOverride ||
+					!typeInfo.PropertiesFromBaseDacs.TryGetValue(projectionDacProperty.Name, out mappedPropertyFromBaseDacTypes))
+				{
+					return null;
+				}
+
 				mappingType = MappingType.Inheritance;
 			}
-			else
-				return null;
 
 			_cancellation.ThrowIfCancellationRequested();
 
