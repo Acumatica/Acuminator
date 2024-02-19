@@ -91,6 +91,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		/// <inheritdoc cref="PXGraphSemanticModel.PXOverrides"/>
 		public ImmutableArray<PXOverrideInfo> PXOverrides => BaseGraphModel.PXOverrides;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredActions"/>
+		public IEnumerable<ActionInfo> DeclaredActions => BaseGraphModel.DeclaredActions;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredActionHandlers"/>
+		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => BaseGraphModel.DeclaredActionHandlers;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredViews"/>
+		public IEnumerable<DataViewInfo> DeclaredViews => BaseGraphModel.DeclaredViews;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredViewDelegates"/>
+		public IEnumerable<DataViewDelegateInfo> DeclaredViewDelegates => BaseGraphModel.DeclaredViewDelegates;
 		#endregion
 
 		#region Events
