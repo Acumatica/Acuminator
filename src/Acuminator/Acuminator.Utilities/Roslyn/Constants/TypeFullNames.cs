@@ -91,7 +91,6 @@
 		internal const string PXOverrideAttribute = "PX.Data.PXOverrideAttribute";
 		internal const string PXEventSubscriberAttribute = "PX.Data.PXEventSubscriberAttribute";
 		internal const string PXAggregateAttribute = "PX.Data.PXAggregateAttribute";
-		internal const string PXDynamicAggregateAttribute = "PX.Data.PXDynamicAggregateAttribute";
 		internal const string PXDefaultAttribute = "PX.Data.PXDefaultAttribute";
 		internal const string PXUnboundDefaultAttribute = "PX.Data.PXUnboundDefaultAttribute";
 		internal const string PXButtonAttribute = "PX.Data.PXButtonAttribute";

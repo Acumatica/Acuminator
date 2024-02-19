@@ -20,7 +20,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXEventSubscriberAttribute  => Compilation.GetTypeByMetadataName(TypeFullNames.PXEventSubscriberAttribute);
 		public INamedTypeSymbol PXAttributeFamily           => Compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute);
 		public INamedTypeSymbol PXAggregateAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXAggregateAttribute);
-		public INamedTypeSymbol PXDynamicAggregateAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDynamicAggregateAttribute);
 		public INamedTypeSymbol PXDefaultAttribute          => Compilation.GetTypeByMetadataName(TypeFullNames.PXDefaultAttribute);
 		public INamedTypeSymbol PXUnboundDefaultAttribute   => Compilation.GetTypeByMetadataName(TypeFullNames.PXUnboundDefaultAttribute);
         public INamedTypeSymbol PXButtonAttribute           => Compilation.GetTypeByMetadataName(TypeFullNames.PXButtonAttribute);
