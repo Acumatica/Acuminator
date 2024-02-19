@@ -50,35 +50,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 				pxContext.CodeAnalysisSettings);
 		}
 
-		public bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension)
-		{
-			// Filter out graph extensions without IsActive method
-			if (graphExtension.Type != GraphType.PXGraphExtension || graphExtension.IsActiveMethodInfo != null)
-				return false;
-
-			// Filter out abstract, static and generic graph extensions
-			if (graphExtension.Symbol.IsAbstract || graphExtension.Symbol.IsStatic || graphExtension.Symbol.IsGenericType)
-				return false;
-
-			// Filter out workflow extensions without business logic. 
-			// The check is split because graph events are available only for PXGraphEventSemanticModel
-			if (graphExtension.ConfiguresWorkflow && !IsWorkflowExtensionWithBusinessLogic(graphExtension))
-				return false;
-
-			return true;
-		}
-
+		public bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension) =>
+			graphExtension.Type == GraphType.PXGraphExtension && graphExtension.IsActiveMethodInfo == null &&
+			!graphExtension.Symbol.IsAbstract && !graphExtension.Symbol.IsStatic && !graphExtension.Symbol.IsGenericType;
+		
 		public bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtensionhWithEvents) =>
 			!graphExtensionhWithEvents.ConfiguresWorkflow || IsWorkflowExtensionWithBusinessLogic(graphExtensionhWithEvents);	// Filter out workflow extensions without business logic.
-		
-		private bool IsWorkflowExtensionWithBusinessLogic(PXGraphSemanticModel graphExtension) =>
-			graphExtension.DeclaredActions.Any() || graphExtension.DeclaredActionHandlers.Any() || 
-			graphExtension.DeclaredViews.Any()   || graphExtension.DeclaredViewDelegates.Any() ||
-			!graphExtension.PXOverrides.IsDefaultOrEmpty;
 
-		private bool IsWorkflowExtensionWithBusinessLogic(PXGraphEventSemanticModel graphExtension) =>
-			graphExtension.GetAllEvents()
-						  .Any(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphExtension.Symbol));
+		private bool IsWorkflowExtensionWithBusinessLogic(PXGraphEventSemanticModel graphExtension)
+		{
+			if (graphExtension.DeclaredActions.Any() || graphExtension.DeclaredActionHandlers.Any() ||
+				graphExtension.DeclaredViews.Any()   || graphExtension.DeclaredViewDelegates.Any() ||
+				!graphExtension.PXOverrides.IsDefaultOrEmpty)
+			{
+				return true;
+			}
+
+			return graphExtension.GetAllEvents()
+								 .Any(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphExtension.Symbol));
+		}
 
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
