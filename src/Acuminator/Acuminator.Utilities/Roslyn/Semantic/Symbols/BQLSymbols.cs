@@ -1,5 +1,9 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
 using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
@@ -50,9 +54,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol FbqlCommand => Compilation.GetTypeByMetadataName(TypeFullNames.FbqlCommand);
 
-		public INamedTypeSymbol PXViewOf => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOf);
+		public INamedTypeSymbol? PXViewOf => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOf);
 
-		public INamedTypeSymbol PXViewOf_BasedOn => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOfBasedOn);
+		public INamedTypeSymbol? PXViewOf_BasedOn => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOfBasedOn);
 
 		internal BQLSymbols(Compilation compilation) : base(compilation)
 		{
