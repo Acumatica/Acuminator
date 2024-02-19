@@ -121,10 +121,15 @@
 		internal const string BqlParameter = "PX.Data.BQL.BqlParameter`2";
 		internal const string PXFilter1 = "PX.Data.PXFilter`1";
 		internal const string IPXNonUpdateable = "PX.Data.IPXNonUpdateable";
+
 		internal const string PXSetup1 = "PX.Data.PXSetup`1";
 		internal const string PXSetup2 = "PX.Data.PXSetup`2";
 		internal const string PXSetup3 = "PX.Data.PXSetup`3";
 		internal const string PXSetupSelect = "PX.Data.PXSetupSelect`1";
+
+		internal const string PXSetupOptional1 = "PX.Objects.IN.PXSetupOptional`1";
+		internal const string PXSetupOptional2 = "PX.Objects.IN.PXSetupOptional`2";
+
 		internal const string PXViewOfBasedOn = "PX.Data.BQL.Fluent.PXViewOf`1+BasedOn`1";
 		internal const string PXViewOf = "PX.Data.BQL.Fluent.PXViewOf`1";
 		internal const string FbqlCommand = "PX.Data.BQL.Fluent.FbqlCommand";
