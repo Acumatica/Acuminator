@@ -19,50 +19,47 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1096_PXOverrideMustMatchSignature);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraphExtension;
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension) =>
+			base.ShouldAnalyze(pxContext, graphExtension) && graphExtension.Type == GraphType.PXGraphExtension &&
+			!graphExtension.PXOverrides.IsDefaultOrEmpty;
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraphExtension)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphExtension)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var allMethods = pxGraphExtension.Symbol.GetMethods();
+			var directBaseTypesAndThis = graphExtension.Symbol.GetBaseTypesAndThis().ToList(capacity: 4);
 
-			var methodsWithPxOverrideAttribute = allMethods
-					.Where(m => m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, checkOverrides: false))
-					.ToList();
+			var allBaseTypes = graphExtension.Symbol
+				.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
+				.SelectMany(t => t.GetBaseTypesAndThis())
+				.OfType<INamedTypeSymbol>()
+				.Distinct()
+				.Where(baseType => !directBaseTypesAndThis.Contains(baseType))
+				.ToList();
 
-			if (methodsWithPxOverrideAttribute.Any())
+			foreach (PXOverrideInfo pxOverride in graphExtension.PXOverrides)
 			{
-				var directBaseTypesAndThis = pxGraphExtension.Symbol.GetBaseTypesAndThis().ToList(capacity: 4);
-
-				var allBaseTypes = pxGraphExtension.Symbol
-					.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
-					.SelectMany(t => t.GetBaseTypesAndThis())
-					.OfType<INamedTypeSymbol>()
-					.Distinct()
-					.Where(baseType => !directBaseTypesAndThis.Contains(baseType));
-
-				methodsWithPxOverrideAttribute.ForEach(m => AnalyzeMethod(context, pxContext, allBaseTypes, m!));
+				AnalyzeMethod(context, pxContext, allBaseTypes, pxOverride.Symbol);
 			}
 		}
 
-		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext, IEnumerable<INamedTypeSymbol> allBaseTypes, IMethodSymbol methodSymbol)
+		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext, List<INamedTypeSymbol> allBaseTypes, 
+								   IMethodSymbol methodWithPXOverride)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!methodSymbol.IsStatic && !methodSymbol.IsGenericMethod)
+			if (!methodWithPXOverride.IsStatic && !methodWithPXOverride.IsGenericMethod)
 			{
 				foreach (var baseType in allBaseTypes)
 				{
-					bool hasSuitablePXOverride = baseType.GetMethods(methodSymbol.Name)
-														 .Any(m => PXOverrideHelper.IsSuitable(methodSymbol, m));
+					bool hasSuitablePXOverride = baseType.GetMethods(methodWithPXOverride.Name)
+														 .Any(m => PXOverrideHelper.IsSuitable(methodWithPXOverride, m));
 					if (hasSuitablePXOverride)
 						return;
 				}
 			}
 
-			var location = methodSymbol.Locations.FirstOrDefault();
+			var location = methodWithPXOverride.Locations.FirstOrDefault();
 
 			if (location != null)
 			{
