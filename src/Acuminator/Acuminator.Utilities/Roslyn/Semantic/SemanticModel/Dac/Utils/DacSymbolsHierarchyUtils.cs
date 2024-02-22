@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -47,14 +51,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
         }
 
 		/// <summary>
-		/// Gets the DAC type with its base types up to the <see cref="System.Object"/>.
+		/// Gets the DAC type with its base types up to the <see cref="System.Object"/> or up to the <c>PX.Data.PXBqlTable</c> DAC base type introduced in Acumatica 2024r1.
 		/// </summary>
 		/// <param name="dacType">The DAC type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetDacWithBaseTypes(this ITypeSymbol dacType) =>
-			dacType.CheckIfNull(nameof(dacType))
-				   .GetBaseTypesAndThis()
-				   .TakeWhile(type => !type.IsDacBaseType());
+		public static IEnumerable<ITypeSymbol> GetDacWithBaseTypes(this ITypeSymbol dacType, PXContext pxContext)
+		{
+			var pxBqlTable = pxContext.CheckIfNull(nameof(pxContext)).PXBqlTable;
+			var baseTypes  = dacType.CheckIfNull(nameof(dacType))
+									.GetBaseTypesAndThis();
+
+			// This filter takes all DAC types with a check for the base PXBqlTable type of System.Object type 
+			// instead of checking if the type implements IBqlTable interface. This was done for two reasons:
+			// 1. Direct comparison will be much more performant than the check for the IBqlTable interface implementation 
+			//    and this method is called rather frequently in code analysis of DACs. 
+			//    Moreover, it is possible to optimize check a bit for Acumatica versions before 2024r1.
+			// 2. The check for IBqlTable interface maybe more general but it will also exclude part of a useful type hierarchy in a scenario 
+			//    with a base non DAC type which declares some shared fields, for instance, PX.Objects.TX.TaxDetail class.
+			if (pxBqlTable != null)
+				return baseTypes.TakeWhile(type => !type.Equals(pxBqlTable) && type.SpecialType != SpecialType.System_Object);
+			else
+				return baseTypes.TakeWhile(type => type.SpecialType != SpecialType.System_Object);
+		}
 
 		/// <summary>
 		/// Gets the DAC extension type with its base types up to first met <c>PX.Data.PXCacheExtension</c>.
@@ -66,9 +84,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 						 .GetBaseTypesAndThis()
 						 .TakeWhile(type => !type.IsDacExtensionBaseType());
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacBaseType(this ITypeSymbol type) => type?.SpecialType == SpecialType.System_Object;
-		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDacExtensionBaseType(this ITypeSymbol type) => 
 			type?.Name == TypeNames.PXCacheExtension;
@@ -113,7 +128,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			if (includeDac)
 			{
-				extensions.AddRange(dacType.GetDacWithBaseTypes().Reverse());
+				extensions.AddRange(dacType.GetDacWithBaseTypes(pxContext).Reverse());
 			}
 
 			for (int i = dacIndex - 1; i >= 0; i--)
@@ -149,7 +164,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			if (includeDac)
 			{
-				extensions.AddRange(dacType.GetDacWithBaseTypes());
+				extensions.AddRange(dacType.GetDacWithBaseTypes(pxContext));
 			}
 
 			return extensions.Distinct();

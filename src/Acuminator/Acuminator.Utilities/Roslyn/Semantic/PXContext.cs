@@ -17,6 +17,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public bool IsAcumatica2023R1_OrGreater => PXCache.RowSelectingWhileReading != null;
 
+		public bool IsAcumatica2024R1_OrGreater => PXBqlTable != null;
+
 		public CodeAnalysisSettings CodeAnalysisSettings { get; }
 
 		/// <summary>
@@ -104,6 +106,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(TypeFullNames.PXAdapter);
 		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlTable);
 		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlField);
+		public INamedTypeSymbol? PXBqlTable => Compilation.GetTypeByMetadataName(TypeFullNames.PXBqlTable);
 		public INamedTypeSymbol? BqlConstantType => Compilation.GetTypeByMetadataName(TypeFullNames.Constant);
 
 		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(TypeFullNames.IPXResultset);
