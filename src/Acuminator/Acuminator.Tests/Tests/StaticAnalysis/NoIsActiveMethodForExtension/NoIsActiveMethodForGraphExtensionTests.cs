@@ -53,5 +53,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 		[EmbeddedFileData("GenericGraphExtension_WithoutIsActive.cs")]
 		public async Task GenericGraphExtension_WithoutIsActive_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
+		
+		[Theory]
+		[EmbeddedFileData("AbstractGraphExtension_WithPXProtectedAccess_WithoutIsActive.cs")]
+		public async Task AbstractGraphExtension_WithPXProtectedAccess_WithoutIsActive(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				 Descriptors.PX1016_NoIsActiveMethodForGraphExtension.CreateFor(11, 24));
+
+		[Theory]
+		[EmbeddedFileData("AbstractGraphExtension_WithPXProtectedAccess_WithIsActive.cs")]
+		public async Task AbstractGraphExtension_WithPXProtectedAccess_WithIsActive(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 	}
 }
