@@ -52,7 +52,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 		public bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension) =>
 			graphExtension.Type == GraphType.PXGraphExtension && graphExtension.IsActiveMethodInfo == null &&
-			!graphExtension.Symbol.IsAbstract && !graphExtension.Symbol.IsStatic && !graphExtension.Symbol.IsGenericType;
+			!graphExtension.Symbol.IsStatic && !graphExtension.Symbol.IsGenericType &&
+			(!graphExtension.Symbol.IsAbstract || graphExtension.HasPXProtectedAccess);
 		
 		public bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtensionhWithEvents) =>
 			!graphExtensionhWithEvents.ConfiguresWorkflow || IsWorkflowExtensionWithBusinessLogic(graphExtensionhWithEvents);	// Filter out workflow extensions without business logic.
