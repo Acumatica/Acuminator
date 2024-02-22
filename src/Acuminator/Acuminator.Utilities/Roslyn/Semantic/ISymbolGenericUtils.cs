@@ -102,13 +102,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return false;
 
 			//-----------------------------------------------------------
-			bool HasAttribute(TSymbol symbolToCheck) =>
-				symbolToCheck.GetAttributes()
-							 .Any(a => a.AttributeClass.Equals(attributeType));
+			bool HasAttribute(TSymbol symbolToCheck)
+			{
+				var attributes = symbolToCheck.GetAttributes();
+				return attributes.IsDefaultOrEmpty
+					? false
+					: attributes.Any(a => a.AttributeClass.Equals(attributeType));
+			}
 
-			bool HasDerivedAttribute(TSymbol symbolToCheck) =>
-				symbolToCheck.GetAttributes()
-							 .Any(a => a.AttributeClass.InheritsFromOrEquals(attributeType));
+			bool HasDerivedAttribute(TSymbol symbolToCheck)
+			{
+				var attributes = symbolToCheck.GetAttributes();
+				return attributes.IsDefaultOrEmpty
+					? false
+					: attributes.Any(a => a.AttributeClass.InheritsFromOrEquals(attributeType));
+			}
 		}
 
 		/// <summary>
