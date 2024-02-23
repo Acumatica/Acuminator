@@ -2,11 +2,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>3.1.4</Version>
-    <Copyright>Copyright © 2017-2024 Acumatica Ltd.</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
-    <Description>Acuminator.Utilities lib</Description>
-    <Company>Acumatica</Company>
-    <Authors>Acumatica</Authors>
+    <Description>Acuminator.Utilities library with shared analysis helpers</Description>
+	<Company>Acumatica, Inc.</Company>
+	<Authors>$(Company)</Authors>
+	<Copyright>Copyright © 2017-$([System.DateTime]::Now.Year) $(Company)</Copyright>
     <PackageLicenseUrl>https://github.com/Acumatica/Acuminator/blob/dev/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Acumatica/Acuminator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Acumatica/Acuminator</RepositoryUrl>
