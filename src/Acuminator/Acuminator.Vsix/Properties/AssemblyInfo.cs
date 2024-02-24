@@ -1,13 +1,13 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Acuminator")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Acuminator Visual Studio extension")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Acumatica, Inc.")]
 [assembly: AssemblyProduct("Acuminator")]
-[assembly: AssemblyCopyright("Copyright © 2017-2023 Acumatica Ltd.")]
+[assembly: AssemblyCopyright("Copyright © 2017-2024 Acumatica, Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("3.1.3")]
-[assembly: AssemblyFileVersion("3.1.3")]
+[assembly: AssemblyVersion("3.1.4")]
+[assembly: AssemblyFileVersion("3.1.4")]
