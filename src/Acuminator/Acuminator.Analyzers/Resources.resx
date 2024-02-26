@@ -243,10 +243,10 @@
   <data name="PX1026Fix" xml:space="preserve">
     <value>Remove underscores from the DAC declaration</value>
   </data>
-  <data name="PX1027Fix" xml:space="preserve">
+  <data name="PX1027ForbiddenFieldsFix" xml:space="preserve">
     <value>Remove the forbidden field from the DAC declaration</value>
   </data>
-  <data name="PX1027MessageFormat" xml:space="preserve">
+  <data name="PX1027ForbiddenFieldsMessageFormat" xml:space="preserve">
     <value>The {0} field cannot be declared within a DAC declaration</value>
   </data>
   <data name="PX1028Fix" xml:space="preserve">
@@ -303,7 +303,7 @@
   <data name="PX1015Title" xml:space="preserve">
     <value>The number of arguments passed to the method does not match the number of BQL statement parameters</value>
   </data>
-  <data name="PX1027Title" xml:space="preserve">
+  <data name="PX1027ForbiddenFieldsTitle" xml:space="preserve">
     <value>System fields cannot be declared within a DAC declaration</value>
   </data>
   <data name="PX1043Title" xml:space="preserve">
@@ -686,5 +686,8 @@ public virtual int? SomeDacField{ get; set; }</value>
   </data>
   <data name="PX1041Fix" xml:space="preserve">
     <value>Convert the graph event handler to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else.</value>
+  </data>
+  <data name="PX1027ForbiddenCompanyPrefixInDacFieldTitle" xml:space="preserve">
+    <value>The name of a DAC field cannot start with the "Company" prefix because company masks work incorrectly with such fields.</value>
   </data>
 </root>

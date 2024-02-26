@@ -624,29 +624,38 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DAC fields cannot start with the &quot;Company&quot; prefix because company masks work incorrectly with such fields.
+        /// </summary>
+        public static string PX1027ForbiddenCompanyPrefixInDacFieldTitle {
+            get {
+                return ResourceManager.GetString("PX1027ForbiddenCompanyPrefixInDacFieldTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove the forbidden field from the DAC declaration.
         /// </summary>
-        public static string PX1027Fix {
+        public static string PX1027ForbiddenFieldsFix {
             get {
-                return ResourceManager.GetString("PX1027Fix", resourceCulture);
+                return ResourceManager.GetString("PX1027ForbiddenFieldsFix", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The {0} field cannot be declared within a DAC declaration.
         /// </summary>
-        public static string PX1027MessageFormat {
+        public static string PX1027ForbiddenFieldsMessageFormat {
             get {
-                return ResourceManager.GetString("PX1027MessageFormat", resourceCulture);
+                return ResourceManager.GetString("PX1027ForbiddenFieldsMessageFormat", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to System fields cannot be declared within a DAC declaration.
         /// </summary>
-        public static string PX1027Title {
+        public static string PX1027ForbiddenFieldsTitle {
             get {
-                return ResourceManager.GetString("PX1027Title", resourceCulture);
+                return ResourceManager.GetString("PX1027ForbiddenFieldsTitle", resourceCulture);
             }
         }
         
