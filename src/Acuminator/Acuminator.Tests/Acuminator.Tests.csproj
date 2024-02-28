@@ -1,16 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{3C74FF92-B17D-4C26-A16E-FCB5348C5B46}</ProjectGuid>
     <TargetFramework>net48</TargetFramework>
     <RestorePackagesPath>../../packages</RestorePackagesPath>
-    <AssemblyTitle>Acuminator.Tests</AssemblyTitle>
-    <Product>Acuminator.Tests</Product>
-    <Copyright>Copyright © 2017-2023 Acumatica Ltd.</Copyright>
-    <AssemblyVersion>3.1.3</AssemblyVersion>
-    <FileVersion>3.1.3</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <NoWarn>VSTHRD200</NoWarn>
   </PropertyGroup>
@@ -21,6 +15,15 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <PropertyGroup>
+    <Company>Acumatica, Inc.</Company>
+    <AssemblyTitle>Acuminator.Tests</AssemblyTitle>
+    <Product>Acuminator.Tests</Product>
+    <Description>Acuminator unit tests</Description>
+    <Authors>$(Company)</Authors> 
+    <Copyright>Copyright © 2017-$([System.DateTime]::Now.Year) $(Company)</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+    <FileVersion>3.1.4</FileVersion>
+    <AssemblyVersion>3.1.4</AssemblyVersion>
     <LangVersion>12.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
