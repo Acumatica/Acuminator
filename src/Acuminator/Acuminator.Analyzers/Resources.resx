@@ -688,6 +688,6 @@ public virtual int? SomeDacField{ get; set; }</value>
     <value>Convert the graph event handler to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else.</value>
   </data>
   <data name="PX1027ForbiddenCompanyPrefixInDacFieldTitle" xml:space="preserve">
-    <value>DAC fields cannot start with the "Company" prefix because company masks work incorrectly with such fields</value>
+    <value>The name of a DAC field cannot start with the "Company" prefix because company masks work incorrectly with such fields.</value>
   </data>
 </root>
