@@ -700,6 +700,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="System.Memory" Version="4.5.5" />
+    <PackageReference Include="PolySharp" Version="1.14.1" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacFieldsWithCompanyPrefix.cs" />
