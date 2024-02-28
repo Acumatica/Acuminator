@@ -1,18 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>14.0</OldToolsVersion>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <FileUpgradeFlags />
+    <UpgradeBackupLocation />
     <UseCodebase>true</UseCodebase>
-    <TargetFrameworkProfile />
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+      <AssemblyTitle>Acuminator</AssemblyTitle>
+      <Product>Acuminator</Product>
+      <AssemblyVersion>3.1.4</AssemblyVersion>
+      <FileVersion>3.1.4</FileVersion>
+      <LangVersion>12.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -20,19 +20,12 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{6DEB14BB-D8F6-4F5B-BBD7-E756CEB67D42}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Acuminator.Vsix</RootNamespace>
     <AssemblyName>Acuminator</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFramework>net48</TargetFramework>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
@@ -43,30 +36,19 @@
     <RestorePackagesPath>../../packages</RestorePackagesPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DeployExtension>False</DeployExtension>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>12.0</LangVersion>
     <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Roslyn</StartArguments>
   </PropertyGroup>
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <ItemGroup>
     <EmbeddedResource Include="Code Snippets\Acumatica Name Convention Events\Field Events\FieldDefaultingNameConvention.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -221,11 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
-      <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
       <Name>Acuminator.Analyzers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
-      <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
       <Name>Acuminator.Utilities</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
@@ -235,21 +215,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
@@ -393,9 +365,6 @@
     <Resource Include="Resources\Copy.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <VSCTCompile Include="AcuminatorVSPackage.vsct">
-      <ResourceName>Menus.ctmenu</ResourceName>
-    </VSCTCompile>
     <None Include="Help Examples\ExampleOfSubMenuDefinition.vsct" />
     <Content Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -403,220 +372,34 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AcuminatorVSPackage.cs" />
-    <Compile Include="Code Snippets\SnippetsVersionFile.cs" />
-    <Compile Include="Code Snippets\CodeSnippetsInitializer.cs" />
-    <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
-    <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
-    <Compile Include="Coloriser\Constants\VSColors.cs" />
-    <Compile Include="Coloriser\Formats\BracesFormats.cs" />
-    <Compile Include="Coloriser\Formats\Theme\AcuminatorThemeChangedEventArgs.cs" />
-    <Compile Include="Coloriser\Formats\Theme\ThemeUpdater.cs" />
-    <Compile Include="Coloriser\Formats\EditorFormatBase.cs" />
-    <Compile Include="Coloriser\Formats\EditorFormats.cs" />
-    <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />
-    <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
-    <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
-    <Compile Include="Coloriser\Base\PXTaggerBase.cs" />
-    <Compile Include="Coloriser\Constants\OutliningConstants.cs" />
-    <Compile Include="Coloriser\Outlining\PXOutliningTagger.cs" />
-    <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
-    <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
-    <Compile Include="Commands\BQL Fixer\AngleBracesBqlRewriter.cs" />
-    <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\BuildAction\VsixBuildActionSetterVS2022.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\DiagnosticDataLocation.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\DiagnosticData.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\Base\SuppressDiagnosticCommandBase.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDTOWrapperBase.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\BuildAction\VsixBuildActionSetterVS2019.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\VsixIOErrorProcessor.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\Suppression File\SuppressDiagnosticInSuppressionFileCommand.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDiagnosticService.cs" />
-    <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
-    <Compile Include="Commands\VSCommandBase.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\Themes\Styles.xaml.cs">
+    <Compile Update="Resources\Themes\Styles.xaml.cs">
       <DependentUpon>Styles.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\VSIXResource.Designer.cs">
+    <Compile Update="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>VSIXResource.resx</DependentUpon>
     </Compile>
-    <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
-    <Compile Include="Settings\OutOfProcess\OutOfProcessSettingValueProvider.cs" />
-    <Compile Include="Settings\OutOfProcess\OutOfProcessSettingsUpdater.cs" />
-    <Compile Include="Settings\ISettingsEvents.cs" />
-    <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
-    <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\BaseMemberOverrideInfo.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\InstanceConstructorInfo.cs" />
-    <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
+    <Compile Update="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacInitializationAndActivationCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\InitializationAndActivation\IsActiveDacMethodNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphBaseMemberOverridesCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphStaticConstructorNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphInstanceConstructorNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\GraphBaseMembeOverrideNodeViewModel.cs" />
-    <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
-    <Compile Include="Utils\Text\StringUtils.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor_DacVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor_GraphVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor_DacVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor_GraphVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_DacVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
-    <Compile Include="Tool Windows\Common\IElementWithTooltip.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphInitializationAndActivationCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActiveGraphMethodNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\EventsMappingInfoVS2022.cs" />
-    <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapter.cs" />
-    <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\VSEventsAdapterVS2022.cs" />
-    <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2019 and older\VSEventsAdapterVS2019.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.CodeMapDteEventsObserver.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\NodeDeclarationOrderComparer.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Sorters\NodesSorter.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapSubtreeSorter.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\CodeMapSortContext.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapTreeInitialSorter.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Tooltips\ElementWithTooltipToTooltipConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\SemanticModelFactoryDefault.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IGroupNodeWithCyclingNavigation.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\Base\ExtraInfoViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\TextViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\IconViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Dac\DefaultCodeMapTreeBuilder_Dac.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\DefaultCodeMapTreeBuilder.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Graph\DefaultCodeMapTreeBuilder_Graph.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacKeysCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacPropertiesCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\Base\DacMemberCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\PropertyNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\Base\DacMemberNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeForFieldEventViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeBaseViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeForFieldEventViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeForCacheAttachedEventViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeForRowEventViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeBaseViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\PXOverridesCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\PXOverrideNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\Base\GraphEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
-    <Compile Include="Tool Windows\CodeMap\UI\CodeMapWindowControl.xaml.cs">
+    <Compile Update="Tool Windows\CodeMap\UI\CodeMapWindowControl.xaml.cs">
       <DependentUpon>CodeMapWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\Base\GraphMemberCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\AttributeNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\FieldEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\ActionCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\CacheAttachedCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\RowEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\ViewCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMemberInfos\GraphMemberInfoNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\FieldEventNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\ActionNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\ViewNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\RowEventNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\CacheAttachedNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\CodeMapRefreshMode.cs" />
-    <Compile Include="Utils\Text\IndentUtils.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
-    <Compile Include="Tool Windows\CodeMap\UI\Converters\TreeViewLineConverter .cs" />
-    <Compile Include="Tool Windows\Converters\ColorToBrushConverter.cs" />
-    <Compile Include="Utils\ChangesClassification\ChangeInfluenceScope.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\CyclingNavigationUtils.cs" />
-    <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
-    <Compile Include="Tool Windows\Converters\ObjectToItsTypeConverter.cs" />
-    <Compile Include="Tool Windows\Converters\IsBackgroundDarkConverter.cs" />
-    <Compile Include="Tool Windows\Converters\VisibilityInverter.cs" />
-    <Compile Include="Tool Windows\Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Tool Windows\OpenToolWindowCommandBase.cs" />
-    <Compile Include="Tool Windows\ViewModel\Command.cs" />
-    <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
-    <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
-    <Compile Include="Utils\Constants\Constants.cs" />
-    <Compile Include="Utils\Logger\LogMode.cs" />
-    <Compile Include="Utils\Logger\AcuminatorLogger.cs" />
-    <Compile Include="Utils\ChangesClassification\DocumentChangesClassifier.cs" />
-    <Compile Include="Utils\EditorExtensions.cs" />
-    <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
-    <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
-    <Compile Include="Coloriser\MainTagger\PXColorizerMainTagger.cs" />
-    <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
-    <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
-    <Compile Include="Commands\Formatter\BqlAggregateRewriter.cs" />
-    <Compile Include="Commands\Formatter\BqlConditionRewriter.cs" />
-    <Compile Include="Commands\Formatter\BqlContext.cs" />
-    <Compile Include="Commands\Formatter\BqlFirstTableRewriter.cs" />
-    <Compile Include="Commands\Formatter\BqlFormatter.cs" />
-    <Compile Include="Commands\Formatter\BqlJoinRewriter.cs" />
-    <Compile Include="Commands\Formatter\BqlRewriter.cs" />
-    <Compile Include="Commands\Formatter\BqlRewriterBase.cs" />
-    <Compile Include="Commands\Formatter\BqlStatementRewriter.cs" />
-    <Compile Include="Commands\Formatter\BqlViewDeclarationRewriter.cs" />
-    <Compile Include="Commands\Formatter\FormatBqlCommand.cs" />
-    <Compile Include="Commands\Formatter\SpanWalker.cs" />
-    <Compile Include="Commands\Formatter\SyntaxTriviaListExtensions.cs" />
-    <Compile Include="Settings\SettingChangedEventArgs.cs" />
-    <Compile Include="Settings\UI\GeneralOptionsPage.cs">
+    <Compile Update="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utils\PolyfillsForVS2017.cs" />
-    <Compile Include="Utils\Version\VSVersionProvider.cs" />
-    <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
-    <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
-    <Compile Include="Utils\VSServicesExtensions.cs" />
-    <Compile Include="Utils\ResourceManagerExtensions.cs" />
-    <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
-    <Compile Include="Utils\UIAttributes\DescriptionFromResourcesAttribute.cs" />
-    <Compile Include="Utils\UIAttributes\DisplayNameFromResourcesAttribute.cs" />
-    <Compile Include="Utils\WPF\VisualTreeUtils.cs" />
-    <Compile Include="Utils\WPF\ResourceDictionaryExtensions.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APRegister.cs" />
-    <Compile Include="Coloriser\Roslyn\ParsedSymbolsCache.cs" />
-    <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
-    <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
-    <Compile Include="Coloriser\Roslyn\PXRoslynColorizerTagger.cs" />
-    <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
-    <EmbeddedResource Include="Resources\VSIXResource.resx">
+    <EmbeddedResource Update="Resources\VSIXResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>VSIXResource.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Acuminator.Vsix</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="VSPackage.resx">
+    <EmbeddedResource Update="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
       <SubType>Designer</SubType>
@@ -641,68 +424,29 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Community.VisualStudio.Toolkit.15">
-      <Version>15.0.394</Version>
-    </PackageReference>
-    <PackageReference Include="Community.VisualStudio.VSCT">
-      <Version>16.0.29.6</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="Community.VisualStudio.Toolkit.15" Version="15.0.394" />
+    <PackageReference Include="Community.VisualStudio.VSCT" Version="16.0.29.6">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis">
-      <Version>2.10.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
-      <Version>2.9.2</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
-      <Version>2.10.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.LanguageServices">
-      <Version>2.10.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" ExcludeAssets="Runtime">
-      <Version>15.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>17.0.5234</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.10.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Text" Version="2.10.0" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServices" Version="2.10.0" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="15.0.1" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5234">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.VsixSignTool">
-      <Version>16.2.29116.78</Version>
-    </PackageReference>
-    <PackageReference Include="PolySharp">
-      <Version>1.14.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.bundle_green">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.osx">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.v110_xp">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.Memory">
-      <Version>4.5.5</Version>
-    </PackageReference>
+    <PackageReference Include="Microsoft.VSSDK.VsixSignTool" Version="16.2.29116.78" />
+    <PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.2" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.2" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.osx" Version="1.1.2" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.v110_xp" Version="1.1.2" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-  </Target>
+  <ItemGroup>
+    <Compile Remove="Coloriser\Regex\Test\ARDocumentRelease.cs" />
+    <Compile Remove="Coloriser\Regex\Test\PMAllocationProcess.cs" />
+    <Compile Remove="Coloriser\Regex\Test\APInvoice.cs" />
+    <Compile Remove="Coloriser\Regex\Test\APRegister.cs" />
+    <Compile Remove="Commands\Formatter\SelectedNodesCollector.cs" />
+  </ItemGroup>
 </Project>
