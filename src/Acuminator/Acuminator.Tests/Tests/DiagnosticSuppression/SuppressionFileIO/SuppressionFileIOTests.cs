@@ -80,8 +80,13 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression.SuppressionFileIO
 		private string GetFileFullPath(string shortFileName)
 		{
 			DirectoryInfo debugOrReleaseDir = new DirectoryInfo(Environment.CurrentDirectory);
-			string solutionDir = debugOrReleaseDir.Parent.Parent.FullName;
-			return Path.Combine(solutionDir, RelativeTestPath, shortFileName);
+			DirectoryInfo solutionDir = debugOrReleaseDir.Parent.Parent;
+
+			if (string.Equals(solutionDir.Name, "bin", StringComparison.OrdinalIgnoreCase))
+				solutionDir = solutionDir.Parent;
+
+			string solutionDirFullName = solutionDir.FullName;
+			return Path.Combine(solutionDirFullName, RelativeTestPath, shortFileName);
 		}
 
 		private IEnumerable<SuppressMessage> GetSuppressionMessagesToCheck() =>
