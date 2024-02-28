@@ -1,48 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3C74FF92-B17D-4C26-A16E-FCB5348C5B46}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Acuminator.Tests</RootNamespace>
-    <AssemblyName>Acuminator.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net48</TargetFramework>
     <RestorePackagesPath>../../packages</RestorePackagesPath>
+    <AssemblyTitle>Acuminator.Tests</AssemblyTitle>
+    <Product>Acuminator.Tests</Product>
+    <Copyright>Copyright © 2017-2023 Acumatica Ltd.</Copyright>
+    <AssemblyVersion>3.1.3</AssemblyVersion>
+    <FileVersion>3.1.3</FileVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <NoWarn>VSTHRD200</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <NoWarn>VSTHRD200</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <NoWarn>VSTHRD200</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
-    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
@@ -63,25 +42,15 @@
     <Reference Include="PX.Objects">
       <HintPath>..\..\..\lib\PX.Objects.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tests\DiagnosticSuppression\SuppressionFileTestService.cs" />
-    <Compile Include="Tests\DiagnosticSuppression\SuppressionFileIO\SuppressionFileIOTests.cs" />
-    <Compile Include="Tests\Fixer\AngleBracesBqlRewriterTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacFieldsWithCompanyPrefix.cs" />
-    <Compile Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\NameConventionEventsInGraphsAndGraphExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\RowEventHandler.cs" />
@@ -100,36 +69,27 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ExternalCache.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Good_PXOverride.cs" />
-    <Compile Include="Tests\StaticAnalysis\ActionHandlerReturnType\ActionHandlerReturnTypeTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerReturnType\Sources\Handlers_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerReturnType\Sources\Handlers_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\PXSelectExtensionCall.cs" />
-    <Compile Include="Tests\StaticAnalysis\AutoNumberAttribute\InsufficientStringLengthForAutoNumberingTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\AutoNumberAttribute\NonStringDacPropertyWithAutoNumberingTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\NonStringAutoNumberingDac_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\NonStringAutoNumberingDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\InsufficientStringLengthDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\InsufficientStringLengthDac_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\FbqlCalls.cs" />
-    <Compile Include="Tests\StaticAnalysis\CallingBaseActionHandler\CallingBaseActionHandlerFromOverrideHandlerTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Good.cs" />
-    <Compile Include="Tests\StaticAnalysis\ActionHandlerAttributes\ActionHandlerAttributesTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerOverrideInvocation_NonGeneric.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerOverrideInvocation_Good_Generic.cs" />
-    <Compile Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\CallingBaseDataViewDelegateFromOverrideDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_WithRedeclaredView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughSelectBase.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ExternalMethod.cs" />
-    <Compile Include="Tests\StaticAnalysis\CallsToInternalAPI\CallsToInternalAPINonIsvModeTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\CallsToInternalAPI\CallsToInternalAPITests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallsToInternalAPI\Sources\GraphUsingInternalApi.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallsToInternalAPI\Sources\InternalAPI.cs" />
-    <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersIsvSpecificTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateWithParameter.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOwnView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionBaseView.cs" />
@@ -139,7 +99,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingInvalid.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingValid.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\SOOrder.cs" />
-    <Compile Include="Tests\StaticAnalysis\ConstructorInDac\ConstructorInDacAnalyzerTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDacExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\BaseAndDerivedDac.cs" />
@@ -148,8 +107,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBScalarAndUnboundTypeAttributes.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBScalarAndWithoutUnboundTypeAttributes.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacFieldWithINUnitAttribute.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\DacMissingForeignKeyDeclarationTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\DacForeignKeyDeclarationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOLine_Without_PrimaryKey_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOLine_Without_PrimaryKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOOrder_Without_PrimaryKey_Expected.cs" />
@@ -166,8 +123,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\DacWithWrongForeignKeyDeclarationsTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\DuplicateForeignKeysInDacTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateInventoryFK_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateInventoryFK.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateSOOrderFK_Expected.cs" />
@@ -181,18 +136,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\WrongForeignKeyDeclaration\SOLineWithoutKeysContainer_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\WrongForeignKeyDeclaration\SOLineWrongDeclarationAndFkClass_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\PivotFieldNoDuplicateFK.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacMissingPrimaryKeyDeclarationTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacWrongPrimaryKeyNameTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacPrimaryKeyDeclarationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Fully_Unbound_Dac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_WrongPrimaryKeyName.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_WrongPrimaryKeyName_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_UnboundField_PrimaryKey.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacNoPKWithNoSuitableUniqueKeyTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacUniqueKeysDeclarationTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacWithWrongUniqueKeyDeclarationsTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacWithNoPrimaryKeyAndSuitableUniqueKeysTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DuplicateKeysInDacTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\Dac_MultipleUniqueKeys_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\Dac_SingleUniqueKey_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\DuplicateKeys\Dac_DuplicateKeys.cs" />
@@ -214,9 +161,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\INUnit_MultipleUniqueKeys_UnboundField.cs" />
-    <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\MissingGetObjectDataOverrideFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\MissingSerializationConstructorFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ExceptionSerialization\ExceptionSerializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\ExceptionWithNewSerializableData.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\ExceptionWithNoNewSerializableData.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NewSerializableData_Expected.cs" />
@@ -225,8 +169,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NoNewSerializableData.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingGetObjectDataOverride_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingGetObjectDataOverride.cs" />
-    <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsNonISVTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithoutIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\WorkflowGraphExtension_WithBusinessLogic_WithoutIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc_AddInheritdoc.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFieldsSuppressComment_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\WithConstructorSuppressComment_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\WithConstructor.cs" />
@@ -259,7 +206,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_ComplexMapping.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_NormalCases.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphExtensionWithCreateInstanceInIsActiveMethods.cs" />
-    <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInDacIsActiveTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\DacExtensionWithGraphCreationInIsActiveMethods.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\ClosuresInNonGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\HelperCallsToAnotherFile.cs" />
@@ -275,21 +221,14 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationCorrect_MessagePassedFromPXExceptionInfo.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationPXExceptionInfoWithHardcodedStrings.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\Override_DacAndBaseGraph.cs" />
-    <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
-    <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForGraphExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithoutIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DAC_MappedCacheExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\WorkflowGraphExtension_WithoutIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GenericGraphExtension_WithoutIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GenericDacExtension_WithoutIsActive.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\WorkflowGraphExtension_WithBusinessLogic_WithoutIsActive.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithIsActive.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithoutIsActive.cs" />
-    <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicGraphExtensionsTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicDacExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension.cs" />
@@ -312,9 +251,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticProperty_ReadOnlyFix.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\AbstractGraphNoPrimaryViewForPrimaryDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\GenericGraphNoPrimaryViewForPrimaryDac.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc_AddInheritdoc.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXOverrideMismatch\PXOverrideMismatchTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsExactlyMatch.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatch.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsMatchWithDelegate.cs" />
@@ -356,23 +292,14 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml_AddSummary.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml_AddExclude.cs" />
-    <Compile Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\StaticFieldOrPropertyInGraphTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DacExtension_WithoutIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DacExtension_WithoutIsActive_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressDiagnosticTestCodeFix.cs" />
-    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnMissingIsActiveMethodCodeFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnMissingXmlCommentCodeFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnDacCodeFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_CacheName.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_Hidden.cs" />
-    <Compile Include="Tests\StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXGraphConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\CreateInstanceDelegate.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\BQLSelect.cs" />
@@ -386,26 +313,19 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax_EditFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Good.cs" />
-    <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInWrongPlaces_NonISVTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\PXGraphDeclarationTypeParameterTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\LegacyBqlConstant\LegacyBqlConstantTest.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantGood.cs" />
-    <Compile Include="Tests\StaticAnalysis\LegacyBqlField\LegacyBqlFieldTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldBad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldBad_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldGood.cs" />
-    <Compile Include="Tests\StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperationViaMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphExtensionStartsLongOperation.cs" />
-    <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphChangesPXCacheInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphChangesPXCacheInInstanceConstructorViaMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphDoesntChangePXCacheInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphExtensionChangesPXCacheInInitializationMethod.cs" />
-    <Compile Include="Tests\StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\BQLSearch.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\BQLSelect.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\DataView.cs" />
@@ -425,7 +345,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\NoPrimaryViewForPrimaryDacFluentBQL.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDacFluentBQL.cs" />
-    <Compile Include="Tests\StaticAnalysis\PublicClassXmlComment\PublicClassXmlCommentTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_Excluded.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\NonPublic.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithEmptySummary.cs" />
@@ -437,12 +356,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutDescription_Exclude.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutSummary_Exclude.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithEmptySummary_Exclude.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersNonISVTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithAdapter.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressOnDerivedType.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersNonISVTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationDuringInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithPXGraphConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CustomerMaint.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\Customer.cs" />
@@ -456,7 +371,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\StaticMethodInPXGraphWithPXGraphConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceMethodInPXGraphExtensionWithPXGraphConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceMethodInPXGraphWithCreateInstance.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDacTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_Key.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityNoKey_Key.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey.cs" />
@@ -503,33 +417,21 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\LongOperationStart_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ActionHandlers\Handlers_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ActionHandlers\Handlers_Good.cs" />
-    <Compile Include="Tests\StaticAnalysis\RaiseExceptionHandling\RaiseExceptionHandlingInEventHandlersNonIsvTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersNonISVTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertInsideRowPersisted.cs" />
-    <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInEventHandlersNonISVTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertContainedInMethodInsideRowPersisted.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertWithoutTranStatusOpenInsideRowPersisted.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IsPatternAssignment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IsPatternAssignment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFields.cs" />
-    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionCommentTriviaCodeFixTest.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\ExceptionInRowPersisted_ProcessingGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\ExceptionInRowPersisted.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\ExceptionInValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\SetupNotEnteredExceptionInInvalidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\SetupNotEnteredExceptionInRowSelected.cs" />
-    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInActionHandlersTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInNonGraphEventHandlersTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInGraphEventHandlers_NonISVTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInNonGraphEventHandlers_NonISVTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInLongRunningOperationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_GraphExtension_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInActionHandlersTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressOnDerivedTypeInGraph.cs" />
@@ -541,7 +443,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInLambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithAggregateAttributeOnFields.cs" />
-    <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\SetValue.cs" />
@@ -551,11 +452,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IndirectSetValue.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\AssignmentInExternalMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\NotAcumaticaAttributeDac.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\FieldTypeAttributesOnDacPropertyTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleCalcedOnDbSideAttributes.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleCalcedOnDbSideAttributes_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\MultipleCalcedOnDbSideAttributesCodeFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithInvalidAggregatorAttributes.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\ExternalAttributes1.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\ExternalAttributes2.cs" />
@@ -566,11 +464,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IndirectSetValue.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValue.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValueExt.cs" />
-    <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInGraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphExtensionIsSavingChangesInInitializationMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsntSavingChangesInInstanceConstructor.cs" />
-    <Compile Include="Tests\StaticAnalysis\LongOperationStart\LongOperationInPXGraphDuringInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphStartsLongOperationInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphExtensionStartsLongOperationInInitializationMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphDoesntStartLongOperationInInstanceConstructor.cs" />
@@ -581,9 +477,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\SetupNotEnteredExceptionInInvalidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\SetupNotEnteredExceptionInRowSelected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\ExceptionInValidEventHandlers.cs" />
-    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInGraphEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RaiseExceptionHandling\Sources\EventHandlers\ValidEventHandlers.cs" />
-    <Compile Include="Tests\StaticAnalysis\RaiseExceptionHandling\RaiseExceptionHandlingInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\ValidEventHandlers.cs" />
@@ -592,13 +486,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance_OneCache.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldInheritedFromPXObjects.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrder_CheckForVersionTests.cs" />
-    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\CodeAnalysisSettingsSerializationTests.cs" />
-    <Compile Include="Tests\Utilities\SemanticModels\Graph\GraphSemanticModelTests.cs" />
-    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\GraphWithSetupViews.cs" />
-    <Compile Include="Tests\Utilities\Version\PackageVersionTests.cs" />
-    <Compile Include="Verification\CodeRefactoringVerifier.cs" />
-    <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\PropertyGetter.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\PropertySetter.cs" />
@@ -618,25 +505,20 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithGraphUsageInAttribute.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationNonLocalizationException.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\InstanceExpressionBodiedMethod.cs" />
-    <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\EventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\LambdaWithBody.cs" />
-    <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInWrongPlaces_ISVTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphExtensionWithCreateInstanceInInitMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInInitDelegate.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\CreateInstance.cs" />
-    <Compile Include="Tests\StaticAnalysis\LongOperationStart\LongOperationInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\EventHandlers\Valid.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\EventHandlers\Invalid.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\EventHandlers\InvalidWithExternalMethod.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\Constructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\ConstructorForNonSpecificPXGraph.cs" />
-    <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSave.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\SavePress.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\GraphPersist.cs" />
@@ -648,8 +530,6 @@
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldAttribute.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldWithoutDefinedAttributes.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldWithDefinedAttributes.cs" />
-    <Compile Include="Verification\DiagnosticResultExtensions.cs" />
-    <Compile Include="Verification\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\SetProcessDelegateClosures.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\PXUpdateCall.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\InheritanceCall.cs" />
@@ -732,29 +612,12 @@
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\AggregateRecursiveAttributeInformation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithAggregateAttributesOnFields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithAggregateAttributesOnFields_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\BqlParameterMismatch\BqlParameterMismatchTests.cs" />
-    <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
-    <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
-    <Compile Include="Tests\Utilities\NestedInvocationWalker\NestedInvocationWalkerTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\UnderscoresInDac\UnderscoresInDacTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\DefaultAttributeDacTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationExceptionTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationMethodTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosures\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\StartRowResetForPaging\Sources\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeBad_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\StartRowResetForPaging\Sources\StartRowResetForPaging_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_SameName.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXMappedCacheExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature_ValidParameters.cs" />
-    <Compile Include="Tests\StaticAnalysis\NonNullableTypeForBqlField\NonNullableTypeForBqlFieldTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonNullableTypeForBqlField\Sources\NonNullableTypeForBqlField_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonNullableTypeForBqlField\Sources\NonNullableTypeForBqlField.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonNullableTypeForBqlField\Sources\NonNullableTypeForBqlField_Valid.cs" />
@@ -785,18 +648,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtension_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXActionOnNonPrimaryView\PXActionOnNonPrimaryViewTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\StartRowResetForPaging\StartRowResetForPagingTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrderTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature_Expected.cs" />
-    <Compile Include="Helpers\EmbeddedFileDataAttribute.cs" />
-    <Compile Include="Tests\StaticAnalysis\InvalidPXActionSignature\InvalidPXActionSignatureTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Field.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Method.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Property.cs" />
@@ -809,101 +664,655 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderInOneGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_Override.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad.cs" />
-    <Compile Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\NoPrimaryViewForPrimaryDacTests.cs" />
-    <Compile Include="Tests\Utilities\AttributeInformation\AttributeSymbolHelpersTests.cs" />
-    <Compile Include="Verification\CodeFixVerifier.cs" />
-    <Compile Include="Verification\DiagnosticVerifier.cs" />
-    <Compile Include="Verification\DiagnosticResult.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\GraphWithSetupViews.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FormatterTests.playlist" />
     <Content Include="Tests\DiagnosticSuppression\SuppressionFileIO\Examples\PX.Objects.acuminator" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj" />
+    <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj" />
+    <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
-      <Project>{984dbfac-91a7-4059-a5b2-cde33cd93ea0}</Project>
-      <Name>Acuminator.Analyzers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
-      <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
-      <Name>Acuminator.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
-      <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>
-      <Name>Acuminator.Vsix</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FluentAssertions">
-      <Version>5.4.2</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
-      <Version>2.9.2</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <Version>2.10.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces">
-      <Version>2.10.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Composition">
-      <Version>1.0.27</Version>
-    </PackageReference>
-    <PackageReference Include="PolySharp">
-      <Version>1.14.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="FluentAssertions" Version="5.4.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="2.10.0" />
+    <PackageReference Include="Microsoft.Composition" Version="1.0.27" />
+    <PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.2" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.2" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.osx" Version="1.1.2" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.v110_xp" Version="1.1.2" />
+    <PackageReference Include="System.Reflection.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Handles" Version="4.0.1" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.abstractions" Version="2.0.3" />
+    <PackageReference Include="xunit.analyzers" Version="0.10.0" />
+    <PackageReference Include="xunit.core" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.console" Version="2.4.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.bundle_green">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.osx">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.v110_xp">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.Memory">
-      <Version>4.5.5</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Primitives">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.Handles">
-      <Version>4.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit">
-      <Version>2.4.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.abstractions">
-      <Version>2.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.analyzers">
-      <Version>0.10.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.core">
-      <Version>2.4.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.console">
-      <Version>2.4.0</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.4.0</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Tests\Refactorings\" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacFieldsWithCompanyPrefix.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\RowEventHandler.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\RowEventHandler_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\FieldEventHandler.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\FieldEventHandler_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttachedWithArgUsages.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttachedWithArgUsages_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\EventHandlerWithArgsUsages.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\EventHandlerWithArgsUsages_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\Override.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\PXOverride.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\AdditionalParameters.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithAggregateAttributeOnFields_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ExternalCache.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Good_PXOverride.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ActionHandlerReturnType\Sources\Handlers_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ActionHandlerReturnType\Sources\Handlers_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\PXSelectExtensionCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\AutoNumberAttribute\Sources\NonStringAutoNumberingDac_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\AutoNumberAttribute\Sources\NonStringAutoNumberingDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\AutoNumberAttribute\Sources\InsufficientStringLengthDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\AutoNumberAttribute\Sources\InsufficientStringLengthDac_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\FbqlCalls.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerOverrideInvocation_NonGeneric.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerOverrideInvocation_Good_Generic.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_WithRedeclaredView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughSelectBase.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallsToInternalAPI\Sources\GraphUsingInternalApi.cs" />
+    <Compile Remove="Tests\StaticAnalysis\CallsToInternalAPI\Sources\InternalAPI.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateWithParameter.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOwnView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionBaseView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOverride.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBCalcedAndWithoutUnboundTypeAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBCalcedAndUnboundTypeAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingInvalid.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingValid.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\SOOrder.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDacExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\BaseAndDerivedDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacUiAttributes\Sources\PXMappedCacheExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithValidAggregatorAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBScalarAndUnboundTypeAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBScalarAndWithoutUnboundTypeAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacFieldWithINUnitAttribute.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOLine_Without_PrimaryKey_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOLine_Without_PrimaryKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOOrder_Without_PrimaryKey_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOOrder_Without_PrimaryKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_GoodPrimaryKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\PXMappedCacheExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\CorrectForeignKey\Dac_GoodForeignKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\Dac_Without_ForeignKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\Fully_Unbound_Dac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\PXMappedCacheExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\CorrectForeignKey\SOOrder.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\CorrectForeignKey\Dac_GoodForeignKey_AsSimpleKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\CorrectForeignKey\Dac_GoodForeignKey_CompositeKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateInventoryFK_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateInventoryFK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateSOOrderFK_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateSOOrderFK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\UnboundFieldInKey\SOLineWithUnboundFieldInCompositeFK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\UnboundFieldInKey\SOLineWithUnboundFieldInFK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\UnboundFieldInKey\SOOrder.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\WrongForeignKeyDeclaration\SOLineWrongDeclarationAndFkClass.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\WrongForeignKeyDeclaration\SOLineWithoutKeysContainer.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\WrongForeignKeyDeclaration\SOLineWithoutKeysContainer_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\WrongForeignKeyDeclaration\SOLineWrongDeclarationAndFkClass_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\PivotFieldNoDuplicateFK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Fully_Unbound_Dac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_WrongPrimaryKeyName.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_WrongPrimaryKeyName_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_UnboundField_PrimaryKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\Dac_MultipleUniqueKeys_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\Dac_SingleUniqueKey_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\DuplicateKeys\Dac_DuplicateKeys.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\DuplicateKeys\Dac_DuplicateKeys_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\TurnUniqueKeyIntoPrimaryKey\INUnit_MultipleUniqueKeys_NoPK_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\TurnUniqueKeyIntoPrimaryKey\INUnit_MultipleUniqueKeys_NoPK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\MissingPrimaryKey\INUnit_MultipleUniqueKeys_NoPK_NoSuitableUK_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\MissingPrimaryKey\INUnit_MultipleUniqueKeys_NoPK_NoSuitableUK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\MissingPrimaryKey\SOOrder_NoPK_And_SingleUK_NotSuitableToBePK_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\MissingPrimaryKey\SOOrder_NoPK_And_SingleUK_NotSuitableToBePK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\SOOrder_SingleUniqueKey_WrongName_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\SOOrder_SingleUniqueKey_WrongName.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_OneKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_OneKey_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_TwoKeys_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_TwoKeys.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_AllNotInUK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_AllNotInUK_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\INUnit_MultipleUniqueKeys_UnboundField.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\ExceptionWithNewSerializableData.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\ExceptionWithNoNewSerializableData.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NewSerializableData_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NewSerializableData.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NoNewSerializableData_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingSerializationConstructor_NoNewSerializableData.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingGetObjectDataOverride_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ExceptionSerialization\Sources\CodeFix\MissingGetObjectDataOverride.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\WorkflowGraphExtension_WithBusinessLogic_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc_AddInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFieldsSuppressComment_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\WithConstructorSuppressComment_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\WithConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\WithConstructor_Unsuppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\InheritanceCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\SOOrder.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\StaticCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\StaticCallWithCustomPredicate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\VariableInstanceCall_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\InheritanceCall_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\PXUpdateCall_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\SearchCall_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\StaticCall_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\StaticCallWithCustomPredicate_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_All_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_All.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One_Suppressed.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacExtensionForDacNestedInGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_ExcludedWithNested.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_AddDescription.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_AddExclude.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_Hidden_Obsolete_InternalUse.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DacExtension_System_Fields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_System_Fields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithoutComment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithComment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithExcludeComment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithBadComment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_ComplexMapping.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_NormalCases.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphExtensionWithCreateInstanceInIsActiveMethods.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\DacExtensionWithGraphCreationInIsActiveMethods.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\ClosuresInNonGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\HelperCallsToAnotherFile.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\CustomView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\CustomAttribute.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_Reassign.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_Local.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongRunDelegateClosures_Delegates.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationWithNonConstStringsInMethods.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationInterpolationStringInException.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationCorrect_MessagePassedFromAnotherPXException.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\ExceptionWithConstStringFieldPassedToBaseConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationCorrect_MessagePassedFromPXExceptionInfo.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationPXExceptionInfoWithHardcodedStrings.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\Override_DacAndBaseGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DAC_MappedCacheExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\WorkflowGraphExtension_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GenericGraphExtension_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GenericDacExtension_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicGraphExtension_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\ShouldNotShow.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CustomerMaint_CheckGraphContext.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_SingleQueryWithGraphCreation.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_TwoQueryWithGraphCreation.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_TwoQueriesReuseGraphField.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService_TwoQueries_UseDifferentGraphFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\GraphWithStaticMembers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\GraphExtensionWithStaticMembers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticField_ReadOnlyFix_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticField_ReadOnlyFix.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticReadOnlyView_RemoveStaticFix_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticReadOnlyView_RemoveStaticFix.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticAction_RemoveStaticFix_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticAction_RemoveStaticFix.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticProperty_ReadOnlyFix_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticProperty_ReadOnlyFix.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\AbstractGraphNoPrimaryViewForPrimaryDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\GenericGraphNoPrimaryViewForPrimaryDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsExactlyMatch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsMatchWithDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DelegateSignatureDoesNotMatch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\PxOverrideInADifferentType.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ParentMethodAlsoHasTheDelegateSignature.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\NoOverridenMethodDoesNotCrash.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\NoPxOverrideAttributeDoNotCrash.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\MethodHasTheDelegateAsType.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\MethodHasTheDelegateAsTypeAndReturnsVoid.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseTypeImplementsPxGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseTypeImplementsPxGraphExtensionSignatureIsWrong.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseTypeDefinedAsExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatchBaseHasMoreParameters.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseMethodIsNotVirtual.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseMethodIsNotAccessible.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DerivedMethodIsGeneric.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\DerivedMethodIsStatic.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\BaseTypeDefinedAsExtensionNoError.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\OverridenMethodIsInTheBaseOfTheBaseExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatchWithDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentTypesDoNotMatch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ReturnTypesDoNotMatch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXOverrideMismatch\Sources\LastArgumentIsNotDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_NoInheritdoc_AddInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DacExtension_Hidden_Obsolete_InternalUse.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\NonProjectionDAC_Inheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_EmptyInheritdoc_FixInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_EmptyInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_SystemFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_NoInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_NotMappedAndGoodFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_InheritdocWithWrongReference_FixInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_InheritdocWithWrongReference.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDacExtension_NoInheritdoc_AddInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDacExtension_NoInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\ProjectionDAC_NoEmptyLine_NoInheritdoc_AddInheritdoc.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml_AddSummary.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\BadlyFormatted\DAC_NoEmptyLine_NoXml_AddExclude.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DacExtension_WithoutIsActive.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DacExtension_WithoutIsActive_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_CacheName.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_Hidden.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXGraphConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\CreateInstanceDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\BQLSelect.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\BQLSearch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\DataView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\ExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\NonDbCrudOperations.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXDatabase.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXSelector.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax_EditFields_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantGood.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldBad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldBad_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldGood.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperation.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperationViaMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphExtensionStartsLongOperation.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphChangesPXCacheInInstanceConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphChangesPXCacheInInstanceConstructorViaMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphDoesntChangePXCacheInInstanceConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphExtensionChangesPXCacheInInitializationMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\BQLSearch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\BQLSelect.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\DataView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\ExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\GenericEventHandlerSignature.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\Lambda.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\LambdaWithBody.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXDatabase.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXSelector.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\TypedCache.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\NonDbCrudOperations.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\Press.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewWithParameterStartsLongOperation.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\StaticDataViewStartsLongOperation.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\NoPrimaryViewForPrimaryDacFluentBQL.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDacFluentBQL.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_Excluded.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\NonPublic.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithEmptySummary.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutDescription.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutSummary.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutDescription_AddDescription.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutSummary_AddDescription.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithEmptySummary_AddDescription.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutDescription_Exclude.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutSummary_Exclude.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithEmptySummary_Exclude.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithAdapter.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressOnDerivedType.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithPXGraphConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CustomerMaint.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\Customer.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalService.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithCreateInstance.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceMethodInPXGraphWithPXGraphConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\PXGraphConstructorInVariable.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithCreateInstanceInVariable.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceIsUsedOutsideBql.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\PropertyInExternalService.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\StaticMethodInPXGraphWithPXGraphConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceMethodInPXGraphExtensionWithPXGraphConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceMethodInPXGraphWithCreateInstance.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_Key.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityNoKey_Key.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\CompoundKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityNoKey_CompoundKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\Key.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityNoKey.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_Key_EditFieldsAttr_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_EditFieldsAttr_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_EditIdentityAttr_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_Key_EditIdentityAttr_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_RemoveIdentityAttr_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_Key_RemoveIdentityAttr_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateInGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateWithParameter.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateInGraphExtension2.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateInGraphExtension3.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithUsedVariable.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithMethodParameter.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_ThisKeyword.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_MethodParameter.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_LocalVariable1.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_LocalVariable2.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_GraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_GraphExtension_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateWithParameter.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOwnView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionBaseView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOverride.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\FinallyProcessDelegate_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\FinallyProcessDelegate_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\LongOperationStart_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ParametersDelegate_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ParametersDelegate_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ProcessDelegate_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ProcessDelegate_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\LongOperationStart_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\ActionHandlers\Handlers_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\ActionHandlers\Handlers_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertInsideRowPersisted.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertContainedInMethodInsideRowPersisted.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertWithoutTranStatusOpenInsideRowPersisted.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IsPatternAssignment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IsPatternAssignment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\ExceptionInRowPersisted_ProcessingGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\ExceptionInRowPersisted.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\ExceptionInValidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\SetupNotEnteredExceptionInInvalidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\NonGraph\SetupNotEnteredExceptionInRowSelected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_GraphExtension_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressOnDerivedTypeInGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressOnDerivedTypeInGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithAdapterInGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithAdapterInGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithExternalMethodInGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithExternalMethodInGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInLambda.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithAggregateAttributeOnFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\SetValue.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\SetValueExt.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\NonRowAssignment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IndirectAssignment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IndirectSetValue.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\AssignmentInExternalMethod.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\NotAcumaticaAttributeDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleCalcedOnDbSideAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleCalcedOnDbSideAttributes_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithInvalidAggregatorAttributes.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\ExternalAttributes1.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\ExternalAttributes2.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceOutsideOfInitialization.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphStartsLongOperationInInstanceConstructorViaMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\DirectAssignment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IndirectAssignment.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IndirectSetValue.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValue.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValueExt.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphExtensionIsSavingChangesInInitializationMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsntSavingChangesInInstanceConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphStartsLongOperationInInstanceConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphExtensionStartsLongOperationInInitializationMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphDoesntStartLongOperationInInstanceConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\ArbitraryCodeInsideRowPersisting.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RaiseExceptionHandling\Sources\EventHandlers\EventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RaiseExceptionHandling\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\ExceptionInRowPersisted.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\SetupNotEnteredExceptionInInvalidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\SetupNotEnteredExceptionInRowSelected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\Graph\ExceptionInValidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\RaiseExceptionHandling\Sources\EventHandlers\ValidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\ValidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance_OneCache.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldInheritedFromPXObjects.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores_Expected.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\PropertyGetter.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\PropertySetter.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\PropertySetterFromInitializer.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\PropertyValid.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\Constructor.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\LocalLambda.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\PropertyGetterConditionalAccess.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\InstanceMethod.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\InstanceMethodConditionalAccess.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithNestedTypes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MethodsUsageInDac\Sources\DacWithNestedTypes.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\SeparateFiles_ExternalClass.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\SeparateFiles_AnalyzedClass.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\SOOrder.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MethodsUsageInDac\Sources\DacWithSystemTypesUsage.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithGraphUsageInAttribute.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationNonLocalizationException.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\InstanceExpressionBodiedMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\EventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ValidEventHandlers.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\Lambda.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\LambdaWithBody.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInInstanceConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphExtensionWithCreateInstanceInInitMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInInitDelegate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\CreateInstance.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\EventHandlers\Valid.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\EventHandlers\Invalid.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationStart\Sources\EventHandlers\InvalidWithExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\Constructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\ConstructorForNonSpecificPXGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSave.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\SavePress.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\GraphPersist.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\CachePersist.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\CachePersistInsideRowPersisting.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSaveInsideRowPersisting.cs" />
+    <Compile Remove="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSaveInExternalMethod.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\MultipleReportedDiagnostics.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldAttribute.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldWithoutDefinedAttributes.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldWithDefinedAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\SetProcessDelegateClosures.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\PXUpdateCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\InheritanceCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\FieldInstanceCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\VariableInstanceCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\StaticCallWithCustomPredicate.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleFieldTypeAttributes.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacFieldAttributesTypeMismatch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleFieldTypeAttributes_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacFieldTypeMismatchPXDBScalarAttr.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacNonAbstractFieldType\Sources\SOOrderNotAbstractField.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacNonAbstractFieldType\Sources\SOOrderNotAbstractField_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacFieldAttributesTypeMismatch_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\GraphWithNonPrimaryDacView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\GraphWithNonPrimaryDacView_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\NoPrimaryViewForPrimaryDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\DerivedGraphWithBaseGraphPrimaryDac.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\DerivedGraphWithBaseGraphPrimaryDac_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacExtensionWithUnderscores.cs" />
+    <Compile Remove="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacExtensionWithUnderscores_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFields_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ConstructorInDac\Sources\DacWithConstructor_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ConstructorInDac\Sources\DacWithConstructor.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsWithoutRegions.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsRegions_Case3.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsRegions_Case1.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsRegions_Case2.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsWithoutRegions_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsRegions_Case3_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsRegions_Case1_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsRegions_Case2_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacExtensionWithGraphUsage.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithGraphUsage.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignatureGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignatureGraphExtension_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\SearchCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MethodsUsageInDac\Sources\DacWithMethodsUsage.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MethodsUsageInDac\Sources\DacExtensionWithMethodsUsage.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ConstructorInGraphExtension\Sources\ConstructorInGraphExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ConstructorInGraphExtension\Sources\ConstructorInGraphExtension_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ConstructorInGraphExtension\Sources\ConstructorInGraphExtensionWithInitialize.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ConstructorInGraphExtension\Sources\ConstructorInGraphExtensionWithInitialize_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationWithNonLocalizableStringInExceptions.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationWithConcatenationInMethods.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationWithIncorrectStringToFormatInMethods.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationMethodsWithHardcodedStrings.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationWithNonLocalizableStringInMethods.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationCorrect.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\Messages.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationExceptionWithHardcodedStrings.cs" />
+    <Compile Remove="Tests\StaticAnalysis\Localization\Sources\LocalizationWithConcatenationInExceptions.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\BQLSelect.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\BQLSelect_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\GenericEventHandlerSignature.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\GenericEventHandlerSignature_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\DataView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\DataView_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\PXView_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\PXView.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\NoNamespace.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\NoNamespace_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\BQLSearch.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\BQLSearch_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\PXSelector.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\PXSelector_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\PXDatabase.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\PXDatabase_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\ExternalMethod.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\ExternalMethod_Expected.cs" />
+    <Compile Remove="Tests\Utilities\NestedInvocationWalker\Sources\SanityCheck.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithBoundFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithBoundFields_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithUnboundFields_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithUnboundFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithBoundAndUnboundFields.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\AggregateAttributeInformation.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\AttributeInformationSimpleDac.cs" />
+    <Compile Remove="Tests\Utilities\AttributeInformation\Sources\AggregateRecursiveAttributeInformation.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithAggregateAttributesOnFields.cs" />
+    <Compile Remove="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithAggregateAttributesOnFields_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StartRowResetForPaging\Sources\StartRowResetForPaging.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeBad_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\StartRowResetForPaging\Sources\StartRowResetForPaging_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_SameName.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXMappedCacheExtension.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature_ValidParameters.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NonNullableTypeForBqlField\Sources\NonNullableTypeForBqlField_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NonNullableTypeForBqlField\Sources\NonNullableTypeForBqlField.cs" />
+    <Compile Remove="Tests\StaticAnalysis\NonNullableTypeForBqlField\Sources\NonNullableTypeForBqlField_Valid.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\View.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\View.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\StaticCall.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\StaticCall.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\SearchInAttribute.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\SearchInAttribute.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\View_JoinWhere2.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\View_JoinWhere2.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\View_MultipleJoins.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\View_MultipleJoins.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\View_Complex.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\View_Complex.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\StaticCall_GroupBy.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\StaticCall_GroupBy.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\View_NestedWhere.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\View_NestedWhere.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\View_EmptyLines.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\View_EmptyLines.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Raw\Search_Join.cs" />
+    <Compile Remove="Tests\Formatter\Sources\Formatted\Search_Join.cs" />
+    <Compile Remove="Tests\StaticAnalysis\BqlParameterMismatch\Sources\StaticCall.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeInheritedList.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtension_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtension_Bad_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtension_Good.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature.cs" />
+    <Compile Remove="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
+    <Compile Remove="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Field.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Method.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Property.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeBad.cs" />
+    <Compile Remove="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeGood.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Method_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Field_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Property_Expected.cs" />
+    <Compile Remove="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\MethodWithNonSpecificPXGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderInOneGraph.cs" />
+    <Compile Remove="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_Override.cs" />
+    <Compile Remove="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad.cs" />
+    <Compile Remove="Tests\Utilities\SemanticModels\Graph\Sources\GraphWithSetupViews.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
