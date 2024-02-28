@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <FileUpgradeFlags />
     <UpgradeBackupLocation />
@@ -10,6 +9,11 @@
   <PropertyGroup>
       <AssemblyTitle>Acuminator</AssemblyTitle>
       <Product>Acuminator</Product>
+      <Company>Acumatica, Inc.</Company>
+      <Description>Acuminator Visual Studio extension</Description>
+      <Authors>$(Company)</Authors>
+      <Copyright>Copyright © 2017-$([System.DateTime]::Now.Year) $(Company)</Copyright>
+      <NeutralLanguage>en</NeutralLanguage>
       <AssemblyVersion>3.1.4</AssemblyVersion>
       <FileVersion>3.1.4</FileVersion>
       <LangVersion>12.0</LangVersion>
