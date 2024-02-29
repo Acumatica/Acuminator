@@ -12,9 +12,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXStringListAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXStringListAttribute)
         {
-	        SetList        = Type.GetMethods(DelegateNames.SetList);
-	        AppendList     = Type.GetMethods(DelegateNames.AppendList);
-	        SetLocalizable = Type.GetMethods(DelegateNames.SetLocalizable);
+	        SetList        = Type.GetMethods(DelegateNames.SetList).ToImmutableArray();
+	        AppendList     = Type.GetMethods(DelegateNames.AppendList).ToImmutableArray();
+	        SetLocalizable = Type.GetMethods(DelegateNames.SetLocalizable).ToImmutableArray();
         }
     }
 }

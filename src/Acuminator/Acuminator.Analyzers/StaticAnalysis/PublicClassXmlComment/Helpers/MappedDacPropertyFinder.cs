@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 
@@ -28,7 +29,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			/// <summary>
 			/// Mapping is specified via BqlTable property.
 			/// </summary>
-			BqlTable
+			BqlTable,
+
+			/// <summary>
+			/// Mapping is specified via inheritance of a projection DAC from the original DAC.
+			/// </summary>
+			Inheritance
 		}
 
 		private readonly PXContext _pxContext;
@@ -53,22 +59,61 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (_semanticModel.GetDeclaredSymbol(projectionDacPropertyDeclaration, _cancellation) is not IPropertySymbol projectionDacProperty)
 				return null;
 
-			var projectionPropertyMappingInfo = GetMappingDeclarationInfo(projectionDacProperty);
-
-			if (projectionPropertyMappingInfo == null)
-				return null;
+			var mappedDacProperty = GetMappedDacProperty(typeInfo, projectionDacProperty);
 
 			_cancellation.ThrowIfCancellationRequested();
-			var (mappingType, mappingInfo) = projectionPropertyMappingInfo.Value;
-
-			if (mappingInfo.Value is not INamedTypeSymbol originalDacOrDacBqlField)
-				return null;
-
-			var mappedDacProperty = GetMappedDacProperty(projectionDacProperty, mappingType, originalDacOrDacBqlField);
 			return mappedDacProperty;
 		}
 
-		private (MappingType MappingType, TypedConstant MappingInfo)? GetMappingDeclarationInfo(IPropertySymbol projectionDacProperty)
+		private IPropertySymbol? GetMappedDacProperty(TypeInfo typeInfo, IPropertySymbol projectionDacProperty)
+		{
+			MappingType mappingType;
+			INamedTypeSymbol? originalDacOrDacBqlField		 = null;
+			IPropertySymbol? mappedPropertyFromBaseDacTypes  = null;
+			var propertyMappingInfoFromAttribute = GetMappingInfoFromAttribute(projectionDacProperty);
+
+			if (propertyMappingInfoFromAttribute != null)
+			{
+				(mappingType, TypedConstant mappingInfo) = propertyMappingInfoFromAttribute.Value;
+				originalDacOrDacBqlField				 = mappingInfo.Value as INamedTypeSymbol;
+			}
+			else
+			{
+				// The projection DAC property needs to be overridden to support binding to a property of a base DAC
+				if (!projectionDacProperty.IsOverride ||
+					!typeInfo.PropertiesFromBaseDacs.TryGetValue(projectionDacProperty.Name, out mappedPropertyFromBaseDacTypes))
+				{
+					return null;
+				}
+
+				mappingType = MappingType.Inheritance;
+			}
+
+			_cancellation.ThrowIfCancellationRequested();
+
+			switch (mappingType)
+			{
+				case MappingType.BqlField:
+					return originalDacOrDacBqlField?.ContainingType == null
+						? null
+						: GetMappedDacPropertyFromMappedDacOrDacExtension(originalDacOrDacBqlField.ContainingType, originalDacOrDacBqlField.Name);
+
+				case MappingType.BqlTable:
+					if (originalDacOrDacBqlField == null) 
+						return null;
+
+					string mappedPropertyName = projectionDacProperty.Name;
+					return GetMappedDacPropertyFromMappedDacOrDacExtension(originalDacOrDacBqlField, mappedPropertyName);
+
+				case MappingType.Inheritance:
+					return mappedPropertyFromBaseDacTypes;
+
+				default:
+					return null;
+			}
+		}
+
+		private (MappingType MappingType, TypedConstant MappingInfoFromAttribute)? GetMappingInfoFromAttribute(IPropertySymbol projectionDacProperty)
 		{
 			var attributes = projectionDacProperty.GetAttributes();
 
@@ -95,22 +140,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 
 			return null;
-		}
-
-		private IPropertySymbol? GetMappedDacProperty(IPropertySymbol projectionDacProperty, MappingType mappingType, 
-													  INamedTypeSymbol originalDacOrDacBqlField)
-		{
-			if (mappingType == MappingType.BqlField)
-			{
-				return originalDacOrDacBqlField.ContainingType == null
-					? null
-					: GetMappedDacPropertyFromMappedDacOrDacExtension(originalDacOrDacBqlField.ContainingType, originalDacOrDacBqlField.Name);
-			}
-			else
-			{
-				string mappedPropertyName = projectionDacProperty.Name;
-				return GetMappedDacPropertyFromMappedDacOrDacExtension(originalDacOrDacBqlField, mappedPropertyName);
-			}
 		}
 
 		private IPropertySymbol? GetMappedDacPropertyFromMappedDacOrDacExtension(INamedTypeSymbol mappedDacOrDacExtension,

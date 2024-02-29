@@ -332,7 +332,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																								  includeGraph: false));
 			}
 
-			return baseTypes.SelectMany(t => t.GetMembers().OfType<IMethodSymbol>());
+			return baseTypes.SelectMany(t => t.GetMethods());
 		}
 
 		private ImmutableDictionary<string, GraphRowEventInfo> GetRowEvents(EventsCollector eventsCollector, EventType eventType)

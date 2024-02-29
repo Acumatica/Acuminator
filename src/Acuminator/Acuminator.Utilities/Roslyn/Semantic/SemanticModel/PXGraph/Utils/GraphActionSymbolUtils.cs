@@ -226,7 +226,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															this ITypeSymbol graphOrExtension, IDictionary<string, ActionInfo> actionsByName,
 															PXContext pxContext, CancellationToken cancellation)
 		{
-			IEnumerable<IMethodSymbol> handlers = from method in graphOrExtension.GetMembers().OfType<IMethodSymbol>()
+			IEnumerable<IMethodSymbol> handlers = from method in graphOrExtension.GetMethods()
 												  where method.IsValidActionHandler(pxContext) && actionsByName.ContainsKey(method.Name)
 												  select method;
 

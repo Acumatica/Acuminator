@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var actionHandlerWithBadSignature = from method in pxGraph.Symbol.GetMembers().OfType<IMethodSymbol>()
+			var actionHandlerWithBadSignature = from method in pxGraph.Symbol.GetMethods()
 												where pxGraph.Symbol.Equals(method.ContainingType) &&
 													  CheckIfDiagnosticShouldBeRegisteredForMethod(method, pxContext) &&
 													  pxGraph.ActionsByNames.ContainsKey(method.Name)

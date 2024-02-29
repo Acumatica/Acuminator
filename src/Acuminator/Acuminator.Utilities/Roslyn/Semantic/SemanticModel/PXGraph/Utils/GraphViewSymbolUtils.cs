@@ -236,7 +236,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															this ITypeSymbol graphOrExtension, IDictionary<string, DataViewInfo> viewsByName,
 															PXContext pxContext, CancellationToken cancellation)
 		{
-			IEnumerable<IMethodSymbol> delegates = from method in graphOrExtension.GetMembers().OfType<IMethodSymbol>()
+			IEnumerable<IMethodSymbol> delegates = from method in graphOrExtension.GetMethods()
 												   where method.IsValidViewDelegate(pxContext) && viewsByName.ContainsKey(method.Name)
 												   select method;
 

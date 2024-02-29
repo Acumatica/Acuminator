@@ -31,8 +31,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 	    public InstanceCreatedEventsSymbols InstanceCreatedEvents { get; }
 
-		public IMethodSymbol? InitCacheMapping => Type?.GetMembers(DelegateNames.InitCacheMapping)
-													   .OfType<IMethodSymbol>()
+		public IMethodSymbol? InitCacheMapping => Type?.GetMethods(DelegateNames.InitCacheMapping)
 													   .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
 
 		public IMethodSymbol? Configure { get; }
@@ -45,7 +44,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			GenericTypeGraphDac = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2);
 			GenericTypeGraphDacField = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3);
 
-			CreateInstance = Type.GetMethods(DelegateNames.CreateInstance);
+			CreateInstance = Type.GetMethods(DelegateNames.CreateInstance).ToImmutableArray();
 			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(Compilation);
 
 			Configure = Type.GetConfigureMethodFromBaseGraphOrGraphExtension(pxContext);

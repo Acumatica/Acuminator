@@ -37,14 +37,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 																  int? declarationOrder = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ImmutableArray<ISymbol> isActiveCandidates = dacOrGraphExtension.GetMembers(DelegateNames.IsActive);
-
-			if (isActiveCandidates.IsDefaultOrEmpty)
-				return null;
-		
+			var isActiveCandidates = dacOrGraphExtension.GetMethods(DelegateNames.IsActive);
 			IMethodSymbol? isActiveMethod =
-				isActiveCandidates.OfType<IMethodSymbol>()
-								  .FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
+				isActiveCandidates.FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
 															method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
 															method.ReturnType.SpecialType == SpecialType.System_Boolean);
 

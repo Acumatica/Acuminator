@@ -26,28 +26,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var allMembers = pxGraphExtension.Symbol.GetMembers();
+			var allMethods = pxGraphExtension.Symbol.GetMethods();
 
-			if (!allMembers.IsDefaultOrEmpty)
-			{
-				var methodsWithPxOverrideAttribute = allMembers
-					.OfType<IMethodSymbol>()
+			var methodsWithPxOverrideAttribute = allMethods
 					.Where(m => m.HasAttribute(pxContext.AttributeTypes.PXOverrideAttribute, checkOverrides: false))
 					.ToList();
 
-				if (methodsWithPxOverrideAttribute.Any())
-				{
-					var directBaseTypesAndThis = pxGraphExtension.Symbol.GetBaseTypesAndThis().ToList(capacity: 4);
+			if (methodsWithPxOverrideAttribute.Any())
+			{
+				var directBaseTypesAndThis = pxGraphExtension.Symbol.GetBaseTypesAndThis().ToList(capacity: 4);
 
-					var allBaseTypes = pxGraphExtension.Symbol
-						.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
-						.SelectMany(t => t.GetBaseTypesAndThis())
-						.OfType<INamedTypeSymbol>()
-						.Distinct()
-						.Where(baseType => !directBaseTypesAndThis.Contains(baseType));
+				var allBaseTypes = pxGraphExtension.Symbol
+					.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
+					.SelectMany(t => t.GetBaseTypesAndThis())
+					.OfType<INamedTypeSymbol>()
+					.Distinct()
+					.Where(baseType => !directBaseTypesAndThis.Contains(baseType));
 
-					methodsWithPxOverrideAttribute.ForEach(m => AnalyzeMethod(context, pxContext, allBaseTypes, m!));
-				}
+				methodsWithPxOverrideAttribute.ForEach(m => AnalyzeMethod(context, pxContext, allBaseTypes, m!));
 			}
 		}
 
@@ -59,15 +55,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			{
 				foreach (var baseType in allBaseTypes)
 				{
-					var allMembers = baseType.GetMembers(methodSymbol.Name);
-
-					if (!allMembers.IsDefaultOrEmpty)
-					{
-						if (allMembers.OfType<IMethodSymbol>().Any(m => PXOverrideHelper.IsSuitable(methodSymbol, m)))
-						{
-							return;
-						}
-					}
+					bool hasSuitablePXOverride = baseType.GetMethods(methodSymbol.Name)
+														 .Any(m => PXOverrideHelper.IsSuitable(methodSymbol, m));
+					if (hasSuitablePXOverride)
+						return;
 				}
 			}
 

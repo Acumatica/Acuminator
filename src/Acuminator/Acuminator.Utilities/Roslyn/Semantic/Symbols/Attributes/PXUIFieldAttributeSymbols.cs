@@ -16,13 +16,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXUIFieldAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXUIFieldAttribute)
         {
-	        SetVisible            = Type.GetMethods(DelegateNames.SetVisible);
-	        SetVisibility         = Type.GetMethods(DelegateNames.SetVisibility);
-	        SetEnabled            = Type.GetMethods(DelegateNames.SetEnabled);
-	        SetRequired           = Type.GetMethods(DelegateNames.SetRequired);
-	        SetReadOnly           = Type.GetMethods(DelegateNames.SetReadOnly);
-	        SetDisplayName        = Type.GetMethods(DelegateNames.SetDisplayName);
-	        SetNeutralDisplayName = Type.GetMethods(DelegateNames.SetNeutralDisplayName);
+	        SetVisible            = Type.GetMethods(DelegateNames.SetVisible).ToImmutableArray();
+	        SetVisibility         = Type.GetMethods(DelegateNames.SetVisibility).ToImmutableArray();
+	        SetEnabled            = Type.GetMethods(DelegateNames.SetEnabled).ToImmutableArray();
+	        SetRequired           = Type.GetMethods(DelegateNames.SetRequired).ToImmutableArray();
+	        SetReadOnly           = Type.GetMethods(DelegateNames.SetReadOnly).ToImmutableArray();
+	        SetDisplayName        = Type.GetMethods(DelegateNames.SetDisplayName).ToImmutableArray();
+	        SetNeutralDisplayName = Type.GetMethods(DelegateNames.SetNeutralDisplayName).ToImmutableArray();
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXIntListAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXIntListAttribute)
         {
-	        SetList = Type.GetMethods(DelegateNames.SetList);
+	        SetList = Type.GetMethods(DelegateNames.SetList).ToImmutableArray();
         }
     }
 }

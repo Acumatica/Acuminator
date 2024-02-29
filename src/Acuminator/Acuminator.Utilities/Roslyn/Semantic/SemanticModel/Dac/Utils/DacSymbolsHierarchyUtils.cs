@@ -51,27 +51,114 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
         }
 
 		/// <summary>
-		/// Gets the DAC type with its base types up to the <see cref="System.Object"/> or up to the <c>PX.Data.PXBqlTable</c> DAC base type introduced in Acumatica 2024r1.
+		/// Gets the base types of a given <paramref name="dacType"/> that are DACs too and implement <c>IBqlTable</c>.
 		/// </summary>
 		/// <param name="dacType">The DAC type to act on.</param>
-		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetDacWithBaseTypes(this ITypeSymbol dacType, PXContext pxContext)
+		/// <param name="pxContext">Acumatica context.</param>
+		/// <returns>
+		/// The base types of a given <paramref name="dacType"/> that are DACs too and implement <c>IBqlTable</c>.
+		/// </returns>
+		/// <remarks>
+		/// This helper MUST be called only on DAC types. The behavior on non DAC types is undefined.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetDacBaseTypes(this ITypeSymbol dacType, PXContext pxContext) =>
+			GetDacBaseTypes(dacType, pxContext, includeDacType: false);
+
+		/// <summary>
+		/// Gets the DAC type <paramref name="dacType"/> with its base types that are DACs too and implement <c>IBqlTable</c>.
+		/// </summary>
+		/// <param name="dacType">The DAC type to act on.</param>
+		/// <param name="pxContext">Acumatica context.</param>
+		/// <returns>
+		/// A collection containing <paramref name="dacType"/> and its base types that are DACs too and implement <c>IBqlTable</c>.
+		/// </returns>
+		/// <remarks>
+		/// This helper MUST be called only on DAC types. The behavior on non DAC types is undefined.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetDacWithBaseTypes(this ITypeSymbol dacType, PXContext pxContext) =>
+			GetDacBaseTypes(dacType, pxContext, includeDacType: true);
+
+		private static IEnumerable<ITypeSymbol> GetDacBaseTypes(ITypeSymbol dacType, PXContext pxContext, bool includeDacType)
 		{
+			dacType.ThrowOnNull(nameof(dacType));
 			var pxBqlTable = pxContext.CheckIfNull(nameof(pxContext)).PXBqlTable;
-			var baseTypes  = dacType.CheckIfNull(nameof(dacType))
-									.GetBaseTypesAndThis();
+
+			if (dacType.BaseType == null || dacType.BaseType.SpecialType == SpecialType.System_Object ||
+				(pxBqlTable != null && dacType.BaseType.Equals(pxBqlTable)))
+			{
+				return includeDacType ? [dacType] : [];
+			}
+
+			var dacHierarchy = dacType.GetBaseTypes()
+									  .TakeWhile(type => type.IsDAC(pxContext));
+			if (includeDacType)
+				dacHierarchy = dacHierarchy.PrependItem(dacType);
+
+			return dacHierarchy;
+		}
+
+		/// <summary>
+		/// Gets the base types of a given <paramref name="dacType"/> that may store DAC properties.<br/>
+		/// This includes base types that do not implement IBqlTable interface because they still can declare shared properties.<br/>
+		/// The base types are taken up to the <see cref="System.Object"/> or up to the <c>PX.Data.PXBqlTable</c> DAC base type introduced in Acumatica 2024r1.
+		/// </summary>
+		/// <param name="dacType">The DAC type to act on.</param>
+		/// <param name="pxContext">Acumatica context.</param>
+		/// <returns>
+		/// A collection of <paramref name="dacType"/> base types that may store DAC properties.
+		/// </returns>
+		/// <remarks>
+		/// This helper MUST be called only on DAC types. The behavior on non DAC types is undefined.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetDacBaseTypesThatMayStoreDacProperties(this ITypeSymbol dacType, PXContext pxContext) =>
+			GetDacBaseTypesThatMayStoreDacProperties(dacType, pxContext, includeDacType: false);
+
+		/// <summary>
+		/// Gets the DAC type <paramref name="dacType"/> with its base types that may store DAC properties.<br/>
+		/// This includes base types that do not implement IBqlTable interface because they still can declare shared properties.<br/>
+		/// The base types are taken up to the <see cref="System.Object"/> or up to the <c>PX.Data.PXBqlTable</c> DAC base type introduced in Acumatica 2024r1.
+		/// </summary>
+		/// <param name="dacType">The DAC type to act on.</param>
+		/// <param name="pxContext">Acumatica context.</param>
+		/// <returns>
+		/// A collection containing <paramref name="dacType"/> and its base types that may store DAC properties.
+		/// </returns>
+		/// <remarks>
+		/// This helper MUST be called only on DAC types. The behavior on non DAC types is undefined.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetDacWithBaseTypesThatMayStoreDacProperties(this ITypeSymbol dacType, PXContext pxContext) =>
+			GetDacBaseTypesThatMayStoreDacProperties(dacType, pxContext, includeDacType: true);
+
+		private static IEnumerable<ITypeSymbol> GetDacBaseTypesThatMayStoreDacProperties(ITypeSymbol dacType, PXContext pxContext, bool includeDacType)
+		{
+			dacType.ThrowOnNull(nameof(dacType));
+			var pxBqlTable = pxContext.CheckIfNull(nameof(pxContext)).PXBqlTable;
+
+			// Optimization for hot path - most DACs have trivial type hierarchy
+			if (dacType.BaseType == null || dacType.BaseType.SpecialType == SpecialType.System_Object ||
+				(pxBqlTable != null && dacType.BaseType.Equals(pxBqlTable)))
+			{
+				return includeDacType ? [dacType] : [];
+			}
+
+			var dacHierarchy = dacType.GetBaseTypes();
 
 			// This filter takes all DAC types with a check for the base PXBqlTable type of System.Object type 
-			// instead of checking if the type implements IBqlTable interface. This was done for two reasons:
-			// 1. Direct comparison will be much more performant than the check for the IBqlTable interface implementation 
-			//    and this method is called rather frequently in code analysis of DACs. 
-			//    Moreover, it is possible to optimize check a bit for Acumatica versions before 2024r1.
-			// 2. The check for IBqlTable interface maybe more general but it will also exclude part of a useful type hierarchy in a scenario 
-			//    with a base non DAC type which declares some shared fields, for instance, PX.Objects.TX.TaxDetail class.
+			// instead of checking if the type implements IBqlTable interface. This is done to include a useful part of type hierarchy in a scenario 
+			// where the base non DAC type which declares some shared fields, for instance, PX.Objects.TX.TaxDetail class.
 			if (pxBqlTable != null)
-				return baseTypes.TakeWhile(type => !type.Equals(pxBqlTable) && type.SpecialType != SpecialType.System_Object);
+				dacHierarchy = dacHierarchy.TakeWhile(type => !type.Equals(pxBqlTable) && type.SpecialType != SpecialType.System_Object);
 			else
-				return baseTypes.TakeWhile(type => type.SpecialType != SpecialType.System_Object);
+				dacHierarchy = dacHierarchy.TakeWhile(type => type.SpecialType != SpecialType.System_Object);
+
+			if (includeDacType)
+				dacHierarchy = dacHierarchy.PrependItem(dacType);
+
+			return dacHierarchy;
 		}
 
 		/// <summary>

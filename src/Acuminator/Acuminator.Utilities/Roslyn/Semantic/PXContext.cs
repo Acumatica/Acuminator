@@ -2,11 +2,14 @@
 
 using System;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic.Symbols;
-using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic.Symbols;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -106,6 +109,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(TypeFullNames.PXAdapter);
 		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlTable);
 		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlField);
+
+		[MemberNotNullWhen(returnValue: true, nameof(IsAcumatica2024R1_OrGreater))]
 		public INamedTypeSymbol? PXBqlTable => Compilation.GetTypeByMetadataName(TypeFullNames.PXBqlTable);
 		public INamedTypeSymbol? BqlConstantType => Compilation.GetTypeByMetadataName(TypeFullNames.Constant);
 
@@ -118,9 +123,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(TypeFullNames.IPXLocalizableList);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(TypeFullNames.PXConnectionScope);
 
-        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMembers(DelegateNames.StartOperation)
-                                                               .OfType<IMethodSymbol>()
-                                                               .ToImmutableArray();
+        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMethods(DelegateNames.StartOperation).ToImmutableArray();
 
 		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(TypeFullNames.IImplementType);
 

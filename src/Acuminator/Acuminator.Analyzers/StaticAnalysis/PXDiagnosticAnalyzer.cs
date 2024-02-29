@@ -45,7 +45,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				return;
 
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
+
+			if (!System.Diagnostics.Debugger.IsAttached)	// Disable concurrent execution during debug
+			{
+				context.EnableConcurrentExecution();
+			}
 
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{

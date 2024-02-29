@@ -309,6 +309,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\StaticFieldOrPropertyInGraph\Sources\CodeFix\GraphWithStaticProperty_ReadOnlyFix.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\AbstractGraphNoPrimaryViewForPrimaryDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\GenericGraphNoPrimaryViewForPrimaryDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc_AddInheritdoc.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Inheritdoc\ProjectionDAC_MappingWithInheritance_NoInheritdoc.cs" />
     <Compile Include="Tests\StaticAnalysis\PXOverrideMismatch\PXOverrideMismatchTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsExactlyMatch.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatch.cs" />

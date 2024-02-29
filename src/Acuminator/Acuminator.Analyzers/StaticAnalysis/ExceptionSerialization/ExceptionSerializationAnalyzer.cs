@@ -89,8 +89,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			constructor.Parameters[1].Type == pxContext.Serialization.StreamingContext;
 
 		private static bool HasGetObjectDataOverride(PXContext pxContext, INamedTypeSymbol exceptionType) =>
-			exceptionType.GetMembers()
-						 .OfType<IMethodSymbol>()	
+			exceptionType.GetMethods()
 						 .Any(method => IsGetObjectDataOverride(method, pxContext));
 
 		private static bool IsGetObjectDataOverride(IMethodSymbol method, PXContext pxContext) =>

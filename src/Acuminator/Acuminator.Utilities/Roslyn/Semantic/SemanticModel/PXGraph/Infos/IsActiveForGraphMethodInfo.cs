@@ -40,14 +40,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																				  int? declarationOrder = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ImmutableArray<ISymbol> isActiveForGraphCandidates = graphExtension.GetMembers(DelegateNames.IsActiveForGraph);
-
-			if (isActiveForGraphCandidates.IsDefaultOrEmpty)
-				return null;
-
+			var isActiveForGraphCandidates		  = graphExtension.GetMethods(DelegateNames.IsActiveForGraph);
 			IMethodSymbol? isActiveForGraphMethod =
-				isActiveForGraphCandidates.OfType<IMethodSymbol>()
-										  .FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
+				isActiveForGraphCandidates.FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
 																	method.Parameters.IsDefaultOrEmpty && 
 																	method.ReturnType.SpecialType == SpecialType.System_Boolean &&
 																	method.TypeParameters.Length == 1);
