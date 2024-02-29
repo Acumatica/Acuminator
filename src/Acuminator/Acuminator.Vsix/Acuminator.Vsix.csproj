@@ -369,6 +369,9 @@
     <Resource Include="Resources\Copy.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+     <VSCTCompile Include="AcuminatorVSPackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
     <None Include="Help Examples\ExampleOfSubMenuDefinition.vsct" />
     <Content Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -429,15 +432,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Community.VisualStudio.Toolkit.15" Version="15.0.394" />
-    <PackageReference Include="Community.VisualStudio.VSCT" Version="16.0.29.6">
+    <PackageReference Include="Community.VisualStudio.VSCT" Version="16.0.29.6" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Text" Version="2.10.0" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServices" Version="2.10.0" />
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="15.0.1" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5234">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="15.0.1" ExcludeAssets="Runtime" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5234" IncludeAssets="runtime; build; native; contentfiles; analyzers" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.VsixSignTool" Version="16.2.29116.78" />
@@ -455,4 +458,9 @@
     <Compile Remove="Coloriser\Regex\Test\APRegister.cs" />
     <Compile Remove="Commands\Formatter\SelectedNodesCollector.cs" />
   </ItemGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+  </Target>
 </Project>
