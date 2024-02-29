@@ -55,8 +55,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// True if is an Acumatica aggregator attribute, false if not.
 		/// </returns>
 		public static bool IsAggregatorAttribute(this ITypeSymbol attributeType, PXContext pxContext) =>
-			attributeType.InheritsFromOrEquals(pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXAggregateAttribute) || 
-			attributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXDynamicAggregateAttribute);
+			attributeType.InheritsFromOrEquals(pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXAggregateAttribute);
 
 		/// <summary>
 		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type or aggregates it.<br/>
@@ -153,10 +152,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				return ImmutableHashSet<ITypeSymbol>.Empty;
 
 			INamedTypeSymbol pxAggregateAttribute = pxContext.AttributeTypes.PXAggregateAttribute;
-			INamedTypeSymbol pxDynamicAggregateAttribute = pxContext.AttributeTypes.PXDynamicAggregateAttribute;
+			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxAggregateAttribute);
 
-			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxAggregateAttribute) ||
-										baseAcumaticaAttributeTypes.Contains(pxDynamicAggregateAttribute);
 			if (!isAggregateAttribute)
 			{
 				return includeBaseTypes
@@ -165,8 +162,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			var results = includeBaseTypes
-				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute) && 
-															 !a.Equals(pxAggregateAttribute) && !a.Equals(pxDynamicAggregateAttribute))
+				? baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(eventSubscriberAttribute) && !a.Equals(pxAggregateAttribute))
 											 .ToHashSet()
 				: new HashSet<ITypeSymbol>() { attributeType };
 
@@ -191,14 +187,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{
 					var aggregatedAttributeBaseAcumaticaAttributeTypes =
 						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute) && 
-																		   !baseType.Equals(pxAggregateAttribute) && 
-																		   !baseType.Equals(pxDynamicAggregateAttribute));
+																		   !baseType.Equals(pxAggregateAttribute));
 
 					results.AddRange(aggregatedAttributeBaseAcumaticaAttributeTypes);
 				}
 
-				bool isAggregateOnAggregateAttribute = aggregatedAttributeBaseTypes.Contains(pxAggregateAttribute) ||
-													   aggregatedAttributeBaseTypes.Contains(pxDynamicAggregateAttribute);
+				bool isAggregateOnAggregateAttribute = aggregatedAttributeBaseTypes.Contains(pxAggregateAttribute);
+
 				if (isAggregateOnAggregateAttribute)
 				{
 					var allDeclaredAcumaticaAttributesOnClassHierarchy = GetAllDeclaredAcumaticaAttributesOnClassHierarchy(aggregatedAttribute, pxContext);
@@ -241,11 +236,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				return ImmutableHashSet<AttributeWithApplication>.Empty;
 
 			var attributeWithApplication = new AttributeWithApplication(attributeApplication);
-			INamedTypeSymbol pxAggregateAttribute = pxContext.AttributeTypes.PXAggregateAttribute;
-			INamedTypeSymbol pxDynamicAggregateAttribute = pxContext.AttributeTypes.PXDynamicAggregateAttribute;
 
-			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxAggregateAttribute) ||
-										baseAcumaticaAttributeTypes.Contains(pxDynamicAggregateAttribute);
+			INamedTypeSymbol pxAggregateAttribute = pxContext.AttributeTypes.PXAggregateAttribute;
+			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(pxAggregateAttribute);
+
 			if (!isAggregateAttribute)
 			{
 				// We can suppose that attribute types hierarchy shares the attribute application 
@@ -257,8 +251,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			var results = includeBaseTypes
-				? baseAcumaticaAttributeTypes.TakeWhile(type => !type.Equals(eventSubscriberAttribute) &&
-																!type.Equals(pxAggregateAttribute) && !type.Equals(pxDynamicAggregateAttribute))
+				? baseAcumaticaAttributeTypes.TakeWhile(type => !type.Equals(eventSubscriberAttribute) && !type.Equals(pxAggregateAttribute))
 											 .Select(type => new AttributeWithApplication(attributeApplication, type))
 											 .ToHashSet()
 				: new HashSet<AttributeWithApplication>() { attributeWithApplication };
@@ -286,15 +279,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				if (includeBaseTypes)
 				{
 					var aggregatedAttributeBaseAcumaticaAttributeTypesWithApplications =
-						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute) &&
-																		   !baseType.Equals(pxAggregateAttribute) && !baseType.Equals(pxDynamicAggregateAttribute))
+						aggregatedAttributeBaseTypes.TakeWhile(baseType => !baseType.Equals(eventSubscriberAttribute) && !baseType.Equals(pxAggregateAttribute))
 													.Select(baseType => new AttributeWithApplication(aggregatedAttributeWithApplication.Application, baseType));
 
 					results.AddRange(aggregatedAttributeBaseAcumaticaAttributeTypesWithApplications);
 				}
 
-				bool isAggregateOnAggregateAttribute = aggregatedAttributeBaseTypes.Contains(pxAggregateAttribute) ||
-													   aggregatedAttributeBaseTypes.Contains(pxDynamicAggregateAttribute);
+				bool isAggregateOnAggregateAttribute = aggregatedAttributeBaseTypes.Contains(pxAggregateAttribute);
+
 				if (isAggregateOnAggregateAttribute)
 				{
 					var allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy =
