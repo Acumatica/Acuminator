@@ -107,6 +107,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public bool ConfiguresWorkflow => !ConfigureMethodOverrides.IsDefaultOrEmpty;
 
+		/// <summary>
+		/// Flag indicating whether the graph extension has PXProtectedAccess attribute.
+		/// </summary>
+		public bool HasPXProtectedAccess { get; }
+
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
 									 CancellationToken cancellation = default)
 		{
@@ -139,6 +144,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
 			ConfigureMethodOverrides   = GetConfigureMethodOverrides();
 			PXOverrides 			   = GetDeclaredPXOverrideInfos();
+			HasPXProtectedAccess	   = IsPXProtectedAccessAttributeDeclared();
 		}
 
 		private void InitProcessingDelegatesInfo()
@@ -374,6 +380,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var pxOverrides = PXOverrideInfo.GetPXOverrides(Symbol, PXContext, _cancellation);
 			return pxOverrides.ToImmutableArray();
+		}
+
+		private bool IsPXProtectedAccessAttributeDeclared()
+		{
+			if (Type != GraphType.PXGraphExtension)
+				return false;
+
+			return PXContext.AttributeTypes.PXProtectedAccessAttribute is { } protectedAccessAttribute
+				? Symbol.HasAttribute(protectedAccessAttribute, checkOverrides: false, checkForDerivedAttributes: false)
+				: false;
 		}
 	}
 }
