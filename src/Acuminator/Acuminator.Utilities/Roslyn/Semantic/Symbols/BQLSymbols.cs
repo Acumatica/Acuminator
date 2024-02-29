@@ -1,6 +1,11 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
 using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Roslyn.Constants;
+using System.Collections.Generic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -19,6 +24,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXSetupJoin => Compilation.GetTypeByMetadataName(TypeFullNames.PXSetup3);
 
 		public INamedTypeSymbol PXSetupSelect => Compilation.GetTypeByMetadataName(TypeFullNames.PXSetupSelect);
+
+		public INamedTypeSymbol? PXSetupOptional => Compilation.GetTypeByMetadataName(TypeFullNames.PXSetupOptional1);
+
+		public INamedTypeSymbol? PXSetupOptionalWhere => Compilation.GetTypeByMetadataName(TypeFullNames.PXSetupOptional2);
 		#endregion
 
 		#region CustomDelegates
@@ -50,19 +59,31 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol FbqlCommand => Compilation.GetTypeByMetadataName(TypeFullNames.FbqlCommand);
 
-		public INamedTypeSymbol PXViewOf => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOf);
+		public INamedTypeSymbol? PXViewOf => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOf);
 
-		public INamedTypeSymbol PXViewOf_BasedOn => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOfBasedOn);
+		public INamedTypeSymbol? PXViewOf_BasedOn => Compilation.GetTypeByMetadataName(TypeFullNames.PXViewOfBasedOn);
 
 		internal BQLSymbols(Compilation compilation) : base(compilation)
 		{
-			PXSetupTypes = ImmutableArray.Create
-			(
-				PXSetup,
-				PXSetupWhere,
-				PXSetupJoin,
-				PXSetupSelect
-			);
+			PXSetupTypes = GetSetupSymbols();
+		}
+
+		private ImmutableArray<INamedTypeSymbol> GetSetupSymbols()
+		{
+			var setupTypes = ImmutableArray.CreateBuilder<INamedTypeSymbol>(initialCapacity: 6);
+
+			setupTypes.Add(PXSetup);
+			setupTypes.Add(PXSetupWhere);
+			setupTypes.Add(PXSetupJoin);
+			setupTypes.Add(PXSetupSelect);
+
+			if (PXSetupOptional is { } pxSetupOptional)
+				setupTypes.Add(pxSetupOptional);
+
+			if (PXSetupOptionalWhere is { } pxSetupOptionalWhere)
+				setupTypes.Add(pxSetupOptionalWhere);
+
+			return setupTypes.ToImmutable();
 		}
 	}
 }
