@@ -66,7 +66,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (type == null || symbol.ContainingType == null)
 				return false;
 
-			return symbol.ContainingType == type || symbol.ContainingType == type.OriginalDefinition;
+			return symbol.ContainingType.Equals(type) || symbol.ContainingType.Equals(type.OriginalDefinition);
 		}
 
 		/// <summary>

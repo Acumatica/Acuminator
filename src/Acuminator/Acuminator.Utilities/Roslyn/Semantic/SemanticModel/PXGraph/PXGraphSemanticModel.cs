@@ -48,20 +48,35 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
 
+		public ImmutableArray<PXOverrideInfo> PXOverrides { get; }
+
 		/// <summary>
 		/// Actions which are declared in a graph/graph extension represented by this semantic model instance.
 		/// </summary>
 		public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None
 			? Enumerable.Empty<ActionInfo>()
-			: Actions.Where(action => Symbol?.Equals(action.Symbol?.ContainingType) ?? false);
+			: Actions.Where(action => action.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
-		/// Action handlers which are declared in a graph represented by an instance of the class.
-		/// Use this property for diagnostics of graph action handlers
+		/// Action handlers which are declared in a graph/graph extension represented by this semantic model instance.
 		/// </summary>
-		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None ?
-			Enumerable.Empty<ActionHandlerInfo>() :
-			ActionHandlers.Where(h => h?.Symbol?.ContainingType?.Equals(Symbol) ?? false);
+		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None
+			? Enumerable.Empty<ActionHandlerInfo>()
+			: ActionHandlers.Where(handler => handler.Symbol.IsDeclaredInType(Symbol));
+
+		/// <summary>
+		/// Views which are declared in a graph/graph extension represented by this semantic model instance.
+		/// </summary>
+		public IEnumerable<DataViewInfo> DeclaredViews => Type == GraphType.None
+			? Enumerable.Empty<DataViewInfo>()
+			: Views.Where(view => view.Symbol.IsDeclaredInType(Symbol));
+
+		/// <summary>
+		/// View delegates which are declared in a graph/graph extension represented by this semantic model instance.
+		/// </summary>
+		public IEnumerable<DataViewDelegateInfo> DeclaredViewDelegates => Type == GraphType.None
+			? Enumerable.Empty<DataViewDelegateInfo>()
+			: ViewDelegates.Where(viewDelegate => viewDelegate.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// Gets the info about IsActive method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
@@ -97,30 +112,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			PXContext = pxContext;
-			Type = type;
-			Symbol = symbol;
-			_cancellation = cancellation;
+			PXContext 			 = pxContext;
+			Type 				 = type;
+			Symbol 				 = symbol;
+			_cancellation 		 = cancellation;
 			ModelCreationOptions = modelCreationOptions;
 
 			GraphSymbol = Type switch
 			{
-				GraphType.PXGraph => Symbol,
+				GraphType.PXGraph 		   => Symbol,
 				GraphType.PXGraphExtension => Symbol.GetGraphFromGraphExtension(PXContext),
-				_ => null,
+				_ 						   => null,
 			};
 
-			StaticConstructors = Symbol.GetStaticConstructors(_cancellation);
-			ViewsByNames = GetDataViews();
+			StaticConstructors 	 = Symbol.GetStaticConstructors(_cancellation);
+			ViewsByNames 		 = GetDataViews();
 			ViewDelegatesByNames = GetDataViewDelegates();
 
-			ActionsByNames = GetActions();
+			ActionsByNames 		  = GetActions();
 			ActionHandlersByNames = GetActionHandlers();
+
 			InitProcessingDelegatesInfo();
-			Initializers = GetDeclaredInitializers().ToImmutableArray();
-			IsActiveMethodInfo = GetIsActiveMethodInfo();
+
+			Initializers 			   = GetDeclaredInitializers().ToImmutableArray();
+			IsActiveMethodInfo 		   = GetIsActiveMethodInfo();
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
-			ConfigureMethodOverrides = GetConfigureMethodOverrides();
+			ConfigureMethodOverrides   = GetConfigureMethodOverrides();
+			PXOverrides 			   = GetDeclaredPXOverrideInfos();
 		}
 
 		private void InitProcessingDelegatesInfo()
@@ -347,6 +365,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var configureOverrides = ConfigureMethodInfo.GetConfigureMethodInfos(Symbol, Type, PXContext, _cancellation);
 			return configureOverrides.ToImmutableArray();
+		}
+
+		private ImmutableArray<PXOverrideInfo> GetDeclaredPXOverrideInfos()
+		{
+			if (Type == GraphType.None)
+				return ImmutableArray<PXOverrideInfo>.Empty;
+
+			var pxOverrides = PXOverrideInfo.GetPXOverrides(Symbol, PXContext, _cancellation);
+			return pxOverrides.ToImmutableArray();
 		}
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {

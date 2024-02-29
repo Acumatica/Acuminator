@@ -17,7 +17,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 			new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new NoIsActiveMethodForExtensionAnalyzer());
+				new PXGraphWithGraphEventsAggregatorAnalyzer
+				(
+					new NoIsActiveMethodForExtensionAnalyzer()
+				));
 
 		[Theory]
 		[EmbeddedFileData("GraphExtension_WithoutIsActive.cs")]
@@ -38,6 +41,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 		[EmbeddedFileData("WorkflowGraphExtension_WithoutIsActive.cs")]
 		public async Task WorkflowGraphExtension_WithoutIsActive_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData("WorkflowGraphExtension_WithBusinessLogic_WithoutIsActive.cs")]
+		public async Task WorkflowGraphExtension_WithBusinessLogic_WithoutIsActive(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				 Descriptors.PX1016_NoIsActiveMethodForGraphExtension.CreateFor(10, 15),
+				 Descriptors.PX1016_NoIsActiveMethodForGraphExtension.CreateFor(18, 15));
 
 		[Theory]
 		[EmbeddedFileData("GenericGraphExtension_WithoutIsActive.cs")]

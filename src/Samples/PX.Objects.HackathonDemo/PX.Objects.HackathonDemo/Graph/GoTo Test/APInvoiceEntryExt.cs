@@ -28,6 +28,11 @@ namespace PX.Objects.HackathonDemo
 
 		public PXAction<APInvoice> ProcessPrices;
 
+		[PXOverride]
+		public virtual void Persist()
+		{
+			Base.Persist();
+		}
 
 		protected virtual void APInvoice_CuryDocBal_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
 		{

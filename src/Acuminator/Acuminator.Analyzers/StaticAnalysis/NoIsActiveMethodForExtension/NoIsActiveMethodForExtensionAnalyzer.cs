@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -20,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 	/// <summary>
 	/// The analyzer which checks that DAC and Graph extensions have IsActive method declared.
 	/// </summary>
-	public class NoIsActiveMethodForExtensionAnalyzer : IDacAnalyzer, IPXGraphAnalyzer
+	public class NoIsActiveMethodForExtensionAnalyzer : IDacAnalyzer, IPXGraphWithGraphEventsAnalyzer
 	{
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1016_NoIsActiveMethodForDacExtension,
@@ -49,19 +51,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 		}
 
 		public bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension) =>
-			graphExtension?.Type == GraphType.PXGraphExtension &&
-			graphExtension.IsActiveMethodInfo == null &&
-			!graphExtension.Symbol.IsAbstract && !graphExtension.Symbol.IsStatic && !graphExtension.Symbol.IsGenericType &&
-			!graphExtension.ConfiguresWorkflow;
+			graphExtension.Type == GraphType.PXGraphExtension && graphExtension.IsActiveMethodInfo == null &&
+			!graphExtension.Symbol.IsAbstract && !graphExtension.Symbol.IsStatic && !graphExtension.Symbol.IsGenericType;
+		
+		public bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtensionhWithEvents) =>
+			!graphExtensionhWithEvents.ConfiguresWorkflow || IsWorkflowExtensionWithBusinessLogic(graphExtensionhWithEvents);	// Filter out workflow extensions without business logic.
 
-		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel graphExtension)
+		private bool IsWorkflowExtensionWithBusinessLogic(PXGraphEventSemanticModel graphExtension)
+		{
+			if (graphExtension.DeclaredActions.Any() || graphExtension.DeclaredActionHandlers.Any() ||
+				graphExtension.DeclaredViews.Any()   || graphExtension.DeclaredViewDelegates.Any() ||
+				!graphExtension.PXOverrides.IsDefaultOrEmpty)
+			{
+				return true;
+			}
+
+			return graphExtension.GetAllEvents()
+								 .Any(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphExtension.Symbol));
+		}
+
+		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			// ShouldAnalyze already filtered everything and left only graph extensions without IsActive
 			// We just need to report them
 			var syntaxNode = graphExtension.Symbol.GetSyntax(symbolContext.CancellationToken);
-			Location location = (syntaxNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? syntaxNode?.GetLocation();
+			Location? location = (syntaxNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? syntaxNode?.GetLocation();
 
 			if (location == null)
 				return;
