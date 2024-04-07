@@ -115,25 +115,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 			{
 				SyntaxToken modifier = classNode.Modifiers[i];
 
-				switch (modifier.Kind())
-				{
-					case SyntaxKind.PublicKeyword:
-						return classNode.Identifier.GetLocation();	//Case when nested public class is declared inside non-public type
-
-					case SyntaxKind.PrivateKeyword:
-						return GetLocationForComplexAccessModifier(modifier, i, secondPartKind: SyntaxKind.ProtectedKeyword);
-
-					case SyntaxKind.ProtectedKeyword:
-						return GetLocationForComplexAccessModifier(modifier, i, secondPartKind: SyntaxKind.InternalKeyword);
-
-					case SyntaxKind.InternalKeyword:
-						return modifier.GetLocation();
-				}
+				if (GetLocationFromModifier(classNode, i, modifier) is Location modifierLocation)
+					return modifierLocation;
 			}
 
 			return classNode.Identifier.GetLocation();
 
 			//------------------------------------------------Local Function------------------------------------------------------------
+			Location? GetLocationFromModifier(ClassDeclarationSyntax classNode, int modifierIndex, in SyntaxToken modifier) =>
+				modifier.Kind() switch
+				{
+					SyntaxKind.PublicKeyword 	=> classNode.Identifier.GetLocation(),     //Case when nested public class is declared inside non-public type
+					SyntaxKind.PrivateKeyword 	=> GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.ProtectedKeyword),
+					SyntaxKind.ProtectedKeyword => GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.InternalKeyword),
+					SyntaxKind.InternalKeyword 	=> modifier.GetLocation(),
+					_ 							=> null
+				};
+
+			//--------------------------------------------------------------------------------------------------------------------------
 			Location GetLocationForComplexAccessModifier(in SyntaxToken modifier, int modifierIndex, SyntaxKind secondPartKind)
 			{
 				if (modifierIndex == lastModifierIndex)
