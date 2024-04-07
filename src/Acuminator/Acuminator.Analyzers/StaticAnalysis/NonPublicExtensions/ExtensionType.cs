@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions
+namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 {
 	/// <summary>
 	/// A class with extension type constants - DAC or Graph.

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
+using Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
@@ -13,13 +13,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions
 {
     public class NonPublicGraphExtensionsTests : CodeFixVerifier
     {
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new NonPublicExtensionFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new NonPublicDAcGraphAndExtensionFix();
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new NonPublicGraphAndDacExtensionAnalyzer());
+				new NonPublicGraphAndDacAndExtensionsAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("NonPublicGraphExtension.cs")]

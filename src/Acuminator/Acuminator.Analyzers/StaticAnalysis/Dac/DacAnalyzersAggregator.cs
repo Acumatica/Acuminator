@@ -18,7 +18,7 @@ using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute;
-using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
+using Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new DacNonAbstractFieldTypeAnalyzer(),
 			new ConstructorInDacAnalyzer(),
 			new UnderscoresInDacAnalyzer(),
-			new NonPublicGraphAndDacExtensionAnalyzer(),
+			new NonPublicGraphAndDacAndExtensionsAnalyzer(),
 			new ForbiddenFieldsInDacAnalyzer(),
 			new DacUiAttributesAnalyzer(),
 			new InheritanceFromPXCacheExtensionAnalyzer(),

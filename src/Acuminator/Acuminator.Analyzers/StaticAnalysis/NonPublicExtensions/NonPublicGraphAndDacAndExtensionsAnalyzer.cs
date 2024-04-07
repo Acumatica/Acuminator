@@ -1,54 +1,79 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions
+namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 {
 	/// <summary>
-	/// An analyzer that checks that DAC and graph extensions are public.
+	/// An analyzer that checks that DACs, graphs, DAC and graph extensions are public.
 	/// </summary>
-	public class NonPublicGraphAndDacExtensionAnalyzer : IDacAnalyzer, IPXGraphAnalyzer
+	public class NonPublicGraphAndDacAndExtensionsAnalyzer : IDacAnalyzer, IPXGraphAnalyzer
 	{
+		private enum CheckedSymbolKind
+		{
+			Dac,
+			Graph,
+			DacExtension,
+			GraphExtension
+		}
+
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1022_NonPublicDacExtension,
-								  Descriptors.PX1022_NonPublicGraphExtension);
+			ImmutableArray.Create
+			(
+				Descriptors.PX1022_NonPublicDac,
+				Descriptors.PX1022_NonPublicDacExtension,
+				Descriptors.PX1022_NonPublicGraph,
+				Descriptors.PX1022_NonPublicGraphExtension
+			);
 
-		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
-			dac?.DacType == DacType.DacExtension;
+		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac != null;
 
-		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
-			graph?.Type == GraphType.PXGraphExtension;
+		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => 
+			graph != null && graph.Type != GraphType.None;
 
-		void IDacAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacExtension) =>
-			CheckSymbolIsPublic(context, pxContext, dacExtension);
+		void IDacAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExtension) =>
+			CheckSymbolIsPublic(context, pxContext, dacOrDacExtension, 
+								checkedSymbolKind: dacOrDacExtension.DacType == DacType.Dac
+													? CheckedSymbolKind.Dac
+													: CheckedSymbolKind.DacExtension);
 
-		void IPXGraphAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphExtension) =>
-			CheckSymbolIsPublic(context, pxContext, graphExtension);
+		void IPXGraphAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphOrGraphExtension) =>
+			CheckSymbolIsPublic(context, pxContext, graphOrGraphExtension, 
+								checkedSymbolKind: graphOrGraphExtension.Type == GraphType.PXGraph
+													? CheckedSymbolKind.Graph
+													: CheckedSymbolKind.GraphExtension);
 
-		private void CheckSymbolIsPublic(SymbolAnalysisContext context, PXContext pxContext, ISemanticModel extension)
+		private void CheckSymbolIsPublic(SymbolAnalysisContext context, PXContext pxContext, ISemanticModel dacOrGraphOrExtensionModel, 
+										 CheckedSymbolKind checkedSymbolKind)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (IsExtensionPublic(extension.Symbol))
+			if (dacOrGraphOrExtensionModel.Symbol.IsPublicWithAllContainingTypes())
 				return;
+
+			
 
 			string extensionType;
 			DiagnosticDescriptor descriptor; 
 			
-			if (extension is DacSemanticModel)
+			if (dacOrGraphOrExtensionModel is DacSemanticModel)
 			{
 				extensionType = ExtensionType.DAC;
 				descriptor = Descriptors.PX1022_NonPublicDacExtension;
@@ -59,7 +84,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions
 				descriptor = Descriptors.PX1022_NonPublicGraphExtension;
 			}
 			
-			var locations = GetDiagnosticLocations(extension.Symbol, context.CancellationToken);
+			var locations = GetDiagnosticLocations(dacOrGraphOrExtensionModel.Symbol, context.CancellationToken);
 			var diagnosticProperties = new Dictionary<string, string>
 			{
 				{ nameof(ExtensionType),  extensionType}
@@ -73,15 +98,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions
 			}		
 		}
 
-		private bool IsExtensionPublic(INamedTypeSymbol extensionSymbol) =>
-			extensionSymbol.GetContainingTypesAndThis()
-						   .All(type => type.DeclaredAccessibility == Accessibility.Public);
-
-		private IEnumerable<Location> GetDiagnosticLocations(INamedTypeSymbol extensionSymbol, CancellationToken cancellationToken) =>
-			extensionSymbol.DeclaringSyntaxReferences
-						   .Select(reference => reference.GetSyntax(cancellationToken))
-						   .OfType<ClassDeclarationSyntax>()
-						   .Select(classNode => GetLocationFromClassNode(classNode));
+		private IEnumerable<Location> GetDiagnosticLocations(INamedTypeSymbol symbol, CancellationToken cancellationToken) =>
+			symbol.DeclaringSyntaxReferences
+				  .Select(reference => reference.GetSyntax(cancellationToken))
+				  .OfType<ClassDeclarationSyntax>()
+				  .Select(classNode => GetLocationFromClassNode(classNode));
 		
 		private Location GetLocationFromClassNode(ClassDeclarationSyntax classNode)
 		{
