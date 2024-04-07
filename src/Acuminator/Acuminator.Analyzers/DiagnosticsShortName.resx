@@ -330,10 +330,10 @@
   <data name="PX1020" xml:space="preserve">
     <value>InsufficientStringLengthForAutoNumberAttribute</value>
   </data>
-  <data name="PX1022Dac" xml:space="preserve">
+  <data name="PX1022DacExtension" xml:space="preserve">
     <value>NonPublicDacExtension</value>
   </data>
-  <data name="PX1022Graph" xml:space="preserve">
+  <data name="PX1022GraphExtension" xml:space="preserve">
     <value>NonPublicGraphExtension</value>
   </data>
   <data name="PX1016" xml:space="preserve">
@@ -395,5 +395,11 @@
   </data>
   <data name="PX1027ForbiddenCompanyPrefixInDacField" xml:space="preserve">
     <value>ForbiddenCompanyPrefixInDacField</value>
+  </data>
+  <data name="PX1022Dac" xml:space="preserve">
+    <value>NonPublicDac</value>
+  </data>
+  <data name="PX1022Graph" xml:space="preserve">
+    <value>NonPublicGraph</value>
   </data>
 </root>
