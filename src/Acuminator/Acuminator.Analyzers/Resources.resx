@@ -504,8 +504,8 @@
   <data name="PX1020Fix" xml:space="preserve">
     <value>Make the string length sufficient for the auto-numbering</value>
   </data>
-  <data name="PX1022DacOrGraphExtensionFix" xml:space="preserve">
-    <value>Make the {0} extension public</value>
+  <data name="PX1022DacExtensionFix" xml:space="preserve">
+    <value>Make the DAC extension public</value>
   </data>
   <data name="PX1022DacExtensionTitle" xml:space="preserve">
     <value>Non-public DAC extensions are not supported</value>
@@ -698,5 +698,8 @@ public virtual int? SomeDacField{ get; set; }</value>
   </data>
   <data name="PX1022GraphExtensionTitle" xml:space="preserve">
     <value>Non-public graph extensions are not supported</value>
+  </data>
+  <data name="PX1022GraphExtensionFix" xml:space="preserve">
+    <value>Make the graph extension public</value>
   </data>
 </root>
