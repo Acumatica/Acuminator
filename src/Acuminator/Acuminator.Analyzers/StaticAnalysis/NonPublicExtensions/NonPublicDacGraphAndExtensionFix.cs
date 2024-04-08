@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class NonPublicDAcGraphAndExtensionFix : CodeFixProvider
+	public class NonPublicDacGraphAndExtensionFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			new HashSet<string>
