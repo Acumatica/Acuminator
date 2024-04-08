@@ -89,26 +89,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 			return null;
 		}
 
-			string codeActionName = codeFixResourceToUse.GetLocalized().ToString();
-			CodeAction codeAction = CodeAction.Create(codeActionName,
-													  cToken => MakeExtensionPublicAsync(context.Document, context.Span, cToken),
-													  equivalenceKey: codeActionName);
+		private Task RegisterCodeFixAsync(Diagnostic diagnostic, CodeFixContext context, CheckedSymbolKind checkedSymbolKind)
+		{
+			if (GetCodeActionName(checkedSymbolKind) is not string codeActionName)
+				return Task.CompletedTask;
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			var codeAction = CodeAction.Create(codeActionName,
+											   cToken => MakeExtensionPublicAsync(context.Document, context.Span, cToken),
+											   equivalenceKey: codeActionName);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 
+		private static string? GetCodeActionName(CheckedSymbolKind checkedSymbolKind) =>
+			checkedSymbolKind switch
+			{
+				CheckedSymbolKind.Dac 			 => nameof(Resources.PX1022DacFix).GetLocalized().ToString(),
+				CheckedSymbolKind.Graph 		 => nameof(Resources.PX1022GraphFix).GetLocalized().ToString(),
+				CheckedSymbolKind.DacExtension 	 => nameof(Resources.PX1022DacExtensionFix).GetLocalized().ToString(),
+				CheckedSymbolKind.GraphExtension => nameof(Resources.PX1022GraphExtensionFix).GetLocalized().ToString(),
+				_ 								 => null
+			};
+
 		private async Task<Document> MakeExtensionPublicAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode diagnosticNode = root?.FindNode(span);
-			var extensionNode = (diagnosticNode as ClassDeclarationSyntax) ?? diagnosticNode?.Parent<ClassDeclarationSyntax>();
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? diagnosticNode = root?.FindNode(span);
+			var graphOrDacOrExtensionToMakePublicNode = (diagnosticNode as ClassDeclarationSyntax) ?? diagnosticNode?.Parent<ClassDeclarationSyntax>();
 
-			if (extensionNode == null || cancellationToken.IsCancellationRequested)
+			if (graphOrDacOrExtensionToMakePublicNode == null)
 				return document;
 
-			List<TypeDeclarationSyntax> nodesToMakePublic = GetTypeNodesToMakePublic(extensionNode).ToList();
-			SyntaxNode trackingRoot = root.TrackNodes(nodesToMakePublic);
+			cancellationToken.ThrowIfCancellationRequested();
+
+			List<TypeDeclarationSyntax> nodesToMakePublic = GetTypeNodesToMakePublic(graphOrDacOrExtensionToMakePublicNode).ToList();
+			SyntaxNode trackingRoot = root!.TrackNodes(nodesToMakePublic);
 
 			foreach (TypeDeclarationSyntax nonPublicTypeNode in nodesToMakePublic)
 			{
@@ -124,9 +139,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 			return document.WithSyntaxRoot(trackingRoot);
 		}
 
-		private IEnumerable<TypeDeclarationSyntax> GetTypeNodesToMakePublic(TypeDeclarationSyntax extensionNode)
+		private IEnumerable<TypeDeclarationSyntax> GetTypeNodesToMakePublic(TypeDeclarationSyntax graphOrDacOrExtensionToMakePublicNode)
 		{
-			TypeDeclarationSyntax currentTypeNode = extensionNode;
+			TypeDeclarationSyntax? currentTypeNode = graphOrDacOrExtensionToMakePublicNode;
 
 			while (currentTypeNode != null)
 			{
