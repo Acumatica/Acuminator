@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 {
-    public class NonPublicDacExtensionsTests : CodeFixVerifier
+    public class NonPublicDacAndDacExtensionsTests : CodeFixVerifier
     {
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new NonPublicDacGraphAndExtensionFix();
 

@@ -288,8 +288,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\WorkflowGraphExtension_WithBusinessLogic_WithoutIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\AbstractGraphExtension_WithPXProtectedAccess_WithoutIsActive.cs" />
-    <Compile Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\NonPublicGraphExtensionsTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\NonPublicDacExtensionsTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\NonPublicGraphAndGraphExtensionsTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\NonPublicDacAndDacExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicDacExtension_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicDacExtension.cs" />
