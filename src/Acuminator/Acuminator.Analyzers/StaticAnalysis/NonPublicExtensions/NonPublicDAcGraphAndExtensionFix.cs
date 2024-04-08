@@ -28,7 +28,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			new HashSet<string>
 			{
+				Descriptors.PX1022_NonPublicDac.Id,
 				Descriptors.PX1022_NonPublicDacExtension.Id,
+				Descriptors.PX1022_NonPublicGraph.Id,
 				Descriptors.PX1022_NonPublicGraphExtension.Id
 			}
 			.ToImmutableArray();
@@ -37,14 +39,55 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
+			context.CancellationToken.ThrowIfCancellationRequested();
+			var diagnostics = context.Diagnostics;
 
-			if (diagnostic == null || !diagnostic.Properties.TryGetValue(nameof(ExtensionType), out string extensionType))
+			if (diagnostics.IsDefaultOrEmpty)
 				return Task.CompletedTask;
-			
-			string codeFixResourceToUse = extensionType == ExtensionType.DAC
-				? nameof(Resources.PX1022DacFix)
-				: nameof(Resources.PX1022GraphFix);
+
+			var supportedDiagnostics = FixableDiagnosticIds;
+
+			if (supportedDiagnostics.IsDefaultOrEmpty)
+				return Task.CompletedTask;
+
+			if (diagnostics.Length == 1)
+			{
+				var diagnostic = diagnostics[0];
+
+				if (!supportedDiagnostics.Contains(diagnostic.Id) || GetCheckedSymbolKind(diagnostic) is not CheckedSymbolKind checkedSymbolKind)
+					return Task.CompletedTask;
+
+				return RegisterCodeFixAsync(diagnostic, context, checkedSymbolKind);
+			}
+			else
+			{
+				var allTasks = new List<Task>(capacity: diagnostics.Length);
+
+				foreach (Diagnostic diagnostic in diagnostics)
+				{
+					context.CancellationToken.ThrowIfCancellationRequested();
+
+					if (!supportedDiagnostics.Contains(diagnostic.Id) || GetCheckedSymbolKind(diagnostic) is not CheckedSymbolKind checkedSymbolKind)
+						continue;
+
+					Task diagnosticTask = RegisterCodeFixAsync(diagnostic, context, checkedSymbolKind);
+					allTasks.Add(diagnosticTask);
+				}
+
+				return Task.WhenAll(allTasks);
+			}
+		}
+
+		private static CheckedSymbolKind? GetCheckedSymbolKind(Diagnostic diagnostic)
+		{
+			if (diagnostic.Properties.TryGetValue(nameof(CheckedSymbolKind), out string checkedSymbolKindStr) &&
+				Enum.TryParse(checkedSymbolKindStr, out CheckedSymbolKind checkedSymbolKind))
+			{
+				return checkedSymbolKind;
+			}
+
+			return null;
+		}
 
 			string codeActionName = codeFixResourceToUse.GetLocalized().ToString();
 			CodeAction codeAction = CodeAction.Create(codeActionName,
