@@ -26,14 +26,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 	/// </summary>
 	public class NonPublicGraphAndDacAndExtensionsAnalyzer : IDacAnalyzer, IPXGraphAnalyzer
 	{
-		private enum CheckedSymbolKind
-		{
-			Dac,
-			Graph,
-			DacExtension,
-			GraphExtension
-		}
-
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -65,46 +57,48 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (dacOrGraphOrExtensionModel.Symbol.IsPublicWithAllContainingTypes())
+			if (dacOrGraphOrExtensionModel.Symbol.IsPublicWithAllContainingTypes() ||
+				GetDiagnosticDescriptor(checkedSymbolKind) is not DiagnosticDescriptor descriptor)
+			{
 				return;
+			}
 
-			
-
-			string extensionType;
-			DiagnosticDescriptor descriptor; 
-			
-			if (dacOrGraphOrExtensionModel is DacSemanticModel)
-			{
-				extensionType = ExtensionType.DAC;
-				descriptor = Descriptors.PX1022_NonPublicDacExtension;
-			}
-			else
-			{
-				extensionType = ExtensionType.Graph;
-				descriptor = Descriptors.PX1022_NonPublicGraphExtension;
-			}
-			
-			var locations = GetDiagnosticLocations(dacOrGraphOrExtensionModel.Symbol, context.CancellationToken);
-			var diagnosticProperties = new Dictionary<string, string>
-			{
-				{ nameof(ExtensionType),  extensionType}
-			}
-			.ToImmutableDictionary();
+			var locations = GetModifiersLocationsFromClassNode(dacOrGraphOrExtensionModel.Symbol, context.CancellationToken);
+			ImmutableDictionary<string, string>? diagnosticProperties = null;
 
 			foreach (Location location in locations)
 			{
-				context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, location, diagnosticProperties),
-															 pxContext.CodeAnalysisSettings);
-			}		
+				context.CancellationToken.ThrowIfCancellationRequested();
+				diagnosticProperties ??= ImmutableDictionary<string, string>.Empty
+																			.Add(nameof(CheckedSymbolKind), checkedSymbolKind.ToString());
+				var diagnostic = Diagnostic.Create(descriptor, location, diagnosticProperties);
+
+				context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+			}
 		}
 
-		private IEnumerable<Location> GetDiagnosticLocations(INamedTypeSymbol symbol, CancellationToken cancellationToken) =>
-			symbol.DeclaringSyntaxReferences
-				  .Select(reference => reference.GetSyntax(cancellationToken))
-				  .OfType<ClassDeclarationSyntax>()
-				  .Select(classNode => GetLocationFromClassNode(classNode));
-		
-		private Location GetLocationFromClassNode(ClassDeclarationSyntax classNode)
+		private DiagnosticDescriptor? GetDiagnosticDescriptor(CheckedSymbolKind checkedSymbolKind) =>
+			checkedSymbolKind switch
+			{
+				CheckedSymbolKind.Dac 			 => Descriptors.PX1022_NonPublicDac,
+				CheckedSymbolKind.DacExtension 	 => Descriptors.PX1022_NonPublicDacExtension,
+				CheckedSymbolKind.Graph 		 => Descriptors.PX1022_NonPublicGraph,
+				CheckedSymbolKind.GraphExtension => Descriptors.PX1022_NonPublicGraphExtension,
+				_								 => null
+			};
+
+		private IEnumerable<Location> GetModifiersLocationsFromClassNode(INamedTypeSymbol symbol, CancellationToken cancellationToken)
+		{
+			if (symbol.DeclaringSyntaxReferences.IsDefaultOrEmpty)
+				return [];
+
+			return symbol.DeclaringSyntaxReferences
+						 .Select(reference => reference.GetSyntax(cancellationToken))
+						 .OfType<ClassDeclarationSyntax>()
+						 .Select(classNode => GetModifiersLocationsFromClassNode(classNode));
+		}
+
+		private Location GetModifiersLocationsFromClassNode(ClassDeclarationSyntax classNode)
 		{
 			if (classNode.Modifiers.Count == 0)
 				return classNode.Identifier.GetLocation();
@@ -128,7 +122,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 					SyntaxKind.PublicKeyword 	=> classNode.Identifier.GetLocation(),     //Case when nested public class is declared inside non-public type
 					SyntaxKind.PrivateKeyword 	=> GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.ProtectedKeyword),
 					SyntaxKind.ProtectedKeyword => GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.InternalKeyword),
-					SyntaxKind.InternalKeyword 	=> modifier.GetLocation(),
+					SyntaxKind.InternalKeyword 	=> GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.ProtectedKeyword),
 					_ 							=> null
 				};
 
