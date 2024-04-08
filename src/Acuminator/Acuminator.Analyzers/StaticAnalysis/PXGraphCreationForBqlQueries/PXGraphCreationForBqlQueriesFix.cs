@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (node == null || context.CancellationToken.IsCancellationRequested)
 				return;
 
-			string format = nameof(Resources.PX1072Fix).GetLocalized().ToString();
+			string codeFixResourceName = nameof(Resources.PX1072Fix);
 
 			foreach (var diagnostic in context.Diagnostics)
 			{
@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 					if (identifierName.IsNullOrWhiteSpace()) continue;
 
-					string codeActionName = String.Format(format, node, identifierName);
+					string codeActionName = codeFixResourceName.GetLocalized(node.ToString(), identifierName.ToString()).ToString();
 					bool isGraphExtension = diagnostic.Properties.ContainsKey(
 						PXGraphCreationForBqlQueriesAnalyzer.IsGraphExtensionPropertyPrefix + i);
 
