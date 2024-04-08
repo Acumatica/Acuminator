@@ -32,7 +32,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1019](diagnostics/PX1019.md) | A DAC property field with the `AutoNumber` attribute must have the string type.                                  | Error | Available   |
 | [PX1020](diagnostics/PX1020.md) | For the DAC property with the `AutoNumber` attribute, the string length must be greater than or equal to PX.Objects.CS.NumberingSequence.StartNbr value.     | Error | Available   |
 | [PX1021](diagnostics/PX1021.md) | The type of the DAC field attribute does not correspond to the property type. | Error | Available |
-| [PX1022](diagnostics/PX1022.md) | The non-public graph and DAC extensions are not supported.                                                       | Error | Available   |
+| [PX1022](diagnostics/PX1022.md) | The non-public graphs, DAC, graph and DAC extensions are not supported. | Error | Available   |
 | [PX1023](diagnostics/PX1023.md) | The DAC property is marked with multiple field type attributes. | Error | Available |
 | [PX1024](diagnostics/PX1024.md) | The DAC class field must be abstract. | Error | Available |
 | [PX1026](diagnostics/PX1026.md) | Underscores cannot be used in the names of DACs and DAC fields. | Error | Available |
