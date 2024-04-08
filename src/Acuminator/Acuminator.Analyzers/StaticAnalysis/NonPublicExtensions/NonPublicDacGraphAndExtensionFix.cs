@@ -95,7 +95,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				return Task.CompletedTask;
 
 			var codeAction = CodeAction.Create(codeActionName,
-											   cToken => MakeExtensionPublicAsync(context.Document, context.Span, cToken),
+											   cToken => MakeTypePublicAsync(context.Document, context.Span, cToken),
 											   equivalenceKey: codeActionName);
 			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
@@ -111,7 +111,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				_ 								 => null
 			};
 
-		private async Task<Document> MakeExtensionPublicAsync(Document document, TextSpan span, CancellationToken cancellationToken)
+		private async Task<Document> MakeTypePublicAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
 			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			SyntaxNode? diagnosticNode = root?.FindNode(span);
