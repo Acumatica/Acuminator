@@ -13,7 +13,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions
 {
     public class NonPublicGraphExtensionsTests : CodeFixVerifier
     {
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new NonPublicDAcGraphAndExtensionFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new NonPublicDacGraphAndExtensionFix();
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PXGraphAnalyzer(
