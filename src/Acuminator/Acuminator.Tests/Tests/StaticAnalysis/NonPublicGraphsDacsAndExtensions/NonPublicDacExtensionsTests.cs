@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 {
     public class NonPublicDacExtensionsTests : CodeFixVerifier
     {

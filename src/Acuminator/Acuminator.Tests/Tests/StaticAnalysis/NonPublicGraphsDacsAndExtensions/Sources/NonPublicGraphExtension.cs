@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions.Sources
 {
 	internal class SOOrderExt1 : PXGraphExtension<SOOrderEntry>
 	{

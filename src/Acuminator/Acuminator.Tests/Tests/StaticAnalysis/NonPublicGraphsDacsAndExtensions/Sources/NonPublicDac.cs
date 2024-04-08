@@ -1,7 +1,7 @@
 ﻿using System;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions.Sources
 {
 	internal sealed class SOOrder : IBqlTable
 	{

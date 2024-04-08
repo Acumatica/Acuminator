@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 {
     public class NonPublicGraphExtensionsTests : CodeFixVerifier
     {
