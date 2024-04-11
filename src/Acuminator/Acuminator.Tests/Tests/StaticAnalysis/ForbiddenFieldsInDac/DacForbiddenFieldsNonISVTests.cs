@@ -33,7 +33,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ForbiddenFieldsInDac
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.CreateFor(27, 25, "deletedDatabaseRecord"),
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.CreateFor(30, 17, "DeletedDatabaseRecord"),
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(39, 25, "companyMask"),
-				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(42, 17, "CompanyMask"));
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(42, 17, "CompanyMask"),
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(45, 25, "notes"),
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(48, 17, "Notes"),
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(51, 25, "files"),
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(54, 17, "Files"));
 
 		[Theory]
 		[EmbeddedFileData("DacFieldsWithCompanyPrefix.cs")]
