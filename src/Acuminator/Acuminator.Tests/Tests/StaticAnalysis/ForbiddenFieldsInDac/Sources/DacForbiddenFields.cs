@@ -53,5 +53,11 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Files")]
 		public string Files { get; set; }
 		#endregion
+		#region DatabaseRecordStatus
+		public abstract class databaseRecordStatus : PX.Data.BQL.BqlInt.Field<databaseRecordStatus> { }
+		[PXDBString(2000, IsUnicode = true, InputMask = "")]
+		[PXUIField(DisplayName = "DatabaseRecordStatus")]
+		public int? DatabaseRecordStatus { get; set; }
+		#endregion
 	}
 }
