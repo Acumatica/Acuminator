@@ -92,22 +92,6 @@ namespace Acuminator.Utilities.Common
 			? new Stack<T>(source)
 			: throw new ArgumentNullException(nameof(source));
 
-		private static IEnumerable<T> ConcatIterator<T>(T extraElement, IEnumerable<T> source, bool insertAtStart)
-		{
-			if (insertAtStart)
-				yield return extraElement;
-
-			if (source != null)
-			{
-				foreach (var e in source)
-				{
-					yield return e;
-				}
-			}
-
-			if (!insertAtStart)
-				yield return extraElement;
-		}
 
 		/// <summary>
 		/// Concatenate structure list to this collection. This is an optimization method which allows to avoid boxing for collections implemented as structs.
