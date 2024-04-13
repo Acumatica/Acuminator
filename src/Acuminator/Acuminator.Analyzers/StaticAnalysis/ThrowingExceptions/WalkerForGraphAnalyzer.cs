@@ -6,11 +6,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
-    internal class WalkerForGraphAnalyzer : WalkerBase
-    {
-        private readonly DiagnosticDescriptor _descriptor;
+	internal class WalkerForGraphAnalyzer : WalkerBase
+	{
+		private readonly DiagnosticDescriptor _descriptor;
 
-        public WalkerForGraphAnalyzer(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor) : base(context, pxContext)
+		public WalkerForGraphAnalyzer(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor) : base(context, pxContext)
         {
             descriptor.ThrowOnNull(nameof(descriptor));
 
@@ -32,17 +32,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 		}
 
 		public override void VisitThrowStatement(ThrowStatementSyntax throwStatement)
-        {
-            ThrowIfCancellationRequested();
+		{
+			ThrowIfCancellationRequested();
 
-            if (IsPXSetupNotEnteredException(throwStatement.Expression))
-            {
-                ReportDiagnostic(_context.ReportDiagnostic, _descriptor, throwStatement);
-            }
-            else
-            {
-                base.VisitThrowStatement(throwStatement);
-            }
-        } 
-    }
+			if (IsPXSetupNotEnteredException(throwStatement.Expression))
+			{
+				ReportDiagnostic(_context.ReportDiagnostic, _descriptor, throwStatement);
+			}
+			else
+			{
+				base.VisitThrowStatement(throwStatement);
+			}
+		}
+	}
 }
