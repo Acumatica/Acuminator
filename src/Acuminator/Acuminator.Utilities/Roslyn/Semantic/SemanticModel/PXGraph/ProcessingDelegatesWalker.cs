@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ProcessingDelegatesWalker(PXContext pxContext, ImmutableHashSet<ISymbol> processingViewSymbols, CancellationToken cancellation)
 			: base(pxContext, cancellation)
 		{
-			_processingViewSymbols = processingViewSymbols.CheckIfNull(nameof(processingViewSymbols));
+			_processingViewSymbols = processingViewSymbols.CheckIfNull();
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)

@@ -41,7 +41,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// </returns>
 		public static Location GetMethodNameLocation(this InvocationExpressionSyntax invocation)
 		{
-			invocation.ThrowOnNull(nameof(invocation));
+			invocation.ThrowOnNull();
 
 			if (invocation.Expression is MemberAccessExpressionSyntax memberAccessNode)
 			{
@@ -58,7 +58,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DoesArgumentsContainIdentifier(this InvocationExpressionSyntax invocation, string? identifier)
 		{
-			invocation.ThrowOnNull(nameof(invocation));
+			invocation.ThrowOnNull();
 
 			if (identifier.IsNullOrWhiteSpace())
 				return false;
@@ -75,7 +75,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 		public static IEnumerable<ArgumentSyntax> GetArgumentsContainingIdentifier(this InvocationExpressionSyntax invocation, string? identifier)
 		{
-			invocation.ThrowOnNull(nameof(invocation));
+			invocation.ThrowOnNull();
 
 			if (identifier.IsNullOrWhiteSpace())
 				yield break;
@@ -179,13 +179,13 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsStatic(this BaseMethodDeclarationSyntax node) =>
-			node.CheckIfNull(nameof(node))
+			node.CheckIfNull()
 				.Modifiers
 				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsStatic(this LocalFunctionStatementSyntax node) =>
-			node.CheckIfNull(nameof(node))
+			node.CheckIfNull()
 				.Modifiers
 				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
 	}

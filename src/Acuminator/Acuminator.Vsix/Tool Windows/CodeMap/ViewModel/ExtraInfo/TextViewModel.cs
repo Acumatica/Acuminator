@@ -36,7 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public TextViewModel(TreeNodeViewModel node, string text, Color? darkThemeForeground = null, Color? lightThemeForeground = null) :
 						base(node)
 		{
-			Text = text.CheckIfNull(nameof(text));
+			Text = text.CheckIfNull();
 			DarkThemeForeground = darkThemeForeground;
 			LightThemeForeground = lightThemeForeground;
 		}

@@ -61,7 +61,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				{
 					_documentModel = value;
 					NotifyPropertyChanged();
-					NotifyPropertyChanged(nameof(Document));
+					NotifyPropertyChanged();
 				}
 			}
 		}
@@ -151,7 +151,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		private CodeMapWindowViewModel(Workspace workspace)
 		{
-			Workspace = workspace.CheckIfNull(nameof(workspace));
+			Workspace = workspace.CheckIfNull();
 
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();

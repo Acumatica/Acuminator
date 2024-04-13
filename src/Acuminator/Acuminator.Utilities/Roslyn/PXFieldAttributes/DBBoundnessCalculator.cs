@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public DbBoundnessCalculator(PXContext pxContext)
 		{
-			Context = pxContext.CheckIfNull(nameof(pxContext));
+			Context = pxContext.CheckIfNull();
 			AttributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 		}
 

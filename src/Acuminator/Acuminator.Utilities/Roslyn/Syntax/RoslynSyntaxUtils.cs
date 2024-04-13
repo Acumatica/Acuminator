@@ -18,8 +18,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 	{
 		public static bool IsLocalVariable(this SemanticModel semanticModel, MethodDeclarationSyntax containingMethod, string? variableName)
 		{
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			containingMethod.ThrowOnNull(nameof(containingMethod));
+			semanticModel.ThrowOnNull();
+			containingMethod.ThrowOnNull();
 
 			if (variableName.IsNullOrWhiteSpace())
 				return false;
@@ -148,25 +148,25 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax? member) =>
 			member switch
 			{
-				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.Identifier.ToEnumerable(),
-				FieldDeclarationSyntax fieldDeclaration             => fieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier),
-				MethodDeclarationSyntax methodDeclaration           => methodDeclaration.Identifier.ToEnumerable(),
-				EventDeclarationSyntax eventDeclaration             => eventDeclaration.Identifier.ToEnumerable(),                                           //for explicit event declaration with "add" and "remove"
-				EventFieldDeclarationSyntax eventFieldDeclaration   => eventFieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier),  //for field event declaration
-				DelegateDeclarationSyntax delegateDeclaration       => delegateDeclaration.Identifier.ToEnumerable(),
-				ClassDeclarationSyntax nestedClassDeclaration       => nestedClassDeclaration.Identifier.ToEnumerable(),
-				EnumDeclarationSyntax enumDeclaration               => enumDeclaration.Identifier.ToEnumerable(),
-				StructDeclarationSyntax structDeclaration           => structDeclaration.Identifier.ToEnumerable(),
-				InterfaceDeclarationSyntax interfaceDeclaration     => interfaceDeclaration.Identifier.ToEnumerable(),
+				PropertyDeclarationSyntax propertyDeclaration 		=> propertyDeclaration.Identifier.ToEnumerable(),
+				FieldDeclarationSyntax fieldDeclaration 			=> fieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier),
+				MethodDeclarationSyntax methodDeclaration 			=> methodDeclaration.Identifier.ToEnumerable(),
+				EventDeclarationSyntax eventDeclaration 			=> eventDeclaration.Identifier.ToEnumerable(),                                           //for explicit event declaration with "add" and "remove"
+				EventFieldDeclarationSyntax eventFieldDeclaration 	=> eventFieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier),  //for field event declaration
+				DelegateDeclarationSyntax delegateDeclaration 		=> delegateDeclaration.Identifier.ToEnumerable(),
+				ClassDeclarationSyntax nestedClassDeclaration 		=> nestedClassDeclaration.Identifier.ToEnumerable(),
+				EnumDeclarationSyntax enumDeclaration 				=> enumDeclaration.Identifier.ToEnumerable(),
+				StructDeclarationSyntax structDeclaration 			=> structDeclaration.Identifier.ToEnumerable(),
+				InterfaceDeclarationSyntax interfaceDeclaration 	=> interfaceDeclaration.Identifier.ToEnumerable(),
 				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.Identifier.ToEnumerable(),
-				_                                                   => Enumerable.Empty<SyntaxToken>()
+				_ 													=> []
 			};
 
 		public static Accessibility? GetAccessibility(this MemberDeclarationSyntax member, SemanticModel semanticModel,
 													 CancellationToken cancellationToken = default)
 		{
-			member.ThrowOnNull(nameof(member));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
+			member.ThrowOnNull();
+			semanticModel.ThrowOnNull();
 			
 			switch (member)
 			{		
@@ -210,7 +210,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		}
 
 		public static bool IsPartial(this TypeDeclarationSyntax typeDeclaration) =>
-			typeDeclaration.CheckIfNull(nameof(typeDeclaration))
+			typeDeclaration.CheckIfNull()
 						   .Modifiers
 						   .Any(SyntaxKind.PartialKeyword);
 		
@@ -223,15 +223,15 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		}
 
 		public static SyntaxTokenList GetModifiers(this SyntaxNode member) =>
-			member.CheckIfNull(nameof(member)) switch
+			member.CheckIfNull() switch
 			{
 				BasePropertyDeclarationSyntax basePropertyDeclaration => basePropertyDeclaration.Modifiers,
-				BaseMethodDeclarationSyntax baseMethodDeclaration     => baseMethodDeclaration.Modifiers,
-				BaseTypeDeclarationSyntax baseTypeDeclaration         => baseTypeDeclaration.Modifiers,
-				BaseFieldDeclarationSyntax baseFieldDeclaration       => baseFieldDeclaration.Modifiers,
-				DelegateDeclarationSyntax delegateDeclaration         => delegateDeclaration.Modifiers,
+				BaseMethodDeclarationSyntax baseMethodDeclaration 	  => baseMethodDeclaration.Modifiers,
+				BaseTypeDeclarationSyntax baseTypeDeclaration 		  => baseTypeDeclaration.Modifiers,
+				BaseFieldDeclarationSyntax baseFieldDeclaration 	  => baseFieldDeclaration.Modifiers,
+				DelegateDeclarationSyntax delegateDeclaration 		  => delegateDeclaration.Modifiers,
 				LocalFunctionStatementSyntax localFunctionStatement   => localFunctionStatement.Modifiers,
-				_                                                     => SyntaxFactory.TokenList()
+				_ 													  => SyntaxFactory.TokenList()
 			};
 
 		/// <summary>
@@ -259,7 +259,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 		public static IEnumerable<AttributeSyntax> GetAttributes(this MemberDeclarationSyntax member)
 		{
-			member.ThrowOnNull(nameof(member));
+			member.ThrowOnNull();
 			return GetAttributesImpl();
 
 			IEnumerable<AttributeSyntax> GetAttributesImpl()
@@ -281,18 +281,18 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax? member) =>
 			member switch
 			{
-				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.AttributeLists,
-				FieldDeclarationSyntax fieldDeclaration             => fieldDeclaration.AttributeLists,
-				MethodDeclarationSyntax methodDeclaration           => methodDeclaration.AttributeLists,
-				EventDeclarationSyntax eventDeclaration             => eventDeclaration.AttributeLists,
-				EventFieldDeclarationSyntax eventFieldDeclaration   => eventFieldDeclaration.AttributeLists,
-				DelegateDeclarationSyntax delegateDeclaration       => delegateDeclaration.AttributeLists,
-				ClassDeclarationSyntax nestedClassDeclaration       => nestedClassDeclaration.AttributeLists,
-				EnumDeclarationSyntax enumDeclaration               => enumDeclaration.AttributeLists,
-				StructDeclarationSyntax structDeclaration           => structDeclaration.AttributeLists,
-				InterfaceDeclarationSyntax interfaceDeclaration     => interfaceDeclaration.AttributeLists,
+				PropertyDeclarationSyntax propertyDeclaration 		=> propertyDeclaration.AttributeLists,
+				FieldDeclarationSyntax fieldDeclaration 			=> fieldDeclaration.AttributeLists,
+				MethodDeclarationSyntax methodDeclaration 			=> methodDeclaration.AttributeLists,
+				EventDeclarationSyntax eventDeclaration 			=> eventDeclaration.AttributeLists,
+				EventFieldDeclarationSyntax eventFieldDeclaration 	=> eventFieldDeclaration.AttributeLists,
+				DelegateDeclarationSyntax delegateDeclaration 		=> delegateDeclaration.AttributeLists,
+				ClassDeclarationSyntax nestedClassDeclaration 		=> nestedClassDeclaration.AttributeLists,
+				EnumDeclarationSyntax enumDeclaration 				=> enumDeclaration.AttributeLists,
+				StructDeclarationSyntax structDeclaration 			=> structDeclaration.AttributeLists,
+				InterfaceDeclarationSyntax interfaceDeclaration 	=> interfaceDeclaration.AttributeLists,
 				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.AttributeLists,
-				_                                                   => new SyntaxList<AttributeListSyntax>()
+				_ 													=> new SyntaxList<AttributeListSyntax>()
 			};
 
 		public static SyntaxTrivia ToSingleLineComment(this string? commentContent)
@@ -308,11 +308,11 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static BaseArgumentListSyntax? GetArgumentsList(this SyntaxNode callSite) =>
 			callSite switch
 			{
-				InvocationExpressionSyntax invocation                           => invocation.ArgumentList,
-				ElementAccessExpressionSyntax elementAccess                     => elementAccess.ArgumentList,
-				ObjectCreationExpressionSyntax objectCreation                   => objectCreation.ArgumentList,
-				ElementBindingExpressionSyntax elementBinding                   => elementBinding.ArgumentList,
-				_                                                               => null
+				InvocationExpressionSyntax invocation 		  => invocation.ArgumentList,
+				ElementAccessExpressionSyntax elementAccess   => elementAccess.ArgumentList,
+				ObjectCreationExpressionSyntax objectCreation => objectCreation.ArgumentList,
+				ElementBindingExpressionSyntax elementBinding => elementBinding.ArgumentList,
+				_ 											  => null
 			};
 
 		public static string? GetDocTagName(this XmlNodeSyntax docTagNode) => docTagNode switch

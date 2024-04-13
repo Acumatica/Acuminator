@@ -101,7 +101,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																								  Func<TSymbolInfo, TreeNodeViewModel> constructor)
 		where TSymbolInfo : SymbolItem
 		{
-			IEnumerable<SymbolItem> categoryTreeNodes = graphMemberCategory.CheckIfNull(nameof(graphMemberCategory))
+			IEnumerable<SymbolItem> categoryTreeNodes = graphMemberCategory.CheckIfNull()
 																		   .GetCategoryGraphNodeSymbols();
 			if (categoryTreeNodes.IsNullOrEmpty())
 				return DefaultValue;
@@ -132,7 +132,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																									   DacVmConstructor<TGraphEventInfo> constructor)
 		where TGraphEventInfo : GraphEventInfoBase<TGraphEventInfo>
 		{
-			graphEventCategory.ThrowOnNull(nameof(graphEventCategory));
+			graphEventCategory.ThrowOnNull();
 
 			var graphSemanticModel = graphEventCategory.GraphViewModel.GraphSemanticModel;
 			var graphCategoryEvents = graphEventCategory.GetCategoryGraphNodeSymbols()

@@ -19,17 +19,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	public static class ISymbolGenericUtils
 	{
 		public static bool IsReadOnly(this ISymbol symbol) =>
-			symbol.CheckIfNull(nameof(symbol)) switch
+			symbol.CheckIfNull() switch
 			{
-				IFieldSymbol field       => field.IsReadOnly,
-				IPropertySymbol property => property.IsReadOnly, 
-				ITypeSymbol type         => type.IsReadOnly(),
-				_                        => false
+				IFieldSymbol field 		 => field.IsReadOnly,
+				IPropertySymbol property => property.IsReadOnly,
+				ITypeSymbol type 		 => type.IsReadOnly(),
+				_ 						 => false
 			};
 
 		public static bool IsReadOnly(this ITypeSymbol typeSymbol)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			typeSymbol.ThrowOnNull();
 
 			var readonlyProperty = typeSymbol.GetType().GetProperty("IsReadOnly");
 
@@ -57,11 +57,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsExplicitlyDeclared(this ISymbol symbol) =>
-			!symbol.CheckIfNull(nameof(symbol)).IsImplicitlyDeclared && symbol.CanBeReferencedByName;
+			!symbol.CheckIfNull().IsImplicitlyDeclared && symbol.CanBeReferencedByName;
 
 		public static bool IsDeclaredInType(this ISymbol symbol, ITypeSymbol? type)
 		{
-			symbol.ThrowOnNull(nameof(symbol));
+			symbol.ThrowOnNull();
 		
 			if (type == null || symbol.ContainingType == null)
 				return false;
@@ -83,8 +83,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 												 bool checkForDerivedAttributes = true)
 		where TSymbol : class, ISymbol
 		{
-			symbol.ThrowOnNull(nameof(symbol));
-			attributeType.ThrowOnNull(nameof(attributeType));
+			symbol.ThrowOnNull();
+			attributeType.ThrowOnNull();
 
 			Func<TSymbol, bool> attributeCheck = checkForDerivedAttributes
 				? HasDerivedAttribute
@@ -129,10 +129,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static IEnumerable<TSymbol> GetOverriddenAndThis<TSymbol>(this TSymbol symbol)
 		where TSymbol : class, ISymbol
 		{
-			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
+			if (symbol.CheckIfNull().IsOverride)
 				return GetOverriddenImpl(symbol, includeThis: true);
 			else
-				return new[] { symbol };
+				return [symbol];
 		}
 
 		/// <summary>
@@ -145,10 +145,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static IEnumerable<TSymbol> GetOverridden<TSymbol>(this TSymbol symbol)
 		where TSymbol : class, ISymbol
 		{
-			if (symbol.CheckIfNull(nameof(symbol)).IsOverride)
+			if (symbol.CheckIfNull().IsOverride)
 				return GetOverriddenImpl(symbol, includeThis: false);
 			else
-				return Enumerable.Empty<TSymbol>();
+				return [];
 		}
 
 		private static IEnumerable<TSymbol> GetOverriddenImpl<TSymbol>(TSymbol symbol, bool includeThis)

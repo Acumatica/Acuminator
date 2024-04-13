@@ -9,18 +9,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public partial class SuppressionManager
 	{
-		private class SuppressionFileCreator
+		private class SuppressionFileCreator(SuppressionManager suppressionManager)
 		{
-			private readonly SuppressionManager _suppressionManager;
-
-			public SuppressionFileCreator(SuppressionManager suppressionManager)
-			{
-				_suppressionManager = suppressionManager.CheckIfNull(nameof(suppressionManager));
-			}
+			private readonly SuppressionManager _suppressionManager = suppressionManager.CheckIfNull();
 
 			public SuppressionFile CreateSuppressionFileForProjectFromCommand(Project project)
 			{
-				project.ThrowOnNull(nameof(project));
+				project.ThrowOnNull();
 
 				//First check if file already exists to dismiss threads withou acquiring the lock
 				var existingSuppressionFile =  _suppressionManager.GetSuppressionFile(project.AssemblyName);
@@ -48,7 +43,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			public TextDocument AddAdditionalSuppressionDocumentToProject(Project project)
 			{
-				project.ThrowOnNull(nameof(project));
+				project.ThrowOnNull();
 
 				string suppressionFileName = project.AssemblyName + SuppressionFile.SuppressionFileExtension;
 				string projectDir = Instance._fileSystemService.GetFileDirectory(project.FilePath);

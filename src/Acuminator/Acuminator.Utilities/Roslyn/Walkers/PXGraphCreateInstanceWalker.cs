@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 			: base(pxContext, context.CancellationToken)
 		{
 			_context = context;
-			_descriptor = descriptor.CheckIfNull(nameof(descriptor));
+			_descriptor = descriptor.CheckIfNull();
 		}
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)

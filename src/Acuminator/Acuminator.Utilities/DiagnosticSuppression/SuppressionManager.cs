@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, ICustomBuildActionSetter? buildActionSetter)
 		{
-			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
+			_fileSystemService = fileSystemService.CheckIfNull();
 			_suppressionFileCreator = new SuppressionFileCreator(this);
 
 			BuildActionSetter = buildActionSetter;

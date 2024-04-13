@@ -24,12 +24,10 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 													   string equivalenceKey = null) :
 												  base(title, equivalenceKey, displayPreview)
 		{
-			_createChangedSolution = createChangedSolution.CheckIfNull(nameof(createChangedSolution));
+			_createChangedSolution = createChangedSolution.CheckIfNull();
 		}
 
-		protected override Task<Solution> GetChangedSolutionAsync(CancellationToken cancellationToken)
-		{
-			return _createChangedSolution(cancellationToken);
-		}
+		protected override Task<Solution> GetChangedSolutionAsync(CancellationToken cancellationToken) => 
+			_createChangedSolution(cancellationToken);
 	}
 }

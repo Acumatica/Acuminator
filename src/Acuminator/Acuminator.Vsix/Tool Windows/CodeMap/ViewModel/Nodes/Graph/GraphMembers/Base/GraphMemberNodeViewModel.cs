@@ -36,8 +36,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										bool isExpanded = false) :
 								   base(graphMemberCategoryVM?.Tree, parent, isExpanded)
 		{
-			MemberInfo = memberInfo.CheckIfNull(nameof(memberInfo));
-			MemberCategory = graphMemberCategoryVM;		
+			MemberInfo = memberInfo.CheckIfNull();
+			MemberCategory = graphMemberCategoryVM;
 		}
 
 		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();
