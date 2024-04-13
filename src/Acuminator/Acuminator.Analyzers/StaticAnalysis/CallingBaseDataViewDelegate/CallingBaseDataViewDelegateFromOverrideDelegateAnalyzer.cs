@@ -14,111 +14,109 @@ using System.Linq;
 namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 {
 	public class CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
-    {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation);
+	{
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
-        {
-            context.CancellationToken.ThrowIfCancellationRequested();
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-            var ownDelegatesDictionary = pxGraph.ViewDelegates
-                                         .Where(d => pxGraph.Symbol.Equals(d.Symbol.ContainingType))
-                                         .ToDictionary(d => d.Symbol.Name, d => d, StringComparer.OrdinalIgnoreCase);
-            var ownRelatedViewsHashSet = pxGraph.Views
-                                         .Where(v => ownDelegatesDictionary.ContainsKey(v.Symbol.Name) &&
-                                                     pxGraph.Symbol.Equals(v.Symbol.ContainingType))
-                                         .Select(v => v.Symbol.Name)
-                                         .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
-            var baseNonRedeclaredRelatedViewsBuilder = ImmutableHashSet<ISymbol>.Empty.ToBuilder();
+			var ownDelegatesDictionary = pxGraph.ViewDelegates
+										 .Where(d => pxGraph.Symbol.Equals(d.Symbol.ContainingType))
+										 .ToDictionary(d => d.Symbol.Name, d => d, StringComparer.OrdinalIgnoreCase);
+			var ownRelatedViewsHashSet = pxGraph.Views
+										 .Where(v => ownDelegatesDictionary.ContainsKey(v.Symbol.Name) &&
+													 pxGraph.Symbol.Equals(v.Symbol.ContainingType))
+										 .Select(v => v.Symbol.Name)
+										 .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
+			var baseNonRedeclaredRelatedViewsBuilder = ImmutableHashSet<ISymbol>.Empty.ToBuilder();
 
-            foreach (var view in pxGraph.Views)
-            {
-                for (var curView = view; curView != null; curView = curView.Base)
-                {
-                    if (ownDelegatesDictionary.ContainsKey(curView.Symbol.Name) &&
-                        !pxGraph.Symbol.Equals(curView.Symbol.ContainingType) &&
-                        !ownRelatedViewsHashSet.Contains(curView.Symbol.Name))
-                    {
-                        baseNonRedeclaredRelatedViewsBuilder.Add(curView.Symbol);
-                    }
-                }
-            }
+			foreach (var view in pxGraph.Views)
+			{
+				for (var curView = view; curView != null; curView = curView.Base)
+				{
+					if (ownDelegatesDictionary.ContainsKey(curView.Symbol.Name) &&
+						!pxGraph.Symbol.Equals(curView.Symbol.ContainingType) &&
+						!ownRelatedViewsHashSet.Contains(curView.Symbol.Name))
+					{
+						baseNonRedeclaredRelatedViewsBuilder.Add(curView.Symbol);
+					}
+				}
+			}
 
-            var baseNonRedeclaredRelatedViewsHashSet = baseNonRedeclaredRelatedViewsBuilder.ToImmutable();
+			var baseNonRedeclaredRelatedViewsHashSet = baseNonRedeclaredRelatedViewsBuilder.ToImmutable();
 
-            foreach (var viewDelegate in ownDelegatesDictionary.Values)
-            {
-                var walker = new Walker(context, pxContext, baseNonRedeclaredRelatedViewsHashSet);
+			foreach (var viewDelegate in ownDelegatesDictionary.Values)
+			{
+				var walker = new Walker(context, pxContext, baseNonRedeclaredRelatedViewsHashSet);
 
-                walker.Visit(viewDelegate.Node);
-            }
-        }
+				walker.Visit(viewDelegate.Node);
+			}
+		}
 
 		private class Walker : NestedInvocationWalker
-        {
-            private readonly SymbolAnalysisContext _context;
-            private readonly ImmutableHashSet<ISymbol> _nonRedeclaredBaseViews;
+		{
+			private readonly SymbolAnalysisContext _context;
+			private readonly ImmutableHashSet<ISymbol> _nonRedeclaredBaseViews;
 
-            public Walker(SymbolAnalysisContext context, PXContext pxContext, ImmutableHashSet<ISymbol> nonRedeclaredBaseViews)
-                : base(pxContext, context.CancellationToken)
-            {
-                nonRedeclaredBaseViews.ThrowOnNull(nameof(nonRedeclaredBaseViews));
+			public Walker(SymbolAnalysisContext context, PXContext pxContext, ImmutableHashSet<ISymbol> nonRedeclaredBaseViews)
+				: base(pxContext, context.CancellationToken)
+			{
+				_context = context;
+				_nonRedeclaredBaseViews = nonRedeclaredBaseViews.CheckIfNull();
+			}
 
-                _context = context;
-                _nonRedeclaredBaseViews = nonRedeclaredBaseViews;
-            }
+			public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+			{
+				ThrowIfCancellationRequested();
 
-            public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
-            {
-                ThrowIfCancellationRequested();
+				var reported = false;
+				var symbol = GetSymbol<ISymbol>(node);
+				var methodSymbol = symbol as IMethodSymbol;
 
-                var reported = false;
-                var symbol = GetSymbol<ISymbol>(node);
-                var methodSymbol = symbol as IMethodSymbol;
+				if (methodSymbol != null)
+				{
+					methodSymbol = methodSymbol.OriginalDefinition?.OverriddenMethod ?? methodSymbol.OriginalDefinition;
+				}
 
-                if (methodSymbol != null)
-                {
-                    methodSymbol = methodSymbol.OriginalDefinition?.OverriddenMethod ?? methodSymbol.OriginalDefinition;
-                }
+				var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
-                var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
-
-                // Case Base.PXSelectBaseGenIns.Select()
-                if (PxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
-                {
-                    reported = TryToReport(expressionSymbol, node);
-                }
-                // Case Base.PXSelectBaseGenIns.View.Select()
-                else if (PxContext.PXView.Select.Contains(symbol) &&
+				// Case Base.PXSelectBaseGenIns.Select()
+				if (PxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
+				{
+					reported = TryToReport(expressionSymbol, node);
+				}
+				// Case Base.PXSelectBaseGenIns.View.Select()
+				else if (PxContext.PXView.Select.Contains(symbol) &&
 						 PxContext.PXSelectBase.View.Equals(expressionSymbol) &&
-                         node.Expression is MemberAccessExpressionSyntax expressionNode)
-                {
-                    var innerExpressionSymbol = GetSymbol<ISymbol>(expressionNode.Expression);
-                    reported = TryToReport(innerExpressionSymbol, node);
-                }
+						 node.Expression is MemberAccessExpressionSyntax expressionNode)
+				{
+					var innerExpressionSymbol = GetSymbol<ISymbol>(expressionNode.Expression);
+					reported = TryToReport(innerExpressionSymbol, node);
+				}
 
-                if (!reported)
-                {
-                    base.VisitMemberAccessExpression(node);
-                }
-            }
+				if (!reported)
+				{
+					base.VisitMemberAccessExpression(node);
+				}
+			}
 
-            private bool TryToReport(ISymbol symbol, ExpressionSyntax node)
-            {
-                ThrowIfCancellationRequested();
+			private bool TryToReport(ISymbol symbol, ExpressionSyntax node)
+			{
+				ThrowIfCancellationRequested();
 
-                if (_nonRedeclaredBaseViews.Contains(symbol))
-                {
-                    ReportDiagnostic(_context.ReportDiagnostic,
+				if (_nonRedeclaredBaseViews.Contains(symbol))
+				{
+					ReportDiagnostic(_context.ReportDiagnostic,
 						Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation,
 						node);
 
-                    return true;
-                }
+					return true;
+				}
 
-                return false;
-            }
-        }
-    }
+				return false;
+			}
+		}
+	}
 }
