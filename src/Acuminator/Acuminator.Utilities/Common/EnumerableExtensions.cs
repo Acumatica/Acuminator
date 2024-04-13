@@ -16,11 +16,8 @@ namespace Acuminator.Utilities.Common
 	public static class EnumerableExtensions
 	{
 		[DebuggerStepThrough]
-		public static IEnumerable<T> ToEnumerable<T>(this T? item)
-		{
-			if (item != null)
-				yield return item;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<T> ToEnumerable<T>(this T? item) => item != null ? [item] : [];
 
 		/// <summary>
 		/// Perfrom an <paramref name="action"/> on all items of the <paramref name="source"/> collection.
