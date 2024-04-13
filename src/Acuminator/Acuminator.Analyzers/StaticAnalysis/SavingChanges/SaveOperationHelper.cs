@@ -72,15 +72,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			if (containingType != null && 
 			    containingType.InheritsFromOrEquals(pxContext.PXDatabase.Type))
 			{
-				if (string.Equals(symbol.Name, DelegateNames.Insert))
-					return PXDBOperationKind.Insert;
-				else if (string.Equals(symbol.Name, DelegateNames.Delete))
-					return PXDBOperationKind.Delete;
-				else if (string.Equals(symbol.Name, DelegateNames.Update))
-					return PXDBOperationKind.Update;
-				else if (string.Equals(symbol.Name, DelegateNames.Ensure))
-					return PXDBOperationKind.Ensure;
+				return symbol.Name switch
+				{
+					DelegateNames.Insert => PXDBOperationKind.Insert,
+					DelegateNames.Delete => PXDBOperationKind.Delete,
+					DelegateNames.Update => PXDBOperationKind.Update,
+					DelegateNames.Ensure => PXDBOperationKind.Ensure,
+					_					 => PXDBOperationKind.None
+				};
 			}
+
 			return PXDBOperationKind.None;
 		}
 
