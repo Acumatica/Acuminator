@@ -87,8 +87,8 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		public static int LevenshteinDistance(string s, string t)
 		{
-			int n = s.CheckIfNull(nameof(s)).Length;
-			int m = t.CheckIfNull(nameof(t)).Length;
+			int n = s.CheckIfNull().Length;
+			int m = t.CheckIfNull().Length;
 			int[,] d = new int[n + 1, m + 1];
 
 			// Step 1

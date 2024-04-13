@@ -32,8 +32,8 @@ namespace Acuminator.Utilities.Common
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<T>(this IEnumerable<T> source, Action<T?> action)
 		{
-			source.ThrowOnNull(nameof(source));
-			action.ThrowOnNull(nameof(action));
+			source.ThrowOnNull();
+			action.ThrowOnNull();
 
 			// perf optimization. try to not use enumerator if possible
 			switch (source)
@@ -66,21 +66,19 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> source) => source != null
-			? new ReadOnlyCollection<T>(source.ToList())
-			: throw new ArgumentNullException(nameof(source));
+		public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> source) =>
+			new(source.CheckIfNull().ToList());
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ReadOnlyCollection<T> ToReadOnlyCollectionShallow<T>(this IList<T> list) => list != null
-			? new ReadOnlyCollection<T>(list)
-			: throw new ArgumentNullException(nameof(list));
+		public static ReadOnlyCollection<T> ToReadOnlyCollectionShallow<T>(this IList<T> list) =>
+			new(list.CheckIfNull());
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T>? comparer = null)
 		{
-			source.ThrowOnNull(nameof(source));
+			source.ThrowOnNull();
 			return comparer != null
 				? new HashSet<T>(source, comparer)
 				: new HashSet<T>(source);
@@ -88,10 +86,8 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Stack<T> ToStack<T>(this IEnumerable<T> source) => source != null
-			? new Stack<T>(source)
-			: throw new ArgumentNullException(nameof(source));
-
+		public static Stack<T> ToStack<T>(this IEnumerable<T> source) =>
+			new(source.CheckIfNull());
 
 		/// <summary>
 		/// Concatenate structure list to this collection. This is an optimization method which allows to avoid boxing for collections implemented as structs.
@@ -152,7 +148,7 @@ namespace Acuminator.Utilities.Common
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<SyntaxToken> Where(this SyntaxTokenList source, Func<SyntaxToken, bool> predicate)
 		{
-			predicate.ThrowOnNull(nameof(predicate));
+			predicate.ThrowOnNull();
 			return WhereForSyntaxTokenListImplementation();
 
 			IEnumerable<SyntaxToken> WhereForSyntaxTokenListImplementation()
@@ -179,7 +175,7 @@ namespace Acuminator.Utilities.Common
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SyntaxToken FirstOrDefault(this SyntaxTokenList source, Func<SyntaxToken, bool> predicate)
 		{
-			predicate.ThrowOnNull(nameof(predicate));
+			predicate.ThrowOnNull();
 
 			for (int i = 0; i < source.Count; i++)
 			{
@@ -204,7 +200,7 @@ namespace Acuminator.Utilities.Common
 		public static IEnumerable<TNode> Where<TNode>(this SyntaxList<TNode> source, Func<TNode, bool> predicate)
 		where TNode : SyntaxNode
 		{
-			predicate.ThrowOnNull(nameof(predicate));
+			predicate.ThrowOnNull();
 			return WhereForStructListImplementation();
 
 			IEnumerable<TNode> WhereForStructListImplementation()
@@ -232,7 +228,7 @@ namespace Acuminator.Utilities.Common
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<TResult> Select<TResult>(this SyntaxTriviaList triviaList, Func<SyntaxTrivia, TResult> selector)
 		{
-			selector.ThrowOnNull(nameof(selector));
+			selector.ThrowOnNull();
 			return SelectForStructListImplementation();
 
 			IEnumerable<TResult> SelectForStructListImplementation()
@@ -257,7 +253,7 @@ namespace Acuminator.Utilities.Common
 		public static IEnumerable<TCollectionItem> SelectMany<TCollectionHolder, TCollectionItem>(this ImmutableArray<TCollectionHolder> array, 
 																								  Func<TCollectionHolder, IEnumerable<TCollectionItem>> selector)
 		{
-			selector.ThrowOnNull(nameof(selector));
+			selector.ThrowOnNull();
 			return GeneratorMethod();
 
 
@@ -299,8 +295,8 @@ namespace Acuminator.Utilities.Common
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void AddRange<T>(this HashSet<T> hashset, IEnumerable<T> items)
 		{
-			hashset.ThrowOnNull(nameof(hashset));
-			items.ThrowOnNull(nameof(items));
+			hashset.ThrowOnNull();
+			items.ThrowOnNull();
 
 			foreach (var item in items)
 				hashset.Add(item);
@@ -309,7 +305,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsEmpty<T>(this IEnumerable<T> source) =>
-			source.CheckIfNull(nameof(source)) switch
+			source.CheckIfNull() switch
 			{
 				IReadOnlyCollection<T> readOnlyCollection => readOnlyCollection.Count == 0,
 				ICollection<T> genericCollection => genericCollection.Count == 0,
@@ -336,13 +332,8 @@ namespace Acuminator.Utilities.Common
 			? source.Count == 0
 			: throw new ArgumentNullException(nameof(source));
 
-		public static bool Contains<T>(this IEnumerable<T> sequence, Func<T?, bool> predicate)
-		{
-			sequence.ThrowOnNull(nameof(sequence));
-			predicate.ThrowOnNull(nameof(predicate));
-
-			return sequence.Any(predicate);
-		}
+		public static bool Contains<T>(this IEnumerable<T> sequence, Func<T?, bool> predicate) =>
+			sequence.CheckIfNull().Any(predicate.CheckIfNull());
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -356,7 +347,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsNullOrEmpty<T>([NotNullWhen(returnValue: false)] this T[]? array) => 
-			array == null || array.Length == 0;
+			array?.Length is null or 0;
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -371,7 +362,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		public static int FindIndex<T>(this ImmutableArray<T> source, int startInclusive, int endExclusive, Func<T, bool> condition)
 		{
-			condition.ThrowOnNull(nameof(condition));
+			condition.ThrowOnNull();
 
 			if (startInclusive < 0 || startInclusive >= source.Length)
 				throw new ArgumentOutOfRangeException(nameof(startInclusive));
@@ -398,7 +389,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		public static ImmutableArray<T> ToImmutableArray<T>(this IReadOnlyCollection<T> source)
 		{
-			source.ThrowOnNull(nameof(source));
+			source.ThrowOnNull();
 
 			if (source.Count == 0)
 				return ImmutableArray<T>.Empty;
@@ -429,7 +420,7 @@ namespace Acuminator.Utilities.Common
 		public static int FindIndex<TNode>(this SeparatedSyntaxList<TNode> source, int startInclusive, int endExclusive, Func<TNode, bool> condition)
 		where TNode : SyntaxNode
 		{
-			condition.ThrowOnNull(nameof(condition));
+			condition.ThrowOnNull();
 
 			if (startInclusive < 0 || startInclusive >= source.Count)
 				throw new ArgumentOutOfRangeException(nameof(startInclusive));
@@ -449,7 +440,7 @@ namespace Acuminator.Utilities.Common
 		public static bool All<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
 		where TNode : SyntaxNode
 		{
-			condition.ThrowOnNull(nameof(condition));
+			condition.ThrowOnNull();
 
 			for (int i = 0; i < source.Count; i++)
 			{
@@ -464,7 +455,7 @@ namespace Acuminator.Utilities.Common
 		public static bool Any<TNode>(this SeparatedSyntaxList<TNode> source, Func<TNode, bool> condition)
 		where TNode : SyntaxNode
 		{
-			condition.ThrowOnNull(nameof(condition));
+			condition.ThrowOnNull();
 
 			for (int i = 0; i < source.Count; i++)
 			{

@@ -44,8 +44,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 
 				public PXConnectionScopeVisitor(DiagnosticWalker parent, PXContext pxContext)
 				{
-					_parent = parent.CheckIfNull(nameof(parent));
-					_pxContext = pxContext.CheckIfNull(nameof(pxContext));
+					_parent = parent.CheckIfNull();
+					_pxContext = pxContext.CheckIfNull();
 				}
 
 				public override bool VisitUsingStatement(UsingStatementSyntax node)

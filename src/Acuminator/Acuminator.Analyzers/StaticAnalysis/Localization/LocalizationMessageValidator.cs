@@ -43,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 											ValidationContext validationContext)
 		{
 			_syntaxContext = syntaxContext;
-			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
+			_pxContext = pxContext.CheckIfNull();
 			_validationContext = validationContext;	
 		}
 

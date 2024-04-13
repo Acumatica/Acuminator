@@ -13,7 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsRegisteredForCodeFix(this Diagnostic diagnostic, bool considerRegisteredByDefault = true)
 		{
-			diagnostic.ThrowOnNull(nameof(diagnostic));
+			diagnostic.ThrowOnNull();
 
 			return diagnostic.Properties.TryGetValue(DiagnosticProperty.RegisterCodeFix, out string registered) 
 				? registered == bool.TrueString
@@ -23,8 +23,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsFlagSet(this Diagnostic diagnostic, string flagName, bool? defaultValueForMissingFlag = null)
 		{
-			diagnostic.ThrowOnNull(nameof(diagnostic));
-			flagName.ThrowOnNullOrWhiteSpace(nameof(flagName));
+			diagnostic.ThrowOnNull();
+			flagName.ThrowOnNullOrWhiteSpace();
 
 			bool defaultValue = defaultValueForMissingFlag ?? false;
 
@@ -36,8 +36,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool TryGetPropertyValue(this Diagnostic diagnostic, string propertyName, out string? propertyValue) =>
-			TryGetPropertyValueInternal(diagnostic.CheckIfNull(nameof(diagnostic)), 
-										propertyName.CheckIfNullOrWhiteSpace(nameof(propertyName)), 
+			TryGetPropertyValueInternal(diagnostic.CheckIfNull(), 
+										propertyName.CheckIfNullOrWhiteSpace(), 
 										out propertyValue);
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
