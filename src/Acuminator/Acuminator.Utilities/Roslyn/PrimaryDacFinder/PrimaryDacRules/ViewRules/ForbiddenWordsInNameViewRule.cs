@@ -1,9 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
@@ -13,15 +17,17 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 	/// </summary>
 	public class ForbiddenWordsInNameViewRule : ViewRuleBase
 	{
-		private readonly bool _useCaseSensitiveComparison;
-		private readonly ImmutableArray<string> _forbiddenWords;
+		private readonly StringComparison _stringComparisonKind;
+		private readonly List<string> _forbiddenWords;
 
-		public sealed override bool IsAbsolute => false;
+		public override sealed bool IsAbsolute => false;
 
-		public ForbiddenWordsInNameViewRule(bool useCaseSensitiveComparison, IEnumerable<string> wordsToForbid = null, double? weight = null) :
+		public ForbiddenWordsInNameViewRule(bool useCaseSensitiveComparison, IEnumerable<string>? wordsToForbid = null, double? weight = null) :
 									   base(weight)
 		{
-			_useCaseSensitiveComparison = useCaseSensitiveComparison;
+			_stringComparisonKind = useCaseSensitiveComparison
+				? StringComparison.Ordinal
+				: StringComparison.OrdinalIgnoreCase;
 
 			if (wordsToForbid.IsNullOrEmpty())
 			{
@@ -29,12 +35,11 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 			}
 			else
 			{
-				if (_useCaseSensitiveComparison)
-				{
-					wordsToForbid = wordsToForbid.Select(w => w.ToUpper());
-				}
+				var stringComparer = useCaseSensitiveComparison 
+					? StringComparer.Ordinal 
+					: StringComparer.OrdinalIgnoreCase;
 
-				_forbiddenWords = wordsToForbid.Distinct().ToImmutableArray();
+				_forbiddenWords = wordsToForbid.Distinct(stringComparer).ToList();
 			}
 		}
 
@@ -45,19 +50,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 		/// <param name="view">The view.</param>
 		/// <param name="viewType">Type of the view.</param>
 		/// <returns/>
-		public sealed override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
+		public override sealed bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
 		{
-			if (view == null)
-				return false;
+			dacFinder.CancellationToken.ThrowIfCancellationRequested();
 
-			string viewName = _useCaseSensitiveComparison
-				? view.Name
-				: view.Name.ToUpper();
-
-			return _forbiddenWords.Any(word => viewName.Contains(word));
+			return _forbiddenWords.Any(word => view.Name.Contains(word, _stringComparisonKind));
 		}
 
-		private ImmutableArray<string> GetDefaultForbiddenWords() =>
-			ImmutableArray.Create("dummy");
+		private List<string> GetDefaultForbiddenWords() => ["dummy"];
 	}
 }
