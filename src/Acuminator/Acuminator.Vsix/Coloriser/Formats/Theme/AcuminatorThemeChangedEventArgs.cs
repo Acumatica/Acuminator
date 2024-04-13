@@ -10,20 +10,14 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.Coloriser
 {
-    internal class AcuminatorThemeChangedEventArgs : EventArgs
+    internal class AcuminatorThemeChangedEventArgs(IVsFontAndColorStorage fontAndColorStorage, 
+												   IClassificationTypeRegistryService classificationTypeRegistry,
+												   IClassificationFormatMap formatMap) : EventArgs
     {
-        public IVsFontAndColorStorage FontAndColorStorage { get; }
+		public IVsFontAndColorStorage FontAndColorStorage { get; } = fontAndColorStorage.CheckIfNull();
 
-        public IClassificationTypeRegistryService ClassificationTypeRegistry { get; }
+		public IClassificationTypeRegistryService ClassificationTypeRegistry { get; } = classificationTypeRegistry.CheckIfNull();
 
-        public IClassificationFormatMap FormatMap { get; }
-
-        public AcuminatorThemeChangedEventArgs(IVsFontAndColorStorage fontAndColorStorage, IClassificationTypeRegistryService classificationTypeRegistry,
-                                               IClassificationFormatMap formatMap)
-		{
-            FontAndColorStorage = fontAndColorStorage.CheckIfNull(nameof(fontAndColorStorage));
-            ClassificationTypeRegistry = classificationTypeRegistry.CheckIfNull(nameof(classificationTypeRegistry));
-            FormatMap = formatMap;
-        }
-    }
+		public IClassificationFormatMap FormatMap { get; } = formatMap;
+	}
 }

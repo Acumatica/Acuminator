@@ -10,7 +10,7 @@ namespace Acuminator.Utilities
 	/// <summary>
 	/// The Visual Studio version information.
 	/// </summary>
-	public class VSVersion
+	public class VSVersion(Version version)
 	{
 		public const int UnknownVersion = 0;
 
@@ -24,7 +24,7 @@ namespace Acuminator.Utilities
 		public const int VS2019 = 16;
 		public const int VS2022 = 17;
 
-		public Version FullVersion { get; }
+		public Version FullVersion { get; } = version.CheckIfNull();
 
 		public bool VS2013OrOlder => FullVersion.Major <= VS2013 && FullVersion.Major != UnknownVersion;
 
@@ -55,10 +55,5 @@ namespace Acuminator.Utilities
 		public bool IsVS2019 => FullVersion.Major == VS2019;
 
 		public bool IsVS2022 => FullVersion.Major == VS2022;
-
-		public VSVersion(Version version)
-		{
-			FullVersion = version.CheckIfNull(nameof(version));
-		}
 	}
 }
