@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 {
@@ -10,7 +12,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 		/// <summary>
 		/// The rule kind.
 		/// </summary>
-		public sealed override PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.View;
+		public override sealed PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.View;
 
 		protected ViewRuleBase(double? customWeight) : base(customWeight)
 		{
@@ -20,9 +22,8 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 		/// Query if view satisfies this rule's conditions.
 		/// </summary>
 		/// <param name="dacFinder">The DAC finder.</param>
-		/// <param name="view">The view.</param>
-		/// <param name="viewType">Type of the view.</param>
+		/// <param name="viewInfo">The view info.</param>
 		/// <returns/>
-		public abstract bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType);
+		public abstract bool SatisfyRule(PrimaryDacFinder dacFinder, DataViewInfo viewInfo);
 	}
 }

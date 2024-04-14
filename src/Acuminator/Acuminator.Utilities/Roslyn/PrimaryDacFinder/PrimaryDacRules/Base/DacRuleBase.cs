@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 {
@@ -10,7 +12,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 		/// <summary>
 		/// The rule kind.
 		/// </summary>
-		public sealed override PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.Dac;
+		public override sealed PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.Dac;
 
 		protected DacRuleBase(double? customWeight) : base(customWeight)
 		{

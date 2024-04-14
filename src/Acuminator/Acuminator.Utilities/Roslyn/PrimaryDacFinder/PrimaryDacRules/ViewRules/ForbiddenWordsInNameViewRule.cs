@@ -7,6 +7,7 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 using Microsoft.CodeAnalysis;
 
@@ -50,12 +51,8 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 		/// <param name="view">The view.</param>
 		/// <param name="viewType">Type of the view.</param>
 		/// <returns/>
-		public override sealed bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
-		{
-			dacFinder.CancellationToken.ThrowIfCancellationRequested();
-
-			return _forbiddenWords.Any(word => view.Name.Contains(word, _stringComparisonKind));
-		}
+		public override sealed bool SatisfyRule(PrimaryDacFinder dacFinder, DataViewInfo viewInfo) =>
+			_forbiddenWords.Any(word => viewInfo.Name.Contains(word, _stringComparisonKind));
 
 		private List<string> GetDefaultForbiddenWords() => ["dummy"];
 	}

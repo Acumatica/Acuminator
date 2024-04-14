@@ -1,7 +1,12 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
@@ -9,22 +14,15 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 	/// <summary>
 	/// An excluding rule for view with PXHiddenAttribute or PXCopyPasteHiddenViewAttribute attributes.
 	/// </summary>
-	public class HiddenAttributesViewRule : ViewRuleBase
+	public class HiddenAttributesViewRule(double? weight = null) : ViewRuleBase(weight)
 	{
-		public sealed override bool IsAbsolute => false;
+		public override sealed bool IsAbsolute => false;
 
-		public HiddenAttributesViewRule(double? weight = null) : base(weight)
+		public override bool SatisfyRule(PrimaryDacFinder dacFinder, DataViewInfo viewInfo)
 		{
-		}
+			ImmutableArray<AttributeData> attributes = viewInfo.Symbol.GetAttributes();
 
-		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
-		{
-			if (view == null || dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested)
-				return false;
-
-			ImmutableArray<AttributeData> attributes = view.GetAttributes();
-
-			if (attributes.Length == 0)
+			if (attributes.IsDefaultOrEmpty)
 				return false;
 
 			INamedTypeSymbol hiddenAttribute = dacFinder.PxContext.AttributeTypes.PXHiddenAttribute;
@@ -32,8 +30,10 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 
 			if (hasHiddenAttribute)
 				return true;
-			else if (dacFinder.GraphViews.Length <= 1 || dacFinder.CancellationToken.IsCancellationRequested)
+			else if (dacFinder.GraphViews.Length <= 1)
 				return false;
+
+			dacFinder.CancellationToken.ThrowIfCancellationRequested();
 
 			INamedTypeSymbol copyPasteHiddenViewAttribute = dacFinder.PxContext.AttributeTypes.PXCopyPasteHiddenViewAttribute;
 			return attributes.Any(a => a.AttributeClass.InheritsFromOrEquals(copyPasteHiddenViewAttribute));

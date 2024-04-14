@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRules;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
@@ -19,10 +22,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 
 		public DefaultRulesProvider(PXContext context)
 		{
-			context.ThrowOnNull(nameof(context));
+			_rules = GetPrimaryDacCalculationRules(context.CheckIfNull()).ToImmutableArray();
+		}
 
-			_rules = new List<PrimaryDacRuleBase>
-			{
+		public ImmutableArray<PrimaryDacRuleBase> GetRules() => _rules;
+
+		private static PrimaryDacRuleBase[] GetPrimaryDacCalculationRules(PXContext context) =>
+			[
 				//AbsoluteRules
 				new PrimaryDacSpecifiedGraphRule(),
 				new PXImportAttributeGraphRule(),
@@ -44,7 +50,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 				// View rules
 				new ForbiddenWordsInNameViewRule(useCaseSensitiveComparison: false),
 				new HiddenAttributesViewRule(),
-				new NoPXSetupViewRule(context),
+				new NoPXSetupViewRule(),
 				new PXViewNameAttributeViewRule(context),			
 
 				// Action rules
@@ -53,10 +59,6 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 
 				// DAC rules
 				new SameOrDescendingNamespaceDacRule()
-			}
-			.ToImmutableArray();
-		}
-
-		public ImmutableArray<PrimaryDacRuleBase> GetRules() => _rules;
+			];
 	}
 }
