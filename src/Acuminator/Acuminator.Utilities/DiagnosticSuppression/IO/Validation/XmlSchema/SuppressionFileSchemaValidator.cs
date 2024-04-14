@@ -62,8 +62,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		/// <returns/>
 		public void ValidateSuppressionFile(XDocument document, ValidationLog validationLog)
 		{
-			document.ThrowOnNull(nameof(document));
-			validationLog.ThrowOnNull(nameof(validationLog));
+			document.ThrowOnNull();
+			validationLog.ThrowOnNull();
 
 			try
 			{

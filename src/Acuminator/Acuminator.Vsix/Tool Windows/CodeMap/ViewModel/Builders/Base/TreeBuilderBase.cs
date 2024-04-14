@@ -34,7 +34,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren, CancellationToken cancellation)
 		{
-			windowViewModel.ThrowOnNull(nameof(windowViewModel));
+			windowViewModel.ThrowOnNull();
 
 			try
 			{

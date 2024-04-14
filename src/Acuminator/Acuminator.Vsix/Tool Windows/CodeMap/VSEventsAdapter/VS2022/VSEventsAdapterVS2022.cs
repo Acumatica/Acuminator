@@ -163,9 +163,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				// Following objects should not be null. Null will indicate a corrupted state so ArgumentNullException will be thrown here. 
 				// If these ogjects are null the adapter mechanism will log ArgumentNullException in VS ActivityLog
-				adapterHandlerMethodInfo.ThrowOnNull(nameof(adapterHandlerMethodInfo));
-				eventObject.ThrowOnNull(nameof(eventObject));
-				eventInfo.ThrowOnNull(nameof(eventInfo));	
+				adapterHandlerMethodInfo.ThrowOnNull();
+				eventObject.ThrowOnNull();
+				eventInfo.ThrowOnNull();	
 
 				try
 				{

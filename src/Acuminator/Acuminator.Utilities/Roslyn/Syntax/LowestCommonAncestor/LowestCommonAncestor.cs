@@ -16,8 +16,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 	{
 		public static LCAResultForTwoStatements GetCommonAncestorForSyntaxStatements(StatementSyntax x, StatementSyntax y)
 		{
-			x.ThrowOnNull(nameof(x));
-			y.ThrowOnNull(nameof(y));
+			x.ThrowOnNull();
+			y.ThrowOnNull();
 
 			//Depth is average O(log n) operation, worst case is O(n) but it isn't the case for the syntax tree which is wide but not very deep.
 			//For statements we could consider depth constrained by BaseMethodDeclarationSyntax
@@ -56,8 +56,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 		public static LCAResultForTwoNodes GetCommonAncestorForSyntaxNodesInsideMethods(SyntaxNode x, SyntaxNode y)
 		{
-			x.ThrowOnNull(nameof(x));
-			y.ThrowOnNull(nameof(y));
+			x.ThrowOnNull();
+			y.ThrowOnNull();
 
 			//Depth is average O(log n) operation, worst case is O(n) but it isn't the case for the syntax tree which is wide but not very deep.
 			//For nodes inside methods we could consider depth constrained by BaseMethodDeclarationSyntax

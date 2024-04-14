@@ -85,8 +85,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns/>
 		public static DacSemanticModel InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{		
-			pxContext.ThrowOnNull(nameof(pxContext));
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			pxContext.ThrowOnNull();
+			typeSymbol.ThrowOnNull();
 			cancellation.ThrowIfCancellationRequested();
 
 			DacType? dacType = typeSymbol.IsDAC(pxContext)

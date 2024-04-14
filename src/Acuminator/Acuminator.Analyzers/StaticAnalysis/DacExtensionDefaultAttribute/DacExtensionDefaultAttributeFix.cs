@@ -154,11 +154,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		public static bool IsBoundField(Diagnostic diagnostic)
 		{
-			diagnostic.ThrowOnNull(nameof(diagnostic));
+			diagnostic.ThrowOnNull();
 
-			return diagnostic.Properties.TryGetValue(DiagnosticProperty.IsBoundField, out string boundFlag)
-				? boundFlag == bool.TrueString
-				: false;
+			return diagnostic.Properties.TryGetValue(DiagnosticProperty.IsBoundField, out string boundFlag) && 
+				   boundFlag == bool.TrueString;
 		}
 	}
 

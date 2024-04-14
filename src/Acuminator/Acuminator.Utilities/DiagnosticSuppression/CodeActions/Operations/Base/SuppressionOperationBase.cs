@@ -17,7 +17,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 		protected SuppressionOperationBase(string assemblyName)
 		{
-			AssemblyName = assemblyName.CheckIfNullOrWhiteSpace(nameof(assemblyName));
+			AssemblyName = assemblyName.CheckIfNullOrWhiteSpace();
 		}
 
 		protected void ShowLocalizedError(string resourceName, params string[] formatArgs)

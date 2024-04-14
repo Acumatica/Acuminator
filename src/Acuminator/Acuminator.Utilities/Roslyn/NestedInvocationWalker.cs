@@ -81,9 +81,7 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="bypassMethod">(Optional) An optional delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. </param>
 		protected NestedInvocationWalker(PXContext pxContext, CancellationToken cancellationToken, Func<IMethodSymbol, bool>? extraBypassCheck = null)
 		{
-			pxContext.ThrowOnNull(nameof (pxContext));
-
-			PxContext = pxContext;
+			PxContext = pxContext.CheckIfNull();
             CancellationToken = cancellationToken;
 			_extraBypassCheck = extraBypassCheck;
 
@@ -92,17 +90,16 @@ namespace Acuminator.Utilities.Roslyn
 		}
 
 		/// <summary>
-		/// Gets types to bypass. The alker won't go into their type members.
+		/// Gets types to bypass. The walker won't go into their type members.
 		/// </summary>
 		/// <returns>
 		/// The types to bypass.
 		/// </returns>
 		/// <remarks>
-		/// some core types from PX.Data namespace
+		/// Some core types from PX.Data namespace
 		/// </remarks>
 		protected virtual HashSet<INamedTypeSymbol> GetTypesToBypass() =>
-			new HashSet<INamedTypeSymbol>()
-			{
+			[
 				PxContext.PXGraph.Type!,
 				PxContext.PXView.Type!,
 				PxContext.PXCache.Type!,
@@ -111,7 +108,7 @@ namespace Acuminator.Utilities.Roslyn
 				PxContext.PXSelectBaseGeneric.Type!,
 				PxContext.PXAdapterType,
 				PxContext.PXDatabase.Type!
-			};
+			];
 
 		protected void ThrowIfCancellationRequested() => CancellationToken.ThrowIfCancellationRequested();
 

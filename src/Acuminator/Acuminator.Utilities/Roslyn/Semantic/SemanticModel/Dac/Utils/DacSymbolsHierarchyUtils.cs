@@ -187,7 +187,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public static IEnumerable<ITypeSymbol> GetDacExtensionWithBaseExtensions(this ITypeSymbol dacExtension, PXContext pxContext,
 																				 SortDirection sortDirection, bool includeDac)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
 			if (dacExtension == null || !dacExtension.IsDacExtension(pxContext))
 				return [];

@@ -36,9 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public AttributeNodeViewModel(TreeNodeViewModel nodeVM, AttributeData attribute, bool isExpanded = false) :
 								 base(nodeVM?.Tree, nodeVM, isExpanded)
 		{
-			attribute.ThrowOnNull(nameof(attribute));
-
-			Attribute = attribute;
+			Attribute = attribute.CheckIfNull();
 			int lastDotIndex = Attribute.AttributeClass.Name.LastIndexOf('.');
 			string attributeName = lastDotIndex >= 0 && lastDotIndex < Attribute.AttributeClass.Name.Length - 1
 				? Attribute.AttributeClass.Name.Substring(lastDotIndex + 1)

@@ -27,8 +27,7 @@ namespace Acuminator.Vsix
 
 		public CategoryFromResourcesAttribute(string resourceKey, string nonLocalizedCategoryName) : base(nonLocalizedCategoryName) 
 		{			
-			resourceKey.ThrowOnNullOrWhiteSpace(nameof(resourceKey));
-			ResourceKey = resourceKey;
+			ResourceKey = resourceKey.CheckIfNullOrWhiteSpace();
 		}	
 	}
 }

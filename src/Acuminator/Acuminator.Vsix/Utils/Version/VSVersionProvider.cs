@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.Utilities
 	{
 		public static async Task<VSVersion> GetVersionAsync(IAsyncServiceProvider serviceProvider)
 		{
-			serviceProvider.ThrowOnNull(nameof(serviceProvider));
+			serviceProvider.ThrowOnNull();
 
 			if (!ThreadHelper.CheckAccess())
 			{

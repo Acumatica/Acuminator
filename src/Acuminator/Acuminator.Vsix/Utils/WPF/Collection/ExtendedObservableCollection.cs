@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <param name="item">The item.</param>
 		public ExtendedObservableCollection(T item) : base()
 		{
-			item.ThrowOnNull(nameof(item));
+			item.ThrowOnNull();
 			Items.Add(item);
 		}
 
@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <exception cref="System.ArgumentNullException"></exception>
 		public void AddRange(IEnumerable<T> range)
 		{
-			range.ThrowOnNull(nameof(range));
+			range.ThrowOnNull();
 			CheckReentrancy();
 
 			foreach (T item in range)
@@ -69,7 +69,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <exception cref="System.ArgumentOutOfRangeException"></exception>
 		public void InsertRange(int index, IEnumerable<T> range)
 		{
-			range.ThrowOnNull(nameof(range));
+			range.ThrowOnNull();
 
 			if (index < 0 || index >= Count)
 				throw new ArgumentOutOfRangeException(nameof(index));
@@ -95,7 +95,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <exception cref="System.ArgumentNullException"></exception>
 		public void RemoveRange(IEnumerable<T> range)
 		{
-			range.ThrowOnNull(nameof(range));
+			range.ThrowOnNull();
 			CheckReentrancy();
 
 			foreach (T item in range)

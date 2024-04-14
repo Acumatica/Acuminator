@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.Settings.OutOfProcess
 
 		public void WriteCodeAnalysisSettings(CodeAnalysisSettings codeAnalysisSettings)
 		{
-			codeAnalysisSettings.ThrowOnNull(nameof(codeAnalysisSettings));
+			codeAnalysisSettings.ThrowOnNull();
 
 			if (_isDisposed)
 				throw new ObjectDisposedException(objectName: nameof(CodeAnalysisSettingsBinaryWriter));

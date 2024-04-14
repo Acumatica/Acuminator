@@ -68,7 +68,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 																		ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributesSet,
 																		IReadOnlyCollection<DataTypeAttributeInfo>? preparedAttributesMetadata)
 		{
-			attributeApplication.ThrowOnNull(nameof(attributeApplication));
+			attributeApplication.ThrowOnNull();
 
 			if (!attributeApplication.AttributeClass.IsAcumaticaAttribute(Context))
 				return DbBoundnessType.NotDefined;

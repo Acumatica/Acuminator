@@ -44,10 +44,9 @@ namespace Acuminator.Utilities.Roslyn
 			DelegateNames.NewJoin
 		);
 
-
 		public static bool IsBqlModifyingInstanceMethod(IMethodSymbol methodSymbol, PXContext context)
 		{
-			methodSymbol.ThrowOnNull(nameof(methodSymbol));
+			methodSymbol.ThrowOnNull();
 
 			if (methodSymbol.IsStatic)
 			{

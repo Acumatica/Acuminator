@@ -1,11 +1,15 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using ViewSymbolWithTypeCollection = System.Collections.Generic.IEnumerable<(Microsoft.CodeAnalysis.ISymbol ViewSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ViewType)>;
 
@@ -39,10 +43,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsProcessingView(this ITypeSymbol view, PXContext pxContext)
 		{
-			view.ThrowOnNull(nameof(view));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
-			return view.InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type);
+			return view.CheckIfNull().InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type!);
 		}
 
 		/// <summary>
@@ -56,9 +59,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public static OverridableItemsCollection<DataViewInfo> GetViewsWithSymbolsFromPXGraph(this ITypeSymbol graph, PXContext pxContext,
 																							  bool includeViewsFromInheritanceChain = true)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
-			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type!) != true)
 				return new OverridableItemsCollection<DataViewInfo>();
 
 			var viewsByName = new OverridableItemsCollection<DataViewInfo>(capacity: EstimatedNumberOfViewsInGraph);
@@ -77,9 +80,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public static OverridableItemsCollection<DataViewInfo> GetViewsFromGraphOrGraphExtensionAndBaseGraph(this ITypeSymbol graphOrExtension,
 																											 PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-			graphOrExtension.ThrowOnNull(nameof(graphOrExtension));
-
 			bool isGraph = graphOrExtension.IsPXGraph(pxContext);
 
 			if (!isGraph && !graphOrExtension.IsPXGraphExtension(pxContext))
@@ -98,8 +98,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <returns></returns>
 		public static OverridableItemsCollection<DataViewInfo> GetViewsFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext)
 		{
-			graphExtension.ThrowOnNull(nameof(graphExtension));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			graphExtension.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			return GetViewInfoFromGraphExtension<DataViewInfo>(graphExtension, pxContext, AddViewsFromGraph, AddViewsFromGraphExtension);
 
@@ -138,10 +138,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			foreach (ISymbol member in graphOrExtension.GetMembers())
 			{
-				if (!(member is IFieldSymbol field) || field.DeclaredAccessibility != Accessibility.Public)
+				if (member is not IFieldSymbol field || field.DeclaredAccessibility != Accessibility.Public)
 					continue;
 
-				if (!(field.Type is INamedTypeSymbol fieldType) || !fieldType.InheritsFrom(pxContext.PXSelectBase.Type))
+				if (field.Type is not INamedTypeSymbol fieldType || !fieldType.InheritsFrom(pxContext.PXSelectBase.Type!))
 					continue;
 
 				yield return (field, fieldType);
@@ -164,9 +164,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																						   PXContext pxContext, bool inheritance = true, 
 																						   CancellationToken cancellation = default)
 		{
-			graph.ThrowOnNull(nameof(graph));
-			viewsByName.ThrowOnNull(nameof(viewsByName));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			viewsByName.ThrowOnNull();
 
 			if (!graph.IsPXGraph(pxContext))
 				return new OverridableItemsCollection<DataViewDelegateInfo>();
@@ -192,9 +190,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																							IDictionary<string, DataViewInfo> viewsByName,
 																							PXContext pxContext, CancellationToken cancellation)
 		{
-			graphExtension.ThrowOnNull(nameof(graphExtension));
-			viewsByName.ThrowOnNull(nameof(viewsByName));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			graphExtension.ThrowOnNull();
+			viewsByName.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			return GetViewInfoFromGraphExtension<DataViewDelegateInfo>(graphExtension, pxContext, AddDelegatesFromGraph, AddDelegatesFromGraphExtension);
 
@@ -258,7 +256,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																						AddViewInfoWithOrderDelegate<TInfo> addGraphExtensionViewInfo)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
+			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
 				return new OverridableItemsCollection<TInfo>();
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);

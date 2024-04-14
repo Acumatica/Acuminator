@@ -25,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor)
 			: base(pxContext, context.CancellationToken)
 		{
-			diagnosticDescriptor.ThrowOnNull(nameof(diagnosticDescriptor));
+			diagnosticDescriptor.ThrowOnNull();
 
 			_context = context;
 			_diagnosticDescriptor = diagnosticDescriptor;

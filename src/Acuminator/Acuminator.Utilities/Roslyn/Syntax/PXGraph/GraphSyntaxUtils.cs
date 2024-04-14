@@ -19,9 +19,9 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 		public static GraphInstantiationType GetGraphInstantiationType(this SyntaxNode node, SemanticModel semanticModel, 
 			PXContext pxContext)
 		{
-			node.ThrowOnNull(nameof (node));
-			semanticModel.ThrowOnNull(nameof (semanticModel));
-			pxContext.ThrowOnNull(nameof (pxContext));
+			node.ThrowOnNull();
+			semanticModel.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			// new PXGraph()
 			if (node is ObjectCreationExpressionSyntax objCreationSyntax && objCreationSyntax.Type != null
@@ -55,14 +55,14 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 																						this SyntaxNode root, SemanticModel semanticModel,
 																						PXContext context, CancellationToken cancellationToken = default)
 		{
-			root.ThrowOnNull(nameof(root));
-			context.ThrowOnNull(nameof(context));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
+			root.ThrowOnNull();
+			context.ThrowOnNull();
+			semanticModel.ThrowOnNull();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			return context.IsPlatformReferenced 
 				? GetDeclaredGraphsAndExtensionsImpl()
-				: Enumerable.Empty<(ITypeSymbol, SyntaxNode)>();
+				: [];
 
 
 			IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensionsImpl()
@@ -84,8 +84,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 		public static ITypeSymbol GetTypeSymbolFromClassDeclaration(this ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel,
 																	CancellationToken cancellationToken = default)
 		{
-			classDeclaration.ThrowOnNull(nameof(classDeclaration));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
+			classDeclaration.ThrowOnNull();
+			semanticModel.ThrowOnNull();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var typeSymbol = semanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken) as ITypeSymbol;

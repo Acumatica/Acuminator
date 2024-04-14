@@ -48,11 +48,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DocumentModel(IWpfTextView wpfTextView, Document document)
 		{
-			wpfTextView.ThrowOnNull(nameof(wpfTextView));
-			document.ThrowOnNull(nameof(document));
-			
-			WpfTextView = wpfTextView;
-			Document = document;
+			WpfTextView = wpfTextView.CheckIfNull();
+			Document = document.CheckIfNull();
 			CodeMapSemanticModels = _codeMapSemanticModels.AsReadOnly();
 		}
 

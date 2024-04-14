@@ -26,10 +26,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 		public static SaveOperationKind GetSaveOperationKind(IMethodSymbol symbol, InvocationExpressionSyntax syntaxNode, 
 			SemanticModel semanticModel, PXContext pxContext)
 		{
-			symbol.ThrowOnNull(nameof (symbol));
-			syntaxNode.ThrowOnNull(nameof (syntaxNode));
-			semanticModel.ThrowOnNull(nameof (semanticModel));
-			pxContext.ThrowOnNull(nameof (pxContext));
+			symbol.ThrowOnNull();
+			syntaxNode.ThrowOnNull();
+			semanticModel.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			var containingType = symbol.ContainingType?.OriginalDefinition;
 
@@ -64,8 +64,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 		public static PXDBOperationKind GetPXDatabaseSaveOperationKind(IMethodSymbol symbol, PXContext pxContext)
 		{
-			symbol.ThrowOnNull(nameof(symbol));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			symbol.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			var containingType = symbol.ContainingType?.OriginalDefinition;
 
@@ -92,11 +92,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 			public SavePressWalker(SemanticModel semanticModel, PXContext pxContext)
 			{
-				semanticModel.ThrowOnNull(nameof (semanticModel));
-				pxContext.ThrowOnNull(nameof (pxContext));
-
-				_semanticModel = semanticModel;
-				_pxContext = pxContext;
+				_semanticModel = semanticModel.CheckIfNull();
+				_pxContext	   = pxContext.CheckIfNull();
 			}
 
 			public bool Found { get; private set; }

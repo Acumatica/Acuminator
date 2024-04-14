@@ -32,12 +32,8 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsEmpty(this string source)
-		{
-			source.ThrowOnNull(nameof(source));
-
-			return source.Length == 0;
-		}
+		public static bool IsEmpty(this string source) =>
+			source.CheckIfNull().Length == 0;
 
 		/// <summary>
 		/// A string extension method that converts the string to a pascal case (first letter to upper case).

@@ -30,9 +30,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 																									bool selectSpan = true,
 																									CancellationToken cToken = default)
 		{
-			symbol.ThrowOnNull(nameof(symbol));
-
-			var syntaxReferences = symbol.DeclaringSyntaxReferences;
+			var syntaxReferences = symbol.CheckIfNull().DeclaringSyntaxReferences;
 
 			if (syntaxReferences.Length != 1)
 				return Task.FromResult(default((IWpfTextView, CaretPosition)));
@@ -44,8 +42,8 @@ namespace Acuminator.Vsix.Utilities.Navigation
 																										  SyntaxReference reference, bool selectSpan = true,
 																										  CancellationToken cToken = default)
 		{
-			symbol.ThrowOnNull(nameof(symbol));
-			reference.ThrowOnNull(nameof(reference));
+			symbol.ThrowOnNull();
+			reference.ThrowOnNull();
 			var filePath = reference.SyntaxTree?.FilePath;
 
 			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -78,7 +76,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 																									 Solution solution, string filePath,
 																									 int lineNumber, int character)
 		{
-			serviceProvider.ThrowOnNull(nameof(serviceProvider));
+			serviceProvider.ThrowOnNull();
 
 			if (lineNumber < 0)
 			{
@@ -129,7 +127,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 																					TextSpan? spanToNavigate = null,
 																					bool selectSpan = true)
 		{
-			serviceProvider.ThrowOnNull(nameof(serviceProvider));
+			serviceProvider.ThrowOnNull();
 
 			IWpfTextView wpfTextView = await OpenCodeWindowAsync(serviceProvider, solution, filePath);
 
@@ -177,8 +175,8 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 		public static async Task<IWpfTextView> OpenCodeWindowAsync(this Shell.IAsyncServiceProvider serviceProvider, Solution solution, string filePath)
 		{
-			serviceProvider.ThrowOnNull(nameof(serviceProvider));
-			solution.ThrowOnNull(nameof(solution));
+			serviceProvider.ThrowOnNull();
+			solution.ThrowOnNull();
 
 			if (!Shell.ThreadHelper.CheckAccess() || !File.Exists(filePath))
 				return null;
@@ -223,7 +221,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 																									this Shell.IAsyncServiceProvider serviceProvider, 
 																									string filePath)
 		{
-			serviceProvider.ThrowOnNull(nameof(serviceProvider));
+			serviceProvider.ThrowOnNull();
 
 			if (!File.Exists(filePath) )
 				return default;

@@ -20,8 +20,7 @@ namespace Acuminator.Vsix
 
 		public DescriptionFromResourcesAttribute(string resourceKey)
 		{
-			resourceKey.ThrowOnNullOrWhiteSpace(nameof(resourceKey));
-			ResourceKey = resourceKey;
+			ResourceKey = resourceKey.CheckIfNullOrWhiteSpace();
 		}	
 	}
 }

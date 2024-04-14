@@ -28,9 +28,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																								SemanticModel semanticModel,
 																								CancellationToken cancellationToken = default)
 		{
-			treeRoot.ThrowOnNull(nameof(treeRoot));
-			context.ThrowOnNull(nameof(context));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
+			treeRoot.ThrowOnNull();
+			context.ThrowOnNull();
+			semanticModel.ThrowOnNull();
 
 			cancellationToken.ThrowIfCancellationRequested();
 			return GetDeclaredCodeMapRoots(treeRoot, context, semanticModel, cancellationToken);

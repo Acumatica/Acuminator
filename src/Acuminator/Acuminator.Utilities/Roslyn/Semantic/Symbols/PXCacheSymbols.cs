@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		internal PXCacheSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXCache)
 		{
-			Type.ThrowOnNull(nameof(Type));
+			Type.ThrowOnNull();
 
 			GenericType = Compilation.GetTypeByMetadataName(TypeFullNames.PXCache1);
 

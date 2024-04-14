@@ -45,7 +45,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		protected static void InitializeSharedStaticData(object roslynDTO)
 		{
-			roslynDTO.ThrowOnNull(nameof(roslynDTO));
+			roslynDTO.ThrowOnNull();
 
 			if (Interlocked.CompareExchange(ref _areStaticMembersInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{

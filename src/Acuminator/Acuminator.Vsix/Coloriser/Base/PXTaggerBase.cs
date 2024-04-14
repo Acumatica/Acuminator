@@ -64,11 +64,8 @@ namespace Acuminator.Vsix.Coloriser
 
         protected PXTaggerBase(ITextBuffer buffer, PXTaggerProviderBase provider, bool subscribeToSettingsChanges, bool useCacheChecking)
         {
-            buffer.ThrowOnNull(nameof(buffer));
-            provider.ThrowOnNull(nameof(provider));
-
-            Buffer = buffer;
-            ProviderBase = provider;
+            Buffer = buffer.CheckIfNull();
+            ProviderBase = provider.CheckIfNull();
             SubscribedToSettingsChanges = subscribeToSettingsChanges;
             CacheCheckingEnabled = useCacheChecking;
 

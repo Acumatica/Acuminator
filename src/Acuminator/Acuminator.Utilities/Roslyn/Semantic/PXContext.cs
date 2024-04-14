@@ -131,7 +131,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public PXContext(Compilation compilation, CodeAnalysisSettings? codeAnalysisSettings)
 		{
-			compilation.ThrowOnNull(nameof(compilation));
+			compilation.ThrowOnNull();
 
 			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.Default;
 			Compilation = compilation;

@@ -127,7 +127,7 @@ namespace Acuminator.Utilities.Common
 
 		public static bool SequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, T, bool> comparer)
 		{
-			comparer.ThrowOnNull(nameof(comparer));
+			comparer.ThrowOnNull();
 
 			if (first == second)
 			{
