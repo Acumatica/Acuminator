@@ -137,64 +137,65 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 		private ITypeSymbol? ApplyRule(PrimaryDacRuleBase rule)
 		{
 			var (dacCandidates, viewCandidates) = GetDacAndViewCandidates(rule);
+			List<ITypeSymbol>? dacCandidatesList = dacCandidates?.Where(dac => dac != null).Distinct().ToList()!;
 
-			if (dacCandidates.IsNullOrEmpty())
+			if (dacCandidatesList?.Count is null or 0)
 				return null;
-
-			List<ITypeSymbol> dacCandidatesList = dacCandidates.Where(dac => dac != null).Distinct().ToList()!;
+			
 			ITypeSymbol? primaryDac = null;
 
 			if (rule.IsAbsolute && dacCandidatesList.Count == 1)
 				primaryDac = dacCandidatesList[0];
 
-			viewCandidates = viewCandidates ?? dacCandidatesList.SelectMany(dac => _dacWithViewsLookup[dac]);
+			viewCandidates ??= dacCandidatesList.SelectMany(dac => _dacWithViewsLookup[dac]);
 			ScoreRuleForViewCandidates(viewCandidates, rule);
 			return primaryDac;
 		}
 
-		private (IEnumerable<ITypeSymbol?> DacCandidates, IEnumerable<DataViewInfo> ViewCandidates) GetDacAndViewCandidates(PrimaryDacRuleBase rule)
+		private (IEnumerable<ITypeSymbol?>? DacCandidates, IEnumerable<DataViewInfo>? ViewCandidates) GetDacAndViewCandidates(PrimaryDacRuleBase rule)
 		{
 			switch (rule)
 			{
 				case GraphRuleBase graphRule:
-					return (DacCandidates: graphRule.GetCandidatesFromGraphRule(this), ViewCandidates: []);
+					return (DacCandidates: graphRule.GetCandidatesFromGraphRule(this), ViewCandidates: null);
 
 				case ViewRuleBase viewRule:
 				{
 					var viewCandidates = GetViewCandidatesFromViewRule(viewRule);
-					var dacCandidates = viewCandidates.Select(view => view.DAC);
+					var dacCandidates  = viewCandidates?.Select(view => view.DAC);
 
 					return (dacCandidates, viewCandidates);
 				}
 				case DacRuleBase dacRule:
 				{
 					var dacWithViewCandidates = GetDacCandidatesWithViewsFromDacRule(dacRule);
-					var dacCandidates = dacWithViewCandidates.Select(dacWithViews => dacWithViews.Key);
-					var viewCandidates = dacWithViewCandidates.SelectMany(dacWithViews => dacWithViews);
+					var dacCandidates = dacWithViewCandidates?.Select(dacWithViews => dacWithViews.Key);
+					var viewCandidates = dacWithViewCandidates?.SelectMany(dacWithViews => dacWithViews);
 
 					return (dacCandidates, viewCandidates);
 				}
 				case ActionRuleBase actionRule:
-					return (DacCandidates: GetCandidatesFromActionRule(actionRule), ViewCandidates: []);
+					return (DacCandidates: GetCandidatesFromActionRule(actionRule), ViewCandidates: null);
 
 				default:
-					return (DacCandidates: [], ViewCandidates: []);
+					return (DacCandidates: null, ViewCandidates: null);
 			}
 		}
 
-		private List<DataViewInfo> GetViewCandidatesFromViewRule(ViewRuleBase viewRule) =>
+		private List<DataViewInfo>? GetViewCandidatesFromViewRule(ViewRuleBase viewRule) =>
 			GraphViews.Length > 0
 				? GraphViews.Where(view => viewRule.SatisfyRule(this, view)).ToList()
-				: [];
+				: null;
 
-		private List<IGrouping<ITypeSymbol, DataViewInfo>> GetDacCandidatesWithViewsFromDacRule(DacRuleBase dacRule) =>
-			_dacWithViewsLookup.Where(dacWithViews => dacRule.SatisfyRule(this, dacWithViews.Key))
-							   .ToList();
+		private List<IGrouping<ITypeSymbol, DataViewInfo>>? GetDacCandidatesWithViewsFromDacRule(DacRuleBase dacRule) =>
+			_dacWithViewsLookup.Count > 0
+				? _dacWithViewsLookup.Where(dacWithViews => dacRule.SatisfyRule(this, dacWithViews.Key)).ToList()
+				: null;
 
-		private IEnumerable<ITypeSymbol> GetCandidatesFromActionRule(ActionRuleBase actionRule)
+		private IEnumerable<ITypeSymbol>? GetCandidatesFromActionRule(ActionRuleBase actionRule)
 		{
 			if (GraphActions.Length == 0)
-				return [];
+				return null;
 
 			var dacCandidates = from action in GraphActions
 								where actionRule.SatisfyRule(this, action.Symbol, action.Type)
