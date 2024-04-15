@@ -51,12 +51,16 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
 			public const string CompanyID 			  = "CompanyID";
 			public const string CompanyMask 		  = "CompanyMask";
+			public const string Notes 				  = "Notes";
+			public const string Files 				  = "Files";
 
 			public static ImmutableArray<string> All { get; } = new[]
 			{
 				DeletedDatabaseRecord,
 				CompanyID,
-				CompanyMask
+				CompanyMask,
+				Notes,
+				Files
 			}
 			.ToImmutableArray();
 		}
