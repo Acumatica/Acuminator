@@ -110,11 +110,8 @@ namespace Acuminator.Utilities.Common
 		public static void ThrowOnNullOrWhiteSpace([NotNull] this string? str, [CallerArgumentExpression(nameof(str))] string? parameter = null, 
 												   string? message = null)
 		{
-			#pragma warning disable CS8777 // Parameter must have a non-null value when exiting. 
-			// string.IsNullOrWhiteSpace is just not annotated so its safe to return here
-			if (!string.IsNullOrWhiteSpace(str))
+			if (!str.IsNullOrWhiteSpace())
 				return;
-			#pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
 			throw str == null
 				? NewArgumentNullException(parameter, message)
