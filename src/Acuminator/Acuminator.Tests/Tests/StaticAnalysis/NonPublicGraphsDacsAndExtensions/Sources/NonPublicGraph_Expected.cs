@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions.Sources
 {
-	public class SOOrderExt1 : PXGraphExtension<SOOrderEntry>
+	public class SOOrderGraph : PXGraph<SOOrderGraph>
 	{
 		public virtual void _(Events.RowUpdating<SOOrder> e)
 		{
@@ -15,7 +15,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 		}
 	}
 
-	public class SOOrderExt2 : PXGraphExtension<SOOrderEntry>
+	public class SOOrderGraph2 : PXGraph<SOOrderGraph2>
 	{
 		public virtual void _(Events.RowUpdated<SOOrder> e)
 		{
@@ -27,7 +27,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 	{
 		public class PurchaseEngine
 		{
-			public sealed class SOOrderEntryExtPurchase : PXGraphExtension<SOOrderEntry>
+			public sealed class SOOrderPurchaseEntry : PXGraph<SOOrderPurchaseEntry>
 			{
 				public virtual void _(Events.RowSelected<SOOrder> e)
 				{
@@ -35,7 +35,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 				}
 			}
 
-			public sealed class SOOrderEntryExtPurchase2 : PXGraphExtension<SOOrderEntry>
+			public sealed class SOOrderPurchaseEntry2 : PXGraph<SOOrderPurchaseEntry2>
 			{
 				public virtual void _(Events.RowSelected<SOOrder> e)
 				{
@@ -45,13 +45,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 		}
 	}
 
-
-	public class SOOrderEntry : PXGraph<SOOrderEntry>
-	{
-
-	}
-
-	[PXHidden]
+	[PXCacheName("SO Order")]
 	public class SOOrder : IBqlTable
 	{
 

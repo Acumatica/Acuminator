@@ -504,17 +504,17 @@
   <data name="PX1020Fix" xml:space="preserve">
     <value>Make the string length sufficient for the auto-numbering</value>
   </data>
-  <data name="PX1022DacFix" xml:space="preserve">
+  <data name="PX1022DacExtensionFix" xml:space="preserve">
     <value>Make the DAC extension public</value>
   </data>
-  <data name="PX1022DacTitle" xml:space="preserve">
+  <data name="PX1022DacExtensionTitle" xml:space="preserve">
     <value>Non-public DAC extensions are not supported</value>
   </data>
   <data name="PX1022GraphFix" xml:space="preserve">
-    <value>Make the graph extension public</value>
+    <value>Make the graph public</value>
   </data>
   <data name="PX1022GraphTitle" xml:space="preserve">
-    <value>Non-public graph extensions are not supported</value>
+    <value>Non-public graphs are not supported</value>
   </data>
   <data name="PX1016DacExtensionTitle" xml:space="preserve">
     <value>A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active.</value>
@@ -689,5 +689,17 @@ public virtual int? SomeDacField{ get; set; }</value>
   </data>
   <data name="PX1027ForbiddenCompanyPrefixInDacFieldTitle" xml:space="preserve">
     <value>The name of a DAC field cannot start with the "Company" prefix because company masks work incorrectly with such fields.</value>
+  </data>
+  <data name="PX1022DacFix" xml:space="preserve">
+    <value>Make DAC public</value>
+  </data>
+  <data name="PX1022DacTitle" xml:space="preserve">
+    <value>Non-public DACs are not supported</value>
+  </data>
+  <data name="PX1022GraphExtensionTitle" xml:space="preserve">
+    <value>Non-public graph extensions are not supported</value>
+  </data>
+  <data name="PX1022GraphExtensionFix" xml:space="preserve">
+    <value>Make the graph extension public</value>
   </data>
 </root>

@@ -42,8 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			if (mainDacType == null || context.CancellationToken.IsCancellationRequested)
 				return;
 
-			string format = nameof(Resources.PX1012Fix).GetLocalized().ToString();
-			string codeActionName = string.Format(format, mainDacName);
+			string codeActionName = nameof(Resources.PX1012Fix).GetLocalized(mainDacName).ToString();
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
 								  cToken => ChangePXActionDeclarationAsync(context.Document, context.Span, cToken, mainDacType),

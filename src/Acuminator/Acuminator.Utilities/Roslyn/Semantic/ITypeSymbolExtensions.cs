@@ -585,7 +585,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 
 		/// <summary>
-		/// An ITypeSymbol extension method that gets a simplified name for type if it is a primitive type.
+		/// Gets a simplified name for type if it is a primitive type.
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
 		/// <returns/>
@@ -614,10 +614,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				case SpecialType.System_String:
 				case SpecialType.System_Array:
 				case SpecialType.System_Nullable_T:
-					return type.ToString();				
+					return type.ToString();
 				default:
 					return type.Name;
 			}
 		}
+
+		/// <summary>
+		/// Check if <paramref name="typeSymbol"/> and all its containing types are <see langword="public"/>.
+		/// </summary>
+		/// <param name="typeSymbol">The typeSymbol to act on.</param>
+		/// <returns>
+		/// True if <paramref name="typeSymbol"/> is public with all its containing types, false if not.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsPublicWithAllContainingTypes(this ITypeSymbol typeSymbol) =>
+			typeSymbol.CheckIfNull(nameof(typeSymbol))
+					  .GetContainingTypesAndThis()
+					  .All(type => type.DeclaredAccessibility == Accessibility.Public);
 	}
 }

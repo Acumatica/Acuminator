@@ -45,8 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 			if (!isViewOrAction)
 			{		
-				string makeReadOnlyCodeActionFormat = nameof(Resources.PX1062FixMakeReadOnlyFormat).GetLocalized().ToString();
-				string makeReadOnlyCodeActionName = string.Format(makeReadOnlyCodeActionFormat, codeFixFormatArg);
+				string makeReadOnlyCodeActionName = nameof(Resources.PX1062FixMakeReadOnlyFormat).GetLocalized(codeFixFormatArg).ToString();
 
 				bool isProperty = diagnostic.IsFlagSet(StaticFieldOrPropertyInGraphDiagnosticProperties.IsProperty);
 				Func<CancellationToken, Task<Document>> createChangedDocumentFunc = 
@@ -61,9 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 				context.RegisterCodeFix(makeReadOnlyCodeAction, diagnostic);
 			}
 
-			string makeNonStaticCodeActionFormat = nameof(Resources.PX1062FixMakeNonStaticFormat).GetLocalized().ToString();
-			string makeNonStaticCodeActionName = string.Format(makeNonStaticCodeActionFormat, codeFixFormatArg);
-
+			string makeNonStaticCodeActionName = nameof(Resources.PX1062FixMakeNonStaticFormat).GetLocalized(codeFixFormatArg).ToString();
 			CodeAction makeNonStaticCodeAction =
 					CodeAction.Create(makeNonStaticCodeActionName, 
 									  cToken => ChangeModifiersAsync(context.Document, context.Span,

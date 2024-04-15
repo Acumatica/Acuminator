@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions.Sources
 {
-	internal class SOOrderExt1 : PXGraphExtension<SOOrderEntry>
+	public class SOOrderExt1 : PXGraphExtension<SOOrderEntry>
 	{
 		public virtual void _(Events.RowUpdating<SOOrder> e)
 		{
@@ -15,7 +15,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 		}
 	}
 
-	class SOOrderExt2 : PXGraphExtension<SOOrderEntry>
+	public class SOOrderExt2 : PXGraphExtension<SOOrderEntry>
 	{
 		public virtual void _(Events.RowUpdated<SOOrder> e)
 		{
@@ -23,9 +23,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 		}
 	}
 
-	static class PurchaseGlobalState
+	public static class PurchaseGlobalState
 	{
-		private class PurchaseEngine
+		public class PurchaseEngine
 		{
 			public sealed class SOOrderEntryExtPurchase : PXGraphExtension<SOOrderEntry>
 			{
@@ -35,7 +35,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 				}
 			}
 
-			protected internal sealed class SOOrderEntryExtPurchase2 : PXGraphExtension<SOOrderEntry>
+			public sealed class SOOrderEntryExtPurchase2 : PXGraphExtension<SOOrderEntry>
 			{
 				public virtual void _(Events.RowSelected<SOOrder> e)
 				{

@@ -259,7 +259,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NonPublicDacExtension.
+        ///   Looks up a localized string similar to NonPublicDac.
         /// </summary>
         public static string PX1022Dac {
             get {
@@ -268,11 +268,29 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NonPublicGraphExtension.
+        ///   Looks up a localized string similar to NonPublicDacExtension.
+        /// </summary>
+        public static string PX1022DacExtension {
+            get {
+                return ResourceManager.GetString("PX1022DacExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NonPublicGraph.
         /// </summary>
         public static string PX1022Graph {
             get {
                 return ResourceManager.GetString("PX1022Graph", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NonPublicGraphExtension.
+        /// </summary>
+        public static string PX1022GraphExtension {
+            get {
+                return ResourceManager.GetString("PX1022GraphExtension", resourceCulture);
             }
         }
         
