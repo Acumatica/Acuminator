@@ -34,7 +34,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ForbiddenFieldsInDac
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(45, 25, "notes"),
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(48, 17, "Notes"),
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(51, 25, "files"),
-				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(54, 17, "Files"));
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(54, 17, "Files"),
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(57, 25, "databaseRecordStatus"),
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(60, 15, "DatabaseRecordStatus"));
 
 		[Theory]
 		[EmbeddedFileData("DacFieldsWithCompanyPrefix.cs")]
