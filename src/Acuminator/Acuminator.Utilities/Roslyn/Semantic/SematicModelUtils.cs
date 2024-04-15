@@ -26,8 +26,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		public static DataFlowAnalysis? TryAnalyzeDataFlow(this SemanticModel semanticModel, SyntaxNode node)
 		{
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			node.ThrowOnNull(nameof(node));
+			semanticModel.ThrowOnNull();
+			node.ThrowOnNull();
 
 			DataFlowAnalysis? dataFlowAnalysis;
 
@@ -56,10 +56,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		public static ISymbol? GetSymbolOrFirstCandidate(this SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellation)
 		{
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			node.ThrowOnNull(nameof(node));
+			node.ThrowOnNull();
 
-			var symbolInfo = semanticModel.GetSymbolInfo(node, cancellation);
+			var symbolInfo = semanticModel.CheckIfNull().GetSymbolInfo(node, cancellation);
 			return symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
 		}
 
@@ -67,9 +66,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static async Task<(SemanticModel? SemanticModel, SyntaxNode? Root)> GetSemanticModelAndRootAsync(this Document document, 
 																												CancellationToken cancellation = default)
 		{
-			document.ThrowOnNull(nameof(document));
-
-			var semanticModelTask = document.GetSemanticModelAsync(cancellation);
+			var semanticModelTask = document.CheckIfNull().GetSemanticModelAsync(cancellation);
 			var syntaxRootTask = document.GetSyntaxRootAsync(cancellation);
 
 			await Task.WhenAll(semanticModelTask, syntaxRootTask).ConfigureAwait(false);

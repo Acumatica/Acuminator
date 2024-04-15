@@ -1,9 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProvider;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
@@ -13,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 	/// </summary>
 	public class FirstViewsInGraphRule : GraphRuleBase
 	{
-		public sealed override bool IsAbsolute => false;
+		public override sealed bool IsAbsolute => false;
 
 		/// <summary>
 		/// The number of first views to select from graph.
@@ -37,16 +40,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 			}
 		}
 
-		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
+		public override IEnumerable<ITypeSymbol?> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (dacFinder == null || dacFinder.GraphViews.Length == 0 || dacFinder.CancellationToken.IsCancellationRequested)
-			{
-				return Enumerable.Empty<ITypeSymbol>();
-			}
+			if (dacFinder.GraphViews.Length == 0)
+				return [];
 
 			return dacFinder.GraphViews.Take(NumberOfViews)
-									   .Select(view => view.Type.GetDacFromView(dacFinder.PxContext))
-									   .Where(dac => dac != null);
+									   .Select(viewInfo => viewInfo.DAC);
 		}
 	}
 }

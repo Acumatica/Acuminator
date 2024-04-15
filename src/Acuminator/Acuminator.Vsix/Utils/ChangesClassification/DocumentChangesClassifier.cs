@@ -33,9 +33,9 @@ namespace Acuminator.Vsix.ChangesClassification
 		public async Task<ChangeInfluenceScope> GetChangesScopeAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument, 
 																  CancellationToken cancellationToken = default)
 		{
-			oldDocument.ThrowOnNull(nameof(oldDocument));
-			newRoot.ThrowOnNull(nameof(newRoot));
-			newDocument.ThrowOnNull(nameof(newDocument));
+			oldDocument.ThrowOnNull();
+			newRoot.ThrowOnNull();
+			newDocument.ThrowOnNull();
 
 			IEnumerable<TextChange> textChanges = await newDocument.GetTextChangesAsync(oldDocument, cancellationToken)
 																   .ConfigureAwait(false);

@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.Settings
 
         public SettingChangedEventArgs(string settingName) 
         {
-            SettingName = settingName.CheckIfNullOrWhiteSpace(nameof(settingName));
+            SettingName = settingName.CheckIfNullOrWhiteSpace();
         }
     }
 }

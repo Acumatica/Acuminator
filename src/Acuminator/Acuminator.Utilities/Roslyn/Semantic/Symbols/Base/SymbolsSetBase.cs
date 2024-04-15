@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		private protected SymbolsSetBase(Compilation compilation)
 		{
-			Compilation = compilation.CheckIfNull(nameof(compilation));
+			Compilation = compilation.CheckIfNull();
 		}
 	}
 }

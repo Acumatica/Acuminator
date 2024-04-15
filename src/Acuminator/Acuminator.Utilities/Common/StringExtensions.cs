@@ -32,12 +32,8 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsEmpty(this string source)
-		{
-			source.ThrowOnNull(nameof(source));
-
-			return source.Length == 0;
-		}
+		public static bool IsEmpty(this string source) =>
+			source.CheckIfNull().Length == 0;
 
 		/// <summary>
 		/// A string extension method that converts the string to a pascal case (first letter to upper case).
@@ -83,12 +79,27 @@ namespace Acuminator.Utilities.Common
 		public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
 
 		/// <summary>
+		/// Checks if <paramref name="source"/> string contains the given <paramref name="stringToSearch"/>.
+		/// </summary>
+		/// <param name="source">The string to act on.</param>
+		/// <param name="stringToSearch">The string to search.</param>
+		/// <param name="stringComparison">The string comparison type.</param>
+		/// <returns>
+		/// True if <paramref name="source"/> string contains the given <paramref name="stringToSearch"/>, false if not.
+		/// </returns>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool Contains(this string source, string stringToSearch, StringComparison stringComparison) =>
+			source.CheckIfNull()
+				  .IndexOf(stringToSearch, stringComparison) >= 0;
+
+		/// <summary>
 		/// Compute the distance between two strings.
 		/// </summary>
 		public static int LevenshteinDistance(string s, string t)
 		{
-			int n = s.CheckIfNull(nameof(s)).Length;
-			int m = t.CheckIfNull(nameof(t)).Length;
+			int n = s.CheckIfNull().Length;
+			int m = t.CheckIfNull().Length;
 			int[,] d = new int[n + 1, m + 1];
 
 			// Step 1

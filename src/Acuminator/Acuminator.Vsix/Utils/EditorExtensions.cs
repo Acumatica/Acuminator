@@ -162,7 +162,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <param name="textBuffer">The textBuffer to act on.</param>
 		public static string GetFilePath(this ITextBuffer textBuffer)
 		{
-			textBuffer.ThrowOnNull(nameof(textBuffer));
+			textBuffer.ThrowOnNull();
 			Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 					
 			textBuffer.Properties.TryGetPropertySafe(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer),
@@ -320,7 +320,7 @@ namespace Acuminator.Vsix.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SnapshotSpan GetOverarchingSpan(this NormalizedSnapshotSpanCollection collection)
         {
-            collection.ThrowOnNull(nameof(collection));
+            collection.ThrowOnNull();
 
             SnapshotSpan start = collection[0];
             SnapshotSpan end = collection[collection.Count - 1];
@@ -337,7 +337,7 @@ namespace Acuminator.Vsix.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ITextBuffer CreateTextBuffer(this ITextBufferFactoryService textBufferFactoryService, params string[] lines)
         {
-            textBufferFactoryService.ThrowOnNull(nameof(textBufferFactoryService));
+            textBufferFactoryService.ThrowOnNull();
             return CreateTextBuffer(textBufferFactoryService, null, lines);
         }
 
@@ -347,7 +347,7 @@ namespace Acuminator.Vsix.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ITextBuffer CreateTextBuffer(this ITextBufferFactoryService textBufferFactoryService, IContentType contentType, params string[] lines)
         {
-            textBufferFactoryService.ThrowOnNull(nameof(textBufferFactoryService));
+            textBufferFactoryService.ThrowOnNull();
 
             var textBuffer = contentType != null
                 ? textBufferFactoryService.CreateTextBuffer(contentType)

@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </returns>
 		public static ITypeSymbol? GetGraphFromGraphExtension(this ITypeSymbol? graphExtension, PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
 			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
 				return null;
@@ -66,8 +66,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public static bool IsValidActionHandler(this IMethodSymbol method, PXContext pxContext)
 		{
-			method.ThrowOnNull(nameof(method));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			method.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			if (method.Parameters.Length == 0)
 				return method.ReturnsVoid;
@@ -80,8 +80,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public static bool IsValidViewDelegate(this IMethodSymbol method, PXContext pxContext)
 		{
-			method.ThrowOnNull(nameof(method));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			method.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			return method.ReturnType.Equals(pxContext.SystemTypes.IEnumerable) &&
 				   method.Parameters.All(p => p.RefKind != RefKind.Ref);
@@ -97,7 +97,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </returns>
 		public static ITypeSymbol? GetDeclaredPrimaryDacFromGraphOrGraphExtension(this ITypeSymbol? graphOrExtension, PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
 			if (graphOrExtension == null)
 				return null;
@@ -129,7 +129,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		internal static (MethodDeclarationSyntax Node, IMethodSymbol Symbol) GetGraphExtensionInitialization
 			(this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			typeSymbol.ThrowOnNull();
 
 			if (pxContext.PXGraphExtension.Initialize == null)
 				return default;

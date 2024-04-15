@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DacType? GetDacType(this ITypeSymbol type, PXContext pxContext)
 		{
-			return type.CheckIfNull(nameof(type)).IsDAC(pxContext)
+			return type.CheckIfNull().IsDAC(pxContext)
 				? DacType.Dac
 				: type.IsDacExtension(pxContext)
 					? DacType.DacExtension
@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDAC(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			typeSymbol.ThrowOnNull();
 
 			if (typeSymbol.ImplementsInterface(pxContext.IBqlTableType))    //Should work for named types and type parameters in most cases
 				return true;
@@ -72,7 +72,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDacExtension(this ITypeSymbol typeSymbol, PXContext pxContext) => 
-			typeSymbol.CheckIfNull(nameof(typeSymbol))
+			typeSymbol.CheckIfNull()
 					  .InheritsFrom(pxContext.PXCacheExtensionType);
 
 		/// <summary>
@@ -105,7 +105,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDacField(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			typeSymbol.ThrowOnNull();
 
 			if (typeSymbol.ImplementsInterface(pxContext.IBqlFieldType))    
 				return true;
@@ -128,7 +128,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </returns>
 		public static ITypeSymbol? GetDacFromView(this ITypeSymbol pxView, PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
 			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type!) != true)
 				return null;
@@ -193,7 +193,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </returns>
 		public static ITypeSymbol? GetDacFromDacExtension(this ITypeSymbol dacExtension, PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
 			if (dacExtension == null || !dacExtension.IsDacExtension(pxContext))
 				return null;
@@ -260,8 +260,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </returns>
 		public static AttributeData? GetProjectionAttributeApplication(this ITypeSymbol dac, PXContext pxContext, bool checkTypeIsDac)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-			dac.ThrowOnNull(nameof(dac));
+			pxContext.ThrowOnNull();
+			dac.ThrowOnNull();
 
 			if (checkTypeIsDac && !dac.IsDAC(pxContext))
 				return null;

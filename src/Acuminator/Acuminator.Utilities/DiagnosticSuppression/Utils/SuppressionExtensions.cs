@@ -34,7 +34,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public static string GetXDocumentStringWithDeclaration(this XDocument xDocument)
 		{
-			xDocument.ThrowOnNull(nameof(xDocument));
+			xDocument.ThrowOnNull();
 
 			var builder = new StringBuilder(capacity: 65);
 

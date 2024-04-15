@@ -45,7 +45,7 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 		public static CodeAction? CreateCodeActionWithNestedActions(string groupActionTitle, ImmutableArray<CodeAction> nestedCodeActions,
 																    bool isInlinable = false)
 		{
-			groupActionTitle.ThrowOnNullOrWhiteSpace(nameof(groupActionTitle));
+			groupActionTitle.ThrowOnNullOrWhiteSpace();
 
 			if (nestedCodeActions.IsDefaultOrEmpty)
 				return null;

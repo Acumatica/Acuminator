@@ -24,8 +24,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public AttributeWithApplication(AttributeData attributeApplication, ITypeSymbol attributeType)
 		{
-			Application = attributeApplication.CheckIfNull(nameof(attributeApplication));
-			Type = attributeType.CheckIfNull(nameof(attributeType));		
+			Application = attributeApplication.CheckIfNull();
+			Type = attributeType.CheckIfNull();
 		}
 
 		public override bool Equals(object obj) => obj is AttributeWithApplication other && Equals(other);

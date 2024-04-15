@@ -1,46 +1,42 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
+
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
 {
 	/// <summary>
-	/// A rule to filter out views which are read only if graph has non read only views.
+	/// A rule to filter out views which are read-only if graph has non-read-only views.
 	/// </summary>
-	public class NoReadOnlyViewGraphRule : GraphRuleBase
+	public class NoReadOnlyViewGraphRule(double? weight = null) : GraphRuleBase(weight)
 	{
 		public sealed override bool IsAbsolute => false;
 
-		public NoReadOnlyViewGraphRule(double? weight = null) : base(weight)
+		public override IEnumerable<ITypeSymbol?> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-		}
+			var readOnlyViews = new List<DataViewInfo>(capacity: 4);
+			var editableViews = new List<DataViewInfo>(capacity: dacFinder.GraphViews.Length);
 
-		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
-		{
-			if (dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested)
-				return Enumerable.Empty<ITypeSymbol>();
-
-			List<INamedTypeSymbol> readOnlyViews = new List<INamedTypeSymbol>(capacity: 4);
-			List<INamedTypeSymbol> editableViews = new List<INamedTypeSymbol>(capacity: dacFinder.GraphViews.Length);
-
-			foreach (var viewWithType in dacFinder.GraphViews)
+			foreach (DataViewInfo viewInfo in dacFinder.GraphViews)
 			{
-				if (dacFinder.CancellationToken.IsCancellationRequested)
-					return Enumerable.Empty<ITypeSymbol>();
+				dacFinder.CancellationToken.ThrowIfCancellationRequested();
 
-				if (viewWithType.Type.IsPXNonUpdateableBqlCommand(dacFinder.PxContext))
-					readOnlyViews.Add(viewWithType.Type);
+				if (viewInfo.Type.IsPXNonUpdateableBqlCommand(dacFinder.PxContext))
+					readOnlyViews.Add(viewInfo);
 				else
-					editableViews.Add(viewWithType.Type);
+					editableViews.Add(viewInfo);
 			}
 
-			if (editableViews.Count == 0 || dacFinder.CancellationToken.IsCancellationRequested)
-				return Enumerable.Empty<ITypeSymbol>();
+			if (editableViews.Count == 0)
+				return [];
 
-			return readOnlyViews.Select(viewType => viewType.GetDacFromView(dacFinder.PxContext));
+			return readOnlyViews.Select(viewInfo => viewInfo.DAC);
 		}
 	}
 }

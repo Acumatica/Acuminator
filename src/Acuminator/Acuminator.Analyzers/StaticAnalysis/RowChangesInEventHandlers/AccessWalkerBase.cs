@@ -18,10 +18,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			public bool Success { get; private set; }
 
 			protected AccessWalkerBase(SemanticModel semanticModel)
-			{
-				semanticModel.ThrowOnNull(nameof (semanticModel));
-				
-				SemanticModel = semanticModel;
+			{				
+				SemanticModel = semanticModel.CheckIfNull();
 			}
 
 			public void Reset()

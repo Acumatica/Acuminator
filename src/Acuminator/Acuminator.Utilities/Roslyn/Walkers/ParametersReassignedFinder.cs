@@ -42,9 +42,9 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 																	  IReadOnlyCollection<string> parametersToCheck, SemanticModel semanticModel,
 																	  CancellationToken cancellation)
 		{
-			declarationNode.ThrowOnNull(nameof(declarationNode));
-			parametersToCheck.ThrowOnNull(nameof(parametersToCheck));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
+			declarationNode.ThrowOnNull();
+			parametersToCheck.ThrowOnNull();
+			semanticModel.ThrowOnNull();
 
 			if (callSite != null && !declarationNode.Contains(callSite))
 				throw new ArgumentOutOfRangeException(nameof(callSite), "The call site node must be a descendant of the declaration node");

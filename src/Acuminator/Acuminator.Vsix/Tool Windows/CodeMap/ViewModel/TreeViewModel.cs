@@ -1,10 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -16,14 +18,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public ExtendedObservableCollection<TreeNodeViewModel> AllItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
-		private TreeNodeViewModel _selectedItem;
+		private TreeNodeViewModel? _selectedItem;
 
-		public TreeNodeViewModel SelectedItem
+		public TreeNodeViewModel? SelectedItem
 		{
 			get => _selectedItem;
 			set
 			{
-				TreeNodeViewModel previousSelection = _selectedItem;
+				TreeNodeViewModel? previousSelection = _selectedItem;
 				_selectedItem = value;
 
 				if (previousSelection != null)
@@ -63,9 +65,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public TreeViewModel(CodeMapWindowViewModel windowViewModel)
 		{
-			windowViewModel.ThrowOnNull(nameof(windowViewModel));
-
-			CodeMapViewModel = windowViewModel;
+			CodeMapViewModel = windowViewModel.CheckIfNull();
 		}
 
 		public void Clear()

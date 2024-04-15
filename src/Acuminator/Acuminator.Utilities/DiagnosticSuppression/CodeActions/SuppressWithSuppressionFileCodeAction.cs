@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 												base(title, equivalenceKey, displayPreview: false)
 		{
 			Context = context;
-			Diagnostic = diagnostic.CheckIfNull(nameof(diagnostic));
+			Diagnostic = diagnostic.CheckIfNull();
 		}
 
 		protected override async Task<IEnumerable<CodeActionOperation>> ComputeOperationsAsync(CancellationToken cancellationToken)

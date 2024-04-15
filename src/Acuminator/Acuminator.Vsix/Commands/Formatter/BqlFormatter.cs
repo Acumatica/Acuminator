@@ -43,7 +43,7 @@ namespace Acuminator.Vsix.Formatter
 
 		public static BqlFormatter FromTextView(IWpfTextView textView)
 		{
-			textView.ThrowOnNull(nameof(textView));
+			textView.ThrowOnNull();
 
 			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
 			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);

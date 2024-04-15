@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -26,7 +27,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public abstract Icon NodeIcon { get; }
 
-		public virtual ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos => null;
+		public virtual ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos => null;
 
 		private SortType? _childrenSortType;
 
@@ -64,7 +65,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public TreeNodeViewModel Parent { get; }
+		public TreeNodeViewModel? Parent { get; }
 
 		public bool IsRoot => Parent == null;
 
@@ -82,7 +83,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					_isExpanded = value;
 					NotifyPropertyChanged();
 
-					Descendants().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
+					Descendants().ForEach(node => node!.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -122,11 +123,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual bool AreDetailsVisible => ShouldShowDetails();
 
-		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel parent, bool isExpanded = true)
+		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel? parent, bool isExpanded = true)
 		{
-			tree.ThrowOnNull(nameof(tree));
-
-			Tree = tree;
+			Tree = tree.CheckIfNull();
 			Parent = parent;
 			_isExpanded = isExpanded;
 		}
@@ -142,7 +141,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual void ExpandOrCollapseAll(bool expand)
 		{
 			IsExpanded = expand;
-			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
+			Children.ForEach(childNode => childNode!.ExpandOrCollapseAll(expand));
 		}
 
 		public IEnumerable<TreeNodeViewModel> Descendants()
@@ -167,7 +166,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (IsRoot)
 				return true;
 
-			TreeNodeViewModel curAncestor = Parent;
+			TreeNodeViewModel? curAncestor = Parent;
 
 			while (curAncestor != null)
 			{

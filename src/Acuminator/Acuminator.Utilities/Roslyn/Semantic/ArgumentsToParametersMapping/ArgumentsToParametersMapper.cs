@@ -27,8 +27,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 		/// </returns>
 		public static ArgumentsToParametersMapping? MapArgumentsToParameters(this IMethodSymbol method, BaseArgumentListSyntax argumentsList)
 		{
-			method.ThrowOnNull(nameof(method));
-			argumentsList.ThrowOnNull(nameof(argumentsList));
+			method.ThrowOnNull();
+			argumentsList.ThrowOnNull();
 			
 			// Need to also filter out unsafe methods here but there is no flag on IMethodSymbol to do this
 			// And obtaining syntax node and checking modifiers will be expensive considering that unsafe code is not used in Acumatica

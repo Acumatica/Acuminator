@@ -13,7 +13,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, SyntaxNode delegateNode, int declarationOrder)
 			: base(delegateNode, delegateSymbol, declarationOrder)
 		{
-			GraphTypeSymbol = graphSymbol.CheckIfNull(nameof(graphSymbol));
+			GraphTypeSymbol = graphSymbol.CheckIfNull();
 		}
 	}
 }

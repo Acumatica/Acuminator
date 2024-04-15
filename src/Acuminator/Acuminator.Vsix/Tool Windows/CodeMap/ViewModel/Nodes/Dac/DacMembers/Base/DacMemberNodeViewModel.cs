@@ -1,13 +1,17 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
-using System.Threading.Tasks;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -35,10 +39,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 									  SymbolItem memberInfo, bool isExpanded = false) :
 								 base(dacMemberCategoryVM?.Tree, parent, isExpanded)
 		{
-			memberInfo.ThrowOnNull(nameof(memberInfo));
-
-			MemberInfo = memberInfo;
-			MemberCategory = dacMemberCategoryVM;		
+			MemberInfo = memberInfo.CheckIfNull();
+			MemberCategory = dacMemberCategoryVM!;
 		}
 
 		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();

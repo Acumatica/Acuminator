@@ -26,8 +26,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public SymbolItem(ISymbol symbol, int declarationOrder)
 		{
-			symbol.ThrowOnNull(nameof(symbol));
-			SymbolBase = symbol;
+			SymbolBase = symbol.CheckIfNull();
 			DeclarationOrder = declarationOrder;
 		}
 

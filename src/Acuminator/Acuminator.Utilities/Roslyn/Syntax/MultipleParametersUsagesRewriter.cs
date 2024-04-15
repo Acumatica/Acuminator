@@ -25,8 +25,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public MultipleParametersUsagesRewriter(IDictionary<IParameterSymbol, SyntaxNode> parametersWithReplacements, SemanticModel semanticModel,
 												CancellationToken cancellation)
 		{
-			_parametersWithReplacements = parametersWithReplacements.CheckIfNull(nameof(parametersWithReplacements));
-			_semanticModel 				= semanticModel.CheckIfNull(nameof(semanticModel));
+			_parametersWithReplacements = parametersWithReplacements.CheckIfNull();
+			_semanticModel 				= semanticModel.CheckIfNull();
 			_cancellation  				= cancellation;
 		}
 

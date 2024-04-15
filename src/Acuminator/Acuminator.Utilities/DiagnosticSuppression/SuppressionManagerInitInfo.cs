@@ -14,9 +14,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public SuppressionManagerInitInfo(string path, bool generateSuppressionBase)
 		{
-			path.ThrowOnNullOrWhiteSpace(nameof(path));
-
-			Path = path;
+			Path = path.CheckIfNullOrWhiteSpace();
 			GenerateSuppressionBase = generateSuppressionBase;
 		}
 

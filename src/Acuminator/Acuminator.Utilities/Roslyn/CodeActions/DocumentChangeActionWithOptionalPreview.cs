@@ -18,12 +18,10 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 													   string equivalenceKey = null) :
 												  base(title, equivalenceKey, displayPreview)
 		{
-			_createChangedDocument = createChangedDocument.CheckIfNull(nameof(createChangedDocument));
+			_createChangedDocument = createChangedDocument.CheckIfNull();
 		}
 
-		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
-		{
-			return _createChangedDocument(cancellationToken);
-		}
+		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
+			_createChangedDocument(cancellationToken);
 	}
 }

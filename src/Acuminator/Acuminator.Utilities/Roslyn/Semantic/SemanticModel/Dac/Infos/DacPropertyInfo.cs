@@ -82,7 +82,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
 							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
 		{
-			Base = baseInfo.CheckIfNull(nameof(baseInfo));
+			Base = baseInfo.CheckIfNull();
 
 			// TODO - need to add support for PXMergeAttributesAttribute in the future
 			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
@@ -119,10 +119,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 											 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacFieldInfo> dacFields,
 											 DacPropertyInfo? baseInfo = null)
 		{
-			context.ThrowOnNull(nameof(context));
-			property.ThrowOnNull(nameof(property));
-			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
-			dacFields.ThrowOnNull(nameof(dacFields));
+			context.ThrowOnNull();
+			property.ThrowOnNull();
+			dbBoundnessCalculator.ThrowOnNull();
+			dacFields.ThrowOnNull();
 
 			bool isDacProperty = dacFields.ContainsKey(property.Name);
 			var attributeInfos = GetAttributeInfos(property, dbBoundnessCalculator);

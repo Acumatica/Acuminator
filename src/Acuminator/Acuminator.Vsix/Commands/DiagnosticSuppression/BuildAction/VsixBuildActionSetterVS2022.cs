@@ -22,8 +22,8 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	{
 		public bool SetBuildAction(string roslynSuppressionFilePath, string buildActionToSet)
 		{
-			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace(nameof(roslynSuppressionFilePath));
-			buildActionToSet.ThrowOnNullOrWhiteSpace(nameof(buildActionToSet));
+			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace();
+			buildActionToSet.ThrowOnNullOrWhiteSpace();
 
 			if (!SharedVsSettings.VSVersion.VS2022OrNewer)
 				return false;

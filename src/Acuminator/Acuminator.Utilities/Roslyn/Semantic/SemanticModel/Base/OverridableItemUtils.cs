@@ -12,14 +12,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static IEnumerable<TInfo> ThisAndOverridenItems<TInfo>(this TInfo info)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			info.ThrowOnNull(nameof(info));
+			info.ThrowOnNull();
 			return GetOverridenItems(info, includeOriginalItem: true);
 		}
 
 		public static IEnumerable<TInfo> JustOverridenItems<TInfo>(this TInfo info)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			info.ThrowOnNull(nameof(info));
+			info.ThrowOnNull();
 			return GetOverridenItems(info, includeOriginalItem: false);
 		}
 

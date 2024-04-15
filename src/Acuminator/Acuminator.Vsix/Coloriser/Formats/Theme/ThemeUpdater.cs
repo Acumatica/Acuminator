@@ -41,7 +41,7 @@ namespace Acuminator.Vsix.Coloriser
 			ThreadHelper.ThrowIfNotOnUIThread();
 
 			_serviceProvider = (AcuminatorVSPackage.Instance as IServiceProvider) ?? ServiceProvider.GlobalProvider;
-			_serviceProvider.ThrowOnNull(nameof(_serviceProvider));
+			_serviceProvider.ThrowOnNull();
 
 			VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
 		}

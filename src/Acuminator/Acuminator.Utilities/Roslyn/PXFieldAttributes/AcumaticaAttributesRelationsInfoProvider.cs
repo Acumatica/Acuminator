@@ -32,7 +32,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// True if is an Acumatica attribute, false if not.
 		/// </returns>
 		public static bool IsAcumaticaAttribute(this ITypeSymbol attributeType, PXContext pxContext) =>
-			pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXEventSubscriberAttribute.Equals(attributeType) ||
+			pxContext.CheckIfNull().AttributeTypes.PXEventSubscriberAttribute.Equals(attributeType) ||
 			attributeType.IsDerivedFromPXEventSubscriberAttribute(pxContext);
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// True if derived from PXEventSubscriberAttribute, false if not.
 		/// </returns>
 		public static bool IsDerivedFromPXEventSubscriberAttribute(this ITypeSymbol attributeType, PXContext pxContext) =>
-			attributeType.InheritsFrom(pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXEventSubscriberAttribute);
+			attributeType.InheritsFrom(pxContext.CheckIfNull().AttributeTypes.PXEventSubscriberAttribute);
 
 		/// <summary>
 		/// Check if <paramref name="attributeType"/> is an Acumatica aggregator attribute.
@@ -55,7 +55,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// True if is an Acumatica aggregator attribute, false if not.
 		/// </returns>
 		public static bool IsAggregatorAttribute(this ITypeSymbol attributeType, PXContext pxContext) =>
-			attributeType.InheritsFromOrEquals(pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXAggregateAttribute);
+			attributeType.InheritsFromOrEquals(pxContext.CheckIfNull().AttributeTypes.PXAggregateAttribute);
 
 		/// <summary>
 		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type or aggregates it.<br/>
@@ -101,7 +101,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </returns>
 		internal static bool IsDerivedFromOrAggregatesAttributeUnsafe(this ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, 
 																	  PXContext pxContext) =>
-			 IsDerivedFromAttribute(attributeType, baseAttributeTypeToCheck, pxContext.CheckIfNull(nameof(pxContext)), recursionDepth: 0);
+			 IsDerivedFromAttribute(attributeType, baseAttributeTypeToCheck, pxContext.CheckIfNull(), recursionDepth: 0);
 
 		private static bool IsDerivedFromAttribute(ITypeSymbol attributeType, ITypeSymbol baseAttributeTypeToCheck, PXContext pxContext, int recursionDepth)
 		{
@@ -141,7 +141,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <returns/>
 		public static ImmutableHashSet<ITypeSymbol> GetThisAndAllAggregatedAttributes(this ITypeSymbol? attributeType, PXContext pxContext, bool includeBaseTypes)
 		{
-			var eventSubscriberAttribute = pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXEventSubscriberAttribute;
+			var eventSubscriberAttribute = pxContext.CheckIfNull().AttributeTypes.PXEventSubscriberAttribute;
 
 			if (attributeType == null || attributeType.Equals(eventSubscriberAttribute))
 				return ImmutableHashSet<ITypeSymbol>.Empty;
@@ -224,7 +224,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public static ImmutableHashSet<AttributeWithApplication> GetThisAndAllAggregatedAttributesWithApplications(this AttributeData? attributeApplication,
 																												   PXContext pxContext, bool includeBaseTypes)
 		{
-			var eventSubscriberAttribute = pxContext.CheckIfNull(nameof(pxContext)).AttributeTypes.PXEventSubscriberAttribute;
+			var eventSubscriberAttribute = pxContext.CheckIfNull().AttributeTypes.PXEventSubscriberAttribute;
 
 			if (attributeApplication?.AttributeClass == null || attributeApplication.AttributeClass.Equals(eventSubscriberAttribute))
 				return ImmutableHashSet<AttributeWithApplication>.Empty;
@@ -313,9 +313,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// True if equals or directly aggregates attribute, false if not.
 		/// </returns>
 		internal static bool EqualsOrAggregatesAttributeDirectly(this ITypeSymbol attribute, ITypeSymbol attributeToCheck, PXContext pxContext) =>
-			EqualsOrAggregatesAttributeDirectly(attribute.CheckIfNull(nameof(attribute)), 
-												attributeToCheck.CheckIfNull(nameof(attributeToCheck)), 
-												pxContext.CheckIfNull(nameof(pxContext)), recursionDepth: 0);
+			EqualsOrAggregatesAttributeDirectly(attribute.CheckIfNull(), 
+												attributeToCheck.CheckIfNull(), 
+												pxContext.CheckIfNull(), recursionDepth: 0);
 
 		private static bool EqualsOrAggregatesAttributeDirectly(ITypeSymbol attribute, ITypeSymbol attributeToCheck, PXContext pxContext, int recursionDepth)
 		{

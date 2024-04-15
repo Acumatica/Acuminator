@@ -49,8 +49,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		{
 			Document document = CreateDocument(source);
 			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
+			semanticModel.ThrowOnNull();
+			syntaxRoot.ThrowOnNull();
 
 			List<bool> actual = new List<bool>(capacity: expected.Count);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
@@ -102,8 +102,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		{
 			Document document = CreateDocument(source);
 			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
+			semanticModel.ThrowOnNull();
+			syntaxRoot.ThrowOnNull();
 
 			var actual = new List<DbBoundnessType>(capacity: expected.Count);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
@@ -112,7 +112,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 			foreach (var type in types)
 			{
-				INamedTypeSymbol typeSymbol = semanticModel.GetDeclaredSymbol(type).CheckIfNull(nameof(typeSymbol));
+				INamedTypeSymbol typeSymbol = semanticModel.GetDeclaredSymbol(type).CheckIfNull();
 
 				if (!typeSymbol.IsDacOrExtension(pxContext))
 					continue;
@@ -163,8 +163,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		{
 			Document document = CreateDocument(source, externalCode: code);
 			var (semanticModel, syntaxRoot)  = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
+			semanticModel.ThrowOnNull();
+			syntaxRoot.ThrowOnNull();
 
 			List<bool> actual = new List<bool>(capacity: expected.Capacity);
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
@@ -349,8 +349,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 		{
 			Document document = CreateDocument(source);
 			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync().ConfigureAwait(false);
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			syntaxRoot.ThrowOnNull(nameof(syntaxRoot));
+			semanticModel.ThrowOnNull();
+			syntaxRoot.ThrowOnNull();
 
 			var expectedSymbols = ConvertSymbolNamesToTypeSymbols(expectedFlattenedSets, semanticModel);
 			var actualResult = new List<List<ITypeSymbol>>(expectedSymbols.Count);
@@ -360,7 +360,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 
 			foreach (var type in types)
 			{
-				INamedTypeSymbol typeSymbol = semanticModel.GetDeclaredSymbol(type).CheckIfNull(nameof(typeSymbol));
+				INamedTypeSymbol typeSymbol = semanticModel.GetDeclaredSymbol(type).CheckIfNull();
 
 				if (!typeSymbol.IsDacOrExtension(pxContext))
 					continue;

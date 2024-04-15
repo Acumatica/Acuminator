@@ -1,7 +1,11 @@
-﻿using System.Diagnostics;
-using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
 using System.Collections.Immutable;
+using System.Diagnostics;
+
+using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -13,13 +17,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// The overriden action if any
 		/// </summary>
-		public ActionInfo Base
+		public ActionInfo? Base
 		{
 			get;
 			internal set;
 		}
 
-		ActionInfo IWriteableBaseItem<ActionInfo>.Base
+		ActionInfo? IWriteableBaseItem<ActionInfo>.Base
 		{
 			get => Base;
 			set => Base = value;
@@ -42,18 +46,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem) :
 					 base(symbol, declarationOrder)
 		{
-			type.ThrowOnNull(nameof(type));
-
-			Type = type;
+			Type = type.CheckIfNull();
 			IsSystem = isSystem;
 		}
 
 		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem, ActionInfo baseInfo) :
 					 this(symbol, type, declarationOrder, isSystem)
 		{
-			baseInfo.ThrowOnNull(nameof(baseInfo));
-
-			Base = baseInfo;
+			Base = baseInfo.CheckIfNull();
 		}
 	}
 }

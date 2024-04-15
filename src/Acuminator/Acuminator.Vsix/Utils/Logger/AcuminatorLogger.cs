@@ -38,8 +38,7 @@ namespace Acuminator.Vsix.Logger
 
 		public AcuminatorLogger(AcuminatorVSPackage acuminatorPackage, bool swallowUnobservedTaskExceptions)
 		{
-			acuminatorPackage.ThrowOnNull(nameof(acuminatorPackage));
-			_package = acuminatorPackage;
+			_package = acuminatorPackage.CheckIfNull();
 			_swallowUnobservedTaskExceptions = swallowUnobservedTaskExceptions;
 
 			AppDomain.CurrentDomain.FirstChanceException += Acuminator_FirstChanceException;

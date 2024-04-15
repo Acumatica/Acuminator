@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PXSystemActions
@@ -18,9 +22,7 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 		
 		public PXSystemActionsRegister(PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			_context = pxContext;
+			_context	  = pxContext.CheckIfNull();
 			SystemActions = GetSystemActions(_context).ToImmutableHashSet();
 		}
 
@@ -30,17 +32,13 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 		/// </summary>
 		/// <param name="pxAction">The action to check.</param>
 		/// <returns/>
-		public bool IsSystemAction(ITypeSymbol pxAction)
-		{
-			pxAction.ThrowOnNull(nameof(pxAction));
-
-			return pxAction.GetBaseTypesAndThis()
-						   .Any(action => SystemActions.Contains(action) || SystemActions.Contains(action.OriginalDefinition));
-		}
+		public bool IsSystemAction(ITypeSymbol pxAction) =>
+			pxAction.CheckIfNull()
+					.GetBaseTypesAndThis()
+					.Any(action => SystemActions.Contains(action) || SystemActions.Contains(action.OriginalDefinition));
 
 		private static HashSet<ITypeSymbol> GetSystemActions(PXContext pxContext) =>
-			new HashSet<ITypeSymbol>
-			{
+			[
 				pxContext.PXSystemActions.PXSave,
 				pxContext.PXSystemActions.PXCancel,
 				pxContext.PXSystemActions.PXInsert,
@@ -51,6 +49,6 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 				pxContext.PXSystemActions.PXNext,
 				pxContext.PXSystemActions.PXLast,
 				pxContext.PXSystemActions.PXChangeID
-			};	
+			];
 	}
 }

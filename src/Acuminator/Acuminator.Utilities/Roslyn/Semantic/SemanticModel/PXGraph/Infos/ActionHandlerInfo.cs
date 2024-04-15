@@ -1,5 +1,9 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
+
+using System.Diagnostics;
+
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -13,13 +17,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// The overriden handler if any
 		/// </summary>
-		public ActionHandlerInfo Base
+		public ActionHandlerInfo? Base
 		{
 			get;
 			internal set;
 		}
 
-		ActionHandlerInfo IWriteableBaseItem<ActionHandlerInfo>.Base
+		ActionHandlerInfo? IWriteableBaseItem<ActionHandlerInfo>.Base
 		{
 			get => Base;
 			set => Base = value;
@@ -34,8 +38,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder, ActionHandlerInfo baseInfo) :
 							this(node, symbol, declarationOrder)
 		{
-			baseInfo.ThrowOnNull(nameof(baseInfo));
-			Base = baseInfo;
+			Base = baseInfo.CheckIfNull();
 		}
 	}
 }

@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
+
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -22,13 +24,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// This will lead to a two concrete implementations of collection for <see cref="GraphRowEventInfo"/> and <see cref="GraphFieldEventInfo"/> 
 		/// or to a hard to read code in the <see cref="PXGraphEventSemanticModel.EventsCollector"/> if we choose to pass the delegates to the generic collection class. 
 		/// </remarks>
-		public TEventInfoType Base
+		public TEventInfoType? Base
 		{
 			get;
 			internal set;
 		}
 
-		TEventInfoType IWriteableBaseItem<TEventInfoType>.Base
+		TEventInfoType? IWriteableBaseItem<TEventInfoType>.Base
 		{
 			get => Base;
 			set => Base = value;
@@ -44,9 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 									 EventHandlerSignatureType signatureType, EventType eventType, TEventInfoType baseEventInfo)
 							  : base(node, symbol, declarationOrder, signatureType, eventType)
 		{
-			baseEventInfo.ThrowOnNull(nameof(baseEventInfo));
-
-			Base = baseEventInfo;
-		}	
+			Base = baseEventInfo.CheckIfNull();
+		}
 	}
 }

@@ -222,7 +222,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public static PXGraphEventSemanticModel EnrichGraphModelWithEvents(PXGraphSemanticModel baseGraphModel, 
 																		   CancellationToken cancellationToken = default) =>
-			new PXGraphEventSemanticModel(baseGraphModel.CheckIfNull(nameof(baseGraphModel)), 
+			new PXGraphEventSemanticModel(baseGraphModel.CheckIfNull(), 
 										  cancellationToken);
 
 		public static IEnumerable<PXGraphEventSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, 

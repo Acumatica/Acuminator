@@ -23,9 +23,9 @@ namespace Acuminator.Vsix.Settings
 
 		public OutOfProcessSettingsUpdater(ISettingsEvents settingsEvents, CodeAnalysisSettings initialSettings)
 		{
-			initialSettings.ThrowOnNull(nameof(initialSettings));
+			initialSettings.ThrowOnNull();
 
-			_settingsEvents = settingsEvents.CheckIfNull(nameof(settingsEvents));
+			_settingsEvents = settingsEvents.CheckIfNull();
 			_memoryMappedFile = CreateOrOpenMemoryMappedFile();
 
 			WriteSettingsToSharedMemory(initialSettings);

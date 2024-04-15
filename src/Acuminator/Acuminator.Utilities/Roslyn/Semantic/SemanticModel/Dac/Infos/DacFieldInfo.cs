@@ -1,7 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities.Common;
+﻿#nullable enable
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -10,13 +12,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <summary>
 		/// The overriden dac field if any
 		/// </summary>
-		public DacFieldInfo Base
+		public DacFieldInfo? Base
 		{
 			get;
 			internal set;
 		}
 	
-		DacFieldInfo IWriteableBaseItem<DacFieldInfo>.Base
+		DacFieldInfo? IWriteableBaseItem<DacFieldInfo>.Base
 		{
 			get => Base;
 			set => Base = value;
@@ -30,7 +32,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public DacFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol symbol, int declarationOrder, DacFieldInfo baseInfo) :
 					   this(node, symbol, declarationOrder)
 		{
-			baseInfo.ThrowOnNull(nameof(baseInfo));
+			baseInfo.ThrowOnNull();
 			Base = baseInfo;
 		}
 	}

@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public DbBoundnessCalculator(PXContext pxContext)
 		{
-			Context = pxContext.CheckIfNull(nameof(pxContext));
+			Context = pxContext.CheckIfNull();
 			AttributesMetadataProvider = new FieldTypeAttributesMetadataProvider(pxContext);
 		}
 
@@ -68,7 +68,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 																		ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributesSet,
 																		IReadOnlyCollection<DataTypeAttributeInfo>? preparedAttributesMetadata)
 		{
-			attributeApplication.ThrowOnNull(nameof(attributeApplication));
+			attributeApplication.ThrowOnNull();
 
 			if (!attributeApplication.AttributeClass.IsAcumaticaAttribute(Context))
 				return DbBoundnessType.NotDefined;

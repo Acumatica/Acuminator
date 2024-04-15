@@ -60,7 +60,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		public static DiagnosticDataLocation Create(object roslynLocationDTO)
 		{
-			roslynLocationDTO.ThrowOnNull(nameof(roslynLocationDTO));
+			roslynLocationDTO.ThrowOnNull();
 
 			InitializeSharedStaticData(roslynLocationDTO);
 

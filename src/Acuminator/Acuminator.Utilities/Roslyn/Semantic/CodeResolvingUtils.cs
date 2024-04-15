@@ -23,15 +23,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAccessibleOutsideOfAssembly(this ISymbol symbol) =>
-			symbol.CheckIfNull(nameof(symbol)).DeclaredAccessibility switch
+			symbol.CheckIfNull().DeclaredAccessibility switch
 			{
-				Accessibility.Private => false,
-				Accessibility.Internal => false,
+				Accessibility.Private 			   => false,
+				Accessibility.Internal 			   => false,
 				Accessibility.ProtectedAndInternal => false,
-				Accessibility.Protected => true,
-				Accessibility.ProtectedOrInternal => true,
-				Accessibility.Public => true,
-				_ => true,
+				Accessibility.Protected 		   => true,
+				Accessibility.ProtectedOrInternal  => true,
+				Accessibility.Public 			   => true,
+				_ 								   => true,
 			};
 
 		/// <summary>
@@ -275,8 +275,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPXGraph(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            pxContext.ThrowOnNull(nameof(pxContext));
+            typeSymbol.ThrowOnNull();
+            pxContext.ThrowOnNull();
 
 			if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
 			{
@@ -292,8 +292,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            pxContext.ThrowOnNull(nameof(pxContext));
+            typeSymbol.ThrowOnNull();
+            pxContext.ThrowOnNull();
 
             return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtension.Type);
         }
@@ -317,8 +317,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static bool IsCustomBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{
-			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
-			context.ThrowOnNull(nameof(context));
+			bqlTypeSymbol.ThrowOnNull();
+			context.ThrowOnNull();
 
 			int pxSelectBaseStandartDepth = context.IsAcumatica2018R2_OrGreater ? 3 : 2;
 			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBase.Type);
@@ -333,7 +333,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static bool IsPXSelectReadOnlyCommand(this ITypeSymbol bqlTypeSymbol)
 		{
-			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
+			bqlTypeSymbol.ThrowOnNull();
 
 			if (!bqlTypeSymbol.IsBqlCommand())
 				return false;
@@ -354,8 +354,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static bool IsPXNonUpdateableBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{
-			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
-			context.ThrowOnNull(nameof(context));
+			bqlTypeSymbol.ThrowOnNull();
+			context.ThrowOnNull();
 
 			if (!bqlTypeSymbol.IsBqlCommand(context))
 				return false;
@@ -365,8 +365,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static bool IsPXSetupBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{
-			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
-			context.ThrowOnNull(nameof(context));
+			bqlTypeSymbol.ThrowOnNull();
+			context.ThrowOnNull();
 
 			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.PXSetupTypes;
 			return bqlTypeSymbol.GetBaseTypesAndThis()

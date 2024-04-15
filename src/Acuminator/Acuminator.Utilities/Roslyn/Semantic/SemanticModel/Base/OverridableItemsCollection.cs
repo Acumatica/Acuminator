@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 																					Func<TRawData, int, TWriteableInfo> infoConstructor)
 		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
-			itemsToAdd.ThrowOnNull(nameof(itemsToAdd));
+			itemsToAdd.ThrowOnNull();
 
 			int order = startingOrder;
 
@@ -46,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		internal virtual void Add<TRawData, TWriteableInfo>(TRawData rawData, int declarationOrder, Func<TRawData, int, TWriteableInfo> infoConstructor)
 		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
-			infoConstructor.ThrowOnNull(nameof(infoConstructor));
+			infoConstructor.ThrowOnNull();
 			TWriteableInfo info = infoConstructor(rawData, declarationOrder);
 			Add(info);
 		}

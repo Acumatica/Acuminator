@@ -42,11 +42,8 @@ namespace Acuminator.Vsix.Coloriser
             public PXColoriserSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
                                       base(SyntaxWalkerDepth.Node)
 			{
-				tagger.ThrowOnNull(nameof(tagger));
-				parsedDocument.ThrowOnNull(nameof(parsedDocument));
-
-				_tagger = tagger;
-				_document = parsedDocument;
+				_tagger = tagger.CheckIfNull();
+				_document = parsedDocument.CheckIfNull();
                 _cancellationToken = cToken;
             }
 
@@ -94,7 +91,7 @@ namespace Acuminator.Vsix.Coloriser
                 if (!_cancellationToken.IsCancellationRequested)
                     base.VisitIdentifierName(node);
 
-                UpdateCodeEditorIfNecessary();				
+                UpdateCodeEditorIfNecessary();
             }
 
             public override void VisitGenericName(GenericNameSyntax genericNode)

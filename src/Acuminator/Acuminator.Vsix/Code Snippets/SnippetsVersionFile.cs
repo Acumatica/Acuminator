@@ -27,8 +27,8 @@ namespace Acuminator.Vsix.CodeSnippets
 
 		public bool WriteVersionFile(string snippetsRootFolder, Version version)
 		{
-			version.ThrowOnNull(nameof(version));
-			snippetsRootFolder.ThrowOnNullOrWhiteSpace(nameof(snippetsRootFolder));
+			version.ThrowOnNull();
+			snippetsRootFolder.ThrowOnNullOrWhiteSpace();
 
 			string snippetsVersionFilePath = Path.Combine(snippetsRootFolder, VersionFileName);
 			var root = new XElement(RootNode, version);

@@ -15,7 +15,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected ExtraInfoViewModel(TreeNodeViewModel node)
 		{
-			Node = node.CheckIfNull(nameof(node));
+			Node = node.CheckIfNull();
 		}
 	}
 }

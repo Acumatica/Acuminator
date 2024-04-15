@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -34,8 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : 
 						   base(tree, parent: null, isExpanded)
 		{
-			dacModel.ThrowOnNull(nameof(dacModel));
-			DacModel = dacModel;
+			DacModel = dacModel.CheckIfNull();
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos());
 		}
 

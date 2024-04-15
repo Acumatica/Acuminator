@@ -20,7 +20,7 @@ namespace Acuminator.Vsix.Settings
 	{
 		internal static bool IsOutOfProcessEnabled(this AcuminatorVSPackage package, Workspace workspace)
 		{
-			package.ThrowOnNull(nameof(package));
+			package.ThrowOnNull();
 			package.VSVersion.ThrowOnNull($"{nameof(AcuminatorVSPackage)}.{nameof(AcuminatorVSPackage.VSVersion)}");
 
 			if (!package.VSVersion.VS2019OrNewer)
@@ -44,7 +44,7 @@ namespace Acuminator.Vsix.Settings
 				MethodInfo isUsingServiceHubOutOfProcess = remoteHostOptionsType?.GetMethod("IsUsingServiceHubOutOfProcess",
 																							BindingFlags.Static | BindingFlags.Public);
 
-				object isOutOfProcessFromRoslynInternalsObj = isUsingServiceHubOutOfProcess?.Invoke(null, new object[] { workspace.Services });
+				object isOutOfProcessFromRoslynInternalsObj = isUsingServiceHubOutOfProcess?.Invoke(null, [workspace.Services]);
 
 				if (isOutOfProcessFromRoslynInternalsObj is bool isOutOfProcessFromRoslynInternals)
 					return isOutOfProcessFromRoslynInternals;

@@ -19,10 +19,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 					  params object[] messageArgs)
 			: base(pxContext, context.CancellationToken)
 		{
-			diagnosticDescriptor.ThrowOnNull(nameof (diagnosticDescriptor));
-
 			_context = context;
-			_diagnosticDescriptor = diagnosticDescriptor;
+			_diagnosticDescriptor = diagnosticDescriptor.CheckIfNull();
 			_messageArgs = messageArgs;
 		}
 

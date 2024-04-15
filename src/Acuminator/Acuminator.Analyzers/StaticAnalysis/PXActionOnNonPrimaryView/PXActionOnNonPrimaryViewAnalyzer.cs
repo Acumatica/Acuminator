@@ -1,19 +1,20 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿#nullable enable
+
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
-
-
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 {
@@ -33,13 +34,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			if (declaredActions.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			PrimaryDacFinder primaryDacFinder = PrimaryDacFinder.Create(pxContext, pxGraph, symbolContext.CancellationToken);
-			ITypeSymbol primaryDAC = primaryDacFinder?.FindPrimaryDAC();
+			PrimaryDacFinder? primaryDacFinder = PrimaryDacFinder.Create(pxContext, pxGraph, symbolContext.CancellationToken);
+			ITypeSymbol? primaryDAC = primaryDacFinder?.FindPrimaryDAC();
 
 			if (primaryDAC == null)
 				return;
 
-			ImmutableDictionary<string, string> diagnosticExtraData = null;
+			ImmutableDictionary<string, string>? diagnosticExtraData = null;
 
 			foreach (ActionInfo action in declaredActions)
 			{
@@ -75,26 +76,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 														ImmutableDictionary<string, string> diagnosticProperties,
 														SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			SyntaxNode symbolSyntax = actionSymbol.GetSyntax(symbolContext.CancellationToken);
-			Location location = GetLocation(symbolSyntax);
+			var symbolSyntax = actionSymbol.GetSyntax(symbolContext.CancellationToken);
+			var location = GetLocation(symbolSyntax);
 
 			if (location == null)
 				return;
 
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticProperties,
-								  actionSymbol.Name, primaryDacName), pxContext.CodeAnalysisSettings);
+								  actionSymbol.Name, primaryDacName), 
+				pxContext.CodeAnalysisSettings);
 		}
 
-		private static Location GetLocation(SyntaxNode symbolSyntax) =>
+		private static Location? GetLocation(SyntaxNode? symbolSyntax) =>
 			symbolSyntax switch
 			{
-				PropertyDeclarationSyntax propertyDeclaration => propertyDeclaration.Type.GetLocation(),
-				FieldDeclarationSyntax fieldDeclaration => fieldDeclaration.Declaration.Type.GetLocation(),
-				VariableDeclarationSyntax variableDeclaration => variableDeclaration.Type.GetLocation(),
+				PropertyDeclarationSyntax propertyDeclaration 										=> propertyDeclaration.Type.GetLocation(),
+				FieldDeclarationSyntax fieldDeclaration 											=> fieldDeclaration.Declaration.Type.GetLocation(),
+				VariableDeclarationSyntax variableDeclaration 										=> variableDeclaration.Type.GetLocation(),
 				VariableDeclaratorSyntax variableDeclarator
-					when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration => variableDeclaration.Type.GetLocation(),
-				_ => symbolSyntax?.GetLocation(),
+				when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration		=> variableDeclaration.Type.GetLocation(),
+				_ 																					=> symbolSyntax?.GetLocation(),
 			};
 	}
 }

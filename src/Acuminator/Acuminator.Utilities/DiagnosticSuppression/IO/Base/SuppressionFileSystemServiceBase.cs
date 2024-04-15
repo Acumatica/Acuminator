@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		public virtual XDocument Load(string path)
 		{
-			path.ThrowOnNullOrWhiteSpace(nameof(path));
+			path.ThrowOnNullOrWhiteSpace();
 
 			try
 			{
@@ -50,8 +50,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		public virtual bool Save(XDocument document, string path)
 		{
-			document.ThrowOnNull(nameof(document));
-			path.ThrowOnNullOrWhiteSpace(nameof(path));
+			document.ThrowOnNull();
+			path.ThrowOnNullOrWhiteSpace();
 			
 			try
 			{
@@ -71,14 +71,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		public virtual string GetFileName(string path)
 		{
-			path.ThrowOnNullOrWhiteSpace(nameof(path));
+			path.ThrowOnNullOrWhiteSpace();
 
 			return Path.GetFileNameWithoutExtension(path);
 		}
 
 		public virtual string GetFileDirectory(string path)
 		{
-			path.ThrowOnNullOrWhiteSpace(nameof(path));
+			path.ThrowOnNullOrWhiteSpace();
 			return Path.GetDirectoryName(path);
 		}
 

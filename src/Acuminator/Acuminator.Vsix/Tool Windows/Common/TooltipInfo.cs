@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.Common
 	/// <summary>
 	/// Information about the tooltip and how to display it.
 	/// </summary>
-	public class TooltipInfo
+	public class TooltipInfo(string tooltip)
 	{
 		/// <summary>
 		/// Gets the tooltip text.
@@ -20,7 +20,7 @@ namespace Acuminator.Vsix.ToolWindows.Common
 		/// <value>
 		/// The tooltip text.
 		/// </value>
-		public string Tooltip { get; }
+		public string Tooltip { get; } = tooltip.NullIfWhiteSpace().CheckIfNull();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to trim excess <see cref="Tooltip"/>.
@@ -45,10 +45,5 @@ namespace Acuminator.Vsix.ToolWindows.Common
 		/// The overflow suffix added to the end of trimmed tooltip.
 		/// </value>
 		public string? OverflowSuffix { get; set; }
-
-		public TooltipInfo(string tooltip)
-		{
-			Tooltip = tooltip.NullIfWhiteSpace().CheckIfNull(nameof(tooltip));
-		}
 	}
 }

@@ -27,7 +27,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		public SuppressionFileWatcherService(FileSystemWatcher watcher)
 		{
-			_fileSystemWatcher = watcher.CheckIfNull(nameof(watcher));
+			_fileSystemWatcher = watcher.CheckIfNull();
 		}
 
 		public void Dispose()

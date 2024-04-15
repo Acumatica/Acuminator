@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 {
@@ -15,32 +17,17 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			Value = value;
 		}
 
-		public int CompareTo(Score other)
-		{
-			if (other == null)
-				return 1;
-			else if (Value == other.Value)
-				return 0;
-			else if (Value > other.Value)
-				return 1;
-			else
-				return -1;
-		}
-
-		public bool Equals(Score other)
-		{
-			if (other == null)
-				return false;
-			else if (ReferenceEquals(this, other))
-				return true;
-			else
-				return Value == other.Value;
-		}
+		public int CompareTo(Score? other) =>
+			other != null
+				? Value.CompareTo(other.Value)
+				: 1;
 
 		public override bool Equals(object obj) => Equals(obj as Score);
-		
+
+		public bool Equals(Score? other) => ReferenceEquals(this, other) || Value == other?.Value;
+
 		public override int GetHashCode() => Value.GetHashCode();
 
-		public override string ToString() => Value.ToString();	
+		public override string ToString() => Value.ToString();
 	}
 }
