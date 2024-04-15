@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		private static IEnumerable<ITypeSymbol> GetBaseTypesImplementation(this ITypeSymbol type, bool includeThis)
 		{
-			type.ThrowOnNull(nameof(type));
+			type.ThrowOnNull();
 
 			if (type is ITypeParameterSymbol typeParameter)
 			{
@@ -71,7 +71,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypes(this ITypeSymbol type, CancellationToken cancellationToken)
 		{
-			type.ThrowOnNull(nameof(type));
+			type.ThrowOnNull();
 			cancellationToken.ThrowIfCancellationRequested();
 			return type.GetFlattenedNestedTypesImplementation(shouldWalkThroughNestedTypesPredicate: null, cancellationToken);			
 		}
@@ -79,9 +79,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypes(this ITypeSymbol type, Func<ITypeSymbol, bool>? shouldWalkThroughNestedTypesPredicate, 
 																			CancellationToken cancellationToken)
 		{
-			type.ThrowOnNull(nameof(type));
+			type.ThrowOnNull();
 			cancellationToken.ThrowIfCancellationRequested();
-			shouldWalkThroughNestedTypesPredicate.ThrowOnNull(nameof(shouldWalkThroughNestedTypesPredicate));
+			shouldWalkThroughNestedTypesPredicate.ThrowOnNull();
 
 			return type.GetFlattenedNestedTypesImplementation(shouldWalkThroughNestedTypesPredicate, cancellationToken);
 		}
@@ -144,7 +144,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static INamedTypeSymbol? TopMostContainingType(this ITypeSymbol type)
 		{
-			INamedTypeSymbol current = type.CheckIfNull(nameof(type)).ContainingType;
+			INamedTypeSymbol current = type.CheckIfNull().ContainingType;
 
 			while (current != null)
 			{
@@ -187,8 +187,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns/>
 		public static bool InheritsFromOrEquals(this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces)
 		{
-			type.ThrowOnNull(nameof(type));
-			baseType.ThrowOnNull(nameof(baseType));
+			type.ThrowOnNull();
+			baseType.ThrowOnNull();
 
 			var typeList = type.GetBaseTypesAndThis();
 
@@ -206,8 +206,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static bool InheritsFromOrEqualsGeneric(this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces)
 		{
-			type.ThrowOnNull(nameof(type));
-			baseType.ThrowOnNull(nameof(baseType));
+			type.ThrowOnNull();
+			baseType.ThrowOnNull();
 
 			var typeList = type.GetBaseTypesAndThis();
 
@@ -220,8 +220,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static bool InheritsFrom(this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces = false)
 		{
-			type.ThrowOnNull(nameof(type));
-			baseType.ThrowOnNull(nameof(baseType));
+			type.ThrowOnNull();
+			baseType.ThrowOnNull();
 
 			IEnumerable<ITypeSymbol> baseTypes = type.GetBaseTypes();
 
@@ -236,8 +236,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool ImplementsInterface(this ITypeSymbol type, ITypeSymbol interfaceType)
 		{
-			type.ThrowOnNull(nameof(type));
-			interfaceType.ThrowOnNull(nameof(interfaceType));
+			type.ThrowOnNull();
+			interfaceType.ThrowOnNull();
 
 			if (interfaceType.TypeKind != TypeKind.Interface)
 			{
@@ -256,8 +256,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool InheritsFrom(this ITypeSymbol symbol, string baseType)
 		{
-			symbol.ThrowOnNull(nameof(symbol));
-			baseType.ThrowOnNullOrWhiteSpace(nameof(baseType));
+			symbol.ThrowOnNull();
+			baseType.ThrowOnNullOrWhiteSpace();
 
 			return symbol.GetBaseTypesAndThis()
 						 .Any(t => t.Name == baseType);
@@ -320,7 +320,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns/>
 		public static IEnumerable<ITypeSymbol> GetAllConstraintTypes(this ITypeParameterSymbol typeParameterSymbol, bool includeInterfaces = true)
 		{
-			typeParameterSymbol.ThrowOnNull(nameof(typeParameterSymbol));
+			typeParameterSymbol.ThrowOnNull();
 			
 			var constraintTypes = includeInterfaces
 				? GetAllConstraintTypesImplementation(typeParameterSymbol)
@@ -367,8 +367,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		public static int? GetInheritanceDepth(this ITypeSymbol type, ITypeSymbol baseType)
 		{
-			type.ThrowOnNull(nameof(type));
-			baseType.ThrowOnNull(nameof(type));
+			type.ThrowOnNull();
+			baseType.ThrowOnNull();
 
 			ITypeSymbol current = type;
 			int depth = 0;
@@ -390,7 +390,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<AttributeData> GetAllAttributesApplicationsDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			typeSymbol.ThrowOnNull();
 			return typeSymbol.GetBaseTypesAndThis()
 							 .SelectMany(t => t.GetAttributes());
 		}
@@ -410,7 +410,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsNullable(this ITypeSymbol? typeSymbol, PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable) ?? false;
 		}
 
@@ -469,7 +469,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		internal static IEnumerable<(ConstructorDeclarationSyntax Node, IMethodSymbol Symbol)> GetDeclaredInstanceConstructors(
 			this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			typeSymbol.ThrowOnNull();
 
 			List<(ConstructorDeclarationSyntax, IMethodSymbol)> initializers = new List<(ConstructorDeclarationSyntax, IMethodSymbol)>();
 
@@ -496,7 +496,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors(this INamedTypeSymbol typeSymbol,
 																				  CancellationToken cancellation = default)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			typeSymbol.ThrowOnNull();
 
 			int order = 0;
 			List<StaticConstructorInfo> staticCtrs = new List<StaticConstructorInfo>();
@@ -573,7 +573,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsInAcumaticaRootNamespace(this ITypeSymbol type)
 		{
-			type.ThrowOnNull(nameof(type));
+			type.ThrowOnNull();
 
 			var typeRootNamespace = type
 				.GetContainingNamespaces()
@@ -591,7 +591,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns/>
 		public static string GetSimplifiedName(this ITypeSymbol type)
 		{
-			type.ThrowOnNull(nameof(type));
+			type.ThrowOnNull();
 
 			switch (type.SpecialType)
 			{

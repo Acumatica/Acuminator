@@ -16,10 +16,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
         public StartLongOperationWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
             : base(pxContext, context.CancellationToken)
         {
-            descriptor.ThrowOnNull(nameof(descriptor));
-
             _reportDiagnostic = context.ReportDiagnostic;
-            _descriptor = descriptor;
+            _descriptor = descriptor.CheckIfNull();
         }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)

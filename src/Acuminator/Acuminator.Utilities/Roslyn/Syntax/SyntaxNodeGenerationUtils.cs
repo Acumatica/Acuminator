@@ -1,4 +1,7 @@
-﻿using Acuminator.Utilities.Common;
+﻿#nullable enable
+
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,7 +18,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// <returns></returns>
 		public static AttributeListSyntax GetAttributeList(this INamedTypeSymbol type, AttributeArgumentListSyntax argumentList = null)
 		{
-			type.ThrowOnNull(nameof(type));
+			type.ThrowOnNull();
 
 			var node = SyntaxFactory.Attribute(
 				SyntaxFactory.IdentifierName(

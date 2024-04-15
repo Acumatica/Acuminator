@@ -22,7 +22,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public NodeSymbolItem(N node, S symbol, int declarationOrder)
 			: base(symbol, declarationOrder)
 		{
-			Node = node.CheckIfNull(nameof(node));
+			Node = node.CheckIfNull();
 		}
 	}
 }

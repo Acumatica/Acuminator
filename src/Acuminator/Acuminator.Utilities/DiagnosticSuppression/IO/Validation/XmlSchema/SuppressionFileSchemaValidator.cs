@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		protected SuppressionFileSchemaValidator(XmlSchema schema)
 		{
-			Schema = schema.CheckIfNull(nameof(schema));
+			Schema = schema.CheckIfNull();
 			_xmlSchemaSet = new XmlSchemaSet();
 			_xmlSchemaSet.Add(Schema);
 		}
@@ -62,8 +62,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		/// <returns/>
 		public void ValidateSuppressionFile(XDocument document, ValidationLog validationLog)
 		{
-			document.ThrowOnNull(nameof(document));
-			validationLog.ThrowOnNull(nameof(validationLog));
+			document.ThrowOnNull();
+			validationLog.ThrowOnNull();
 
 			try
 			{

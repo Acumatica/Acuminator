@@ -1,42 +1,25 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Common;
+﻿#nullable enable
+
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 {
 	/// <summary>
-	/// A rule to filter out views which are PXSetup.
+	/// A rule to filter out views which are PXSetup views.
 	/// </summary>
-	public class NoPXSetupViewRule : ViewRuleBase
+	public class NoPXSetupViewRule(double? weight = null) : ViewRuleBase(weight)
 	{
-		public sealed override bool IsAbsolute => false;
+		public override sealed bool IsAbsolute => false;
 
-		private readonly ImmutableArray<INamedTypeSymbol> _setupTypes;
-
-		public NoPXSetupViewRule(PXContext context, double? weight = null) : base(weight)
-		{
-			context.ThrowOnNull(nameof(context));
-
-			_setupTypes = context.BQL.PXSetupTypes;
-		}
-		
 		/// <summary>
-		/// Query if view type is PXSetup-like. 
+		/// Query if view type is PXSetup view. 
 		/// </summary>
 		/// <param name="dacFinder">The DAC finder.</param>
 		/// <param name="view">The view.</param>
 		/// <param name="viewType">Type of the view.</param>
 		/// <returns/>
-		public sealed override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
-		{
-			if (dacFinder == null || viewType == null || dacFinder.CancellationToken.IsCancellationRequested)
-				return false;
-
-			return viewType.GetBaseTypesAndThis()
-						   .Any(type => _setupTypes.Contains(type));
-		}
+		public override sealed bool SatisfyRule(PrimaryDacFinder dacFinder, DataViewInfo viewInfo) =>
+			viewInfo.IsSetup;
 	}
 }

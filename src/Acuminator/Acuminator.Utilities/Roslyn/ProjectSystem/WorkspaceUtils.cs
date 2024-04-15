@@ -30,11 +30,11 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<TextDocument> GetAllAdditionalDocuments(this Solution solution) =>
-			solution.CheckIfNull(nameof(solution)).Projects.SelectMany(p => p.AdditionalDocuments);
+			solution.CheckIfNull().Projects.SelectMany(p => p.AdditionalDocuments);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<TextDocument> GetSuppressionFiles(this Project project) =>
-			project.CheckIfNull(nameof(project)).AdditionalDocuments
+			project.CheckIfNull().AdditionalDocuments
 												.Where(additionalDoc => SuppressionFile.IsSuppressionFile(additionalDoc.FilePath));
 
 		/// <summary>
@@ -45,12 +45,12 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int GetWorkspaceIndentationSize(this Workspace workspace)
 		{
-			workspace.ThrowOnNull(nameof(workspace));
+			workspace.ThrowOnNull();
 			return workspace.Options.GetOption(FormattingOptions.IndentationSize, LanguageNames.CSharp);
 		}		
 
 		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument) =>
-			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
+			changeEventArgs.CheckIfNull().Kind switch
 			{
 				var kind when kind == WorkspaceChangeKind.SolutionRemoved ||
 							  kind == WorkspaceChangeKind.SolutionCleared ||
@@ -66,7 +66,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument)
 		{
-			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
+			changeEventArgs.ThrowOnNull();
 
 			if (changeEventArgs.Kind != WorkspaceChangeKind.DocumentChanged)
 				return false;
@@ -77,7 +77,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDocumentTextChanged(this WorkspaceChangeEventArgs changeEventArgs, Document? oldDocument)
 		{
-			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
+			changeEventArgs.ThrowOnNull();
 
 			if (changeEventArgs.Kind != WorkspaceChangeKind.DocumentChanged &&
 				changeEventArgs.Kind != WorkspaceChangeKind.DocumentReloaded)
@@ -92,11 +92,11 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			oldDocument?.Id != changeEventArgs.DocumentId || oldDocument?.Project.Id != changeEventArgs.ProjectId;
 
 		public static bool IsFullyLoadedProject(this Project project) =>
-			project.CheckIfNull(nameof(project)).FilePath.NullIfWhiteSpace() != null;
+			project.CheckIfNull().FilePath.NullIfWhiteSpace() != null;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsProjectStatusInSolutionChanged(this WorkspaceChangeEventArgs changeEventArgs) =>
-			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
+			changeEventArgs.CheckIfNull().Kind switch
 			{
 				WorkspaceChangeKind.ProjectAdded => true,
 				WorkspaceChangeKind.ProjectRemoved => true,
@@ -106,7 +106,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 
 		public static bool IsProjectMetadataChanged(this WorkspaceChangeEventArgs changeEventArgs)
 		{
-			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
+			changeEventArgs.ThrowOnNull();
 
 			if ((changeEventArgs.Kind != WorkspaceChangeKind.ProjectChanged && 
 				changeEventArgs.Kind != WorkspaceChangeKind.ProjectReloaded) || 

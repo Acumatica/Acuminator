@@ -31,8 +31,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, SyntaxNode rootNode, PXContext context, out ISemanticModel semanticModel, 
 													CancellationToken cancellationToken = default)
 		{
-			rootSymbol.ThrowOnNull(nameof(rootSymbol));
-			context.ThrowOnNull(nameof(context));
+			rootSymbol.ThrowOnNull();
+			context.ThrowOnNull();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			if (rootSymbol.IsPXGraphOrExtension(context))

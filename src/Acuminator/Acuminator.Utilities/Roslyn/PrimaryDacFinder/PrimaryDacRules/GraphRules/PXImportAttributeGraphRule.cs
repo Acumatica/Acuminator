@@ -1,40 +1,35 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Microsoft.CodeAnalysis;
 
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
 {
 	/// <summary>
-	/// A rule to get primary DAC from PXImportAttribute cosntructor attribute if there is a view with such attribute.
+	/// A rule to get primary DAC from PXImportAttribute constructor if there is a view with such attribute.
 	/// </summary>
-	public class PXImportAttributeGraphRule : GraphRuleBase
+	public class PXImportAttributeGraphRule(double? customWeight = null) : GraphRuleBase(customWeight)
 	{
-		public sealed override bool IsAbsolute => true;
-
-		public PXImportAttributeGraphRule(double? customWeight = null) : base(customWeight)
-		{
-		}
+		public override sealed bool IsAbsolute => true;
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested)
-				return Enumerable.Empty<ITypeSymbol>();
-
-			List<ITypeSymbol> primaryDacCandidates = new List<ITypeSymbol>(1);
+			var primaryDacCandidates = new List<ITypeSymbol>(1);
 
 			foreach (DataViewInfo viewInfo in dacFinder.GraphViews)
 			{
-				if (dacFinder.CancellationToken.IsCancellationRequested)
-					return Enumerable.Empty<ITypeSymbol>();
+				dacFinder.CancellationToken.ThrowIfCancellationRequested();
 
 				ImmutableArray<AttributeData> attributes = viewInfo.Symbol.GetAttributes();
 
-				if (attributes.Length == 0)
+				if (attributes.IsDefaultOrEmpty)
 					continue;
 
 				var importAttributeType = dacFinder.PxContext.AttributeTypes.PXImportAttribute;
@@ -42,21 +37,28 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 
 				if (importAttributeData == null)
 					continue;
-				else if (dacFinder.CancellationToken.IsCancellationRequested)
-					return Enumerable.Empty<ITypeSymbol>();
-
+				
 				var dacArgType = (from arg in importAttributeData.ConstructorArguments
-								  where arg.Kind == TypedConstantKind.Type && arg.Type.IsDAC()
+								  where arg.Kind == TypedConstantKind.Type && arg.Type.IsDAC(dacFinder.PxContext)
 								  select arg.Type)
 								 .FirstOrDefault();
 
 				if (dacArgType != null)
-				{
 					primaryDacCandidates.Add(dacArgType);
-				}
 			}
 
-			return primaryDacCandidates;
+			return primaryDacCandidates.Count <= 1
+				? primaryDacCandidates
+				: ResolveMultipleDacCandidatesFomDifferentViews(primaryDacCandidates);
+		}
+
+		private IEnumerable<ITypeSymbol> ResolveMultipleDacCandidatesFomDifferentViews(List<ITypeSymbol> primaryDacCandidates)
+		{
+			var distinctDacCandidates = primaryDacCandidates.Distinct().ToList();
+
+			return distinctDacCandidates.Count <= 1
+				? distinctDacCandidates
+				: [];
 		}
 	}
 }

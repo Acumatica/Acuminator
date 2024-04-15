@@ -75,7 +75,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </returns>
 		public static DbBoundnessType Combine(this IEnumerable<DbBoundnessType> dbBoundnesses)
 		{
-			var sortedDbBoundness = dbBoundnesses.CheckIfNull(nameof(dbBoundnesses)).OrderBy(b => b);
+			var sortedDbBoundness = dbBoundnesses.CheckIfNull().OrderBy(b => b);
 			DbBoundnessType aggregatedBoundness = DbBoundnessType.NotDefined;
 
 			foreach (var dbBoundness in sortedDbBoundness)

@@ -18,14 +18,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public SuppressionDiffResult(string path, string assembly, HashSet<SuppressMessage> addedMessages, HashSet<SuppressMessage> deletedMessages)
 		{
-			Path = path.CheckIfNull(nameof(path));
-			Assembly = assembly.CheckIfNull(nameof(assembly));
+			Path = path.CheckIfNull();
+			Assembly = assembly.CheckIfNull();
 
-			AddedMessages = addedMessages.CheckIfNull(nameof(addedMessages))
+			AddedMessages = addedMessages.CheckIfNull()
 										 .Where(m => m.IsValid)
 										 .ToImmutableArray();
 
-			DeletedMessages = deletedMessages.CheckIfNull(nameof(deletedMessages))
+			DeletedMessages = deletedMessages.CheckIfNull()
 											 .Where(m => m.IsValid)
 											 .ToImmutableArray();
 		}

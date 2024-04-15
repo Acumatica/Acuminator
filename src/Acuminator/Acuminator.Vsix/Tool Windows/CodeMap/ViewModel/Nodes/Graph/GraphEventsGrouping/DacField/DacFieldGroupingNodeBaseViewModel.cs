@@ -42,10 +42,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 													bool isExpanded) :
 											  base(dacVM?.Tree, dacVM, isExpanded)
 		{
-			dacFieldName.ThrowOnNullOrWhiteSpace(nameof(dacFieldName));
-
 			DacVM = dacVM;
-			DacFieldName = dacFieldName;
+			DacFieldName = dacFieldName.CheckIfNullOrWhiteSpace();
 			FieldEvents = dacFieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}
 

@@ -26,8 +26,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </returns>
 		public static INamedTypeSymbol? GetCorrespondingBqlField(this IPropertySymbol property, PXContext pxContext, bool checkContainingTypeIsDac)
 		{
-			property.ThrowOnNull(nameof(property));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			property.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			var containingDacOrDacExt = property.ContainingType;
 
@@ -82,8 +82,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 																				   bool includeFromInheritanceChain = true,
 																				   CancellationToken cancellation = default)
 		{
-			dac.ThrowOnNull(nameof(dac));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			dac.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			if (!dac.IsDAC(pxContext))
 				return new OverridableItemsCollection<DacFieldInfo>();
@@ -109,8 +109,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public static OverridableItemsCollection<DacFieldInfo> GetDacFieldsFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
 																									  CancellationToken cancellation = default)
 		{
-			dacExtension.ThrowOnNull(nameof(dacExtension));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			dacExtension.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			return GetPropertiesOrFieldsInfoFromDacExtension<DacFieldInfo>(dacExtension, pxContext, AddFieldsFromDac, AddFieldsFromDacExtension);
 

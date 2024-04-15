@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		public virtual bool ValidateSuppressionFile(XDocument document)
 		{
-			document.ThrowOnNull(nameof(document));
+			document.ThrowOnNull();
 
 			ValidationLog validationLog = new ValidationLog();
 

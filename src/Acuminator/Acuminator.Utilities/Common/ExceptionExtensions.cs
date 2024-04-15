@@ -23,8 +23,8 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		[return: NotNullIfNotNull("obj")]
-		public static T CheckIfNull<T>([NotNull] this T? obj, string? paramName = null, string? message = null)
+		[return: NotNullIfNotNull(nameof(obj))]
+		public static T CheckIfNull<T>([NotNull] this T? obj, [CallerArgumentExpression(nameof(obj))] string? paramName = null, string? message = null)
 		{
 			obj.ThrowOnNull(paramName, message);
 			return obj;
@@ -32,7 +32,7 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ThrowOnNull<T>([NotNull] this T? obj, string? parameter = null, string? message = null)
+		public static void ThrowOnNull<T>([NotNull] this T? obj, [CallerArgumentExpression(nameof(obj))] string? parameter = null, string? message = null)
 		{
 			if (obj != null)
 				return;
@@ -52,8 +52,9 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		[return: NotNullIfNotNull("collection")]
-		public static IEnumerable<T> CheckIfNullOrEmpty<T>([NotNull] this IEnumerable<T>? collection, string? paramName = null, string? message = null)
+		[return: NotNullIfNotNull(nameof(collection))]
+		public static IEnumerable<T> CheckIfNullOrEmpty<T>([NotNull] this IEnumerable<T>? collection, 
+														   [CallerArgumentExpression(nameof(collection))] string? paramName = null, string? message = null)
 		{
 			collection.ThrowOnNullOrEmpty(paramName, message);
 			return collection;
@@ -69,7 +70,8 @@ namespace Acuminator.Utilities.Common
 		/// <param name="message">(Optional) The error message.</param>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ThrowOnNullOrEmpty<T>([NotNull] this IEnumerable<T>? collection, string? paramName = null, string? message = null)
+		public static void ThrowOnNullOrEmpty<T>([NotNull] this IEnumerable<T>? collection, [CallerArgumentExpression(nameof(collection))] string? paramName = null,
+												 string? message = null)
 		{
 			if (collection == null)
 			{
@@ -95,8 +97,9 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		[return: NotNullIfNotNull("str")]
-		public static string CheckIfNullOrWhiteSpace([NotNull] this string? str, string? paramName = null, string? message = null)
+		[return: NotNullIfNotNull(nameof(str))]
+		public static string CheckIfNullOrWhiteSpace([NotNull] this string? str, [CallerArgumentExpression(nameof(str))] string? paramName = null, 
+													  string? message = null)
 		{
 			str.ThrowOnNullOrWhiteSpace(paramName, message);
 			return str;
@@ -104,7 +107,8 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ThrowOnNullOrWhiteSpace([NotNull] this string? str, string? parameter = null, string? message = null)
+		public static void ThrowOnNullOrWhiteSpace([NotNull] this string? str, [CallerArgumentExpression(nameof(str))] string? parameter = null, 
+												   string? message = null)
 		{
 			#pragma warning disable CS8777 // Parameter must have a non-null value when exiting. 
 			// string.IsNullOrWhiteSpace is just not annotated so its safe to return here

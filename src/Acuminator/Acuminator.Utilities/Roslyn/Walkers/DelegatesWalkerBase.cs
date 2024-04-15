@@ -35,7 +35,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 		/// </returns>
 		protected (ISymbol? DelegateSymbol, SyntaxNode? DelegateNode) GetDelegateSymbolAndNode(ExpressionSyntax delegateExpression)
 		{
-			delegateExpression.ThrowOnNull(nameof(delegateExpression));
+			delegateExpression.ThrowOnNull();
 			ThrowIfCancellationRequested();
 
 			switch (delegateExpression)
@@ -88,7 +88,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 		/// </returns>
 		protected SyntaxNode? GetDelegateNode(ExpressionSyntax delegateExpression)
 		{
-			delegateExpression.ThrowOnNull(nameof(delegateExpression));
+			delegateExpression.ThrowOnNull();
 			ThrowIfCancellationRequested();
 
 			switch (delegateExpression)

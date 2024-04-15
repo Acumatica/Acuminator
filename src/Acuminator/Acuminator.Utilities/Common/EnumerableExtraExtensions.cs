@@ -13,45 +13,41 @@ namespace Acuminator.Utilities.Common
 		public static T? FirstOrNullable<T>(this IEnumerable<T> source)
 		where T : struct
 		{
-			source.ThrowOnNull(nameof(source));
-			return source.Cast<T?>().FirstOrDefault();
+			return source.CheckIfNull()
+						 .Cast<T?>()
+						 .FirstOrDefault();
 		}
 
 		public static T? LastOrNullable<T>(this IEnumerable<T> source)
 		where T : struct
 		{
-			source.ThrowOnNull(nameof(source));
-			return source.Cast<T?>().LastOrDefault();
+			return source.CheckIfNull()
+						 .Cast<T?>()
+						 .LastOrDefault();
 		}
 
 		public static bool SetEquals<T>(this IEnumerable<T> source1, IEnumerable<T> source2, IEqualityComparer<T> comparer)
 		{
-			source1.ThrowOnNull(nameof(source1));
-			source2.ThrowOnNull(nameof(source2));
+			source1.ThrowOnNull();
+			source2.ThrowOnNull();
 			return source1.ToSet(comparer).SetEquals(source2);
 		}
 
 		public static bool SetEquals<T>(this IEnumerable<T> source1, IEnumerable<T> source2)
 		{
-			source1.ThrowOnNull(nameof(source1));
-			source2.ThrowOnNull(nameof(source2));
+			source1.ThrowOnNull();
+			source2.ThrowOnNull();
 
 			return source1.ToSet().SetEquals(source2);
 		}
 
-		public static ISet<T> ToSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer)
-		{
-			source.ThrowOnNull(nameof(source));
-			return new HashSet<T>(source, comparer);
-		}
+		public static ISet<T> ToSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer) =>
+			 new HashSet<T>(source, comparer);
 
-		public static ISet<T> ToSet<T>(this IEnumerable<T> source)
-		{
-			source.ThrowOnNull(nameof(source));
-			return source as ISet<T> ?? new HashSet<T>(source);
-		}
+		public static ISet<T> ToSet<T>(this IEnumerable<T> source) =>
+			source as ISet<T> ?? new HashSet<T>(source);
 
-		public static bool IsSingle<T>(this IEnumerable<T> list)
+		public static bool IsSingle<T>(this IEnumerable<T>? list)
 		{
 			if (list == null)
 				return false;
@@ -62,7 +58,7 @@ namespace Acuminator.Utilities.Common
 
 		public static bool All(this IEnumerable<bool> source)
 		{
-			source.ThrowOnNull(nameof(source));
+			source.ThrowOnNull();
 
 			foreach (bool b in source)
 			{
@@ -76,46 +72,38 @@ namespace Acuminator.Utilities.Common
 		}
 
 		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
-			 source.CheckIfNull(nameof(source)).OrderBy(Functions<T>.Identity, comparer);
+			 source.CheckIfNull()
+				   .OrderBy(Functions<T>.Identity, comparer);
 
 		public static IOrderedEnumerable<T> OrderByDescending<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
-			source.CheckIfNull(nameof(source)).OrderByDescending(Functions<T>.Identity, comparer);
+			source.CheckIfNull()
+				  .OrderByDescending(Functions<T>.Identity, comparer);
 
-		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, Comparison<T> compare)
-		{
-			source.ThrowOnNull(nameof(source));
-			return source.OrderBy(Comparer<T>.Create(compare));
-		}
+		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, Comparison<T> compare) =>
+			source.CheckIfNull()
+				  .OrderBy(Comparer<T>.Create(compare));
 
 		public static IOrderedEnumerable<T> Order<T>(this IEnumerable<T> source)
-		where T : IComparable<T>
-		{
-			source.ThrowOnNull(nameof(source));
-			return source.OrderBy(Comparisons<T>.Comparer);
-		}
+		where T : IComparable<T> =>
+			source.CheckIfNull()
+				  .OrderBy(Comparisons<T>.Comparer);
 
-		public static IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, IComparer<T> comparer)
-		{
-			source.ThrowOnNull(nameof(source));
-			return source.ThenBy(Functions<T>.Identity, comparer);
-		}
+		public static IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, IComparer<T> comparer) => 
+			source.CheckIfNull()
+				  .ThenBy(Functions<T>.Identity, comparer);
 
-		public static IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, Comparison<T> compare)
-		{
-			source.ThrowOnNull(nameof(source));
-			return source.ThenBy(Comparer<T>.Create(compare));
-		}
+		public static IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, Comparison<T> compare) =>
+			 source.CheckIfNull()
+				   .ThenBy(Comparer<T>.Create(compare));
 
 		public static IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source)
-		where T : IComparable<T>
-		{
-			source.ThrowOnNull(nameof(source));
-			return source.ThenBy(Comparisons<T>.Comparer);
-		}
+		where T : IComparable<T> => 
+			source.CheckIfNull()
+				  .ThenBy(Comparisons<T>.Comparer);
 
 		public static bool IsSorted<T>(this IEnumerable<T> enumerable, IComparer<T> comparer)
 		{
-			using var e = enumerable.GetEnumerator();
+			using var e = enumerable.CheckIfNull().GetEnumerator();
 
 			if (!e.MoveNext())
 			{
@@ -139,7 +127,7 @@ namespace Acuminator.Utilities.Common
 
 		public static bool SequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, T, bool> comparer)
 		{
-			comparer.ThrowOnNull(nameof(comparer));
+			comparer.ThrowOnNull();
 
 			if (first == second)
 			{
@@ -189,7 +177,7 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TItem> PrependItem<TItem>(this IEnumerable<TItem> source, TItem itemToAdd) =>
+		public static IEnumerable<TItem> PrependItem<TItem>(this IEnumerable<TItem>? source, TItem itemToAdd) =>
 			source.PrependOrAppend(itemToAdd, isAppending: false);
 
 		/// <summary>
@@ -201,11 +189,11 @@ namespace Acuminator.Utilities.Common
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TItem> AppendItem<TItem>(this IEnumerable<TItem> source, TItem itemToAdd) =>
+		public static IEnumerable<TItem> AppendItem<TItem>(this IEnumerable<TItem>? source, TItem itemToAdd) =>
 			source.PrependOrAppend(itemToAdd, isAppending: true);
 
 		[DebuggerStepThrough]
-		private static IEnumerable<TItem> PrependOrAppend<TItem>(this IEnumerable<TItem> source, TItem itemToAdd, bool isAppending)
+		private static IEnumerable<TItem> PrependOrAppend<TItem>(this IEnumerable<TItem>? source, TItem itemToAdd, bool isAppending)
 		{
 			if (!isAppending)
 				yield return itemToAdd;
@@ -226,10 +214,7 @@ namespace Acuminator.Utilities.Common
 
 		private static T[] ConcatArray<T>(T extraElement, T[]? source, bool insertAtStart)
 		{
-			if (source == null)
-			{
-				source = new T[0];
-			}
+			source ??= [];
 
 			T[] result = new T[source.Length + 1];
 			source.CopyTo(result, insertAtStart ? 1 : 0);
@@ -243,10 +228,7 @@ namespace Acuminator.Utilities.Common
 
 		private static T[] ConcatArrays<T>(T[] extraElements, T[]? source, bool insertAtStart)
 		{
-			if (source == null)
-			{
-				source = new T[0];
-			}
+			source ??= [];
 
 			T[] result = new T[source.Length + extraElements.Length];
 			source.CopyTo(result, insertAtStart ? extraElements.Length : 0);
@@ -257,11 +239,11 @@ namespace Acuminator.Utilities.Common
 
 		public static List<TItem> ItemsWithMaxValues<TItem>(this IEnumerable<TItem> source, Func<TItem, double> selector)
 		{
-			source.ThrowOnNull(nameof(source));
-			selector.ThrowOnNull(nameof(selector));
+			source.ThrowOnNull();
+			selector.ThrowOnNull();
 
 			double maxValue = double.MinValue;
-			List<TItem> result = new List<TItem>(capacity: 2);
+			var result = new List<TItem>(capacity: 2);
 
 			foreach (TItem item in source)
 			{

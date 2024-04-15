@@ -23,7 +23,7 @@ namespace Acuminator.Utilities
 		/// <param name="instance">The instance.</param>
 		public static void InitializeGlobalSettingsOnce(CodeAnalysisSettings instance)
 		{
-			instance.ThrowOnNull(nameof(instance));
+			instance.ThrowOnNull();
 
 			if (Interlocked.CompareExchange(ref _isInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{

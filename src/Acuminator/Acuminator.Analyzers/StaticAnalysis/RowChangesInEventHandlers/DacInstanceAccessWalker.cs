@@ -12,13 +12,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 		/// <summary>
 		/// Searches for a member access (conditional and unconditional) on a DAC instance
 		/// </summary>
-		private class DacInstanceAccessWalker : AccessWalkerBase
+		private class DacInstanceAccessWalker(SemanticModel semanticModel) : AccessWalkerBase(semanticModel)
 		{
-			public DacInstanceAccessWalker(SemanticModel semanticModel)
-				: base(semanticModel)
-			{
-			}
-
 			protected override bool Predicate(ExpressionSyntax node)
 			{
 				if (node != null)

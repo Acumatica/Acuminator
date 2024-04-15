@@ -1,4 +1,6 @@
-﻿namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
+﻿#nullable enable
+
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 {
 	/// <summary>
 	/// Values that represent kinds of rule of the graph's primary DAC.

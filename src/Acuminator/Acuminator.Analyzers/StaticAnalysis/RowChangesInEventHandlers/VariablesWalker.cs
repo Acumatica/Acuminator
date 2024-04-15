@@ -30,12 +30,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			public VariablesWalker(MethodDeclarationSyntax methodSyntax, SemanticModel semanticModel, PXContext pxContext,
 				CancellationToken cancellationToken)
 			{
-				methodSyntax.ThrowOnNull(nameof (methodSyntax));
-				semanticModel.ThrowOnNull(nameof (semanticModel));
-				pxContext.ThrowOnNull(nameof (pxContext));
+				methodSyntax.ThrowOnNull();
 
-				_semanticModel = semanticModel;
-				_pxContext = pxContext;
+				_semanticModel = semanticModel.CheckIfNull();
+				_pxContext = pxContext.CheckIfNull();
 				_cancellationToken = cancellationToken;
 
 				_eventArgsRowWalker = new EventArgsRowWalker(semanticModel, pxContext);

@@ -1,5 +1,8 @@
-﻿using Acuminator.Utilities.Roslyn.PXSystemActions;
+﻿#nullable enable
+
+using Acuminator.Utilities.Roslyn.PXSystemActions;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRules
@@ -7,21 +10,12 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRul
 	/// <summary>
 	/// A rule to  add score to DACs which has system action declared for it.
 	/// </summary>
-	public class ScoreSystemActionRule : ScoreSimpleActionRule
+	public class ScoreSystemActionRule(PXContext context, double? weight = null) : ScoreSimpleActionRule(weight)
 	{
-		private readonly PXSystemActionsRegister _systemActionsRegister;
+		private readonly PXSystemActionsRegister _systemActionsRegister = new(context);
 
-		public ScoreSystemActionRule(PXContext context, double? weight = null) : base(weight)
-		{
-			_systemActionsRegister = new PXSystemActionsRegister(context);
-		}
-
-		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol action, INamedTypeSymbol actionType)
-		{
-			if (!base.SatisfyRule(dacFinder, action, actionType))
-				return false;
-
-			return _systemActionsRegister.IsSystemAction(actionType);
-		}
+		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol action, INamedTypeSymbol actionType) =>
+			base.SatisfyRule(dacFinder, action, actionType) && 
+			_systemActionsRegister.IsSystemAction(actionType);
 	}
 }

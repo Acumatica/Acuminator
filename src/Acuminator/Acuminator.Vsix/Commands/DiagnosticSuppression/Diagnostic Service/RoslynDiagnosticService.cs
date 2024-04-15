@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -38,20 +40,20 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		public Type DiagnosticDataLocationType { get; }
 
-		private readonly object _roslynAnalyzersService;
+		private readonly object? _roslynAnalyzersService;
 		private readonly MethodInfo _getDiagnosticOnTextSpanMethod;
-		private readonly PropertyInfo _taskResultPropertyInfo;
+		private readonly PropertyInfo? _taskResultPropertyInfo;
 
 		/// <summary>
 		/// Cached instance of the service.
 		/// </summary>
-		private static RoslynDiagnosticService _instance;
+		private static RoslynDiagnosticService? _instance;
 
 		/// <summary>
 		/// Create wrapper for Roslyn internal diagnostic service.
 		/// </summary>
 		/// <param name="componentModel">The component model service.</param>
-		public static RoslynDiagnosticService Create(IComponentModel componentModel)
+		public static RoslynDiagnosticService? Create(IComponentModel componentModel)
 		{
 			if (_instance != null)
 				return _instance;
@@ -76,8 +78,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		private RoslynDiagnosticService(IComponentModel componentModel)
 		{
-			componentModel.ThrowOnNull(nameof(componentModel));
-			_componentModel = componentModel;
+			_componentModel = componentModel.CheckIfNull();
 
 			DiagnosticAnalyzerServiceType = GetInternalRoslynServiceType();
 
@@ -89,18 +90,18 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 					DiagnosticDataLocationType = type;
 			}
 
-			DiagnosticAnalyzerServiceType.ThrowOnNull(nameof(DiagnosticAnalyzerServiceType));
-			DiagnosticDataType.ThrowOnNull(nameof(DiagnosticDataType));
-			DiagnosticDataLocationType.ThrowOnNull(nameof(DiagnosticDataLocationType));
+			DiagnosticAnalyzerServiceType.ThrowOnNull();
+			DiagnosticDataType.ThrowOnNull();
+			DiagnosticDataLocationType.ThrowOnNull();
 
 			_roslynAnalyzersService = GetDiagnosticServiceInstance(componentModel, DiagnosticAnalyzerServiceType);
-			_roslynAnalyzersService.ThrowOnNull(nameof(_roslynAnalyzersService));
+			_roslynAnalyzersService.ThrowOnNull();
 
 			_getDiagnosticOnTextSpanMethod = DiagnosticAnalyzerServiceType.GetMethod(GetDiagnosticsForSpanAsyncMethodName);
-			_getDiagnosticOnTextSpanMethod.ThrowOnNull(nameof(_getDiagnosticOnTextSpanMethod));
+			_getDiagnosticOnTextSpanMethod.ThrowOnNull();
 
 			_taskResultPropertyInfo = GetTaskResultPropertyInfo(DiagnosticDataType);
-			_taskResultPropertyInfo.ThrowOnNull(nameof(_taskResultPropertyInfo));
+			_taskResultPropertyInfo.ThrowOnNull();
 		}
 
 		private static Type GetInternalRoslynServiceType()
@@ -114,7 +115,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return diagnosticAnalyzerServiceType;
 		}
 
-		private static object GetDiagnosticServiceInstance(IComponentModel componentModel, Type diagnosticAnalyzerServiceType)
+		private static object? GetDiagnosticServiceInstance(IComponentModel componentModel, Type diagnosticAnalyzerServiceType)
 		{
 			Type componentModelType = componentModel.GetType();
 			var getServiceMethodInfo = componentModelType.GetMethod(nameof(componentModel.GetService))
@@ -132,7 +133,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			}
 		}
 
-		private static PropertyInfo GetTaskResultPropertyInfo(Type diagnosticDataType)
+		private static PropertyInfo? GetTaskResultPropertyInfo(Type diagnosticDataType)
 		{
 			Type genericIEnumerableType = typeof(IEnumerable<>).MakeGenericType(diagnosticDataType);
 
@@ -149,15 +150,15 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			try
 			{
 				object dataTask = _getDiagnosticOnTextSpanMethod.Invoke(_roslynAnalyzersService, 
-																new object[] { document, caretSpan, null, false, cancellationToken });
-				if (!(dataTask is Task task))
-					return new List<DiagnosticData>();
+																		[document, caretSpan, null, false, cancellationToken]);
+				if (dataTask is not Task task)
+					return [];
 
 				await task;
-				object rawResult = _taskResultPropertyInfo.GetValue(dataTask);
+				object? rawResult = _taskResultPropertyInfo?.GetValue(dataTask);
 
-				if (!(rawResult is IEnumerable<object> diagnosticsRaw) || diagnosticsRaw.IsNullOrEmpty())
-					return new List<DiagnosticData>();
+				if (rawResult is not IEnumerable<object> diagnosticsRaw || diagnosticsRaw.IsNullOrEmpty())
+					return [];
 
 				return diagnosticsRaw.Select(rawData => DiagnosticData.Create(rawData))
 									 .Where(diagnosticData => diagnosticData != null)
@@ -165,7 +166,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			}
 			catch (Exception e)
 			{
-				return new List<DiagnosticData>();
+				return [];
 			}
 		}
 
@@ -177,15 +178,15 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			try
 			{
 				object dataTask = _getDiagnosticOnTextSpanMethod.Invoke(_roslynAnalyzersService,
-																new object[] { document, caretSpan, null, false, cancellationToken });
-				if (!(dataTask is Task task))
-					return new List<DiagnosticData>();
+																		[document, caretSpan, null, false, cancellationToken]);
+				if (dataTask is not Task task)
+					return [];
 
 				await task;
-				object rawResult = _taskResultPropertyInfo.GetValue(dataTask);
+				object? rawResult = _taskResultPropertyInfo?.GetValue(dataTask);
 
-				if (!(rawResult is IEnumerable<object> diagnosticsRaw) || diagnosticsRaw.IsNullOrEmpty())
-					return new List<DiagnosticData>();
+				if (rawResult is not IEnumerable<object> diagnosticsRaw || diagnosticsRaw.IsNullOrEmpty())
+					return [];
 
 				return diagnosticsRaw.Select(rawData => DiagnosticData.Create(rawData))
 									 .Where(diagnosticData => diagnosticData != null && IsAcuminatorDiagnostic(diagnosticData))
@@ -193,7 +194,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			}
 			catch (Exception e)
 			{
-				return new List<DiagnosticData>();
+				return [];
 			}
 		}
 

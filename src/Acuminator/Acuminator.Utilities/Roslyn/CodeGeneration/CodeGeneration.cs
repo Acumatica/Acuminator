@@ -29,8 +29,8 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 		/// </returns>
 		public static CompilationUnitSyntax AddMissingUsingDirectiveForNamespace(this CompilationUnitSyntax root, string namespaceName)
 		{
-			root.ThrowOnNull(nameof(root));
-			namespaceName.ThrowOnNullOrWhiteSpace(nameof(namespaceName));
+			root.ThrowOnNull();
+			namespaceName.ThrowOnNullOrWhiteSpace();
 
 			bool alreadyHasUsing = root.Usings.Any(usingDirective => namespaceName == usingDirective.Name?.ToString());
 

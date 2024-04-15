@@ -16,7 +16,7 @@ namespace Acuminator.Vsix.Coloriser
     {
         private static TaskScheduler _vsTaskScheduler;
 
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource = new();
 
         public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 
@@ -31,9 +31,9 @@ namespace Acuminator.Vsix.Coloriser
 
         public static BackgroundTagging StartBackgroundTagging(PXColorizerTaggerBase tagger)
         {
-            tagger.ThrowOnNull(nameof(tagger));
+            tagger.ThrowOnNull();
 
-            BackgroundTagging backgroundTagging = new BackgroundTagging();
+            var backgroundTagging = new BackgroundTagging();
             var taggingTask = tagger.GetTagsAsyncImplementationAsync(tagger.Snapshot, backgroundTagging.CancellationToken);
 
             if (taggingTask == null)

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.ComponentModel.Design;
 using System.Linq;
 using EnvDTE;
@@ -44,23 +46,19 @@ namespace Acuminator.Vsix
 		/// <param name="package">Owner package, not null.</param>
 		protected VSCommandBase(AsyncPackage package, OleMenuCommandService commandService, int commandID, Guid? customCommandSet = null)
 		{
-			package.ThrowOnNull(nameof(package));
-			commandService.ThrowOnNull(nameof(commandService));
+			commandService.ThrowOnNull();
 
-			Package = package;
+			Package = package.CheckIfNull();
 			Guid commandSet = customCommandSet ?? DefaultCommandSet;
 
-			if (commandService != null)
+			var menuCommandID = new CommandID(commandSet, commandID);
+			var menuItem = new OleMenuCommand(CommandCallback, menuCommandID)
 			{
-				var menuCommandID = new CommandID(commandSet, commandID);
-				var menuItem = new OleMenuCommand(CommandCallback, menuCommandID)
-				{
-					// This defers the visibility logic back to the VisibilityConstraints in the .vsct file
-					Supported = false
-				};
+				// This defers the visibility logic back to the VisibilityConstraints in the .vsct file
+				Supported = false
+			};
 
-				commandService.AddCommand(menuItem);
-			}
+			commandService.AddCommand(menuItem);
 		}
 
 		/// <summary>

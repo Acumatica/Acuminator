@@ -139,8 +139,8 @@ namespace Acuminator.Vsix.BqlFixer
 
 		private void ApplyChanges(Document oldDocument, Document newDocument)
 		{
-			oldDocument.ThrowOnNull(nameof(oldDocument));
-			newDocument.ThrowOnNull(nameof(newDocument));
+			oldDocument.ThrowOnNull();
+			newDocument.ThrowOnNull();
 
 			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
 			Solution newSolution = newDocument.Project?.Solution;

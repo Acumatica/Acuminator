@@ -82,7 +82,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Depth(this SyntaxNode node)
 		{
-			node.ThrowOnNull(nameof(node));
+			node.ThrowOnNull();
 
 			int depth = 0;
 			SyntaxNode curNode = node.Parent;
@@ -107,7 +107,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static int Depth<TRoot>(this SyntaxNode node)
 		where TRoot : SyntaxNode
 		{
-			node.ThrowOnNull(nameof(node));
+			node.ThrowOnNull();
 
 			if (node is TRoot)
 				return 0;
@@ -138,7 +138,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		where TRoot : SyntaxNode
 		where TNode : SyntaxNode
 		{
-			node.ThrowOnNull(nameof(node));
+			node.ThrowOnNull();
 
 			if (node is TRoot)
 				return 0;
@@ -157,9 +157,6 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 		public static SyntaxNode LowestCommonAncestor(SyntaxNode nodeX, SyntaxNode nodeY)
 		{
-			nodeX.ThrowOnNull(nameof(nodeX));
-			nodeY.ThrowOnNull(nameof(nodeY));
-
 			int depthX = nodeX.Depth();            //Depth is average O(log n) operation, worst case is O(n) but it isn't the case for the syntax tree which is wide but not very deep
 			int depthY = nodeY.Depth();
 

@@ -46,8 +46,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 																						  bool includeFromInheritanceChain = true,																					  
 																						  CancellationToken cancellation = default)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-			dacFields.ThrowOnNull(nameof(dacFields));
+			pxContext.ThrowOnNull();
+			dacFields.ThrowOnNull();
 
 			if (!dac.IsDAC(pxContext))
 				return new OverridableItemsCollection<DacPropertyInfo>();
@@ -77,7 +77,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 																											   IDictionary<string, DacFieldInfo> dacFields,
 																											   CancellationToken cancellation = default)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
 			bool isDac = dacOrExtension.IsDAC(pxContext);
 
@@ -103,8 +103,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 																										  IDictionary<string, DacFieldInfo> dacFields,
 																										  CancellationToken cancellation = default)
 		{
-			dacExtension.ThrowOnNull(nameof(dacExtension));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			dacExtension.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
 			var dbBoundnessCalculator = new DbBoundnessCalculator(pxContext);
 			return GetPropertiesOrFieldsInfoFromDacExtension<DacPropertyInfo>(dacExtension, pxContext, AddPropertiesFromDac, AddPropertiesFromDacExtension);

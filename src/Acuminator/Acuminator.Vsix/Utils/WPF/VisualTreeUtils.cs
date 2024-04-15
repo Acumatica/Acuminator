@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <returns/>
 		public static IEnumerable<FrameworkElement> GetVisualAncestors(this FrameworkElement uiElement)
 		{
-			uiElement.ThrowOnNull(nameof(uiElement));
+			uiElement.ThrowOnNull();
 
 			return GetVisualAncestorsImpl();
 
@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <returns/>
 		public static IEnumerable<FrameworkElement> GetVisualDescendants(this FrameworkElement uiElement)
 		{
-			uiElement.ThrowOnNull(nameof(uiElement));
+			uiElement.ThrowOnNull();
 
 			int elementChildrenCount = VisualTreeHelper.GetChildrenCount(uiElement);
 

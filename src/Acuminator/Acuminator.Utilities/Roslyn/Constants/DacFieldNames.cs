@@ -49,14 +49,20 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static class Restricted
 		{
 			public const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
+			public const string DatabaseRecordStatus  = "DatabaseRecordStatus";
 			public const string CompanyID 			  = "CompanyID";
 			public const string CompanyMask 		  = "CompanyMask";
+			public const string Notes 				  = "Notes";
+			public const string Files 				  = "Files";
 
 			public static ImmutableArray<string> All { get; } = new[]
 			{
 				DeletedDatabaseRecord,
+				DatabaseRecordStatus,
 				CompanyID,
-				CompanyMask
+				CompanyMask,
+				Notes,
+				Files
 			}
 			.ToImmutableArray();
 		}

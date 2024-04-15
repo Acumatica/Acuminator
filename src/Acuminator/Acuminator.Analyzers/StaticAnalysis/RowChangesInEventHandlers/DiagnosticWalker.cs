@@ -39,12 +39,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				RowChangesAnalysisMode analysisMode,
 				params object[] messageArgs)
 			{
-				pxContext.ThrowOnNull(nameof (pxContext));
-				semanticModel.ThrowOnNull(nameof (semanticModel));
-
 				_context = context;
-				_semanticModel = semanticModel;
-				_pxContext = pxContext;
+				_semanticModel = semanticModel.CheckIfNull();
+				_pxContext = pxContext.CheckIfNull();
 				_analysisMode = analysisMode;
 				_rowVariables = rowVariables.ToImmutableHashSet();
 				_messageArgs = messageArgs;

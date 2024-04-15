@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, ICustomBuildActionSetter? buildActionSetter)
 		{
-			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
+			_fileSystemService = fileSystemService.CheckIfNull();
 			_suppressionFileCreator = new SuppressionFileCreator(this);
 
 			BuildActionSetter = buildActionSetter;
@@ -187,7 +187,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		public SuppressionFile? GetSuppressionFile(string assemblyName) =>
-			_fileByAssembly.TryGetValue(assemblyName.CheckIfNullOrWhiteSpace(nameof(assemblyName)), out var existingSuppressionFile)
+			_fileByAssembly.TryGetValue(assemblyName.CheckIfNullOrWhiteSpace(), out var existingSuppressionFile)
 				? existingSuppressionFile
 				: null;
 
@@ -288,7 +288,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 																Diagnostic diagnostic, CodeAnalysisSettings settings, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
-			reportDiagnostic.ThrowOnNull(nameof(reportDiagnostic));
+			reportDiagnostic.ThrowOnNull();
 
 			if (!settings.SuppressionMechanismEnabled)
 			{

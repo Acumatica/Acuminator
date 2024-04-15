@@ -35,8 +35,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			public BqlGraphArgWalker(SemanticModel semanticModel, PXContext pxContext, CancellationToken cancellation)
 			{				
-				_semanticModel = semanticModel.CheckIfNull(nameof(semanticModel));
-				_pxContext = pxContext.CheckIfNull(nameof(pxContext));
+				_semanticModel = semanticModel.CheckIfNull();
+				_pxContext = pxContext.CheckIfNull();
 				_cancellation = cancellation;
 			}
 

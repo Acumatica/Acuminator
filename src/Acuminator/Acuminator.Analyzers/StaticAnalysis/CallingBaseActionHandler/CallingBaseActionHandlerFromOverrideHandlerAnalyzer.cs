@@ -71,8 +71,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, HashSet<ISymbol> baseActions, HashSet<IMethodSymbol> baseHandlers)
 				: base(pxContext, context.CancellationToken)
 			{
-				_baseActions = baseActions.CheckIfNull(nameof(baseActions));
-				_baseHandlers = baseHandlers.CheckIfNull(nameof(baseHandlers));
+				_baseActions = baseActions.CheckIfNull();
+				_baseHandlers = baseHandlers.CheckIfNull();
 				_context = context;
 			}
 

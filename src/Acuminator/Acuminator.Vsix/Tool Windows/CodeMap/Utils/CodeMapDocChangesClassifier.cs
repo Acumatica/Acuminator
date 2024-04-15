@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public CodeMapDocChangesClassifier(CodeMapWindowViewModel codeMapWindowViewModel)
 		{
-			_codeMapViewModel = codeMapWindowViewModel.CheckIfNull(nameof(codeMapWindowViewModel));
+			_codeMapViewModel = codeMapWindowViewModel.CheckIfNull();
 		}
 
 		public async Task<CodeMapRefreshMode> ShouldRefreshCodeMapAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,

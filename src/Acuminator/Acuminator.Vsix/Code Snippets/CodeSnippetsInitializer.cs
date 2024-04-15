@@ -65,7 +65,7 @@ namespace Acuminator.Vsix.CodeSnippets
 		/// </returns>
 		public bool InitializeCodeSnippets(Version packageVersion)
 		{
-			packageVersion.ThrowOnNull(nameof(packageVersion));
+			packageVersion.ThrowOnNull();
 			
 			if (!IsSnippetsFolderInitialized)
 				return false;

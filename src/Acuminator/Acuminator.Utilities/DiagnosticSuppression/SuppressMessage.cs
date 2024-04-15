@@ -20,7 +20,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private const string TargetElement = "target";
 		private const string SyntaxNodeElement = "syntaxNode";
 
-		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
+		private static HashSet<SyntaxKind> _targetKinds = 
+		[
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.StructDeclaration,
 			SyntaxKind.EnumDeclaration,
@@ -30,7 +31,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			SyntaxKind.ConstructorDeclaration,
 			SyntaxKind.PropertyDeclaration,
 			SyntaxKind.FieldDeclaration
-		});
+		];
 
 		/// <summary>
 		/// Suppressed diagnostic Id
@@ -56,13 +57,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public SuppressMessage(string id, string target, string syntaxNode)
 		{
-			id.ThrowOnNull(nameof(id));
-			target.ThrowOnNull(nameof(target));
-			syntaxNode.ThrowOnNull(nameof(syntaxNode));
-
-			Id = id;
-			Target = target;
-			SyntaxNode = syntaxNode;
+			Id = id.CheckIfNull();
+			Target = target.CheckIfNull();
+			SyntaxNode = syntaxNode.CheckIfNull();
 
 			var hash = 17;
 
@@ -162,7 +159,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			var targetNode = node?.AncestorsAndSelf().FirstOrDefault(a => _targetKinds.Contains(a.Kind()));
 
-			if (!(targetNode is FieldDeclarationSyntax fieldDeclaration))
+			if (targetNode is not FieldDeclarationSyntax fieldDeclaration)
 				return targetNode;
 			else if (fieldDeclaration.Declaration == null)
 				return null;

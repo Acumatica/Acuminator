@@ -73,8 +73,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		internal static SuppressionFile Load(ISuppressionFileSystemService fileSystemService, string suppressionFilePath, 
 											 bool generateSuppressionBase)
 		{
-			fileSystemService.ThrowOnNull(nameof(fileSystemService));
-			suppressionFilePath.ThrowOnNullOrWhiteSpace(nameof(suppressionFilePath));
+			fileSystemService.ThrowOnNull();
+			suppressionFilePath.ThrowOnNullOrWhiteSpace();
 
 			string assemblyName = fileSystemService.GetFileName(suppressionFilePath);
 			if (string.IsNullOrEmpty(assemblyName))
@@ -115,7 +115,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		internal XDocument MessagesToDocument(ISuppressionFileSystemService fileSystemService)
 		{
-			fileSystemService.ThrowOnNull(nameof(fileSystemService));
+			fileSystemService.ThrowOnNull();
 			XDocument document;
 
 			lock (fileSystemService)

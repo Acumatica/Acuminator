@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		internal PXGraphExtensionSymbols(PXContext pxContext) : base(pxContext.Compilation, TypeFullNames.PXGraphExtension)
         {
-			Initialize = Type!.CheckIfNull(nameof(Type))
+			Initialize = Type!.CheckIfNull()
 							  .GetMethods(DelegateNames.Initialize).FirstOrDefault();
 			Configure  = Type.GetConfigureMethodFromBaseGraphOrGraphExtension(pxContext);
 		}

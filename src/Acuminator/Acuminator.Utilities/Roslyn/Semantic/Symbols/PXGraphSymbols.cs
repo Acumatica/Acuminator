@@ -38,7 +38,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		internal PXGraphSymbols(PXContext pxContext) : base(pxContext.Compilation, TypeFullNames.PXGraph)
         {
-			Type.ThrowOnNull(nameof(Type));
+			Type.ThrowOnNull();
 
 			GenericTypeGraph = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1);
 			GenericTypeGraphDac = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2);

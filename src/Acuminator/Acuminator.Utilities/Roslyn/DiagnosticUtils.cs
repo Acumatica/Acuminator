@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
@@ -11,10 +13,7 @@ namespace Acuminator.Utilities.Roslyn
 	/// </summary>
 	public static class DiagnosticUtils
 	{
-		public static bool IsAcuminatorDiagnostic(this Diagnostic diagnostic)
-		{
-			diagnostic.ThrowOnNull(nameof(diagnostic));
-			return diagnostic.Id.StartsWith(SharedConstants.AcuminatorDiagnosticPrefix);
-		}
+		public static bool IsAcuminatorDiagnostic(this Diagnostic diagnostic) =>
+			diagnostic.CheckIfNull().Id.StartsWith(SharedConstants.AcuminatorDiagnosticPrefix);
 	}
 }

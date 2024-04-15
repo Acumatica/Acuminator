@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	{
 		public static bool IsInstanceConstructor(this IMethodSymbol methodSymbol)
 		{
-			methodSymbol.ThrowOnNull(nameof (methodSymbol));
+			methodSymbol.ThrowOnNull();
 
 			return !methodSymbol.IsStatic && methodSymbol.MethodKind == MethodKind.Constructor;
 		}
@@ -48,7 +48,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private static IMethodSymbol? GetStaticOrNonLocalContainingMethod(IMethodSymbol localFunction, bool stopOnStaticMethod,
 																		  CancellationToken cancellation)
 		{
-			localFunction.ThrowOnNull(nameof(localFunction));
+			localFunction.ThrowOnNull();
 
 			if (localFunction.MethodKind != MethodKind.LocalFunction)
 				return localFunction;
@@ -62,12 +62,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		public static IEnumerable<IMethodSymbol> GetContainingMethodsAndThis(this IMethodSymbol localFunction) =>
-			localFunction.CheckIfNull(nameof(localFunction)).MethodKind == MethodKind.LocalFunction
+			localFunction.CheckIfNull().MethodKind == MethodKind.LocalFunction
 				? localFunction.GetContainingMethods(includeThis: true)
 				: new[] { localFunction };
 
 		public static IEnumerable<IMethodSymbol> GetContainingMethods(this IMethodSymbol localFunction) =>
-			localFunction.CheckIfNull(nameof(localFunction)).MethodKind == MethodKind.LocalFunction
+			localFunction.CheckIfNull().MethodKind == MethodKind.LocalFunction
 				? localFunction.GetContainingMethods(includeThis: false)
 				: Enumerable.Empty<IMethodSymbol>();
 
@@ -95,7 +95,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static ImmutableArray<IParameterSymbol> GetAllParametersAvailableForLocalFunction(this IMethodSymbol localFunction, bool includeOwnParameters,
 																								 CancellationToken cancellation)
 		{
-			if (localFunction.CheckIfNull(nameof(localFunction)).MethodKind != MethodKind.LocalFunction)
+			if (localFunction.CheckIfNull().MethodKind != MethodKind.LocalFunction)
 				return localFunction.Parameters;
 
 			ImmutableArray<IParameterSymbol>.Builder parametersBuilder;
@@ -149,7 +149,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		public static bool IsNonLocalMethodParameterRedefined(this IMethodSymbol localMethod, string parameterName, CancellationToken cancellation)
 		{
-			localMethod.ThrowOnNull(nameof(localMethod));
+			localMethod.ThrowOnNull();
 
 			if (parameterName.IsNullOrWhiteSpace() || localMethod.MethodKind != MethodKind.LocalFunction)
 				return false;
@@ -206,8 +206,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		public static bool IsDefinitelyStatic(this IMethodSymbol method, SyntaxNode methodDeclaration)
 		{
-			method.ThrowOnNull(nameof(method));
-			methodDeclaration.ThrowOnNull(nameof(methodDeclaration));
+			method.ThrowOnNull();
+			methodDeclaration.ThrowOnNull();
 
 			if (method.MethodKind != MethodKind.LocalFunction)
 				return method.IsStatic;
@@ -222,7 +222,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>True if <paramref name="method"/> </returns>
 		public static bool CanBeOverriden(this IMethodSymbol method)
 		{
-			method.ThrowOnNull(nameof(method));
+			method.ThrowOnNull();
 
 			return method.IsVirtual || method.IsOverride || method.IsAbstract;
 		}

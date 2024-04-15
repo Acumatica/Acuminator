@@ -54,7 +54,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected DacGroupingNodeBaseViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName, bool isExpanded) :
 												base(graphEventsCategoryVM?.Tree, graphEventsCategoryVM, isExpanded)
 		{
-			dacName.ThrowOnNullOrWhiteSpace(nameof(dacName));
+			dacName.ThrowOnNullOrWhiteSpace();
 
 			GraphEventsCategoryVM = graphEventsCategoryVM;
 			DacName = dacName;

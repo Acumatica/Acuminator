@@ -53,13 +53,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 
 		public ArgumentsToParametersMapping(int[] parametersMapping)
 		{
-			_parametersMapping = parametersMapping.CheckIfNull(nameof(parametersMapping));
+			_parametersMapping = parametersMapping.CheckIfNull();
 			_length = parametersMapping.Length;
 		}
 
 		public IParameterSymbol GetMappedParameter(IMethodSymbol methodSymbol, int argIndex)
 		{
-			methodSymbol.ThrowOnNull(nameof(methodSymbol));
+			methodSymbol.ThrowOnNull();
 			int parameterIndex = GetMappedParameterPosition(argIndex);
 			return methodSymbol.Parameters[parameterIndex];
 		}

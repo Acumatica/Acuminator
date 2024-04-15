@@ -42,8 +42,8 @@ namespace Acuminator.Vsix.Utilities
 		public static void FileAndForget(this Task task, string faultEventName, string faultDescription = null,
 										 Func<Exception, bool> fileOnlyIf = null)
 		{
-			task.ThrowOnNull(nameof(task));
-			faultEventName.ThrowOnNullOrEmpty(nameof(faultEventName));
+			task.ThrowOnNull();
+			faultEventName.ThrowOnNullOrEmpty();
 
 #pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
 #pragma warning disable VSTHRD110 // Observe result of async calls

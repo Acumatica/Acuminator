@@ -1,7 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
 using System.Collections.Immutable;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -42,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public INamedTypeSymbol Type { get; }
 		
-		public ITypeSymbol DAC { get; }
+		public ITypeSymbol? DAC { get; }
 
 		/// <summary>
 		/// The process delegates
@@ -67,13 +71,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// The overriden item if any
 		/// </summary>
-		public DataViewInfo Base
+		public DataViewInfo? Base
 		{
 			get;
 			internal set;
 		}
 
-		DataViewInfo IWriteableBaseItem<DataViewInfo>.Base
+		DataViewInfo? IWriteableBaseItem<DataViewInfo>.Base
 		{
 			get => Base;
 			set => Base = value;
@@ -82,17 +86,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder)
 					 : base(symbol, declarationOrder)
 		{
-			type.ThrowOnNull(nameof(type));
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull();
 
-			Type = type;
+			Type = type.CheckIfNull();
 
-			IsProcessing = type.IsProcessingView(pxContext);
-			IsSetup = type.IsPXSetupBqlCommand(pxContext);
-			IsFilter = type.InheritsFromOrEqualsGeneric(pxContext.BQL.PXFilter);
-			IsFBQL = type.IsFbqlView(pxContext);
-			IsCustomView = !IsProcessing && !IsSetup && !IsFilter && !IsFBQL && type.IsCustomBqlCommand(pxContext);
-			IsPXSelectReadOnly = type.IsPXSelectReadOnlyCommand();
+			IsProcessing 	   = Type.IsProcessingView(pxContext);
+			IsSetup 		   = Type.IsPXSetupBqlCommand(pxContext);
+			IsFilter 		   = Type.InheritsFromOrEqualsGeneric(pxContext.BQL.PXFilter);
+			IsFBQL 			   = Type.IsFbqlView(pxContext);
+			IsCustomView 	   = !IsProcessing && !IsSetup && !IsFilter && !IsFBQL && Type.IsCustomBqlCommand(pxContext);
+			IsPXSelectReadOnly = Type.IsPXSelectReadOnlyCommand();
 
 			DAC = Type.GetDacFromView(pxContext);
 		}
@@ -100,9 +103,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder, DataViewInfo baseInfo)
 					 : this(symbol, type, pxContext, declarationOrder)
 		{
-			baseInfo.ThrowOnNull(nameof(baseInfo));
-
-			Base = baseInfo;
+			Base = baseInfo.CheckIfNull(nameof(baseInfo));
 		}
 	}
 }

@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 		public PassedParameter(string name, CapturedInstancesTypes capturedInstanceTypes)
 		{
-			Name = name.CheckIfNullOrWhiteSpace(nameof(name));
+			Name = name.CheckIfNullOrWhiteSpace();
 			CapturedTypes = capturedInstanceTypes;
 		}
 

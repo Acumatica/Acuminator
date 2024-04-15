@@ -1,20 +1,18 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 {
 	/// <summary>
 	/// A rule to filter DAC based on a graph's action.
 	/// </summary>
-	public abstract class ActionRuleBase : PrimaryDacRuleBase
+	public abstract class ActionRuleBase(double? customWeight) : PrimaryDacRuleBase(customWeight)
 	{
 		/// <summary>
 		/// The rule kind.
 		/// </summary>
-		public sealed override PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.Action;
-
-		protected ActionRuleBase(double? customWeight) : base(customWeight)
-		{
-		}
+		public override sealed PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.Action;
 
 		/// <summary>
 		/// Query if action satisfies this rule's conditions.

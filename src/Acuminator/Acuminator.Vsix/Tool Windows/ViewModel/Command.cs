@@ -41,10 +41,8 @@ namespace Acuminator.Vsix.ToolWindows
 		/// <param name="actionToExecute">The execution logic.</param>
 		/// <param name="canExecute">The predicate to determine if action can execute.</param>
 		public Command(Action<object> actionToExecute, Predicate<object> canExecute)
-		{
-			actionToExecute.ThrowOnNull(nameof(actionToExecute));
-				
-			_actionToExecute = actionToExecute;
+		{				
+			_actionToExecute = actionToExecute.CheckIfNull();
 			_canExecute = canExecute;
 		}	
 	}

@@ -260,9 +260,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																	GraphSemanticModelCreationOptions modelCreationOptions,
 																	CancellationToken cancellation = default)
 		{
+			pxContext.ThrowOnNull();
+			typeSymbol.ThrowOnNull();
 			cancellation.ThrowIfCancellationRequested();
-			pxContext.ThrowOnNull(nameof(pxContext));
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
 			var models = new List<PXGraphSemanticModel>(capacity: 1);
 			var explicitModel = InferExplicitModel(pxContext, typeSymbol, modelCreationOptions, cancellation);
@@ -313,9 +313,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															  GraphSemanticModelCreationOptions modelCreationOptions,
 															  CancellationToken cancellation)
 		{
+			pxContext.ThrowOnNull();
+			typeSymbol.ThrowOnNull();
 			cancellation.ThrowIfCancellationRequested();
-			pxContext.ThrowOnNull(nameof(pxContext));
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
 			GraphType graphType = GraphType.None;
 

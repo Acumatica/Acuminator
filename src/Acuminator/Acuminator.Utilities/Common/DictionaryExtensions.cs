@@ -14,7 +14,7 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
 		{
-			dict.ThrowOnNull(nameof (dict));
+			dict.ThrowOnNull();
 
 			if (key != null && !dict.ContainsKey(key))
 			{

@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -17,34 +21,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		/// <param name="graphType">The graph type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetGraphWithBaseTypes(this ITypeSymbol graphType)
-		{
-			graphType.ThrowOnNull(nameof(graphType));
-			return graphType.GetBaseTypesAndThis()
-							.TakeWhile(type => !type.IsGraphBaseType());
-		}
+		public static IEnumerable<ITypeSymbol> GetGraphWithBaseTypes(this ITypeSymbol graphType) =>
+			graphType.GetBaseTypesAndThis()
+					 .TakeWhile(type => !type.IsGraphBaseType());
 
 		/// <summary>
 		/// Gets the extension type with its base types up to first met <see cref="PX.Data.PXGraphExtension"/>.
 		/// </summary>
 		/// <param name="extensionType">The extension type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetExtensionWithBaseTypes(this ITypeSymbol extensionType)
-		{
-			extensionType.ThrowOnNull(nameof(extensionType));
-			return extensionType.GetBaseTypesAndThis()
-								.TakeWhile(type => !type.IsGraphExtensionBaseType());
-		}
+		public static IEnumerable<ITypeSymbol> GetExtensionWithBaseTypes(this ITypeSymbol extensionType) =>
+			extensionType.GetBaseTypesAndThis()
+						 .TakeWhile(type => !type.IsGraphExtensionBaseType());
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type) =>
-			type?.Name == TypeNames.PXGraph || type.Name == TypeNames.PXGraphExtension;
+		internal static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol? type) =>
+			type != null && (type.Name == TypeNames.PXGraph || type.Name == TypeNames.PXGraphExtension);
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsGraphBaseType(this ITypeSymbol type) => type?.Name == TypeNames.PXGraph;
+		public static bool IsGraphBaseType(this ITypeSymbol? type) => type?.Name == TypeNames.PXGraph;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsGraphExtensionBaseType(this ITypeSymbol type) => 
+		public static bool IsGraphExtensionBaseType(this ITypeSymbol? type) => 
 			type?.Name == TypeNames.PXGraphExtension;
 
 		/// <summary>
@@ -61,18 +59,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
-				return Enumerable.Empty<ITypeSymbol>();
+			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
+				return [];
 
-			INamedTypeSymbol extensionBaseType = graphExtension.GetBaseTypesAndThis()
-															   .FirstOrDefault(type => type.IsGraphExtensionBaseType()) as INamedTypeSymbol;
+			INamedTypeSymbol? extensionBaseType = graphExtension.GetBaseTypesAndThis()
+																.FirstOrDefault(type => type.IsGraphExtensionBaseType()) as INamedTypeSymbol;
 			if (extensionBaseType == null)
-				return Enumerable.Empty<ITypeSymbol>();
+				return [];
 
 			var graphType = extensionBaseType.TypeArguments.LastOrDefault();
 
 			if (graphType == null || !graphType.IsPXGraph(pxContext))
-				return Enumerable.Empty<ITypeSymbol>();
+				return [];
 
 			return sortDirection == SortDirection.Ascending
 				? GetExtensionInAscendingOrder(graphType, graphExtension, extensionBaseType, pxContext, includeGraph)
@@ -95,7 +93,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				var baseExtension = extensionBaseType.TypeArguments[i];
 
 				if (!baseExtension.IsPXGraphExtension(pxContext))
-					return Enumerable.Empty<ITypeSymbol>();
+					return [];
 
 				extensions.Add(baseExtension);		//According to Platform team we shouldn't consider case when the graph extensions chaining mixes with .Net inheritance
 			}
@@ -116,7 +114,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				var baseExtension = extensionBaseType.TypeArguments[i];
 
 				if (!baseExtension.IsPXGraphExtension(pxContext))
-					return Enumerable.Empty<ITypeSymbol>();
+					return [];
 
 				extensions.Add(baseExtension);		//According to Platform team we shouldn't consider case when the graph extensions chaining mixes with .Net inheritance
 			}

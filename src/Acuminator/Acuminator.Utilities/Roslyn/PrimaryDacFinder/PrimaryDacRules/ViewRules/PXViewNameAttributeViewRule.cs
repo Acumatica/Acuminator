@@ -1,10 +1,15 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 {
@@ -15,23 +20,18 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 	{
 		private readonly INamedTypeSymbol _pxViewNameAttribute;
 
-		public sealed override bool IsAbsolute => false;
+		public override sealed bool IsAbsolute => false;
 
 		public PXViewNameAttributeViewRule(PXContext context, double? weight = null) : base(weight)
 		{
-			context.ThrowOnNull(nameof(context));
-
-			_pxViewNameAttribute = context.Compilation.GetTypeByMetadataName(TypeFullNames.PXViewNameAttribute);
+			_pxViewNameAttribute = context.CheckIfNull().Compilation.GetTypeByMetadataName(TypeFullNames.PXViewNameAttribute);
 		}
 
-		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
+		public override bool SatisfyRule(PrimaryDacFinder? dacFinder, DataViewInfo viewInfo)
 		{
-			if (view == null || dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested)
-				return false;
+			ImmutableArray<AttributeData> attributes = viewInfo.Symbol.GetAttributes();
 
-			ImmutableArray<AttributeData> attributes = view.GetAttributes();
-
-			if (attributes.Length == 0)
+			if (attributes.IsDefaultOrEmpty)
 				return false;
 
 			return attributes.SelectMany(a => a.AttributeClass.GetBaseTypesAndThis())

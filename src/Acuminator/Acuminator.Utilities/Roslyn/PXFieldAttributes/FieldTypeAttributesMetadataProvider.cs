@@ -38,7 +38,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public FieldTypeAttributesMetadataProvider(PXContext pxContext)
 		{
-			_pxContext = pxContext.CheckIfNull(nameof(pxContext));
+			_pxContext = pxContext.CheckIfNull();
 			_pxDBScalarAttribute = _pxContext.FieldAttributes.PXDBScalarAttribute;
 			_pxDBCalcedAttribute = _pxContext.FieldAttributes.PXDBCalcedAttribute;
 			_pxDBFieldAttribute = _pxContext.FieldAttributes.PXDBFieldAttribute;
@@ -84,7 +84,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 																										ImmutableHashSet<ITypeSymbol> flattenedAttributes)
 		{
 			if (flattenedAttributes.Count == 0)
-				return Array.Empty<DataTypeAttributeInfo>();
+				return [];
 
 			var mixedDbBoundnessAttributeInfos = GetMixedDbBoundnessAttributeInfosInFlattenedSet(originalAttribute, flattenedAttributes);
 			bool hasMixedBoundnessAttributes = mixedDbBoundnessAttributeInfos?.Count > 0;

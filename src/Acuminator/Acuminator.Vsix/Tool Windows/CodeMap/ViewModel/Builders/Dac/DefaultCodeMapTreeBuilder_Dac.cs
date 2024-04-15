@@ -57,14 +57,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory)
 		{
-			dacKeysCategory.ThrowOnNull(nameof(dacKeysCategory));
+			dacKeysCategory.ThrowOnNull();
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacKeysCategory,
 																	propertyInfo => new PropertyNodeViewModel(dacKeysCategory, propertyInfo, ExpandCreatedNodes));
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory)
 		{
-			dacPropertiesCategory.ThrowOnNull(nameof(dacPropertiesCategory));
+			dacPropertiesCategory.ThrowOnNull();
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacPropertiesCategory, 
 																	propertyInfo => new PropertyNodeViewModel(dacPropertiesCategory, propertyInfo, ExpandCreatedNodes));
 		}
@@ -92,10 +92,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(PropertyNodeViewModel property)
-		{
-			property.ThrowOnNull(nameof(property));
-			return property.PropertyInfo.Attributes.Select(a => new AttributeNodeViewModel(property, a.AttributeData, ExpandCreatedNodes));
-		}
+		public override IEnumerable<TreeNodeViewModel> VisitNode(PropertyNodeViewModel property) =>
+			property.CheckIfNull().PropertyInfo.Attributes.Select(a => new AttributeNodeViewModel(property, a.AttributeData, ExpandCreatedNodes));
 	}
 }

@@ -26,10 +26,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphSemanticModelForCodeMap(PXGraphEventSemanticModel graphEventSemanticModel, PXContext context)
 		{
-			graphEventSemanticModel.ThrowOnNull(nameof(graphEventSemanticModel));
-			context.ThrowOnNull(nameof(context));
+			context.ThrowOnNull();
 
-			GraphModel = graphEventSemanticModel;
+			GraphModel = graphEventSemanticModel.CheckIfNull();
 			InstanceConstructors = GetInstanceConstructors(graphEventSemanticModel.Symbol, context).ToImmutableArray();
 			BaseMemberOverrides = GetBaseMemberOverrides(graphEventSemanticModel.Symbol, context).ToImmutableArray();
 		}

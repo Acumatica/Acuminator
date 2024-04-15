@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		protected AttributeInfo(AttributeData attributeData, IEnumerable<AttributeWithApplication> flattenedAttributeApplications, IEnumerable<DataTypeAttributeInfo> attributeInfos,
 								DbBoundnessType dbBoundness, int declarationOrder, bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute)
 		{
-			AttributeData                = attributeData.CheckIfNull(nameof(attributeData));
+			AttributeData                = attributeData.CheckIfNull();
 			FlattenedAcumaticaAttributes = (flattenedAttributeApplications as ImmutableHashSet<AttributeWithApplication>) ?? flattenedAttributeApplications.ToImmutableHashSet();
 			AggregatedAttributeMetadata  = attributeInfos.ToImmutableArray();
 			DbBoundness                  = dbBoundness;
@@ -75,8 +75,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		public static AttributeInfo Create(AttributeData attribute, DbBoundnessCalculator dbBoundnessCalculator, int declarationOrder)
 		{
-			attribute.ThrowOnNull(nameof(attribute));
-			dbBoundnessCalculator.ThrowOnNull(nameof(dbBoundnessCalculator));
+			attribute.ThrowOnNull();
+			dbBoundnessCalculator.ThrowOnNull();
 
 			var flattenedAttributeApplications = attribute.GetThisAndAllAggregatedAttributesWithApplications(dbBoundnessCalculator.Context, includeBaseTypes: true);
 			var flattenedAttributeTypes = flattenedAttributeApplications.Select(attributeWithApplication => attributeWithApplication.Type).ToImmutableHashSet();
