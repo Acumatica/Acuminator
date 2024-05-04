@@ -130,10 +130,10 @@ namespace Acuminator.Utilities.Common
 		private static ArgumentException NewArgumentException(string? parameter = null, string? message = null)
 		{
 			return parameter == null
-			   ? new ArgumentNullException()
+			   ? new ArgumentException()
 			   : message == null
-				   ? new ArgumentNullException(parameter)
-				   : new ArgumentNullException(parameter, message);
+				   ? new ArgumentException(parameter)
+				   : new ArgumentException(parameter, message);
 		}
 	}
 }
