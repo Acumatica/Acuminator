@@ -338,7 +338,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsNullOrEmpty<T>([NotNullWhen(returnValue: false)] this IEnumerable<T>? source) => 
-			source?.IsEmpty() ?? true;
+			source == null || source.IsEmpty();
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
