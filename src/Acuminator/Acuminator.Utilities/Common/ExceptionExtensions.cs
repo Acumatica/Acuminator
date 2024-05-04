@@ -82,7 +82,7 @@ namespace Acuminator.Utilities.Common
 				message = message.IsNullOrWhiteSpace()
 							? TheCollectionCannotBeEmptyErrorMsg
 							: message;
-				throw NewArgumentException(message, paramName);
+				throw NewArgumentException(paramName, message);
 			}
 		}
 
