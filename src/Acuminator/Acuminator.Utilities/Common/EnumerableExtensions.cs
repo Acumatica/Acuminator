@@ -304,10 +304,9 @@ namespace Acuminator.Utilities.Common
 		public static bool IsEmpty<T>(this IEnumerable<T> source) =>
 			source.CheckIfNull() switch
 			{
-				IReadOnlyCollection<T> readOnlyCollection => readOnlyCollection.Count == 0,
 				ICollection<T> genericCollection => genericCollection.Count == 0,
+				IReadOnlyCollection<T> readOnlyCollection => readOnlyCollection.Count == 0,
 				ICollection collection => collection.Count == 0,
-				string str => str.Length == 0,
 				_ => !source.Any(),
 			};
 
@@ -339,7 +338,7 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsNullOrEmpty<T>([NotNullWhen(returnValue: false)] this IEnumerable<T>? source) => 
-			source?.IsEmpty() ?? true;
+			source == null || source.IsEmpty();
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
