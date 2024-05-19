@@ -8,6 +8,7 @@ using System.Threading;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -18,6 +19,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+
+using ModifierSetsLocations = System.Collections.Generic.List<Microsoft.CodeAnalysis.Location>;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 {
@@ -63,17 +66,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				return;
 			}
 
-			var locations = GetModifiersLocationsFromClassNode(dacOrGraphOrExtensionModel.Symbol, context.CancellationToken);
+			var modifierSetsLocationsForTypeDeclarations = 
+				GetBadModifierSetsLocationsForTypeDeclarations(dacOrGraphOrExtensionModel.Symbol, context.CancellationToken);
 			ImmutableDictionary<string, string>? diagnosticProperties = null;
 
-			foreach (Location location in locations)
+			foreach (ModifierSetsLocations typeDeclarationModifierSetsLocations in modifierSetsLocationsForTypeDeclarations)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				diagnosticProperties ??= ImmutableDictionary<string, string>.Empty
-																			.Add(nameof(CheckedSymbolKind), checkedSymbolKind.ToString());
-				var diagnostic = Diagnostic.Create(descriptor, location, diagnosticProperties);
 
-				context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+				foreach (Location modifierSetLocation in typeDeclarationModifierSetsLocations)
+				{
+					diagnosticProperties ??= ImmutableDictionary<string, string>.Empty
+																				.Add(nameof(CheckedSymbolKind), checkedSymbolKind.ToString());
+
+					var diagnostic = Diagnostic.Create(descriptor, modifierSetLocation, diagnosticProperties);
+					context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+				}
 			}
 		}
 
@@ -87,55 +95,138 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				_								 => null
 			};
 
-		private IEnumerable<Location> GetModifiersLocationsFromClassNode(INamedTypeSymbol symbol, CancellationToken cancellationToken)
+		private IEnumerable<ModifierSetsLocations> GetBadModifierSetsLocationsForTypeDeclarations(INamedTypeSymbol dacOrGraphType, 
+																								  CancellationToken cancellationToken)
 		{
-			if (symbol.DeclaringSyntaxReferences.IsDefaultOrEmpty)
+			if (dacOrGraphType.DeclaringSyntaxReferences.IsDefaultOrEmpty)
 				return [];
 
-			return symbol.DeclaringSyntaxReferences
-						 .Select(reference => reference.GetSyntax(cancellationToken))
-						 .OfType<ClassDeclarationSyntax>()
-						 .Select(classNode => GetModifiersLocationsFromClassNode(classNode));
+			if (dacOrGraphType.DeclaringSyntaxReferences.Length == 1)
+			{
+				if (dacOrGraphType.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken) is not ClassDeclarationSyntax classNode)
+					return [];
+
+				var modifierSetsLocations = GetModifierSetsLocationsFromClassNode(classNode);
+				return [modifierSetsLocations];
+			}
+
+			return GetModifierSetsLocationsFromPartialType(dacOrGraphType, cancellationToken);
 		}
 
-		private Location GetModifiersLocationsFromClassNode(ClassDeclarationSyntax classNode)
+		private IEnumerable<ModifierSetsLocations> GetModifierSetsLocationsFromPartialType(INamedTypeSymbol partialDacOrGraphType, 
+																						   CancellationToken cancellationToken)
+		{
+			var partialTypeDeclarations = partialDacOrGraphType.DeclaringSyntaxReferences
+															   .Select(reference => reference.GetSyntax(cancellationToken))
+															   .OfType<ClassDeclarationSyntax>();
+			foreach (var typeNode in partialTypeDeclarations)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+
+				var modifierSetsLocations = GetModifierSetsLocationsFromClassNode(typeNode);
+				yield return modifierSetsLocations;
+			}
+		}
+
+		private ModifierSetsLocations GetModifierSetsLocationsFromClassNode(ClassDeclarationSyntax classNode)
 		{
 			if (classNode.Modifiers.Count == 0)
-				return classNode.Identifier.GetLocation();
+				return [classNode.Identifier.GetLocation()];
 
-			int lastModifierIndex = classNode.Modifiers.Count - 1;
+			List<List<SyntaxToken>> continousModifiersSets = GetContinousModifiersSets(classNode);
+			var locations = TransformContinousModifiersSetsToLocations(classNode, continousModifiersSets);
+
+			return locations;
+		}
+
+		private List<List<SyntaxToken>> GetContinousModifiersSets(ClassDeclarationSyntax classNode)
+		{
+			List<List<SyntaxToken>> continousModifiersSets = new();
+			bool hasPreviousAccessModifier = false;
 
 			for (int i = 0; i < classNode.Modifiers.Count; i++)
 			{
 				SyntaxToken modifier = classNode.Modifiers[i];
 
-				if (GetLocationFromModifier(classNode, i, modifier) is Location modifierLocation)
-					return modifierLocation;
+				if (SyntaxFacts.IsAccessibilityModifier(modifier.Kind()))
+				{
+					AddModifier(modifier);
+					hasPreviousAccessModifier = true;
+				}
+				else
+					hasPreviousAccessModifier = false;
 			}
 
-			return classNode.Identifier.GetLocation();
+			return continousModifiersSets;
 
 			//------------------------------------------------Local Function------------------------------------------------------------
-			Location? GetLocationFromModifier(ClassDeclarationSyntax classNode, int modifierIndex, in SyntaxToken modifier) =>
-				modifier.Kind() switch
-				{
-					SyntaxKind.PublicKeyword 	=> classNode.Identifier.GetLocation(),     //Case when nested public class is declared inside non-public type
-					SyntaxKind.PrivateKeyword 	=> GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.ProtectedKeyword),
-					SyntaxKind.ProtectedKeyword => GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.InternalKeyword),
-					SyntaxKind.InternalKeyword 	=> GetLocationForComplexAccessModifier(modifier, modifierIndex, secondPartKind: SyntaxKind.ProtectedKeyword),
-					_ 							=> null
-				};
-
-			//--------------------------------------------------------------------------------------------------------------------------
-			Location GetLocationForComplexAccessModifier(in SyntaxToken modifier, int modifierIndex, SyntaxKind secondPartKind)
+			void AddModifier(in SyntaxToken modifier)
 			{
-				if (modifierIndex == lastModifierIndex)
-					return modifier.GetLocation();
+				bool needToAddNewContinousModifiersSet = !hasPreviousAccessModifier;
 
-				SyntaxToken nextModifier = classNode.Modifiers[modifierIndex + 1];
-				return nextModifier.IsKind(secondPartKind)
-					? Location.Create(modifier.SyntaxTree, TextSpan.FromBounds(modifier.SpanStart, nextModifier.Span.End))
-					: modifier.GetLocation();
+				if (hasPreviousAccessModifier)
+				{
+					List<SyntaxToken>? lastModifiersSet = continousModifiersSets.LastOrDefault();
+
+					if (lastModifiersSet != null)
+						lastModifiersSet.Add(modifier);
+					else
+						needToAddNewContinousModifiersSet = true;
+				}
+
+				if (needToAddNewContinousModifiersSet)
+				{
+					List<SyntaxToken> continousModifiers = [modifier];
+					continousModifiersSets.Add(continousModifiers);
+				}
+			}
+		}
+
+		private ModifierSetsLocations TransformContinousModifiersSetsToLocations(ClassDeclarationSyntax classNode, 
+																				 List<List<SyntaxToken>> continousModifiersSets)
+		{
+			if (continousModifiersSets.Count == 0)
+				return [classNode.Identifier.GetLocation()];
+
+			bool classIdentifierLocationWasAdded = false;
+			ModifierSetsLocations locations = new(capacity: continousModifiersSets.Count);
+
+			foreach (List<SyntaxToken> modifiersSet in continousModifiersSets)
+			{
+				if (CreateLocationFromModifiersSet(modifiersSet) is Location location)
+					locations.Add(location);
+			}
+
+			return locations;
+
+			//---------------------------------------------Local Function----------------------------------------------------------
+			Location? CreateLocationFromModifiersSet(List<SyntaxToken> modifiersSet)
+			{
+				if (modifiersSet.Count == 1)    
+				{
+					var modifier = modifiersSet[0];
+
+					if (modifier.IsKind(SyntaxKind.PublicKeyword))  //Special case - public type nested in non public
+					{
+						if (!classIdentifierLocationWasAdded)
+						{
+							classIdentifierLocationWasAdded = true;
+							return classNode.Identifier.GetLocation();
+						}
+
+						return null;
+					}
+					else
+						return modifier.GetLocation();
+				}
+				else
+				{
+					var firstModifier = modifiersSet[0];
+					var lastModifier  = modifiersSet[^1];
+					var span		  = TextSpan.FromBounds(firstModifier.SpanStart, lastModifier.Span.End);
+
+					return Location.Create(firstModifier.SyntaxTree, span);
+				}
 			}
 		}
 	}
