@@ -29,24 +29,26 @@ namespace Acuminator.Utilities.Common
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<T>(this IEnumerable<T> source, Action<T?> action)
 		{
-			source.ThrowOnNull();
 			action.ThrowOnNull();
 
 			// perf optimization. try to not use enumerator if possible
-			switch (source)
+			switch (source.CheckIfNull())
 			{
-				case IList<T> iList:
-					for (int i = 0; i < iList.Count; i++)
-					{
-						action(iList[i]);
-					}
+				case IList<T> list:
+					for (int i = 0; i < list.Count; i++)
+						action(list[i]);
 
 					return;
+
+				case IReadOnlyList<T> readOnlyList:
+					for (int i = 0; i < readOnlyList.Count; i++)
+						action(readOnlyList[i]);
+
+					return;
+
 				default:
 					foreach (var value in source)
-					{
 						action(value);
-					}
 
 					return;
 			}
@@ -102,10 +104,10 @@ namespace Acuminator.Utilities.Common
 		public static bool IsEmpty<T>(this IEnumerable<T> source) =>
 			source.CheckIfNull() switch
 			{
-				ICollection<T> genericCollection => genericCollection.Count == 0,
+				ICollection<T> genericCollection 		  => genericCollection.Count == 0,
 				IReadOnlyCollection<T> readOnlyCollection => readOnlyCollection.Count == 0,
-				ICollection collection => collection.Count == 0,
-				_ => !source.Any(),
+				ICollection collection 					  => collection.Count == 0,
+				_ 										  => !source.Any(),
 			};
 
 		[DebuggerStepThrough]
