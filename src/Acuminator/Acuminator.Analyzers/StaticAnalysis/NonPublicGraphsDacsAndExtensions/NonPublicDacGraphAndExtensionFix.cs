@@ -17,6 +17,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
@@ -95,7 +96,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				return Task.CompletedTask;
 
 			var codeAction = CodeAction.Create(codeActionName,
-											   cToken => MakeTypePublicAsync(context.Document, context.Span, cToken),
+											   cToken => MakeTypePublicAsync(context.Document, context.Span, diagnostic.AdditionalLocations, cToken),
 											   equivalenceKey: codeActionName);
 			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
@@ -111,18 +112,80 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				_ 								 => null
 			};
 
-		private async Task<Document> MakeTypePublicAsync(Document document, TextSpan span, CancellationToken cancellationToken)
+		private async Task<Solution> MakeTypePublicAsync(Document document, TextSpan span, IReadOnlyList<Location> otherPartialTypeDeclarations, 
+														 CancellationToken cancellationToken)
 		{
-			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode? diagnosticNode = root?.FindNode(span);
+			Solution originalSolution = document.Project.Solution;
+			var (semanticModel, root) = await document.GetSemanticModelAndRootAsync(cancellationToken).ConfigureAwait(false);
+
+			if (semanticModel == null || root == null)
+				return originalSolution;
+
+			SyntaxNode? diagnosticNode = root.FindNode(span);
 			var graphOrDacOrExtensionToMakePublicNode = (diagnosticNode as ClassDeclarationSyntax) ?? diagnosticNode?.Parent<ClassDeclarationSyntax>();
 
 			if (graphOrDacOrExtensionToMakePublicNode == null)
-				return document;
+				return originalSolution;
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			List<TypeDeclarationSyntax> nodesToMakePublic = GetTypeNodesToMakePublic(graphOrDacOrExtensionToMakePublicNode).ToList();
+			var graphOrDacOrExtType = semanticModel.GetDeclaredSymbol(graphOrDacOrExtensionToMakePublicNode, cancellationToken);
+			
+			if (graphOrDacOrExtType == null) 
+				return originalSolution;
+
+			var changedSolution = MakeTypeNodePublic(document, root, graphOrDacOrExtensionToMakePublicNode);
+			var typeDeclarations = graphOrDacOrExtType.DeclaringSyntaxReferences;
+
+			if (typeDeclarations.Length <= 1)
+				return changedSolution;
+
+			foreach (var typeDeclaration in typeDeclarations)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (typeDeclaration.SyntaxTree.FilePath == graphOrDacOrExtensionToMakePublicNode.SyntaxTree.FilePath &&
+					typeDeclaration.Span == graphOrDacOrExtensionToMakePublicNode.Span)
+				{
+					continue;
+				}
+
+				changedSolution = 
+					await MakeTypePartialDeclarationPublicAsync(typeDeclaration, changedSolution, originalSolution, cancellationToken)
+							.ConfigureAwait(false);
+			}
+
+			return changedSolution;
+		}
+
+		private async Task<Solution> MakeTypePartialDeclarationPublicAsync(SyntaxReference typeDeclaration, Solution changedSolution, 
+																		   Solution originalSolution, CancellationToken cancellation)
+		{
+			DocumentId? docIdContainingDeclaration = originalSolution.GetDocumentId(typeDeclaration.SyntaxTree);
+
+			if (docIdContainingDeclaration == null)
+				return changedSolution;
+
+			// Obtain document through the doc ID to avoid possibility that document from the changed solution
+			// can't be found with a syntax tree from the original solution
+			var docContainingDeclaration = changedSolution.GetDocument(docIdContainingDeclaration);
+
+			if (docContainingDeclaration == null)
+				return changedSolution;
+
+			var docRoot = await docContainingDeclaration.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
+			var typeDeclarationNode = docRoot?.FindNode(typeDeclaration.Span) as ClassDeclarationSyntax;
+
+			if (typeDeclarationNode == null)
+				return changedSolution;
+
+			changedSolution = MakeTypeNodePublic(docContainingDeclaration, docRoot!, typeDeclarationNode);
+			return changedSolution;
+		}
+
+		private Solution MakeTypeNodePublic(Document document, SyntaxNode root, ClassDeclarationSyntax typeNodeToMakePublicNode)
+		{
+			List<TypeDeclarationSyntax> nodesToMakePublic = GetTypeNodesToMakePublic(typeNodeToMakePublicNode).ToList();
 			SyntaxNode trackingRoot = root!.TrackNodes(nodesToMakePublic);
 
 			foreach (TypeDeclarationSyntax nonPublicTypeNode in nodesToMakePublic)
@@ -136,12 +199,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				}
 			}
 
-			return document.WithSyntaxRoot(trackingRoot);
+			var changedDocument = document.WithSyntaxRoot(trackingRoot);
+			return changedDocument.Project.Solution;
 		}
 
-		private IEnumerable<TypeDeclarationSyntax> GetTypeNodesToMakePublic(TypeDeclarationSyntax graphOrDacOrExtensionToMakePublicNode)
+		private IEnumerable<TypeDeclarationSyntax> GetTypeNodesToMakePublic(TypeDeclarationSyntax typeNodeToMakePublicNode)
 		{
-			TypeDeclarationSyntax? currentTypeNode = graphOrDacOrExtensionToMakePublicNode;
+			TypeDeclarationSyntax? currentTypeNode = typeNodeToMakePublicNode;
 
 			while (currentTypeNode != null)
 			{
