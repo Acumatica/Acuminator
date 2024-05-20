@@ -320,6 +320,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicGraphWithBadModifiers_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicGraphWithBadModifiers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicPartialGraph_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicGraphsDacsAndExtensions\Sources\NonPublicPartialGraph.cs" />
     <Compile Include="Tests\StaticAnalysis\PXOverrideMismatch\PXOverrideMismatchTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsExactlyMatch.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatch.cs" />
