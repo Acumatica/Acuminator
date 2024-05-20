@@ -134,53 +134,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 			if (graphOrDacOrExtType == null) 
 				return originalSolution;
 
-			var changedSolution = MakeTypeNodePublic(document, root, graphOrDacOrExtensionToMakePublicNode);
 			var typeDeclarations = graphOrDacOrExtType.DeclaringSyntaxReferences;
 
 			if (typeDeclarations.Length <= 1)
-				return changedSolution;
-
-			foreach (var typeDeclaration in typeDeclarations)
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-
-				if (typeDeclaration.SyntaxTree.FilePath == graphOrDacOrExtensionToMakePublicNode.SyntaxTree.FilePath &&
-					typeDeclaration.Span == graphOrDacOrExtensionToMakePublicNode.Span)
-				{
-					continue;
-				}
-
-				changedSolution = 
-					await MakeTypePartialDeclarationPublicAsync(typeDeclaration, changedSolution, originalSolution, cancellationToken)
-							.ConfigureAwait(false);
+				var changedSolutionForNonPartialType = MakeTypeNodePublic(document, root, graphOrDacOrExtensionToMakePublicNode);
+				return changedSolutionForNonPartialType;
 			}
 
-			return changedSolution;
-		}
-
-		private async Task<Solution> MakeTypePartialDeclarationPublicAsync(SyntaxReference typeDeclaration, Solution changedSolution, 
-																		   Solution originalSolution, CancellationToken cancellation)
-		{
-			DocumentId? docIdContainingDeclaration = originalSolution.GetDocumentId(typeDeclaration.SyntaxTree);
-
-			if (docIdContainingDeclaration == null)
-				return changedSolution;
-
-			// Obtain document through the doc ID to avoid possibility that document from the changed solution
-			// can't be found with a syntax tree from the original solution
-			var docContainingDeclaration = changedSolution.GetDocument(docIdContainingDeclaration);
-
-			if (docContainingDeclaration == null)
-				return changedSolution;
-
-			var docRoot = await docContainingDeclaration.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
-			var typeDeclarationNode = docRoot?.FindNode(typeDeclaration.Span) as ClassDeclarationSyntax;
-
-			if (typeDeclarationNode == null)
-				return changedSolution;
-
-			changedSolution = MakeTypeNodePublic(docContainingDeclaration, docRoot!, typeDeclarationNode);
-			return changedSolution;
+			var changedSolutionForPartialType = await MakePartialTypePublicAsync(document.Project.Solution, typeDeclarations, cancellationToken)
+														.ConfigureAwait(false);
+			return changedSolutionForPartialType;
 		}
 
 		private Solution MakeTypeNodePublic(Document document, SyntaxNode root, ClassDeclarationSyntax typeNodeToMakePublicNode)
@@ -203,6 +167,77 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 			return changedDocument.Project.Solution;
 		}
 
+		private TypeDeclarationSyntax MakeTypeNodePublic(TypeDeclarationSyntax nonPublicTypeNode)
+		{
+			var modifiersWithPublicAccesibility =
+				SyntaxFactory.TokenList(
+					SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+			var modifiersToTransfer = nonPublicTypeNode.Modifiers.Where(token => !SyntaxFacts.IsAccessibilityModifier(token.Kind()));
+			modifiersWithPublicAccesibility = modifiersWithPublicAccesibility.AddRange(modifiersToTransfer);
+			return nonPublicTypeNode.WithModifiers(modifiersWithPublicAccesibility);
+		}
+
+		private async Task<Solution> MakePartialTypePublicAsync(Solution originalSolution, ImmutableArray<SyntaxReference> typeDeclarations, 
+																CancellationToken cancellation)
+		{
+			var solutionEditor = new SolutionEditor(originalSolution);
+			var documentEditors = await GetAllDocumentEditorsAsync(solutionEditor, typeDeclarations, cancellation).ConfigureAwait(false);
+
+			foreach (DocumentEditor? documentEditor in documentEditors)
+			{
+				cancellation.ThrowIfCancellationRequested();
+
+				if (documentEditor == null)
+					continue;
+
+				var typeNodesInDocument = GetTypeDeclarationsInDocument(documentEditor.OriginalDocument.FilePath, typeDeclarations, cancellation);
+				var typeNodesToMakePublic = typeNodesInDocument.SelectMany(GetTypeNodesToMakePublic).Distinct();
+
+				foreach (var node in typeNodesToMakePublic)
+					documentEditor.SetAccessibility(node, Accessibility.Public);
+			}
+
+			return solutionEditor.GetChangedSolution();
+		}
+
+		private Task<DocumentEditor?[]> GetAllDocumentEditorsAsync(SolutionEditor solutionEditor, ImmutableArray<SyntaxReference> typeDeclarations, 
+																  CancellationToken cancellation)
+		{
+			var declarationsByFile = typeDeclarations.GroupBy(typeDecl => typeDecl.SyntaxTree.FilePath);
+			var documentEditorsTasks = new List<Task<DocumentEditor?>>(capacity: typeDeclarations.Length);
+
+			foreach (var declarationsInFile in declarationsByFile)
+			{
+				cancellation.ThrowIfCancellationRequested();
+
+				SyntaxTree? syntaxTree = declarationsInFile.FirstOrDefault()?.SyntaxTree;
+
+				if (syntaxTree == null)
+					continue;
+
+				var documentId = solutionEditor.OriginalSolution.GetDocumentId(syntaxTree);
+
+				if (documentId != null)
+				{
+					var documentEditorTask = solutionEditor.GetDocumentEditorAsync(documentId, cancellation);
+					documentEditorsTasks.Add(documentEditorTask);
+				}
+			}
+
+			return Task.WhenAll(documentEditorsTasks);
+		}
+
+		private IEnumerable<ClassDeclarationSyntax> GetTypeDeclarationsInDocument(string documentPath, 
+																				  ImmutableArray<SyntaxReference> typeDeclarations,
+																				  CancellationToken cancellation)
+		{
+			return (from typeDecl in typeDeclarations
+					where typeDecl.SyntaxTree.FilePath == documentPath
+					select typeDecl.GetSyntax(cancellation))
+				   .OfType<ClassDeclarationSyntax>();
+		}
+
 		private IEnumerable<TypeDeclarationSyntax> GetTypeNodesToMakePublic(TypeDeclarationSyntax typeNodeToMakePublicNode)
 		{
 			TypeDeclarationSyntax? currentTypeNode = typeNodeToMakePublicNode;
@@ -216,17 +251,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 				currentTypeNode = currentTypeNode.Parent<TypeDeclarationSyntax>();
 			}
-		}
-
-		private TypeDeclarationSyntax MakeTypeNodePublic(TypeDeclarationSyntax nonPublicTypeNode)
-		{
-			var modifiersWithPublicAccesibility = 
-				SyntaxFactory.TokenList(
-					SyntaxFactory.Token(SyntaxKind.PublicKeyword));
-
-			var modifiersToTransfer = nonPublicTypeNode.Modifiers.Where(token => !SyntaxFacts.IsAccessibilityModifier(token.Kind()));
-			modifiersWithPublicAccesibility = modifiersWithPublicAccesibility.AddRange(modifiersToTransfer);
-			return nonPublicTypeNode.WithModifiers(modifiersWithPublicAccesibility);
 		}
 	}
 }
