@@ -25,7 +25,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 	{
 		public partial class SOOrderPurchaseEntry2 : PXGraph<SOOrderPurchaseEntry2>
 		{
-
 		}
 	}
 
@@ -33,7 +32,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 	{
 		public partial class SOOrderPurchaseEntry : PXGraph<SOOrderPurchaseEntry>
 		{
-
 		}
 	}
 

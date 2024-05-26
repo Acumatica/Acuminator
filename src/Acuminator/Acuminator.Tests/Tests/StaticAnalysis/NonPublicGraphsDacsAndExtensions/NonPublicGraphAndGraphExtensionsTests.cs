@@ -59,7 +59,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				 Descriptors.PX1022_NonPublicGraph.CreateFor(7, 17),
 				 Descriptors.PX1022_NonPublicGraph.CreateFor(15, 3),
 				 Descriptors.PX1022_NonPublicGraph.CreateFor(26, 17),
-				 Descriptors.PX1022_NonPublicGraph.CreateFor(34, 24));
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(33, 24));
 
 		[Theory]
         [EmbeddedFileData("NonPublicGraphExtension_Expected.cs")]
