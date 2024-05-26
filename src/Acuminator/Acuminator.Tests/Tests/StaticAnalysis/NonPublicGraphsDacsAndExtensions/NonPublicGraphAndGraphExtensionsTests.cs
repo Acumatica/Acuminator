@@ -56,10 +56,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 		[EmbeddedFileData("NonPublicPartialGraph.cs")]
 		public async Task NonPublicPartialGraphs(string actual) =>
 			 await VerifyCSharpDiagnosticAsync(actual,
-				 Descriptors.PX1022_NonPublicGraph.CreateFor(7, 3),
-				 Descriptors.PX1022_NonPublicGraph.CreateFor(15, 17),
-				 Descriptors.PX1022_NonPublicGraph.CreateFor(27, 3),
-				 Descriptors.PX1022_NonPublicGraph.CreateFor(36, 17));
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(7, 17),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(15, 3),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(26, 17),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(34, 24));
 
 		[Theory]
         [EmbeddedFileData("NonPublicGraphExtension_Expected.cs")]

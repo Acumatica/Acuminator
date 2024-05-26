@@ -2,9 +2,9 @@
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions.Sources
 {
-	public static partial class PurchaseGlobalState
+	static partial class PurchaseGlobalState
 	{
-		public partial class SOOrderPurchaseEntry : PXGraph<SOOrderPurchaseEntry>
+		partial class SOOrderPurchaseEntry : PXGraph<SOOrderPurchaseEntry>
 		{
 			public void _(Events.RowSelected<SOOrder> e)
 			{
@@ -12,7 +12,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 			}
 		}
 
-		public partial class SOOrderPurchaseEntry2 : PXGraph<SOOrderPurchaseEntry2>
+		private partial class SOOrderPurchaseEntry2 : PXGraph<SOOrderPurchaseEntry2>
 		{
 			public void _(Events.RowSelected<SOOrder> e)
 			{
@@ -21,15 +21,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 		}
 	}
 
-	public static partial class PurchaseGlobalState
+	static partial class PurchaseGlobalState
 	{
-		public partial class SOOrderPurchaseEntry2 : PXGraph<SOOrderPurchaseEntry2>
+		partial class SOOrderPurchaseEntry2 : PXGraph<SOOrderPurchaseEntry2>
 		{
 			
 		}
 	}
 
-	public static partial class PurchaseGlobalState
+	internal static partial class PurchaseGlobalState
 	{
 		public partial class SOOrderPurchaseEntry : PXGraph<SOOrderPurchaseEntry>
 		{
