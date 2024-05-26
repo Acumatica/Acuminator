@@ -191,7 +191,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				if (documentEditor == null)
 					continue;
 
-				var typeNodesInDocument = GetTypeDeclarationsInDocument(documentEditor.OriginalDocument.FilePath, typeDeclarations, cancellation);
+				string path = documentEditor.OriginalDocument.FilePath.NullIfWhiteSpace() ?? documentEditor.OriginalDocument.Name;
+				var typeNodesInDocument = GetTypeDeclarationsInDocument(path, typeDeclarations, cancellation);
 				var typeNodesToMakePublic = typeNodesInDocument.SelectMany(GetTypeNodesToMakePublic).Distinct();
 
 				foreach (var node in typeNodesToMakePublic)
