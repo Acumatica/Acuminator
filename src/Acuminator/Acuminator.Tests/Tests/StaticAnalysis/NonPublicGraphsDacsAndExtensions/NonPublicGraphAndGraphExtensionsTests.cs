@@ -45,6 +45,23 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				 Descriptors.PX1022_NonPublicGraph.CreateFor(38, 4));
 
 		[Theory]
+		[EmbeddedFileData("NonPublicGraphWithBadModifiers.cs")]
+		public async Task NonPublicGraphsWithBadModifiers(string actual) =>
+			 await VerifyCSharpDiagnosticAsync(actual,
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(9, 4),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(9, 19),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(17, 11));
+
+		[Theory]
+		[EmbeddedFileData("NonPublicPartialGraph.cs")]
+		public async Task NonPublicPartialGraphs(string actual) =>
+			 await VerifyCSharpDiagnosticAsync(actual,
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(7, 17),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(15, 3),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(26, 17),
+				 Descriptors.PX1022_NonPublicGraph.CreateFor(33, 24));
+
+		[Theory]
         [EmbeddedFileData("NonPublicGraphExtension_Expected.cs")]
         public async Task NonPublicGraphExtensions_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
@@ -52,6 +69,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 		[Theory]
 		[EmbeddedFileData("NonPublicGraph_Expected.cs")]
 		public async Task NonPublicGraphs_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData("NonPublicGraphWithBadModifiers_Expected.cs")]
+		public async Task NonPublicGraphsWithBadModifiers_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData("NonPublicPartialGraph_Expected.cs")]
+		public async Task NonPublicPartialGraphs_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
@@ -64,6 +91,18 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 		[EmbeddedFileData("NonPublicGraph.cs",
 						  "NonPublicGraph_Expected.cs")]
 		public async Task NonPublicGraphs_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("NonPublicGraphWithBadModifiers.cs",
+						  "NonPublicGraphWithBadModifiers_Expected.cs")]
+		public async Task NonPublicGraphsWithBadModifiers_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("NonPublicPartialGraph.cs",
+						  "NonPublicPartialGraph_Expected.cs")]
+		public async Task NonPublicPartialGraphs_CodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 	}
 }

@@ -17,6 +17,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
@@ -95,7 +96,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				return Task.CompletedTask;
 
 			var codeAction = CodeAction.Create(codeActionName,
-											   cToken => MakeTypePublicAsync(context.Document, context.Span, cToken),
+											   cToken => MakeTypePublicAsync(context.Document, context.Span, diagnostic.AdditionalLocations, cToken),
 											   equivalenceKey: codeActionName);
 			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
@@ -111,18 +112,44 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				_ 								 => null
 			};
 
-		private async Task<Document> MakeTypePublicAsync(Document document, TextSpan span, CancellationToken cancellationToken)
+		private async Task<Solution> MakeTypePublicAsync(Document document, TextSpan span, IReadOnlyList<Location> otherPartialTypeDeclarations, 
+														 CancellationToken cancellationToken)
 		{
-			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode? diagnosticNode = root?.FindNode(span);
+			Solution originalSolution = document.Project.Solution;
+			var (semanticModel, root) = await document.GetSemanticModelAndRootAsync(cancellationToken).ConfigureAwait(false);
+
+			if (semanticModel == null || root == null)
+				return originalSolution;
+
+			SyntaxNode? diagnosticNode = root.FindNode(span);
 			var graphOrDacOrExtensionToMakePublicNode = (diagnosticNode as ClassDeclarationSyntax) ?? diagnosticNode?.Parent<ClassDeclarationSyntax>();
 
 			if (graphOrDacOrExtensionToMakePublicNode == null)
-				return document;
+				return originalSolution;
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			List<TypeDeclarationSyntax> nodesToMakePublic = GetTypeNodesToMakePublic(graphOrDacOrExtensionToMakePublicNode).ToList();
+			var graphOrDacOrExtType = semanticModel.GetDeclaredSymbol(graphOrDacOrExtensionToMakePublicNode, cancellationToken);
+			
+			if (graphOrDacOrExtType == null) 
+				return originalSolution;
+
+			var typeDeclarations = graphOrDacOrExtType.DeclaringSyntaxReferences;
+
+			if (typeDeclarations.Length <= 1)
+			{
+				var changedSolutionForNonPartialType = MakeTypeNodePublic(document, root, graphOrDacOrExtensionToMakePublicNode);
+				return changedSolutionForNonPartialType;
+			}
+
+			var changedSolutionForPartialType = await MakePartialTypePublicAsync(document.Project.Solution, typeDeclarations, cancellationToken)
+														.ConfigureAwait(false);
+			return changedSolutionForPartialType;
+		}
+
+		private Solution MakeTypeNodePublic(Document document, SyntaxNode root, ClassDeclarationSyntax typeNodeToMakePublicNode)
+		{
+			List<TypeDeclarationSyntax> nodesToMakePublic = GetTypeNodesToMakePublic(typeNodeToMakePublicNode).ToList();
 			SyntaxNode trackingRoot = root!.TrackNodes(nodesToMakePublic);
 
 			foreach (TypeDeclarationSyntax nonPublicTypeNode in nodesToMakePublic)
@@ -136,12 +163,85 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				}
 			}
 
-			return document.WithSyntaxRoot(trackingRoot);
+			var changedDocument = document.WithSyntaxRoot(trackingRoot);
+			return changedDocument.Project.Solution;
 		}
 
-		private IEnumerable<TypeDeclarationSyntax> GetTypeNodesToMakePublic(TypeDeclarationSyntax graphOrDacOrExtensionToMakePublicNode)
+		private TypeDeclarationSyntax MakeTypeNodePublic(TypeDeclarationSyntax nonPublicTypeNode)
 		{
-			TypeDeclarationSyntax? currentTypeNode = graphOrDacOrExtensionToMakePublicNode;
+			var modifiersWithPublicAccesibility =
+				SyntaxFactory.TokenList(
+					SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+			var modifiersToTransfer = nonPublicTypeNode.Modifiers.Where(token => !SyntaxFacts.IsAccessibilityModifier(token.Kind()));
+			modifiersWithPublicAccesibility = modifiersWithPublicAccesibility.AddRange(modifiersToTransfer);
+			return nonPublicTypeNode.WithModifiers(modifiersWithPublicAccesibility);
+		}
+
+		private async Task<Solution> MakePartialTypePublicAsync(Solution originalSolution, ImmutableArray<SyntaxReference> typeDeclarations, 
+																CancellationToken cancellation)
+		{
+			var solutionEditor = new SolutionEditor(originalSolution);
+			var documentEditors = await GetAllDocumentEditorsAsync(solutionEditor, typeDeclarations, cancellation).ConfigureAwait(false);
+
+			foreach (DocumentEditor? documentEditor in documentEditors)
+			{
+				cancellation.ThrowIfCancellationRequested();
+
+				if (documentEditor == null)
+					continue;
+
+				string path = documentEditor.OriginalDocument.FilePath.NullIfWhiteSpace() ?? documentEditor.OriginalDocument.Name;
+				var typeNodesInDocument = GetTypeDeclarationsInDocument(path, typeDeclarations, cancellation);
+				var typeNodesToMakePublic = typeNodesInDocument.SelectMany(GetTypeNodesToMakePublic).Distinct();
+
+				foreach (var node in typeNodesToMakePublic)
+					documentEditor.SetAccessibility(node, Accessibility.Public);
+			}
+
+			return solutionEditor.GetChangedSolution();
+		}
+
+		private Task<DocumentEditor?[]> GetAllDocumentEditorsAsync(SolutionEditor solutionEditor, ImmutableArray<SyntaxReference> typeDeclarations, 
+																  CancellationToken cancellation)
+		{
+			var declarationsByFile = typeDeclarations.GroupBy(typeDecl => typeDecl.SyntaxTree.FilePath);
+			var documentEditorsTasks = new List<Task<DocumentEditor?>>(capacity: typeDeclarations.Length);
+
+			foreach (var declarationsInFile in declarationsByFile)
+			{
+				cancellation.ThrowIfCancellationRequested();
+
+				SyntaxTree? syntaxTree = declarationsInFile.FirstOrDefault()?.SyntaxTree;
+
+				if (syntaxTree == null)
+					continue;
+
+				var documentId = solutionEditor.OriginalSolution.GetDocumentId(syntaxTree);
+
+				if (documentId != null)
+				{
+					var documentEditorTask = solutionEditor.GetDocumentEditorAsync(documentId, cancellation);
+					documentEditorsTasks.Add(documentEditorTask);
+				}
+			}
+
+			return Task.WhenAll(documentEditorsTasks);
+		}
+
+		private IEnumerable<ClassDeclarationSyntax> GetTypeDeclarationsInDocument(string documentPath, 
+																				  ImmutableArray<SyntaxReference> typeDeclarations,
+																				  CancellationToken cancellation)
+		{
+			return (from typeDecl in typeDeclarations
+					where typeDecl.SyntaxTree.FilePath == documentPath
+					select typeDecl.GetSyntax(cancellation))
+				   .OfType<ClassDeclarationSyntax>();
+		}
+
+		private IEnumerable<TypeDeclarationSyntax> GetTypeNodesToMakePublic(TypeDeclarationSyntax typeNodeToMakePublicNode)
+		{
+			TypeDeclarationSyntax? currentTypeNode = typeNodeToMakePublicNode;
 
 			while (currentTypeNode != null)
 			{
@@ -152,17 +252,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 				currentTypeNode = currentTypeNode.Parent<TypeDeclarationSyntax>();
 			}
-		}
-
-		private TypeDeclarationSyntax MakeTypeNodePublic(TypeDeclarationSyntax nonPublicTypeNode)
-		{
-			var modifiersWithPublicAccesibility = 
-				SyntaxFactory.TokenList(
-					SyntaxFactory.Token(SyntaxKind.PublicKeyword));
-
-			var modifiersToTransfer = nonPublicTypeNode.Modifiers.Where(token => !SyntaxFacts.IsAccessibilityModifier(token.Kind()));
-			modifiersWithPublicAccesibility = modifiersWithPublicAccesibility.AddRange(modifiersToTransfer);
-			return nonPublicTypeNode.WithModifiers(modifiersWithPublicAccesibility);
 		}
 	}
 }
