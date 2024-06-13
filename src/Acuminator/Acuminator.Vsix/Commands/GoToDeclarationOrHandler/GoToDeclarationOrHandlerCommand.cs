@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel.Design;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EnvDTE;
-using EnvDTE80;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,16 +13,16 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.Threading;
-using Microsoft.VisualStudio.TextManager.Interop;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
+
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
-
 using Shell =  Microsoft.VisualStudio.Shell;
+
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.GoToDeclaration
@@ -222,11 +219,11 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				viewDelegateInfoToNavigateTo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType == viewSymbol.ContainingType)
+				viewDelegateInfoToNavigateTo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType?.Equals(viewSymbol.ContainingType) ?? false)
 															.FirstOrDefault();
 			}
 
-			if (!(viewDelegateInfoToNavigateTo.Node is MethodDeclarationSyntax methodNode) || methodNode.SyntaxTree == null)
+			if (viewDelegateInfoToNavigateTo.Node is not MethodDeclarationSyntax methodNode || methodNode.SyntaxTree == null)
 				return;
 
 			string viewDelegateFilePath = viewDelegateInfoToNavigateTo.Node.SyntaxTree.FilePath;
