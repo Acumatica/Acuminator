@@ -233,7 +233,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			{
 				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-				if (reference.SyntaxTree == typeDeclaration.SyntaxTree ||
+				if (Equals(reference.SyntaxTree, typeDeclaration.SyntaxTree) ||
 					reference.GetSyntax(_syntaxContext.CancellationToken) is not TypeDeclarationSyntax partialTypeDeclaration)
 				{
 					continue;
