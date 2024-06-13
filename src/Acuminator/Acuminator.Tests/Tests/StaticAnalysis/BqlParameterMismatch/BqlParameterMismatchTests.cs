@@ -61,11 +61,26 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(70, 6, "SelectSingleBound", 1, 2),
 				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(79, 6, "SelectSingleBound", 1, 2));
 
-			await VerifyCSharpDiagnosticAsync(new[] { source, dacSource },
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(30, 30, "SelectSingle", 1, 2),
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(31, 30, "SelectSingle", 1, 2),
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(70, 6, "SelectSingleBound", 1, 2),
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(79, 6, "SelectSingleBound", 1, 2));
+
+		/// <summary>
+		/// Test that checks that for FBQL queries PX1015 diagnostic is disabled. Remove the test when support for FBQL is added to PX1015. 
+		/// </summary>
+		/// <param name="source">Source.</param>
+		[Theory]
+		[EmbeddedFileData("FbqlCalls.cs")]
+		public virtual async Task FbqlCalls_NoFBQL_Support_NoDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory(Skip = "Test can be run only after PX1015 diagnostic will receive support for FBQL queries")]
+		[EmbeddedFileData("FbqlCalls.cs")]
+		public virtual async Task Fbql_Calls(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(30, 50, "SelectSingle", 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(31, 50, "SelectSingle", 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(88, 6, "SelectSingleBound", 1, 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(97, 6, "SelectSingleBound", 1, 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(106, 7, "SelectSingleBound", 1, 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(115, 7, "SelectSingleBound", 1, 2));
 
 		[Theory]
 		[EmbeddedFileData("PXUpdateCall.cs", "SOOrder.cs")]
