@@ -14,7 +14,6 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -84,9 +83,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 						 .Any(constructor => IsSerializationConstructor(constructor, pxContext));
 
 		private static bool IsSerializationConstructor(IMethodSymbol constructor, PXContext pxContext) =>
-			constructor.Parameters.Length == 2 && 
-			constructor.Parameters[0].Type == pxContext.Serialization.SerializationInfo &&
-			constructor.Parameters[1].Type == pxContext.Serialization.StreamingContext;
+			constructor.Parameters.Length == 2 &&
+			pxContext.Serialization.SerializationInfo.Equals(constructor.Parameters[0].Type) &&
+			pxContext.Serialization.StreamingContext.Equals(constructor.Parameters[1].Type);
 
 		private static bool HasGetObjectDataOverride(PXContext pxContext, INamedTypeSymbol exceptionType) =>
 			exceptionType.GetMethods()
@@ -97,8 +96,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			method.DeclaredAccessibility == Accessibility.Public &&
 			method.Name == DelegateNames.Serialization.GetObjectData &&
 			method.Parameters.Length == 2 &&
-			method.Parameters[0].Type == pxContext.Serialization.SerializationInfo &&
-			method.Parameters[1].Type == pxContext.Serialization.StreamingContext;
+			pxContext.Serialization.SerializationInfo.Equals(method.Parameters[0].Type) &&
+			pxContext.Serialization.StreamingContext.Equals(method.Parameters[1].Type);
 
 		private static IEnumerable<ISymbol> GetSerializableFieldsAndProperties(INamedTypeSymbol exceptionType, PXContext pxContext)
 		{
@@ -147,7 +146,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 			bool hasNonSerializedAttributeDeclared = attributes.IsDefaultOrEmpty
 				? false
-				: attributes.Any(a => a.AttributeClass == pxContext.Serialization.NonSerializedAttribute);
+				: attributes.Any(a => pxContext.Serialization.NonSerializedAttribute.Equals(a.AttributeClass));
 
 			return !hasNonSerializedAttributeDeclared;
 		}

@@ -114,8 +114,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 		protected bool IsMethodUsedForSerialization(IMethodSymbol method, PXContext pxContext) =>
 			method.Parameters.Length == 2 &&
-			method.Parameters[0]?.Type == pxContext.Serialization.SerializationInfo &&
-			method.Parameters[1]?.Type == pxContext.Serialization.StreamingContext;
+			pxContext.Serialization.SerializationInfo.Equals(method.Parameters[0]?.Type)  &&
+			pxContext.Serialization.StreamingContext.Equals(method.Parameters[1]?.Type);
 
 		protected SyntaxNode[] GenerateSerializationMemberParameters(SyntaxGenerator generator, PXContext pxContext) =>
 			new[]
