@@ -131,7 +131,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out var dacPropertyInfoCandidate))
 				return false;
 
-			return dacPropertyInfoCandidate.Node.ExplicitInterfaceSpecifier == changedProperty.ExplicitInterfaceSpecifier;
+			return Equals(dacPropertyInfoCandidate.Node.ExplicitInterfaceSpecifier, changedProperty.ExplicitInterfaceSpecifier);
 		}
 	}
 }

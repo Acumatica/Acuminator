@@ -306,8 +306,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				return candidates.Where(symbol => symbol.ContainingType == methodSymbol.ContainingType ||
-												  symbol.ContainingType.OriginalDefinition == methodSymbol.ContainingType.OriginalDefinition)
+				return candidates.Where(symbol => (symbol.ContainingType != null && symbol.ContainingType.Equals(methodSymbol.ContainingType) ||
+												  (symbol.ContainingType?.OriginalDefinition != null && 
+												   symbol.ContainingType.OriginalDefinition.Equals(methodSymbol.ContainingType.OriginalDefinition))))
 								 .FirstOrDefault();
 			}
 		}
