@@ -52,16 +52,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(34, 7, "Search", 1),
 				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(46, 6, "Search", 3));
 
-		[Theory]
-		[EmbeddedFileData("FbqlStyleParametersCalls.cs", "SOOrder.cs")]
-		public virtual async Task FbqlStyleParameters_Calls(string source, string dacSource) =>
-			await VerifyCSharpDiagnosticAsync(new[] { source, dacSource },
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(30, 30, "SelectSingle", 1, 2),
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(31, 30, "SelectSingle", 1, 2),
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(70, 6, "SelectSingleBound", 1, 2),
-				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(79, 6, "SelectSingleBound", 1, 2));
-
-
 		/// <summary>
 		/// Test that checks that for FBQL queries PX1015 diagnostic is disabled. Remove the test when support for FBQL is added to PX1015. 
 		/// </summary>
