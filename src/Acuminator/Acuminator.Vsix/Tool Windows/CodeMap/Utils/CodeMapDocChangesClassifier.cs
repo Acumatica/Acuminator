@@ -1,18 +1,19 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Vsix.ChangesClassification;
+
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.ChangesClassification;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -72,7 +73,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var changeScope = base.GetChangeScopeFromMethodBaseSyntaxNode(methodNodeBase, textChange, containingModeChange);
 
-			if (changeScope != ChangeInfluenceScope.Attributes || !(methodNodeBase is MethodDeclarationSyntax))
+			if (changeScope != ChangeInfluenceScope.Attributes || methodNodeBase is not MethodDeclarationSyntax)
 			{
 				return changeScope;
 			}
@@ -96,12 +97,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <param name="containingModeChange">The containing mode change.</param>
 		/// <returns/>
 		protected override ChangeInfluenceScope? GetChangeScopeFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
-																					      in TextChange textChange, ContainmentModeChange containingModeChange)
+																						  in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
 			var changeScope = base.GetChangeScopeFromPropertyBaseSyntaxNode(propertyNodeBase, textChange, containingModeChange);
 
 			//We look for changes in DAC property attributes
-			if (changeScope != ChangeInfluenceScope.Attributes || !(propertyNodeBase is PropertyDeclarationSyntax changedProperty) ||
+			if (changeScope != ChangeInfluenceScope.Attributes || propertyNodeBase is not PropertyDeclarationSyntax changedProperty ||
 				_codeMapViewModel.DocumentModel?.CodeMapSemanticModels == null)
 			{
 				return changeScope;
@@ -109,7 +110,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			for (int i = 0; i < _codeMapViewModel.DocumentModel.CodeMapSemanticModels.Count; i++)
 			{
-				if (!(_codeMapViewModel.DocumentModel.CodeMapSemanticModels[i] is DacSemanticModel dacSemanticModel))
+				if (_codeMapViewModel.DocumentModel.CodeMapSemanticModels[i] is not DacSemanticModel dacSemanticModel)
 					continue;
 				else if (IsPropertyFromDAC(changedProperty, dacSemanticModel))
 					return ChangeInfluenceScope.Class;
@@ -125,10 +126,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return false;
 
 			//Check that declaring type is the same
-			if (!(changedProperty.Parent is ClassDeclarationSyntax changedDac) || changedDac.Identifier.Text != dacCandidate.Node.Identifier.Text)
+			if (changedProperty.Parent is not ClassDeclarationSyntax changedDac || changedDac.Identifier.Text != dacCandidate.Node.Identifier.Text)
 				return false;
 
-			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out var dacPropertyInfoCandidate))
+			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out DacPropertyInfo dacPropertyInfoCandidate))
 				return false;
 
 			return Equals(dacPropertyInfoCandidate.Node.ExplicitInterfaceSpecifier, changedProperty.ExplicitInterfaceSpecifier);
