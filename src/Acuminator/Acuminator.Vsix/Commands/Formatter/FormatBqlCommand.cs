@@ -121,7 +121,7 @@ namespace Acuminator.Vsix.Formatter
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Return to UI thread
 
-			if (!textView.TextBuffer.EditInProgress && formattedRoot != syntaxRoot)
+			if (!textView.TextBuffer.EditInProgress && !syntaxRoot.Equals(formattedRoot))
 			{
 				var formattedDocument = document.WithSyntaxRoot(formattedRoot);
 				ApplyChanges(document, formattedDocument);
