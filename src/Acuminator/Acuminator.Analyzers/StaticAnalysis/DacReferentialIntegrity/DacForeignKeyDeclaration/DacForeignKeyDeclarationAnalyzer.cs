@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -7,11 +9,9 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private bool IsForeignKey(ITypeSymbol type)
 		{
-			ITypeSymbol currentType = type.ContainingType;
+			ITypeSymbol? currentType = type.ContainingType;
 
 			while (currentType != null)
 			{
@@ -70,9 +70,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return false;
 		}
 
-		protected override ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol foreignKey)
+		protected override ITypeSymbol? GetParentDacFromKey(PXContext context, INamedTypeSymbol foreignKey)
 		{
-			ITypeSymbol parentDAC = GetParentDacFromForeighKeyToInterface(context, foreignKey); // effective implementation via interface for Acumatica 2019R2 and later
+			ITypeSymbol? parentDAC = GetParentDacFromForeighKeyToInterface(context, foreignKey); // effective implementation via interface for Acumatica 2019R2 and later
 
 			if (parentDAC != null)
 				return parentDAC.IsDAC() ? parentDAC : null;
@@ -99,7 +99,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					case ReferentialIntegrity.By_TypeName
 					when baseType.ContainingType?.Name == ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary or unique key
 						{
-							INamedTypeSymbol topMostContainingType = baseType.TopMostContainingType();
+							INamedTypeSymbol? topMostContainingType = baseType.TopMostContainingType();
 
 							if (topMostContainingType?.Name == ReferentialIntegrity.PrimaryKeyOfName && topMostContainingType.TypeArguments.Length == 1)
 							{
@@ -126,15 +126,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return null;
 		}
 
-		private ITypeSymbol GetParentDacFromForeighKeyToInterface(PXContext context, INamedTypeSymbol foreignKey)
+		private ITypeSymbol? GetParentDacFromForeighKeyToInterface(PXContext context, INamedTypeSymbol foreignKey)
 		{
 			if (context.ReferentialIntegritySymbols.IForeignKeyTo1 == null)
 				return null;
 
-			INamedTypeSymbol foreignKeyInterface = foreignKey.AllInterfaces
-															 .FirstOrDefault(i => i.TypeArguments.Length == 1 && 
-																				  i.Name == ReferentialIntegrity.IForeignKeyToName);
-			return foreignKeyInterface.TypeArguments[0];
+			INamedTypeSymbol? foreignKeyInterface = foreignKey.AllInterfaces
+															  .FirstOrDefault(i => i.TypeArguments.Length == 1 && 
+																				   i.Name == ReferentialIntegrity.IForeignKeyToName);
+			return foreignKeyInterface?.TypeArguments[0];
 		}
 
 		/// <summary>
@@ -174,7 +174,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 							return areValidFields
 								? usedFields.OrderBy(dacField => dacField.MetadataName).ToList(capacity: usedFields.Length)
-								: new List<ITypeSymbol>();
+								: [];
 						}
 
 					case ReferentialIntegrity.WithTablesOf_TypeName
@@ -183,9 +183,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 							var isRelatedTo_Type = baseType.ContainingType.ContainingType;
 							var usedDacField = GetDacFieldFromIsRelatedToType(dac, isRelatedTo_Type);
 
-							return usedDacField != null
-								? new List<ITypeSymbol>(capacity: 1) { usedDacField }
-								: new List<ITypeSymbol>();
+							return usedDacField != null ? [usedDacField] : [];
 						}
 
 					case ReferentialIntegrity.WithTablesOf_TypeName
@@ -194,24 +192,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 							var compositeKey = baseType.ContainingType;
 
 							if (compositeKey.TypeArguments.IsDefaultOrEmpty)
-								return new List<ITypeSymbol>();
+								return [];
 
-							var usedDacFields = compositeKey.TypeArguments.Select(isRelatedTo_Type => GetDacFieldFromIsRelatedToType(dac, isRelatedTo_Type))
+							List<ITypeSymbol> usedDacFields = compositeKey.TypeArguments
+																		  .Select(isRelatedTo_Type => GetDacFieldFromIsRelatedToType(dac, isRelatedTo_Type))
 																		  .Where(dacField => dacField != null)
-																		  .OrderBy(dacField => dacField.MetadataName)
-																		  .ToList(capacity: compositeKey.TypeArguments.Length);
+																		  .OrderBy(dacField => dacField!.MetadataName)
+																		  .ToList(capacity: compositeKey.TypeArguments.Length)!;
 
 							return usedDacFields.Count == compositeKey.TypeArguments.Length
 								? usedDacFields
-								: new List<ITypeSymbol>();
+								: [];
 						}
 				}
 			}
 
-			return new List<ITypeSymbol>();
+			return [];
 		}	
 
-		private ITypeSymbol GetDacFieldFromIsRelatedToType(DacSemanticModel dac, ITypeSymbol isRelatedTo_Type)
+		private ITypeSymbol? GetDacFieldFromIsRelatedToType(DacSemanticModel dac, ITypeSymbol isRelatedTo_Type)
 		{
 			var field_Type = isRelatedTo_Type?.ContainingType;
 
@@ -227,14 +226,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				: null;
 		}
 
-		protected override Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
+		protected override Location? GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
 		{
 			if (keyNode.BaseList.Types.Count == 0)
 				return null;
 
 			BaseTypeSyntax baseTypeNode = keyNode.BaseList.Types[0];
 
-			if (!(baseTypeNode.Type is QualifiedNameSyntax fullBaseTypeQualifiedName) || !(fullBaseTypeQualifiedName.Right is GenericNameSyntax byOrWithTablesOfNode))
+			if (baseTypeNode.Type is not QualifiedNameSyntax fullBaseTypeQualifiedName || fullBaseTypeQualifiedName.Right is not GenericNameSyntax byOrWithTablesOfNode)
 				return null;
 
 			if (byOrWithTablesOfNode.Identifier.Text == ReferentialIntegrity.By_TypeName)
@@ -248,7 +247,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				{
 					//AsSimpleKey case
 					case QualifiedNameSyntax partialBaseTypeQualifiedName												  //Case of Field<>.IsRelatedTo<> AsSimpleKey.WithTablesOf<,>
-					when partialBaseTypeQualifiedName.Right is IdentifierNameSyntax { Identifier: { Text: ReferentialIntegrity.AsSimpleKeyName } } asSimpleKeyNode:
+					when partialBaseTypeQualifiedName.Right is IdentifierNameSyntax { Identifier.Text: ReferentialIntegrity.AsSimpleKeyName } asSimpleKeyNode:
 
 						return GetUnboundDacFieldLocationFromAsSimpleKeyNode(partialBaseTypeQualifiedName.Left as QualifiedNameSyntax, unboundDacFieldInKey);
 
@@ -257,12 +256,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 						return GetUnboundDacFieldLocationFromCompositeKeyNode(compositeKeyNode, unboundDacFieldInKey);
 
 					case QualifiedNameSyntax compositeKeyNodeWithNamespace												   //Case of Namespace.CompositeKey<,...,> and Alias::Namespace.CompositeKey<,...,>
-					when compositeKeyNodeWithNamespace.Right is GenericNameSyntax { Identifier: { Text: ReferentialIntegrity.CompositeKey } } compositeKeyNode:
+					when compositeKeyNodeWithNamespace.Right is GenericNameSyntax { Identifier.Text: ReferentialIntegrity.CompositeKey } compositeKeyNode:
 
 						return GetUnboundDacFieldLocationFromCompositeKeyNode(compositeKeyNode, unboundDacFieldInKey);
 
 					case AliasQualifiedNameSyntax compositeKeyNodeWithAlias
-					when compositeKeyNodeWithAlias.Name is GenericNameSyntax { Identifier: { Text: ReferentialIntegrity.CompositeKey } } compositeKeyNode:
+					when compositeKeyNodeWithAlias.Name is GenericNameSyntax { Identifier.Text: ReferentialIntegrity.CompositeKey } compositeKeyNode:
 
 						return GetUnboundDacFieldLocationFromCompositeKeyNode(compositeKeyNode, unboundDacFieldInKey);
 				}
@@ -271,18 +270,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return null;
 		}
 
-		private Location GetUnboundDacFieldLocationFromAsSimpleKeyNode(QualifiedNameSyntax asSimpleKeyLeftPartOfNameNode, ITypeSymbol unboundDacFieldInKey)
+		private Location? GetUnboundDacFieldLocationFromAsSimpleKeyNode(QualifiedNameSyntax? asSimpleKeyLeftPartOfNameNode, ITypeSymbol unboundDacFieldInKey)
 		{
 			if (asSimpleKeyLeftPartOfNameNode?.Right?.Identifier.Text != ReferentialIntegrity.IsRelatedTo)
 				return null;
 
-			GenericNameSyntax fieldNode = GetFieldNodeWithPrefixConsideration(asSimpleKeyLeftPartOfNameNode.Left);
+			GenericNameSyntax? fieldNode = GetFieldNodeWithPrefixConsideration(asSimpleKeyLeftPartOfNameNode.Left);
 			return fieldNode != null
 				? GetUnboundDacFieldLocationFromTypeArguments(fieldNode, unboundDacFieldInKey)
 				: null;
 		}
 
-		private Location GetUnboundDacFieldLocationFromCompositeKeyNode(GenericNameSyntax compositeKeyNode, ITypeSymbol unboundDacFieldInKey)
+		private Location? GetUnboundDacFieldLocationFromCompositeKeyNode(GenericNameSyntax compositeKeyNode, ITypeSymbol unboundDacFieldInKey)
 		{
 			var fieldLocations = 
 				compositeKeyNode.TypeArgumentList.Arguments
@@ -295,12 +294,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return fieldLocations.FirstOrDefault(location => location != null);
 		}
 
-		private GenericNameSyntax GetFieldNodeWithPrefixConsideration(NameSyntax fieldNodeWithPossibleNamespaceAndAlias) =>
+		private GenericNameSyntax? GetFieldNodeWithPrefixConsideration(NameSyntax fieldNodeWithPossibleNamespaceAndAlias) =>
 			fieldNodeWithPossibleNamespaceAndAlias switch
 			{
-				GenericNameSyntax fieldNode when fieldNode.Identifier.Text == ReferentialIntegrity.Field							   => fieldNode,  //case Field<> without prefix
-				QualifiedNameSyntax		 { Right: GenericNameSyntax { Identifier: { Text: ReferentialIntegrity.Field } } fieldNode } _ => fieldNode,  //cases Namespace.Field<> and Alias::Namespace.Field<>
-				AliasQualifiedNameSyntax { Name: GenericNameSyntax  { Identifier: { Text: ReferentialIntegrity.Field } } fieldNode } _ => fieldNode,  //case Alias::Field<>
+				GenericNameSyntax fieldNode when fieldNode.Identifier.Text == ReferentialIntegrity.Field						  => fieldNode,  //case Field<> without prefix
+				QualifiedNameSyntax		 { Right: GenericNameSyntax { Identifier.Text: ReferentialIntegrity.Field } fieldNode } _ => fieldNode,  //cases Namespace.Field<> and Alias::Namespace.Field<>
+				AliasQualifiedNameSyntax { Name: GenericNameSyntax  { Identifier.Text: ReferentialIntegrity.Field } fieldNode } _ => fieldNode,  //case Alias::Field<>
 				_ => null
 			};
 
@@ -356,7 +355,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private void ReportNoForeignKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
-			Location location = dac.Node.Identifier.GetLocation() ?? dac.Node.GetLocation();
+			var location = dac.Node.Identifier.GetLocation() ?? dac.Node.GetLocation();
 
 			if (location != null)
 			{
@@ -366,7 +365,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			} 
 		}
 
-		private List<INamedTypeSymbol> GetKeysNotInContainer(List<INamedTypeSymbol> keyDeclarations, INamedTypeSymbol foreignKeysContainer)
+		private List<INamedTypeSymbol> GetKeysNotInContainer(List<INamedTypeSymbol> keyDeclarations, INamedTypeSymbol? foreignKeysContainer)
 		{
 			bool containerDeclaredIncorrectly = foreignKeysContainer?.DeclaredAccessibility != Accessibility.Public || !foreignKeysContainer.IsStatic;
 

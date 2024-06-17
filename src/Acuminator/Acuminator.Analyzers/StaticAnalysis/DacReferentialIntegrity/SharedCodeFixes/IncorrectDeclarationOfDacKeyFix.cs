@@ -51,10 +51,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax keyNode))
+			if (root?.FindNode(context.Span) is not ClassDeclarationSyntax keyNode)
 				return;
 
-			if (!(root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is ClassDeclarationSyntax dacNode))
+			if (root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is not ClassDeclarationSyntax dacNode)
 				return;
 
 			switch (dacKeyType)
