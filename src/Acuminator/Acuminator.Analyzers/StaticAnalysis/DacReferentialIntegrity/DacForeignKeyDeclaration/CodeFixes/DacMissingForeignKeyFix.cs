@@ -185,7 +185,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				var selectorAttributeCandidateMemberTypes = 
 					from type in attribute.AttributeType.GetBaseTypesAndThis()
-														.TakeWhile(attrType => attrType != pxContext.AttributeTypes.PXEventSubscriberAttribute)
+														.TakeWhile(attrType => !pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attrType))
 					from member in type.GetMembers(selectorAttributeProperty)
 					select member switch
 					{

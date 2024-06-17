@@ -256,11 +256,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			if (containerDeclaredIncorrectly)
 			{
-				return keyDeclarations.Where(key => key != primaryKey).ToList(capacity: keyDeclarations.Count - 1);
+				return keyDeclarations.Where(key => !key.Equals(primaryKey)).ToList(capacity: keyDeclarations.Count - 1);
 			}
 			else
 			{
-				return keyDeclarations.Where(key => key != primaryKey && key.ContainingType != uniqueKeysContainer && 
+				return keyDeclarations.Where(key => !key.Equals(primaryKey) && !Equals(key.ContainingType, uniqueKeysContainer) && 
 													!key.GetContainingTypes().Contains(uniqueKeysContainer))
 									  .ToList(capacity: keyDeclarations.Count - 1);
 			}

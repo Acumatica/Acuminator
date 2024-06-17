@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				case RefIntegrityDacKeyType.PrimaryKey
 				when keyNode.Identifier.Text != ReferentialIntegrity.PrimaryKeyClassName:
 					{
-						bool shouldChangeLocation = keyNode.Parent != dacNode;  //We need to change location for primary key
+						bool shouldChangeLocation = !dacNode.Equals(keyNode.Parent);  //We need to change location for primary key
 						string codeActionResourceName = shouldChangeLocation
 							? nameof(Resources.PX1036PK_ChangeNameAndLocationFix)
 							: nameof(Resources.PX1036PK_ChangeNameFix);
