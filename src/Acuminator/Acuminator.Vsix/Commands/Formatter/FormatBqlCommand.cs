@@ -1,20 +1,22 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Vsix.Utilities;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
-using Acuminator.Vsix;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Vsix.Utilities;
-
-
+using Microsoft.VisualStudio.Threading;
 
 namespace Acuminator.Vsix.Formatter
 {
@@ -43,17 +45,19 @@ namespace Acuminator.Vsix.Formatter
 		/// <summary>
 		/// Gets the instance of the command.
 		/// </summary>
-		public static FormatBqlCommand Instance
+		public static FormatBqlCommand? Instance
 		{
 			get;
 			private set;
 		}
 
+#pragma warning disable CS8774 // Member must have a non-null value when exiting.
 		/// <summary>
 		/// Initializes the singleton instance of the command.
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
 		/// <param name="commandService">The OLE command service.</param>
+		[MemberNotNull(nameof(Instance))]
 		public static void Initialize(AsyncPackage package, OleMenuCommandService commandService)
 		{
 			if (Interlocked.CompareExchange(ref _isCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
@@ -61,6 +65,7 @@ namespace Acuminator.Vsix.Formatter
 				Instance = new FormatBqlCommand(package, commandService);
 			}
 		}
+#pragma warning restore CS8774
 
 		protected override void CommandCallback(object sender, EventArgs e) =>
 			CommandCallbackAsync()
@@ -133,8 +138,8 @@ namespace Acuminator.Vsix.Formatter
 			oldDocument.ThrowOnNull();
 			newDocument.ThrowOnNull();
 
-			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
-			Solution newSolution = newDocument.Project?.Solution;
+			Workspace? workspace = oldDocument.Project?.Solution?.Workspace;
+			Solution? newSolution = newDocument.Project?.Solution;
 
 			if (workspace != null && newSolution != null)
 			{
