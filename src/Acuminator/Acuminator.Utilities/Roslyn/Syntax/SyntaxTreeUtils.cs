@@ -115,7 +115,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			int depth = 0;
 			SyntaxNode curNode = node.Parent;
 
-			while (curNode != null && !(curNode is TRoot))
+			while (curNode != null && curNode is not TRoot)
 			{
 				depth++;
 				curNode = curNode.Parent;
@@ -146,7 +146,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			int depth = 0;
 			TNode? curNode = node.Parent<TNode>();
 
-			while (curNode != null && !(curNode is TRoot))
+			while (curNode != null && curNode is not TRoot)
 			{
 				depth++;
 				curNode = curNode.Parent<TNode>();
@@ -177,7 +177,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				}
 			}
 
-			while (currentX != currentY)          //Then move up the branches until nodes coincide
+			while (!Equals(currentX, currentY))          //Then move up the branches until nodes coincide
 			{
 				currentX = currentX.Parent;
 				currentY = currentY.Parent;
