@@ -464,6 +464,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphInstanceConstructorNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\GraphBaseMembeOverrideNodeViewModel.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
+    <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
     <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />

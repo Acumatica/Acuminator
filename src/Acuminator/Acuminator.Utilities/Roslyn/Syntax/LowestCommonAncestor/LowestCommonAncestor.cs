@@ -43,7 +43,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				}
 			}
 
-			while (currentX != currentY)          //Then move up the branches until nodes coincide
+			while (!Equals(currentX, currentY))          //Then move up the branches until nodes coincide
 			{
 				prevX = currentX;
 				prevY = currentY;
@@ -83,7 +83,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				}
 			}
 
-			while (currentX != currentY)          //Then move up the branches until nodes coincide
+			while (!Equals(currentX, currentY))          //Then move up the branches until nodes coincide
 			{
 				prevX = currentX;
 				prevY = currentY;

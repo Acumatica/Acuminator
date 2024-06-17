@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -7,10 +9,8 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -66,9 +66,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 						 ?? new List<ITypeSymbol>();
 		}
 
-		protected override ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
+		protected override ITypeSymbol? GetParentDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
 		{
-			ITypeSymbol parentDAC = null;
+			ITypeSymbol? parentDAC = null;
 
 			if (context.ReferentialIntegritySymbols.IPrimaryKeyOf1 != null)
 			{
@@ -96,14 +96,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				: null;
 		}
 
-		protected override Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
+		protected override Location? GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
 		{
 			if (keyNode.BaseList.Types.Count == 0)
 				return null;
 
 			BaseTypeSyntax baseTypeNode = keyNode.BaseList.Types[0];
 
-			if (!(baseTypeNode.Type is QualifiedNameSyntax qualifiedName) || !(qualifiedName.Right is GenericNameSyntax byTypeNode))
+			if (baseTypeNode.Type is not QualifiedNameSyntax qualifiedName || qualifiedName.Right is not GenericNameSyntax byTypeNode)
 				return null;
 
 			return GetUnboundDacFieldLocationFromTypeArguments(byTypeNode, unboundDacFieldInKey);
@@ -141,7 +141,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private void ReportNoPrimaryKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
-			Location location = dac.Node.Identifier.GetLocation() ?? dac.Node.GetLocation();
+			var location = dac.Node.Identifier.GetLocation() ?? dac.Node.GetLocation();
 
 			if (location != null)
 			{
@@ -210,8 +210,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 			}
 
-			INamedTypeSymbol uniqueKeysContainer = dac.Symbol.GetTypeMembers(ReferentialIntegrity.UniqueKeyClassName)
-															 .FirstOrDefault();
+			INamedTypeSymbol? uniqueKeysContainer = dac.Symbol.GetTypeMembers(ReferentialIntegrity.UniqueKeyClassName)
+															  .FirstOrDefault();
 			
 			//We can register code fix only if there is no UK nested type in DAC or there is a public static UK class. Otherwise we will break the code.
 			bool registerCodeFix = uniqueKeysContainer == null || 
@@ -250,17 +250,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 		}
 
-		private List<INamedTypeSymbol> GetKeysNotInContainer(List<INamedTypeSymbol> keyDeclarations, INamedTypeSymbol uniqueKeysContainer, INamedTypeSymbol primaryKey)
+		private List<INamedTypeSymbol> GetKeysNotInContainer(List<INamedTypeSymbol> keyDeclarations, INamedTypeSymbol? uniqueKeysContainer, INamedTypeSymbol primaryKey)
 		{
 			bool containerDeclaredIncorrectly = uniqueKeysContainer?.DeclaredAccessibility != Accessibility.Public || !uniqueKeysContainer.IsStatic;
 
 			if (containerDeclaredIncorrectly)
 			{
-				return keyDeclarations.Where(key => key != primaryKey).ToList(capacity: keyDeclarations.Count - 1);
+				return keyDeclarations.Where(key => !key.Equals(primaryKey)).ToList(capacity: keyDeclarations.Count - 1);
 			}
 			else
 			{
-				return keyDeclarations.Where(key => key != primaryKey && key.ContainingType != uniqueKeysContainer && 
+				return keyDeclarations.Where(key => !key.Equals(primaryKey) && !Equals(key.ContainingType, uniqueKeysContainer) && 
 													!key.GetContainingTypes().Contains(uniqueKeysContainer))
 									  .ToList(capacity: keyDeclarations.Count - 1);
 			}

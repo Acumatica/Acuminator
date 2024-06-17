@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 				keyAttributes.AddRange(propertyKeyAttributes);
 
-				if (property.Symbol.ContainingType == dac.Symbol)
+				if (dac.Symbol.Equals(property.Symbol.ContainingType))
 				{
 					declaredInDacKeyAttributes.AddRange(propertyKeyAttributes);
 				}
