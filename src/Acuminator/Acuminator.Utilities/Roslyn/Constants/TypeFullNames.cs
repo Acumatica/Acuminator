@@ -86,7 +86,10 @@
 		internal const string PXImportAttribute = "PX.Data.PXImportAttribute";
 		internal const string PXHiddenAttribute = "PX.Data.PXHiddenAttribute";
 		internal const string PXCacheNameAttribute = "PX.Data.PXCacheNameAttribute";
+
 		internal const string PXPrimaryGraphAttribute = "PX.Data.PXPrimaryGraphAttribute";
+		internal const string PXPrimaryGraphBaseAttribute = "PX.Data.PXPrimaryGraphBaseAttribute";
+
 		internal const string PXCopyPasteHiddenViewAttribute = "PX.Data.PXCopyPasteHiddenViewAttribute";
 		internal const string PXOverrideAttribute = "PX.Data.PXOverrideAttribute";
 		internal const string PXEventSubscriberAttribute = "PX.Data.PXEventSubscriberAttribute";
