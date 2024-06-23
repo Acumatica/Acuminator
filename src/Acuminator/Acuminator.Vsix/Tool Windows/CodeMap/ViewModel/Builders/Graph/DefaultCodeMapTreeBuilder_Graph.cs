@@ -109,8 +109,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Cancellation.ThrowIfCancellationRequested();
 			var graphSemanticModel = graphMemberCategory.GraphSemanticModel;
 			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes.OfType<TSymbolInfo>()
-										where graphMemberInfo.SymbolBase.ContainingType == graphSemanticModel.Symbol ||
-											  graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition == graphSemanticModel.Symbol.OriginalDefinition
+										where graphSemanticModel.Symbol.Equals(graphMemberInfo.SymbolBase.ContainingType) ||
+											  Equals(graphSemanticModel.Symbol.OriginalDefinition, graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition) 
 										select constructor(graphMemberInfo);
 
 			return graphMemberViewModels;
@@ -143,8 +143,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			Cancellation.ThrowIfCancellationRequested();
 			var dacGroupingNodesViewModels = from eventInfo in graphCategoryEvents
-											 where eventInfo.Symbol.ContainingType == graphSemanticModel.Symbol ||
-												   eventInfo.Symbol.ContainingType.OriginalDefinition == graphSemanticModel.Symbol.OriginalDefinition
+											 where graphSemanticModel.Symbol.Equals(eventInfo.Symbol.ContainingType) ||
+												   Equals(eventInfo.Symbol.ContainingType.OriginalDefinition, graphSemanticModel.Symbol.OriginalDefinition)
 											 group eventInfo by eventInfo.DacName into graphEventsForDAC
 											 select constructor(graphEventCategory, graphEventsForDAC.Key, graphEventsForDAC) into dacNodeVM
 											 where dacNodeVM != null

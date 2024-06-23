@@ -51,10 +51,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax keyNode))
+			if (root?.FindNode(context.Span) is not ClassDeclarationSyntax keyNode)
 				return;
 
-			if (!(root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is ClassDeclarationSyntax dacNode))
+			if (root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is not ClassDeclarationSyntax dacNode)
 				return;
 
 			switch (dacKeyType)
@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				case RefIntegrityDacKeyType.PrimaryKey
 				when keyNode.Identifier.Text != ReferentialIntegrity.PrimaryKeyClassName:
 					{
-						bool shouldChangeLocation = keyNode.Parent != dacNode;  //We need to change location for primary key
+						bool shouldChangeLocation = !dacNode.Equals(keyNode.Parent);  //We need to change location for primary key
 						string codeActionResourceName = shouldChangeLocation
 							? nameof(Resources.PX1036PK_ChangeNameAndLocationFix)
 							: nameof(Resources.PX1036PK_ChangeNameFix);

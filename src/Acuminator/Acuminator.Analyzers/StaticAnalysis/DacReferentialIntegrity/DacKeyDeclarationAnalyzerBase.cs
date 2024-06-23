@@ -279,11 +279,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return false;
 
 			var pxCacheNameAttribute = context.AttributeTypes.PXCacheNameAttribute;
-			var pxPrimaryGraphAttribute = context.AttributeTypes.PXPrimaryGraphAttribute;
+			var defaultNavigationAttribute = context.AttributeTypes.PXPrimaryGraphBaseAttribute ?? context.AttributeTypes.PXPrimaryGraphAttribute;
 
 			return dacAttributes.Any(attribute => attribute.AttributeClass != null &&
 												 (attribute.AttributeClass.InheritsFromOrEquals(pxCacheNameAttribute) ||
-												  attribute.AttributeClass.InheritsFromOrEquals(pxPrimaryGraphAttribute)));
+												  attribute.AttributeClass.InheritsFromOrEquals(defaultNavigationAttribute)));
 		}
 
 		protected abstract void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 

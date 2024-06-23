@@ -39,14 +39,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public IEnumerable<DacPropertyInfo> DacProperties => Properties.Where(p => p.IsDacProperty);
 
-		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => p.Symbol.ContainingType == Symbol);
+		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => Symbol.Equals(p.Symbol.ContainingType));
 
-		public IEnumerable<DacPropertyInfo> DeclaredDacProperties => Properties.Where(p => p.IsDacProperty && p.Symbol.ContainingType == Symbol);
+		public IEnumerable<DacPropertyInfo> DeclaredDacProperties => Properties.Where(p => p.IsDacProperty && Symbol.Equals(p.Symbol.ContainingType));
 
 		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
 		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
 
-		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => f.Symbol.ContainingType == Symbol);
+		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => Symbol.Equals(f.Symbol.ContainingType));
 
 		/// <summary>
 		/// Gets the info about IsActive method for DAC extensions. Can be <c>null</c>. Always <c>null</c> for DACs.

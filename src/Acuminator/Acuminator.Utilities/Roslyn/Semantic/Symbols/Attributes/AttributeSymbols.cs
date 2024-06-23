@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
@@ -14,6 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXHiddenAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXHiddenAttribute);
 		public INamedTypeSymbol PXCacheNameAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXCacheNameAttribute);
 		public INamedTypeSymbol PXPrimaryGraphAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXPrimaryGraphAttribute);
+		public INamedTypeSymbol? PXPrimaryGraphBaseAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXPrimaryGraphBaseAttribute);
 		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXCopyPasteHiddenViewAttribute);
 		public INamedTypeSymbol PXOverrideAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXOverrideAttribute);
 
