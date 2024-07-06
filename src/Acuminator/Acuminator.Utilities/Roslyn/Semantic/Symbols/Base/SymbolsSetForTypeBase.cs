@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.CodeAnalysis;
 
@@ -16,6 +17,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	{
 		public INamedTypeSymbol? Type { get; }
 
+		[MemberNotNullWhen(returnValue: true, nameof(Type))]
 		public bool IsDefined => Type != null;
 
 		private protected SymbolsSetForTypeBase(Compilation compilation, string typeName) : base(compilation)
