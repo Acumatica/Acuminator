@@ -79,18 +79,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 
 			var parameters = methodSymbol.Parameters;
+			var viewType   = methodSymbol.ContainingType;
 
 			if (parameters.IsDefaultOrEmpty || !parameters[parameters.Length - 1].IsParams ||
-				!methodSymbol.ContainingType.IsBqlCommand(pxContext) || !IsValidReturnType(methodSymbol, pxContext))
+				viewType == null || !viewType.IsBqlCommand(pxContext) || IsFbqlViewType(viewType) ||
+				!IsValidReturnType(methodSymbol, pxContext))
 			{
 				return false;
 			}
 
 			return !pxContext.PXSelectExtensionSymbols.IsDefined || 
-				   !methodSymbol.ContainingType.InheritsFromOrEqualsGeneric(pxContext.PXSelectExtensionSymbols.Type);
+				   !viewType.InheritsFromOrEqualsGeneric(pxContext.PXSelectExtensionSymbols.Type);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsFbqlViewType(ITypeSymbol viewType) =>
+			viewType.ContainingNamespace?.ToString() == NamespaceNames.PXDataBqlFluent;
+
 		private static bool IsValidReturnType(IMethodSymbol methodSymbol, PXContext pxContext)
 		{
 			if (methodSymbol.ReturnsVoid)
@@ -113,17 +117,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocation)
 		{
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 			ExpressionSyntax? accessExpression = invocation.GetAccessNodeFromInvocationNode();
 
-			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (accessExpression == null)
 				return;
 
 			ITypeSymbol callerStaticType = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken).Type;
 
-			if (callerStaticType == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (callerStaticType == null)
 				return;
 
-			if (callerStaticType.IsCustomBqlCommand(pxContext))
+			if (IsFbqlViewType(callerStaticType))
+				return;
+			else if (callerStaticType.IsCustomBqlCommand(pxContext))
 			{
 				AnalyzeDerivedBqlStaticCall(methodSymbol, invocation, pxContext, syntaxContext);
 				return;
@@ -131,8 +138,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocation);
 
-			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (argsCount == null)
 				return;
+
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			var walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
 
@@ -282,8 +291,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
 			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
 
-			if (containingType == null || !containingType.IsBqlCommand(pxContext) || containingType.IsCustomBqlCommand(pxContext))
+			if (containingType == null || !containingType.IsBqlCommand(pxContext) || containingType.IsCustomBqlCommand(pxContext) ||
+				IsFbqlViewType(containingType))
+			{
 				return null;
+			}
 
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
