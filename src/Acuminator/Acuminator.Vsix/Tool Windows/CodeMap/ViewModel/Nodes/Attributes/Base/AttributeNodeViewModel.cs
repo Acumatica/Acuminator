@@ -20,10 +20,12 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class AttributeNodeViewModel : TreeNodeViewModel, IElementWithTooltip
+	public abstract class AttributeNodeViewModel<TAttributeInfo> : TreeNodeViewModel, IElementWithTooltip
+	where TAttributeInfo : AttributeInfoBase
 	{
-		private const string AttributeSuffix = nameof(System.Attribute);
-		public AttributeData Attribute { get; }
+		protected const string AttributeSuffix = nameof(System.Attribute);
+
+		public AttributeInfoBase Attribute { get; }
 
 		public override string Name
 		{
@@ -37,8 +39,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private readonly Lazy<TooltipInfo> _tooltipLazy;
 
-		public AttributeNodeViewModel(TreeNodeViewModel nodeVM, AttributeData attribute, bool isExpanded = false) :
-								 base(nodeVM?.Tree, nodeVM, isExpanded)
+		protected AttributeNodeViewModel(TreeNodeViewModel nodeVM, TAttributeInfo attributeInfo, bool isExpanded = false) :
+									base(nodeVM?.Tree!, nodeVM, isExpanded)
 		{
 			Attribute = attribute.CheckIfNull();
 			int lastDotIndex = Attribute.AttributeClass.Name.LastIndexOf('.');
