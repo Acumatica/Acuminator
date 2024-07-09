@@ -7,11 +7,11 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -103,6 +103,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredViewDelegates"/>
 		public IEnumerable<DataViewDelegateInfo> DeclaredViewDelegates => BaseGraphModel.DeclaredViewDelegates;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.Attributes"/>
+		public IEnumerable<GraphAttributeInfo> Attributes => BaseGraphModel.Attributes;
 		#endregion
 
 		#region Events
