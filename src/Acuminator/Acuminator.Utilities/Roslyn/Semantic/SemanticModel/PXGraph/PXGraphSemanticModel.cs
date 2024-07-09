@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
@@ -112,6 +113,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public bool HasPXProtectedAccess { get; }
 
+		/// <summary>
+		/// The attributes declared on a graph or graph extension.
+		/// </summary>
+		public ImmutableArray<GraphAttributeInfo> Attributes { get; }
+
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
 									 CancellationToken cancellation = default)
 		{
@@ -129,6 +135,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				GraphType.PXGraphExtension => Symbol.GetGraphFromGraphExtension(PXContext),
 				_ 						   => null,
 			};
+
+			Attributes = GetGraphAttributes();
 
 			StaticConstructors 	 = Symbol.GetStaticConstructors(_cancellation);
 			ViewsByNames 		 = GetDataViews();
@@ -193,6 +201,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				ViewsByNames[viewName].FinallyProcessDelegates = finalProcessDelegateInfo.ToImmutableArray();
 			}
+		}
+
+		private ImmutableArray<GraphAttributeInfo> GetGraphAttributes()
+		{
+			var attributes = Symbol.GetAttributes();
+
+			if (attributes.IsDefaultOrEmpty)
+				return ImmutableArray<GraphAttributeInfo>.Empty;
+
+			var attributeInfos = attributes.Select((attributeData, relativeOrder) => new GraphAttributeInfo(PXContext, attributeData, relativeOrder));
+			var builder = ImmutableArray.CreateBuilder<GraphAttributeInfo>(attributes.Length);
+			builder.AddRange(attributeInfos);
+
+			return builder.ToImmutable();
 		}
 
 		private ImmutableDictionary<string, DataViewInfo> GetDataViews() =>
@@ -382,14 +404,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return pxOverrides.ToImmutableArray();
 		}
 
-		private bool IsPXProtectedAccessAttributeDeclared()
-		{
-			if (Type != GraphType.PXGraphExtension)
-				return false;
-
-			return PXContext.AttributeTypes.PXProtectedAccessAttribute is { } protectedAccessAttribute
-				? Symbol.HasAttribute(protectedAccessAttribute, checkOverrides: false, checkForDerivedAttributes: false)
+		private bool IsPXProtectedAccessAttributeDeclared() =>
+			Type == GraphType.PXGraphExtension && !Attributes.IsDefaultOrEmpty
+				? Attributes.Any(attrInfo => attrInfo.IsProtectedAccess)
 				: false;
-		}
 	}
 }

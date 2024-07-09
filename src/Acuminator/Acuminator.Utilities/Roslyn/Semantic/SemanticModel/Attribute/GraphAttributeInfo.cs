@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			if (AttributeType != null)
 			{
 				IsDefaultNavigation = AttributeType.IsDefaultNavigation(pxContext);
-				IsProtectedAccess   = pxContext.AttributeTypes.PXProtectedAccessAttribute is INamedTypeSymbol protectedAccessAttribute &&
+				IsProtectedAccess   = pxContext.AttributeTypes.PXProtectedAccessAttribute is { } protectedAccessAttribute &&
 									  AttributeType.InheritsFromOrEquals(protectedAccessAttribute);
 			}
 		}
