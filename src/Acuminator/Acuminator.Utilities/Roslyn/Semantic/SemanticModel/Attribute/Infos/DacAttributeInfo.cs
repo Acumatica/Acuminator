@@ -9,6 +9,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 	/// </summary>
 	public class DacAttributeInfo : AttributeInfoBase
 	{
+		public override AttributePlacement Placement => AttributePlacement.Dac;
+
 		/// <summary>
 		/// An indicator of whether the attribute configures the default navigation.
 		/// </summary>
