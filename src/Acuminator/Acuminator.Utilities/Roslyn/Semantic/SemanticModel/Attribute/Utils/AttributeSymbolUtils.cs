@@ -14,10 +14,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		{
 			attributeType.ThrowOnNull();
 
-			if (pxContext.CheckIfNull().AttributeTypes.PXPrimaryGraphBaseAttribute is INamedTypeSymbol pxPrimaryGraphBaseAttribute)
-				return attributeType.InheritsFromOrEquals(pxPrimaryGraphBaseAttribute);
-			else
-				return attributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXPrimaryGraphAttribute);
+			var defaultNavigationAttribute = pxContext.CheckIfNull().AttributeTypes.PXPrimaryGraphBaseAttribute ?? 
+											 pxContext.AttributeTypes.PXPrimaryGraphAttribute;
+			return attributeType.InheritsFromOrEquals(defaultNavigationAttribute);
 		}
 	}
 }
