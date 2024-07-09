@@ -8,6 +8,7 @@
         public const string PXCommonStd                   = "PX.Common.Std";
 
         public const string ReferentialIntegrityAttributes = "PX.Data.ReferentialIntegrity.Attributes";
+        public const string PXDataBqlFluent                = "PX.Data.BQL.Fluent";
 
 		public const string DotNetSerializationNamespace = "System.Runtime.Serialization";
 	}

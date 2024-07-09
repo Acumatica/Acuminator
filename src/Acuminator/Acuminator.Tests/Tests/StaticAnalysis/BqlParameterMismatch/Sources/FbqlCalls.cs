@@ -1,34 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using PX.Data;
 using PX.Data.BQL;
+using PX.Data.BQL.Fluent;
+using PX.Objects.AR;
+using PX.Objects.SO;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SOOrderTestFbqlEntry : PXGraph<SOOrderTestFbqlEntry>
+	public class FbqlReadOnlyEntry : PXGraph<FbqlReadOnlyEntry>
 	{
-		PXSelect<SOOrder,
-		   Where<SOOrder.orderType, Equal<@P.AsString>,
-			 And<SOOrder.orderNbr, Equal<SOOrder.orderNbr.FromCurrent>,
-			 And<SOOrder.status, Equal<SOOrder.status.AsOptional>>>>,
-		 OrderBy<
-			 Asc<SOOrder.orderNbr>>> fieldSelect;
+		public SelectFrom<SOAdjust>
+				.LeftJoin<ARRegister>
+					.On<SOAdjust.adjgDocType.IsEqual<ARRegister.docType>
+					.And<SOAdjust.adjgRefNbr.IsEqual<ARRegister.refNbr>>>
+				.Where<SOAdjust.adjdOrderType.IsEqual<@P.AsString>
+					.And<SOAdjust.adjdOrderNbr.IsEqual<@P.AsString>>
+					.And<ARRegister.openDoc.IsEqual<True>>>
+				.View.ReadOnly OpenAdjustingPrepaymentInvoices;
 
-		public SOOrder FieldInstanceCall_Correct()
+		public SOAdjust FieldInstanceCall_Correct()
 		{
-			var resultWithoutOptional = fieldSelect.SelectSingle("INV");
-			var resultWithOptional = fieldSelect.SelectSingle("INV", "Hold");
-
-			return resultWithOptional ?? resultWithOptional;
+			SOAdjust result = OpenAdjustingPrepaymentInvoices.SelectSingle("INV", "0000001");		// no diagnostic
+			return result;
 		}
 
-		public SOOrder FieldInstanceCall_Incorrect()
+		public SOAdjust FieldInstanceCall_Incorrect()
 		{
-			var result1 = fieldSelect.SelectSingle();
-			var result2 = fieldSelect.SelectSingle("INV", "0000001", "Hold");
+			var result1 = OpenAdjustingPrepaymentInvoices.SelectSingle();
+			var result2 = OpenAdjustingPrepaymentInvoices.SelectSingle("INV", "0000001", "Hold");
 
 			return result1 ?? result2;
 		}
@@ -37,48 +37,84 @@ namespace PX.Objects.HackathonDemo
 		{
 			object[] currents = null;
 			SOOrder resultWithoutOptional =
-				PXSelect<SOOrder,
-				   Where<SOOrder.orderType, Equal<@P.AsString>,
-					 And<SOOrder.orderNbr, Equal<SOOrder.orderNbr.FromCurrent>,
-					 And<SOOrder.status, Equal<SOOrder.status.AsOptional>>>>,
-				 OrderBy<
-					 Asc<SOOrder.orderNbr>>>
-				.SelectSingleBound(this, currents, "INV");
-	
-			var resultWithOptional =
-				PXSelect<SOOrder,
-				   Where<SOOrder.orderType, Equal<@P.AsString>,
-					 And<SOOrder.orderNbr, Equal<SOOrder.orderNbr.FromCurrent>,
-					 And<SOOrder.status, Equal<SOOrder.status.AsOptional>>>>,
-				 OrderBy<
-					 Asc<SOOrder.orderNbr>>>
-				.SelectSingleBound(this, currents, "INV", "Hold");
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View
+				.SelectSingleBound(this, currents, "INV");      // no diagnostic
 
-			return resultWithOptional ?? resultWithoutOptional;
+			SOOrder resultWithoutOptionalReadonly =
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View.ReadOnly
+				.SelectSingleBound(this, currents, "INV");      // no diagnostic
+
+			var resultWithOptional =
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View
+				.SelectSingleBound(this, currents, "INV", "Hold");       // no diagnostic
+
+			var resultWithOptionalReadonly =
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View.ReadOnly
+				.SelectSingleBound(this, currents, "INV", "Hold");       // no diagnostic
+
+			return resultWithOptional ?? resultWithoutOptionalReadonly ?? resultWithoutOptional ?? resultWithOptionalReadonly;
 		}
 
 		public SOOrder StaticFbqlCall_Incorrect()
 		{
 			object[] currents = null;
 			SOOrder result1 =
-				PXSelect<SOOrder,
-				   Where<SOOrder.orderType, Equal<@P.AsString>,
-					 And<SOOrder.orderNbr, Equal<SOOrder.orderNbr.FromCurrent>,
-					 And<SOOrder.status, Equal<SOOrder.status.AsOptional>>>>,
-				 OrderBy<
-					 Asc<SOOrder.orderNbr>>>
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View
 				.SelectSingleBound(this, currents);
 
-			var result2 =
-				PXSelect<SOOrder,
-				   Where<SOOrder.orderType, Equal<@P.AsString>,
-					 And<SOOrder.orderNbr, Equal<SOOrder.orderNbr.FromCurrent>,
-					 And<SOOrder.status, Equal<SOOrder.status.AsOptional>>>>,
-				 OrderBy<
-					 Asc<SOOrder.orderNbr>>>
-				.SelectSingleBound(this, currents, "INV", "000001", "Hold");
+			SOOrder result2 =
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View.ReadOnly
+				.SelectSingleBound(this, currents);
 
-			return result1 ?? result2;
+			var result3 =
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View
+				 .SelectSingleBound(this, currents, "INV", "000001", "Hold");
+
+			var result4 =
+				SelectFrom<SOOrder>
+				   .Where<SOOrder.orderType.IsEqual<@P.AsString>
+					 .And<SOOrder.orderNbr.IsEqual<SOOrder.orderNbr.FromCurrent>
+					 .And<SOOrder.status.IsEqual<SOOrder.status.AsOptional>>>>
+				 .OrderBy<SOOrder.orderNbr.Asc>
+				 .View.ReadOnly
+				 .SelectSingleBound(this, currents, "INV", "000001", "Hold");
+
+			return result1 ?? result2 ?? result3 ?? result4;
 		}
 	}
 }

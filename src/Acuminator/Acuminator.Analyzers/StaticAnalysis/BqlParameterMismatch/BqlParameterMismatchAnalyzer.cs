@@ -1,15 +1,20 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 {
@@ -25,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		public BqlParameterMismatchAnalyzer() : this(null)
 		{ }
 
-		public BqlParameterMismatchAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public BqlParameterMismatchAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -37,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration) || classDeclaration.Members.Count == 0)
+			if (syntaxContext.Node is not ClassDeclarationSyntax classDeclaration || classDeclaration.Members.Count == 0)
 				return;
 
 			var invocationNodes = classDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>();
@@ -46,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			{
 				var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode, syntaxContext.CancellationToken);
 
-				if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol) || !IsValidMethodGeneralCheck(methodSymbol, pxContext))
+				if (symbolInfo.Symbol is not IMethodSymbol methodSymbol || !IsValidMethodGeneralCheck(methodSymbol, pxContext))
 					continue;
 
 				if (methodSymbol.IsStatic)
@@ -74,18 +79,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 
 			var parameters = methodSymbol.Parameters;
+			var viewType   = methodSymbol.ContainingType;
 
 			if (parameters.IsDefaultOrEmpty || !parameters[parameters.Length - 1].IsParams ||
-				!methodSymbol.ContainingType.IsBqlCommand(pxContext) || !IsValidReturnType(methodSymbol, pxContext))
+				viewType == null || !viewType.IsBqlCommand(pxContext) || IsFbqlViewType(viewType) ||
+				!IsValidReturnType(methodSymbol, pxContext))
 			{
 				return false;
 			}
 
 			return !pxContext.PXSelectExtensionSymbols.IsDefined || 
-				   !methodSymbol.ContainingType.InheritsFromOrEqualsGeneric(pxContext.PXSelectExtensionSymbols.Type);
+				   !viewType.InheritsFromOrEqualsGeneric(pxContext.PXSelectExtensionSymbols.Type);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsFbqlViewType(ITypeSymbol viewType) =>
+			viewType.ContainingNamespace?.ToString() == NamespaceNames.PXDataBqlFluent;
+
 		private static bool IsValidReturnType(IMethodSymbol methodSymbol, PXContext pxContext)
 		{
 			if (methodSymbol.ReturnsVoid)
@@ -96,7 +105,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			var returnType = methodSymbol.ReturnType;
 			return returnType.ImplementsInterface(pxContext.IPXResultsetType) ||
 				   returnType.InheritsFrom(pxContext.PXResult) ||
-				   returnType.ImplementsInterface(pxContext.IBqlTableType);
+				   returnType.IsDAC(pxContext);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -108,17 +117,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocation)
 		{
-			ExpressionSyntax accessExpression = invocation.GetAccessNodeFromInvocationNode();
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+			ExpressionSyntax? accessExpression = invocation.GetAccessNodeFromInvocationNode();
 
-			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (accessExpression == null)
 				return;
 
 			ITypeSymbol callerStaticType = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken).Type;
 
-			if (callerStaticType == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (callerStaticType == null)
 				return;
 
-			if (callerStaticType.IsCustomBqlCommand(pxContext))
+			if (IsFbqlViewType(callerStaticType))
+				return;
+			else if (callerStaticType.IsCustomBqlCommand(pxContext))
 			{
 				AnalyzeDerivedBqlStaticCall(methodSymbol, invocation, pxContext, syntaxContext);
 				return;
@@ -126,10 +138,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocation);
 
-			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (argsCount == null)
 				return;
 
-			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			var walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
 
 			if (!walker.CountParametersInNode(invocation))
 				return;
@@ -164,7 +178,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													  InvocationExpressionSyntax invocation)
 		{
-			ExpressionSyntax accessExpression = invocation.GetAccessNodeFromInvocationNode();
+			ExpressionSyntax? accessExpression = invocation.GetAccessNodeFromInvocationNode();
 
 			if (accessExpression == null)
 				return;
@@ -178,12 +192,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			ITypeSymbol containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, invocation, accessExpression);
+			ITypeSymbol? containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, invocation, accessExpression);
 
 			if (containingType == null)
 				return;
 
-			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
+			var walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
 
 			if (!walker.CountParametersInTypeSymbol(containingType))
 				return;
@@ -271,18 +285,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 																				 syntaxContext.CancellationToken);
 		}
 
-		private static ITypeSymbol GetContainingTypeForInstanceCall(PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
+		private static ITypeSymbol? GetContainingTypeForInstanceCall(PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 																	InvocationExpressionSyntax invocation, ExpressionSyntax accessExpression)
 		{
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
 			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
 
-			if (containingType == null || !containingType.IsBqlCommand(pxContext) || containingType.IsCustomBqlCommand(pxContext))
+			if (containingType == null || !containingType.IsBqlCommand(pxContext) || containingType.IsCustomBqlCommand(pxContext) ||
+				IsFbqlViewType(containingType))
+			{
 				return null;
+			}
 
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(accessExpression is IdentifierNameSyntax identifierNode))
+			if (accessExpression is not IdentifierNameSyntax identifierNode)
 				return null;
 	
 			var resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, invocation, identifierNode);
