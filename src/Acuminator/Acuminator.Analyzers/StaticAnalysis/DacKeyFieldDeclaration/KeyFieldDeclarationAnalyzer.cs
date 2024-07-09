@@ -24,15 +24,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var keyAttributes = new List<AttributeInfo>(capacity: 2);
-			var declaredInDacKeyAttributes = new List<AttributeInfo>(capacity: 2);
+			var keyAttributes = new List<DacFieldAttributeInfo>(capacity: 2);
+			var declaredInDacKeyAttributes = new List<DacFieldAttributeInfo>(capacity: 2);
 			bool containsIdentityKeys = false;
 
 			foreach (DacPropertyInfo property in dac.DacProperties.Where(p => p.IsKey))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				IEnumerable<AttributeInfo> propertyKeyAttributes = property.Attributes.Where(a => a.IsKey);
+				IEnumerable<DacFieldAttributeInfo> propertyKeyAttributes = property.Attributes.Where(a => a.IsKey);
 				containsIdentityKeys = containsIdentityKeys || property.IsIdentity;
 
 				keyAttributes.AddRange(propertyKeyAttributes);

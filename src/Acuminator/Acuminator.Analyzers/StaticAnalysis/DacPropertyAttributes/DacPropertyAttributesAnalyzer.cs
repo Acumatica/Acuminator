@@ -3,8 +3,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
@@ -46,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static void CheckDacProperty(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			ImmutableArray<AttributeInfo> attributes = property.Attributes;
+			ImmutableArray<DacFieldAttributeInfo> attributes = property.Attributes;
 
 			if (attributes.IsDefaultOrEmpty)
 				return;
@@ -68,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 	
 		private static bool CheckForMultipleAttributesCalcedOnDbSide(SymbolAnalysisContext symbolContext, PXContext pxContext,
-																	 DacPropertyInfo property, List<AttributeInfo> attributesWithFieldTypeMetadata)
+																	 DacPropertyInfo property, List<DacFieldAttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -100,10 +98,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			return false;
 
 			//-----------------------------------------------Local Functions---------------------------------------
-			(List<AttributeInfo>?, List<AttributeInfo>?) FilterAttributeInfosCalcedOnDbSide()
+			(List<DacFieldAttributeInfo>?, List<DacFieldAttributeInfo>?) FilterAttributeInfosCalcedOnDbSide()
 			{
-				List<AttributeInfo>? attributesCalcedOnDbSideOnDacProperty = null;
-				List<AttributeInfo>? attributesCalcedOnDbSideInvalidAggregatorDeclarations = null;
+				List<DacFieldAttributeInfo>? attributesCalcedOnDbSideOnDacProperty = null;
+				List<DacFieldAttributeInfo>? attributesCalcedOnDbSideInvalidAggregatorDeclarations = null;
 
 				foreach (var attribute in attributesWithFieldTypeMetadata)
 				{
@@ -120,13 +118,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 					if (counterOfCalcedOnDbSideAttributeInfos > 0)
 					{
-						attributesCalcedOnDbSideOnDacProperty ??= new List<AttributeInfo>(capacity: 2);
+						attributesCalcedOnDbSideOnDacProperty ??= new List<DacFieldAttributeInfo>(capacity: 2);
 						attributesCalcedOnDbSideOnDacProperty.Add(attribute);
 					}
 
 					if (counterOfCalcedOnDbSideAttributeInfos > 1)
 					{
-						attributesCalcedOnDbSideInvalidAggregatorDeclarations ??= new List<AttributeInfo>(capacity: 2);
+						attributesCalcedOnDbSideInvalidAggregatorDeclarations ??= new List<DacFieldAttributeInfo>(capacity: 2);
 						attributesCalcedOnDbSideInvalidAggregatorDeclarations.Add(attribute);
 					}
 				}
@@ -136,7 +134,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static void CheckForCalcedOnDbSideAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
-																		   DacPropertyInfo property, List<AttributeInfo> attributesWithFieldTypeMetadata)
+																		   DacPropertyInfo property, List<DacFieldAttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -182,7 +180,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-														List<AttributeInfo> attributesWithFieldTypeMetadata)
+														List<DacFieldAttributeInfo> attributesWithFieldTypeMetadata)
 		{
 			if (property.EffectiveDbBoundness == DbBoundnessType.NotDefined)
 				return;
@@ -206,7 +204,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			} 
 			else if (typeAttributesWithDifferentDataTypesOnAggregator?.Count is null or 0)
 			{
-				AttributeInfo dataTypeAttribute = typeAttributesOnDacProperty[0];
+				DacFieldAttributeInfo dataTypeAttribute = typeAttributesOnDacProperty[0];
 				var dataTypeFromAttribute = dataTypeAttribute.AggregatedAttributeMetadata
 															 .Where(atrMetadata => atrMetadata.IsFieldAttribute && atrMetadata.DataType != null)
 															 .Select(atrMetadata => atrMetadata.DataType)
@@ -217,11 +215,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}			
 		}
 
-		private static (List<AttributeInfo>?, List<AttributeInfo>?, bool HasNonNullDataType) FilterTypeAttributes(
-																								List<AttributeInfo> attributesWithFieldTypeMetadata)
+		private static (List<DacFieldAttributeInfo>?, List<DacFieldAttributeInfo>?, bool HasNonNullDataType) FilterTypeAttributes(
+																								List<DacFieldAttributeInfo> attributesWithFieldTypeMetadata)
 		{
-			List<AttributeInfo>? typeAttributesOnDacProperty = null;
-			List<AttributeInfo>? typeAttributesWithDifferentDataTypesOnAggregator = null;
+			List<DacFieldAttributeInfo>? typeAttributesOnDacProperty = null;
+			List<DacFieldAttributeInfo>? typeAttributesWithDifferentDataTypesOnAggregator = null;
 			bool hasNonNullDataType = false;
 
 			foreach (var attribute in attributesWithFieldTypeMetadata)
@@ -232,7 +230,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				if (dataTypeAttributes.Count == 0)
 					continue;
 
-				typeAttributesOnDacProperty ??= new List<AttributeInfo>(capacity: 2);
+				typeAttributesOnDacProperty ??= new List<DacFieldAttributeInfo>(capacity: 2);
 				typeAttributesOnDacProperty.Add(attribute);
 
 				if (dataTypeAttributes.Count == 1)
@@ -249,7 +247,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 				if (countOfDeclaredNonNullDataTypes > 1)
 				{
-					typeAttributesWithDifferentDataTypesOnAggregator ??= new List<AttributeInfo>(capacity: 2);
+					typeAttributesWithDifferentDataTypesOnAggregator ??= new List<DacFieldAttributeInfo>(capacity: 2);
 					typeAttributesWithDifferentDataTypesOnAggregator.Add(attribute);
 				}
 			}
@@ -257,7 +255,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			return (typeAttributesOnDacProperty, typeAttributesWithDifferentDataTypesOnAggregator, hasNonNullDataType);
 		}
 
-		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, AttributeInfo dataTypeAttribute, 
+		private static void CheckAttributeAndPropertyTypesForCompatibility(DacPropertyInfo property, DacFieldAttributeInfo dataTypeAttribute, 
 																		   ITypeSymbol? dataTypeFromAttribute, PXContext pxContext, 
 																		   SymbolAnalysisContext symbolContext)
 		{
@@ -273,7 +271,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static void ReportIncompatibleTypesDiagnostics(DacPropertyInfo property, AttributeInfo fieldAttribute,
+		private static void ReportIncompatibleTypesDiagnostics(DacPropertyInfo property, DacFieldAttributeInfo fieldAttribute,
 															   SymbolAnalysisContext symbolContext, PXContext pxContext, bool registerCodeFix)
 		{
 			var diagnosticProperties = ImmutableDictionary.Create<string, string>()
@@ -299,7 +297,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static void RegisterDiagnosticForAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
-															IEnumerable<AttributeInfo> attributesToReport, DiagnosticDescriptor diagnosticDescriptor)
+															IEnumerable<DacFieldAttributeInfo> attributesToReport, DiagnosticDescriptor diagnosticDescriptor)
 		{
 			Location[] attributeLocations = attributesToReport.Select(a => a.AttributeData.GetLocation(symbolContext.CancellationToken))
 															  .Where(location => location != null)

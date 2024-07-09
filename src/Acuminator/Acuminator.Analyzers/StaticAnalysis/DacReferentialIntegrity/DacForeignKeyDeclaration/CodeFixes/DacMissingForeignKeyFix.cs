@@ -22,7 +22,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -169,7 +168,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return dacPropertiesWithForeignKeys.ToList();
 
 			//----------------------------------------Local Function----------------------------------------------------------------
-			bool IsForeignKeyAttribute(AttributeInfo attribute)
+			bool IsForeignKeyAttribute(DacFieldAttributeInfo attribute)
 			{
 				const string selectorAttributeProperty = "SelectorAttribute";
 

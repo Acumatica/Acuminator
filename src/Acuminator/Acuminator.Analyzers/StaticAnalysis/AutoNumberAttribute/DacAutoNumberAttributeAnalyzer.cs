@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			if (stringAttributes.Count != 1)
 				return;
 
-			AttributeInfo stringAttribute = stringAttributes[0];
+			DacFieldAttributeInfo stringAttribute = stringAttributes[0];
 			int? stringLength = GetStringLengthFromStringAttribute(stringAttribute);
 			int minAllowedLength = pxContext.AttributeTypes.AutoNumberAttribute.MinAutoNumberLength;
 
@@ -99,13 +99,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			}
 		}
 
-		private bool IsStringAttribute(AttributeInfo attribute, PXContext pxContext, 
+		private bool IsStringAttribute(DacFieldAttributeInfo attribute, PXContext pxContext, 
 									   INamedTypeSymbol dbBoundStringAttribute, INamedTypeSymbol unboundStringAttribute) =>
 			attribute.DbBoundness != DbBoundnessType.NotDefined &&
 			(attribute.AttributeType.IsDerivedFromOrAggregatesAttribute(dbBoundStringAttribute, pxContext) ||
 			 attribute.AttributeType.IsDerivedFromOrAggregatesAttribute(unboundStringAttribute, pxContext));
 
-		private int? GetStringLengthFromStringAttribute(AttributeInfo stringAttribute)
+		private int? GetStringLengthFromStringAttribute(DacFieldAttributeInfo stringAttribute)
 		{
 			if (stringAttribute.AttributeData.ConstructorArguments.IsDefaultOrEmpty)
 				return null;
@@ -129,11 +129,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			return stringLength;
 		}
 
-		private static Location? GetLocationToReportInsufficientStringLength(SymbolAnalysisContext context, AttributeInfo stringAttribute, int stringLength)
+		private static Location? GetLocationToReportInsufficientStringLength(SymbolAnalysisContext context, DacFieldAttributeInfo stringAttribute, int stringLength)
 		{
 			var syntaxNode = stringAttribute.AttributeData.ApplicationSyntaxReference?.GetSyntax(context.CancellationToken);
 
-			if (!(syntaxNode is AttributeSyntax attributeSyntaxNode))
+			if (syntaxNode is not AttributeSyntax attributeSyntaxNode)
 				return stringAttribute.AttributeData.GetLocation(context.CancellationToken);
 
 			var argumentsList = attributeSyntaxNode.ArgumentList.Arguments;
