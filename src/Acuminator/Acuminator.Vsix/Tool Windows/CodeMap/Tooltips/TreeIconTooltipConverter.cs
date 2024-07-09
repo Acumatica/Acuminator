@@ -1,9 +1,11 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows.Data;
+
 using Acuminator.Utilities.Common;
 
 
@@ -22,12 +24,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			return icon switch
 			{
-				Icon.DacKeyProperty                             => VSIXResource.CodeMap_ExtraInfo_DacKeyIconTooltip,
-				Icon.Settings                                   => VSIXResource.CodeMap_ExtraInfo_PXSetupViewIconTooltip,
-				Icon.Filter                                     => VSIXResource.CodeMap_ExtraInfo_PXFilterViewIconTooltip,
-				Icon.Processing when node is ViewNodeViewModel  => VSIXResource.CodeMap_ExtraInfo_ProcessingViewIconTooltip,
+				Icon.DacKeyProperty 							=> VSIXResource.CodeMap_ExtraInfo_DacKeyIconTooltip,
+				Icon.Settings 									=> VSIXResource.CodeMap_ExtraInfo_PXSetupViewIconTooltip,
+				Icon.Filter 									=> VSIXResource.CodeMap_ExtraInfo_PXFilterViewIconTooltip,
+				Icon.Processing when node is ViewNodeViewModel 	=> VSIXResource.CodeMap_ExtraInfo_ProcessingViewIconTooltip,
 				Icon.Processing when node is GraphNodeViewModel => VSIXResource.CodeMap_ExtraInfo_ProcessingGraphIconTooltip,
-				_                                               => Binding.DoNothing
+				Icon.ProjectionDac 								=> VSIXResource.CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip,
+				_ 												=> Binding.DoNothing
 			};
 		}
 
@@ -36,12 +39,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private Icon GetIcon(object viewModel) =>
 			viewModel switch
 			{
-				TreeNodeViewModel treeNode => treeNode.NodeIcon,
+				TreeNodeViewModel treeNode 	=> treeNode.NodeIcon,
 				IconViewModel iconViewModel => iconViewModel.IconType,
-				_ => Icon.None,
+				_ 							=> Icon.None,
 			};
 
-		private TreeNodeViewModel GetNode(object viewModel) =>
+		private TreeNodeViewModel? GetNode(object viewModel) =>
 			viewModel is IconViewModel iconViewModel
 				? iconViewModel.Node
 				: viewModel as TreeNodeViewModel;

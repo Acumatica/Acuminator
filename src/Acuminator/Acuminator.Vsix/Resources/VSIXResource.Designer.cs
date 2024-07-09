@@ -349,6 +349,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is a projection DAC.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Autonumbering is enabled for this field..
         /// </summary>
         public static string CodeMap_ExtraInfo_PropertyHasAutoNumberingTooltip {
@@ -367,7 +376,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uncached.
+        ///   Looks up a localized string similar to ReadOnly.
         /// </summary>
         public static string CodeMap_ExtraInfo_PXSelectReadOnlyViewLabel {
             get {
@@ -583,7 +592,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable Acuminator PX1007 diagnostic that checks DACs, DAC extensions and DAC field properties for the presence of valid XML documentation comments..
+        ///   Looks up a localized string similar to Enable Acuminator PX1007 diagnostic which checks DACs, DAC extensions, and DAC field properties for the valid XML documentation comments..
         /// </summary>
         public static string Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description {
             get {

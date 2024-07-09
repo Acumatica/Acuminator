@@ -357,4 +357,7 @@
   <data name="PackageLoad_InitCodeSnippets" xml:space="preserve">
     <value>Initializing Acumatica Code Snippets shipped with Acuminator</value>
   </data>
+  <data name="CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip" xml:space="preserve">
+    <value>This is a projection DAC</value>
+  </data>
 </root>
