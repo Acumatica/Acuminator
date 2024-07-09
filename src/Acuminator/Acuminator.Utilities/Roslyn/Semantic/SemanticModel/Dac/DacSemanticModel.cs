@@ -31,14 +31,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ITypeSymbol DacSymbol { get; }
 
 		/// <summary>
-		/// True if the DAC is a mapping DAC derived from PXMappedCacheExtension class.
+		/// True if DAC is a mapping DAC derived from PXMappedCacheExtension class.
 		/// </summary>
 		public bool IsMappedCacheExtension { get; }
 
 		/// <summary>
-		/// True if the DAC is fully unbound.
+		/// True if DAC is fully unbound.
 		/// </summary>
 		public bool IsFullyUnbound { get; }
+
+		/// <summary>
+		/// True if DAC is a projection DAC.
+		/// </summary>
+		public bool IsProjectionDac { get; }
 
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
@@ -86,7 +91,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			PropertiesByNames  = GetDacProperties();
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 
-			IsFullyUnbound = DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
+			IsFullyUnbound  = DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
+			IsProjectionDac = CheckIfDacIsProjection();
 		}
 
 		/// <summary>
@@ -176,6 +182,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			_cancellation.ThrowIfCancellationRequested();
 			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation);
+		}
+
+		private bool CheckIfDacIsProjection()
+		{
+			if (DacType != DacType.Dac || Attributes.IsDefaultOrEmpty)
+				return false;
+
+			return Attributes.Any(attrInfo => attrInfo.IsPXProjection);
 		}
 	}
 }
