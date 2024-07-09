@@ -172,6 +172,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			{
 				const string selectorAttributeProperty = "SelectorAttribute";
 
+				if (attribute.AttributeType == null)
+					return false;
+
 				bool isDerivedFromOrAggregateForeignKeyAttribute =
 					foreignKeyAttributes.Exists(
 						foreignKeyAttribute => attribute.AttributeType.IsDerivedFromOrAggregatesAttribute(foreignKeyAttribute, pxContext));

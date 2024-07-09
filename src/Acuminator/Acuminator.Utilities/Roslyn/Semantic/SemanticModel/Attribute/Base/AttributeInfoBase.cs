@@ -22,9 +22,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// </summary>
 		public AttributeData AttributeData { get; }
 
-		public INamedTypeSymbol AttributeType => AttributeData.AttributeClass;
+		public INamedTypeSymbol? AttributeType => AttributeData.AttributeClass;
 
-		public virtual string Name => AttributeType.Name;
+		public virtual string Name => AttributeType?.Name ?? ToString();
 
 		/// <summary>
 		/// The declaration order.

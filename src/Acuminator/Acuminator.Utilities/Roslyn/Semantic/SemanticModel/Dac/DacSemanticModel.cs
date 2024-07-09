@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public IsActiveMethodInfo IsActiveMethodInfo { get; }
 
 		/// <summary>
-		/// The attributes declared on a graph or graph extension.
+		/// The attributes declared on a DAC or DAC extension.
 		/// </summary>
 		public ImmutableArray<DacAttributeInfo> Attributes { get; }
 
@@ -107,7 +107,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				? DacType.Dac
 				: typeSymbol.IsDacExtension(pxContext)
 					? DacType.DacExtension
-					: (DacType?)null;
+					: null;
 
 			if (dacType == null ||
 				typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is not ClassDeclarationSyntax node)

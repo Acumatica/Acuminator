@@ -21,9 +21,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		public GraphAttributeInfo(PXContext pxContext, AttributeData attributeData, int declarationOrder) : base(attributeData, declarationOrder)
 		{
-			IsDefaultNavigation = AttributeType.IsDefaultNavigation(pxContext);
-			IsProtectedAccess   = pxContext.AttributeTypes.PXProtectedAccessAttribute is INamedTypeSymbol protectedAccessAttribute && 
-								  AttributeType.InheritsFromOrEquals(protectedAccessAttribute);
+			if (AttributeType != null)
+			{
+				IsDefaultNavigation = AttributeType.IsDefaultNavigation(pxContext);
+				IsProtectedAccess   = pxContext.AttributeTypes.PXProtectedAccessAttribute is INamedTypeSymbol protectedAccessAttribute &&
+									  AttributeType.InheritsFromOrEquals(protectedAccessAttribute);
+			}
 		}
 	}
 }

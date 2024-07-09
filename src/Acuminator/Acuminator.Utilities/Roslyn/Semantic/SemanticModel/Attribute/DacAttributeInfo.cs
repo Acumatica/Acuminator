@@ -31,10 +31,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		public DacAttributeInfo(PXContext pxContext, AttributeData attributeData, int declarationOrder) : base(attributeData, declarationOrder)
 		{
-			IsDefaultNavigation = AttributeType.IsDefaultNavigation(pxContext);
-			IsPXProjection		= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXProjectionAttribute);
-			IsPXCacheName		= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXCacheNameAttribute);
-			IsPXHidden			= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXHiddenAttribute);
+			if (AttributeType != null)
+			{
+				IsDefaultNavigation = AttributeType.IsDefaultNavigation(pxContext);
+				IsPXProjection 		= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXProjectionAttribute);
+				IsPXCacheName 		= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXCacheNameAttribute);
+				IsPXHidden 			= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXHiddenAttribute);
+			}
 		}
 	}
 }
