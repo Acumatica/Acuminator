@@ -5,17 +5,17 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 {
 	/// <summary>
-	/// Graph or graph extension attribute info.
+	/// Information about an attribute of a graph or a graph extension.
 	/// </summary>
 	public class GraphAttributeInfo : AttributeInfoBase
 	{
 		/// <summary>
-		/// Indicates if the attribute configures the default navigation.
+		/// An indicator of whether the attribute configures the default navigation.
 		/// </summary>
 		public bool IsDefaultNavigation { get; }
 
 		/// <summary>
-		/// Indicates if the attribute configures access to the protected members of a base graph or base graph extension.
+		/// An indicator of whether the attribute configures access to the protected members of a base graph or base graph extension.
 		/// </summary>
 		public bool IsProtectedAccess { get; }
 

@@ -5,27 +5,27 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 {
 	/// <summary>
-	/// DAC or DAC extension attribute info.
+	/// Information about an attribute of a DAC or a DAC extension.
 	/// </summary>
 	public class DacAttributeInfo : AttributeInfoBase
 	{
 		/// <summary>
-		/// Indicates if the attribute configures the default navigation.
+		/// An indicator of whether the attribute configures the default navigation.
 		/// </summary>
 		public bool IsDefaultNavigation { get; }
 
 		/// <summary>
-		/// Indicates if the attribute configures a projection DAC.
+		/// An indicator of whether the attribute configures a projection DAC.
 		/// </summary>
 		public bool IsPXProjection { get; }
 
 		/// <summary>
-		/// Indicates if the attribute is a PXCacheNameAttribute.
+		/// An indicator of whether the attribute is a PXCacheName attribute.
 		/// </summary>
 		public bool IsPXCacheName { get; }
 
 		/// <summary>
-		/// Indicates if the attribute is a PXHiddenAttribute.
+		/// An indicator of whether the attribute is a PXHidden attribute.
 		/// </summary>
 		public bool IsPXHidden { get; }
 

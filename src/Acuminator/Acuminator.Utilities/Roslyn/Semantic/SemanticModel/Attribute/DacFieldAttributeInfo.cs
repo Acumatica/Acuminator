@@ -14,19 +14,20 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 {
 	/// <summary>
-	/// Info about DAC field attributes
+	/// Information about attributes of a DAC field.
 	/// </summary>
 	public class DacFieldAttributeInfo : AttributeInfoBase
 	{
 		/// <summary>
-		/// The flattened Acumatica attributes with applications set - this attribute, its base attributes, aggregated attributes in case of an aggregate attribute, 
+		/// The flattened Acumatica attributes with the application set: the current attribute, its base attributes, 
+		/// aggregated attributes in case of an aggregate attribute, 
 		/// aggregates on aggregates and so on.
 		/// </summary>
 		public ImmutableHashSet<AttributeWithApplication> FlattenedAcumaticaAttributes { get; }
 
 		/// <summary>
-		/// The aggregated attribute metadata collection - information from the flattened attributes set. 
-		/// It is mostly related to the attribute's relationship with database.
+		/// The aggregated attribute metadata collection which is information from the flattened attributes set. 
+		/// This information is mostly related to the attribute's relationship with the database.
 		/// </summary>
 		public ImmutableArray<DataTypeAttributeInfo> AggregatedAttributeMetadata { get; }
 

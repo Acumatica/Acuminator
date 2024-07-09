@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 {
 	/// <summary>
-	/// General attribute info.
+	/// General information about attributes of an entity.
 	/// </summary>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public abstract class AttributeInfoBase
@@ -27,7 +27,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		public virtual string Name => AttributeType?.Name ?? ToString();
 
 		/// <summary>
-		/// The declaration order.
+		/// The index number of the attribute in the attribute declaration.
 		/// </summary>
 		public int DeclarationOrder { get; }
 

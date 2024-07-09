@@ -26,22 +26,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public INamedTypeSymbol Symbol { get; }
 
 		/// <summary>
-		/// The DAC symbol. For the DAC is the same as <see cref="Symbol"/>. For DAC extensions is the extension's base DAC.
+		/// The DAC symbol. For the DAC, the value is the same as <see cref="Symbol"/>. 
+		/// For DAC extensions, the value is the symbol of the extension's base DAC.
 		/// </summary>
 		public ITypeSymbol DacSymbol { get; }
 
 		/// <summary>
-		/// True if DAC is a mapping DAC derived from PXMappedCacheExtension class.
+		/// An indicator of whether the DAC is a mapping DAC derived from the PXMappedCacheExtension class.
 		/// </summary>
 		public bool IsMappedCacheExtension { get; }
 
 		/// <summary>
-		/// True if DAC is fully unbound.
+		/// An indicator of whether the DAC is fully unbound.
 		/// </summary>
 		public bool IsFullyUnbound { get; }
 
 		/// <summary>
-		/// True if DAC is a projection DAC.
+		/// An indicator of whether the DAC is a projection DAC.
 		/// </summary>
 		public bool IsProjectionDac { get; }
 
@@ -60,14 +61,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => Symbol.Equals(f.Symbol.ContainingType));
 
 		/// <summary>
-		/// Gets the info about IsActive method for DAC extensions. Can be <c>null</c>. Always <c>null</c> for DACs.
+		/// Information about the IsActive method of the DAC extensions. 
+		/// The value can be <c>null</c>. The value is always <c>null</c> for DACs.
 		/// <value>
-		/// The info about IsActive method.
+		/// Information about the IsActive method.
 		/// </value>
 		public IsActiveMethodInfo IsActiveMethodInfo { get; }
 
 		/// <summary>
-		/// The attributes declared on a DAC or DAC extension.
+		/// The attributes declared on a DAC or a DAC extension.
 		/// </summary>
 		public ImmutableArray<DacAttributeInfo> Attributes { get; }
 
@@ -96,12 +98,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		/// <summary>
-		/// Returns semantic model of DAC or DAC Extension which is inferred from <paramref name="typeSymbol"/>
+		/// Returns the semantic model of DAC or DAC extension which is inferred from <paramref name="typeSymbol"/>.
 		/// </summary>
 		/// <param name="pxContext">Context instance</param>
-		/// <param name="typeSymbol">Symbol which is DAC or DAC Extension descendant</param>
+		/// <param name="typeSymbol">Symbol which is DAC or DAC extension descendant</param>
 		/// <param name="semanticModel">Semantic model</param>
-		/// <param name="cancellation">Cancellation</param>
+		/// <param name="cancellation">Cancellation token</param>
 		/// <returns/>
 		public static DacSemanticModel InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{		
@@ -125,10 +127,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		/// <summary>
-		/// Gets the member nodes of the specified type from the DAC/Dac extension declaration.
-		/// Does not perform boxing of <see cref="SyntaxList{TNode}"/> <see cref="DacNode.Members"/> which is good for performance.
+		/// Gets the member nodes of the specified type from the declaration of a DAC or a DAC extension.
+		/// The method does perform boxing of <see cref="SyntaxList{TNode}"/> <see cref="DacNode.Members"/> which is good for performance.
 		/// </summary>
-		/// <typeparam name="TMemberNode">Type of the member node.</typeparam>
+		/// <typeparam name="TMemberNode">Type of the member node</typeparam>
 		/// <returns/>
 		public IEnumerable<TMemberNode> GetMemberNodes<TMemberNode>()
 		where TMemberNode : MemberDeclarationSyntax
