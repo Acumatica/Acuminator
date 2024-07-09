@@ -53,6 +53,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		InstanceGraphConstructor,
 
 		InitializationAndActivationDacCategory,
-		IsActiveMethodDac
+		IsActiveMethodDac,
+
+		ProjectionDac
 	}
 }
