@@ -319,7 +319,7 @@
     <value>The view is a custom class derived from standard PXSelect-like classes</value>
   </data>
   <data name="CodeMap_ExtraInfo_PXSelectReadOnlyViewLabel" xml:space="preserve">
-    <value>Uncached</value>
+    <value>ReadOnly</value>
   </data>
   <data name="CodeMap_ExtraInfo_PXSelectReadOnlyViewTooltip" xml:space="preserve">
     <value>The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache.</value>
