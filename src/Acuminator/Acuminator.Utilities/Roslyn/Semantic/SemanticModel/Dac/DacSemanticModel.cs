@@ -35,6 +35,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary>
 		public bool IsMappedCacheExtension { get; }
 
+		/// <summary>
+		/// True if the DAC is fully unbound.
+		/// </summary>
+		public bool IsFullyUnbound { get; }
+
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
@@ -80,6 +85,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			FieldsByNames      = GetDacFields();
 			PropertiesByNames  = GetDacProperties();
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
+
+			IsFullyUnbound = DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
 		}
 
 		/// <summary>
@@ -142,9 +149,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			return builder.ToImmutable();
 		}
-
-		public bool IsFullyUnbound() =>
-			DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
 			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, FieldsByNames, cancellation: _cancellation),

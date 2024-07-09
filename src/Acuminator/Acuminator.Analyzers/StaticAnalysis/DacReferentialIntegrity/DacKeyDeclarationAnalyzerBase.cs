@@ -270,7 +270,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected virtual bool ShouldMakeSpecificAnalysisForDacKeys(PXContext context, DacSemanticModel dac)
 		{
-			if (dac.IsFullyUnbound())
+			if (dac.IsFullyUnbound)
 				return false;
 
 			var dacAttributes = dac.Symbol.GetAttributes();
