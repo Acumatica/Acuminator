@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
@@ -29,7 +30,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public INamedTypeSymbol Symbol { get; }
 
 		/// <summary>
-		/// The graph symbol. For the graph is the same as <see cref="Symbol"/>. For graph extensions is the extension's base graph.
+		/// The graph symbol. For a graph, the value is the same as <see cref="Symbol"/>. 
+		/// For a graph extension, the value is the symbol of the extension's base graph.
 		/// </summary>
 		public ITypeSymbol? GraphSymbol { get; }
 
@@ -51,38 +53,39 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableArray<PXOverrideInfo> PXOverrides { get; }
 
 		/// <summary>
-		/// Actions which are declared in a graph/graph extension represented by this semantic model instance.
+		/// Actions which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None
 			? Enumerable.Empty<ActionInfo>()
 			: Actions.Where(action => action.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
-		/// Action handlers which are declared in a graph/graph extension represented by this semantic model instance.
+		/// Action handlers which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None
 			? Enumerable.Empty<ActionHandlerInfo>()
 			: ActionHandlers.Where(handler => handler.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
-		/// Views which are declared in a graph/graph extension represented by this semantic model instance.
+		/// Views which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<DataViewInfo> DeclaredViews => Type == GraphType.None
 			? Enumerable.Empty<DataViewInfo>()
 			: Views.Where(view => view.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
-		/// View delegates which are declared in a graph/graph extension represented by this semantic model instance.
+		/// View delegates which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<DataViewDelegateInfo> DeclaredViewDelegates => Type == GraphType.None
 			? Enumerable.Empty<DataViewDelegateInfo>()
 			: ViewDelegates.Where(viewDelegate => viewDelegate.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
-		/// Gets the info about IsActive method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
+		/// Information about the IsActive method of the graph extensions. 
+		/// The value can be <c>null</c>. The value is always <c>null</c> for a graph.
 		/// </summary>
 		/// <value>
-		/// The info about IsActive method.
+		/// Information about the IsActive method.
 		/// </value>
 		public IsActiveMethodInfo? IsActiveMethodInfo { get; }
 
@@ -95,22 +98,27 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo { get; }
 
 		/// <summary>
-		/// Gets infos about the Configure method overrides declared in the graph or graph extension's class hierarchy. 
+		/// Information about the Configure method that overrides the class hierarchy declared in the graph or the graph extension. 
 		/// </summary>
 		/// <value>
-		/// Infos about Configure method overrides.
+		/// Information about the overrides of the Configure method.
 		/// </value>
 		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides { get; }
 
 		/// <summary>
-		/// Flag indicating whether the graph or graph extension configures workflow.
+		/// An indicator of whether the graph or the graph extension configures a workflow.
 		/// </summary>
 		public bool ConfiguresWorkflow => !ConfigureMethodOverrides.IsDefaultOrEmpty;
 
 		/// <summary>
-		/// Flag indicating whether the graph extension has PXProtectedAccess attribute.
+		/// An indicator of whether the graph extension has the PXProtectedAccess attribute.
 		/// </summary>
 		public bool HasPXProtectedAccess { get; }
+
+		/// <summary>
+		/// The attributes declared on the graph or the graph extension.
+		/// </summary>
+		public ImmutableArray<GraphAttributeInfo> Attributes { get; }
 
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
 									 CancellationToken cancellation = default)
@@ -129,6 +137,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				GraphType.PXGraphExtension => Symbol.GetGraphFromGraphExtension(PXContext),
 				_ 						   => null,
 			};
+
+			Attributes = GetGraphAttributes();
 
 			StaticConstructors 	 = Symbol.GetStaticConstructors(_cancellation);
 			ViewsByNames 		 = GetDataViews();
@@ -195,6 +205,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
+		private ImmutableArray<GraphAttributeInfo> GetGraphAttributes()
+		{
+			var attributes = Symbol.GetAttributes();
+
+			if (attributes.IsDefaultOrEmpty)
+				return ImmutableArray<GraphAttributeInfo>.Empty;
+
+			var attributeInfos = attributes.Select((attributeData, relativeOrder) => new GraphAttributeInfo(PXContext, attributeData, relativeOrder));
+			var builder = ImmutableArray.CreateBuilder<GraphAttributeInfo>(attributes.Length);
+			builder.AddRange(attributeInfos);
+
+			return builder.ToImmutable();
+		}
+
 		private ImmutableDictionary<string, DataViewInfo> GetDataViews() =>
 			GetInfos(() => Symbol.GetViewsWithSymbolsFromPXGraph(PXContext),
 					 () => Symbol.GetViewsFromGraphExtensionAndBaseGraph(PXContext));
@@ -249,12 +273,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		/// <summary>
-		/// Returns one or multiple semantic models of PXGraph and PXGraphExtension descendants which are inferred from <paramref name="typeSymbol"/>
+		/// Returns one or multiple semantic models of the PXGraph and PXGraphExtension descendants which are inferred from <paramref name="typeSymbol"/>.
 		/// </summary>
 		/// <param name="pxContext">Context instance</param>
-		/// <param name="typeSymbol">Symbol which is PXGraph or PXGraphExtension descendant and/or which uses PXGraph.InstanceCreated AddHandler method</param>
+		/// <param name="typeSymbol">Symbol which is PXGraph or PXGraphExtension descendant and/or which uses the PXGraph.InstanceCreated AddHandler method</param>
 		/// <param name="semanticModel">Semantic model</param>
-		/// <param name="cancellation">Cancellation</param>
+		/// <param name="cancellation">Cancellation token</param>
 		/// <returns></returns>
 		public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
 																	GraphSemanticModelCreationOptions modelCreationOptions,
@@ -382,14 +406,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return pxOverrides.ToImmutableArray();
 		}
 
-		private bool IsPXProtectedAccessAttributeDeclared()
-		{
-			if (Type != GraphType.PXGraphExtension)
-				return false;
-
-			return PXContext.AttributeTypes.PXProtectedAccessAttribute is { } protectedAccessAttribute
-				? Symbol.HasAttribute(protectedAccessAttribute, checkOverrides: false, checkForDerivedAttributes: false)
+		private bool IsPXProtectedAccessAttributeDeclared() =>
+			Type == GraphType.PXGraphExtension && !Attributes.IsDefaultOrEmpty
+				? Attributes.Any(attrInfo => attrInfo.IsProtectedAccess)
 				: false;
-		}
 	}
 }

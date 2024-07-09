@@ -1,14 +1,18 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿#nullable enable
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
@@ -24,15 +28,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var keyAttributes = new List<AttributeInfo>(capacity: 2);
-			var declaredInDacKeyAttributes = new List<AttributeInfo>(capacity: 2);
+			var keyAttributes = new List<DacFieldAttributeInfo>(capacity: 2);
+			var declaredInDacKeyAttributes = new List<DacFieldAttributeInfo>(capacity: 2);
 			bool containsIdentityKeys = false;
 
 			foreach (DacPropertyInfo property in dac.DacProperties.Where(p => p.IsKey))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				IEnumerable<AttributeInfo> propertyKeyAttributes = property.Attributes.Where(a => a.IsKey);
+				IEnumerable<DacFieldAttributeInfo> propertyKeyAttributes = property.Attributes.Where(a => a.IsKey);
 				containsIdentityKeys = containsIdentityKeys || property.IsIdentity;
 
 				keyAttributes.AddRange(propertyKeyAttributes);
@@ -45,7 +49,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			if (keyAttributes.Count > 1 && containsIdentityKeys && declaredInDacKeyAttributes.Count > 0)
 			{		
-				var locations = declaredInDacKeyAttributes.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken)).ToList();
+				List<Location> locations = declaredInDacKeyAttributes
+											.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken))
+											.Where(location => location != null)
+											.ToList()!;
 
 				foreach (Location attributeLocation in locations)
 				{
@@ -59,9 +66,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			}
 		}
 
-		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
+		private static Location? GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
 			attribute.ApplicationSyntaxReference
 					?.GetSyntax(cancellationToken)
-					?.GetLocation();	
+					?.GetLocation();
 	}
 }

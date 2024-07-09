@@ -42,6 +42,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetDacExtraInfos()
 		{
+			if (DacModel.IsProjectionDac)
+			{
+				yield return new IconViewModel(this, Icon.ProjectionDac);
+			}
+
 			Color color = Color.FromRgb(38, 155, 199);
 			string dacType = DacModel.DacType == DacType.Dac
 				? VSIXResource.CodeMap_ExtraInfo_IsDac

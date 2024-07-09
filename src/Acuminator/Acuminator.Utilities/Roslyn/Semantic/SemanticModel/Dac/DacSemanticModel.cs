@@ -6,6 +6,7 @@ using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
@@ -25,14 +26,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public INamedTypeSymbol Symbol { get; }
 
 		/// <summary>
-		/// The DAC symbol. For the DAC is the same as <see cref="Symbol"/>. For DAC extensions is the extension's base DAC.
+		/// The DAC symbol. For the DAC, the value is the same as <see cref="Symbol"/>. 
+		/// For DAC extensions, the value is the symbol of the extension's base DAC.
 		/// </summary>
 		public ITypeSymbol DacSymbol { get; }
 
 		/// <summary>
-		/// True if the DAC is a mapping DAC derived from PXMappedCacheExtension class.
+		/// An indicator of whether the DAC is a mapping DAC derived from the PXMappedCacheExtension class.
 		/// </summary>
 		public bool IsMappedCacheExtension { get; }
+
+		/// <summary>
+		/// An indicator of whether the DAC is fully unbound.
+		/// </summary>
+		public bool IsFullyUnbound { get; }
+
+		/// <summary>
+		/// An indicator of whether the DAC is a projection DAC.
+		/// </summary>
+		public bool IsProjectionDac { get; }
 
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
@@ -49,11 +61,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => Symbol.Equals(f.Symbol.ContainingType));
 
 		/// <summary>
-		/// Gets the info about IsActive method for DAC extensions. Can be <c>null</c>. Always <c>null</c> for DACs.
+		/// Information about the IsActive method of the DAC extensions. 
+		/// The value can be <c>null</c>. The value is always <c>null</c> for DACs.
 		/// <value>
-		/// The info about IsActive method.
+		/// Information about the IsActive method.
 		/// </value>
 		public IsActiveMethodInfo IsActiveMethodInfo { get; }
+
+		/// <summary>
+		/// The attributes declared on a DAC or a DAC extension.
+		/// </summary>
+		public ImmutableArray<DacAttributeInfo> Attributes { get; }
 
 		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax node,
 								 CancellationToken cancellation)
@@ -64,24 +82,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			_cancellation = cancellation;
 			DacType = dacType;
 			Node = node;
-			Symbol = symbol;		
+			Symbol = symbol;
 			DacSymbol = DacType == DacType.Dac
 				? Symbol
 				: Symbol.GetDacFromDacExtension(_pxContext);
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(_pxContext.PXMappedCacheExtensionType);
 
-			FieldsByNames = GetDacFields();
-			PropertiesByNames = GetDacProperties();
+			Attributes         = GetDacAttributes();
+			FieldsByNames      = GetDacFields();
+			PropertiesByNames  = GetDacProperties();
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
+
+			IsFullyUnbound  = DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
+			IsProjectionDac = CheckIfDacIsProjection();
 		}
 
 		/// <summary>
-		/// Returns semantic model of DAC or DAC Extension which is inferred from <paramref name="typeSymbol"/>
+		/// Returns the semantic model of DAC or DAC extension which is inferred from <paramref name="typeSymbol"/>.
 		/// </summary>
 		/// <param name="pxContext">Context instance</param>
-		/// <param name="typeSymbol">Symbol which is DAC or DAC Extension descendant</param>
+		/// <param name="typeSymbol">Symbol which is DAC or DAC extension descendant</param>
 		/// <param name="semanticModel">Semantic model</param>
-		/// <param name="cancellation">Cancellation</param>
+		/// <param name="cancellation">Cancellation token</param>
 		/// <returns/>
 		public static DacSemanticModel InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{		
@@ -93,7 +115,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				? DacType.Dac
 				: typeSymbol.IsDacExtension(pxContext)
 					? DacType.DacExtension
-					: (DacType?)null;
+					: null;
 
 			if (dacType == null ||
 				typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is not ClassDeclarationSyntax node)
@@ -105,10 +127,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		/// <summary>
-		/// Gets the member nodes of the specified type from the DAC/Dac extension declaration.
-		/// Does not perform boxing of <see cref="SyntaxList{TNode}"/> <see cref="DacNode.Members"/> which is good for performance.
+		/// Gets the member nodes of the specified type from the declaration of a DAC or a DAC extension.
+		/// The method does not perform boxing of <see cref="SyntaxList{TNode}"/> <see cref="DacNode.Members"/> which is good for performance.
 		/// </summary>
-		/// <typeparam name="TMemberNode">Type of the member node.</typeparam>
+		/// <typeparam name="TMemberNode">Type of the member node</typeparam>
 		/// <returns/>
 		public IEnumerable<TMemberNode> GetMemberNodes<TMemberNode>()
 		where TMemberNode : MemberDeclarationSyntax
@@ -122,8 +144,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		public bool IsFullyUnbound() =>
-			DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
+		private ImmutableArray<DacAttributeInfo> GetDacAttributes()
+		{
+			var attributes = Symbol.GetAttributes();
+
+			if (attributes.IsDefaultOrEmpty)
+				return ImmutableArray<DacAttributeInfo>.Empty;
+
+			var attributeInfos = attributes.Select((attributeData, relativeOrder) => new DacAttributeInfo(_pxContext, attributeData, relativeOrder));
+			var builder = ImmutableArray.CreateBuilder<DacAttributeInfo>(attributes.Length);
+			builder.AddRange(attributeInfos);
+
+			return builder.ToImmutable();
+		}
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
 			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, FieldsByNames, cancellation: _cancellation),
@@ -151,6 +184,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			_cancellation.ThrowIfCancellationRequested();
 			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation);
+		}
+
+		private bool CheckIfDacIsProjection()
+		{
+			if (DacType != DacType.Dac || Attributes.IsDefaultOrEmpty)
+				return false;
+
+			return Attributes.Any(attrInfo => attrInfo.IsPXProjection);
 		}
 	}
 }

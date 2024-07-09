@@ -1,13 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap

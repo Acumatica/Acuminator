@@ -40,7 +40,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		public ImmutableArray<AttributeInfo> Attributes { get; }
+		public ImmutableArray<DacFieldAttributeInfo> Attributes { get; }
 
 		/// <summary>
 		///  True if this property is DAC property - it has a corresponding DAC field.
@@ -79,7 +79,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public bool IsAutoNumbering { get; }
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
-								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
+								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
 							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
 		{
 			Base = baseInfo.CheckIfNull();
@@ -89,7 +89,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
-								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos) :
+								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos) :
 							 base(node, symbol, declarationOrder)
 		{
 			Attributes = attributeInfos.ToImmutableArray();
@@ -102,7 +102,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			bool isPrimaryKey = false;
 			bool isAutoNumbering = false;
 
-			foreach (AttributeInfo attributeInfo in Attributes)
+			foreach (DacFieldAttributeInfo attributeInfo in Attributes)
 			{
 				isIdentity = isIdentity || attributeInfo.IsIdentity;
 				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
@@ -133,13 +133,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos);
 		}
 
-		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator dbBoundnessCalculator)
+		private static IEnumerable<DacFieldAttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator dbBoundnessCalculator)
 		{
 			int relativeDeclarationOrder = 0;
 
 			foreach (AttributeData attribute in property.GetAttributes())
 			{			
-				yield return AttributeInfo.Create(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
+				yield return DacFieldAttributeInfo.Create(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
 
 				relativeDeclarationOrder++;
 			}
