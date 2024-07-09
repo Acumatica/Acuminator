@@ -128,7 +128,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		/// <summary>
 		/// Gets the member nodes of the specified type from the declaration of a DAC or a DAC extension.
-		/// The method does perform boxing of <see cref="SyntaxList{TNode}"/> <see cref="DacNode.Members"/> which is good for performance.
+		/// The method does not perform boxing of <see cref="SyntaxList{TNode}"/> <see cref="DacNode.Members"/> which is good for performance.
 		/// </summary>
 		/// <typeparam name="TMemberNode">Type of the member node</typeparam>
 		/// <returns/>
