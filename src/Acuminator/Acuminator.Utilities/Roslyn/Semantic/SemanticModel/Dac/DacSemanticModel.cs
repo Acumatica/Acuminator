@@ -6,6 +6,7 @@ using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
@@ -55,6 +56,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </value>
 		public IsActiveMethodInfo IsActiveMethodInfo { get; }
 
+		/// <summary>
+		/// The attributes declared on a graph or graph extension.
+		/// </summary>
+		public ImmutableArray<DacAttributeInfo> Attributes { get; }
+
 		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax node,
 								 CancellationToken cancellation)
 		{
@@ -64,14 +70,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			_cancellation = cancellation;
 			DacType = dacType;
 			Node = node;
-			Symbol = symbol;		
+			Symbol = symbol;
 			DacSymbol = DacType == DacType.Dac
 				? Symbol
 				: Symbol.GetDacFromDacExtension(_pxContext);
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(_pxContext.PXMappedCacheExtensionType);
 
-			FieldsByNames = GetDacFields();
-			PropertiesByNames = GetDacProperties();
+			Attributes         = GetDacAttributes();
+			FieldsByNames      = GetDacFields();
+			PropertiesByNames  = GetDacProperties();
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 		}
 
@@ -120,6 +127,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				if (memberList[i] is TMemberNode memberNode)
 					yield return memberNode;
 			}
+		}
+
+		private ImmutableArray<DacAttributeInfo> GetDacAttributes()
+		{
+			var attributes = Symbol.GetAttributes();
+
+			if (attributes.IsDefaultOrEmpty)
+				return ImmutableArray<DacAttributeInfo>.Empty;
+
+			var attributeInfos = attributes.Select((attributeData, relativeOrder) => new DacAttributeInfo(_pxContext, attributeData, relativeOrder));
+			var builder = ImmutableArray.CreateBuilder<DacAttributeInfo>(attributes.Length);
+			builder.AddRange(attributeInfos);
+
+			return builder.ToImmutable();
 		}
 
 		public bool IsFullyUnbound() =>
