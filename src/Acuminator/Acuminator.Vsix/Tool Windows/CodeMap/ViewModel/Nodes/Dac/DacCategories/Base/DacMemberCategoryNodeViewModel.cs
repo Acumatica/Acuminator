@@ -22,11 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected string CategoryDescription { get; }
 
-		public override string Name
-		{
-			get => $"{CategoryDescription}({Children.Count})";
-			protected set { }
-		}
+		public override string Name => $"{CategoryDescription}({Children.Count})";
 
 		public override Icon NodeIcon => Icon.Category;
 
