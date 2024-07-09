@@ -17,12 +17,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// <summary>
 		/// Indicates if the attribute configures a projection DAC.
 		/// </summary>
-		public bool IsProjectionAttribute { get; }
+		public bool IsPXProjection { get; }
+
+		/// <summary>
+		/// Indicates if the attribute is a PXCacheNameAttribute.
+		/// </summary>
+		public bool IsPXCacheName { get; }
+
+		/// <summary>
+		/// Indicates if the attribute is a PXHiddenAttribute.
+		/// </summary>
+		public bool IsPXHidden { get; }
 
 		public DacAttributeInfo(PXContext pxContext, AttributeData attributeData, int declarationOrder) : base(attributeData, declarationOrder)
 		{
-			IsDefaultNavigation   = AttributeType.IsDefaultNavigation(pxContext);
-			IsProjectionAttribute = AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXProjectionAttribute);
+			IsDefaultNavigation = AttributeType.IsDefaultNavigation(pxContext);
+			IsPXProjection		= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXProjectionAttribute);
+			IsPXCacheName		= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXCacheNameAttribute);
+			IsPXHidden			= AttributeType.InheritsFromOrEquals(pxContext.AttributeTypes.PXHiddenAttribute);
 		}
 	}
 }
