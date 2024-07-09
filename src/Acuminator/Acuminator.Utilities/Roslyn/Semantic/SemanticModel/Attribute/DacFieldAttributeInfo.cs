@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
@@ -15,18 +14,10 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 {
 	/// <summary>
-	///  A  class for attributes
+	/// Info about DAC field attributes
 	/// </summary>
-	[DebuggerDisplay("{DebuggerDisplay,nq}")]
-	public class AttributeInfo
+	public class DacFieldAttributeInfo : AttributeInfoBase
 	{
-		/// <summary>
-		/// Information describing the attribute application.
-		/// </summary>
-		public AttributeData AttributeData { get; }
-
-		public INamedTypeSymbol AttributeType => AttributeData.AttributeClass;
-
 		/// <summary>
 		/// The flattened Acumatica attributes with applications set - this attribute, its base attributes, aggregated attributes in case of an aggregate attribute, 
 		/// aggregates on aggregates and so on.
@@ -39,13 +30,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		/// </summary>
 		public ImmutableArray<DataTypeAttributeInfo> AggregatedAttributeMetadata { get; }
 
-		public virtual string Name => AttributeType.Name;
-
-		/// <summary>
-		/// The declaration order.
-		/// </summary>
-		public int DeclarationOrder { get; }
-
 		public DbBoundnessType DbBoundness { get; }
 
 		public bool IsIdentity { get; }
@@ -56,24 +40,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		public bool IsAutoNumberAttribute { get; }
 
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		protected virtual string DebuggerDisplay => $"{Name}";
-
-		protected AttributeInfo(AttributeData attributeData, IEnumerable<AttributeWithApplication> flattenedAttributeApplications, IEnumerable<DataTypeAttributeInfo> attributeInfos,
-								DbBoundnessType dbBoundness, int declarationOrder, bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute)
+		protected DacFieldAttributeInfo(AttributeData attributeData, IEnumerable<AttributeWithApplication> flattenedAttributeApplications, 
+										IEnumerable<DataTypeAttributeInfo> attributeInfos, DbBoundnessType dbBoundness, int declarationOrder, 
+										bool isKey, bool isIdentity, bool isDefaultAttribute, bool isAutoNumberAttribute) :
+								   base(attributeData, declarationOrder)
 		{
-			AttributeData                = attributeData.CheckIfNull();
 			FlattenedAcumaticaAttributes = (flattenedAttributeApplications as ImmutableHashSet<AttributeWithApplication>) ?? flattenedAttributeApplications.ToImmutableHashSet();
 			AggregatedAttributeMetadata  = attributeInfos.ToImmutableArray();
 			DbBoundness                  = dbBoundness;
-			DeclarationOrder             = declarationOrder;
 			IsKey                        = isKey;
 			IsIdentity                   = isIdentity;
 			IsDefaultAttribute           = isDefaultAttribute;
 			IsAutoNumberAttribute        = isAutoNumberAttribute;
 		}
 
-		public static AttributeInfo Create(AttributeData attribute, DbBoundnessCalculator dbBoundnessCalculator, int declarationOrder)
+		public static DacFieldAttributeInfo Create(AttributeData attribute, DbBoundnessCalculator dbBoundnessCalculator, int declarationOrder)
 		{
 			attribute.ThrowOnNull();
 			dbBoundnessCalculator.ThrowOnNull();
@@ -91,8 +72,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(PropertyNames.Attributes.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
-			return new AttributeInfo(attribute, flattenedAttributeApplications, aggregatedMetadata, dbBoundness, declarationOrder, isAttributeWithPrimaryKey,
-									 isIdentityAttribute, isPXDefaultAttribute, isAutoNumberAttribute);
+			return new DacFieldAttributeInfo(attribute, flattenedAttributeApplications, aggregatedMetadata, dbBoundness, 
+											 declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute, isPXDefaultAttribute, isAutoNumberAttribute);
 		}
 
 		private static bool IsDerivedFromIdentityTypes(ImmutableHashSet<ITypeSymbol> flattenedAttributes, PXContext pxContext) =>
