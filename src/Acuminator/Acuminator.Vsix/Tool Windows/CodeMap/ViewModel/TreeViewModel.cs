@@ -57,7 +57,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// A workaround to avoid endless loop of TreeNodeViewModel IsSelected and TreeViewModel SelectedItem setting each other.
 		/// </summary>
 		/// <param name="selected">The selected.</param>
-		internal void SetSelectedWithoutNotification(TreeNodeViewModel selected)
+		internal void SetSelectedWithoutNotification(TreeNodeViewModel? selected)
 		{
 			_selectedItem = selected;
 			NotifyPropertyChanged(nameof(SelectedItem));
