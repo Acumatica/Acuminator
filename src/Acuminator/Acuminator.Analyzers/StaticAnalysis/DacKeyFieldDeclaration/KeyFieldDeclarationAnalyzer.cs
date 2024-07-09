@@ -1,14 +1,18 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿#nullable enable
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
@@ -45,7 +49,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			if (keyAttributes.Count > 1 && containsIdentityKeys && declaredInDacKeyAttributes.Count > 0)
 			{		
-				var locations = declaredInDacKeyAttributes.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken)).ToList();
+				List<Location> locations = declaredInDacKeyAttributes
+											.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken))
+											.Where(location => location != null)
+											.ToList()!;
 
 				foreach (Location attributeLocation in locations)
 				{
@@ -59,9 +66,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			}
 		}
 
-		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
+		private static Location? GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
 			attribute.ApplicationSyntaxReference
 					?.GetSyntax(cancellationToken)
-					?.GetLocation();	
+					?.GetLocation();
 	}
 }
