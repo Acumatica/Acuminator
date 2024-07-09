@@ -7,25 +7,22 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class AttributeNodeViewModel<TAttributeInfo> : TreeNodeViewModel, IElementWithTooltip
-	where TAttributeInfo : AttributeInfoBase
+	public abstract class AttributeNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		protected const string AttributeSuffix = nameof(System.Attribute);
 
-		public AttributeInfoBase Attribute { get; }
+		public AttributeInfoBase AttributeInfo { get; }
 
 		public override string Name
 		{
@@ -39,14 +36,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private readonly Lazy<TooltipInfo> _tooltipLazy;
 
-		protected AttributeNodeViewModel(TreeNodeViewModel nodeVM, TAttributeInfo attributeInfo, bool isExpanded = false) :
+		public AttributePlacement Placement => AttributeInfo.Placement;
+
+		protected AttributeNodeViewModel(TreeNodeViewModel nodeVM, AttributeInfoBase attributeInfo, bool isExpanded = false) :
 									base(nodeVM?.Tree!, nodeVM, isExpanded)
 		{
-			Attribute = attribute.CheckIfNull();
-			int lastDotIndex = Attribute.AttributeClass.Name.LastIndexOf('.');
-			string attributeName = lastDotIndex >= 0 && lastDotIndex < Attribute.AttributeClass.Name.Length - 1
-				? Attribute.AttributeClass.Name.Substring(lastDotIndex + 1)
-				: Attribute.AttributeClass.Name;
+			AttributeInfo = attributeInfo.CheckIfNull();
+			int lastDotIndex = AttributeInfo.AttributeType?.Name.LastIndexOf('.') ?? -1;
+			string attributeName = lastDotIndex >= 0 && lastDotIndex < AttributeInfo.AttributeType!.Name.Length - 1
+				? AttributeInfo.AttributeType.Name.Substring(lastDotIndex + 1)
+				: AttributeInfo.Name;
 
 			int lastAttributeSuffixIndex = attributeName.LastIndexOf(AttributeSuffix);
 			bool endsWithSuffix = attributeName.Length == (lastAttributeSuffixIndex + AttributeSuffix.Length);
@@ -63,11 +62,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public async override Task NavigateToItemAsync()
 		{
-			if (Attribute.ApplicationSyntaxReference?.SyntaxTree == null)
+			var syntaxReference = AttributeInfo.AttributeData.ApplicationSyntaxReference;
+
+			if (syntaxReference?.SyntaxTree == null)
 				return;
 
-			TextSpan span = Attribute.ApplicationSyntaxReference.Span;
-			string filePath =  Attribute.ApplicationSyntaxReference.SyntaxTree.FilePath;
+			TextSpan span = syntaxReference.Span;
+			string filePath = syntaxReference.SyntaxTree.FilePath;
 			Workspace workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
 			if (workspace?.CurrentSolution == null)
@@ -76,30 +77,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace.CurrentSolution, filePath, span);
 		}
 
-		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
-
-		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
-
-		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
-
 		public TooltipInfo CalculateTooltip() => _tooltipLazy.Value;
 
 		private TooltipInfo CalculateAttributeTooltip()
 		{
 			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
-			var attributeListNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
+			var attributeListNode = AttributeInfo.AttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
 			string tooltip;
 
 			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
 			{
-				tooltip = $"[{Attribute.ToString()}]";
+				tooltip = $"[{AttributeInfo.ToString()}]";
 			}
 			else
 			{
 				int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
 				tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
 										   .RemoveCommonAcumaticaNamespacePrefixes();
-				tooltip = tooltip.NullIfWhiteSpace() ?? $"[{Attribute.ToString()}]";
+				tooltip = tooltip.NullIfWhiteSpace() ?? $"[{AttributeInfo.ToString()}]";
 			}
 
 			return new TooltipInfo(tooltip);
