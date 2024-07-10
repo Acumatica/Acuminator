@@ -492,7 +492,7 @@
     <Compile Include="Tool Windows\Common\IElementWithTooltip.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphInitializationAndActivationCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActiveGraphMethodNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\EventsMappingInfoVS2022.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapter.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\VSEventsAdapterVS2022.cs" />
