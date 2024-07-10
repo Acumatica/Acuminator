@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#endregion
 
 		#region Attribute Nodes
-		public virtual TResult VisitNode(DacAttributesGroupNodeViewModel attributeNode) => DefaultVisit(attributeNode);
+		public virtual TResult VisitNode(DacAttributesGroupNodeViewModel attributeGroupNode) => DefaultVisit(attributeGroupNode);
 
 		public virtual TResult VisitNode(DacFieldAttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
 

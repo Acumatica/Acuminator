@@ -73,7 +73,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#endregion
 
 		#region Attribute Nodes
-		public virtual TResult VisitNode(GraphAttributesGroupNodeViewModel attributeNode) => DefaultVisit(attributeNode);
+		public virtual TResult VisitNode(GraphAttributesGroupNodeViewModel attributeGroupNode) => DefaultVisit(attributeGroupNode);
 
 		public virtual TResult VisitNode(CacheAttachedAttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
 
