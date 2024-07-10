@@ -1,12 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
+
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using System.Threading.Tasks;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -22,7 +22,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected string CategoryDescription { get; }
 
-		public override string Name => $"{CategoryDescription}({Children.Count})";
+		public override string Name
+		{
+			get => $"{CategoryDescription}({Children.Count})";
+			protected set { }
+		}
 
 		public override Icon NodeIcon => Icon.Category;
 
@@ -39,9 +43,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
 		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, DacMemberCategory dacCategoryType, bool isExpanded) : 
-										    base(dacViewModel?.Tree, dacViewModel, isExpanded)
+										    base(dacViewModel?.Tree!, dacViewModel, isExpanded)
 		{
-			DacViewModel = dacViewModel;
+			DacViewModel = dacViewModel!;
 			CategoryType = dacCategoryType;
 			CategoryDescription = CategoryType.Description();
 		}

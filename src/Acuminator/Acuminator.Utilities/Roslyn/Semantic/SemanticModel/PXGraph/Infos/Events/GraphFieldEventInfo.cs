@@ -1,7 +1,10 @@
-﻿using System;
-using System.Diagnostics;
+﻿#nullable enable
+
+using System;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -96,7 +99,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return string.Empty;
 			}
 
-			ITypeSymbol dacField = firstParameter.TypeArguments.Length > 1
+			ITypeSymbol? dacField = firstParameter.TypeArguments.Length > 1
 				? firstParameter.TypeArguments[1]
 				: firstParameter.TypeArguments.Length == 1
 					? firstParameter.TypeArguments[0]

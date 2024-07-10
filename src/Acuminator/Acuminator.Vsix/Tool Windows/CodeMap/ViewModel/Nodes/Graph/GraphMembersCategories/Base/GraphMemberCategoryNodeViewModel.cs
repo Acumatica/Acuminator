@@ -1,14 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Common;
+using System.Threading.Tasks;
+
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -26,7 +24,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected string CategoryDescription { get; }
 
-		public override string Name => $"{CategoryDescription}({Children.Count})";
+		public override string Name
+		{
+			get => $"{CategoryDescription}({Children.Count})";
+			protected set { }
+		}
 
 		public override Icon NodeIcon => Icon.Category;
 
@@ -43,9 +45,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) : 
-										      base(graphViewModel?.Tree, graphViewModel, isExpanded)
+										      base(graphViewModel?.Tree!, graphViewModel, isExpanded)
 		{
-			GraphViewModel = graphViewModel;
+			GraphViewModel = graphViewModel!;
 			CategoryType = graphMemberType;
 			CategoryDescription = CategoryType.Description();
 		}

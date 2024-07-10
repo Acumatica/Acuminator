@@ -13,7 +13,7 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Syntax;	
 using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap

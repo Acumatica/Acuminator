@@ -19,7 +19,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected abstract string AttributesGroupDescription { get; }
 
-		public override string Name => $"{AttributesGroupDescription}({Children.Count})";
+		public override string Name
+		{
+			get => $"{AttributesGroupDescription}({Children.Count})";
+			protected set { }
+		}
 
 		protected abstract bool AllowNavigation { get; }
 
