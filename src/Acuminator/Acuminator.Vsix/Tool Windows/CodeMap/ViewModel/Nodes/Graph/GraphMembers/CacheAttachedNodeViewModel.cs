@@ -1,11 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.ToolWindows.Common;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -24,11 +25,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public CacheAttachedNodeViewModel(DacGroupingNodeBaseViewModel dacVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 									 base(dacVM?.GraphEventsCategoryVM, dacVM, eventInfo, isExpanded)
 		{
-			DacVM = dacVM;
+			DacVM = dacVM!;
 			Name = eventInfo.DacFieldName;
 		}
 
-		TooltipInfo IElementWithTooltip.CalculateTooltip()
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
 			var attributeStrings = Children.OfType<AttributeNodeViewModel>()
 										   .Select(attribute => attribute.CalculateTooltip().Tooltip);
