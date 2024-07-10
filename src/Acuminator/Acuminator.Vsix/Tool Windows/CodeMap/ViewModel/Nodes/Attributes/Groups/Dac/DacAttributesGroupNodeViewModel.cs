@@ -20,8 +20,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected override bool AllowNavigation => true;
 
-		protected DacAttributesGroupNodeViewModel(DacSemanticModel dacSemanticModel, TreeNodeViewModel nodeVM, bool isExpanded = false) :
-											 base(nodeVM, isExpanded)
+		public DacAttributesGroupNodeViewModel(DacSemanticModel dacSemanticModel, TreeNodeViewModel nodeVM, bool isExpanded = false) :
+											   base(nodeVM, isExpanded)
 		{	
 			DacModel = dacSemanticModel.CheckIfNull();
 		}

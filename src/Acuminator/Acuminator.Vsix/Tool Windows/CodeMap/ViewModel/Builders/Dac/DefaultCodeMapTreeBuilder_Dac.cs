@@ -18,6 +18,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacNodeViewModel dac)
 		{
+			var dacAttributesGroup = GetDacAttributesGroupNode(dac);
+
+			if (dacAttributesGroup != null)
+				yield return dacAttributesGroup;
+
 			foreach (DacMemberCategory dacMemberCategory in GetDacMemberCategoriesInOrder())
 			{
 				Cancellation.ThrowIfCancellationRequested();
@@ -29,6 +34,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				}
 			}
 		}
+
+		protected virtual DacAttributesGroupNodeViewModel GetDacAttributesGroupNode(DacNodeViewModel dac) =>
+			new DacAttributesGroupNodeViewModel(dac.DacModel, dac, ExpandCreatedNodes);
 
 		protected virtual IEnumerable<DacMemberCategory> GetDacMemberCategoriesInOrder()
 		{
@@ -46,6 +54,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				DacMemberCategory.Property 					  => new DacPropertiesCategoryNodeViewModel(dac, ExpandCreatedNodes),
 				_ 											  => null,
 			};
+
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacAttributesGroupNodeViewModel attributeGroupNode) =>
+			attributeGroupNode.AttributeInfos()
+							  .Select(attrInfo => new DacAttributeNodeViewModel(attributeGroupNode, attrInfo, ExpandCreatedNodes));
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory)
 		{

@@ -29,6 +29,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphNodeViewModel graph)
 		{
+			var graphAttributesGroup = GetGraphAttributesGroupNode(graph);
+
+			if (graphAttributesGroup != null)
+				yield return graphAttributesGroup;
+
 			foreach (GraphMemberType graphMemberType in GetGraphMemberTypesInOrder())
 			{
 				Cancellation.ThrowIfCancellationRequested();
@@ -38,6 +43,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					yield return graphMemberCategory;
 			}
 		}
+
+		protected virtual GraphAttributesGroupNodeViewModel GetGraphAttributesGroupNode(GraphNodeViewModel graph) =>
+			new GraphAttributesGroupNodeViewModel(graph.GraphSemanticModel, graph, ExpandCreatedNodes);
 
 		protected virtual IEnumerable<GraphMemberType> GetGraphMemberTypesInOrder()
 		{
@@ -66,6 +74,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				GraphMemberType.BaseMemberOverride 			=> new GraphBaseMemberOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
 				_ 											=> null,
 			};
+
+		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphAttributesGroupNodeViewModel attributeGroupNode) =>
+			attributeGroupNode.AttributeInfos()
+							  .Select(attrInfo => new GraphAttributeNodeViewModel(attributeGroupNode, attrInfo, ExpandCreatedNodes));
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory)
 		{
@@ -226,7 +238,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					var attributeApplication = attributes[i];
 					var attributeInfo = CacheAttachedAttributeInfo.Create(attributeApplication, defaultMergeMethod, dbBoundnessCalculator,
 																		  declarationOrder: i);
-					yield return new CacheAttachedAttributeNodeViewModel(cacheAttachedNode, attributeInfo);
+					yield return new CacheAttachedAttributeNodeViewModel(cacheAttachedNode, attributeInfo, ExpandCreatedNodes);
 				}
 			}
 		}
