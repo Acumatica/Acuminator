@@ -30,6 +30,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				yield return new IconViewModel(this, Icon.ProjectionAttribute);
 			}
 
+			if (AttributeInfo.IsPXCacheName)
+			{
+				string? dacFriendlyName = AttributeInfo.AttributeData.GetNameFromPXCacheNameAttribute().NullIfWhiteSpace();
+
+				if (dacFriendlyName != null)
+				{
+					dacFriendlyName = $"\"{dacFriendlyName}\"";
+					Color color = Color.FromRgb(38, 155, 199);
+					yield return new TextViewModel(this, dacFriendlyName, darkThemeForeground: color, lightThemeForeground: color);
+				}
+			}
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => 

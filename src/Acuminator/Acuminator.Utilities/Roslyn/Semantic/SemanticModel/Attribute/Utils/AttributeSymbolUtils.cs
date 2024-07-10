@@ -1,6 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 using Acuminator.Utilities.Common;
 
@@ -17,6 +18,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			var defaultNavigationAttribute = pxContext.CheckIfNull().AttributeTypes.PXPrimaryGraphBaseAttribute ?? 
 											 pxContext.AttributeTypes.PXPrimaryGraphAttribute;
 			return attributeType.InheritsFromOrEquals(defaultNavigationAttribute);
+		}
+
+		public static string? GetNameFromPXCacheNameAttribute(this AttributeData attributeData)
+		{
+			var constructorArgs = attributeData.CheckIfNull().ConstructorArguments;
+
+			if (constructorArgs.Length != 1)
+				return null;
+
+			var nameArg = constructorArgs[0];
+
+			if (nameArg.Kind != TypedConstantKind.Primitive)
+				return null;
+
+			return nameArg.Value as string;
 		}
 	}
 }

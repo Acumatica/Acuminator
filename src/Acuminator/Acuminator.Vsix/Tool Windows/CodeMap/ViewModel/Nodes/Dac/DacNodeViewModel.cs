@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
@@ -48,10 +48,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			Color color = Color.FromRgb(38, 155, 199);
+
 			string dacType = DacModel.DacType == DacType.Dac
 				? VSIXResource.CodeMap_ExtraInfo_IsDac
 				: VSIXResource.CodeMap_ExtraInfo_IsDacExtension;
+
 			yield return new TextViewModel(this, dacType, darkThemeForeground: color, lightThemeForeground: color);
+
+			var pxCacheNameAttributeInfo = DacModel.Attributes.FirstOrDefault(attrInfo => attrInfo.IsPXCacheName);
+			string? dacFriendlyName = pxCacheNameAttributeInfo?.AttributeData.GetNameFromPXCacheNameAttribute()
+																			 .NullIfWhiteSpace();
+			if (dacFriendlyName != null)
+			{
+				dacFriendlyName = $"\"{dacFriendlyName}\"";
+				yield return new TextViewModel(this, dacFriendlyName, darkThemeForeground: color, lightThemeForeground: color);
+			}
 		}
 
 		public override Task NavigateToItemAsync() => DacModel.Symbol.NavigateToAsync();
