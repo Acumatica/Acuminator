@@ -1,14 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
-using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -23,12 +22,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual GraphNodeViewModel CreateGraphNode(GraphSemanticModelForCodeMap graph, TreeViewModel tree) =>
 			new GraphNodeViewModel(graph, tree, ExpandCreatedNodes);
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphNodeViewModel graph)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphNodeViewModel graph)
 		{
 			foreach (GraphMemberType graphMemberType in GetGraphMemberTypesInOrder())
 			{
 				Cancellation.ThrowIfCancellationRequested();
-				GraphMemberCategoryNodeViewModel graphMemberCategory = CreateCategory(graph, graphMemberType);
+				GraphMemberCategoryNodeViewModel? graphMemberCategory = CreateCategory(graph, graphMemberType);
 
 				if (graphMemberCategory != null)
 					yield return graphMemberCategory;
@@ -49,7 +48,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return GraphMemberType.NestedGraph;
 		}
 
-		protected virtual GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType) =>
+		protected virtual GraphMemberCategoryNodeViewModel? CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType) =>
 			graphMemberType switch
 			{
 				GraphMemberType.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, ExpandCreatedNodes),
@@ -63,42 +62,42 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_                                           => null,
 			};
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory)
 		{
 			return CreateGraphCategoryChildren<SymbolItem>(graphInitializationAndActivationCategory, InitializationAndActivationGraphMemberConstructor);
 
 			//----------------------------------Local Function-----------------------------------------------------
-			TreeNodeViewModel InitializationAndActivationGraphMemberConstructor(SymbolItem symbolInfo) => symbolInfo switch
+			TreeNodeViewModel? InitializationAndActivationGraphMemberConstructor(SymbolItem symbolInfo) => symbolInfo switch
 			{
 				IsActiveMethodInfo isActiveMethodInfo => new IsActiveGraphMethodNodeViewModel(graphInitializationAndActivationCategory,
 																							  isActiveMethodInfo, ExpandCreatedNodes),
 				StaticConstructorInfo staticConstructorInfo => new GraphStaticConstructorNodeViewModel(graphInitializationAndActivationCategory,
 																									   staticConstructorInfo, ExpandCreatedNodes),
 				InstanceConstructorInfo instanceConstructorInfo => new GraphInstanceConstructorNodeViewModel(graphInitializationAndActivationCategory,
-																													   instanceConstructorInfo, ExpandCreatedNodes),
+																											 instanceConstructorInfo, ExpandCreatedNodes),
 				_ => null
 			};
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategory) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategory) =>
 			CreateGraphCategoryChildren<BaseMemberOverrideInfo>(graphBaseMemberOverridesCategory,
 						constructor: baseMemberOverrideInfo => new GraphBaseMembeOverrideNodeViewModel(graphBaseMemberOverridesCategory,
 																										baseMemberOverrideInfo, ExpandCreatedNodes));
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(ActionCategoryNodeViewModel actionCategory) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(ActionCategoryNodeViewModel actionCategory) =>
 			CreateGraphCategoryChildren<ActionInfo>(actionCategory,
 						constructor: actionInfo => new ActionNodeViewModel(actionCategory, actionInfo, ExpandCreatedNodes));
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(ViewCategoryNodeViewModel viewCategory) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(ViewCategoryNodeViewModel viewCategory) =>
 			 CreateGraphCategoryChildren<DataViewInfo>(viewCategory,
 						constructor: viewInfo => new ViewNodeViewModel(viewCategory, viewInfo, ExpandCreatedNodes));
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory) =>
 			CreateGraphCategoryChildren<PXOverrideInfo>(pxOverridesCategory,
 						constructor: pxOverrideInfo => new PXOverrideNodeViewModel(pxOverridesCategory, pxOverrideInfo, ExpandCreatedNodes));
 
-		protected virtual IEnumerable<TreeNodeViewModel> CreateGraphCategoryChildren<TSymbolInfo>(GraphMemberCategoryNodeViewModel graphMemberCategory,
-																								  Func<TSymbolInfo, TreeNodeViewModel> constructor)
+		protected virtual IEnumerable<TreeNodeViewModel>? CreateGraphCategoryChildren<TSymbolInfo>(GraphMemberCategoryNodeViewModel graphMemberCategory,
+																								   Func<TSymbolInfo, TreeNodeViewModel?> constructor)
 		where TSymbolInfo : SymbolItem
 		{
 			IEnumerable<SymbolItem> categoryTreeNodes = graphMemberCategory.CheckIfNull()
@@ -153,11 +152,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return dacGroupingNodesViewModels;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode) =>
 			dacGroupingNode.RowEvents.Select(rowEventInfo => new RowEventNodeViewModel(dacGroupingNode, rowEventInfo, ExpandCreatedNodes))
 									 .Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty());
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacGroupingNodeForCacheAttachedEventViewModel? dacGroupingNode) =>
 			dacGroupingNode?.AllFieldEvents.Select(fieldEvent => new CacheAttachedNodeViewModel(dacGroupingNode, fieldEvent, ExpandCreatedNodes))
 										   .Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty());
 
@@ -177,11 +176,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				   select dacFieldNodeVM;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode) =>
 			dacFieldGroupingNode?.FieldEvents.Select(fieldEvent => new FieldEventNodeViewModel(dacFieldGroupingNode, fieldEvent, ExpandCreatedNodes))
 											 .Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty());
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(ViewNodeViewModel viewNode)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(ViewNodeViewModel viewNode)
 		{
 			var hasViewDelegate = viewNode.MemberCategory.GraphSemanticModel.ViewDelegatesByNames.TryGetValue(viewNode.MemberSymbol.Name,
 																											  out DataViewDelegateInfo viewDelegate);
@@ -190,7 +189,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				: DefaultValue;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(ActionNodeViewModel actionNode)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(ActionNodeViewModel actionNode)
 		{
 			var hasActionHandler =
 				actionNode.MemberCategory.GraphSemanticModel.ActionHandlersByNames.TryGetValue(actionNode.MemberSymbol.Name,
@@ -200,7 +199,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				: DefaultValue;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(CacheAttachedNodeViewModel cacheAttachedNode) =>
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(CacheAttachedNodeViewModel cacheAttachedNode) =>
 			cacheAttachedNode?.MemberSymbol.GetAttributes()
 										   .Select(a => new AttributeNodeViewModel(cacheAttachedNode, a));
 	}

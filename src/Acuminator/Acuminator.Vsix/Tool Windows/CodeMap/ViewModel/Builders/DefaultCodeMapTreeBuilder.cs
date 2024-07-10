@@ -1,7 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -13,13 +15,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected CodeMapTreeInitialSorter TreeInitialSorter { get; }
 
-		public DefaultCodeMapTreeBuilder(CodeMapTreeInitialSorter customSorter = null)
+		public DefaultCodeMapTreeBuilder(CodeMapTreeInitialSorter? customSorter = null)
 		{
 			TreeInitialSorter = customSorter ?? 
 								new CodeMapTreeInitialSorter(defaultSortType: SortType.Declaration, defaultSortDirection: SortDirection.Ascending);
 		}
 
-		protected override TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree)
+		protected override TreeNodeViewModel? CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree)
 		{
 			return rootSemanticModel switch
 			{
@@ -29,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			};
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(TreeNodeViewModel node)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(TreeNodeViewModel node)
 		{
 			var generatedChildren = base.VisitNode(node);
 

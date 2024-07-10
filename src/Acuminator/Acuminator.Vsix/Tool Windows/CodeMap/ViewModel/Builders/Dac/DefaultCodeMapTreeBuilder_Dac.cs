@@ -1,14 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
-using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -17,7 +16,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual DacNodeViewModel CreateDacNode(DacSemanticModel dacSemanticModel, TreeViewModel tree) =>
 			new DacNodeViewModel(dacSemanticModel, tree, ExpandCreatedNodes);
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacNodeViewModel dac)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacNodeViewModel dac)
 		{
 			foreach (DacMemberCategory dacMemberCategory in GetDacMemberCategoriesInOrder())
 			{
@@ -39,33 +38,33 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return DacMemberCategory.FieldsWithoutProperty;
 		}
 
-		protected virtual DacMemberCategoryNodeViewModel CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory) =>
+		protected virtual DacMemberCategoryNodeViewModel? CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory) =>
 			dacMemberCategory switch
 			{
 				DacMemberCategory.InitializationAndActivation => new DacInitializationAndActivationCategoryNodeViewModel(dac, ExpandCreatedNodes),
-				DacMemberCategory.Keys                        => new DacKeysCategoryNodeViewModel(dac, ExpandCreatedNodes),
-				DacMemberCategory.Property                    => new DacPropertiesCategoryNodeViewModel(dac, ExpandCreatedNodes),
-				_                                             => null,
+				DacMemberCategory.Keys 						  => new DacKeysCategoryNodeViewModel(dac, ExpandCreatedNodes),
+				DacMemberCategory.Property 					  => new DacPropertiesCategoryNodeViewModel(dac, ExpandCreatedNodes),
+				_ 											  => null,
 			};
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory)
 		{
 			return CreateDacMemberCategoryChildren<IsActiveMethodInfo>(dacInitializationAndActivationCategory,
 						constructor: isActiveMethodInfo => new IsActiveDacMethodNodeViewModel(dacInitializationAndActivationCategory,
 																							  isActiveMethodInfo, ExpandCreatedNodes));
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory)
 		{
 			dacKeysCategory.ThrowOnNull();
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacKeysCategory,
 																	propertyInfo => new PropertyNodeViewModel(dacKeysCategory, propertyInfo, ExpandCreatedNodes));
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory)
 		{
 			dacPropertiesCategory.ThrowOnNull();
-			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacPropertiesCategory, 
+			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacPropertiesCategory,
 																	propertyInfo => new PropertyNodeViewModel(dacPropertiesCategory, propertyInfo, ExpandCreatedNodes));
 		}
 
@@ -92,7 +91,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(PropertyNodeViewModel property) =>
-			property.CheckIfNull().PropertyInfo.Attributes.Select(a => new AttributeNodeViewModel(property, a.AttributeData, ExpandCreatedNodes));
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(PropertyNodeViewModel property)
+		{
+			var attributes = property.CheckIfNull().PropertyInfo.Attributes;
+			return attributes.Select(attrInfo => new DacFieldAttributeNodeViewModel(property, attrInfo, ExpandCreatedNodes));
+		}
 	}
 }
