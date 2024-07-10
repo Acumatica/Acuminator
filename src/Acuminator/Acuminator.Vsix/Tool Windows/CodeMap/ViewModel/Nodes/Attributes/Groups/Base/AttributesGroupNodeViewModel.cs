@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+using Acuminator.Vsix.ToolWindows.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class AttributesGroupNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
+	public abstract class AttributesGroupNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation, IElementWithTooltip
 	{
 		public override bool DisplayNodeWithoutChildren => false;
 
@@ -60,5 +62,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) => CanNavigateToChild(child);
 
 		protected virtual bool CanNavigateToChild(TreeNodeViewModel child) => true;
+
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
+		{
+			var attributeStrings = Children.OfType<AttributeNodeViewModel>()
+										   .Select(attribute => attribute.CalculateTooltip().Tooltip);
+			string aggregatedTooltip = attributeStrings.Join(Environment.NewLine);
+			return aggregatedTooltip.IsNullOrWhiteSpace()
+				? null
+				: new TooltipInfo(aggregatedTooltip);
+		}
 	}
 }
