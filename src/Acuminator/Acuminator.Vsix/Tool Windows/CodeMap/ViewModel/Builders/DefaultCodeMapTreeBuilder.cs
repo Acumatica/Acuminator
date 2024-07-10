@@ -33,7 +33,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(TreeNodeViewModel node)
 		{
-			var generatedChildren = base.VisitNode(node);
+			var generatedChildren = base.VisitNode(node)?.ToList();
 
 			if (generatedChildren == null || ReferenceEquals(generatedChildren, DefaultValue))
 				return generatedChildren;
