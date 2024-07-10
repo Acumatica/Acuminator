@@ -1,8 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -29,6 +28,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(IsActiveDacMethodNodeViewModel isActiveDacMethodNode) =>
 			DefaultVisit(isActiveDacMethodNode);
+		#endregion
+
+		#region Attribute Nodes
+		public virtual TResult VisitNode(DacAttributesGroupNodeViewModel attributeNode) => DefaultVisit(attributeNode);
+
+		public virtual TResult VisitNode(DacFieldAttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
+
+		public virtual TResult VisitNode(DacAttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
 		#endregion
 	}
 }
