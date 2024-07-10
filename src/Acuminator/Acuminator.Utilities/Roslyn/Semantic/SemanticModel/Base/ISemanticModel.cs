@@ -12,5 +12,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// The symbol for which the model is defined.
 		/// </summary>
 		INamedTypeSymbol Symbol { get; }
+
+		/// <summary>
+		/// Acumatica analysis context.
+		/// </summary>
+		PXContext PXContext { get; }
 	}
 }

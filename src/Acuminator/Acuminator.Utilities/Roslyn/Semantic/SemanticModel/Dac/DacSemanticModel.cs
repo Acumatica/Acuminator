@@ -17,7 +17,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 	public class DacSemanticModel : ISemanticModel
 	{
 		private readonly CancellationToken _cancellation;
-		private readonly PXContext _pxContext;
+
+		public PXContext PXContext { get; }
 
 		public DacType DacType { get; }
 
@@ -78,15 +79,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			_pxContext = pxContext;
+			PXContext = pxContext;
 			_cancellation = cancellation;
 			DacType = dacType;
 			Node = node;
 			Symbol = symbol;
 			DacSymbol = DacType == DacType.Dac
 				? Symbol
-				: Symbol.GetDacFromDacExtension(_pxContext);
-			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(_pxContext.PXMappedCacheExtensionType);
+				: Symbol.GetDacFromDacExtension(PXContext);
+			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(PXContext.PXMappedCacheExtensionType);
 
 			Attributes         = GetDacAttributes();
 			FieldsByNames      = GetDacFields();
@@ -151,7 +152,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			if (attributes.IsDefaultOrEmpty)
 				return ImmutableArray<DacAttributeInfo>.Empty;
 
-			var attributeInfos = attributes.Select((attributeData, relativeOrder) => new DacAttributeInfo(_pxContext, attributeData, relativeOrder));
+			var attributeInfos = attributes.Select((attributeData, relativeOrder) => new DacAttributeInfo(PXContext, attributeData, relativeOrder));
 			var builder = ImmutableArray.CreateBuilder<DacAttributeInfo>(attributes.Length);
 			builder.AddRange(attributeInfos);
 
@@ -159,12 +160,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
-			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, FieldsByNames, cancellation: _cancellation),
-					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(_pxContext, FieldsByNames, _cancellation));
+			GetInfos(() => Symbol.GetDacPropertiesFromDac(PXContext, FieldsByNames, cancellation: _cancellation),
+					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, FieldsByNames, _cancellation));
 
 		private ImmutableDictionary<string, DacFieldInfo> GetDacFields() =>
-			GetInfos(() => Symbol.GetDacFieldsFromDac(_pxContext, cancellation: _cancellation),
-					 () => Symbol.GetDacFieldsFromDacExtensionAndBaseDac(_pxContext, _cancellation));
+			GetInfos(() => Symbol.GetDacFieldsFromDac(PXContext, cancellation: _cancellation),
+					 () => Symbol.GetDacFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
 
 		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> dacInfosSelector,
 																   Func<OverridableItemsCollection<TInfo>> dacExtInfosSelector)

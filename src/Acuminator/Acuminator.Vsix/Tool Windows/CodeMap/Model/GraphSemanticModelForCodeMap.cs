@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -24,16 +23,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public INamedTypeSymbol Symbol => GraphModel.Symbol;
 
-		public GraphSemanticModelForCodeMap(PXGraphEventSemanticModel graphEventSemanticModel, PXContext context)
-		{
-			context.ThrowOnNull();
+		public PXContext PXContext => GraphModel.PXContext;
 
-			GraphModel = graphEventSemanticModel.CheckIfNull();
-			InstanceConstructors = GetInstanceConstructors(graphEventSemanticModel.Symbol, context).ToImmutableArray();
-			BaseMemberOverrides = GetBaseMemberOverrides(graphEventSemanticModel.Symbol, context).ToImmutableArray();
+		public GraphSemanticModelForCodeMap(PXGraphEventSemanticModel graphEventSemanticModel)
+		{
+			GraphModel 			 = graphEventSemanticModel.CheckIfNull();
+			InstanceConstructors = GetInstanceConstructors(graphEventSemanticModel.Symbol).ToImmutableArray();
+			BaseMemberOverrides  = GetBaseMemberOverrides(graphEventSemanticModel.Symbol).ToImmutableArray();
 		}
 
-		protected virtual IEnumerable<InstanceConstructorInfo> GetInstanceConstructors(INamedTypeSymbol graphOrExtension, PXContext context)
+		protected virtual IEnumerable<InstanceConstructorInfo> GetInstanceConstructors(INamedTypeSymbol graphOrExtension)
 		{
 			if (graphOrExtension.InstanceConstructors.IsDefaultOrEmpty)
 				yield break;
@@ -51,7 +50,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		protected virtual IEnumerable<BaseMemberOverrideInfo> GetBaseMemberOverrides(INamedTypeSymbol graphOrExtension, PXContext context)
+		protected virtual IEnumerable<BaseMemberOverrideInfo> GetBaseMemberOverrides(INamedTypeSymbol graphOrExtension)
 		{
 			var baseMemberOverrides = from member in graphOrExtension.GetMembers()
 									  where !member.IsImplicitlyDeclared && member.IsOverride && 

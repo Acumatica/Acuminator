@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	{
 		private readonly CancellationToken _cancellation;
 
-		internal PXContext PXContext { get; }
+		public PXContext PXContext { get; }
 
 		public GraphSemanticModelCreationOptions ModelCreationOptions { get; }
 
