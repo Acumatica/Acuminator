@@ -10,7 +10,7 @@ using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacAttributesGroupNodeViewModel : AttributesGroupNodeViewModel
+	public class DacAttributesGroupNodeViewModel : AttributesGroupNodeViewModel<DacAttributeInfo>
 	{
 		public DacSemanticModel DacModel { get; }
 
@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			DacModel = dacSemanticModel.CheckIfNull();
 		}
 
-		public override IEnumerable<AttributeInfoBase> GetAttributeInfos() => DacModel.Attributes;
+		public override IEnumerable<DacAttributeInfo> AttributeInfos() => DacModel.Attributes;
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => 
 			treeVisitor.VisitNode(this, input);

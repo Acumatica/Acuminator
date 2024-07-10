@@ -43,7 +43,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 		}
 
-		public abstract IEnumerable<AttributeInfoBase> GetAttributeInfos();
+		public abstract IEnumerable<AttributeInfoBase> UntypedAttributeInfos();
 
 		public async override Task NavigateToItemAsync()
 		{
