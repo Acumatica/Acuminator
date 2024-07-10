@@ -2,12 +2,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -52,14 +57,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			graphMemberType switch
 			{
 				GraphMemberType.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.View                        => new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.Action                      => new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.CacheAttached               => new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.RowEvent                    => new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.FieldEvent                  => new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.PXOverride                  => new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.BaseMemberOverride          => new GraphBaseMemberOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				_                                           => null,
+				GraphMemberType.View 						=> new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.Action 						=> new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.CacheAttached 				=> new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.RowEvent 					=> new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.FieldEvent 					=> new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.PXOverride 					=> new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.BaseMemberOverride 			=> new GraphBaseMemberOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				_ 											=> null,
 			};
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory)
@@ -109,7 +114,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var graphSemanticModel = graphMemberCategory.GraphSemanticModel;
 			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes.OfType<TSymbolInfo>()
 										where graphSemanticModel.Symbol.Equals(graphMemberInfo.SymbolBase.ContainingType) ||
-											  Equals(graphSemanticModel.Symbol.OriginalDefinition, graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition) 
+											  Equals(graphSemanticModel.Symbol.OriginalDefinition, graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition)
 										select constructor(graphMemberInfo);
 
 			return graphMemberViewModels;
@@ -199,8 +204,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				: DefaultValue;
 		}
 
-		public override IEnumerable<TreeNodeViewModel>? VisitNode(CacheAttachedNodeViewModel cacheAttachedNode) =>
-			cacheAttachedNode?.MemberSymbol.GetAttributes()
-										   .Select(a => new AttributeNodeViewModel(cacheAttachedNode, a));
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(CacheAttachedNodeViewModel cacheAttachedNode)
+		{
+			var attributes = cacheAttachedNode?.MemberSymbol.GetAttributes() ?? ImmutableArray<AttributeData>.Empty;
+
+			if (attributes.IsDefaultOrEmpty)
+				return [];
+
+			return CreateCacheAttachedAttributeNodes();
+
+			//-------------------------------------------Local Function------------------------------------------------------------------
+			IEnumerable<CacheAttachedAttributeNodeViewModel> CreateCacheAttachedAttributeNodes()
+			{
+				// TODO add calculation of merge method later
+				var defaultMergeMethod 	  = CacheAttachedAttributesMergeMethod.Replace;
+				var graphSemanticModel 	  = cacheAttachedNode!.MemberCategory.GraphSemanticModel;
+				var dbBoundnessCalculator = new DbBoundnessCalculator(graphSemanticModel.PXContext);
+
+				for (int i = 0; i < attributes.Length; i++)
+				{
+					var attributeApplication = attributes[i];
+					var attributeInfo = CacheAttachedAttributeInfo.Create(attributeApplication, defaultMergeMethod, dbBoundnessCalculator,
+																		  declarationOrder: i);
+					yield return new CacheAttachedAttributeNodeViewModel(cacheAttachedNode, attributeInfo);
+				}
+			}
+		}
 	}
 }

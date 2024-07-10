@@ -94,7 +94,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(PropertyNodeViewModel property)
 		{
 			var attributes = property.CheckIfNull().PropertyInfo.Attributes;
-			return attributes.Select(attrInfo => new DacFieldAttributeNodeViewModel(property, attrInfo, ExpandCreatedNodes));
+			return !attributes.IsDefaultOrEmpty
+				? attributes.Select(attrInfo => new DacFieldAttributeNodeViewModel(property, attrInfo, ExpandCreatedNodes))
+				: [];
 		}
 	}
 }

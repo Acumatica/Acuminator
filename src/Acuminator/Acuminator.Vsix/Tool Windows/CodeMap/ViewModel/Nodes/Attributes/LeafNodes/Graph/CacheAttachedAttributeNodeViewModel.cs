@@ -10,8 +10,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedAttributeNodeViewModel : AttributeNodeViewModel<CacheAttachedAttributeInfo>
 	{
-		protected CacheAttachedAttributeNodeViewModel(TreeNodeViewModel nodeVM, CacheAttachedAttributeInfo attributeInfo, bool isExpanded = false) :
-												 base(nodeVM, attributeInfo, isExpanded)
+		public CacheAttachedAttributeNodeViewModel(TreeNodeViewModel nodeVM, CacheAttachedAttributeInfo attributeInfo, bool isExpanded = false) :
+												   base(nodeVM, attributeInfo, isExpanded)
 		{
 		}
 
