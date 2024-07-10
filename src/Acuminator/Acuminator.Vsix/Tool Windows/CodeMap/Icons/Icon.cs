@@ -55,6 +55,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		InitializationAndActivationDacCategory,
 		IsActiveMethodDac,
 
-		ProjectionDac
+		ProjectionDac,
+		ProjectionAttribute
 	}
 }

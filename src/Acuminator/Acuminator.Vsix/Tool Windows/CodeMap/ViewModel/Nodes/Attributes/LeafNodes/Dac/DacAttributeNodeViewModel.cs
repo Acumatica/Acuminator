@@ -2,16 +2,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.Utilities;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacAttributeNodeViewModel : AttributeNodeViewModel<DacAttributeInfo>
 	{
+		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
+
 		public DacAttributeNodeViewModel(TreeNodeViewModel nodeVM, DacAttributeInfo attributeInfo, bool isExpanded = false) :
 									base(nodeVM, attributeInfo, isExpanded)
 		{
+			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos());
+		}
+
+		private IEnumerable<ExtraInfoViewModel> GetDacExtraInfos()
+		{
+			if (AttributeInfo.IsPXProjection)
+			{
+				yield return new IconViewModel(this, Icon.ProjectionAttribute);
+			}
 
 		}
 

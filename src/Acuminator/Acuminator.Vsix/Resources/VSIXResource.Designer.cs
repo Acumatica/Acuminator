@@ -421,6 +421,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is a projection attribute.
+        /// </summary>
+        public static string CodeMap_Icon_ProjectionAttributeTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_Icon_ProjectionAttributeTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DAC Attributes.
         /// </summary>
         public static string CodeMap_Node_DacAttributes {
