@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
@@ -17,10 +16,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 	/// </summary>
 	public class IsActiveMethodInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
-		private const int IsActiveDeclarationOrderToPlaceItFirst= -3;
+		internal const int IsActiveDeclarationOrderToPlaceItFirst = int.MinValue;
 
-		public IsActiveMethodInfo(MethodDeclarationSyntax node, IMethodSymbol isActiveMethod, int? declarationOrder = null) :
-							 base(node, isActiveMethod, declarationOrder ?? IsActiveDeclarationOrderToPlaceItFirst)
+		public IsActiveMethodInfo(MethodDeclarationSyntax node, IMethodSymbol isActiveMethod, int declarationOrder) :
+							 base(node, isActiveMethod, declarationOrder)
 		{
 		}
 
@@ -29,14 +28,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 		/// </summary>
 		/// <param name="dacOrGraphExtension">The DAC or graph extension.</param>
 		/// <param name="cancellationToken">A token that allows processing to be cancelled.</param>
-		/// <param name="declarationOrder">(Optional) The declaration order.</param>
+		/// <param name="customDeclarationOrder">(Optional) The declaration order. Default value is <see cref="IsActiveDeclarationOrderToPlaceItFirst"/>.</param>
 		/// <returns>
 		/// The <see cref="IsActiveMethodInfo"/> DTO if extension contains IsActive method, otherwise <see langword="null"/>.
 		/// </returns>
 		internal static IsActiveMethodInfo? GetIsActiveMethodInfo(INamedTypeSymbol dacOrGraphExtension, CancellationToken cancellationToken,
-																  int? declarationOrder = null)
+																  int? customDeclarationOrder = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+
+			int declarationOrder   = customDeclarationOrder ?? IsActiveDeclarationOrderToPlaceItFirst;
 			var isActiveCandidates = dacOrGraphExtension.GetMethods(DelegateNames.IsActive);
 			IMethodSymbol? isActiveMethod =
 				isActiveCandidates.FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&

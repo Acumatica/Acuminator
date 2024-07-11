@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
@@ -19,17 +18,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <remarks>
 	/// <see cref="ConfigureMethodInfo"/> is derived from <see cref="SymbolItem{T}"/> insted of <see cref="NodeSymbolItem{N, S}"/>.
 	/// This way the class does not keep any information about syntax nodes.<br/>
-	/// This is done intentionally to support a scenario when Configure method is overriden in a customization with no access to source code with base overrides.
+	/// This is done intentionally to support a scenario when Configure method is overriden in a customization
+	/// with no access to source code with base overrides.
 	/// </remarks>
 	public class ConfigureMethodInfo : SymbolItem<IMethodSymbol>
 	{
 		/// <summary>
 		/// The Configure method declaration order to place it second after IsActiveForGraph&lt;TGraph&gt;.
 		/// </summary>
-		private const int ConfigureDeclarationOrderToPlaceItThird = -1;
+		internal const int ConfigureDeclarationOrderToPlaceItThird = IsActiveForGraphMethodInfo.IsActiveForGraphDeclarationOrderToPlaceItSecond + 1;
 
-		public ConfigureMethodInfo(IMethodSymbol configureMethod, int? declarationOrder = null) :
-							  base(configureMethod, declarationOrder ?? ConfigureDeclarationOrderToPlaceItThird)
+		public ConfigureMethodInfo(IMethodSymbol configureMethod, int declarationOrder) : base(configureMethod, declarationOrder)
 		{
 		}
 
@@ -47,19 +46,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="graphType">Type of the <paramref name="graphOrGraphExtension"/> symbol.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
 		/// <param name="cancellationToken">A token that allows processing to be cancelled.</param>
-		/// <param name="declarationOrder">(Optional) The declaration order.</param>
+		/// <param name="customDeclarationOrder">(Optional) The declaration order. Default value is <see cref="ConfigureDeclarationOrderToPlaceItThird"/>.</param>
 		/// <returns>
-		/// A collection of <see cref="ConfigureMethodInfo"/> DTOs if the graph / graph extension contains one or several Configure method, otherwise an empty collection.
+		/// A collection of <see cref="ConfigureMethodInfo"/> DTOs if the graph / graph extension contains one or several Configure method,
+		/// otherwise an empty collection.
 		/// </returns>
-		internal static IReadOnlyCollection<ConfigureMethodInfo> GetConfigureMethodInfos(INamedTypeSymbol graphOrGraphExtension, GraphType graphType, PXContext pxContext,
-																						 CancellationToken cancellationToken, int? declarationOrder = null)
+		internal static IReadOnlyCollection<ConfigureMethodInfo> GetConfigureMethodInfos(INamedTypeSymbol graphOrGraphExtension, GraphType graphType, 
+																						 PXContext pxContext, CancellationToken cancellationToken, 
+																						 int? customDeclarationOrder = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var originalConfigureMethod = GetOriginalConfigureMethod(graphType, pxContext);
 
 			if (originalConfigureMethod == null)
-				return Array.Empty<ConfigureMethodInfo>();
+				return [];
 
 			var allConfigureTypeMethods = graphOrGraphExtension.GetBaseTypesAndThis()
 															   .Select(type => type.GetMethods(DelegateNames.Workflow.Configure))
@@ -68,6 +69,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 									  where !method.IsStatic && method.ReturnsVoid && method.IsOverride && 
 											 method.DeclaredAccessibility == Accessibility.Public && method.Parameters.Length == 1
 									  select method;
+			int startDeclarationOrder = customDeclarationOrder ?? ConfigureDeclarationOrderToPlaceItThird;
 
 			foreach (IMethodSymbol configureMethodCandidate in configureCandidates)
 			{
@@ -79,21 +81,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (originalConfigureMethod.Equals(originalVirtualMethod))
 				{
 					// Do not include the original PXGraphExtension.Configure method into results
-					return overridesChain.Take(overridesChain.Count - 1)
-										 .Select(configureMethodOverride => new ConfigureMethodInfo(configureMethodOverride, declarationOrder))
-										 .ToList(capacity: overridesChain.Count - 1);
-				} 
+					return overridesChain
+							.Take(overridesChain.Count - 1)
+							.Select((configureMethodOverride, index) => new ConfigureMethodInfo(configureMethodOverride, index + startDeclarationOrder))
+							.ToList(capacity: overridesChain.Count - 1);
+				}
 			}
 
-			return Array.Empty<ConfigureMethodInfo>();
+			return [];
 		}
 
 		private static IMethodSymbol? GetOriginalConfigureMethod(GraphType graphType, PXContext pxContext) =>
 			graphType switch
 			{
-				GraphType.PXGraph => pxContext?.PXGraph.Configure,
+				GraphType.PXGraph 		   => pxContext?.PXGraph.Configure,
 				GraphType.PXGraphExtension => pxContext?.PXGraphExtension.Configure,
-				_ => null
+				_ 						   => null
 			};
 	}
 }
