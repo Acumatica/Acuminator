@@ -16,7 +16,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class GraphBaseMembeOverrideNodeViewModel : GraphMemberNodeViewModel
 	{
-		public bool IsPersistMethodOverride => BaseMemberOverrideInfo.IsPersistMethodOverride;
+		public MemberOverrideKind OverrideKind => BaseMemberOverrideInfo.OverrideKind;
 
 		public override Icon NodeIcon { get; }
 
@@ -44,14 +44,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private Icon GetNodeIcon() => MemberSymbol switch
+		private Icon GetNodeIcon() => OverrideKind switch
 		{
-			IMethodSymbol method => IsPersistMethodOverride 
-										? Icon.PersistMethodOverride 
-										: Icon.MethodOverrideGraph,
-			IPropertySymbol _    => Icon.PropertyOverrideGraph,
-			IEventSymbol _       => Icon.EventOverrideGraph,
-			_                    => Icon.MethodOverrideGraph
+			MemberOverrideKind.NormalMethodOverride    => Icon.MethodOverrideGraph,
+			MemberOverrideKind.NormalPropertyOverride  => Icon.PropertyOverrideGraph,
+			MemberOverrideKind.NormalEventOverride     => Icon.EventOverrideGraph,
+
+			MemberOverrideKind.PersistMethodOverride   => Icon.PersistMethodOverride,
+			MemberOverrideKind.ConfigureMethodOverride => Icon.ConfigureMethodGraph,
+
+			_ 										   => Icon.None
 		};
 
 		private string? GetNameForOverridenGraphEventHandler(IMethodSymbol graphEventHandler)
