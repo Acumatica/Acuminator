@@ -88,6 +88,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.ConfigureMethodOverrides"/>
 		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides => BaseGraphModel.ConfigureMethodOverrides;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredConfigureMethodOverrides"/>
+		public IEnumerable<ConfigureMethodInfo> DeclaredConfigureMethodOverrides => BaseGraphModel.DeclaredConfigureMethodOverrides;
+
 		/// <inheritdoc cref="PXGraphSemanticModel.PXOverrides"/>
 		public ImmutableArray<PXOverrideInfo> PXOverrides => BaseGraphModel.PXOverrides;
 

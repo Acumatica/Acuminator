@@ -56,28 +56,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// Actions which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None
-			? Enumerable.Empty<ActionInfo>()
+			? []
 			: Actions.Where(action => action.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// Action handlers which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None
-			? Enumerable.Empty<ActionHandlerInfo>()
+			? []
 			: ActionHandlers.Where(handler => handler.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// Views which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<DataViewInfo> DeclaredViews => Type == GraphType.None
-			? Enumerable.Empty<DataViewInfo>()
+			? []
 			: Views.Where(view => view.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// View delegates which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
 		/// </summary>
 		public IEnumerable<DataViewDelegateInfo> DeclaredViewDelegates => Type == GraphType.None
-			? Enumerable.Empty<DataViewDelegateInfo>()
+			? []
 			: ViewDelegates.Where(viewDelegate => viewDelegate.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
@@ -104,6 +104,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// Information about the overrides of the Configure method.
 		/// </value>
 		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides { get; }
+
+		/// <summary>
+		/// Configure method overrides which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
+		/// </summary>
+		public IEnumerable<ConfigureMethodInfo> DeclaredConfigureMethodOverrides => Type == GraphType.None
+			? []
+			: ConfigureMethodOverrides.Where(method => method.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// An indicator of whether the graph or the graph extension configures a workflow.
