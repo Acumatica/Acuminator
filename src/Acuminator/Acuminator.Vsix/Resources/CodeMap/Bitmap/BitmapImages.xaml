@@ -54,7 +54,7 @@
 	<BitmapImage x:Key="IsActiveMethodGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/IsActiveMethod.png"/>
 
-	<BitmapImage x:Key="ConfigureMethod" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+	<BitmapImage x:Key="ConfigureMethodGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/ConfigureMethod.ico"/>
 
 	<BitmapImage x:Key="InstanceGraphConstructor" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
