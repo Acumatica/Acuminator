@@ -86,15 +86,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			//----------------------------------Local Function-----------------------------------------------------
 			TreeNodeViewModel? InitializationAndActivationGraphMemberConstructor(SymbolItem symbolInfo) => symbolInfo switch
 			{
-				IsActiveMethodInfo isActiveMethodInfo => new IsActiveGraphMethodNodeViewModel(graphInitializationAndActivationCategory,
-																							  isActiveMethodInfo, ExpandCreatedNodes),
-				StaticConstructorInfo staticConstructorInfo => new GraphStaticConstructorNodeViewModel(graphInitializationAndActivationCategory,
-																									   staticConstructorInfo, ExpandCreatedNodes),
-				InstanceConstructorInfo instanceConstructorInfo => new GraphInstanceConstructorNodeViewModel(graphInitializationAndActivationCategory,
-																											 instanceConstructorInfo, ExpandCreatedNodes),
+				IsActiveMethodInfo isActiveMethodInfo 				  => new IsActiveGraphMethodNodeViewModel(graphInitializationAndActivationCategory,
+																											  isActiveMethodInfo, ExpandCreatedNodes),
+				StaticConstructorInfo staticConstructorInfo 		  => new GraphStaticConstructorNodeViewModel(graphInitializationAndActivationCategory,
+																												 staticConstructorInfo, ExpandCreatedNodes),
+				InstanceConstructorInfo instanceConstructorInfo 	  => new GraphInstanceConstructorNodeViewModel(graphInitializationAndActivationCategory,
+																												   instanceConstructorInfo, ExpandCreatedNodes),
+				ConfigureMethodInfo configureMethodInfo 			  => new GraphConfigureMethodNodeViewModel(graphInitializationAndActivationCategory, 
+																											   configureMethodInfo, ExpandCreatedNodes),
 				IsActiveForGraphMethodInfo isActiveForGraphMethodInfo => new IsActiveForGraphMethodNodeViewModel(graphInitializationAndActivationCategory,
 																												 isActiveForGraphMethodInfo, ExpandCreatedNodes),
-				_ => null
+				_													  => null
 			};
 		}
 
