@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Microsoft.VisualStudio.OLE.Interop;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
@@ -65,6 +67,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual void VisitNode(IsActiveForGraphMethodNodeViewModel isActiveForGraphMethodNode) =>
 			DefaultVisit(isActiveForGraphMethodNode);
+
+		public virtual void VisitNode(GraphConfigureMethodNodeViewModel configureMethodNode) =>
+			DefaultVisit(configureMethodNode);
 
 		public virtual void VisitNode(GraphInstanceConstructorNodeViewModel graphInstanceConstructorNode) =>
 			DefaultVisit(graphInstanceConstructorNode);
