@@ -18,6 +18,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 	/// </summary>
 	public class DacFieldAttributeInfo : AttributeInfoBase
 	{
+		public override AttributePlacement Placement => AttributePlacement.DacField;
+
 		/// <summary>
 		/// The flattened Acumatica attributes with the application set: the current attribute, its base attributes, 
 		/// aggregated attributes in case of an aggregate attribute, 

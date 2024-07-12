@@ -6,9 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 
-using Acuminator.Utilities.Common;
-
-
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
@@ -30,6 +27,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				Icon.Processing when node is ViewNodeViewModel 	=> VSIXResource.CodeMap_ExtraInfo_ProcessingViewIconTooltip,
 				Icon.Processing when node is GraphNodeViewModel => VSIXResource.CodeMap_ExtraInfo_ProcessingGraphIconTooltip,
 				Icon.ProjectionDac 								=> VSIXResource.CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip,
+				Icon.ProjectionAttribute 						=> VSIXResource.CodeMap_Icon_ProjectionAttributeTooltip,
 				_ 												=> Binding.DoNothing
 			};
 		}

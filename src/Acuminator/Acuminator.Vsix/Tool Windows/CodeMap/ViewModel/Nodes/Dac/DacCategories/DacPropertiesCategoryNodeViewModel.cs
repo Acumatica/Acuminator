@@ -1,12 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
-
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {

@@ -1,9 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Acuminator.Utilities.Common;
 
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -14,13 +15,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected NodesSorter NodesSorter { get; }
 
-		protected CodeMapSortContext SortContext
+		protected CodeMapSortContext? SortContext
 		{
 			get;
 			set;
 		}
 
-		public CodeMapSubtreeSorter(NodesSorter nodesSorter = null)
+		public CodeMapSubtreeSorter(NodesSorter? nodesSorter = null)
 		{
 			NodesSorter = nodesSorter ?? new NodesSorter();
 		}
@@ -53,8 +54,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (node == null || SortContext == null)
 				return;
 
-			node.ChildrenSortType = SortContext.SortType;
-			node.ChildrenSortDirection = SortContext.SortDirection;
+			SetTreeNodeSortProperties(node);
 
 			if (node.Children.Count == 0)
 				return;
@@ -73,11 +73,33 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override void VisitNode(AttributeNodeViewModel attributeNode)
+		//Optimization for attributes - don't put more on execution stack by visiting them
+
+		public override void VisitNode(DacAttributesGroupNodeViewModel attributeGroupNode) =>
+			SetTreeNodeSortProperties(attributeGroupNode);
+
+		public override void VisitNode(GraphAttributesGroupNodeViewModel attributeGroupNode) =>
+			SetTreeNodeSortProperties(attributeGroupNode);
+
+		public override void VisitNode(CacheAttachedAttributeNodeViewModel attributeNode) =>
+			SetTreeNodeSortProperties(attributeNode);
+
+		public override void VisitNode(DacAttributeNodeViewModel attributeNode) =>
+			SetTreeNodeSortProperties(attributeNode);
+
+		public override void VisitNode(DacFieldAttributeNodeViewModel attributeNode) => 
+			SetTreeNodeSortProperties(attributeNode);
+
+		public override void VisitNode(GraphAttributeNodeViewModel attributeNode) => 
+			SetTreeNodeSortProperties(attributeNode);
+
+		private void SetTreeNodeSortProperties(TreeNodeViewModel node)
 		{
-			//Optimization for attributes - don't put more on execution stack by visiting them
-			attributeNode.ChildrenSortType = SortContext.SortType;
-			attributeNode.ChildrenSortDirection = SortContext.SortDirection;
+			if (SortContext != null)
+			{
+				node.ChildrenSortType 	   = SortContext.SortType;
+				node.ChildrenSortDirection = SortContext.SortDirection;
+			}
 		}
 	}
 }

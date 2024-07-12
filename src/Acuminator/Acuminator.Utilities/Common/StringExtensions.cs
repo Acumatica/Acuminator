@@ -40,6 +40,7 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		/// <param name="s">The string to act on.</param>
 		/// <returns/>
+		[return: NotNullIfNotNull(nameof(s))]
 		public static string? ToPascalCase(this string? s)
 		{
 			if (s.IsNullOrWhiteSpace() || char.IsUpper(s[0]))

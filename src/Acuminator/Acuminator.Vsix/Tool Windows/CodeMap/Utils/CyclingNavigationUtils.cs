@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
+﻿#nullable enable
 
+using System;
+using System.Collections.Generic;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	internal static class CyclingNavigationUtils
 	{
-		public static TreeNodeViewModel GetChildToNavigateTo(this IGroupNodeWithCyclingNavigation groupNode)
+		public static TreeNodeViewModel? GetChildToNavigateTo(this IGroupNodeWithCyclingNavigation groupNode)
 		{
 			if (groupNode?.AllowNavigation != true || groupNode.Children.Count == 0)
 				return null;

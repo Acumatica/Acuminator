@@ -1,8 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {

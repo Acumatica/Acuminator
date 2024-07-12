@@ -360,4 +360,13 @@
   <data name="CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip" xml:space="preserve">
     <value>This is a projection DAC</value>
   </data>
+  <data name="CodeMap_Node_DacAttributes" xml:space="preserve">
+    <value>DAC Attributes</value>
+  </data>
+  <data name="CodeMap_Node_GraphAttributes" xml:space="preserve">
+    <value>Graph Attributes</value>
+  </data>
+  <data name="CodeMap_Icon_ProjectionAttributeTooltip" xml:space="preserve">
+    <value>This is a projection attribute</value>
+  </data>
 </root>

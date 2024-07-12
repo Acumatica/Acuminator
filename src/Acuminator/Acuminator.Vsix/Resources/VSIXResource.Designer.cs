@@ -421,6 +421,33 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is a projection attribute.
+        /// </summary>
+        public static string CodeMap_Icon_ProjectionAttributeTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_Icon_ProjectionAttributeTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC Attributes.
+        /// </summary>
+        public static string CodeMap_Node_DacAttributes {
+            get {
+                return ResourceManager.GetString("CodeMap_Node_DacAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph Attributes.
+        /// </summary>
+        public static string CodeMap_Node_GraphAttributes {
+            get {
+                return ResourceManager.GetString("CodeMap_Node_GraphAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Static Constructor.
         /// </summary>
         public static string CodeMap_StaticConstructorNodeName {

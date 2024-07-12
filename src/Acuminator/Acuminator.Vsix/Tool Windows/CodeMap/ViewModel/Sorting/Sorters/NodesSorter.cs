@@ -88,15 +88,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual bool IsSortTypeSupported(TreeNodeViewModel node, SortType sortType) =>
 			node switch
 			{
-				var n when n is DacMemberCategoryNodeViewModel ||
-						   n is GraphMemberCategoryNodeViewModel _ => false,
+				DacMemberCategoryNodeViewModel or GraphMemberCategoryNodeViewModel => false,
 
-				IsActiveGraphMethodNodeViewModel _ => false,
-				GraphInstanceConstructorNodeViewModel _ => false,
-				GraphStaticConstructorNodeViewModel _ => false,
+				AttributeNodeViewModel _ 	   => false,
+				AttributesGroupNodeViewModel _ => false,
 
-				var n when n is DacGroupingNodeBaseViewModel ||
-						   n is DacFieldGroupingNodeBaseViewModel => sortType == SortType.Alphabet,
+				IsActiveGraphMethodNodeViewModel 	  => false,
+				GraphInstanceConstructorNodeViewModel => false,
+				GraphStaticConstructorNodeViewModel   => false,
+
+				DacGroupingNodeBaseViewModel or DacFieldGroupingNodeBaseViewModel => sortType == SortType.Alphabet,
 
 				_ => sortType == SortType.Alphabet || sortType == SortType.Declaration
 			};

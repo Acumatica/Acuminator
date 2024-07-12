@@ -1,16 +1,17 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Acuminator.Utilities.Common;
 
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
 	/// A Code Map tree nodes special sorter implementation used to sort tree during tree construction to reduce a number of node.Children.Reset calls.
 	/// </summary>
-	public class CodeMapTreeInitialSorter : CodeMapTreeVisitor<IEnumerable<TreeNodeViewModel>, List<TreeNodeViewModel>>
+	public class CodeMapTreeInitialSorter : CodeMapTreeVisitor<IReadOnlyCollection<TreeNodeViewModel>, IReadOnlyCollection<TreeNodeViewModel>>
 	{
 		protected NodesSorter NodesSorter { get; }
 
@@ -26,8 +27,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		public CodeMapTreeInitialSorter(SortType defaultSortType, SortDirection defaultSortDirection, NodesSorter nodesSorter = null) :
-								   base(defaultValue: new List<TreeNodeViewModel>())
+		public CodeMapTreeInitialSorter(SortType defaultSortType, SortDirection defaultSortDirection, NodesSorter? nodesSorter = null) :
+								   base(defaultValue: [])
 		{
 			NodesSorter = nodesSorter ?? new NodesSorter();
 
@@ -35,32 +36,82 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			SortDirection = defaultSortDirection;
 		}
 
-		public List<TreeNodeViewModel> SortGeneratedChildren(TreeNodeViewModel parentNode, IEnumerable<TreeNodeViewModel> generatedChildren) =>
+		public IReadOnlyCollection<TreeNodeViewModel> SortGeneratedChildren(TreeNodeViewModel parentNode, 
+															 IReadOnlyCollection<TreeNodeViewModel> generatedChildren) =>
 			VisitNode(parentNode, generatedChildren);
 
-		public override List<TreeNodeViewModel> DefaultVisit(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren)
+		public override IReadOnlyCollection<TreeNodeViewModel> DefaultVisit(TreeNodeViewModel node, 
+																IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
 		{
 			if (node == null)
-				return base.DefaultVisit(node, generatedChildren);
+				return DefaultValue;
 
-			node.ChildrenSortType = SortType;
-			node.ChildrenSortDirection = SortDirection;
-
+			SetTreeNodeSortProperties(node);
+			
 			return !generatedChildren.IsNullOrEmpty()
 				? NodesSorter.SortNodes(generatedChildren, SortType, SortDirection)
+							 .ToList(capacity: generatedChildren.Count)
 				: base.DefaultVisit(node, generatedChildren);
 		}
 
-		public override List<TreeNodeViewModel> VisitNode(AttributeNodeViewModel attributeNode, IEnumerable<TreeNodeViewModel> generatedChildren)
+		//Optimization for attributes - don't put more on execution stack by visiting them
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(CacheAttachedAttributeNodeViewModel attributeNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren) =>
+			SetTreeNodeSortProperties(attributeNode);
+
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(DacAttributeNodeViewModel attributeNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren) =>
+			SetTreeNodeSortProperties(attributeNode);
+
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(DacFieldAttributeNodeViewModel attributeNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren) =>
+			SetTreeNodeSortProperties(attributeNode);
+
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(GraphAttributeNodeViewModel attributeNode,
+															IReadOnlyCollection<TreeNodeViewModel> generatedChildren) =>
+			SetTreeNodeSortProperties(attributeNode);
+
+		private IReadOnlyCollection<TreeNodeViewModel> SetTreeNodeSortProperties(TreeNodeViewModel node)
 		{
-			//Optimization for attributes - don't put more on execution stack by visiting them
-			attributeNode.ChildrenSortType = SortType;
-			attributeNode.ChildrenSortDirection = SortDirection;
+			node.ChildrenSortType	   = SortType;
+			node.ChildrenSortDirection = SortDirection;
 			return DefaultValue;
 		}
 
-		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode,
-														  IEnumerable<TreeNodeViewModel> generatedChildren)
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(DacAttributesGroupNodeViewModel attributeGroupNode,
+																IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
+		{
+			SortType oldSortType = SortType;
+
+			try
+			{
+				SortType = SortType.Alphabet;
+				return base.VisitNode(attributeGroupNode, generatedChildren);
+			}
+			finally
+			{
+				SortType = oldSortType;
+			}
+		}
+
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(GraphAttributesGroupNodeViewModel attributeGroupNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
+		{
+			SortType oldSortType = SortType;
+
+			try
+			{
+				SortType = SortType.Alphabet;
+				return base.VisitNode(attributeGroupNode, generatedChildren);
+			}
+			finally
+			{
+				SortType = oldSortType;
+			}
+		}
+
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
 		{
 			SortType oldSortType = SortType;
 
@@ -75,8 +126,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode,
-														  IEnumerable<TreeNodeViewModel> generatedChildren)
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
 		{
 			SortType oldSortType = SortType;
 
@@ -91,8 +142,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode,
-														  IEnumerable<TreeNodeViewModel> generatedChildren)
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
 		{
 			SortType oldSortType = SortType;
 
@@ -107,8 +158,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override List<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode,
-														  IEnumerable<TreeNodeViewModel> generatedChildren)
+		public override IReadOnlyCollection<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode,
+														  IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
 		{
 			SortType oldSortType = SortType;
 

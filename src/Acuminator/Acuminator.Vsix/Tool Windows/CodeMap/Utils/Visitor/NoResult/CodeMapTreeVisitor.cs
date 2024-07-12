@@ -1,8 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -20,7 +19,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public virtual void DefaultVisit(TreeNodeViewModel nodeViewModel) { }
-
-		public virtual void VisitNode(AttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
 	}
 }

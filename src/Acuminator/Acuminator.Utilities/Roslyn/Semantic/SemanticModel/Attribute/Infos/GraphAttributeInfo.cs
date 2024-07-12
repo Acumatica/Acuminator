@@ -9,6 +9,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 	/// </summary>
 	public class GraphAttributeInfo : AttributeInfoBase
 	{
+		public override AttributePlacement Placement => AttributePlacement.Graph;
+
 		/// <summary>
 		/// An indicator of whether the attribute configures the default navigation.
 		/// </summary>

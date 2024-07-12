@@ -18,6 +18,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 	public abstract class AttributeInfoBase
 	{
 		/// <summary>
+		/// The attribute placement.
+		/// </summary>
+		public abstract AttributePlacement Placement { get; }
+
+		/// <summary>
 		/// Information describing the attribute application.
 		/// </summary>
 		public AttributeData AttributeData { get; }

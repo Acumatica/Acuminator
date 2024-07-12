@@ -1,14 +1,13 @@
-﻿using System;
-using System.Text;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Collections.Immutable;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -40,9 +39,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected DacFieldGroupingNodeBaseViewModel(DacGroupingNodeBaseViewModel dacVM, string dacFieldName, IEnumerable<GraphFieldEventInfo> dacFieldEvents,
 													bool isExpanded) :
-											  base(dacVM?.Tree, dacVM, isExpanded)
+											  base(dacVM?.Tree!, dacVM, isExpanded)
 		{
-			DacVM = dacVM;
+			DacVM = dacVM!;
 			DacFieldName = dacFieldName.CheckIfNullOrWhiteSpace();
 			FieldEvents = dacFieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}

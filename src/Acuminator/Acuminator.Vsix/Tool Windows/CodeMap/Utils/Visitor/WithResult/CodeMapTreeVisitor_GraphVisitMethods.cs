@@ -1,8 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -71,6 +70,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(GraphBaseMembeOverrideNodeViewModel graphBaseMembeOverrideNode) =>
 			DefaultVisit(graphBaseMembeOverrideNode);
+		#endregion
+
+		#region Attribute Nodes
+		public virtual TResult VisitNode(GraphAttributesGroupNodeViewModel attributeGroupNode) => DefaultVisit(attributeGroupNode);
+
+		public virtual TResult VisitNode(CacheAttachedAttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
+
+		public virtual TResult VisitNode(GraphAttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
 		#endregion
 	}
 }

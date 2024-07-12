@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Base class for code map tree builder.
 	/// </summary>
-	public abstract partial class TreeBuilderBase : CodeMapTreeVisitor<IEnumerable<TreeNodeViewModel>>
+	public abstract partial class TreeBuilderBase : CodeMapTreeVisitor<IEnumerable<TreeNodeViewModel>?>
 	{
 		protected bool ExpandCreatedNodes 
 		{ 
@@ -102,7 +102,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			foreach (ISemanticModel rootSemanticModel in tree.CodeMapViewModel.DocumentModel.CodeMapSemanticModels)
 			{
 				Cancellation.ThrowIfCancellationRequested();
-				TreeNodeViewModel rootVM = CreateRoot(rootSemanticModel, tree);
+				TreeNodeViewModel? rootVM = CreateRoot(rootSemanticModel, tree);
 
 				if (rootVM != null)
 				{
@@ -111,7 +111,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		protected abstract TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree);
+		protected abstract TreeNodeViewModel? CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree);
 
 		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot)
 		{

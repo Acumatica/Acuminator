@@ -1,13 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Common;
 
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -28,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
-		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, SyntaxNode rootNode, PXContext context, out ISemanticModel semanticModel, 
+		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, SyntaxNode rootNode, PXContext context, out ISemanticModel? semanticModel,
 													CancellationToken cancellationToken = default)
 		{
 			rootSymbol.ThrowOnNull();
@@ -51,7 +54,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual bool TryToInferGraphOrGraphExtensionSemanticModel(INamedTypeSymbol graphSymbol, PXContext context, 
 																			GraphSemanticModelCreationOptions modelCreationOptions,
-																			out ISemanticModel graphSemanticModel,
+																			out ISemanticModel? graphSemanticModel,
 																			CancellationToken cancellationToken = default)
 		{
 			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, modelCreationOptions, cancellationToken)
@@ -63,12 +66,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return false;
 			}
 
-			graphSemanticModel = new GraphSemanticModelForCodeMap(graphSimpleModel, context);
+			graphSemanticModel = new GraphSemanticModelForCodeMap(graphSimpleModel);
 			return true;
 		}
 
 		protected virtual bool TryToInferDacOrDacExtensionSemanticModel(INamedTypeSymbol dacSymbol, PXContext context,
-																		out ISemanticModel dacSemanticModel,
+																		out ISemanticModel? dacSemanticModel,
 																		CancellationToken cancellationToken = default)
 		{
 			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, cancellationToken);

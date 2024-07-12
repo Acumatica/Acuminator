@@ -7,11 +7,10 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -26,7 +25,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private readonly CancellationToken _cancellation;
 
-		private PXContext PXContext => BaseGraphModel.PXContext;
+		public PXContext PXContext => BaseGraphModel.PXContext;
 
 		public PXGraphSemanticModel BaseGraphModel { get; }
 
@@ -103,6 +102,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredViewDelegates"/>
 		public IEnumerable<DataViewDelegateInfo> DeclaredViewDelegates => BaseGraphModel.DeclaredViewDelegates;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.Attributes"/>
+		public IEnumerable<GraphAttributeInfo> Attributes => BaseGraphModel.Attributes;
 		#endregion
 
 		#region Events
@@ -340,19 +342,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private IEnumerable<IMethodSymbol> GetAllGraphMethodsFromBaseToDerived()
 		{
-			IEnumerable<ITypeSymbol> baseTypes = BaseGraphModel.GraphSymbol
-															   .GetGraphWithBaseTypes()
-															   .Reverse();
+			IEnumerable<ITypeSymbol>? baseTypes = BaseGraphModel.GraphSymbol
+															   ?.GetGraphWithBaseTypes()
+																.Reverse();
 
 			if (BaseGraphModel.Type == GraphType.PXGraphExtension)
 			{
-				baseTypes = baseTypes.Concat(
+				baseTypes = baseTypes?.Concat(
 										BaseGraphModel.Symbol.GetGraphExtensionWithBaseExtensions(PXContext, 
 																								  SortDirection.Ascending,
 																								  includeGraph: false));
 			}
 
-			return baseTypes.SelectMany(t => t.GetMethods());
+			return baseTypes?.SelectMany(t => t.GetMethods()) ?? [];
 		}
 
 		private ImmutableDictionary<string, GraphRowEventInfo> GetRowEvents(EventsCollector eventsCollector, EventType eventType)
