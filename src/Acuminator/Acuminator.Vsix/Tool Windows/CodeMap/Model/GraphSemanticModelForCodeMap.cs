@@ -61,7 +61,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (ISymbol baseMemberOverride in baseMemberOverrides)
 			{
-				yield return new BaseMemberOverrideInfo(baseMemberOverride, declarationOrder);
+				yield return new BaseMemberOverrideInfo(baseMemberOverride, GraphModel.BaseGraphModel, declarationOrder);
 				declarationOrder++;
 			}
 		}
