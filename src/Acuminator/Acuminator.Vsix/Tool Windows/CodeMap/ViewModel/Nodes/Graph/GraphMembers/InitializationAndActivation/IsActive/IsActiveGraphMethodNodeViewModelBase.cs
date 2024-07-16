@@ -4,9 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
@@ -16,23 +15,24 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class IsActiveGraphMethodNodeViewModel : GraphMemberNodeViewModel, IElementWithTooltip
+	public abstract class IsActiveGraphMethodNodeViewModelBase : GraphMemberNodeViewModel, IElementWithTooltip
 	{
 		public override Icon NodeIcon => Icon.IsActiveMethodGraph;
 
-		public IsActiveMethodInfo IsActiveMethodInfo => (IsActiveMethodInfo)MemberInfo;
-
-		public IsActiveGraphMethodNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
-												IsActiveMethodInfo isActiveMethodInfo, bool isExpanded = false) :
-										   base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM, 
-												isActiveMethodInfo, isExpanded)
+		protected IsActiveGraphMethodNodeViewModelBase(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
+													   NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol> isActiveMethodMemberInfo, 
+													   bool isExpanded = false) :
+												  base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM,
+													   isActiveMethodMemberInfo, isExpanded)
 		{
-
 		}
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			IMethodSymbol isActiveMethod = IsActiveMethodInfo.Symbol;
+			if (MemberInfo is not NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol> isActiveMethodInfo)
+				return null;
+
+			IMethodSymbol isActiveMethod = isActiveMethodInfo.Symbol;
 
 			if (isActiveMethod.Locations.Length != 1 || isActiveMethod.Locations[0].IsInMetadata || Tree.CodeMapViewModel.Workspace == null)
 				return null;
@@ -46,11 +46,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			string tooltip = isActiveMethodSyntaxNode.GetSyntaxNodeStringWithRemovedIndent(tabSize);
 			return new TooltipInfo(tooltip) { TrimExcess = true };
 		}
-
-		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
-
-		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
-
-		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }
