@@ -17,8 +17,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class DacFieldGroupingNodeViewModel : DacMemberNodeViewModel, IElementWithTooltip
 	{
 		public override Icon NodeIcon => IsKey
-				? Icon.DacKeyProperty
-				: Icon.DacProperty;
+				? Icon.DacKeyField
+				: Icon.DacField;
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
@@ -32,8 +32,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DbBoundnessType EffectiveDbBoundness => PropertyInfo.EffectiveDbBoundness;
 
-		public DacFieldGroupingNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
-										base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
+		public DacFieldGroupingNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
+											 DacPropertyInfo propertyInfo, bool isExpanded = false) :
+										base(dacMemberCategoryVM, parent, propertyInfo, isExpanded)
 		{
 			var extraInfos = GetExtraInfos();
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(extraInfos);
