@@ -369,4 +369,22 @@
   <data name="CodeMap_Icon_ProjectionAttributeTooltip" xml:space="preserve">
     <value>This is a projection attribute</value>
   </data>
+  <data name="CodeMap_DbBoundnessIndicator_Unbound" xml:space="preserve">
+    <value>Unbound</value>
+  </data>
+  <data name="CodeMap_DbBoundnessIndicator_Bound" xml:space="preserve">
+    <value>Bound</value>
+  </data>
+  <data name="CodeMap_DbBoundnessIndicator_PXDBCalced" xml:space="preserve">
+    <value>PXDBCalced</value>
+  </data>
+  <data name="CodeMap_DbBoundnessIndicator_PXDBScalar" xml:space="preserve">
+    <value>PXDBScalar</value>
+  </data>
+  <data name="CodeMap_DbBoundnessIndicator_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="CodeMap_DbBoundnessIndicator_Inconsistent" xml:space="preserve">
+    <value>Inconsistent</value>
+  </data>
 </root>

@@ -54,7 +54,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											  };
 			}
 
-			string? boundLabelText = GetDbBoundnessLabelText();
+			string? boundLabelText = EffectiveDbBoundness.GetDbBoundnessLabelText();
 
 			if (boundLabelText != null)
 				yield return new TextViewModel(this, boundLabelText);
@@ -67,17 +67,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				};
 			}
 		}
-
-		private string? GetDbBoundnessLabelText() => EffectiveDbBoundness switch
-		{
-			DbBoundnessType.Unbound    => "Unbound",
-			DbBoundnessType.DbBound    => "Bound",
-			DbBoundnessType.PXDBCalced => "PXDBCalced",
-			DbBoundnessType.PXDBScalar => "PXDBScalar",
-			DbBoundnessType.Unknown    => "Unknown",
-			DbBoundnessType.Error      => "Inconsistent",
-			_                          => null
-		};
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 
