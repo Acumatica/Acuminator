@@ -11,7 +11,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public abstract class AttributesGroupNodeViewModel<TAttributeInfo> : AttributesGroupNodeViewModel
 	where TAttributeInfo : AttributeInfoBase
 	{
-		protected AttributesGroupNodeViewModel(TreeNodeViewModel nodeVM, bool isExpanded = false) : base(nodeVM, isExpanded)
+		protected AttributesGroupNodeViewModel(TreeNodeViewModel parent, bool isExpanded = false) : base(parent, isExpanded)
 		{
 		}
 

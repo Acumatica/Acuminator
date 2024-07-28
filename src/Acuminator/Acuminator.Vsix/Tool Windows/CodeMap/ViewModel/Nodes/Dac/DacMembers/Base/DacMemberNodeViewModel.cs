@@ -2,13 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
 using Microsoft.CodeAnalysis;
@@ -37,7 +35,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DacMemberNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
 									  SymbolItem memberInfo, bool isExpanded = false) :
-								 base(dacMemberCategoryVM?.Tree, parent, isExpanded)
+								 base(dacMemberCategoryVM?.Tree!, parent, isExpanded)
 		{
 			MemberInfo = memberInfo.CheckIfNull();
 			MemberCategory = dacMemberCategoryVM!;
