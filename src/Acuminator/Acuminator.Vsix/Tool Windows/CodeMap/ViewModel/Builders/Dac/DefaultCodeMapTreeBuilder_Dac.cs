@@ -70,14 +70,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			dacKeysCategory.ThrowOnNull();
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacKeysCategory,
-																	propertyInfo => new PropertyNodeViewModel(dacKeysCategory, propertyInfo, ExpandCreatedNodes));
+																	propertyInfo => new DacFieldGroupingNodeViewModel(dacKeysCategory, propertyInfo, ExpandCreatedNodes));
 		}
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory)
 		{
 			dacPropertiesCategory.ThrowOnNull();
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacPropertiesCategory,
-																	propertyInfo => new PropertyNodeViewModel(dacPropertiesCategory, propertyInfo, ExpandCreatedNodes));
+																	propertyInfo => new DacFieldGroupingNodeViewModel(dacPropertiesCategory, propertyInfo, ExpandCreatedNodes));
 		}
 
 		protected virtual IEnumerable<TreeNodeViewModel> CreateDacMemberCategoryChildren<TInfo>(DacMemberCategoryNodeViewModel dacMemberCategory,
@@ -103,7 +103,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override IEnumerable<TreeNodeViewModel>? VisitNode(PropertyNodeViewModel property)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacFieldGroupingNodeViewModel property)
 		{
 			var attributes = property.CheckIfNull().PropertyInfo.Attributes;
 			return !attributes.IsDefaultOrEmpty

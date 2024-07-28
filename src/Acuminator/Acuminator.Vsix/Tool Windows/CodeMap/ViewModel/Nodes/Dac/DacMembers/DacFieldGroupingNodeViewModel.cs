@@ -14,7 +14,7 @@ using Acuminator.Vsix.ToolWindows.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class PropertyNodeViewModel : DacMemberNodeViewModel, IElementWithTooltip
+	public class DacFieldGroupingNodeViewModel : DacMemberNodeViewModel, IElementWithTooltip
 	{
 		public override Icon NodeIcon => IsKey
 				? Icon.DacKeyProperty
@@ -32,8 +32,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DbBoundnessType EffectiveDbBoundness => PropertyInfo.EffectiveDbBoundness;
 
-		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
-								base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
+		public DacFieldGroupingNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
+										base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
 		{
 			var extraInfos = GetExtraInfos();
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(extraInfos);

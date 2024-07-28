@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#endregion
 
 		#region Leaf Nodes
-		public virtual void VisitNode(PropertyNodeViewModel property) => DefaultVisit(property);
+		public virtual void VisitNode(DacFieldGroupingNodeViewModel property) => DefaultVisit(property);
 
 		public virtual void VisitNode(IsActiveDacMethodNodeViewModel isActiveDacMethodNode) =>
 			DefaultVisit(isActiveDacMethodNode);
