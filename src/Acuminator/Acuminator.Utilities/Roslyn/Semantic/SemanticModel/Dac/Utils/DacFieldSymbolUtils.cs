@@ -78,7 +78,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns>
 		/// The DAC fields from DAC.
 		/// </returns>
-		public static OverridableItemsCollection<DacFieldInfo> GetDacFieldsFromDac(this ITypeSymbol dac, PXContext pxContext, 
+		public static OverridableItemsCollection<DacBqlFieldInfo> GetDacFieldsFromDac(this ITypeSymbol dac, PXContext pxContext, 
 																				   bool includeFromInheritanceChain = true,
 																				   CancellationToken cancellation = default)
 		{
@@ -86,14 +86,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			pxContext.ThrowOnNull();
 
 			if (!dac.IsDAC(pxContext))
-				return new OverridableItemsCollection<DacFieldInfo>();
+				return new OverridableItemsCollection<DacBqlFieldInfo>();
 
 			int estimatedCapacity = dac.GetTypeMembers().Length;
-			var dacFieldsByName = new OverridableItemsCollection<DacFieldInfo>(estimatedCapacity);
+			var dacFieldsByName = new OverridableItemsCollection<DacBqlFieldInfo>(estimatedCapacity);
 			var dacFields = GetRawDacFieldsFromDacImpl(dac, pxContext, includeFromInheritanceChain, cancellation);
 
 			dacFieldsByName.AddRangeWithDeclarationOrder(dacFields, startingOrder: 0, 
-														 (dacField, order) => new DacFieldInfo(dacField.Node, dacField.Symbol, order));
+														 (dacField, order) => new DacBqlFieldInfo(dacField.Node, dacField.Symbol, order));
 			return dacFieldsByName;
 		}
 
@@ -106,27 +106,27 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns>
 		/// The DAC fields from DAC extension and base DAC.
 		/// </returns>
-		public static OverridableItemsCollection<DacFieldInfo> GetDacFieldsFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
+		public static OverridableItemsCollection<DacBqlFieldInfo> GetDacFieldsFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
 																									  CancellationToken cancellation = default)
 		{
 			dacExtension.ThrowOnNull();
 			pxContext.ThrowOnNull();
 
-			return GetPropertiesOrFieldsInfoFromDacExtension<DacFieldInfo>(dacExtension, pxContext, AddFieldsFromDac, AddFieldsFromDacExtension);
+			return GetPropertiesOrFieldsInfoFromDacExtension<DacBqlFieldInfo>(dacExtension, pxContext, AddFieldsFromDac, AddFieldsFromDacExtension);
 
 
-			int AddFieldsFromDac(OverridableItemsCollection<DacFieldInfo> fieldsCollection, ITypeSymbol dac, int startingOrder)
+			int AddFieldsFromDac(OverridableItemsCollection<DacBqlFieldInfo> fieldsCollection, ITypeSymbol dac, int startingOrder)
 			{
 				var rawDacFields = dac.GetRawDacFieldsFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
 				return fieldsCollection.AddRangeWithDeclarationOrder(rawDacFields, startingOrder, 
-																	 (dacField, order) => new DacFieldInfo(dacField.Node, dacField.Symbol, order));
+																	 (dacField, order) => new DacBqlFieldInfo(dacField.Node, dacField.Symbol, order));
 			}
 
-			int AddFieldsFromDacExtension(OverridableItemsCollection<DacFieldInfo> fieldsCollection, ITypeSymbol dacExt, int startingOrder)
+			int AddFieldsFromDacExtension(OverridableItemsCollection<DacBqlFieldInfo> fieldsCollection, ITypeSymbol dacExt, int startingOrder)
 			{
 				var rawDacExtensionFields = dacExt.GetRawDacFieldsFromDacOrDacExtension(pxContext, cancellation);
 				return fieldsCollection.AddRangeWithDeclarationOrder(rawDacExtensionFields, startingOrder,
-																	 (dacField, order) => new DacFieldInfo(dacField.Node, dacField.Symbol, order));
+																	 (dacField, order) => new DacBqlFieldInfo(dacField.Node, dacField.Symbol, order));
 			}
 		}
 

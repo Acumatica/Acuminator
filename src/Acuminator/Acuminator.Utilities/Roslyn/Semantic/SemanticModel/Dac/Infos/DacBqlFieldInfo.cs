@@ -7,29 +7,29 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
-	public class DacFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, IWriteableBaseItem<DacFieldInfo>
+	public class DacBqlFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, IWriteableBaseItem<DacBqlFieldInfo>
 	{
 		/// <summary>
 		/// The overriden dac field if any
 		/// </summary>
-		public DacFieldInfo? Base
+		public DacBqlFieldInfo? Base
 		{
 			get;
 			internal set;
 		}
 	
-		DacFieldInfo? IWriteableBaseItem<DacFieldInfo>.Base
+		DacBqlFieldInfo? IWriteableBaseItem<DacBqlFieldInfo>.Base
 		{
 			get => Base;
 			set => Base = value;
 		}
 
-		public DacFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol symbol, int declarationOrder) :
+		public DacBqlFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol symbol, int declarationOrder) :
 					   base(node, symbol, declarationOrder)
 		{
 		}
 
-		public DacFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol symbol, int declarationOrder, DacFieldInfo baseInfo) :
+		public DacBqlFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol symbol, int declarationOrder, DacBqlFieldInfo baseInfo) :
 					   this(node, symbol, declarationOrder)
 		{
 			baseInfo.ThrowOnNull();

@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// The DAC property symbols with nodes from DAC.
 		/// </returns>
 		public static OverridableItemsCollection<DacPropertyInfo> GetDacPropertiesFromDac(this ITypeSymbol dac, PXContext pxContext,
-																						  IDictionary<string, DacFieldInfo> dacFields,
+																						  IDictionary<string, DacBqlFieldInfo> dacFields,
 																						  bool includeFromInheritanceChain = true,																					  
 																						  CancellationToken cancellation = default)
 		{
@@ -74,7 +74,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </returns>
 		public static OverridableItemsCollection<DacPropertyInfo> GetPropertiesFromDacOrDacExtensionAndBaseDac(this ITypeSymbol dacOrExtension,
 																											   PXContext pxContext,
-																											   IDictionary<string, DacFieldInfo> dacFields,
+																											   IDictionary<string, DacBqlFieldInfo> dacFields,
 																											   CancellationToken cancellation = default)
 		{
 			pxContext.ThrowOnNull();
@@ -100,7 +100,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// The properties from DAC extension and base DAC.
 		/// </returns>
 		public static OverridableItemsCollection<DacPropertyInfo> GetPropertiesFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
-																										  IDictionary<string, DacFieldInfo> dacFields,
+																										  IDictionary<string, DacBqlFieldInfo> dacFields,
 																										  CancellationToken cancellation = default)
 		{
 			dacExtension.ThrowOnNull();

@@ -179,7 +179,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			foreach (DacPropertyInfo keyProperty in dacKeys)
 			{
-				DacFieldInfo keyField = dacSemanticModel.FieldsByNames[keyProperty.Name];
+				DacBqlFieldInfo keyField = dacSemanticModel.FieldsByNames[keyProperty.Name];
 				var parameterType = generator.TypeExpression(keyProperty.PropertyType);
 				var parameterNode = generator.ParameterDeclaration(keyField.Name, parameterType);
 

@@ -56,10 +56,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public IEnumerable<DacPropertyInfo> DeclaredDacProperties => Properties.Where(p => p.IsDacProperty && Symbol.Equals(p.Symbol.ContainingType));
 
-		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
-		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
+		public ImmutableDictionary<string, DacBqlFieldInfo> FieldsByNames { get; }
+		public IEnumerable<DacBqlFieldInfo> Fields => FieldsByNames.Values;
 
-		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => Symbol.Equals(f.Symbol.ContainingType));
+		public IEnumerable<DacBqlFieldInfo> DeclaredFields => Fields.Where(f => Symbol.Equals(f.Symbol.ContainingType));
 
 		/// <summary>
 		/// Information about the IsActive method of the DAC extensions. 
@@ -163,7 +163,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			GetInfos(() => Symbol.GetDacPropertiesFromDac(PXContext, FieldsByNames, cancellation: _cancellation),
 					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, FieldsByNames, _cancellation));
 
-		private ImmutableDictionary<string, DacFieldInfo> GetDacFields() =>
+		private ImmutableDictionary<string, DacBqlFieldInfo> GetDacFields() =>
 			GetInfos(() => Symbol.GetDacFieldsFromDac(PXContext, cancellation: _cancellation),
 					 () => Symbol.GetDacFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
 
