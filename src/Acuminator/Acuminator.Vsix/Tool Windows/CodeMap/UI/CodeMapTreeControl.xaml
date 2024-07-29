@@ -544,9 +544,16 @@
 						<HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
 												  ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 							<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
-								<Image Margin="0,0,5,0" UseLayoutRounding="True" 
-									   Source="{Binding Mode=OneWay, Converter={StaticResource treeNodeToIconConverter}}"
+								<Image Margin="0,0,5,0" UseLayoutRounding="True"
 									   ToolTip="{Binding Mode=OneWay, Converter={StaticResource iconTooltipConverter}}">
+									<Image.Source>
+										<MultiBinding Mode="OneWay" Converter="{StaticResource treeNodeToIconConverter}">
+											<!-- Pass the datacontext as the first parameter -->
+											<Binding Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+											<!-- Pass the node icon explicitly to allow icon refresh on VS theme change -->
+											<Binding Path="NodeIcon" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+										</MultiBinding>
+									</Image.Source>
 									<Image.Style>
 										<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
 											<Style.Triggers>
@@ -628,9 +635,17 @@
 								<ItemsControl.Resources>
 									<DataTemplate DataType="{x:Type codeMap:IconViewModel}">
 										<Image Margin="0,0,5,0" UseLayoutRounding="True" MaxHeight="14" MinHeight="14" MaxWidth="14" MinWidth="14"
-											   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Mode=OneWay, 
-																UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}"
 											   ToolTip="{Binding Mode=OneWay, Converter={StaticResource iconTooltipConverter}}">
+											<Image.Source>
+												<MultiBinding Mode="OneWay" Converter="{StaticResource treeNodeToIconConverter}">
+													<!-- Pass the datacontext as the first parameter -->
+													<Binding RelativeSource="{RelativeSource Mode=Self}" Path="DataContext" Mode="OneWay"
+															 UpdateSourceTrigger="PropertyChanged"/>
+													<!-- Pass the node icon explicitly to allow icon refresh on VS theme change -->
+													<Binding RelativeSource="{RelativeSource Mode=Self}" Path="DataContext.IconType" Mode="OneWay"
+															 UpdateSourceTrigger="PropertyChanged"/>
+												</MultiBinding>
+											</Image.Source>
 											<Image.Style>
 												<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
 													<Style.Triggers>
