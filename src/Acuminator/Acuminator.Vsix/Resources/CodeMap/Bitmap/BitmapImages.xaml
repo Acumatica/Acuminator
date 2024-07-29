@@ -129,6 +129,15 @@
 	<!--#endregion-->
 
 	<!--#region Attributes-->
+	<BitmapImage x:Key="AttributeDark" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+			 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Attribute_DarkTheme.ico"/>
+
+	<BitmapImage x:Key="AttributeLight" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+		 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Attribute_LightTheme.ico"/>
+
+	<BitmapImage x:Key="AttributesGroup" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+		 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/AttributesGroup.ico"/>
+
 	<BitmapImage x:Key="ProjectionAttributeSmall" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Projection.ico"/>
 	<!--#endregion-->
