@@ -21,8 +21,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap/Bitmap/BitmapImages.xaml";
 		private const string SmallIconSuffix = "Small";
+		private const string LightIconSuffix = "Light";
+		private const string DarkIconSuffix = "Dark";
 
-		private ResourceDictionary _resourceDictionary = new ResourceDictionary()
+		private ResourceDictionary _resourceDictionary = new()
 		{
 			Source = new Uri(BitmapsCollectionURI)
 		};
@@ -47,6 +49,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				case TreeNodeViewModel nodeViewModel when nodeViewModel.NodeIcon != Icon.None:
 				{
 					string iconKey = nodeViewModel.NodeIcon.ToString();
+
+					if (nodeViewModel.IconDependsOnCurrentTheme)
+					{
+						string themeSuffix = nodeViewModel.Tree.CodeMapViewModel.IsDarkTheme
+							? DarkIconSuffix
+							: LightIconSuffix;
+						iconKey += themeSuffix;
+					}
+
 					return _resourceDictionary.TryGetValue(iconKey, out BitmapImage icon)
 						? icon
 						: null;

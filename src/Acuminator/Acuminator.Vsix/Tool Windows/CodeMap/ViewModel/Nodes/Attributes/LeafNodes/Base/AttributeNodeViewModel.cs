@@ -34,6 +34,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Icon NodeIcon => Icon.Attribute;
 
+		public override bool IconDependsOnCurrentTheme => true;
+
 		private readonly Lazy<TooltipInfo> _tooltipLazy;
 
 		public AttributePlacement Placement => AttributeInfo.Placement;

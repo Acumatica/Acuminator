@@ -27,6 +27,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public abstract Icon NodeIcon { get; }
 
+		/// <summary>
+		/// The icon depends on the current IDE theme.
+		/// </summary>
+		public virtual bool IconDependsOnCurrentTheme { get; }
+
 		public virtual ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos => null;
 
 		private SortType? _childrenSortType;
