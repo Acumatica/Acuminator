@@ -9,6 +9,8 @@ using System.Windows;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
+using Microsoft.VisualStudio.PlatformUI;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class TreeNodeViewModel : ViewModelBase
@@ -164,6 +166,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					yield return descendant;
 				}
 			}
+		}
+
+		public virtual void OnVsColorThemeChanged(ThemeChangedEventArgs e) 
+		{
+			if (IconDependsOnCurrentTheme)
+				NotifyPropertyChanged(nameof(NodeIcon));
 		}
 
 		protected bool ShouldShowDetails()

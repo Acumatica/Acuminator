@@ -17,6 +17,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			? Icon.ProjectionAttribute
 			: Icon.Attribute;
 
+		public override bool IconDependsOnCurrentTheme => !AttributeInfo.IsPXProjection;
+
 		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
 		public DacAttributeNodeViewModel(TreeNodeViewModel nodeVM, DacAttributeInfo attributeInfo, bool isExpanded = false) :
