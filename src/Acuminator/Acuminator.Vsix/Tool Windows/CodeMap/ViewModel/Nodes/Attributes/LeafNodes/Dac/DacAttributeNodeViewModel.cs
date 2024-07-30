@@ -9,12 +9,16 @@ using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.Utilities;
 
-using Microsoft.CodeAnalysis;
-
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacAttributeNodeViewModel : AttributeNodeViewModel<DacAttributeInfo>
 	{
+		public override Icon NodeIcon => AttributeInfo.IsPXProjection
+			? Icon.ProjectionAttribute
+			: Icon.Attribute;
+
+		public override bool IconDependsOnCurrentTheme => !AttributeInfo.IsPXProjection;
+
 		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
 		public DacAttributeNodeViewModel(TreeNodeViewModel nodeVM, DacAttributeInfo attributeInfo, bool isExpanded = false) :
@@ -25,11 +29,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetDacExtraInfos()
 		{
-			if (AttributeInfo.IsPXProjection)
-			{
-				yield return new IconViewModel(this, Icon.ProjectionAttribute);
-			}
-
 			if (AttributeInfo.IsPXCacheName)
 			{
 				string? dacFriendlyName = AttributeInfo.AttributeData.GetNameFromPXCacheNameAttribute().NullIfWhiteSpace();

@@ -32,7 +32,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => true;
 
-		public override Icon NodeIcon => Icon.None;
+		public override Icon NodeIcon => Icon.Attribute;
+
+		public override bool IconDependsOnCurrentTheme => true;
 
 		private readonly Lazy<TooltipInfo> _tooltipLazy;
 

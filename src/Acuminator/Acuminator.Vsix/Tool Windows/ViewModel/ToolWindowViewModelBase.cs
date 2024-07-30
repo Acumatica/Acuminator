@@ -1,10 +1,12 @@
-﻿using System;
-using System.ComponentModel;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.PlatformUI;
-using Acuminator.Utilities.Common;
+
 using Acuminator.Vsix.Coloriser;
+
+using Microsoft.VisualStudio.PlatformUI;
 
 using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 
@@ -33,14 +35,14 @@ namespace Acuminator.Vsix.ToolWindows
 		public ToolWindowViewModelBase()
 		{
 			_isDarkTheme = VSColors.IsDarkTheme();
-			VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
+			VSColorTheme.ThemeChanged += OnVsColorThemeChanged;
 		}
 
 		public virtual void FreeResources() { }
 
 		public virtual void UnSubscribeVSEvents()
 		{
-			VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
+			VSColorTheme.ThemeChanged -= OnVsColorThemeChanged;
 		}
 
 		public void Dispose()
@@ -49,7 +51,7 @@ namespace Acuminator.Vsix.ToolWindows
 			FreeResources();
 		}
 
-		private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
+		protected virtual void OnVsColorThemeChanged(ThemeChangedEventArgs e)
 		{
 			IsDarkTheme = VSColors.IsDarkTheme();
 		}
