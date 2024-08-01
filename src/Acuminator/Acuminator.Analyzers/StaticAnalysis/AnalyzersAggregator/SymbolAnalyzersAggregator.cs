@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -58,12 +59,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 
 		protected abstract void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext);
 
-		protected virtual void RunAggregatedAnalyzersInParallel(SymbolAnalysisContext context, Action<int> aggregatedAnalyserAction, ParallelOptions? parallelOptions = null)
+		protected virtual void RunAggregatedAnalyzersInParallel(List<T> effectiveAnalyzers, SymbolAnalysisContext context, 
+																Action<int> aggregatedAnalyserAction, ParallelOptions? parallelOptions = null)
 		{
 #if DEBUG
-			for (int innerAnalyzerIndex = 0; innerAnalyzerIndex < _innerAnalyzers.Length; innerAnalyzerIndex++)
+			for (int analyzerIndex = 0; analyzerIndex < effectiveAnalyzers.Count; analyzerIndex++)
 			{
-				aggregatedAnalyserAction(innerAnalyzerIndex);
+				aggregatedAnalyserAction(analyzerIndex);
 			}
 #else
 			parallelOptions = parallelOptions ?? new ParallelOptions
@@ -71,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 				CancellationToken = context.CancellationToken
 			};
 
-			Parallel.For(0, _innerAnalyzers.Length, parallelOptions, aggregatedAnalyserAction);
+			Parallel.For(0, effectiveAnalyzers.Count, parallelOptions, aggregatedAnalyserAction);
 #endif
 		}
 	}
