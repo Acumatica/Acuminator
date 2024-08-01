@@ -9,13 +9,13 @@ using System.Windows.Media;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
-using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacNodeViewModel : TreeNodeViewModel
+	public class DacNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		public DacSemanticModel DacModel { get; }
 
@@ -66,6 +66,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override Task NavigateToItemAsync() => DacModel.Symbol.NavigateToAsync();
+
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
+		{
+			var dacAttributesGroupNode = Children.OfType<DacAttributesGroupNodeViewModel>().FirstOrDefault();
+			return dacAttributesGroupNode is IElementWithTooltip elementWithTooltip
+				? elementWithTooltip.CalculateTooltip()
+				: null;
+		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => 
 			treeVisitor.VisitNode(this, input);
