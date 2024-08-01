@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#nullable enable
+
+using System;
 using System.Threading.Tasks;
 
 using Acuminator.Analyzers.StaticAnalysis;
@@ -25,10 +24,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 													.WithIsvSpecificAnalyzersEnabled()
 													.WithRecursiveAnalysisEnabled()
 													.WithSuppressionMechanismDisabled(),
-				new PXGraphWithGraphEventsAggregatorAnalyzer
-				(
-					new ThrowingExceptionsInEventHandlersAnalyzer()
-				));
+				new ThrowingExceptionsInEventHandlersAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Graph\ExceptionInRowPersisted.cs")]

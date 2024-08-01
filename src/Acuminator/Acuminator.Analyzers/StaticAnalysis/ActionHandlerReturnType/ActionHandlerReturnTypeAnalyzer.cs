@@ -1,14 +1,18 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+using System.Threading;
+
+using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
 {
@@ -17,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1013_PXActionHandlerInvalidReturnType);
 
-        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
         {
             foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
             {

@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 	/// <summary>
 	/// The analyzer which checks that DAC and Graph extensions have IsActive method declared.
 	/// </summary>
-	public class NoIsActiveMethodForExtensionAnalyzer : IDacAnalyzer, IPXGraphWithGraphEventsAnalyzer
+	public class NoIsActiveMethodForExtensionAnalyzer : IDacAnalyzer, IPXGraphAnalyzer
 	{
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1016_NoIsActiveMethodForDacExtension,
@@ -48,13 +48,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 				pxContext.CodeAnalysisSettings);
 		}
 
-		public bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension) =>
-			graphExtension.Type == GraphType.PXGraphExtension && graphExtension.IsActiveMethodInfo == null &&
-			!graphExtension.Symbol.IsGenericType &&
-			(!graphExtension.Symbol.IsAbstract || graphExtension.HasPXProtectedAccess);
-		
-		public bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtensionhWithEvents) =>
-			!graphExtensionhWithEvents.ConfiguresWorkflow || IsWorkflowExtensionWithBusinessLogic(graphExtensionhWithEvents);	// Filter out workflow extensions without business logic.
+		public bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtension)
+		{
+			if (graphExtension.Type != GraphType.PXGraphExtension || graphExtension.IsActiveMethodInfo != null ||
+				graphExtension.Symbol.IsGenericType)
+			{  
+				return false; 
+			}
+
+			if (graphExtension.Symbol.IsAbstract && !graphExtension.HasPXProtectedAccess)
+				return false;
+
+			// Filter out workflow extensions without business logic.
+			return !graphExtension.ConfiguresWorkflow || IsWorkflowExtensionWithBusinessLogic(graphExtension);       
+		}
 
 		private bool IsWorkflowExtensionWithBusinessLogic(PXGraphEventSemanticModel graphExtension)
 		{

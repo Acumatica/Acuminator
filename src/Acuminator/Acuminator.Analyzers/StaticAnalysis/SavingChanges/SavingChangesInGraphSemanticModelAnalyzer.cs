@@ -1,12 +1,16 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
@@ -17,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
                 Descriptors.PX1058_PXGraphSavingChangesDuringInitialization,
                 Descriptors.PX1083_SavingChangesInDataViewDelegate);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -54,10 +58,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
             {
                 _context.CancellationToken.ThrowIfCancellationRequested();
 
-                IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
-                SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
+                IMethodSymbol? symbol = GetSymbol<IMethodSymbol>(node);
+                SemanticModel? semanticModel = GetSemanticModel(node.SyntaxTree);
 
-                if (symbol != null && SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, PxContext) != SaveOperationKind.None)
+                if (symbol != null && semanticModel != null && 
+					SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, PxContext) != SaveOperationKind.None)
                 {
                     ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
                 }

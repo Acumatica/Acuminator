@@ -1,14 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 
-
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 {
@@ -17,10 +19,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 

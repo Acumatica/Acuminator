@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
-	public partial class ThrowingExceptionsInEventHandlersAnalyzer : IEventHandlerAnalyzer, IPXGraphWithGraphEventsAnalyzer
+	public partial class ThrowingExceptionsInEventHandlersAnalyzer : IEventHandlerAnalyzer, IPXGraphAnalyzer
 	{
 		private class ThrowInGraphEventsWalker : ThrowInEventsWalker
 		{

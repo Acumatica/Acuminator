@@ -23,10 +23,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraphExtension;
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphExtension)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

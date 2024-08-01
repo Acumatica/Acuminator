@@ -17,10 +17,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 			new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new PXGraphWithGraphEventsAggregatorAnalyzer
-				(
-					new NoIsActiveMethodForExtensionAnalyzer()
-				));
+				new NoIsActiveMethodForExtensionAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("GraphExtension_WithoutIsActive.cs")]

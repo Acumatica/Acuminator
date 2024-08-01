@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac != null;
 
-		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => 
+		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => 
 			graph != null && graph.Type != GraphType.None;
 
 		void IDacAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExtension) =>
@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 													? CheckedSymbolKind.Dac
 													: CheckedSymbolKind.DacExtension);
 
-		void IPXGraphAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphOrGraphExtension) =>
+		void IPXGraphAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphOrGraphExtension) =>
 			CheckSymbolIsPublic(context, pxContext, graphOrGraphExtension, 
 								checkedSymbolKind: graphOrGraphExtension.Type == GraphType.PXGraph
 													? CheckedSymbolKind.Graph

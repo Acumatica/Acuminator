@@ -23,11 +23,13 @@ using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Dac
 {
@@ -79,15 +81,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			if (inferredDacModel == null)
 				return;
 
-			RunAggregatedAnalyzersInParallel(context, innerAnalyzerIndex =>
+			context.CancellationToken.ThrowIfCancellationRequested();
+			var effectiveDacAnalyzers = _innerAnalyzers.Where(analyzer => analyzer.ShouldAnalyze(pxContext, inferredDacModel))
+													   .ToList(capacity: _innerAnalyzers.Length);
+
+			RunAggregatedAnalyzersInParallel(effectiveDacAnalyzers, context, analyzerIndex =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				var innerAnalyzer = _innerAnalyzers[innerAnalyzerIndex];
 
-				if (innerAnalyzer.ShouldAnalyze(pxContext, inferredDacModel))
-				{
-					innerAnalyzer.Analyze(context, pxContext, inferredDacModel);
-				}
+				var aggregatedAnalyzer = effectiveDacAnalyzers[analyzerIndex];
+				aggregatedAnalyzer.Analyze(context, pxContext, inferredDacModel);
 			});
 		}
     }

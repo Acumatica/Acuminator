@@ -24,10 +24,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1062_StaticFieldOrPropertyInGraph);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; 
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel graphOrExtension)
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphOrExtension)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 		}
 
 		private void AnalyseStaticFieldOrProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, ISymbol staticFieldOrProperty,
-												  PXGraphSemanticModel graphOrExtension)
+												  PXGraphEventSemanticModel graphOrExtension)
 		{
 			bool isView = graphOrExtension.ViewsByNames.ContainsKey(staticFieldOrProperty.Name);
 			bool isAction = graphOrExtension.ActionsByNames.ContainsKey(staticFieldOrProperty.Name);
