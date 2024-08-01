@@ -1,13 +1,17 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
-using Xunit;
+﻿#nullable enable
+
 using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
+using Microsoft.CodeAnalysis.Diagnostics;
+
+using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 {
@@ -64,7 +68,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 		/// </summary>
 		private class ViewDeclarationOrderAnalyzerForTests : ViewDeclarationOrderAnalyzer
 		{
-			public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => true;
+			public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => true;
 		}
 	}
 }
