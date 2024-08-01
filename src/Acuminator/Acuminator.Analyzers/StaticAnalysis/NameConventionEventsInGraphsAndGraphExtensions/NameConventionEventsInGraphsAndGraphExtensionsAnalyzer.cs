@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -15,12 +17,12 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphExtensions
 {
-	public class NameConventionEventsInGraphsAndGraphExtensionsAnalyzer : PXGraphWithGraphEventsAggregatedAnalyzerBase
+	public class NameConventionEventsInGraphsAndGraphExtensionsAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1041_NameConventionEventsInGraphsAndGraphExtensions);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => 
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => 
 			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None;
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphOrExtensionWithEvents)
