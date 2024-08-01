@@ -22,13 +22,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 	    public const string ViewFieldNameProperty = "field";
 		private const int MaximumDistance = 2;
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphModel)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphModel)
 		{
 			var viewWithoutDelegatesNames = graphModel.Views.Where(view => !graphModel.ViewDelegatesByNames.ContainsKey(view.Symbol.Name))
 															.Select(view => view.Symbol.Name)

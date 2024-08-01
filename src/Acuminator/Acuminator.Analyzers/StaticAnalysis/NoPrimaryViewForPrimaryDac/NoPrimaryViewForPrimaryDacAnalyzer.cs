@@ -23,11 +23,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraph &&
 			!graph.Symbol.IsAbstract && !graph.Symbol.IsUnboundGenericType;
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graph)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			ITypeSymbol? declaredPrimaryDacType = graph.Symbol.GetDeclaredPrimaryDacFromGraphOrGraphExtension(pxContext);
@@ -52,8 +52,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 				pxContext.CodeAnalysisSettings);
 		}
 
-		private static Location? GetLocation(PXGraphSemanticModel graph, ITypeSymbol declaredPrimaryDacType,
-											SymbolAnalysisContext context)
+		private static Location? GetLocation(PXGraphEventSemanticModel graph, ITypeSymbol declaredPrimaryDacType,
+											 SymbolAnalysisContext context)
 		{
 			if (!(graph.Symbol.GetSyntax(context.CancellationToken) is ClassDeclarationSyntax graphNode))
 				return null;

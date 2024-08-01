@@ -1,11 +1,15 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+using System.Linq;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 {
@@ -14,11 +18,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1040_ConstructorInGraphExtension);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraphExtension &&
 			!graph.Symbol.InstanceConstructors.IsDefaultOrEmpty && !graph.Symbol.IsGraphExtensionBaseType();
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			var constructorLocations = pxGraph.Symbol.InstanceConstructors.Where(constructor => !constructor.IsImplicitlyDeclared)

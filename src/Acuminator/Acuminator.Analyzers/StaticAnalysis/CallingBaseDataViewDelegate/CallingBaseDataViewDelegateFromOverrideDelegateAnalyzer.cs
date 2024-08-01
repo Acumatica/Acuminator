@@ -1,15 +1,19 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿#nullable enable
+
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 {
@@ -18,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -102,11 +106,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 				}
 			}
 
-			private bool TryToReport(ISymbol symbol, ExpressionSyntax node)
+			private bool TryToReport(ISymbol? symbol, ExpressionSyntax node)
 			{
 				ThrowIfCancellationRequested();
 
-				if (_nonRedeclaredBaseViews.Contains(symbol))
+				if (symbol != null && _nonRedeclaredBaseViews.Contains(symbol))
 				{
 					ReportDiagnostic(_context.ReportDiagnostic,
 						Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation,
