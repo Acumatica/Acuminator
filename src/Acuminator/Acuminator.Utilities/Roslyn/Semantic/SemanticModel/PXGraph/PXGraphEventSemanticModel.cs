@@ -36,6 +36,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.IsProcessing"/>
 		public bool IsProcessing => BaseGraphModel.IsProcessing;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.HasPXProtectedAccess"/>
+		public bool HasPXProtectedAccess => BaseGraphModel.HasPXProtectedAccess;
+
 		/// <inheritdoc cref="PXGraphSemanticModel.ConfiguresWorkflow"/>
 		public bool ConfiguresWorkflow => BaseGraphModel.ConfiguresWorkflow;
 

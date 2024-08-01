@@ -1,15 +1,17 @@
 ﻿#nullable enable
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Linq;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Common;
-using System.Collections.Generic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 {
@@ -19,11 +21,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1096_PXOverrideMustMatchSignature);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphExtension) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtension) =>
 			base.ShouldAnalyze(pxContext, graphExtension) && graphExtension.Type == GraphType.PXGraphExtension &&
 			!graphExtension.PXOverrides.IsDefaultOrEmpty;
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphExtension)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

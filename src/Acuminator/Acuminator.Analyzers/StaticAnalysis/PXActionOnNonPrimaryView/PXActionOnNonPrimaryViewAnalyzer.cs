@@ -23,10 +23,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
 			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			var declaredActions = pxGraph.DeclaredActions.ToList();
@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			if (declaredActions.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			PrimaryDacFinder? primaryDacFinder = PrimaryDacFinder.Create(pxContext, pxGraph, symbolContext.CancellationToken);
+			PrimaryDacFinder? primaryDacFinder = PrimaryDacFinder.Create(pxContext, pxGraph.BaseGraphModel, symbolContext.CancellationToken);
 			ITypeSymbol? primaryDAC = primaryDacFinder?.FindPrimaryDAC();
 
 			if (primaryDAC == null)

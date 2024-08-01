@@ -1,11 +1,15 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+using System.Linq;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 {
@@ -14,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1089_UiPresentationLogicInActionDelegates);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using System.Linq;
+
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
@@ -12,10 +14,11 @@ using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {
@@ -52,7 +55,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(context.Symbol is IMethodSymbol methodSymbol))
+			if (context.Symbol is not IMethodSymbol methodSymbol)
 				return;
 		
 			EventType eventType = methodSymbol.GetEventHandlerType(pxContext);
@@ -60,15 +63,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			if (eventType == EventType.None)
 				return;
 
-			RunAggregatedAnalyzersInParallel(context, innerAnalyzerIndex =>
+			context.CancellationToken.ThrowIfCancellationRequested();
+			var effectiveEventAnalyzers = _innerAnalyzers.Where(analyzer => analyzer.ShouldAnalyze(pxContext, eventType))
+														 .ToList(capacity: _innerAnalyzers.Length);
+
+			RunAggregatedAnalyzersInParallel(effectiveEventAnalyzers, context, analyzerIndex =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				var innerAnalyzer = _innerAnalyzers[innerAnalyzerIndex];
 
-				if (innerAnalyzer.ShouldAnalyze(pxContext, eventType))
-				{
-					innerAnalyzer.Analyze(context, pxContext, eventType);
-				}
+				var aggregatedAnalyzer = effectiveEventAnalyzers[analyzerIndex];
+				aggregatedAnalyzer.Analyze(context, pxContext, eventType);
 			});
 		}
 

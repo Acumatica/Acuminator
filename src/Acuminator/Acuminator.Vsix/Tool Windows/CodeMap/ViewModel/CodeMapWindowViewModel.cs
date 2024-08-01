@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Threading;
 
 using Acuminator.Utilities.Roslyn.ProjectSystem;
@@ -21,7 +23,6 @@ using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -55,7 +56,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public DocumentModel? DocumentModel
 		{
 			get => _documentModel;
-			private set
+			private set 
 			{
 				if (!ReferenceEquals(_documentModel, value))
 				{
@@ -90,7 +91,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public TreeViewModel? Tree
 		{
 			get => _tree;
-			private set
+			private set 
 			{
 				if (!ReferenceEquals(_tree, value))
 				{
@@ -104,10 +105,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private bool _isCalculating;
 
-		public bool  IsCalculating
+		public bool IsCalculating
 		{
 			get => _isCalculating;
-			private set
+			private set 
 			{
 				if (_isCalculating != value)
 				{
@@ -143,7 +144,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private CodeMapWindowViewModel(Workspace workspace, IWpfTextView wpfTextView, Document document) : this(workspace)
 		{
-			DocumentModel = new DocumentModel(wpfTextView, document);	
+			DocumentModel = new DocumentModel(wpfTextView, document);
 		}
 
 		/// <summary>
@@ -181,7 +182,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: true));
 			SortNodeDescendantsByDeclarationOrderDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: true));
-			
+
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
 			_dteEventsObserver = new CodeMapDteEventsObserver(this);
@@ -195,7 +196,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
 			{
-				VS.MessageBox.Show(line1: VSIXResource.CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage, 
+				VS.MessageBox.Show(line1: VSIXResource.CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage,
 								   line2: VSIXResource.CreateIssue_Message, icon: OLEMSGICON.OLEMSGICON_WARNING,
 								   buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK);
 			}
@@ -257,7 +258,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
-			var activeWpfTextViewTask = activeWpfTextView != null 
+			var activeWpfTextViewTask = activeWpfTextView != null
 				? Task.FromResult(activeWpfTextView)
 				: AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
 
@@ -315,8 +316,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, e.DocumentId, onlyActiveDocumentWasChanged: true)
 						.ConfigureAwait(false);
 			}
-			else if (Document?.Project != null && 
-					(Document.Project.Id == e.ProjectId || !Document.Project.IsFullyLoadedProject()) && 
+			else if (Document?.Project != null &&
+					(Document.Project.Id == e.ProjectId || !Document.Project.IsFullyLoadedProject()) &&
 					(e.IsProjectStatusInSolutionChanged() || e.IsProjectMetadataChanged()))
 			{
 				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, Document.Id, onlyActiveDocumentWasChanged: false)
@@ -324,7 +325,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, Microsoft.CodeAnalysis.Solution newSolution, 
+		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, Microsoft.CodeAnalysis.Solution newSolution,
 													   DocumentId activeDocumentID, bool onlyActiveDocumentWasChanged)
 		{
 			Workspace = newWorkspace;
@@ -365,7 +366,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
-			}	
+			}
 		}
 
 		private void ClearCodeMap()
@@ -390,7 +391,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					{
 						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 					}
-				
+
 					IsCalculating = true;
 					await TaskScheduler.Default;
 
@@ -407,7 +408,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-					Tree = newTreeVM;			
+					Tree = newTreeVM;
 				}
 			}
 			catch (OperationCanceledException)
@@ -427,6 +428,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
 			}
+		}
+
+		protected override void OnVsColorThemeChanged(ThemeChangedEventArgs e)
+		{
+			base.OnVsColorThemeChanged(e);
+
+			if (Tree?.AllItems.Count is null or 0)
+				return;
+
+			foreach (var node in Tree.AllItems)
+				node.OnVsColorThemeChanged(e);
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler);
 
-        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
         {
             foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
             {

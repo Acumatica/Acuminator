@@ -1,14 +1,18 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿#nullable enable
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
@@ -17,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -27,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
             CheckLongOperationStartDelegates(pxGraph.Symbol, walker, pxContext, context.CancellationToken);
         }
 
-        private void CheckProcessingDelegates(PXGraphSemanticModel pxGraph, WalkerForGraphAnalyzer walker, CancellationToken cancellation)
+        private void CheckProcessingDelegates(PXGraphEventSemanticModel pxGraph, WalkerForGraphAnalyzer walker, CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
 

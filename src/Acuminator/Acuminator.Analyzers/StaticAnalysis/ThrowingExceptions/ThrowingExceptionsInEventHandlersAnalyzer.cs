@@ -7,19 +7,17 @@ using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
-	public partial class ThrowingExceptionsInEventHandlersAnalyzer : IEventHandlerAnalyzer, IPXGraphWithGraphEventsAnalyzer
+	public partial class ThrowingExceptionsInEventHandlersAnalyzer : IEventHandlerAnalyzer, IPXGraphAnalyzer
 	{
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
@@ -29,10 +27,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 		bool IEventHandlerAnalyzer.ShouldAnalyze(PXContext pxContext, EventType eventType) => 
 			eventType != EventType.None;
 
-		bool IPXGraphWithGraphEventsAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graphOrGraphExtension) =>
+		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphOrGraphExtension) => 
 			graphOrGraphExtension != null && !graphOrGraphExtension.Symbol.IsStatic;
-
-		bool IPXGraphWithGraphEventsAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel pxGraphWithEvents) => true;
 
 		/// <summary>
 		/// Analyze events outside graphs and graph extensions.
@@ -67,8 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 		/// <param name="context">The context.</param>
 		/// <param name="pxContext">The Acumatica context.</param>
 		/// <param name="graphOrGraphExtension">The graph or graph extension semantic model with events.</param>
-		void IPXGraphWithGraphEventsAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, 
-													 PXGraphEventSemanticModel graphOrExtensionWithEvents)
+		void IPXGraphAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphOrExtensionWithEvents)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

@@ -14,51 +14,63 @@ using Acuminator.Vsix.Utilities;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Converter which converts <see cref="ViewModelBase"/> to the <see cref="BitmapImage"/> icon.
+	/// Multi value converter which converts <see cref="ViewModelBase"/> and <see cref="Icon"/> to the <see cref="BitmapImage"/> icon.<br/>
+	/// The second <see cref="Icon"/> parameter is not actually used, it is present to allow dynamic refresh of icons on VS theme change.
 	/// </summary>
-	[ValueConversion(sourceType: typeof(ViewModelBase), targetType: typeof(BitmapImage))]
-	public class TreeNodeToImageSourceConverter : IValueConverter
+	public class TreeNodeToImageSourceConverter : IMultiValueConverter
 	{
 		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap/Bitmap/BitmapImages.xaml";
 		private const string SmallIconSuffix = "Small";
+		private const string LightIconSuffix = "Light";
+		private const string DarkIconSuffix = "Dark";
 
-		private ResourceDictionary _resourceDictionary = new ResourceDictionary()
+		private ResourceDictionary _resourceDictionary = new()
 		{
 			Source = new Uri(BitmapsCollectionURI)
 		};
 
-		public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object? Convert(object?[]? values, Type targetType, object parameter, CultureInfo culture)
 		{
-			switch (value)
+			if (values?.Length != 2 || values[0] is not ViewModelBase viewModel)
+				return null;
+
+			switch (viewModel)
 			{
 				case IconViewModel iconViewModel when iconViewModel.IconType != Icon.None:
-				{
-					string iconKey = iconViewModel.IconType.ToString();
-					string smallIconKey = iconKey + SmallIconSuffix;
-
-					if (_resourceDictionary.TryGetValue(smallIconKey, out BitmapImage icon) ||
-						_resourceDictionary.TryGetValue(iconKey, out icon))
 					{
-						return icon;
-					}
+						string iconKey = iconViewModel.IconType.ToString();
+						string smallIconKey = iconKey + SmallIconSuffix;
 
-					return null;
-				}
+						if (_resourceDictionary.TryGetValue(smallIconKey, out BitmapImage icon) ||
+							_resourceDictionary.TryGetValue(iconKey, out icon))
+						{
+							return icon;
+						}
+
+						return null;
+					}
 				case TreeNodeViewModel nodeViewModel when nodeViewModel.NodeIcon != Icon.None:
-				{
-					string iconKey = nodeViewModel.NodeIcon.ToString();
-					return _resourceDictionary.TryGetValue(iconKey, out BitmapImage icon)
-						? icon
-						: null;
-				}
+					{
+						string iconKey = nodeViewModel.NodeIcon.ToString();
+
+						if (nodeViewModel.IconDependsOnCurrentTheme)
+						{
+							string themeSuffix = nodeViewModel.Tree.CodeMapViewModel.IsDarkTheme
+								? DarkIconSuffix
+								: LightIconSuffix;
+							iconKey += themeSuffix;
+						}
+
+						return _resourceDictionary.TryGetValue(iconKey, out BitmapImage icon)
+							? icon
+							: null;
+					}
 			}
 
 			return null;
 		}
 
-		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
-		{
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => 
 			throw new NotSupportedException();
-		}
 	}
 }

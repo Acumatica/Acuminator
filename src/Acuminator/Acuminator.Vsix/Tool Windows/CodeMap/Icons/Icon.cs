@@ -59,6 +59,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IsActiveMethodDac,
 
 		ProjectionDac,
+
+		Attribute,
+		AttributesGroup,
 		ProjectionAttribute
 	}
 }

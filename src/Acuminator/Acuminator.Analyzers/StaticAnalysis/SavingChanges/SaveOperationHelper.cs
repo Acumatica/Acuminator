@@ -1,12 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -41,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					case PressSaveMethodName when containingType.InheritsFromOrEquals(pxContext.PXActionCollection):
 						return SaveOperationKind.PressSave;
 					// PXSave.press
-					case PressMethodName when containingType.InheritsFromOrEquals(pxContext.PXAction.Type):
+					case PressMethodName when containingType.InheritsFromOrEquals(pxContext.PXAction.Type!):
 						var walker = new SavePressWalker(semanticModel, pxContext);
 						syntaxNode.Accept(walker);
 						return walker.Found ? SaveOperationKind.PressSave : SaveOperationKind.None;
@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					case CachePersistInsertedMethodName:
 					case CachePersistUpdatedMethodName:
 					case CachePersistDeletedMethodName:
-						if (containingType.InheritsFromOrEquals(pxContext.PXCache.Type))
+						if (containingType.InheritsFromOrEquals(pxContext.PXCache.Type!))
 							return SaveOperationKind.CachePersist;
 						break;
 				}
@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			var containingType = symbol.ContainingType?.OriginalDefinition;
 
 			if (containingType != null && 
-			    containingType.InheritsFromOrEquals(pxContext.PXDatabase.Type))
+			    containingType.InheritsFromOrEquals(pxContext.PXDatabase.Type!))
 			{
 				return symbol.Name switch
 				{
