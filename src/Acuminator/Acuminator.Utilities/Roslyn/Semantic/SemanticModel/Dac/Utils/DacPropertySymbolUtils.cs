@@ -43,7 +43,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </returns>
 		public static OverridableItemsCollection<DacPropertyInfo> GetDacPropertiesFromDac(this ITypeSymbol dac, PXContext pxContext,
 																						  IDictionary<string, DacBqlFieldInfo> dacFields,
-																						  bool includeFromInheritanceChain = true,																					  
+																						  bool includeFromInheritanceChain = true,
 																						  CancellationToken cancellation = default)
 		{
 			pxContext.ThrowOnNull();
@@ -58,7 +58,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			var dbBoundnessCalculator = new DbBoundnessCalculator(pxContext);
 
 			propertiesByName.AddRangeWithDeclarationOrder(dacProperties, startingOrder: 0, 
-												(rawData, order) => DacPropertyInfo.Create(pxContext, rawData.Node, rawData.Symbol, order, dbBoundnessCalculator, dacFields));
+												(rawData, order) => DacPropertyInfo.CreateUnsafe(pxContext, rawData.Node, rawData.Symbol, order, 
+																								 dbBoundnessCalculator, dacFields));
 			return propertiesByName;
 		}
 
@@ -114,14 +115,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				var rawDacProperties = dac.GetRawPropertiesFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
 				return propertiesCollection.AddRangeWithDeclarationOrder(rawDacProperties, startingOrder,
-													(dacProperty, order) => DacPropertyInfo.Create(pxContext, dacProperty.Node, dacProperty.Symbol, order, dbBoundnessCalculator, dacFields));
+													(dacProperty, order) => DacPropertyInfo.CreateUnsafe(pxContext, dacProperty.Node, dacProperty.Symbol, order, 
+																										 dbBoundnessCalculator, dacFields));
 			}
 
 			int AddPropertiesFromDacExtension(OverridableItemsCollection<DacPropertyInfo> propertiesCollection, ITypeSymbol dacExt, int startingOrder)
 			{
 				var rawDacExtensionProperties = GetRawPropertiesFromDacOrDacExtensionImpl(dacExt, pxContext, cancellation);
 				return propertiesCollection.AddRangeWithDeclarationOrder(rawDacExtensionProperties, startingOrder,
-													(dacProperty, order) => DacPropertyInfo.Create(pxContext, dacProperty.Node, dacProperty.Symbol, order, dbBoundnessCalculator, dacFields));
+													(dacProperty, order) => DacPropertyInfo.CreateUnsafe(pxContext, dacProperty.Node, dacProperty.Symbol, order, 
+																										 dbBoundnessCalculator, dacFields));
 			}
 		}
 
