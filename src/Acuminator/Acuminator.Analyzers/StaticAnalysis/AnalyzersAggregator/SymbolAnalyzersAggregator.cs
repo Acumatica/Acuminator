@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.CodeAnalysis;
@@ -62,19 +61,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 		protected virtual void RunAggregatedAnalyzersInParallel(List<T> effectiveAnalyzers, SymbolAnalysisContext context, 
 																Action<int> aggregatedAnalyserAction, ParallelOptions? parallelOptions = null)
 		{
-#if DEBUG
-			for (int analyzerIndex = 0; analyzerIndex < effectiveAnalyzers.Count; analyzerIndex++)
+			switch (effectiveAnalyzers.Count)
 			{
-				aggregatedAnalyserAction(analyzerIndex);
-			}
+				case 0:
+					return;
+				case 1:
+					aggregatedAnalyserAction(0);
+					return;
+				default:
+				{
+#if DEBUG1
+					for (int analyzerIndex = 0; analyzerIndex < effectiveAnalyzers.Count; analyzerIndex++)
+					{
+						aggregatedAnalyserAction(analyzerIndex);
+					}
 #else
-			parallelOptions = parallelOptions ?? new ParallelOptions
-			{
-				CancellationToken = context.CancellationToken
-			};
+					parallelOptions = parallelOptions ?? new ParallelOptions
+					{
+						CancellationToken = context.CancellationToken
+					};
 
-			Parallel.For(0, effectiveAnalyzers.Count, parallelOptions, aggregatedAnalyserAction);
+					Parallel.For(0, effectiveAnalyzers.Count, parallelOptions, aggregatedAnalyserAction);
 #endif
+					return;
+				}
+			}
 		}
 	}
 }
