@@ -164,8 +164,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, FieldsByNames, _cancellation));
 
 		private ImmutableDictionary<string, DacBqlFieldInfo> GetDacFields() =>
-			GetInfos(() => Symbol.GetDacFieldsFromDac(PXContext, cancellation: _cancellation),
-					 () => Symbol.GetDacFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
+			GetInfos(() => Symbol.GetDacBqlFieldsFromDac(PXContext, cancellation: _cancellation),
+					 () => Symbol.GetDacBqlFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
 
 		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> dacInfosSelector,
 																   Func<OverridableItemsCollection<TInfo>> dacExtInfosSelector)
