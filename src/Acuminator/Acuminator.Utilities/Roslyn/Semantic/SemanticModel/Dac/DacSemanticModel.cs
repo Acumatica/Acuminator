@@ -217,8 +217,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				if (!hasBqlFields && !hasFieldProperties)
 					continue;
 
-				var declaredDacFieldNames = declaredBqlFields.Keys.Union(declaredProperties.Keys, StringComparer.OrdinalIgnoreCase);
-
+				var declaredDacFieldNames = (hasBqlFields, hasFieldProperties) switch
+				{
+					(true, false) => declaredBqlFields.Keys, 
+					(false, true) => declaredProperties.Keys,
+					_			  => declaredBqlFields.Keys.Union(declaredProperties.Keys, StringComparer.OrdinalIgnoreCase)
+				};
+	
 				foreach (string dacFieldName in declaredDacFieldNames)
 				{
 					DacBqlFieldInfo? bqlFieldInfo = null;
