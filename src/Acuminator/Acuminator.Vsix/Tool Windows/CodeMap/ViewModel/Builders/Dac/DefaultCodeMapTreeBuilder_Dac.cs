@@ -50,7 +50,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			dacMemberCategory switch
 			{
 				DacMemberCategory.InitializationAndActivation => new DacInitializationAndActivationCategoryNodeViewModel(dac, ExpandCreatedNodes),
-				DacMemberCategory.Keys 						  => new DacKeysCategoryNodeViewModel(dac, ExpandCreatedNodes),
+				DacMemberCategory.Keys 						  => new KeyDacFieldsCategoryNodeViewModel(dac, ExpandCreatedNodes),
 				DacMemberCategory.Property 					  => new AllDacFieldsDacCategoryNodeViewModel(dac, ExpandCreatedNodes),
 				_ 											  => null,
 			};
@@ -66,7 +66,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																							  isActiveMethodInfo, ExpandCreatedNodes));
 		}
 
-		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(KeyDacFieldsCategoryNodeViewModel dacKeysCategory)
 		{
 			dacKeysCategory.ThrowOnNull();
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacKeysCategory,

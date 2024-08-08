@@ -17,7 +17,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#region Categories
 		public virtual TResult VisitNode(AllDacFieldsDacCategoryNodeViewModel dacPropertiesCategory) => DefaultVisit(dacPropertiesCategory);
 
-		public virtual TResult VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory) => DefaultVisit(dacKeysCategory);
+		public virtual TResult VisitNode(KeyDacFieldsCategoryNodeViewModel dacKeysCategory) => DefaultVisit(dacKeysCategory);
 
 		public virtual TResult VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory) =>
 			DefaultVisit(dacInitializationAndActivationCategory);

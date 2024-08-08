@@ -1,25 +1,22 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Vsix.Utilities;
-
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacKeysCategoryNodeViewModel : DacMemberCategoryNodeViewModel
+	public class KeyDacFieldsCategoryNodeViewModel : DacMemberCategoryNodeViewModel
 	{
 		protected override bool AllowNavigation => true;
 
 		public override Icon NodeIcon => Icon.DacKeysCategory;
 
-		public DacKeysCategoryNodeViewModel(DacNodeViewModel dacViewModel, bool isExpanded) : 
-									   base(dacViewModel, DacMemberCategory.Keys, isExpanded)
+		public KeyDacFieldsCategoryNodeViewModel(DacNodeViewModel dacViewModel, bool isExpanded) : 
+											base(dacViewModel, DacMemberCategory.Keys, isExpanded)
 		{		
 		}
 
