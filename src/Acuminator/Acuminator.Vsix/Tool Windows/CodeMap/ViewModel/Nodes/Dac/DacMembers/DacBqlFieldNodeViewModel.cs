@@ -5,18 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacBqlFieldNodeViewModel : DacMemberNodeViewModel
+	public class DacBqlFieldNodeViewModel : DacMemberNodeViewModel, IElementWithTooltip
 	{
 		public override Icon NodeIcon => Icon.DacBqlField;
 
-		public DacFieldInfo FieldInfo => (MemberInfo as DacFieldInfo)!;
+		public DacBqlFieldInfo BqlFieldInfo => (MemberInfo as DacBqlFieldInfo)!;
 
 		public DacBqlFieldNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent,
-										DacFieldInfo fieldInfo, bool isExpanded = false) :
-										base(dacMemberCategoryVM, parent, fieldInfo, isExpanded)
+										DacBqlFieldInfo bqlFieldInfo, bool isExpanded = false) :
+										base(dacMemberCategoryVM, parent, bqlFieldInfo, isExpanded)
 		{
 		}
 
@@ -25,5 +26,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
+
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
+		{
+			string tooltipText = BqlFieldInfo.Node.ToFullString();
+			return new TooltipInfo(tooltipText);
+		}
 	}
 }
