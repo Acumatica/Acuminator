@@ -170,7 +170,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					when baseType.ContainingType?.Name == ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary or unique key
 						{
 							var usedFields = baseType.TypeArguments;
-							bool areValidFields = !usedFields.IsDefaultOrEmpty && usedFields.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name));
+							bool areValidFields = !usedFields.IsDefaultOrEmpty && usedFields.All(dacFieldArg => dac.BqlFieldsByNames.ContainsKey(dacFieldArg.Name));
 
 							return areValidFields
 								? usedFields.OrderBy(dacField => dacField.MetadataName).ToList(capacity: usedFields.Length)
@@ -221,7 +221,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 
 			var usedDacField = field_Type.TypeArguments[0];
-			return dac.FieldsByNames.ContainsKey(usedDacField.Name)
+			return dac.BqlFieldsByNames.ContainsKey(usedDacField.Name)
 				? usedDacField
 				: null;
 		}

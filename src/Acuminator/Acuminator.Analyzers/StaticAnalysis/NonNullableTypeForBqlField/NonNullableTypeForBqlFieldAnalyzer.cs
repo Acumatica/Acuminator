@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (!dac.FieldsByNames.TryGetValue(property.Name, out DacBqlFieldInfo field))
+				if (!dac.BqlFieldsByNames.TryGetValue(property.Name, out DacBqlFieldInfo field))
 					continue;
 
 				if (property.Symbol.Type is INamedTypeSymbol propertyType && propertyType.IsValueType &&

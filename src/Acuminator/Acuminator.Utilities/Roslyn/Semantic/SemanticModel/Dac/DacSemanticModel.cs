@@ -50,16 +50,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
-		public IEnumerable<DacPropertyInfo> DacProperties => Properties.Where(p => p.IsDacProperty);
+		public IEnumerable<DacPropertyInfo> DacFieldProperties => Properties.Where(p => p.IsDacProperty);
 
-		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => Symbol.Equals(p.Symbol.ContainingType));
+		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => p.Symbol.IsDeclaredInType(Symbol));
 
-		public IEnumerable<DacPropertyInfo> DeclaredDacProperties => Properties.Where(p => p.IsDacProperty && Symbol.Equals(p.Symbol.ContainingType));
+		public IEnumerable<DacPropertyInfo> DeclaredDacFieldProperties => Properties.Where(p => p.IsDacProperty && p.Symbol.IsDeclaredInType(Symbol));
 
-		public ImmutableDictionary<string, DacBqlFieldInfo> FieldsByNames { get; }
-		public IEnumerable<DacBqlFieldInfo> Fields => FieldsByNames.Values;
+		public ImmutableDictionary<string, DacBqlFieldInfo> BqlFieldsByNames { get; }
+		public IEnumerable<DacBqlFieldInfo> BqlFields => BqlFieldsByNames.Values;
 
-		public IEnumerable<DacBqlFieldInfo> DeclaredFields => Fields.Where(f => Symbol.Equals(f.Symbol.ContainingType));
+		public IEnumerable<DacBqlFieldInfo> DeclaredBqlFields => BqlFields.Where(f => f.Symbol.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// Information about the IsActive method of the DAC extensions. 
@@ -90,11 +90,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(PXContext.PXMappedCacheExtensionType);
 
 			Attributes         = GetDacAttributes();
-			FieldsByNames      = GetDacFields();
+			BqlFieldsByNames   = GetDacBqlFields();
 			PropertiesByNames  = GetDacProperties();
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 
-			IsFullyUnbound  = DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
+			IsFullyUnbound  = DacFieldProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
 			IsProjectionDac = CheckIfDacIsProjection();
 		}
 
@@ -160,10 +160,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
-			GetInfos(() => Symbol.GetDacPropertiesFromDac(PXContext, FieldsByNames, cancellation: _cancellation),
-					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, FieldsByNames, _cancellation));
+			GetInfos(() => Symbol.GetDacPropertiesFromDac(PXContext, BqlFieldsByNames, cancellation: _cancellation),
+					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, BqlFieldsByNames, _cancellation));
 
-		private ImmutableDictionary<string, DacBqlFieldInfo> GetDacFields() =>
+		private ImmutableDictionary<string, DacBqlFieldInfo> GetDacBqlFields() =>
 			GetInfos(() => Symbol.GetDacBqlFieldsFromDac(PXContext, cancellation: _cancellation),
 					 () => Symbol.GetDacBqlFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
 
