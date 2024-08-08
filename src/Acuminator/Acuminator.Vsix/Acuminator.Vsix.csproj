@@ -487,6 +487,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\LeafNodes\Dac\DacFieldAttributeNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\LeafNodes\Graph\GraphAttributeNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\LeafNodes\Graph\CacheAttachedAttributeNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\Base\DacFieldCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacInitializationAndActivationCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacBqlFieldNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacFieldPropertyNodeViewModel.cs" />
