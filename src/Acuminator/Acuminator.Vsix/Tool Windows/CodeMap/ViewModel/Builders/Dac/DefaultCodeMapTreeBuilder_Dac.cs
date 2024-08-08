@@ -51,7 +51,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				DacMemberCategory.InitializationAndActivation => new DacInitializationAndActivationCategoryNodeViewModel(dac, ExpandCreatedNodes),
 				DacMemberCategory.Keys 						  => new DacKeysCategoryNodeViewModel(dac, ExpandCreatedNodes),
-				DacMemberCategory.Property 					  => new DacPropertiesCategoryNodeViewModel(dac, ExpandCreatedNodes),
+				DacMemberCategory.Property 					  => new AllDacFieldsDacCategoryNodeViewModel(dac, ExpandCreatedNodes),
 				_ 											  => null,
 			};
 
@@ -73,7 +73,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																	propertyInfo => new DacFieldGroupingNodeViewModel(dacKeysCategory, propertyInfo, ExpandCreatedNodes));
 		}
 
-		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(AllDacFieldsDacCategoryNodeViewModel dacPropertiesCategory)
 		{
 			dacPropertiesCategory.ThrowOnNull();
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacPropertiesCategory,
