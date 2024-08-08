@@ -27,23 +27,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
-		public DacPropertyInfo? PropertyInfo { get; }
+		public DacFieldInfo FieldInfo { get; }
 
-		public DacFieldInfo? FieldInfo { get; }
+		public bool IsDacProperty => FieldInfo.IsDacProperty;
 
-		public bool IsDacProperty => PropertyInfo?.IsDacProperty ?? false;
+		public bool IsKey => FieldInfo.IsKey;
 
-		public bool IsKey => PropertyInfo?.IsKey ?? false;
+		public bool IsIdentity => FieldInfo.IsIdentity;
 
-		public bool IsIdentity => PropertyInfo?.IsIdentity ?? false;
-
-		public DbBoundnessType EffectiveDbBoundness => PropertyInfo?.EffectiveDbBoundness ?? DbBoundnessType.NotDefined;
-
-		private readonly string _name;
+		public DbBoundnessType EffectiveDbBoundness => FieldInfo.EffectiveDbBoundness;
 
 		public override string Name 
 		{
-			get => _name;
+			get => FieldInfo.Name;
 			protected set { }
 		}
 
@@ -56,34 +52,37 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override bool DisplayNodeWithoutChildren => false;
 
 		public DacFieldGroupingNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent,
-											 DacPropertyInfo? propertyInfo, DacFieldInfo? fieldInfo, bool isExpanded = false) :
+											 DacFieldInfo fieldInfo, bool isExpanded = false) :
 										base(dacMemberCategoryVM?.Tree!, parent, isExpanded)
 		{
 			MemberCategory = dacMemberCategoryVM!;
-			PropertyInfo = propertyInfo;
-			FieldInfo = fieldInfo;
-			_name = PropertyInfo?.Name ?? FieldInfo?.Name.ToPascalCase() ?? string.Empty;
+			FieldInfo = fieldInfo.CheckIfNull();
 
-			if (PropertyInfo != null)
+			var extraInfos = GetExtraInfos().ToList(capacity: 4);
+
+			if (extraInfos.Count > 0)
 			{
-				var extraInfos = GetExtraInfos();
 				ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(extraInfos);
 			}
 		}
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
-			yield return new TextViewModel(this, PropertyInfo!.EffectivePropertyType.GetSimplifiedName(), 
-											darkThemeForeground: Color.FromRgb(86, 156, 214),
-											lightThemeForeground: Color.FromRgb(0, 0, 255));
+			if (FieldInfo.EffectivePropertyType != null)
+			{
+				yield return new TextViewModel(this, FieldInfo.EffectivePropertyType.GetSimplifiedName(),
+												darkThemeForeground: Color.FromRgb(86, 156, 214),
+												lightThemeForeground: Color.FromRgb(0, 0, 255));
+			}
+
 			if (IsIdentity)
 			{
 				yield return new TextViewModel(this, "ID",
-											   darkThemeForeground: Coloriser.VSColors.DacFieldFormatColorDark,
-											   lightThemeForeground: Coloriser.VSColors.DacFieldFormatColorLight)
-											  {
-												  Tooltip = VSIXResource.CodeMap_ExtraInfo_HasPXDBIdentityAttributeTooltip
-											  };
+												darkThemeForeground: Coloriser.VSColors.DacFieldFormatColorDark,
+												lightThemeForeground: Coloriser.VSColors.DacFieldFormatColorLight)
+								 {
+									 Tooltip = VSIXResource.CodeMap_ExtraInfo_HasPXDBIdentityAttributeTooltip
+								 };
 			}
 
 			string? boundLabelText = GetDbBoundnessLabelText();
@@ -91,7 +90,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (boundLabelText != null)
 				yield return new TextViewModel(this, boundLabelText);
 
-			if (PropertyInfo.IsAutoNumbering)
+			if (FieldInfo.IsAutoNumbering)
 			{
 				yield return new TextViewModel(this, "Auto")
 				{
