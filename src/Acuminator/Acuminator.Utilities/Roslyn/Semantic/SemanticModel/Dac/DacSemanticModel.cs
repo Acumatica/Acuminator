@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -67,7 +69,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <value>
 		/// Information about the IsActive method.
 		/// </value>
-		public IsActiveMethodInfo IsActiveMethodInfo { get; }
+		public IsActiveMethodInfo? IsActiveMethodInfo { get; }
 
 		/// <summary>
 		/// The attributes declared on a DAC or a DAC extension.
@@ -86,7 +88,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Symbol = symbol;
 			DacSymbol = DacType == DacType.Dac
 				? Symbol
-				: Symbol.GetDacFromDacExtension(PXContext);
+				: Symbol.GetDacFromDacExtension(PXContext)!;
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(PXContext.PXMappedCacheExtensionType);
 
 			Attributes         = GetDacAttributes();
@@ -106,7 +108,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <param name="semanticModel">Semantic model</param>
 		/// <param name="cancellation">Cancellation token</param>
 		/// <returns/>
-		public static DacSemanticModel InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+		public static DacSemanticModel? InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{		
 			pxContext.ThrowOnNull();
 			typeSymbol.ThrowOnNull();
@@ -179,6 +181,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		private IsActiveMethodInfo GetIsActiveMethodInfo()
+		private IsActiveMethodInfo? GetIsActiveMethodInfo()
 		{
 			if (DacType != DacType.DacExtension)
 				return null;
