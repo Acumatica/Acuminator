@@ -62,13 +62,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public bool IsAutoNumbering { get; }
 
-		public DacFieldInfo(DacPropertyInfo? dacPropertyInfo, DacBqlFieldInfo? dacFieldInfo)
+		public DacFieldInfo(DacPropertyInfo? dacPropertyInfo, DacBqlFieldInfo? dacBqlFieldInfo)
 		{
-			if (dacPropertyInfo == null && dacFieldInfo == null)
-				throw new ArgumentNullException($"Both {nameof(dacPropertyInfo)} and {nameof(dacFieldInfo)} parameters cannot be null.");
+			if (dacPropertyInfo == null && dacBqlFieldInfo == null)
+				throw new ArgumentNullException($"Both {nameof(dacPropertyInfo)} and {nameof(dacBqlFieldInfo)} parameters cannot be null.");
 
 			PropertyInfo = dacPropertyInfo;
-			BqlFieldInfo 	 = dacFieldInfo;
+			BqlFieldInfo = dacBqlFieldInfo;
 			Name 		 = PropertyInfo?.Name ?? BqlFieldInfo!.Name.ToPascalCase();
 			DacType 	 = PropertyInfo?.Symbol.ContainingType ?? BqlFieldInfo!.Symbol.ContainingType;
 
