@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Vsix.ToolWindows.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -17,14 +15,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.DacFieldProperty;
 
 		public DacPropertyInfo PropertyInfo => (MemberInfo as DacPropertyInfo)!;
-
-		public bool IsDacProperty => PropertyInfo.IsDacProperty;
-
-		public bool IsKey => PropertyInfo.IsKey;
-
-		public bool IsIdentity => PropertyInfo.IsIdentity;
-
-		public DbBoundnessType EffectiveDbBoundness => PropertyInfo.EffectiveDbBoundness;
 
 		public DacFieldPropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
 											 DacPropertyInfo propertyInfo, bool isExpanded = false) :
