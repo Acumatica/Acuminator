@@ -61,9 +61,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory)
 		{
-			return CreateDacMemberCategoryChildren<IsActiveMethodInfo>(dacInitializationAndActivationCategory,
-						constructor: isActiveMethodInfo => new IsActiveDacMethodNodeViewModel(dacInitializationAndActivationCategory,
-																							  isActiveMethodInfo, ExpandCreatedNodes));
+			Cancellation.ThrowIfCancellationRequested();
+
+			if (dacInitializationAndActivationCategory?.DacModel.IsActiveMethodInfo != null)
+			{
+				var isActiveNode = new IsActiveDacMethodNodeViewModel(dacInitializationAndActivationCategory,
+																	  dacInitializationAndActivationCategory.DacModel.IsActiveMethodInfo, 
+																	  ExpandCreatedNodes);
+				return [isActiveNode];
+			}
+			else
+				return [];
 		}
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(KeyDacFieldsCategoryNodeViewModel dacKeysCategory)
