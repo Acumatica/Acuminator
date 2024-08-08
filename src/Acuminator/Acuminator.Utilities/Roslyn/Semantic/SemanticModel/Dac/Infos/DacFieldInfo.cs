@@ -11,7 +11,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 	/// <summary>
 	/// Information about a DAC field - a pair consisting of a DAC field property and a DAC BQL field.
 	/// </summary>
-	public class DacFieldInfo
+	public class DacFieldInfo : IWriteableBaseItem<DacFieldInfo>
 	{
 		public string Name { get; }
 
@@ -20,6 +20,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public DacPropertyInfo? PropertyInfo { get; }
 
 		public DacBqlFieldInfo? FieldInfo { get; }
+
+		public DacFieldInfo? Base { get; set; }
+
+		DacFieldInfo? IOverridableItem<DacFieldInfo>.Base => Base;
+
+		public int DeclarationOrder => PropertyInfo?.DeclarationOrder ?? FieldInfo!.DeclarationOrder;
 
 		public DacFieldInfo(DacPropertyInfo? dacPropertyInfo, DacBqlFieldInfo? dacFieldInfo)
 		{
@@ -31,5 +37,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Name 		 = PropertyInfo?.Name ?? FieldInfo!.Name.ToPascalCase();
 			DacType 	 = PropertyInfo?.Symbol.ContainingType ?? FieldInfo!.Symbol.ContainingType;
 		}
+
+		public bool IsDeclaredInType(ITypeSymbol? type) =>
+			 PropertyInfo?.Symbol.IsDeclaredInType(type) ?? FieldInfo!.Symbol.IsDeclaredInType(type);
 	}
 }
