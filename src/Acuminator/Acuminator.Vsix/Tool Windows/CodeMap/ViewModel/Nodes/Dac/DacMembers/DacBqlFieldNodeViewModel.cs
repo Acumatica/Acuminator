@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.ToolWindows.Common;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -29,8 +31,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			string tooltipText = BqlFieldInfo.Node.ToFullString();
-			return new TooltipInfo(tooltipText);
+			if (Tree.CodeMapViewModel.Workspace == null)
+			{
+				string tooltipText = BqlFieldInfo.Node.ToString();
+				return new TooltipInfo(tooltipText);
+			}
+			else
+			{
+				int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
+				string tooltipText = BqlFieldInfo.Node.GetSyntaxNodeStringWithRemovedIndent(tabSize);
+				return new TooltipInfo(tooltipText);
+			}
 		}
 	}
 }
