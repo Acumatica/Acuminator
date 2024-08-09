@@ -100,7 +100,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Attributes         = GetDacAttributes();
 			BqlFieldsByNames   = GetDacBqlFields();
 			PropertiesByNames  = GetDacProperties();
-			DacFieldsByNames   = CollectDacFieldsFromDacPropertiesAndBqlFields();
+			DacFieldsByNames   = DacFieldsCollector.CollectDacFieldsFromDacPropertiesAndBqlFields(Symbol, DacType, PXContext,
+																								   BqlFieldsByNames, PropertiesByNames);
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 
 			IsFullyUnbound  = DacFieldProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
@@ -185,61 +186,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: dacExtInfosSelector();
 
 			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
-		}
-
-		private ImmutableDictionary<string, DacFieldInfo> CollectDacFieldsFromDacPropertiesAndBqlFields()
-		{
-			int estimatedCapacity = Math.Max(BqlFieldsByNames.Count, PropertiesByNames.Count);
-			var dacFields = new OverridableItemsCollection<DacFieldInfo>(estimatedCapacity);
-
-			var bqlFieldsByTypes = BqlFieldsByNames
-									.Values
-									.SelectMany(bqlField => bqlField.ThisAndOverridenItems())
-									.GroupBy(bqlField => bqlField.Symbol.ContainingType as ITypeSymbol)
-									.ToDictionary(grouped => grouped.Key,
-												  grouped => grouped.ToDictionary(f => f.Name, StringComparer.OrdinalIgnoreCase));
-			var propertiesByTypes = PropertiesByNames
-									.Values
-									.SelectMany(property => property.ThisAndOverridenItems())
-									.GroupBy(property => property.Symbol.ContainingType as ITypeSymbol)
-									.ToDictionary(grouped => grouped.Key,
-												  grouped => grouped.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase));
-
-			var typeHierarchy = DacType == DacType.Dac
-				? Symbol.GetDacWithBaseTypesThatMayStoreDacProperties(PXContext)
-				: Symbol.GetDacExtensionWithBaseExtensions(PXContext, SortDirection.Ascending, includeDac: true);
-
-			foreach (var type in typeHierarchy)
-			{
-				bool hasBqlFields = bqlFieldsByTypes.TryGetValue(type, out var declaredBqlFields);
-				bool hasFieldProperties = propertiesByTypes.TryGetValue(type, out var declaredProperties);
-
-				if (!hasBqlFields && !hasFieldProperties)
-					continue;
-
-				var declaredDacFieldNames = (hasBqlFields, hasFieldProperties) switch
-				{
-					(true, false) => declaredBqlFields.Keys, 
-					(false, true) => declaredProperties.Keys,
-					_			  => declaredBqlFields.Keys.Union(declaredProperties.Keys, StringComparer.OrdinalIgnoreCase)
-				};
-	
-				foreach (string dacFieldName in declaredDacFieldNames)
-				{
-					DacBqlFieldInfo? bqlFieldInfo = null;
-					DacPropertyInfo? propertyInfo = null;
-					declaredBqlFields?.TryGetValue(dacFieldName, out bqlFieldInfo);
-					declaredProperties?.TryGetValue(dacFieldName, out propertyInfo);
-
-					if (bqlFieldInfo != null || propertyInfo != null)
-					{
-						var dacField = new DacFieldInfo(propertyInfo, bqlFieldInfo);
-						dacFields.Add(dacField);
-					}
-				}
-			}
-
-			return dacFields.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 		}
 
 		private IsActiveMethodInfo? GetIsActiveMethodInfo()
