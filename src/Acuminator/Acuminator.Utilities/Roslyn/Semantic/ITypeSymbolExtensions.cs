@@ -131,9 +131,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetContainingTypes(this ITypeSymbol type)
+		public static IEnumerable<INamedTypeSymbol> GetContainingTypes(this ISymbol symbol)
 		{
-			var current = type.ContainingType;
+			var current = symbol.CheckIfNull().ContainingType;
 
 			while (current != null)
 			{
