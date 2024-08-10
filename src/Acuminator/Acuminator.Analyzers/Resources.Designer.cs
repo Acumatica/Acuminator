@@ -1456,6 +1456,34 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The forbidden API is used.
+        /// </summary>
+        public static string PX1065Title {
+            get {
+                return ResourceManager.GetString("PX1065Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The forbidden {0} &quot;{1}&quot; is used.
+        /// </summary>
+        public static string PX1065TitleFormat {
+            get {
+                return ResourceManager.GetString("PX1065TitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The forbidden {0} &quot;{1}&quot; is used.
+        ///Details: &quot;{2}&quot;..
+        /// </summary>
+        public static string PX1065TitleFormatWithDetails {
+            get {
+                return ResourceManager.GetString("PX1065TitleFormatWithDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {

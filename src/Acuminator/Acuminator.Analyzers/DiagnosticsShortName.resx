@@ -138,14 +138,20 @@
   <data name="PX1006" xml:space="preserve">
     <value>ViewDeclarationOrderOneCacheInstance</value>
   </data>
+  <data name="PX1007IncorrectProjectionDacFieldComment" xml:space="preserve">
+    <value>IncorrectProjectionDacFieldComment</value>
+  </data>
+  <data name="PX1007NoXmlComment" xml:space="preserve">
+    <value>NoXmlCommentForPublicEntityOrDacProperty</value>
+  </data>
   <data name="PX1008" xml:space="preserve">
     <value>LongOperationDelegateSynchronousExecution</value>
   </data>
-  <data name="PX1010" xml:space="preserve">
-    <value>StartRowResetForPaging</value>
-  </data>
   <data name="PX1009" xml:space="preserve">
     <value>InheritanceFromPXCacheExtension</value>
+  </data>
+  <data name="PX1010" xml:space="preserve">
+    <value>StartRowResetForPaging</value>
   </data>
   <data name="PX1011" xml:space="preserve">
     <value>InheritanceFromPXCacheExtension</value>
@@ -162,11 +168,32 @@
   <data name="PX1015" xml:space="preserve">
     <value>IncorrectNumberOfSelectParameters</value>
   </data>
+  <data name="PX1016" xml:space="preserve">
+    <value>ExtensionDoesNotDeclareIsActiveMethod</value>
+  </data>
   <data name="PX1018" xml:space="preserve">
     <value>NoPrimaryViewForPrimaryDac</value>
   </data>
+  <data name="PX1019" xml:space="preserve">
+    <value>NonStringPropertyTypeWithAutoNumberAttribute</value>
+  </data>
+  <data name="PX1020" xml:space="preserve">
+    <value>InsufficientStringLengthForAutoNumberAttribute</value>
+  </data>
   <data name="PX1021" xml:space="preserve">
     <value>FieldTypeAttributeAndPropertyTypeMismatch</value>
+  </data>
+  <data name="PX1022Dac" xml:space="preserve">
+    <value>NonPublicDac</value>
+  </data>
+  <data name="PX1022DacExtension" xml:space="preserve">
+    <value>NonPublicDacExtension</value>
+  </data>
+  <data name="PX1022Graph" xml:space="preserve">
+    <value>NonPublicGraph</value>
+  </data>
+  <data name="PX1022GraphExtension" xml:space="preserve">
+    <value>NonPublicGraphExtension</value>
   </data>
   <data name="PX1023" xml:space="preserve">
     <value>MultipleTypeAttributesOnProperty</value>
@@ -176,6 +203,9 @@
   </data>
   <data name="PX1026" xml:space="preserve">
     <value>UnderscoresInDacDeclaration</value>
+  </data>
+  <data name="PX1027ForbiddenCompanyPrefixInDacField" xml:space="preserve">
+    <value>ForbiddenCompanyPrefixInDacField</value>
   </data>
   <data name="PX1027ForbiddenFieldsInDac" xml:space="preserve">
     <value>ForbiddenFieldsInDacDeclaration</value>
@@ -195,8 +225,35 @@
   <data name="PX1032" xml:space="preserve">
     <value>MethodInvocationInDac</value>
   </data>
+  <data name="PX1033" xml:space="preserve">
+    <value>MissingPrimaryKeyDeclaration</value>
+  </data>
+  <data name="PX1034" xml:space="preserve">
+    <value>MissingForeignKeyDeclaration</value>
+  </data>
+  <data name="PX1035" xml:space="preserve">
+    <value>MultipleKeyDeclarationsWithSameFields</value>
+  </data>
+  <data name="PX1036FK" xml:space="preserve">
+    <value>IncorrectDacForeignKeyName</value>
+  </data>
+  <data name="PX1036MultipleUK" xml:space="preserve">
+    <value>IncorrectDacUniqueKeyDeclaration</value>
+  </data>
+  <data name="PX1036PK" xml:space="preserve">
+    <value>IncorrectDacPrimaryKeyName</value>
+  </data>
+  <data name="PX1036SingleUK" xml:space="preserve">
+    <value>IncorrectDacUniqueKeyName</value>
+  </data>
+  <data name="PX1037" xml:space="preserve">
+    <value>UnboundDacFieldInKeyDeclaration</value>
+  </data>
   <data name="PX1040" xml:space="preserve">
     <value>ConstructorInGraphExtension</value>
+  </data>
+  <data name="PX1041" xml:space="preserve">
+    <value>NameConventionEventsInGraphsAndGraphExtensions</value>
   </data>
   <data name="PX1042" xml:space="preserve">
     <value>DatabaseQueriesInRowSelecting</value>
@@ -213,11 +270,11 @@
   <data name="PX1046" xml:space="preserve">
     <value>LongOperationInEventHandlers</value>
   </data>
-  <data name="PX1048" xml:space="preserve">
-    <value>RowChangesInEventHandlersAllowedForArgsOnly</value>
-  </data>
   <data name="PX1047" xml:space="preserve">
     <value>RowChangesInEventHandlersForbiddenForArgs</value>
+  </data>
+  <data name="PX1048" xml:space="preserve">
+    <value>RowChangesInEventHandlersAllowedForArgsOnly</value>
   </data>
   <data name="PX1049" xml:space="preserve">
     <value>DatabaseQueriesInRowSelected</value>
@@ -237,14 +294,20 @@
   <data name="PX1054" xml:space="preserve">
     <value>PXGraphLongRunOperationDuringInitialization</value>
   </data>
+  <data name="PX1055" xml:space="preserve">
+    <value>DacKeyFieldsWithIdentityKeyField</value>
+  </data>
+  <data name="PX1056IsActiveForGraphMethod" xml:space="preserve">
+    <value>PXGraphCreationInIsActiveForGraphMethod</value>
+  </data>
+  <data name="PX1056IsActiveMethod" xml:space="preserve">
+    <value>PXGraphCreationInIsActiveMethod</value>
+  </data>
   <data name="PX1057" xml:space="preserve">
     <value>PXGraphCreationDuringInitialization</value>
   </data>
   <data name="PX1058" xml:space="preserve">
     <value>PXGraphSavingChangesDuringInitialization</value>
-  </data>
-  <data name="PX1055" xml:space="preserve">
-    <value>DacKeyFieldsWithIdentityKeyField</value>
   </data>
   <data name="PX1059" xml:space="preserve">
     <value>ChangesInPXCacheDuringPXGraphInitialization</value>
@@ -254,6 +317,18 @@
   </data>
   <data name="PX1061" xml:space="preserve">
     <value>LegacyBqlConstant</value>
+  </data>
+  <data name="PX1062" xml:space="preserve">
+    <value>StaticPropertyOrFieldInGraph</value>
+  </data>
+  <data name="PX1063" xml:space="preserve">
+    <value>ExceptionWithoutSerializationConstructor</value>
+  </data>
+  <data name="PX1064" xml:space="preserve">
+    <value>ExceptionWithNewFieldsAndNoGetObjectDataOverride</value>
+  </data>
+  <data name="PX1065" xml:space="preserve">
+    <value>ForbiddenApiUsage</value>
   </data>
   <data name="PX1070" xml:space="preserve">
     <value>UiPresentationLogicInEventHandlers</value>
@@ -272,6 +347,9 @@
   </data>
   <data name="PX1075" xml:space="preserve">
     <value>RaiseExceptionHandlingInEventHandlers</value>
+  </data>
+  <data name="PX1076" xml:space="preserve">
+    <value>CallToInternalApi</value>
   </data>
   <data name="PX1080" xml:space="preserve">
     <value>LongRunOperationInDataViewDelegate</value>
@@ -321,85 +399,10 @@
   <data name="PX1095PXDBCalced" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBCalced</value>
   </data>
-  <data name="PX1007NoXmlComment" xml:space="preserve">
-    <value>NoXmlCommentForPublicEntityOrDacProperty</value>
-  </data>
-  <data name="PX1019" xml:space="preserve">
-    <value>NonStringPropertyTypeWithAutoNumberAttribute</value>
-  </data>
-  <data name="PX1020" xml:space="preserve">
-    <value>InsufficientStringLengthForAutoNumberAttribute</value>
-  </data>
-  <data name="PX1022DacExtension" xml:space="preserve">
-    <value>NonPublicDacExtension</value>
-  </data>
-  <data name="PX1022GraphExtension" xml:space="preserve">
-    <value>NonPublicGraphExtension</value>
-  </data>
-  <data name="PX1016" xml:space="preserve">
-    <value>ExtensionDoesNotDeclareIsActiveMethod</value>
-  </data>
-  <data name="PX1033" xml:space="preserve">
-    <value>MissingPrimaryKeyDeclaration</value>
-  </data>
-  <data name="PX1034" xml:space="preserve">
-    <value>MissingForeignKeyDeclaration</value>
-  </data>
-  <data name="PX1035" xml:space="preserve">
-    <value>MultipleKeyDeclarationsWithSameFields</value>
-  </data>
-  <data name="PX1036PK" xml:space="preserve">
-    <value>IncorrectDacPrimaryKeyName</value>
-  </data>
-  <data name="PX1036FK" xml:space="preserve">
-    <value>IncorrectDacForeignKeyName</value>
-  </data>
-  <data name="PX1036SingleUK" xml:space="preserve">
-    <value>IncorrectDacUniqueKeyName</value>
-  </data>
-  <data name="PX1036MultipleUK" xml:space="preserve">
-    <value>IncorrectDacUniqueKeyDeclaration</value>
-  </data>
-  <data name="PX1037" xml:space="preserve">
-    <value>UnboundDacFieldInKeyDeclaration</value>
-  </data>
-  <data name="PX1076" xml:space="preserve">
-    <value>CallToInternalApi</value>
-  </data>
-  <data name="PX1056IsActiveMethod" xml:space="preserve">
-    <value>PXGraphCreationInIsActiveMethod</value>
-  </data>
-  <data name="PX1056IsActiveForGraphMethod" xml:space="preserve">
-    <value>PXGraphCreationInIsActiveForGraphMethod</value>
-  </data>
-  <data name="PX1062" xml:space="preserve">
-    <value>StaticPropertyOrFieldInGraph</value>
-  </data>
-  <data name="PX1063" xml:space="preserve">
-    <value>ExceptionWithoutSerializationConstructor</value>
-  </data>
-  <data name="PX1064" xml:space="preserve">
-    <value>ExceptionWithNewFieldsAndNoGetObjectDataOverride</value>
-  </data>
   <data name="PX1095PXDBScalar" xml:space="preserve">
     <value>NoUnboundTypeAttributeWithPXDBScalar</value>
   </data>
   <data name="PX1096" xml:space="preserve">
     <value>PXOverrideSignatureMismatch</value>
-  </data>
-  <data name="PX1007IncorrectProjectionDacFieldComment" xml:space="preserve">
-    <value>IncorrectProjectionDacFieldComment</value>
-  </data>
-  <data name="PX1041" xml:space="preserve">
-    <value>NameConventionEventsInGraphsAndGraphExtensions</value>
-  </data>
-  <data name="PX1027ForbiddenCompanyPrefixInDacField" xml:space="preserve">
-    <value>ForbiddenCompanyPrefixInDacField</value>
-  </data>
-  <data name="PX1022Dac" xml:space="preserve">
-    <value>NonPublicDac</value>
-  </data>
-  <data name="PX1022Graph" xml:space="preserve">
-    <value>NonPublicGraph</value>
   </data>
 </root>

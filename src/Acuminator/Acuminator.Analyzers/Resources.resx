@@ -162,11 +162,37 @@
   <data name="PX1007FixAddExcludeTag" xml:space="preserve">
     <value>Add the &lt;exclude/&gt; tag to exclude this API from the API Reference</value>
   </data>
+  <data name="PX1007FixAddInheritdocTag" xml:space="preserve">
+    <value>Add the &lt;inheritdoc/&gt; tag for the projection DAC property with `cref` attribute referencing the mapped original DAC property</value>
+  </data>
+  <data name="PX1007FixAddSummaryTag" xml:space="preserve">
+    <value>Add the &lt;summary&gt; tag with the description generated from the API name</value>
+  </data>
+  <data name="PX1007Title_IncorrectProjectionDacFieldDescription" xml:space="preserve">
+    <value>Incorrect XML documentation of the projection DAC field property. The &lt;inheritdoc/&gt; tag with `cref` attribute should be used for a mapped DAC field property of the projection DAC.
+The `cref` attribute should reference the original DAC field property from the projection field's mapping:
+
+/// &lt;inheritdoc cref="OriginalDac.SomeDacField"/&gt;
+[PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
+public virtual int? SomeDacField{ get; set; }</value>
+  </data>
   <data name="PX1007Title_MissingDescription" xml:space="preserve">
     <value>The DAC, DAC extension, or DAC property should have a description in the &lt;summary&gt; tag or &lt;inheritdoc/&gt; tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
     <value>The reference to {0} is captured in the {1} delegate and will cause synchronous execution of the delegate. It may lead to random bugs and data consistency issues.</value>
+  </data>
+  <data name="PX1008Title_CapturedGraphFormatArg" xml:space="preserve">
+    <value>the screen graph</value>
+  </data>
+  <data name="PX1008Title_CapturedPXAdapterFormatArg" xml:space="preserve">
+    <value>the action delegate adapter</value>
+  </data>
+  <data name="PX1008Title_LongRunDelegateFormatArg" xml:space="preserve">
+    <value>long-running operation</value>
+  </data>
+  <data name="PX1008Title_ProcessingDelegateFormatArg" xml:space="preserve">
+    <value>processing</value>
   </data>
   <data name="PX1009Fix" xml:space="preserve">
     <value>Change the base type to a PXCacheExtension overload</value>
@@ -192,6 +218,12 @@
   <data name="PX1012Title" xml:space="preserve">
     <value>The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar.</value>
   </data>
+  <data name="PX1013Fix" xml:space="preserve">
+    <value>Change the return type to IEnumerable</value>
+  </data>
+  <data name="PX1013Title" xml:space="preserve">
+    <value>The action handler that initiates a background operation or is executed by a background operation must return IEnumerable</value>
+  </data>
   <data name="PX1014Fix" xml:space="preserve">
     <value>Make the type nullable</value>
   </data>
@@ -204,50 +236,101 @@
   <data name="PX1015MessageFormatWithRequiredAndOptionalParams" xml:space="preserve">
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
   </data>
+  <data name="PX1015Title" xml:space="preserve">
+    <value>The number of arguments passed to the method does not match the number of BQL statement parameters</value>
+  </data>
+  <data name="PX1016DacExtensionTitle" xml:space="preserve">
+    <value>A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active.</value>
+  </data>
+  <data name="PX1016GraphExtensionTitle" xml:space="preserve">
+    <value>A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active.</value>
+  </data>
   <data name="PX1018Title" xml:space="preserve">
     <value>The graph with the specified primary DAC type does not contain a view of this type</value>
   </data>
-  <data name="PX1021Title" xml:space="preserve">
-    <value>The type of the DAC field attribute does not correspond to the property type</value>
+  <data name="PX1019Fix" xml:space="preserve">
+    <value>Change the type to string</value>
+  </data>
+  <data name="PX1019Title" xml:space="preserve">
+    <value>A DAC property field with the AutoNumber attribute must have the string type</value>
+  </data>
+  <data name="PX1020Fix" xml:space="preserve">
+    <value>Make the string length sufficient for the auto-numbering</value>
+  </data>
+  <data name="PX1020Title" xml:space="preserve">
+    <value>For a DAC property field with the AutoNumber attribute, the string length must be greater than {0}</value>
   </data>
   <data name="PX1021PropertyFix" xml:space="preserve">
     <value>Change the property type so that it corresponds to the attribute type</value>
   </data>
-  <data name="PX1023MultipleTypeAttributesOnPropertyTitle" xml:space="preserve">
-    <value>The DAC property cannot be marked with multiple field type attributes</value>
+  <data name="PX1021Title" xml:space="preserve">
+    <value>The type of the DAC field attribute does not correspond to the property type</value>
   </data>
-  <data name="PX1023MultipleTypeAttributesOnAggregatorsTitle" xml:space="preserve">
-    <value>The attribute aggregates incompatible field type attributes</value>
+  <data name="PX1022DacExtensionFix" xml:space="preserve">
+    <value>Make the DAC extension public</value>
   </data>
-  <data name="PX1023MultipleCalcedOnDbSideAttributesOnPropertyTitle" xml:space="preserve">
-    <value>The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes</value>
+  <data name="PX1022DacExtensionTitle" xml:space="preserve">
+    <value>Non-public DAC extensions are not supported</value>
   </data>
-  <data name="PX1023MultipleCalcedOnDbSideAttributesOnAggregatorsTitle" xml:space="preserve">
-    <value>The attribute aggregates multiple PXDBScalar or PXDBCalced attributes</value>
+  <data name="PX1022DacFix" xml:space="preserve">
+    <value>Make DAC public</value>
   </data>
-  <data name="PX1023TypeAttributesFix" xml:space="preserve">
-    <value>Leave the selected attribute and remove other field type attributes from the property</value>
+  <data name="PX1022DacTitle" xml:space="preserve">
+    <value>Non-public DACs are not supported</value>
+  </data>
+  <data name="PX1022GraphExtensionFix" xml:space="preserve">
+    <value>Make the graph extension public</value>
+  </data>
+  <data name="PX1022GraphExtensionTitle" xml:space="preserve">
+    <value>Non-public graph extensions are not supported</value>
+  </data>
+  <data name="PX1022GraphFix" xml:space="preserve">
+    <value>Make the graph public</value>
+  </data>
+  <data name="PX1022GraphTitle" xml:space="preserve">
+    <value>Non-public graphs are not supported</value>
   </data>
   <data name="PX1023MultipleCalcedOnDbSideAttributesFix" xml:space="preserve">
     <value>Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property</value>
   </data>
-  <data name="PX1024Title" xml:space="preserve">
-    <value>The DAC field type must be abstract</value>
+  <data name="PX1023MultipleCalcedOnDbSideAttributesOnAggregatorsTitle" xml:space="preserve">
+    <value>The attribute aggregates multiple PXDBScalar or PXDBCalced attributes</value>
+  </data>
+  <data name="PX1023MultipleCalcedOnDbSideAttributesOnPropertyTitle" xml:space="preserve">
+    <value>The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes</value>
+  </data>
+  <data name="PX1023MultipleTypeAttributesOnAggregatorsTitle" xml:space="preserve">
+    <value>The attribute aggregates incompatible field type attributes</value>
+  </data>
+  <data name="PX1023MultipleTypeAttributesOnPropertyTitle" xml:space="preserve">
+    <value>The DAC property cannot be marked with multiple field type attributes</value>
+  </data>
+  <data name="PX1023TypeAttributesFix" xml:space="preserve">
+    <value>Leave the selected attribute and remove other field type attributes from the property</value>
   </data>
   <data name="PX1024Fix" xml:space="preserve">
     <value>Make the DAC field type abstract</value>
   </data>
-  <data name="PX1026Title" xml:space="preserve">
-    <value>Underscores cannot be used in DAC declarations</value>
+  <data name="PX1024Title" xml:space="preserve">
+    <value>The DAC field type must be abstract</value>
   </data>
   <data name="PX1026Fix" xml:space="preserve">
     <value>Remove underscores from the DAC declaration</value>
+  </data>
+  <data name="PX1026Title" xml:space="preserve">
+    <value>Underscores cannot be used in DAC declarations</value>
+  </data>
+  <data name="PX1027ForbiddenCompanyPrefixInDacFieldTitle" xml:space="preserve">
+    <value>The name of a DAC field cannot start with the "Company" prefix because company masks work incorrectly with such fields.</value>
   </data>
   <data name="PX1027ForbiddenFieldsFix" xml:space="preserve">
     <value>Remove the forbidden field from the DAC declaration</value>
   </data>
   <data name="PX1027ForbiddenFieldsMessageFormat" xml:space="preserve">
     <value>The {0} field cannot be declared within a DAC declaration</value>
+  </data>
+  <data name="PX1027ForbiddenFieldsTitle" xml:space="preserve">
+    <value>System fields cannot be declared within a DAC declaration</value>
   </data>
   <data name="PX1028Fix" xml:space="preserve">
     <value>Remove the constructor</value>
@@ -258,293 +341,29 @@
   <data name="PX1029Title" xml:space="preserve">
     <value>PXGraph instances cannot be used inside DAC properties</value>
   </data>
+  <data name="PX1030FixBound" xml:space="preserve">
+    <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
+  </data>
+  <data name="PX1030FixUnbound" xml:space="preserve">
+    <value>Replace with PXUnboundDefaultAttribute</value>
+  </data>
+  <data name="PX1030TitleDefaultAttributeOnDac" xml:space="preserve">
+    <value>Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault</value>
+  </data>
+  <data name="PX1030TitleDefaultAttributeOnDacExtension" xml:space="preserve">
+    <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.</value>
+  </data>
   <data name="PX1031Title" xml:space="preserve">
     <value>DACs and DAC extensions cannot contain instance methods</value>
   </data>
   <data name="PX1032Title" xml:space="preserve">
     <value>DAC properties cannot contain method invocations</value>
   </data>
-  <data name="PX1030FixBound" xml:space="preserve">
-    <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
-  </data>
-  <data name="PX1030TitleDefaultAttributeOnDacExtension" xml:space="preserve">
-    <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.</value>
-  </data>
-  <data name="PX1040Fix" xml:space="preserve">
-    <value>Move the code to the Initialize() method</value>
-  </data>
-  <data name="PX1040Title" xml:space="preserve">
-    <value>Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead</value>
-  </data>
-  <data name="PX1030FixUnbound" xml:space="preserve">
-    <value>Replace with PXUnboundDefaultAttribute</value>
-  </data>
-  <data name="PX1042Fix" xml:space="preserve">
-    <value>Surround the BQL statement or database query execution with a connection scope</value>
-  </data>
-  <data name="PX1042Title" xml:space="preserve">
-    <value>In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope</value>
-  </data>
-  <data name="PX1050Title_HardcodedString" xml:space="preserve">
-    <value>Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
-  </data>
-  <data name="PX1050Title_NonConstFieldString" xml:space="preserve">
-    <value>Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
-  </data>
-  <data name="PX1051Title" xml:space="preserve">
-    <value>Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
-  </data>
-  <data name="PX1052Title" xml:space="preserve">
-    <value>Incorrect format string in the localization method. You should use correct format string constants from the appropriate localizable messages class.</value>
-  </data>
-  <data name="PX1053Title" xml:space="preserve">
-    <value>Strings concatenation is not allowed as a parameter for localization methods and PXException constructors. You should use localization format methods instead.</value>
-  </data>
-  <data name="PX1015Title" xml:space="preserve">
-    <value>The number of arguments passed to the method does not match the number of BQL statement parameters</value>
-  </data>
-  <data name="PX1027ForbiddenFieldsTitle" xml:space="preserve">
-    <value>System fields cannot be declared within a DAC declaration</value>
-  </data>
-  <data name="PX1043Title" xml:space="preserve">
-    <value>Changes cannot be saved to the database from the event handler</value>
-  </data>
-  <data name="PX1043TitleRowPersisting" xml:space="preserve">
-    <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisting event handler</value>
-  </data>
-  <data name="PX1044Title" xml:space="preserve">
-    <value>Changing PXCache is prohibited in this event handler</value>
-  </data>
-  <data name="PX1044MessageFormat" xml:space="preserve">
-    <value>Changing PXCache is prohibited in the {0} event handler</value>
-  </data>
-  <data name="PX1057Title" xml:space="preserve">
-    <value>A PXGraph instance cannot be initialized while another PXGraph instance is being initialized</value>
-  </data>
-  <data name="PX1046Title" xml:space="preserve">
-    <value>A long-running operation cannot be started within an event handler</value>
-  </data>
-  <data name="PX1045Title" xml:space="preserve">
-    <value>A PXGraph instance cannot be created within an event handler</value>
-  </data>
-  <data name="PX1058Title" xml:space="preserve">
-    <value>A PXGraph instance should not save changes to the database during the initialization phase</value>
-  </data>
-  <data name="PX1047MessageFormat" xml:space="preserve">
-    <value>A DAC instance passed to the {0} event handler cannot be modified inside this event handler</value>
-  </data>
-  <data name="PX1059Title" xml:space="preserve">
-    <value>Changes to PXCache cannot be performed during PXGraph initialization</value>
-  </data>
-  <data name="PX1047Title" xml:space="preserve">
-    <value>A DAC instance passed to the event handler cannot be modified inside the event handler</value>
-  </data>
-  <data name="PX1054Title" xml:space="preserve">
-    <value>A PXGraph instance should not start PXLongOperation during the initialization phase</value>
-  </data>
-  <data name="PX1048MessageFormat" xml:space="preserve">
-    <value>Only the DAC instance that is passed in the event arguments can be modified in the {0} event handler</value>
-  </data>
-  <data name="PX1048Title" xml:space="preserve">
-    <value>Only the DAC instance that is passed in the event arguments can be modified in this event handler</value>
-  </data>
-  <data name="PX1049Title" xml:space="preserve">
-    <value>In a RowSelected handler, BQL statements and other database queries should be avoided</value>
-  </data>
-  <data name="PX1070Title" xml:space="preserve">
-    <value>The state of fields and actions can be configured only in the RowSelected event handler</value>
-  </data>
-  <data name="PX1071Title" xml:space="preserve">
-    <value>Actions cannot be executed within event handlers</value>
-  </data>
-  <data name="PX1072Title_ReuseExistingGraphVariable" xml:space="preserve">
-    <value>BQL queries must be executed within the context of an existing PXGraph instance</value>
-  </data>
-  <data name="PX1080Title" xml:space="preserve">
-    <value>Data view delegates should not start long-running operations</value>
-  </data>
-  <data name="PX1055FixEditKeyFieldAttributes" xml:space="preserve">
-    <value>Make the field bound to the identity column be the only key field in the DAC</value>
-  </data>
-  <data name="PX1055FixEditIdentityAttribute" xml:space="preserve">
-    <value>Make the field bound to the identity column be a non-key field and leave all other key fields untouched</value>
-  </data>
-  <data name="PX1055FixRemoveIdentityAttribute" xml:space="preserve">
-    <value>Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.)</value>
-  </data>
-  <data name="PX1055Title" xml:space="preserve">
-    <value>Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key.</value>
-  </data>
-  <data name="PX1073Title" xml:space="preserve">
-    <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
-  </data>
-  <data name="PX1074Title" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.</value>
-  </data>
-  <data name="PX1074MessageFormat" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.</value>
-  </data>
-  <data name="PX1075MessageFormat" xml:space="preserve">
-    <value>PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler</value>
-  </data>
-  <data name="PX1075Title" xml:space="preserve">
-    <value>PXCache.RaiseExceptionHandling cannot be invoked from this event handler</value>
-  </data>
-  <data name="PX1081Title" xml:space="preserve">
-    <value>Actions cannot be executed during the PXGraph initialization</value>
-  </data>
-  <data name="PX1082Title" xml:space="preserve">
-    <value>Actions cannot be executed within data view delegates</value>
-  </data>
-  <data name="PX1072Fix" xml:space="preserve">
-    <value>Replace {0} with the following PXGraph instance: {1}</value>
-  </data>
-  <data name="PX1083Title" xml:space="preserve">
-    <value>Changes cannot be saved to the database from data view delegates</value>
-  </data>
-  <data name="PX1030TitleDefaultAttributeOnDac" xml:space="preserve">
-    <value>Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault</value>
-  </data>
-  <data name="PX1084Title" xml:space="preserve">
-    <value>PXGraph instances cannot be initialized within data view delegates</value>
-  </data>
-  <data name="PX1085Title" xml:space="preserve">
-    <value>BQL statements and other database queries should not be executed during the PXGraph initialization</value>
-  </data>
-  <data name="PX1086Title" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in long-running operations</value>
-  </data>
-  <data name="PX1087Title" xml:space="preserve">
-    <value>This invocation of the base data view delegate can cause a StackOverflowException</value>
-  </data>
-  <data name="PX1088Title" xml:space="preserve">
-    <value>Processing delegates cannot use the data views from processing graphs except for the data views of the PXFilter, PXProcessingBase, or PXSetup types</value>
-  </data>
-  <data name="PX1089Title" xml:space="preserve">
-    <value>The state of fields and actions cannot be configured in action delegates</value>
-  </data>
-  <data name="PX1090Title" xml:space="preserve">
-    <value>PXSetupNotEnteredException cannot be thrown in action handlers</value>
-  </data>
-  <data name="PX1091Title" xml:space="preserve">
-    <value>This invocation of the base action handler can cause a StackOverflowException</value>
-  </data>
-  <data name="PX1092Title" xml:space="preserve">
-    <value>Action handlers must be decorated with the PXUIField attribute and the PXButton attribute or its successors</value>
-  </data>
-  <data name="PX1092Fix" xml:space="preserve">
-    <value>Add the missing attribute or attributes to the action handler</value>
-  </data>
-  <data name="PX1093Fix" xml:space="preserve">
-    <value>Change graph type parameter</value>
-  </data>
-  <data name="PX1093Title" xml:space="preserve">
-    <value>Graph declaration should contain graph type as first type parameter</value>
-  </data>
-  <data name="PX1060Fix" xml:space="preserve">
-    <value>Make field strongly typed</value>
-  </data>
-  <data name="PX1060Title" xml:space="preserve">
-    <value>The {0} field should be strongly typed to be used in the fluent BQL queries</value>
-  </data>
-  <data name="PX1061Fix" xml:space="preserve">
-    <value>Make constant strongly typed</value>
-  </data>
-  <data name="PX1061Title" xml:space="preserve">
-    <value>The {0} constant should be strongly typed to be used in the fluent BQL queries</value>
-  </data>
-  <data name="PX1094FixPXCacheNameAttribute" xml:space="preserve">
-    <value>Add the PXCacheName attribute</value>
-  </data>
-  <data name="PX1094FixPXHiddenAttribute" xml:space="preserve">
-    <value>Add the PXHidden attribute</value>
-  </data>
-  <data name="PX1094Title" xml:space="preserve">
-    <value>A DAC must be decorated with the PXHidden or PXCacheName attribute</value>
-  </data>
-  <data name="PX1094PXCacheNameDefaultArgumentValue" xml:space="preserve">
-    <value>Enter a cache name for this DAC</value>
-  </data>
-  <data name="PX1095Title_PXDBCalced" xml:space="preserve">
-    <value>A field with the PXDBCalced attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
-  </data>
-  <data name="PX1013Fix" xml:space="preserve">
-    <value>Change the return type to IEnumerable</value>
-  </data>
-  <data name="PX1013Title" xml:space="preserve">
-    <value>The action handler that initiates a background operation or is executed by a background operation must return IEnumerable</value>
-  </data>
-  <data name="PX1043TitleRowPersistedNonISV" xml:space="preserve">
-    <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisted event handler</value>
-  </data>
-  <data name="PX1007FixAddSummaryTag" xml:space="preserve">
-    <value>Add the &lt;summary&gt; tag with the description generated from the API name</value>
-  </data>
-  <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
-    <value>Suppress the {0} diagnostic with Acuminator</value>
-  </data>
-  <data name="SuppressDiagnosticWithCommentNestedCodeActionTitle" xml:space="preserve">
-    <value>in a comment</value>
-  </data>
-  <data name="SuppressDiagnosticInSuppressionFileCodeActionTitle" xml:space="preserve">
-    <value>in the Acuminator suppression file</value>
-  </data>
-  <data name="SuppressDiagnosticWithCommentNonNestedCodeActionTitle" xml:space="preserve">
-    <value>Suppress the {0} diagnostic with Acuminator in a comment</value>
-  </data>
-  <data name="PX1019Title" xml:space="preserve">
-    <value>A DAC property field with the AutoNumber attribute must have the string type</value>
-  </data>
-  <data name="PX1020Title" xml:space="preserve">
-    <value>For a DAC property field with the AutoNumber attribute, the string length must be greater than {0}</value>
-  </data>
-  <data name="PX1019Fix" xml:space="preserve">
-    <value>Change the type to string</value>
-  </data>
-  <data name="PX1020Fix" xml:space="preserve">
-    <value>Make the string length sufficient for the auto-numbering</value>
-  </data>
-  <data name="PX1022DacExtensionFix" xml:space="preserve">
-    <value>Make the DAC extension public</value>
-  </data>
-  <data name="PX1022DacExtensionTitle" xml:space="preserve">
-    <value>Non-public DAC extensions are not supported</value>
-  </data>
-  <data name="PX1022GraphFix" xml:space="preserve">
-    <value>Make the graph public</value>
-  </data>
-  <data name="PX1022GraphTitle" xml:space="preserve">
-    <value>Non-public graphs are not supported</value>
-  </data>
-  <data name="PX1016DacExtensionTitle" xml:space="preserve">
-    <value>A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active.</value>
-  </data>
-  <data name="PX1016GraphExtensionTitle" xml:space="preserve">
-    <value>A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active.</value>
-  </data>
-  <data name="PX1033Title" xml:space="preserve">
-    <value>The DAC does not have an explicit primary key declaration</value>
-  </data>
-  <data name="PX1034Title" xml:space="preserve">
-    <value>The DAC does not have an explicit foreign key declaration</value>
-  </data>
-  <data name="PX1035Title" xml:space="preserve">
-    <value>The DAC has multiple key declarations which use the same set of fields</value>
-  </data>
-  <data name="PX1036PKTitle" xml:space="preserve">
-    <value>The DAC must have one primary key which should be named "PK". This key could be turned into a primary key for this DAC.</value>
-  </data>
-  <data name="PX1036FKTitle" xml:space="preserve">
-    <value>Foreign keys should be declared in a public static class named "FK"</value>
-  </data>
   <data name="PX1033Fix" xml:space="preserve">
     <value>Add a primary key declaration to the DAC</value>
   </data>
-  <data name="PX1036PK_ChangeNameFix" xml:space="preserve">
-    <value>Change the name of this key to "PK"</value>
-  </data>
-  <data name="PX1035Fix" xml:space="preserve">
-    <value>Remove other key declarations that use the same fields from the DAC</value>
+  <data name="PX1033Title" xml:space="preserve">
+    <value>The DAC does not have an explicit primary key declaration</value>
   </data>
   <data name="PX1034Fix" xml:space="preserve">
     <value>Add a foreign key declaration template to the DAC</value>
@@ -574,29 +393,128 @@
   <data name="PX1034FixTemplateLine7" xml:space="preserve">
     <value>You can start with the following properties:</value>
   </data>
-  <data name="PX1036SingleUKTitle" xml:space="preserve">
-    <value>The single unique key in the DAC should be named "UK"</value>
+  <data name="PX1034Title" xml:space="preserve">
+    <value>The DAC does not have an explicit foreign key declaration</value>
   </data>
-  <data name="PX1036SingleUKFix" xml:space="preserve">
-    <value>Change the name of the single unique key to "UK"</value>
+  <data name="PX1035Fix" xml:space="preserve">
+    <value>Remove other key declarations that use the same fields from the DAC</value>
   </data>
-  <data name="PX1036MultipleUKTitle" xml:space="preserve">
-    <value>All unique keys in the DAC should be declared in a public static class named "UK"</value>
-  </data>
-  <data name="PX1036MultipleUKFix" xml:space="preserve">
-    <value>Place all unique keys in a public static class named "UK"</value>
-  </data>
-  <data name="PX1036PK_ChangeNameAndLocationFix" xml:space="preserve">
-    <value>Change this key's name to "PK" which is the name for the DAC's primary key</value>
-  </data>
-  <data name="PX1037Title" xml:space="preserve">
-    <value>Unbound DAC field cannot be used in the declaration of a key</value>
+  <data name="PX1035Title" xml:space="preserve">
+    <value>The DAC has multiple key declarations which use the same set of fields</value>
   </data>
   <data name="PX1036FKFix" xml:space="preserve">
     <value>Place all foreign keys in a public static class named "FK"</value>
   </data>
-  <data name="PX1076Title" xml:space="preserve">
-    <value>This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use</value>
+  <data name="PX1036FKTitle" xml:space="preserve">
+    <value>Foreign keys should be declared in a public static class named "FK"</value>
+  </data>
+  <data name="PX1036MultipleUKFix" xml:space="preserve">
+    <value>Place all unique keys in a public static class named "UK"</value>
+  </data>
+  <data name="PX1036MultipleUKTitle" xml:space="preserve">
+    <value>All unique keys in the DAC should be declared in a public static class named "UK"</value>
+  </data>
+  <data name="PX1036PKTitle" xml:space="preserve">
+    <value>The DAC must have one primary key which should be named "PK". This key could be turned into a primary key for this DAC.</value>
+  </data>
+  <data name="PX1036PK_ChangeNameAndLocationFix" xml:space="preserve">
+    <value>Change this key's name to "PK" which is the name for the DAC's primary key</value>
+  </data>
+  <data name="PX1036PK_ChangeNameFix" xml:space="preserve">
+    <value>Change the name of this key to "PK"</value>
+  </data>
+  <data name="PX1036SingleUKFix" xml:space="preserve">
+    <value>Change the name of the single unique key to "UK"</value>
+  </data>
+  <data name="PX1036SingleUKTitle" xml:space="preserve">
+    <value>The single unique key in the DAC should be named "UK"</value>
+  </data>
+  <data name="PX1037Title" xml:space="preserve">
+    <value>Unbound DAC field cannot be used in the declaration of a key</value>
+  </data>
+  <data name="PX1040Fix" xml:space="preserve">
+    <value>Move the code to the Initialize() method</value>
+  </data>
+  <data name="PX1040Title" xml:space="preserve">
+    <value>Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead</value>
+  </data>
+  <data name="PX1041Fix" xml:space="preserve">
+    <value>Convert the graph event handler to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else.</value>
+  </data>
+  <data name="PX1041Title" xml:space="preserve">
+    <value>The graph event handler has a weekly typed signature that relies on a naming convention. Consider converting it to a strongly typed generic signature for a better type safety enforced by the C# compiler.</value>
+  </data>
+  <data name="PX1042Fix" xml:space="preserve">
+    <value>Surround the BQL statement or database query execution with a connection scope</value>
+  </data>
+  <data name="PX1042Title" xml:space="preserve">
+    <value>In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope</value>
+  </data>
+  <data name="PX1043Title" xml:space="preserve">
+    <value>Changes cannot be saved to the database from the event handler</value>
+  </data>
+  <data name="PX1043TitleRowPersistedNonISV" xml:space="preserve">
+    <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisted event handler</value>
+  </data>
+  <data name="PX1043TitleRowPersisting" xml:space="preserve">
+    <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisting event handler</value>
+  </data>
+  <data name="PX1044MessageFormat" xml:space="preserve">
+    <value>Changing PXCache is prohibited in the {0} event handler</value>
+  </data>
+  <data name="PX1044Title" xml:space="preserve">
+    <value>Changing PXCache is prohibited in this event handler</value>
+  </data>
+  <data name="PX1045Title" xml:space="preserve">
+    <value>A PXGraph instance cannot be created within an event handler</value>
+  </data>
+  <data name="PX1046Title" xml:space="preserve">
+    <value>A long-running operation cannot be started within an event handler</value>
+  </data>
+  <data name="PX1047MessageFormat" xml:space="preserve">
+    <value>A DAC instance passed to the {0} event handler cannot be modified inside this event handler</value>
+  </data>
+  <data name="PX1047Title" xml:space="preserve">
+    <value>A DAC instance passed to the event handler cannot be modified inside the event handler</value>
+  </data>
+  <data name="PX1048MessageFormat" xml:space="preserve">
+    <value>Only the DAC instance that is passed in the event arguments can be modified in the {0} event handler</value>
+  </data>
+  <data name="PX1048Title" xml:space="preserve">
+    <value>Only the DAC instance that is passed in the event arguments can be modified in this event handler</value>
+  </data>
+  <data name="PX1049Title" xml:space="preserve">
+    <value>In a RowSelected handler, BQL statements and other database queries should be avoided</value>
+  </data>
+  <data name="PX1050Title_HardcodedString" xml:space="preserve">
+    <value>Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
+  </data>
+  <data name="PX1050Title_NonConstFieldString" xml:space="preserve">
+    <value>Strings that are not constant fields are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
+  </data>
+  <data name="PX1051Title" xml:space="preserve">
+    <value>Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
+  </data>
+  <data name="PX1052Title" xml:space="preserve">
+    <value>Incorrect format string in the localization method. You should use correct format string constants from the appropriate localizable messages class.</value>
+  </data>
+  <data name="PX1053Title" xml:space="preserve">
+    <value>Strings concatenation is not allowed as a parameter for localization methods and PXException constructors. You should use localization format methods instead.</value>
+  </data>
+  <data name="PX1054Title" xml:space="preserve">
+    <value>A PXGraph instance should not start PXLongOperation during the initialization phase</value>
+  </data>
+  <data name="PX1055FixEditIdentityAttribute" xml:space="preserve">
+    <value>Make the field bound to the identity column be a non-key field and leave all other key fields untouched</value>
+  </data>
+  <data name="PX1055FixEditKeyFieldAttributes" xml:space="preserve">
+    <value>Make the field bound to the identity column be the only key field in the DAC</value>
+  </data>
+  <data name="PX1055FixRemoveIdentityAttribute" xml:space="preserve">
+    <value>Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.)</value>
+  </data>
+  <data name="PX1055Title" xml:space="preserve">
+    <value>Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key.</value>
   </data>
   <data name="PX1056TitleIsActive" xml:space="preserve">
     <value>A PXGraph instance cannot be initialized inside the IsActive method</value>
@@ -604,32 +522,29 @@
   <data name="PX1056TitleIsActiveForGraph" xml:space="preserve">
     <value>A PXGraph instance cannot be initialized inside the IsActiveForGraph&lt;TGraph&gt; method</value>
   </data>
-  <data name="PX1008Title_CapturedGraphFormatArg" xml:space="preserve">
-    <value>the screen graph</value>
+  <data name="PX1057Title" xml:space="preserve">
+    <value>A PXGraph instance cannot be initialized while another PXGraph instance is being initialized</value>
   </data>
-  <data name="PX1008Title_CapturedPXAdapterFormatArg" xml:space="preserve">
-    <value>the action delegate adapter</value>
+  <data name="PX1058Title" xml:space="preserve">
+    <value>A PXGraph instance should not save changes to the database during the initialization phase</value>
   </data>
-  <data name="PX1008Title_ProcessingDelegateFormatArg" xml:space="preserve">
-    <value>processing</value>
+  <data name="PX1059Title" xml:space="preserve">
+    <value>Changes to PXCache cannot be performed during PXGraph initialization</value>
   </data>
-  <data name="PX1008Title_LongRunDelegateFormatArg" xml:space="preserve">
-    <value>long-running operation</value>
+  <data name="PX1060Fix" xml:space="preserve">
+    <value>Make field strongly typed</value>
   </data>
-  <data name="PX1072Title_CreateSharedGraphVariable" xml:space="preserve">
-    <value>Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries.</value>
+  <data name="PX1060Title" xml:space="preserve">
+    <value>The {0} field should be strongly typed to be used in the fluent BQL queries</value>
   </data>
-  <data name="PX1062MessageFormat" xml:space="preserve">
-    <value>You cannot declare static {0} in graphs or graph extensions</value>
+  <data name="PX1061Fix" xml:space="preserve">
+    <value>Make constant strongly typed</value>
   </data>
-  <data name="PX1062MessageFormatArg_Fields" xml:space="preserve">
-    <value>mutable fields</value>
+  <data name="PX1061Title" xml:space="preserve">
+    <value>The {0} constant should be strongly typed to be used in the fluent BQL queries</value>
   </data>
-  <data name="PX1062MessageFormatArg_Properties" xml:space="preserve">
-    <value>mutable properties</value>
-  </data>
-  <data name="PX1062FixMakeReadOnlyFormat" xml:space="preserve">
-    <value>Make the {0} read-only</value>
+  <data name="PX1062FixFormatArg_Action" xml:space="preserve">
+    <value>action</value>
   </data>
   <data name="PX1062FixFormatArg_Field" xml:space="preserve">
     <value>field</value>
@@ -637,32 +552,147 @@
   <data name="PX1062FixFormatArg_Property" xml:space="preserve">
     <value>property</value>
   </data>
-  <data name="PX1062MessageFormatArg_Views" xml:space="preserve">
-    <value>views</value>
-  </data>
-  <data name="PX1062MessageFormatArg_Actions" xml:space="preserve">
-    <value>actions</value>
+  <data name="PX1062FixFormatArg_View" xml:space="preserve">
+    <value>view</value>
   </data>
   <data name="PX1062FixMakeNonStaticFormat" xml:space="preserve">
     <value>Remove the static modifier from the {0}</value>
   </data>
-  <data name="PX1062FixFormatArg_View" xml:space="preserve">
-    <value>view</value>
+  <data name="PX1062FixMakeReadOnlyFormat" xml:space="preserve">
+    <value>Make the {0} read-only</value>
   </data>
-  <data name="PX1062FixFormatArg_Action" xml:space="preserve">
-    <value>action</value>
+  <data name="PX1062MessageFormat" xml:space="preserve">
+    <value>You cannot declare static {0} in graphs or graph extensions</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Actions" xml:space="preserve">
+    <value>actions</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Fields" xml:space="preserve">
+    <value>mutable fields</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Properties" xml:space="preserve">
+    <value>mutable properties</value>
+  </data>
+  <data name="PX1062MessageFormatArg_Views" xml:space="preserve">
+    <value>views</value>
+  </data>
+  <data name="PX1063Fix" xml:space="preserve">
+    <value>Add a serialization constructor to the exception declaration</value>
   </data>
   <data name="PX1063Title" xml:space="preserve">
     <value>The declaration of the exception class does not contain a serialization constructor. This will cause incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
   </data>
-  <data name="PX1064Title" xml:space="preserve">
-    <value>The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
-  </data>
   <data name="PX1064Fix" xml:space="preserve">
     <value>Add an override for the GetObjectData method to the exception declaration</value>
   </data>
-  <data name="PX1063Fix" xml:space="preserve">
-    <value>Add a serialization constructor to the exception declaration</value>
+  <data name="PX1064Title" xml:space="preserve">
+    <value>The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
+  </data>
+  <data name="PX1065Title" xml:space="preserve">
+    <value>The forbidden API is used</value>
+  </data>
+  <data name="PX1065TitleFormat" xml:space="preserve">
+    <value>The forbidden {0} "{1}" is used</value>
+  </data>
+  <data name="PX1065TitleFormatWithDetails" xml:space="preserve">
+    <value>The forbidden {0} "{1}" is used.
+Details: "{2}".</value>
+  </data>
+  <data name="PX1070Title" xml:space="preserve">
+    <value>The state of fields and actions can be configured only in the RowSelected event handler</value>
+  </data>
+  <data name="PX1071Title" xml:space="preserve">
+    <value>Actions cannot be executed within event handlers</value>
+  </data>
+  <data name="PX1072Fix" xml:space="preserve">
+    <value>Replace {0} with the following PXGraph instance: {1}</value>
+  </data>
+  <data name="PX1072Title_CreateSharedGraphVariable" xml:space="preserve">
+    <value>Creating a graph for a BQL query is a resource consuming operation. To decrease the number of these operations, create a variable with a shared graph that can be reused by BQL queries.</value>
+  </data>
+  <data name="PX1072Title_ReuseExistingGraphVariable" xml:space="preserve">
+    <value>BQL queries must be executed within the context of an existing PXGraph instance</value>
+  </data>
+  <data name="PX1073Title" xml:space="preserve">
+    <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
+  </data>
+  <data name="PX1074MessageFormat" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.</value>
+  </data>
+  <data name="PX1074Title" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.</value>
+  </data>
+  <data name="PX1075MessageFormat" xml:space="preserve">
+    <value>PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler</value>
+  </data>
+  <data name="PX1075Title" xml:space="preserve">
+    <value>PXCache.RaiseExceptionHandling cannot be invoked from this event handler</value>
+  </data>
+  <data name="PX1076Title" xml:space="preserve">
+    <value>This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use</value>
+  </data>
+  <data name="PX1080Title" xml:space="preserve">
+    <value>Data view delegates should not start long-running operations</value>
+  </data>
+  <data name="PX1081Title" xml:space="preserve">
+    <value>Actions cannot be executed during the PXGraph initialization</value>
+  </data>
+  <data name="PX1082Title" xml:space="preserve">
+    <value>Actions cannot be executed within data view delegates</value>
+  </data>
+  <data name="PX1083Title" xml:space="preserve">
+    <value>Changes cannot be saved to the database from data view delegates</value>
+  </data>
+  <data name="PX1084Title" xml:space="preserve">
+    <value>PXGraph instances cannot be initialized within data view delegates</value>
+  </data>
+  <data name="PX1085Title" xml:space="preserve">
+    <value>BQL statements and other database queries should not be executed during the PXGraph initialization</value>
+  </data>
+  <data name="PX1086Title" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown in long-running operations</value>
+  </data>
+  <data name="PX1087Title" xml:space="preserve">
+    <value>This invocation of the base data view delegate can cause a StackOverflowException</value>
+  </data>
+  <data name="PX1088Title" xml:space="preserve">
+    <value>Processing delegates cannot use the data views from processing graphs except for the data views of the PXFilter, PXProcessingBase, or PXSetup types</value>
+  </data>
+  <data name="PX1089Title" xml:space="preserve">
+    <value>The state of fields and actions cannot be configured in action delegates</value>
+  </data>
+  <data name="PX1090Title" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown in action handlers</value>
+  </data>
+  <data name="PX1091Title" xml:space="preserve">
+    <value>This invocation of the base action handler can cause a StackOverflowException</value>
+  </data>
+  <data name="PX1092Fix" xml:space="preserve">
+    <value>Add the missing attribute or attributes to the action handler</value>
+  </data>
+  <data name="PX1092Title" xml:space="preserve">
+    <value>Action handlers must be decorated with the PXUIField attribute and the PXButton attribute or its successors</value>
+  </data>
+  <data name="PX1093Fix" xml:space="preserve">
+    <value>Change graph type parameter</value>
+  </data>
+  <data name="PX1093Title" xml:space="preserve">
+    <value>Graph declaration should contain graph type as first type parameter</value>
+  </data>
+  <data name="PX1094FixPXCacheNameAttribute" xml:space="preserve">
+    <value>Add the PXCacheName attribute</value>
+  </data>
+  <data name="PX1094FixPXHiddenAttribute" xml:space="preserve">
+    <value>Add the PXHidden attribute</value>
+  </data>
+  <data name="PX1094PXCacheNameDefaultArgumentValue" xml:space="preserve">
+    <value>Enter a cache name for this DAC</value>
+  </data>
+  <data name="PX1094Title" xml:space="preserve">
+    <value>A DAC must be decorated with the PXHidden or PXCacheName attribute</value>
+  </data>
+  <data name="PX1095Title_PXDBCalced" xml:space="preserve">
+    <value>A field with the PXDBCalced attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
   </data>
   <data name="PX1095Title_PXDBScalar" xml:space="preserve">
     <value>A field with the PXDBScalar attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
@@ -670,36 +700,16 @@
   <data name="PX1096Title" xml:space="preserve">
     <value>The signature of a method with the PXOverride attribute must match the overridden method</value>
   </data>
-  <data name="PX1007Title_IncorrectProjectionDacFieldDescription" xml:space="preserve">
-    <value>Incorrect XML documentation of the projection DAC field property. The &lt;inheritdoc/&gt; tag with `cref` attribute should be used for a mapped DAC field property of the projection DAC.
-The `cref` attribute should reference the original DAC field property from the projection field's mapping:
-
-/// &lt;inheritdoc cref="OriginalDac.SomeDacField"/&gt;
-[PXDBInt(BqlField = typeof(OriginalDac.someDacField))]
-public virtual int? SomeDacField{ get; set; }</value>
+  <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
+    <value>Suppress the {0} diagnostic with Acuminator</value>
   </data>
-  <data name="PX1007FixAddInheritdocTag" xml:space="preserve">
-    <value>Add the &lt;inheritdoc/&gt; tag for the projection DAC property with `cref` attribute referencing the mapped original DAC property</value>
+  <data name="SuppressDiagnosticInSuppressionFileCodeActionTitle" xml:space="preserve">
+    <value>in the Acuminator suppression file</value>
   </data>
-  <data name="PX1041Title" xml:space="preserve">
-    <value>The graph event handler has a weekly typed signature that relies on a naming convention. Consider converting it to a strongly typed generic signature for a better type safety enforced by the C# compiler.</value>
+  <data name="SuppressDiagnosticWithCommentNestedCodeActionTitle" xml:space="preserve">
+    <value>in a comment</value>
   </data>
-  <data name="PX1041Fix" xml:space="preserve">
-    <value>Convert the graph event handler to a strongly typed generic signature. Please, be careful because the event handler can be overwritten somewhere else.</value>
-  </data>
-  <data name="PX1027ForbiddenCompanyPrefixInDacFieldTitle" xml:space="preserve">
-    <value>The name of a DAC field cannot start with the "Company" prefix because company masks work incorrectly with such fields.</value>
-  </data>
-  <data name="PX1022DacFix" xml:space="preserve">
-    <value>Make DAC public</value>
-  </data>
-  <data name="PX1022DacTitle" xml:space="preserve">
-    <value>Non-public DACs are not supported</value>
-  </data>
-  <data name="PX1022GraphExtensionTitle" xml:space="preserve">
-    <value>Non-public graph extensions are not supported</value>
-  </data>
-  <data name="PX1022GraphExtensionFix" xml:space="preserve">
-    <value>Make the graph extension public</value>
+  <data name="SuppressDiagnosticWithCommentNonNestedCodeActionTitle" xml:space="preserve">
+    <value>Suppress the {0} diagnostic with Acuminator in a comment</value>
   </data>
 </root>
