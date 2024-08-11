@@ -139,6 +139,21 @@ namespace Acuminator.Utilities.ForbiddenApi.Model
 			return rawApiData;
 		}
 
+		public Api(Api sourceApi, ApiBanKind banKind, string? apiBanReason)
+		{
+			RawApiData 		   = sourceApi.CheckIfNull().RawApiData;
+			Kind 			   = sourceApi.Kind;
+			DocID 			   = sourceApi.DocID;
+			FullName 		   = sourceApi.FullName;
+			Namespace 		   = sourceApi.Namespace;
+			AllContainingTypes = sourceApi.AllContainingTypes;
+			TypeName 		   = sourceApi.TypeName;
+			FullTypeName 	   = sourceApi.FullTypeName;
+			MemberName 		   = sourceApi.MemberName;
+			BanKind 		   = banKind;
+			BanReason 		   = apiBanReason.NullIfWhiteSpace();
+		}
+
 		public Api(string rawApiData)
 		{
 			RawApiData = rawApiData.CheckIfNullOrWhiteSpace().Trim();

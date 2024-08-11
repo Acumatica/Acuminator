@@ -38,4 +38,7 @@
     </EmbeddedResource>
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ForbiddenApi\Storage\" />
+  </ItemGroup>
 </Project>
