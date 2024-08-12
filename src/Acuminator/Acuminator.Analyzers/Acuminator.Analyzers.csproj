@@ -16,14 +16,14 @@
     <RestorePackagesPath>../../packages</RestorePackagesPath>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="StaticAnalysis\ForbiddenAPI\Data\BannedApis.txt" />
-    <None Remove="StaticAnalysis\ForbiddenAPI\Data\WhiteList.txt" />
+    <None Remove="StaticAnalysis\BannedApi\Data\BannedApis.txt" />
+    <None Remove="StaticAnalysis\BannedApi\Data\WhiteList.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="StaticAnalysis\ForbiddenAPI\Data\BannedApis.txt">
+    <EmbeddedResource Include="StaticAnalysis\BannedApi\Data\BannedApis.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="StaticAnalysis\ForbiddenAPI\Data\WhiteList.txt">
+    <EmbeddedResource Include="StaticAnalysis\BannedApi\Data\WhiteList.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
