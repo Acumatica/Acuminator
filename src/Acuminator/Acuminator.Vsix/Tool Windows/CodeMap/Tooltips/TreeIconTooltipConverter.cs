@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			return icon switch
 			{
-				Icon.DacKeyProperty 							=> VSIXResource.CodeMap_ExtraInfo_DacKeyIconTooltip,
+				Icon.DacKeyField 								=> VSIXResource.CodeMap_ExtraInfo_DacKeyIconTooltip,
 				Icon.Settings 									=> VSIXResource.CodeMap_ExtraInfo_PXSetupViewIconTooltip,
 				Icon.Filter 									=> VSIXResource.CodeMap_ExtraInfo_PXFilterViewIconTooltip,
 				Icon.Processing when node is ViewNodeViewModel 	=> VSIXResource.CodeMap_ExtraInfo_ProcessingViewIconTooltip,

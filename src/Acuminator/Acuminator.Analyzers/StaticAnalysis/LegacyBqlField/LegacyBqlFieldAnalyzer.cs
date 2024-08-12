@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			foreach (DacFieldInfo dacField in dac.DeclaredFields)
+			foreach (DacBqlFieldInfo dacField in dac.DeclaredBqlFields)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 

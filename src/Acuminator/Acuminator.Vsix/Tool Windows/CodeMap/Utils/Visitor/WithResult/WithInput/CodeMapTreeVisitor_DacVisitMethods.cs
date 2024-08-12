@@ -15,19 +15,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#endregion
 
 		#region Categories
-		public virtual TResult VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory, TInput input) => DefaultVisit(dacPropertiesCategory, input);
+		public virtual TResult VisitNode(AllDacFieldsDacCategoryNodeViewModel allDacFieldsCategory, TInput input) => DefaultVisit(allDacFieldsCategory, input);
 
-		public virtual TResult VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory, TInput input) => DefaultVisit(dacKeysCategory, input);
+		public virtual TResult VisitNode(KeyDacFieldsCategoryNodeViewModel dacKeyFieldsCategory, TInput input) => DefaultVisit(dacKeyFieldsCategory, input);
 
 		public virtual TResult VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory, TInput input) =>
 			DefaultVisit(dacInitializationAndActivationCategory, input);
 		#endregion
 
 		#region Leaf Nodes
-		public virtual TResult VisitNode(PropertyNodeViewModel property, TInput input) => DefaultVisit(property, input);
+		public virtual TResult VisitNode(DacFieldGroupingNodeViewModel dacField, TInput input) => 
+			DefaultVisit(dacField, input);
 
 		public virtual TResult VisitNode(IsActiveDacMethodNodeViewModel isActiveDacMethodNode, TInput input) =>
 			DefaultVisit(isActiveDacMethodNode, input);
+
+		public virtual TResult VisitNode(DacBqlFieldNodeViewModel dacBqlField, TInput input) => 
+			DefaultVisit(dacBqlField, input);
+
+		public virtual TResult VisitNode(DacFieldPropertyNodeViewModel dacFieldProperty, TInput input) => 
+			DefaultVisit(dacFieldProperty, input);
 		#endregion
 
 		#region Attribute Nodes

@@ -3,15 +3,14 @@
 using System;
 using System.Collections.Generic;
 
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedAttributeNodeViewModel : AttributeNodeViewModel<CacheAttachedAttributeInfo>
 	{
-		public CacheAttachedAttributeNodeViewModel(TreeNodeViewModel nodeVM, CacheAttachedAttributeInfo attributeInfo, bool isExpanded = false) :
-												   base(nodeVM, attributeInfo, isExpanded)
+		public CacheAttachedAttributeNodeViewModel(TreeNodeViewModel parent, CacheAttachedAttributeInfo attributeInfo, bool isExpanded = false) :
+												   base(parent, attributeInfo, isExpanded)
 		{
 		}
 

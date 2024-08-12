@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExt)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			var autoNumberProperties = dacOrDacExt.DeclaredDacProperties.Where(property => property.IsAutoNumbering);
+			var autoNumberProperties = dacOrDacExt.DeclaredDacFieldProperties.Where(property => property.IsAutoNumbering);
 
 			foreach (DacPropertyInfo dacProperty in autoNumberProperties)
 			{

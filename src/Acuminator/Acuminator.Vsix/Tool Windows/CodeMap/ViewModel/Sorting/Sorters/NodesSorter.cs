@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,7 +17,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public List<TreeNodeViewModel> SortNodes(IEnumerable<TreeNodeViewModel> nodes, SortType sortType, SortDirection sortDirection)
 		{
 			if (nodes.IsNullOrEmpty())
-				return new List<TreeNodeViewModel>();
+				return [];
 
 			var sortedNodes = new List<TreeNodeViewModel>(capacity: 8);
 			var sortableNodes = new List<TreeNodeViewModel>(capacity: 8);
@@ -100,6 +102,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				GraphStaticConstructorNodeViewModel   => false,
 
 				DacGroupingNodeBaseViewModel or DacFieldGroupingNodeBaseViewModel => sortType == SortType.Alphabet,
+
+				DacFieldPropertyNodeViewModel => false,
+				DacBqlFieldNodeViewModel	  => false,
 
 				_ => sortType == SortType.Alphabet || sortType == SortType.Declaration
 			};

@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			var declaredInDacKeyAttributes = new List<DacFieldAttributeInfo>(capacity: 2);
 			bool containsIdentityKeys = false;
 
-			foreach (DacPropertyInfo property in dac.DacProperties.Where(p => p.IsKey))
+			foreach (DacPropertyInfo property in dac.DacFieldProperties.Where(p => p.IsKey))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 

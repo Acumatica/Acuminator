@@ -41,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             if (dacOrExtension.IsFullyUnbound)
                 return;
 
-			foreach (DacPropertyInfo property in dacOrExtension.DeclaredDacProperties)
+			foreach (DacPropertyInfo property in dacOrExtension.DeclaredDacFieldProperties)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 				AnalyzeProperty(context, pxContext, dacOrExtension, property);

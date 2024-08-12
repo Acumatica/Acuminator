@@ -69,7 +69,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		/// <summary>
-		/// Get the DAC fields symbols and syntax nodes from the DAC.
+		/// Get the DAC BQL fields symbols and syntax nodes from the DAC.
 		/// </summary>
 		/// <param name="dac">The DAC to act on.</param>
 		/// <param name="pxContext">Context.</param>
@@ -78,27 +78,27 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns>
 		/// The DAC fields from DAC.
 		/// </returns>
-		public static OverridableItemsCollection<DacFieldInfo> GetDacFieldsFromDac(this ITypeSymbol dac, PXContext pxContext, 
-																				   bool includeFromInheritanceChain = true,
-																				   CancellationToken cancellation = default)
+		public static OverridableItemsCollection<DacBqlFieldInfo> GetDacBqlFieldsFromDac(this ITypeSymbol dac, PXContext pxContext, 
+																						 bool includeFromInheritanceChain = true,
+																						 CancellationToken cancellation = default)
 		{
 			dac.ThrowOnNull();
 			pxContext.ThrowOnNull();
 
 			if (!dac.IsDAC(pxContext))
-				return new OverridableItemsCollection<DacFieldInfo>();
+				return new OverridableItemsCollection<DacBqlFieldInfo>();
 
 			int estimatedCapacity = dac.GetTypeMembers().Length;
-			var dacFieldsByName = new OverridableItemsCollection<DacFieldInfo>(estimatedCapacity);
-			var dacFields = GetRawDacFieldsFromDacImpl(dac, pxContext, includeFromInheritanceChain, cancellation);
+			var dacFieldsByName = new OverridableItemsCollection<DacBqlFieldInfo>(estimatedCapacity);
+			var dacFields = GetRawDacBqlFieldsFromDacImpl(dac, pxContext, includeFromInheritanceChain, cancellation);
 
 			dacFieldsByName.AddRangeWithDeclarationOrder(dacFields, startingOrder: 0, 
-														 (dacField, order) => new DacFieldInfo(dacField.Node, dacField.Symbol, order));
+												(dacField, order) => DacBqlFieldInfo.CreateUnsafe(pxContext, dacField.Node, dacField.Symbol, order));
 			return dacFieldsByName;
 		}
 
 		/// <summary>
-		/// Get the DAC field symbols and syntax nodes from the DAC extension.
+		/// Get the DAC BQL field symbols and syntax nodes from the DAC extension.
 		/// </summary>
 		/// <param name="dacExtension">The DAC extension to act on.</param>
 		/// <param name="pxContext">Context.</param>
@@ -106,31 +106,31 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <returns>
 		/// The DAC fields from DAC extension and base DAC.
 		/// </returns>
-		public static OverridableItemsCollection<DacFieldInfo> GetDacFieldsFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
-																									  CancellationToken cancellation = default)
+		public static OverridableItemsCollection<DacBqlFieldInfo> GetDacBqlFieldsFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
+																											CancellationToken cancellation = default)
 		{
 			dacExtension.ThrowOnNull();
 			pxContext.ThrowOnNull();
 
-			return GetPropertiesOrFieldsInfoFromDacExtension<DacFieldInfo>(dacExtension, pxContext, AddFieldsFromDac, AddFieldsFromDacExtension);
+			return GetPropertiesOrFieldsInfoFromDacExtension<DacBqlFieldInfo>(dacExtension, pxContext, AddFieldsFromDac, AddFieldsFromDacExtension);
 
 
-			int AddFieldsFromDac(OverridableItemsCollection<DacFieldInfo> fieldsCollection, ITypeSymbol dac, int startingOrder)
+			int AddFieldsFromDac(OverridableItemsCollection<DacBqlFieldInfo> fieldsCollection, ITypeSymbol dac, int startingOrder)
 			{
-				var rawDacFields = dac.GetRawDacFieldsFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
+				var rawDacFields = dac.GetRawDacBqlFieldsFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
 				return fieldsCollection.AddRangeWithDeclarationOrder(rawDacFields, startingOrder, 
-																	 (dacField, order) => new DacFieldInfo(dacField.Node, dacField.Symbol, order));
+															(dacField, order) => DacBqlFieldInfo.CreateUnsafe(pxContext, dacField.Node, dacField.Symbol, order));
 			}
 
-			int AddFieldsFromDacExtension(OverridableItemsCollection<DacFieldInfo> fieldsCollection, ITypeSymbol dacExt, int startingOrder)
+			int AddFieldsFromDacExtension(OverridableItemsCollection<DacBqlFieldInfo> fieldsCollection, ITypeSymbol dacExt, int startingOrder)
 			{
-				var rawDacExtensionFields = dacExt.GetRawDacFieldsFromDacOrDacExtension(pxContext, cancellation);
+				var rawDacExtensionFields = dacExt.GetRawDacBqlFieldsFromDacOrDacExtension(pxContext, cancellation);
 				return fieldsCollection.AddRangeWithDeclarationOrder(rawDacExtensionFields, startingOrder,
-																	 (dacField, order) => new DacFieldInfo(dacField.Node, dacField.Symbol, order));
+															(dacField, order) => DacBqlFieldInfo.CreateUnsafe(pxContext, dacField.Node, dacField.Symbol, order));
 			}
 		}
 
-		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetRawDacFieldsFromDacImpl(this ITypeSymbol dac,
+		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetRawDacBqlFieldsFromDacImpl(this ITypeSymbol dac,
 																								PXContext pxContext, bool includeFromInheritanceChain,
 																								CancellationToken cancellation)
 		{
@@ -138,20 +138,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				return dac.GetDacWithBaseTypesThatMayStoreDacProperties(pxContext)
 						  .Reverse()
-						  .SelectMany(baseGraph => GetRawDacFieldsFromDacOrDacExtension(baseGraph, pxContext, cancellation));
+						  .SelectMany(baseGraph => GetRawDacBqlFieldsFromDacOrDacExtension(baseGraph, pxContext, cancellation));
 			}
 			else
 			{
-				return GetRawDacFieldsFromDacOrDacExtension(dac, pxContext, cancellation);
+				return GetRawDacBqlFieldsFromDacOrDacExtension(dac, pxContext, cancellation);
 			}
 		}
 
-		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetRawDacFieldsFromDacOrDacExtension(
+		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetRawDacBqlFieldsFromDacOrDacExtension(
 																								this ITypeSymbol dacOrDacExtension,
 																								PXContext pxContext, CancellationToken cancellation)
 		{
 			IEnumerable<INamedTypeSymbol> dacFields = dacOrDacExtension.GetTypeMembers()
-																	   .Where(type => type.IsDacField(pxContext));												 
+																	   .Where(type => type.IsDacField(pxContext)); 
 			foreach (INamedTypeSymbol field in dacFields)
 			{
 				cancellation.ThrowIfCancellationRequested();

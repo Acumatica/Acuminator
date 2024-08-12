@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -49,8 +48,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			CategoryType = dacCategoryType;
 			CategoryDescription = CategoryType.Description();
 		}
-
-		public abstract IEnumerable<SymbolItem> GetCategoryDacNodeSymbols();
 
 		public async override Task NavigateToItemAsync()
 		{

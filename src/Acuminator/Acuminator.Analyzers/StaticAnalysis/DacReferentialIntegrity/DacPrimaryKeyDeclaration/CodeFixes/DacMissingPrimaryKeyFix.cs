@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			cancellation.ThrowIfCancellationRequested();
 
 			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
-			List<DacPropertyInfo> dacKeys = dacSemanticModel?.DacProperties
+			List<DacPropertyInfo> dacKeys = dacSemanticModel?.DacFieldProperties
 															 .Where(property => property.IsKey)
 															 .OrderBy(property => property.DeclarationOrder)
 															 .ToList(capacity: 4);
@@ -117,7 +117,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			var primaryKeyOfTypeNode = generator.GenericName(pxContext.ReferentialIntegritySymbols.PrimaryKeyOf.Name,
 															 generator.TypeExpression(dacSemanticModel.Symbol));
-			var dacFieldTypeArgNodes = dacKeys.Select(keyProperty => dacSemanticModel.FieldsByNames[keyProperty.Name])
+			var dacFieldTypeArgNodes = dacKeys.Select(keyProperty => dacSemanticModel.BqlFieldsByNames[keyProperty.Name])
 											  .Select(keyField => generator.TypeExpression(keyField.Symbol));
 
 			return generator.QualifiedName(primaryKeyOfTypeNode, generator.GenericName(TypeNames.ReferentialIntegrity.By_TypeName, dacFieldTypeArgNodes));
@@ -179,7 +179,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			foreach (DacPropertyInfo keyProperty in dacKeys)
 			{
-				DacFieldInfo keyField = dacSemanticModel.FieldsByNames[keyProperty.Name];
+				DacBqlFieldInfo keyField = dacSemanticModel.BqlFieldsByNames[keyProperty.Name];
 				var parameterType = generator.TypeExpression(keyProperty.PropertyType);
 				var parameterNode = generator.ParameterDeclaration(keyField.Name, parameterType);
 

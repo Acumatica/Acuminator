@@ -116,14 +116,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
-											 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacFieldInfo> dacFields,
+											 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacBqlFieldInfo> dacFields,
 											 DacPropertyInfo? baseInfo = null)
 		{
-			context.ThrowOnNull();
-			property.ThrowOnNull();
-			dbBoundnessCalculator.ThrowOnNull();
-			dacFields.ThrowOnNull();
+			return CreateUnsafe(context.CheckIfNull(), node, property.CheckIfNull(), declarationOrder, 
+								dbBoundnessCalculator.CheckIfNull(), dacFields.CheckIfNull(), baseInfo);
+		}
 
+		internal static DacPropertyInfo CreateUnsafe(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
+													 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacBqlFieldInfo> dacFields,
+													 DacPropertyInfo? baseInfo = null)
+		{
 			bool isDacProperty = dacFields.ContainsKey(property.Name);
 			var attributeInfos = GetAttributeInfos(property, dbBoundnessCalculator);
 			var effectivePropertyType = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;

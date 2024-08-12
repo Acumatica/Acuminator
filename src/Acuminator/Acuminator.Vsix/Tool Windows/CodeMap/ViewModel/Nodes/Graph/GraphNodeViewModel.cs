@@ -8,6 +8,7 @@ using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
@@ -15,7 +16,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphNodeViewModel : TreeNodeViewModel
+	public class GraphNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		private int _currentNavigationIndex;
 
@@ -84,6 +85,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					return GraphSemanticModel.Symbol.NavigateToAsync(reference);
 			}		
+		}
+
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
+		{
+			var graphAttributesGroupNode = Children.OfType<GraphAttributesGroupNodeViewModel>().FirstOrDefault();
+			return graphAttributesGroupNode is IElementWithTooltip elementWithTooltip
+				? elementWithTooltip.CalculateTooltip()
+				: null;
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);

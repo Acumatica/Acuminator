@@ -97,7 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 														PXContext pxContext, SymbolAnalysisContext context)
 		{
 			var propertiesWithInvalidPrefix = 
-				dacOrDacExtension.DeclaredDacProperties
+				dacOrDacExtension.DeclaredDacFieldProperties
 								 .Where(property => property.Name.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase) &&
 													forbiddenNames.All(field => !field.Equals(property.Name, StringComparison.OrdinalIgnoreCase)));
 

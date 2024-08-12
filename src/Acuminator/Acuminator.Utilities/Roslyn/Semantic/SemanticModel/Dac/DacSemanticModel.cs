@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -50,16 +52,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
-		public IEnumerable<DacPropertyInfo> DacProperties => Properties.Where(p => p.IsDacProperty);
+		public IEnumerable<DacPropertyInfo> DacFieldProperties => Properties.Where(p => p.IsDacProperty);
 
-		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => Symbol.Equals(p.Symbol.ContainingType));
+		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => p.Symbol.IsDeclaredInType(Symbol));
 
-		public IEnumerable<DacPropertyInfo> DeclaredDacProperties => Properties.Where(p => p.IsDacProperty && Symbol.Equals(p.Symbol.ContainingType));
+		public IEnumerable<DacPropertyInfo> DeclaredDacFieldProperties => Properties.Where(p => p.IsDacProperty && p.Symbol.IsDeclaredInType(Symbol));
 
-		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
-		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
+		public ImmutableDictionary<string, DacBqlFieldInfo> BqlFieldsByNames { get; }
+		public IEnumerable<DacBqlFieldInfo> BqlFields => BqlFieldsByNames.Values;
 
-		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => Symbol.Equals(f.Symbol.ContainingType));
+		public IEnumerable<DacBqlFieldInfo> DeclaredBqlFields => BqlFields.Where(f => f.Symbol.IsDeclaredInType(Symbol));
+
+		public ImmutableDictionary<string, DacFieldInfo> DacFieldsByNames { get; }
+
+		public IEnumerable<DacFieldInfo> DacFields => DacFieldsByNames.Values;
+
+		public IEnumerable<DacFieldInfo> DeclaredDacFields => DacFields.Where(f => f.IsDeclaredInType(Symbol));
 
 		/// <summary>
 		/// Information about the IsActive method of the DAC extensions. 
@@ -67,7 +75,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <value>
 		/// Information about the IsActive method.
 		/// </value>
-		public IsActiveMethodInfo IsActiveMethodInfo { get; }
+		public IsActiveMethodInfo? IsActiveMethodInfo { get; }
 
 		/// <summary>
 		/// The attributes declared on a DAC or a DAC extension.
@@ -86,15 +94,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Symbol = symbol;
 			DacSymbol = DacType == DacType.Dac
 				? Symbol
-				: Symbol.GetDacFromDacExtension(PXContext);
+				: Symbol.GetDacFromDacExtension(PXContext)!;
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(PXContext.PXMappedCacheExtensionType);
 
 			Attributes         = GetDacAttributes();
-			FieldsByNames      = GetDacFields();
+			BqlFieldsByNames   = GetDacBqlFields();
 			PropertiesByNames  = GetDacProperties();
+			DacFieldsByNames   = DacFieldsCollector.CollectDacFieldsFromDacPropertiesAndBqlFields(Symbol, DacType, PXContext,
+																								   BqlFieldsByNames, PropertiesByNames);
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 
-			IsFullyUnbound  = DacProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
+			IsFullyUnbound  = DacFieldProperties.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
 			IsProjectionDac = CheckIfDacIsProjection();
 		}
 
@@ -106,7 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <param name="semanticModel">Semantic model</param>
 		/// <param name="cancellation">Cancellation token</param>
 		/// <returns/>
-		public static DacSemanticModel InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+		public static DacSemanticModel? InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{		
 			pxContext.ThrowOnNull();
 			typeSymbol.ThrowOnNull();
@@ -160,12 +170,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
-			GetInfos(() => Symbol.GetDacPropertiesFromDac(PXContext, FieldsByNames, cancellation: _cancellation),
-					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, FieldsByNames, _cancellation));
+			GetInfos(() => Symbol.GetDacPropertiesFromDac(PXContext, BqlFieldsByNames, cancellation: _cancellation),
+					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, BqlFieldsByNames, _cancellation));
 
-		private ImmutableDictionary<string, DacFieldInfo> GetDacFields() =>
-			GetInfos(() => Symbol.GetDacFieldsFromDac(PXContext, cancellation: _cancellation),
-					 () => Symbol.GetDacFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
+		private ImmutableDictionary<string, DacBqlFieldInfo> GetDacBqlFields() =>
+			GetInfos(() => Symbol.GetDacBqlFieldsFromDac(PXContext, cancellation: _cancellation),
+					 () => Symbol.GetDacBqlFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
 
 		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> dacInfosSelector,
 																   Func<OverridableItemsCollection<TInfo>> dacExtInfosSelector)
@@ -178,7 +188,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 		}
 
-		private IsActiveMethodInfo GetIsActiveMethodInfo()
+		private IsActiveMethodInfo? GetIsActiveMethodInfo()
 		{
 			if (DacType != DacType.DacExtension)
 				return null;

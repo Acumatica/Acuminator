@@ -259,6 +259,60 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bound.
+        /// </summary>
+        public static string CodeMap_DbBoundnessIndicator_Bound {
+            get {
+                return ResourceManager.GetString("CodeMap_DbBoundnessIndicator_Bound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inconsistent.
+        /// </summary>
+        public static string CodeMap_DbBoundnessIndicator_Inconsistent {
+            get {
+                return ResourceManager.GetString("CodeMap_DbBoundnessIndicator_Inconsistent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXDBCalced.
+        /// </summary>
+        public static string CodeMap_DbBoundnessIndicator_PXDBCalced {
+            get {
+                return ResourceManager.GetString("CodeMap_DbBoundnessIndicator_PXDBCalced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXDBScalar.
+        /// </summary>
+        public static string CodeMap_DbBoundnessIndicator_PXDBScalar {
+            get {
+                return ResourceManager.GetString("CodeMap_DbBoundnessIndicator_PXDBScalar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unbound.
+        /// </summary>
+        public static string CodeMap_DbBoundnessIndicator_Unbound {
+            get {
+                return ResourceManager.GetString("CodeMap_DbBoundnessIndicator_Unbound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string CodeMap_DbBoundnessIndicator_Unknown {
+            get {
+                return ResourceManager.GetString("CodeMap_DbBoundnessIndicator_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Custom.
         /// </summary>
         public static string CodeMap_ExtraInfo_CustomViewLabel {

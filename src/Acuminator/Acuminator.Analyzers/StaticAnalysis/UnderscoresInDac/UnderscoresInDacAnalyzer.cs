@@ -30,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			if (dacOrDacExt.DacType == DacType.Dac)
 				CheckIdentifierForUnderscores(dacIdentifier, context, pxContext);
 
-			var fieldsIdentifiers = dacOrDacExt.DeclaredFields.Where(field => CheckDacMemberAccessibility(field.Symbol) && 
+			var fieldsIdentifiers = dacOrDacExt.DeclaredBqlFields.Where(field => CheckDacMemberAccessibility(field.Symbol) && 
 																			  dacOrDacExt.PropertiesByNames.ContainsKey(field.Name))
 															  .SelectMany(field => field.Node.GetIdentifiers());
 

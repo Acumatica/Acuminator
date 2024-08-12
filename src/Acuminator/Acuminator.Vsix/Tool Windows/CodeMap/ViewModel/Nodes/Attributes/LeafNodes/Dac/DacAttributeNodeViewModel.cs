@@ -6,7 +6,6 @@ using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -21,8 +20,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
-		public DacAttributeNodeViewModel(TreeNodeViewModel nodeVM, DacAttributeInfo attributeInfo, bool isExpanded = false) :
-									base(nodeVM, attributeInfo, isExpanded)
+		public DacAttributeNodeViewModel(TreeNodeViewModel parent, DacAttributeInfo attributeInfo, bool isExpanded = false) :
+									base(parent, attributeInfo, isExpanded)
 		{
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos());
 		}

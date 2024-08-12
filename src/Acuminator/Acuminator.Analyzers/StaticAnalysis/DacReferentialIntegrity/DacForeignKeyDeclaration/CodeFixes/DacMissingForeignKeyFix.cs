@@ -158,7 +158,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type!;
 			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
 			var dacPropertiesWithForeignKeys = 
-				from dacProperty in dacSemanticModel.DacProperties
+				from dacProperty in dacSemanticModel.DacFieldProperties
 				where !dacProperty.Attributes.IsDefaultOrEmpty && 
 					   dacProperty.DeclaredDbBoundness == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
 					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))

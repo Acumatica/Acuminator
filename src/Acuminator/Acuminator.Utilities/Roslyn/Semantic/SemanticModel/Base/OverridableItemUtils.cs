@@ -1,5 +1,8 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
+
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
@@ -10,23 +13,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	public static class OverridableItemUtils
 	{
 		public static IEnumerable<TInfo> ThisAndOverridenItems<TInfo>(this TInfo info)
-		where TInfo : IOverridableItem<TInfo>
-		{
-			info.ThrowOnNull();
-			return GetOverridenItems(info, includeOriginalItem: true);
-		}
-
+		where TInfo : IOverridableItem<TInfo> =>
+			GetOverridenItems(info.CheckIfNull(), includeOriginalItem: true);
+		
 		public static IEnumerable<TInfo> JustOverridenItems<TInfo>(this TInfo info)
-		where TInfo : IOverridableItem<TInfo>
-		{
-			info.ThrowOnNull();
-			return GetOverridenItems(info, includeOriginalItem: false);
-		}
+		where TInfo : IOverridableItem<TInfo> =>
+			GetOverridenItems(info.CheckIfNull(), includeOriginalItem: false);
 
 		private static IEnumerable<TInfo> GetOverridenItems<TInfo>(TInfo info, bool includeOriginalItem)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			TInfo current = includeOriginalItem
+			TInfo? current = includeOriginalItem
 				? info
 				: info.Base;
 
