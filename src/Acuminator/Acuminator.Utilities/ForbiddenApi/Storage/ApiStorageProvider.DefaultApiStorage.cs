@@ -10,7 +10,7 @@ using Acuminator.Utilities.ForbiddenApi.Model;
 
 namespace Acuminator.Utilities.ForbiddenApi.Storage
 {
-	public partial class ApiStorage
+	public partial class ApiStorageProvider
 	{
 		/// <summary>
 		/// A default API storage.

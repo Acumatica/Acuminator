@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.ForbiddenApi.Storage
     /// <summary>
     /// An API storage helper that keeps and retrieves the API storage.
     /// </summary>
-    public partial class ApiStorage
+    public partial class ApiStorageProvider
     {
 		private readonly SemaphoreSlim _initializationLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
         private volatile IApiStorage? _instance;
@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.ForbiddenApi.Storage
 		private readonly string? _dataFileRelativePath;
 		private readonly string? _dataAssemblyResourceName;
 
-		public ApiStorage(string? dataFileRelativePath, string? dataAssemblyResourceName)
+		public ApiStorageProvider(string? dataFileRelativePath, string? dataAssemblyResourceName)
 		{
 			_dataFileRelativePath = dataFileRelativePath.NullIfWhiteSpace();
 			_dataAssemblyResourceName = dataAssemblyResourceName.NullIfWhiteSpace();
@@ -103,7 +103,7 @@ namespace Acuminator.Utilities.ForbiddenApi.Storage
 			if (_dataFileRelativePath == null && _dataAssemblyResourceName == null)
 				return new EmptyProvider(considerDataAvailable: false);
 
-			Assembly assembly 		 = typeof(ApiStorage).Assembly;
+			Assembly assembly 		 = typeof(ApiStorageProvider).Assembly;
 			var fileDataProvider 	 = MakeFileDataProvider(assembly);
 			var assemblyDataProvider = MakeAssemblyDataProvider(assembly);
 
