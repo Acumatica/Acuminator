@@ -44,12 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (!CodeAnalysisSettings!.StaticAnalysisEnabled)
 				return;
 
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-			if (!System.Diagnostics.Debugger.IsAttached)	// Disable concurrent execution during debug
-			{
-				context.EnableConcurrentExecution();
-			}
+			ConfigureAnalysisContext(context);
 
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
@@ -60,6 +55,16 @@ namespace Acuminator.Analyzers.StaticAnalysis
 					AnalyzeCompilation(compilationStartContext, pxContext);
 				}
 			});
+		}
+
+		protected virtual void ConfigureAnalysisContext(AnalysisContext analysisContext)
+		{
+			analysisContext.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+
+			if (!System.Diagnostics.Debugger.IsAttached)    // Disable concurrent execution during debug
+			{
+				analysisContext.EnableConcurrentExecution();
+			}
 		}
 
 		protected virtual bool ShouldAnalyze(PXContext pxContext) =>  pxContext.IsPlatformReferenced && 
