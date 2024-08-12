@@ -1,0 +1,1 @@
+N:System.Reflection ISV Reflection usage is forbidden in customization code.
