@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#nullable enable
 
 namespace Acuminator.Utilities
 {
@@ -8,9 +6,8 @@ namespace Acuminator.Utilities
 	{
 		public const string AcuminatorSharedMemorySlotName = "AcuminatorMemorySlot";
 
-		public static VSVersion VSVersion { get; set; }
+		public static VSVersion? VSVersion { get; set; }
 
 		public static bool IsInsideVsProcess => VSVersion != null; 
-
 	}
 }
