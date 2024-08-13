@@ -380,7 +380,9 @@ namespace Acuminator.Vsix
         private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
 			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
-			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
+			var bannedApiSettings = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
+
+			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings, bannedApiSettings);
 
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
 			SharedVsSettings.VSVersion = VSVersion;

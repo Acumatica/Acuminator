@@ -22,6 +22,10 @@ namespace Acuminator.Utilities
 			WhiteListApiFilePath = whiteListApiFilePath.NullIfWhiteSpace()?.Trim();
 		}
 
+		protected BannedApiSettings()
+		{
+		}
+
 		public BannedApiSettings WithBannedApiFilePath(string? bannedApiFilePath) =>
 			new(bannedApiFilePath, WhiteListApiFilePath);
 
