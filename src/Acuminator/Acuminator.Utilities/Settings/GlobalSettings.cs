@@ -27,10 +27,12 @@ namespace Acuminator.Utilities
 		public static void InitializeGlobalSettingsOnce(CodeAnalysisSettings codeAnalysisSettings, BannedApiSettings bannedApiSettings)
 		{
 			codeAnalysisSettings.ThrowOnNull();
+			bannedApiSettings.ThrowOnNull();
 
 			if (Interlocked.CompareExchange(ref _isInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
 				_cachedCodeAnalysisSettings = codeAnalysisSettings;
+				_cachedBannedApiSettings = bannedApiSettings;
 			}
 		}
 	}

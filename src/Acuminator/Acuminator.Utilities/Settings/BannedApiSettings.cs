@@ -12,9 +12,9 @@ namespace Acuminator.Utilities
 	{
 		public static BannedApiSettings Default { get; } = new BannedApiSettings(bannedApiFilePath: null, whiteListApiFilePath: null);
 
-		public string? BannedApiFilePath { get; }
+		public virtual string? BannedApiFilePath { get; }
 
-		public string? WhiteListApiFilePath { get; }
+		public virtual string? WhiteListApiFilePath { get; }
 
 		public BannedApiSettings(string? bannedApiFilePath, string? whiteListApiFilePath)
 		{
