@@ -906,5 +906,23 @@ namespace Acuminator.Vsix {
                 return ResourceManager.GetString("Setting_UseRegexColoring_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid or not existing file.
+        /// </summary>
+        public static string Settings_InvalidFileErrorCaption {
+            get {
+                return ResourceManager.GetString("Settings_InvalidFileErrorCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid or not existing file is specified for the setting &quot;{0}&quot;. .
+        /// </summary>
+        public static string Settings_InvalidFileErrorFormat {
+            get {
+                return ResourceManager.GetString("Settings_InvalidFileErrorFormat", resourceCulture);
+            }
+        }
     }
 }
