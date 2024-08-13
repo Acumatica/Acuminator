@@ -380,7 +380,7 @@ namespace Acuminator.Vsix
         private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
 			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
-			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
+			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
 
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
 			SharedVsSettings.VSVersion = VSVersion;
@@ -393,7 +393,7 @@ namespace Acuminator.Vsix
 			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace))
 				return;
 
-			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
+			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalSettings.AnalysisSettings);
 		}
 
 		private void InitializeCodeSnippets()

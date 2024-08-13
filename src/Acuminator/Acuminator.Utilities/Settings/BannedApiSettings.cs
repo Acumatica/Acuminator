@@ -8,29 +8,29 @@ using Acuminator.Utilities.Common;
 namespace Acuminator.Utilities
 {
 	[Export]
-	public class ForbiddenApiSettings : IEquatable<ForbiddenApiSettings>
+	public class BannedApiSettings : IEquatable<BannedApiSettings>
 	{
-		public static ForbiddenApiSettings Default { get; } = new ForbiddenApiSettings(bannedApiFilePath: null, whiteListApiFilePath: null);
+		public static BannedApiSettings Default { get; } = new BannedApiSettings(bannedApiFilePath: null, whiteListApiFilePath: null);
 
 		public string? BannedApiFilePath { get; }
 
 		public string? WhiteListApiFilePath { get; }
 
-		public ForbiddenApiSettings(string? bannedApiFilePath, string? whiteListApiFilePath)
+		public BannedApiSettings(string? bannedApiFilePath, string? whiteListApiFilePath)
 		{
 			BannedApiFilePath = bannedApiFilePath.NullIfWhiteSpace()?.Trim();
 			WhiteListApiFilePath = whiteListApiFilePath.NullIfWhiteSpace()?.Trim();
 		}
 
-		public ForbiddenApiSettings WithBannedApiFilePath(string? bannedApiFilePath) =>
+		public BannedApiSettings WithBannedApiFilePath(string? bannedApiFilePath) =>
 			new(bannedApiFilePath, WhiteListApiFilePath);
 
-		public ForbiddenApiSettings WithWhiteListApiFilePath(string? whiteListApiFilePath) =>
+		public BannedApiSettings WithWhiteListApiFilePath(string? whiteListApiFilePath) =>
 			new(BannedApiFilePath, whiteListApiFilePath);
 
-		public override bool Equals(object obj) => Equals(obj as ForbiddenApiSettings);
+		public override bool Equals(object obj) => Equals(obj as BannedApiSettings);
 
-		public bool Equals(ForbiddenApiSettings? other) =>
+		public bool Equals(BannedApiSettings? other) =>
 			BannedApiFilePath == other?.BannedApiFilePath && WhiteListApiFilePath == other?.WhiteListApiFilePath;
 
 		public override int GetHashCode()

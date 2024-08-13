@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 		public static CodeAnalysisSettings GetCodeAnalysisSettings()
 		{
 			if (SharedVsSettings.IsInsideVsProcess)
-				return GlobalCodeAnalysisSettings.Instance;
+				return GlobalSettings.AnalysisSettings;
 
 			if (!_isSharedMemoryOpened)
 			{
@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 			}
 			
 			if (_memoryMappedFile == null)
-				return GlobalCodeAnalysisSettings.Instance;
+				return GlobalSettings.AnalysisSettings;
 
 			try
 			{
@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 			}
 			catch (Exception)
 			{
-				return GlobalCodeAnalysisSettings.Instance;
+				return GlobalSettings.AnalysisSettings;
 			}		
 		}
 

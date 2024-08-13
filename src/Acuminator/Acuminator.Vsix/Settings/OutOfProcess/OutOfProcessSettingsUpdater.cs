@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.Settings
 
 		private void SettingsEvents_CodeAnalysisSettingChanged(object sender, SettingChangedEventArgs e)
 		{
-			var currentSettings = GlobalCodeAnalysisSettings.Instance;
+			var currentSettings = GlobalSettings.AnalysisSettings;
 			WriteSettingsToSharedMemory(currentSettings);
 		}
 
