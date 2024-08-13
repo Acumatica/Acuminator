@@ -425,7 +425,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
-    <Compile Include="Code Snippets\SnippetsVersionFile.cs" />
     <Compile Include="Code Snippets\CodeSnippetsInitializer.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
@@ -502,6 +501,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
+    <Compile Include="Utils\Storage\VersionFile.cs" />
     <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />
