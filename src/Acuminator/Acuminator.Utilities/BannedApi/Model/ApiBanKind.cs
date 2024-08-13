@@ -1,25 +1,28 @@
 ﻿#nullable enable
 
-using System;
-using System.Collections.Generic;
-
 namespace Acuminator.Utilities.BannedApi.Model
 {
-	[Flags]
+	/// <summary>
+	/// Values that represent for whom API is banned.
+	/// </summary>
 	public enum ApiBanKind : byte
 	{
-		None	  = 0b0000,
-		General	  = 0b0001,
-		ISV		  = 0b0010,
-		All		  = General | ISV,
+		/// <summary>
+		/// Api is banned for all.
+		/// </summary>
+		General,
+
+		/// <summary>
+		/// Api is banned for ISVs.
+		/// </summary>
+		ISV
 	}
 
 	public static class ApiBanKindUtils
 	{
-		public static bool IsGeneral(this ApiBanKind kind) => kind.IsKind(ApiBanKind.General);
-
-		public static bool IsISV(this ApiBanKind kind) => kind.IsKind(ApiBanKind.ISV);
-	
-		public static bool IsKind(this ApiBanKind kind, ApiBanKind kindToCheck) => (kind & kindToCheck) == kindToCheck;
+		public static ApiBanKind Combine(this ApiBanKind banKindX, ApiBanKind banKindY) =>
+			banKindX == banKindY
+				? banKindX
+				: ApiBanKind.General;
 	}
 }

@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.BannedApi.Storage
         /// <returns>
         /// The API or null.
         /// </returns>
-        public ApiWithAppliedBanKind? GetApi(ApiKind apiKind, string apiDocId);
+        public Api? GetApi(ApiKind apiKind, string apiDocId);
 
         /// <summary>
         /// Query if the storage contains the API.

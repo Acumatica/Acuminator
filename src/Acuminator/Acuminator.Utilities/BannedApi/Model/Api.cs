@@ -308,7 +308,7 @@ namespace Acuminator.Utilities.BannedApi.Model
 					$" \"{ApiFormatConstants.Strings.NamespaceSeparator}\",{Environment.NewLine}" +
 					$"and names of nested types are separated with \"{ApiFormatConstants.Strings.NestedTypesSeparator}\".{Environment.NewLine}" +
 					$"Acuminator also adds two extra strings after the DocID string and separated by whitespaces:{Environment.NewLine}" +
-					$"- First, Mandatory banned API data - info for whom the API is banned: Acumatica, ISV, All or None;{Environment.NewLine}" +
+					$"- First, Mandatory banned API data - info for whom the API is banned: {nameof(ApiBanKind.General)} or {nameof(ApiBanKind.ISV)};{Environment.NewLine}" +
 					$"- Second, optional string description of why the banned API is forbidden.{Environment.NewLine}{Environment.NewLine}" +
 					"Example: \"T:System.Web-IHttpModule ISV Declaring Http Modules in Acumatica Customization is forbidden.\"",
 					paramName: nameof(rawApiData));
