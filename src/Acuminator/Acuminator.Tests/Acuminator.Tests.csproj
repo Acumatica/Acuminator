@@ -602,6 +602,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrder_CheckForVersionTests.cs" />
     <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\CodeAnalysisSettingsSerializationTests.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacFields_OnlyBqlFields.cs" />
+    <Compile Include="Tests\Utilities\SemanticModels\RoslynTestContext.cs" />
+    <Compile Include="Tests\Utilities\SemanticModels\SemanticModelTestsBase.cs" />
+    <Compile Include="Tests\Utilities\SemanticModels\Dac\DacSemanticModelTests.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\Graph\GraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\GraphWithSetupViews.cs" />
     <Compile Include="Tests\Utilities\Version\PackageVersionTests.cs" />
