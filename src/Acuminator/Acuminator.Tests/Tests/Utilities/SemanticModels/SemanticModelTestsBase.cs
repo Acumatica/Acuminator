@@ -23,10 +23,18 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels
 	public abstract class SemanticModelTestsBase<TSemanticModel>
 	where TSemanticModel : ISemanticModel
 	{
-		protected abstract TSemanticModel? PrepareSemanticModel(PXContext pXContext);
+		protected async Task<TSemanticModel> PrepareSemanticModelAsync(string code, CodeAnalysisSettings? customAnalysisSettings = null, 
+																		CancellationToken cancellation = default)
+		{
+			var context = await PrepareTestContextForCodeAsync(code, customAnalysisSettings, cancellation).ConfigureAwait(false);
+			var model = await PrepareSemanticModelAsync(context, cancellation).ConfigureAwait(false);
+			return model;
+		}
 
-		protected async Task<RoslynTestContext> PrepareTestContextForCode(string code, CodeAnalysisSettings? customAnalysisSettings = null, 
-																		  CancellationToken cancellation = default)
+		protected abstract Task<TSemanticModel> PrepareSemanticModelAsync(RoslynTestContext context, CancellationToken cancellation = default);
+
+		protected async Task<RoslynTestContext> PrepareTestContextForCodeAsync(string code, CodeAnalysisSettings? customAnalysisSettings = null, 
+																			   CancellationToken cancellation = default)
 		{
 			code.Should().NotBeNullOrWhiteSpace();
 
