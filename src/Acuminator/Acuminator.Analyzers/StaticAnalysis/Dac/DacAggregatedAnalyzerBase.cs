@@ -1,13 +1,15 @@
-﻿using Acuminator.Utilities;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Dac
 {
-
 	/// <summary>
 	/// Base class for aggregated DAC analyzers.
 	/// </summary>
@@ -17,6 +19,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 
 		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac != null;
+		public virtual bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac?.IsInSource == true;
 	}
 }
