@@ -223,6 +223,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Banned API.
+        /// </summary>
+        public static string Category_BannedAPI {
+            get {
+                return ResourceManager.GetString("Category_BannedAPI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code Analysis.
         /// </summary>
         public static string Category_CodeAnalysis {

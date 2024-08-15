@@ -23,6 +23,7 @@ namespace Acuminator.Vsix
 		private const string ColoringCategoryName = "BQL Coloring";
 		private const string OutliningCategoryName = "BQL Outlining";
 		private const string CodeAnalysisCategoryName = "Code Analysis";
+		private const string BannedApiCategoryName = "Banned API";
 
 		private bool _colorSettingsChanged;
 		private bool _bannedApiFileInvalid, _whiteListApiFileInvalid;
@@ -248,7 +249,7 @@ namespace Acuminator.Vsix
 
 		private string? _bannedApiFilePath;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_BannedApiFilePath_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_BannedApiFilePath_Description))]
 		public string? BannedApiFilePath
@@ -267,7 +268,7 @@ namespace Acuminator.Vsix
 
 		private string? _whiteListApiFilePath;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_WhiteListApiFilePath_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_WhiteListApiFilePath_Description))]
 		public string? WhiteListApiFilePath

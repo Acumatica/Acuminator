@@ -171,6 +171,9 @@
   <data name="BraceLevel_9_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Angle Brackets (Level 9)</value>
   </data>
+  <data name="Category_BannedAPI" xml:space="preserve">
+    <value>Banned API</value>
+  </data>
   <data name="Category_CodeAnalysis" xml:space="preserve">
     <value>Code Analysis</value>
   </data>
