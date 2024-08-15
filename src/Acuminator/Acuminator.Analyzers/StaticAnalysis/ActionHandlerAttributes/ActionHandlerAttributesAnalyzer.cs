@@ -1,11 +1,15 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 {
@@ -37,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var attributes = symbol.GetAttributes();
-			var pxUIFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type;
+			var pxUIFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type!;
 			var pxButtonAttributeType = pxContext.AttributeTypes.PXButtonAttribute;
 			var pxOverrideAttributeType = pxContext.AttributeTypes.PXOverrideAttribute;
 			var hasPXUIFieldAttribute = false;

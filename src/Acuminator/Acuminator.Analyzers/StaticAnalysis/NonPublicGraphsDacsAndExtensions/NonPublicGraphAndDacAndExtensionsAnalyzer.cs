@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				Descriptors.PX1022_NonPublicGraphExtension
 			);
 
-		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac != null;
+		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac?.IsInSource == true;
 
 		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => 
 			graph != null && graph.Type != GraphType.None;

@@ -23,14 +23,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlace
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dacExtension) => 
 			base.ShouldAnalyze(pxContext, dacExtension) &&
 			dacExtension.DacType == DacType.DacExtension &&
-			dacExtension.IsActiveMethodInfo != null;
+			dacExtension.IsActiveMethodInfo?.Node != null;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacExtension)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var graphIsActiveMethodWalker = new PXGraphCreateInstanceWalker(context, pxContext, Descriptors.PX1056_PXGraphCreationInIsActiveMethod);
-			graphIsActiveMethodWalker.Visit(dacExtension.IsActiveMethodInfo.Node);
+
+			// Node not null here because it is checked in ShouldAnalyze
+			graphIsActiveMethodWalker.Visit(dacExtension.IsActiveMethodInfo!.Node);
 		}
 	}
 }

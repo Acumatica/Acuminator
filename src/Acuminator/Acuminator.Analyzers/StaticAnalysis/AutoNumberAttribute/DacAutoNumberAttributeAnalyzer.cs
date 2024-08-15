@@ -54,7 +54,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		private void ReportDacPropertyTypeIsNotString(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
 		{
 			var autoNumberingAttribute = dacProperty.Attributes.FirstOrDefault(a => a.IsAutoNumberAttribute);
-			var propertyTypeLocation = dacProperty.Node.Type.GetLocation();
+
+			// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+			// and these properties are declared in the DAC type itself
+			var propertyTypeLocation = dacProperty.Node!.Type.GetLocation();
 
 			if (propertyTypeLocation != null)
 			{

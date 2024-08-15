@@ -40,8 +40,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 					return;
 			}
 
+			// Node is not null here because DAC aggregated analyzer runs only on DACs and DAC extensions declared in source code
 			var diagnostic = Diagnostic.Create(Descriptors.PX1094_DacShouldHaveUiAttribute,
-											   dac.Node.Identifier.GetLocation());
+											   dac.Node!.Identifier.GetLocation());
 
 			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}

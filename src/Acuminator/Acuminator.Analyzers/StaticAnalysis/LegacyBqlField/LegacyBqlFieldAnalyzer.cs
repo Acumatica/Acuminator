@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Analyzers.StaticAnalysis.Dac;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 {
@@ -49,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 				if (location != null && dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
 				{
-					string propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
+					string? propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
 
 					if (propertyTypeName == null || !PropertyTypeToFieldType.ContainsKey(propertyTypeName))
 						continue;
@@ -69,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				&& t.OriginalDefinition.Name == pxContext.IImplementType.Name
 				&& t.TypeArguments.First().AllInterfaces.Any(z => z.Name == pxContext.BqlTypes.BqlDataType.Name));
 
-		private static string GetPropertyTypeName(IPropertySymbol property, PXContext pxContext) =>
+		private static string? GetPropertyTypeName(IPropertySymbol property, PXContext pxContext) =>
 			property.Type switch
 			{
 				IArrayTypeSymbol arrType                                        => arrType.ElementType.Name + "[]",

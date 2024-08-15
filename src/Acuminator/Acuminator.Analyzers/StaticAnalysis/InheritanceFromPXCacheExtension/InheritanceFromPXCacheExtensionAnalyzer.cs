@@ -1,12 +1,16 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿#nullable enable
+
 using System.Collections.Immutable;
 using System.Linq;
-using Acuminator.Utilities.Roslyn.Constants;
+
 using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 {

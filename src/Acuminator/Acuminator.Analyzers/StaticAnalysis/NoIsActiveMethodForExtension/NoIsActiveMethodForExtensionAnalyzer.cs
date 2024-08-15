@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 								  Descriptors.PX1016_NoIsActiveMethodForGraphExtension);
 
 		public bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dacExtension) =>
-			dacExtension?.DacType == DacType.DacExtension && dacExtension.IsActiveMethodInfo == null &&
+			dacExtension?.DacType == DacType.DacExtension && dacExtension.IsInSource && dacExtension.IsActiveMethodInfo == null &&
 			!dacExtension.Symbol.IsAbstract && !dacExtension.Symbol.IsGenericType && !dacExtension.IsMappedCacheExtension;
 
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacExtension)
@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 			// ShouldAnalyze already filtered everything and left only DAC extensions without IsActive
 			// We just need to report them
-			Location location = dacExtension.Node.Identifier.GetLocation();
+			Location? location = dacExtension.Node?.Identifier.GetLocation();
 
 			if (location == null)
 				return;

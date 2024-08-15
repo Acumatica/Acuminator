@@ -121,6 +121,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private bool IsPropertyFromDAC(PropertyDeclarationSyntax changedProperty, DacSemanticModel dacCandidate)
 		{
+			if (dacCandidate.IsInMetadata)
+				return false;
+
 			//basic fast check for bounds and file
 			if (!dacCandidate.Node.Span.Contains(changedProperty.Span) || dacCandidate.Node.SyntaxTree.FilePath != changedProperty.SyntaxTree.FilePath)
 				return false;
@@ -132,7 +135,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out DacPropertyInfo dacPropertyInfoCandidate))
 				return false;
 
-			return Equals(dacPropertyInfoCandidate.Node.ExplicitInterfaceSpecifier, changedProperty.ExplicitInterfaceSpecifier);
+			return dacPropertyInfoCandidate.IsInSource && 
+				   Equals(dacPropertyInfoCandidate.Node.ExplicitInterfaceSpecifier, changedProperty.ExplicitInterfaceSpecifier);
 		}
 	}
 }
