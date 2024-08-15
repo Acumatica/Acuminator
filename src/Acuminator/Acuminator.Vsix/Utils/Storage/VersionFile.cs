@@ -1,5 +1,4 @@
-﻿
-#nullable enable
+﻿#nullable enable
 
 using System;
 using System.Collections.Generic;
@@ -21,25 +20,22 @@ namespace Acuminator.Vsix.Utilities.Storage
 	/// </remarks>
 	internal class VersionFile
 	{
-		private const string DefaultVersionFileName = "AcuminatorVersion.xml";
+		private const string VersionFileName = "AcuminatorVersion.xml";
 		private const string RootNode = "version";
 
 		public string RootFolder { get; }
 
-		public string FileName { get; }
-
 		public Version Version { get; }
 
-		public VersionFile(string rootFolder, Version version, string? customVersionFileName = null)
+		public VersionFile(string rootFolder, Version version)
 		{
 			RootFolder = rootFolder.CheckIfNullOrWhiteSpace();
 			Version = version.CheckIfNull();
-			FileName = customVersionFileName.NullIfWhiteSpace() ?? DefaultVersionFileName;
 		}
 
-		public virtual bool WriteVersionFile(string versonFileName)
+		public virtual bool WriteVersionFile()
 		{
-			string versionFilePath = Path.Combine(RootFolder, versonFileName);
+			string versionFilePath = Path.Combine(RootFolder, VersionFileName);
 			var root 			   = new XElement(RootNode, Version);
 			var versionFile 	   = new XDocument(root);
 
@@ -57,7 +53,7 @@ namespace Acuminator.Vsix.Utilities.Storage
 
 		public virtual Version? TryGetExistingVersion()
 		{
-			string versionFilePath = Path.Combine(RootFolder, FileName);
+			string versionFilePath = Path.Combine(RootFolder, VersionFileName);
 			XDocument? versionFile = LoadVersionFile(versionFilePath);
 
 			if (versionFile?.Root == null || versionFile.Root.Name != RootNode || versionFile.Root.IsEmpty)
