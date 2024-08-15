@@ -29,6 +29,20 @@ namespace Acuminator.Vsix.Utilities.Storage
 			VersionFile = versionFile;
 		}
 
+		public static AcuminatorMyDocumentsStorage? TryInitialize(string packageCurrentVersion)
+		{
+			try 
+			{
+				var packageVersion = new Version(packageCurrentVersion);
+				return TryInitialize(packageVersion);
+			}
+			catch (Exception e)
+			{
+				AcuminatorLogger.LogException(e);
+				return null;
+			}
+		}
+
 		public static AcuminatorMyDocumentsStorage? TryInitialize(Version packageCurrentVersion)
 		{
 			packageCurrentVersion.ThrowOnNull();

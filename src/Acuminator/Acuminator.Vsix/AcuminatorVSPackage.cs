@@ -111,6 +111,12 @@ namespace Acuminator.Vsix
 			private set;
 		}
 
+		internal AcuminatorMyDocumentsStorage? MyDocumentsStorage
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
 		/// </summary>
@@ -182,6 +188,7 @@ namespace Acuminator.Vsix
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
 													   currentStep: 1, TotalLoadSteps);
 			progress?.Report(progressData);
+			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
 
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
 			await InitializeCodeAnalysisSettingsAsync();
@@ -428,7 +435,6 @@ namespace Acuminator.Vsix
 		#region Package Settings         
 		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
 
-
         public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
 
         public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
@@ -440,6 +446,10 @@ namespace Acuminator.Vsix
         public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
 
         public bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? false;
+
+		public string? BannedApiFilePath => GeneralOptionsPage?.BannedApiFilePath;
+
+		public string? WhiteListApiFilePath => GeneralOptionsPage?.WhiteListApiFilePath;
         #endregion
     }
 }
