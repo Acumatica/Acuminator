@@ -20,19 +20,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class SemanticModelFactoryDefault : ISemanticModelFactory
 	{
 		/// <summary>
-		/// Try to infer semantic model for <paramref name="rootSymbol"/>. 
-		/// If semantic model can't be inferred the <paramref name="semanticModel"/> is null and the method returns false.
+		/// Try to infer semantic model for <paramref name="rootSymbol"/>. If semantic model can't be inferred
+		/// the <paramref name="semanticModel"/> is null and the method returns false.
 		/// </summary>
 		/// <param name="rootSymbol">The root symbol.</param>
 		/// <param name="rootNode">The root node.</param>
 		/// <param name="context">The context.</param>
 		/// <param name="semanticModel">[out] The inferred semantic model.</param>
+		/// <param name="declarationOrder">(Optional) The declaration order of the <see cref="ISemanticModel.Symbol"/>.</param>
 		/// <param name="cancellationToken">(Optional) A token that allows processing to be cancelled.</param>
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
 		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, SyntaxNode rootNode, PXContext context, out ISemanticModel? semanticModel,
-													CancellationToken cancellationToken = default)
+													int? declarationOrder = null, CancellationToken cancellationToken = default)
 		{
 			rootSymbol.ThrowOnNull();
 			context.ThrowOnNull();
@@ -45,7 +46,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			else if (rootSymbol.IsDacOrExtension(context))
 			{
-				return TryToInferDacOrDacExtensionSemanticModel(rootSymbol, context, out semanticModel, cancellationToken);
+				return TryToInferDacOrDacExtensionSemanticModel(rootSymbol, context, out semanticModel, declarationOrder, cancellationToken);
 			}
 
 			semanticModel = null;
@@ -72,9 +73,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual bool TryToInferDacOrDacExtensionSemanticModel(INamedTypeSymbol dacSymbol, PXContext context,
 																		out ISemanticModel? dacSemanticModel,
+																		int? declarationOrder,
 																		CancellationToken cancellationToken = default)
 		{
-			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, cancellationToken);
+			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, declarationOrder, cancellationToken);
 			return dacSemanticModel != null;
 		}
 	}
