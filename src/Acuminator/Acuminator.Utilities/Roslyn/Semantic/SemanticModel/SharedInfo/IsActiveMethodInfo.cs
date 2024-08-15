@@ -18,7 +18,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 	{
 		internal const int IsActiveDeclarationOrderToPlaceItFirst = int.MinValue;
 
-		public IsActiveMethodInfo(MethodDeclarationSyntax node, IMethodSymbol isActiveMethod, int declarationOrder) :
+		public IsActiveMethodInfo(MethodDeclarationSyntax? node, IMethodSymbol isActiveMethod, int declarationOrder) :
 							 base(node, isActiveMethod, declarationOrder)
 		{
 		}

@@ -1,6 +1,8 @@
 ﻿#nullable enable
+using System.Diagnostics.CodeAnalysis;
 
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
@@ -15,14 +17,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		where S : ISymbol
 	{
 		/// <summary>
+		/// True if this symbol is declared in external assembly metadata, false if not.
+		/// </summary>
+		[MemberNotNullWhen(returnValue: false, nameof(Node))]
+		public bool IsInMetadata => Node is null;
+
+		/// <summary>
+		/// True if this symbol is declared in the source code, false if not.
+		/// </summary>
+		[MemberNotNullWhen(returnValue: true, nameof(Node))]
+		public bool IsInSource => Node is not null;
+
+		/// <summary>
 		/// The declaration node of the item
 		/// </summary>
-		public N Node { get; }
+		public N? Node { get; }
 
-		public NodeSymbolItem(N node, S symbol, int declarationOrder)
+		public NodeSymbolItem(N? node, S symbol, int declarationOrder)
 			: base(symbol, declarationOrder)
 		{
-			Node = node.CheckIfNull();
+			Node = node;
 		}
 	}
 }

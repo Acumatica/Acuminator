@@ -20,7 +20,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public string DacFieldName { get; }
 
-		public GraphFieldEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		public GraphFieldEventInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder,
 								   EventHandlerSignatureType signatureType, EventType eventType) :
 							  base(node, symbol, declarationOrder, signatureType, eventType)
 		{
@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			DacFieldName = GetDacFieldName();
 		}
 
-		public GraphFieldEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		public GraphFieldEventInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder,
 								   EventHandlerSignatureType signatureType, EventType eventType, GraphFieldEventInfo baseInfo)
 							: base(node, symbol, declarationOrder, signatureType, eventType, baseInfo)
 		{
@@ -94,7 +94,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private string GetDacFieldNameForGenericFieldEvent()
 		{
-			if (Symbol.Parameters.IsDefaultOrEmpty || !(Symbol.Parameters[0]?.Type is INamedTypeSymbol firstParameter))
+			if (Symbol.Parameters.IsDefaultOrEmpty || Symbol.Parameters[0]?.Type is not INamedTypeSymbol firstParameter)
 			{
 				return string.Empty;
 			}

@@ -26,24 +26,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			set => Base = value;
 		}
 
-		protected DacBqlFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder) :
+		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder) :
 							 base(node, bqlField, declarationOrder)
 		{
 		}
 
-		protected DacBqlFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder, DacBqlFieldInfo baseInfo) :
+		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder, DacBqlFieldInfo baseInfo) :
 							 this(node, bqlField, declarationOrder)
 		{
 			Base = baseInfo.CheckIfNull();
 		}
 
-		public static DacBqlFieldInfo Create(PXContext pxContext, ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder,
+		public static DacBqlFieldInfo Create(PXContext pxContext, ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder,
 											 DacBqlFieldInfo? baseInfo = null)
 		{
 			return CreateUnsafe(pxContext.CheckIfNull(), node, bqlField.CheckIfNull(), declarationOrder, baseInfo);
 		}
 
-		internal static DacBqlFieldInfo CreateUnsafe(PXContext pxContext, ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder,
+		internal static DacBqlFieldInfo CreateUnsafe(PXContext pxContext, ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder,
 													 DacBqlFieldInfo? baseInfo = null)
 		{
 			return baseInfo != null

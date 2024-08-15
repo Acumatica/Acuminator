@@ -36,13 +36,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			set => Base = value;
 		}
 
-		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		protected GraphEventInfoBase(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType) :
 								base(node, symbol, declarationOrder, signatureType, eventType)
 		{		
 		}
 
-		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		protected GraphEventInfoBase(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType, TEventInfoType baseEventInfo)
 							  : base(node, symbol, declarationOrder, signatureType, eventType)
 		{

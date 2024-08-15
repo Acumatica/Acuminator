@@ -1,5 +1,4 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections.Generic;
 
@@ -27,12 +26,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			set => Base = value;
 		}
 
-		public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder)
+		public DataViewDelegateInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder)
 			: base(node, symbol, declarationOrder)
 		{
 		}
 
-		public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder, DataViewDelegateInfo baseInfo)
+		public DataViewDelegateInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder, DataViewDelegateInfo baseInfo)
 			: this(node, symbol, declarationOrder)
 		{
 			Base = baseInfo.CheckIfNull();

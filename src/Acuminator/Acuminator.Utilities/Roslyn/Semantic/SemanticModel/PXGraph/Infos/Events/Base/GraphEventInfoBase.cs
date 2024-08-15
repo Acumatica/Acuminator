@@ -1,6 +1,7 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -19,7 +20,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public override string Name => GetEventGroupingKey();
 
-		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		protected GraphEventInfoBase(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType) :
 								base(node, symbol, declarationOrder)
 		{
@@ -37,7 +38,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private string GetDacName() => SignatureType switch
 		{
 			EventHandlerSignatureType.Default => Symbol.Name.IndexOf('_') is int underscoreIndex && underscoreIndex > 0
-													? Symbol.Name.Substring(0, underscoreIndex)
+													? Symbol.Name[..underscoreIndex]
 													: string.Empty,				
 
 			EventHandlerSignatureType.Generic => GetDacNameFromGenericEvent(),
@@ -48,8 +49,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private string GetDacNameFromGenericEvent()
 		{
 			if (Symbol.Parameters.IsDefaultOrEmpty ||
-					   !(Symbol.Parameters[0]?.Type is INamedTypeSymbol firstParameter) ||
-					   firstParameter.TypeArguments.IsDefaultOrEmpty)
+				Symbol.Parameters[0]?.Type is not INamedTypeSymbol firstParameter ||
+				firstParameter.TypeArguments.IsDefaultOrEmpty)
 			{
 				return string.Empty;
 			}

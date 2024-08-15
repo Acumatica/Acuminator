@@ -78,8 +78,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public bool IsAutoNumbering { get; }
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
-								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
+		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos, 
+								  DacPropertyInfo baseInfo) :
 							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
 		{
 			Base = baseInfo.CheckIfNull();
@@ -88,7 +89,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
 		}
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
 								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos) :
 							 base(node, symbol, declarationOrder)
 		{
@@ -115,7 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			IsAutoNumbering = isAutoNumbering;
 		}
 
-		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
+		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax? node, IPropertySymbol property, int declarationOrder,
 											 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacBqlFieldInfo> dacFields,
 											 DacPropertyInfo? baseInfo = null)
 		{
@@ -123,7 +124,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 								dbBoundnessCalculator.CheckIfNull(), dacFields.CheckIfNull(), baseInfo);
 		}
 
-		internal static DacPropertyInfo CreateUnsafe(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
+		internal static DacPropertyInfo CreateUnsafe(PXContext context, PropertyDeclarationSyntax? node, IPropertySymbol property, int declarationOrder,
 													 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacBqlFieldInfo> dacFields,
 													 DacPropertyInfo? baseInfo = null)
 		{
