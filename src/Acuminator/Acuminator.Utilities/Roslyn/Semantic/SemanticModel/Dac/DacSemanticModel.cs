@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -24,15 +25,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public DacType DacType { get; }
 
-		public ClassDeclarationSyntax Node { get; }
+		public DacOrDacExtInfoBase DacOrDacExtInfo { get; }
 
-		public INamedTypeSymbol Symbol { get; }
+		[MemberNotNullWhen(returnValue: false, nameof(Node))]
+		public bool IsInMetadata => DacOrDacExtInfo.IsInMetadata;
+
+		[MemberNotNullWhen(returnValue: true, nameof(Node))]
+		public bool IsInSource => DacOrDacExtInfo.IsInSource;
+
+		public ClassDeclarationSyntax? Node => DacOrDacExtInfo.Node;
+
+		public INamedTypeSymbol Symbol => DacOrDacExtInfo.Symbol;
 
 		/// <summary>
 		/// The DAC symbol. For the DAC, the value is the same as <see cref="Symbol"/>. 
 		/// For DAC extensions, the value is the symbol of the extension's base DAC.
 		/// </summary>
-		public ITypeSymbol DacSymbol { get; }
+		public ITypeSymbol? DacSymbol { get; }
 
 		/// <summary>
 		/// An indicator of whether the DAC is a mapping DAC derived from the PXMappedCacheExtension class.
@@ -82,19 +91,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary>
 		public ImmutableArray<DacAttributeInfo> Attributes { get; }
 
-		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax node,
-								 CancellationToken cancellation)
+		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax? node,
+								 int declarationOrder, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
 			PXContext = pxContext;
 			_cancellation = cancellation;
 			DacType = dacType;
-			Node = node;
-			Symbol = symbol;
-			DacSymbol = DacType == DacType.Dac
-				? Symbol
-				: Symbol.GetDacFromDacExtension(PXContext)!;
+
+			if (DacType == DacType.Dac)
+			{
+				DacOrDacExtInfo = new DacInfo(node, symbol, declarationOrder);
+				DacSymbol = Symbol;
+			}
+			else
+			{
+				DacOrDacExtInfo = new DacExtensionInfo(node, symbol, declarationOrder);
+				DacSymbol = Symbol.GetDacFromDacExtension(PXContext);
+			}
+
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(PXContext.PXMappedCacheExtensionType);
 
 			Attributes         = GetDacAttributes();
@@ -116,7 +132,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <param name="semanticModel">Semantic model</param>
 		/// <param name="cancellation">Cancellation token</param>
 		/// <returns/>
-		public static DacSemanticModel? InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+		public static DacSemanticModel? InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, int? declarationOrder = null, 
+												   CancellationToken cancellation = default)
 		{		
 			pxContext.ThrowOnNull();
 			typeSymbol.ThrowOnNull();
@@ -134,7 +151,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return null;
 			}
 
-			return new DacSemanticModel(pxContext, dacType.Value, typeSymbol, node, cancellation);
+			return new DacSemanticModel(pxContext, dacType.Value, typeSymbol, node, declarationOrder ?? 0, cancellation);
 		}
 
 		/// <summary>
@@ -146,6 +163,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public IEnumerable<TMemberNode> GetMemberNodes<TMemberNode>()
 		where TMemberNode : MemberDeclarationSyntax
 		{
+			if (IsInMetadata)
+				yield break;
+
 			var memberList = Node.Members;
 
 			for (int i = 0; i < memberList.Count; i++)
