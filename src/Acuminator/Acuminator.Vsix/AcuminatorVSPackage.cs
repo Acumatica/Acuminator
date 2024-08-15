@@ -1,8 +1,8 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -29,6 +29,7 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities;
+using Acuminator.Vsix.Utilities.Storage;
 
 
 namespace Acuminator.Vsix
@@ -81,7 +82,7 @@ namespace Acuminator.Vsix
 		/// </summary>
 		public const string AcuminatorDefaultCommandSetGuidString = "3cd59430-1e8d-40af-b48d-9007624b3d77";
 
-		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace _vsWorkspace;
+		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace? _vsWorkspace;
 
         private const int INSTANCE_UNINITIALIZED = 0;
         private const int INSTANCE_INITIALIZED = 1;
@@ -89,12 +90,14 @@ namespace Acuminator.Vsix
 
 		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		public static AcuminatorVSPackage Instance { get; private set; }
+#pragma warning restore CS8618
 
-		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
-			new Lazy<GeneralOptionsPage>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
+		private Lazy<GeneralOptionsPage?> _generalOptionsPage = 
+			new Lazy<GeneralOptionsPage?>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
 
-		public GeneralOptionsPage GeneralOptionsPage => _generalOptionsPage.Value;
+		public GeneralOptionsPage? GeneralOptionsPage => _generalOptionsPage.Value;
 
 		internal AcuminatorLogger AcuminatorLogger
 		{
@@ -108,19 +111,21 @@ namespace Acuminator.Vsix
 			private set;
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
-        /// </summary>
-        public AcuminatorVSPackage()
-        {
-            // Inside this method you can place any initialization code that does not require
-            // any Visual Studio service because at this point the package object is created but
-            // not sited yet inside Visual Studio environment. The place to do all the other
-            // initialization is the Initialize method.
-        
-            SetupSingleton(this);
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
+		/// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+		public AcuminatorVSPackage()
+		{
+			// Inside this method you can place any initialization code that does not require
+			// any Visual Studio service because at this point the package object is created but
+			// not sited yet inside Visual Studio environment. The place to do all the other
+			// initialization is the Initialize method.
+
+			SetupSingleton(this);
 		}
-        
+#pragma warning restore CS8618 
+
 		/// <summary>
 		/// Force load package. 
 		/// A hack method which is called from analyzers to ensure that the package is loaded before diagnostics are executed.
@@ -141,7 +146,7 @@ namespace Acuminator.Vsix
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			IVsShell shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
+			IVsShell? shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
 
 			if (shell == null)
 				return;			
@@ -151,16 +156,16 @@ namespace Acuminator.Vsix
 			await System.Threading.Tasks.TaskScheduler.Default;
 		}
 
-        private static void SetupSingleton(AcuminatorVSPackage package)
-        {
-            if (package == null)
-                return;
+		private static void SetupSingleton(AcuminatorVSPackage? package)
+		{
+			if (package == null)
+				return;
 
-            if (Interlocked.CompareExchange(ref _instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
-            {
-                Instance = package;
-            }
-        }
+			if (Interlocked.CompareExchange(ref _instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
+			{
+				Instance = package;
+			}
+		}
 
 		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 		{			
@@ -362,7 +367,7 @@ namespace Acuminator.Vsix
 			return missingOldDocument || addedNewDocument;
 
 			//---------------------------------Local function--------------------------------------------------------
-			HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project project) =>
+			HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project? project) =>
 				project?.GetSuppressionFiles()
 						.Select(file => file.Id)
 						.ToHashSet() ?? new HashSet<DocumentId>();
@@ -370,17 +375,28 @@ namespace Acuminator.Vsix
 
 		private void SetupSuppressionManager()
         {
-            SuppressionManager.InitOrReset(_vsWorkspace, generateSuppressionBase: false, 
+            SuppressionManager.InitOrReset(_vsWorkspace!, generateSuppressionBase: false, 
 										   errorProcessorFabric: () => new VsixIOErrorProcessor(),
-										   buildActionSetterFabric: () => SharedVsSettings.VSVersion.VS2022OrNewer 
+										   buildActionSetterFabric: () => SharedVsSettings.VSVersion!.VS2022OrNewer 
 																			? new VsixBuildActionSetterVS2022() 
 																			: new VsixBuildActionSetterVS2019());
         }
 
         private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
-			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
-			var bannedApiSettings = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
+			CodeAnalysisSettings codeAnalysisSettings;
+			BannedApiSettings bannedApiSettings;
+
+			if (GeneralOptionsPage != null)
+			{
+				codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
+				bannedApiSettings = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
+			}
+			else
+			{
+				codeAnalysisSettings = CodeAnalysisSettings.Default;
+				bannedApiSettings = BannedApiSettings.Default;
+			}
 
 			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings, bannedApiSettings);
 
@@ -392,7 +408,7 @@ namespace Acuminator.Vsix
 
 		private void InitializeOutOfProcessSettingsSharing()
 		{
-			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace))
+			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace) || GeneralOptionsPage == null)
 				return;
 
 			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalSettings.AnalysisSettings);
