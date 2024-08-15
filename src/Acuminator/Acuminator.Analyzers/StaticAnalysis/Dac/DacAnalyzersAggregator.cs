@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			if (context.Symbol is not INamedTypeSymbol type)
 				return;
 
-			var inferredDacModel = DacSemanticModel.InferModel(pxContext, type, context.CancellationToken);
+			var inferredDacModel = DacSemanticModel.InferModel(pxContext, type, cancellation: context.CancellationToken);
 
 			if (inferredDacModel == null)
 				return;

@@ -150,7 +150,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (foreignKeyAttributes.Count == 0)
 				return new List<DacPropertyInfo>();
 			
-			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
+			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation: cancellation);
 
 			if (dacSemanticModel == null || dacSemanticModel.DacType != DacType.Dac)
 				return new List<DacPropertyInfo>();

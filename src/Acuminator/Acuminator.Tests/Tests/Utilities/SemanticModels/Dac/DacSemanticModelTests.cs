@@ -43,7 +43,7 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			INamedTypeSymbol dacOrDacExtSymbol = context.SemanticModel.GetDeclaredSymbol(dacOrDacExtDeclaration);
 			dacOrDacExtDeclaration.Should().NotBeNull();
 
-			var dacModel = DacSemanticModel.InferModel(context.PXContext, dacOrDacExtSymbol, cancellation);
+			var dacModel = DacSemanticModel.InferModel(context.PXContext, dacOrDacExtSymbol, cancellation: cancellation);
 			dacModel.Should().NotBeNull();
 
 			return Task.FromResult(dacModel!);

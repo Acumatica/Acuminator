@@ -75,7 +75,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, declarationOrder: null, cancellation);
+			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation: cancellation);
 
 			if (dacSemanticModel?.IsInSource != true)
 				return Task.FromResult(document);
