@@ -17,7 +17,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public class PXGraphSemanticModel : ISemanticModel
 	{
-		private readonly CancellationToken _cancellation;
+		protected readonly CancellationToken _cancellation;
 
 		public PXContext PXContext { get; }
 
@@ -127,14 +127,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public ImmutableArray<GraphAttributeInfo> Attributes { get; }
 
-		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
-									 CancellationToken cancellation = default)
+		protected PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, 
+										GraphSemanticModelCreationOptions modelCreationOptions,
+										CancellationToken cancellation = default)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			PXContext 			 = pxContext;
+			PXContext 			 = pxContext.CheckIfNull();
 			Type 				 = type;
-			Symbol 				 = symbol;
+			Symbol 				 = symbol.CheckIfNull();
 			_cancellation 		 = cancellation;
 			ModelCreationOptions = modelCreationOptions;
 
@@ -164,7 +165,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			HasPXProtectedAccess	   = IsPXProtectedAccessAttributeDeclared();
 		}
 
-		private void InitProcessingDelegatesInfo()
+		protected void InitProcessingDelegatesInfo()
 		{
 			if (!ModelCreationOptions.HasFlag(GraphSemanticModelCreationOptions.CollectProcessingDelegates))
 			{
@@ -212,7 +213,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private ImmutableArray<GraphAttributeInfo> GetGraphAttributes()
+		protected ImmutableArray<GraphAttributeInfo> GetGraphAttributes()
 		{
 			var attributes = Symbol.GetAttributes();
 
@@ -226,23 +227,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return builder.ToImmutable();
 		}
 
-		private ImmutableDictionary<string, DataViewInfo> GetDataViews() =>
+		protected ImmutableDictionary<string, DataViewInfo> GetDataViews() =>
 			GetInfos(() => Symbol.GetViewsWithSymbolsFromPXGraph(PXContext),
 					 () => Symbol.GetViewsFromGraphExtensionAndBaseGraph(PXContext));
 
-		private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates() =>
+		protected ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates() =>
 			GetInfos(() => Symbol.GetViewDelegatesFromGraph(ViewsByNames, PXContext, cancellation: _cancellation),
 					 () => Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, PXContext, _cancellation));
 
-		private ImmutableDictionary<string, ActionInfo> GetActions() =>
+		protected ImmutableDictionary<string, ActionInfo> GetActions() =>
 			GetInfos(() => Symbol.GetActionSymbolsWithTypesFromGraph(PXContext),
 					 () => Symbol.GetActionsFromGraphExtensionAndBaseGraph(PXContext));
 
-		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers() =>
+		protected ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers() =>
 			GetInfos(() => Symbol.GetActionHandlersFromGraph(ActionsByNames, PXContext, cancellation: _cancellation),
 					 () => Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, PXContext, _cancellation));
 
-		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> graphInfosSelector,
+		protected ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> graphInfosSelector,
 																   Func<OverridableItemsCollection<TInfo>> graphExtInfosSelector)
 		where TInfo : IOverridableItem<TInfo>
 		{
@@ -256,7 +257,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 		}
 
-		private IEnumerable<GraphInitializerInfo> GetDeclaredInitializers()
+		protected IEnumerable<GraphInitializerInfo> GetDeclaredInitializers()
 		{
 			_cancellation.ThrowIfCancellationRequested();
 
@@ -311,7 +312,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return models;
 		}
 
-		private static void InferImplicitModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
+		protected static void InferImplicitModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
 												GraphSemanticModelCreationOptions modelCreationOptions,
 												List<PXGraphSemanticModel> models, CancellationToken cancellation)
 		{
@@ -367,7 +368,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return null;
 		}
 
-		private static IEnumerable<InitDelegateInfo> GetInitDelegates(PXContext pxContext, INamedTypeSymbol typeSymbol,
+		protected static IEnumerable<InitDelegateInfo> GetInitDelegates(PXContext pxContext, INamedTypeSymbol typeSymbol,
 																	  CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
@@ -385,17 +386,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return walker.GraphInitDelegates;
 		}
 
-		private IsActiveMethodInfo? GetIsActiveMethodInfo() =>
+		protected IsActiveMethodInfo? GetIsActiveMethodInfo() =>
 			Type == GraphType.PXGraphExtension
 				? IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation)
 				: null;
 
-		private IsActiveForGraphMethodInfo? GetIsActiveForGraphMethodInfo() =>
+		protected IsActiveForGraphMethodInfo? GetIsActiveForGraphMethodInfo() =>
 			Type == GraphType.PXGraphExtension
 				? IsActiveForGraphMethodInfo.GetIsActiveForGraphMethodInfo(Symbol, _cancellation)
 				: null;
 
-		private ImmutableArray<ConfigureMethodInfo> GetConfigureMethodOverrides()
+		protected ImmutableArray<ConfigureMethodInfo> GetConfigureMethodOverrides()
 		{
 			if (Type == GraphType.None)
 				return ImmutableArray<ConfigureMethodInfo>.Empty;
@@ -404,7 +405,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return configureOverrides.ToImmutableArray();
 		}
 
-		private ImmutableArray<PXOverrideInfo> GetDeclaredPXOverrideInfos()
+		protected ImmutableArray<PXOverrideInfo> GetDeclaredPXOverrideInfos()
 		{
 			if (Type == GraphType.None)
 				return ImmutableArray<PXOverrideInfo>.Empty;
@@ -413,7 +414,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return pxOverrides.ToImmutableArray();
 		}
 
-		private bool IsPXProtectedAccessAttributeDeclared() =>
+		protected bool IsPXProtectedAccessAttributeDeclared() =>
 			Type == GraphType.PXGraphExtension && !Attributes.IsDefaultOrEmpty
 				? Attributes.Any(attrInfo => attrInfo.IsProtectedAccess)
 				: false;

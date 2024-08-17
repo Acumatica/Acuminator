@@ -91,8 +91,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary>
 		public ImmutableArray<DacAttributeInfo> Attributes { get; }
 
-		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax? node,
-								 int declarationOrder, CancellationToken cancellation)
+		protected DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax? node,
+									int declarationOrder, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
@@ -175,7 +175,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		private ImmutableArray<DacAttributeInfo> GetDacAttributes()
+		protected ImmutableArray<DacAttributeInfo> GetDacAttributes()
 		{
 			var attributes = Symbol.GetAttributes();
 
@@ -189,16 +189,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return builder.ToImmutable();
 		}
 
-		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
+		protected ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
 			GetInfos(() => Symbol.GetDacPropertiesFromDac(PXContext, BqlFieldsByNames, cancellation: _cancellation),
 					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(PXContext, BqlFieldsByNames, _cancellation));
 
-		private ImmutableDictionary<string, DacBqlFieldInfo> GetDacBqlFields() =>
+		protected ImmutableDictionary<string, DacBqlFieldInfo> GetDacBqlFields() =>
 			GetInfos(() => Symbol.GetDacBqlFieldsFromDac(PXContext, cancellation: _cancellation),
 					 () => Symbol.GetDacBqlFieldsFromDacExtensionAndBaseDac(PXContext, _cancellation));
 
-		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> dacInfosSelector,
-																   Func<OverridableItemsCollection<TInfo>> dacExtInfosSelector)
+		protected ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> dacInfosSelector,
+																	 Func<OverridableItemsCollection<TInfo>> dacExtInfosSelector)
 		where TInfo : IOverridableItem<TInfo>
 		{
 			var infos = DacType == DacType.Dac
@@ -208,7 +208,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 		}
 
-		private IsActiveMethodInfo? GetIsActiveMethodInfo()
+		protected IsActiveMethodInfo? GetIsActiveMethodInfo()
 		{
 			if (DacType != DacType.DacExtension)
 				return null;
@@ -217,7 +217,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol, _cancellation);
 		}
 
-		private bool CheckIfDacIsProjection()
+		protected bool CheckIfDacIsProjection()
 		{
 			if (DacType != DacType.Dac || Attributes.IsDefaultOrEmpty)
 				return false;
