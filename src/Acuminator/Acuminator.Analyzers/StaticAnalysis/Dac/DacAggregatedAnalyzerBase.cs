@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -19,6 +20,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 
 		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac?.IsInSource == true;
+		public virtual bool ShouldAnalyze(PXContext pxContext, [NotNullWhen(returnValue: true)] DacSemanticModel dac) => dac?.IsInSource == true;
 	}
 }
