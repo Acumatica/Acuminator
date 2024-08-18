@@ -348,13 +348,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private ImmutableDictionary<string, GraphRowEventInfo> GetRowEvents(EventsCollector eventsCollector, EventType eventType)
 		{
-			OverridableItemsCollection<GraphRowEventInfo> rawCollection = eventsCollector.GetRowEvents(eventType);
+			OverridableItemsCollection<GraphRowEventInfo>? rawCollection = eventsCollector.GetRowEvents(eventType);
 			return rawCollection?.ToImmutableDictionary() ?? ImmutableDictionary<string, GraphRowEventInfo>.Empty;
 		}
 
 		private ImmutableDictionary<string, GraphFieldEventInfo> GetFieldEvents(EventsCollector eventsCollector, EventType eventType)
 		{
-			OverridableItemsCollection<GraphFieldEventInfo> rawCollection = eventsCollector.GetFieldEvents(eventType);
+			OverridableItemsCollection<GraphFieldEventInfo>? rawCollection = eventsCollector.GetFieldEvents(eventType);
 			return rawCollection.ToImmutableDictionary() ?? ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
 		}
 
