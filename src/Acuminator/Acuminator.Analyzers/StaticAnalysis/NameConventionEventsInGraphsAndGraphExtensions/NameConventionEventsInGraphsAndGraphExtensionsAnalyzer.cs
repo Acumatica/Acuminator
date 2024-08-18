@@ -46,7 +46,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 
 		private static void ReportDiagnosticForEvent(SymbolAnalysisContext symbolContext, PXContext pxContext, GraphEventInfoBase eventInfo)
 		{
-			var graphEventLocation = eventInfo.Node.Identifier.GetLocation();
+			// Node is not null here because aggregated graph analyzers work only on graphs and graph extensions declared in the source code,
+			// and only events declared in the graph or graph extension are analyzed
+			var graphEventLocation = eventInfo.Node!.Identifier.GetLocation();
 			var properties = new Dictionary<string, string>
 			{
 				{ NameConventionEventsInGraphsAndGraphExtensionsDiagnosticProperties.EventType, eventInfo.EventType.ToString() },

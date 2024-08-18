@@ -1,12 +1,14 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
-using Acuminator.Utilities.Roslyn;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+
+using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
