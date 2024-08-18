@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities;
@@ -21,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 		public PXGraphDeclarationTypeParameterAnalyzer() : this(null)
 		{ }
 
-		public PXGraphDeclarationTypeParameterAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public PXGraphDeclarationTypeParameterAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -33,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(context.Node is ClassDeclarationSyntax classDeclaration))
+			if (context.Node is not ClassDeclarationSyntax classDeclaration)
 			{
 				return;
 			}
@@ -73,8 +75,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				pxContext.CodeAnalysisSettings);
 		}
 
-		private TypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
-												SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
+		private TypeSyntax? GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
+												 SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
 		{
 			foreach (var typeSyntax in baseTypes)
 			{
@@ -85,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 					continue;
 				}
 
-				if (!(context.SemanticModel.GetTypeInfo(typeSyntax.Type).Type is INamedTypeSymbol baseTypeSymbol))
+				if (context.SemanticModel.GetTypeInfo(typeSyntax.Type).Type is not INamedTypeSymbol baseTypeSymbol)
 				{
 					continue;
 				}

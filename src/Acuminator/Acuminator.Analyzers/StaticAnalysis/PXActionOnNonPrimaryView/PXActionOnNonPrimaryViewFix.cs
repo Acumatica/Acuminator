@@ -1,8 +1,11 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -37,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
 																.ConfigureAwait(false);
-			INamedTypeSymbol mainDacType = semanticModel?.Compilation.GetTypeByMetadataName(mainDacMetadata);
+			INamedTypeSymbol? mainDacType = semanticModel?.Compilation.GetTypeByMetadataName(mainDacMetadata);
 
 			if (mainDacType == null || context.CancellationToken.IsCancellationRequested)
 				return;
@@ -55,13 +58,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 																	INamedTypeSymbol mainDacType)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			GenericNameSyntax pxActionTypeDeclaration = root?.FindNode(span) as GenericNameSyntax;
+			GenericNameSyntax? pxActionTypeDeclaration = root?.FindNode(span) as GenericNameSyntax;
 
 			if (pxActionTypeDeclaration == null || cancellationToken.IsCancellationRequested)
 				return document;
 
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			TypeSyntax mainDacTypeNode = generator.TypeExpression(mainDacType) as TypeSyntax;
+			TypeSyntax? mainDacTypeNode = generator.TypeExpression(mainDacType) as TypeSyntax;
 
 			if (mainDacType == null || cancellationToken.IsCancellationRequested)
 				return document;
