@@ -41,26 +41,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (rootSymbol.IsPXGraphOrExtension(context))
 			{
-				return TryToInferGraphOrGraphExtensionSemanticModel(rootSymbol, context, GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
+				return TryToInferGraphOrGraphExtensionSemanticModel(rootSymbol, context, declarationOrder, 
+																	GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
 																	out semanticModel, cancellationToken);
 			}
 			else if (rootSymbol.IsDacOrExtension(context))
 			{
-				return TryToInferDacOrDacExtensionSemanticModel(rootSymbol, context, out semanticModel, declarationOrder, cancellationToken);
+				return TryToInferDacOrDacExtensionSemanticModel(rootSymbol, context, declarationOrder, out semanticModel, cancellationToken);
 			}
 
 			semanticModel = null;
 			return false;
 		}
 
-		protected virtual bool TryToInferGraphOrGraphExtensionSemanticModel(INamedTypeSymbol graphSymbol, PXContext context, 
+		protected virtual bool TryToInferGraphOrGraphExtensionSemanticModel(INamedTypeSymbol graphSymbol, PXContext context, int? declarationOrder,
 																			GraphSemanticModelCreationOptions modelCreationOptions,
 																			out ISemanticModel? graphSemanticModel,
 																			CancellationToken cancellationToken = default)
 		{
-			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, modelCreationOptions, cancellationToken)
+			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, modelCreationOptions,
+																		 declarationOrder, cancellationToken)
 															.FirstOrDefault();
-
 			if (graphSimpleModel == null)
 			{
 				graphSemanticModel = null;
@@ -71,9 +72,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return true;
 		}
 
-		protected virtual bool TryToInferDacOrDacExtensionSemanticModel(INamedTypeSymbol dacSymbol, PXContext context,
-																		out ISemanticModel? dacSemanticModel,
-																		int? declarationOrder,
+		protected virtual bool TryToInferDacOrDacExtensionSemanticModel(INamedTypeSymbol dacSymbol, PXContext context, int? declarationOrder,
+																		out ISemanticModel? dacSemanticModel, 
 																		CancellationToken cancellationToken = default)
 		{
 			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, declarationOrder, cancellationToken);

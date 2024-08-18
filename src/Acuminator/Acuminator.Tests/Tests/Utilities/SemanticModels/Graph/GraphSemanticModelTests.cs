@@ -45,7 +45,7 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Graph
 
 			var graphSemanticModel = PXGraphSemanticModel.InferExplicitModel(context.PXContext, graphOrGraphExtSymbol,
 																			GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
-																			cancellation);
+																			cancellation: cancellation);
 			graphSemanticModel.Should().NotBeNull();
 			return Task.FromResult(graphSemanticModel!);
 		}

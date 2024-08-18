@@ -67,7 +67,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			PXGraphSemanticModel? graphSemanticModel = PXGraphSemanticModel.InferModels(pxContext, graphOrGraphExtension, 
 																					   GraphSemanticModelCreationOptions.CollectGeneralGraphInfo, 
-																					   cancellationToken)
+																					   cancellation: cancellationToken)
 																		  ?.FirstOrDefault();
 			return graphSemanticModel != null 
 				? Create(pxContext, graphSemanticModel, cancellationToken, customRulesProvider)
