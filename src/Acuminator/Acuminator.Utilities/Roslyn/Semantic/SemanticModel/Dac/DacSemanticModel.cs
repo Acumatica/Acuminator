@@ -11,6 +11,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -34,6 +35,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public bool IsInSource => DacOrDacExtInfo.IsInSource;
 
 		public ClassDeclarationSyntax? Node => DacOrDacExtInfo.Node;
+
+		public int DeclarationOrder => DacOrDacExtInfo.DeclarationOrder;
 
 		public INamedTypeSymbol Symbol => DacOrDacExtInfo.Symbol;
 
@@ -145,13 +148,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 					? DacType.DacExtension
 					: null;
 
-			if (dacType == null ||
-				typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is not ClassDeclarationSyntax node)
-			{
+			if (dacType == null)
 				return null;
-			}
 
-			return new DacSemanticModel(pxContext, dacType.Value, typeSymbol, node, declarationOrder ?? 0, cancellation);
+			var dacOrExtNode = typeSymbol.GetSyntax(cancellation) as ClassDeclarationSyntax;
+			return new DacSemanticModel(pxContext, dacType.Value, typeSymbol, dacOrExtNode, declarationOrder ?? 0, cancellation);
 		}
 
 		/// <summary>
