@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			ImmutableArray.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraph &&
+			base.ShouldAnalyze(pxContext, graph) && graph.GraphType == GraphType.PXGraph &&
 			!graph.Symbol.IsAbstract && !graph.Symbol.IsUnboundGenericType;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graph)

@@ -17,23 +17,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 	{
 		internal const string FixOptionKey = nameof(FixOptionKey);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler);
 
-        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
-        {
-            foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
-            {
-                context.CancellationToken.ThrowIfCancellationRequested();
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
+		{
+			foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
 
-                if (actionHandler.Symbol == null || actionHandler.Node == null)
-                {
-                    continue;
-                }
+				if (actionHandler.Symbol == null || actionHandler.Node == null)
+				{
+					continue;
+				}
 
-				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node, pxGraph.Type);
-            }
-        }
+				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node, pxGraph.GraphType);
+			}
+		}
 
 		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext, IMethodSymbol symbol, MethodDeclarationSyntax node,
 										GraphType graphType)
@@ -95,5 +95,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
 			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
-    }
+	}
 }

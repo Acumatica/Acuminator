@@ -22,9 +22,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1041_NameConventionEventsInGraphsAndGraphExtensions);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => 
-			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None;
-
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphOrExtensionWithEvents)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();

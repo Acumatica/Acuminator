@@ -61,7 +61,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, modelCreationOptions, cancellationToken)
 															.FirstOrDefault();
 
-			if (graphSimpleModel == null || graphSimpleModel.Type == GraphType.None)
+			if (graphSimpleModel == null)
 			{
 				graphSemanticModel = null;
 				return false;

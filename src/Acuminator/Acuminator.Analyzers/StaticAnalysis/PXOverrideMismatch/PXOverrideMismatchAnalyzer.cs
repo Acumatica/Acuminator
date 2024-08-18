@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			ImmutableArray.Create(Descriptors.PX1096_PXOverrideMustMatchSignature);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtension) =>
-			base.ShouldAnalyze(pxContext, graphExtension) && graphExtension.Type == GraphType.PXGraphExtension &&
+			base.ShouldAnalyze(pxContext, graphExtension) && graphExtension.GraphType == GraphType.PXGraphExtension &&
 			!graphExtension.PXOverrides.IsDefaultOrEmpty;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)

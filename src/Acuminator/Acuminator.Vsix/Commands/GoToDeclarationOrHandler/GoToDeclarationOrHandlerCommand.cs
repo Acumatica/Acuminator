@@ -162,7 +162,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			PXGraphSemanticModel? graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType, modelCreationOptions)
 																		  ?.FirstOrDefault();
 
-			if (graphSemanticModel == null || graphSemanticModel.Type == GraphType.None)
+			if (graphSemanticModel == null)
 				return;
 
 			switch (memberSymbol)

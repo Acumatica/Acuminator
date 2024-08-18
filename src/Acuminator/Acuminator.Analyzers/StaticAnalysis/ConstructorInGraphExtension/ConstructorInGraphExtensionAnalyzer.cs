@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 			ImmutableArray.Create(Descriptors.PX1040_ConstructorInGraphExtension);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraphExtension &&
+			base.ShouldAnalyze(pxContext, graph) && graph.GraphType == GraphType.PXGraphExtension &&
 			!graph.Symbol.InstanceConstructors.IsDefaultOrEmpty && !graph.Symbol.IsGraphExtensionBaseType();
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel pxGraph)

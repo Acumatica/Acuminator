@@ -30,12 +30,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override Icon NodeIcon => GraphSemanticModel.Type switch
-		{
-			GraphType.PXGraph          => Icon.Graph,
-			GraphType.PXGraphExtension => Icon.GraphExtension,
-			_                          => Icon.None
-		};
+		public override Icon NodeIcon => GraphSemanticModel.GraphType == GraphType.PXGraph
+			? Icon.Graph
+			: Icon.GraphExtension;
 
 		public override bool DisplayNodeWithoutChildren => true;
 
@@ -55,11 +52,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				yield return new IconViewModel(this, Icon.Processing);
 			}
 
-			if (GraphSemanticModel.Type == GraphType.None)
-				yield break;
-
 			Color color = Color.FromRgb(38, 155, 199);
-			string graphType = GraphSemanticModel.Type == GraphType.PXGraph
+			string graphType = GraphSemanticModel.GraphType == GraphType.PXGraph
 				? VSIXResource.CodeMap_ExtraInfo_IsGraph
 				: VSIXResource.CodeMap_ExtraInfo_IsGraphExtension;
 			yield return new TextViewModel(this, graphType, darkThemeForeground: color, lightThemeForeground: color);

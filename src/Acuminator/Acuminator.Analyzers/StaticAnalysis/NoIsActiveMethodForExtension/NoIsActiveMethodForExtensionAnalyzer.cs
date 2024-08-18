@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 		public bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
-			if (graphExtension.Type != GraphType.PXGraphExtension || graphExtension.IsActiveMethodInfo != null ||
+			if (graphExtension.GraphType == GraphType.PXGraph || graphExtension.IsActiveMethodInfo != null ||
 				graphExtension.Symbol.IsGenericType)
 			{  
 				return false; 
