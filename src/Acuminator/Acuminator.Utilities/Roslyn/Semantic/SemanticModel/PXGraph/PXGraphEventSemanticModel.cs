@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -48,6 +49,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		/// <inheritdoc cref="PXGraphSemanticModel.GraphOrGraphExtInfo"/>
 		public GraphOrGraphExtInfoBase GraphOrGraphExtInfo => BaseGraphModel.GraphOrGraphExtInfo;
+
+		[MemberNotNullWhen(returnValue: false, nameof(Node))]
+		public bool IsInMetadata => GraphOrGraphExtInfo.IsInMetadata;
+
+		[MemberNotNullWhen(returnValue: true, nameof(Node))]
+		public bool IsInSource => GraphOrGraphExtInfo.IsInSource;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.Node"/>
 		public ClassDeclarationSyntax? Node => BaseGraphModel.Node;
