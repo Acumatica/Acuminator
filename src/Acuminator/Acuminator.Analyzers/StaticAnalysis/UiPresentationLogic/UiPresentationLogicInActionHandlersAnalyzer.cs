@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 

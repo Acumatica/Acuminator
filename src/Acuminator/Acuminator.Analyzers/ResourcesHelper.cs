@@ -1,9 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Resources;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Analyzers
 {

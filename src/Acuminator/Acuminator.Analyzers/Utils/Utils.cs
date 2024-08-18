@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -30,7 +32,7 @@ namespace Acuminator.Analyzers.Utils
 		/// <returns/>
 		public static bool IsUnitTestAssembly(this Compilation compilation)
 		{
-			string assemblyName = compilation?.AssemblyName;
+			string? assemblyName = compilation?.AssemblyName;
 
 			if (assemblyName.IsNullOrEmpty())
 				return false;

@@ -1,8 +1,11 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -40,12 +43,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 		private async Task<Document> ChangeUnderscoredNamesAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode diagnosticNode = root?.FindNode(span);
+			SyntaxNode? diagnosticNode = root?.FindNode(span);
 
 			if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			SyntaxNode modifiedNode = GetNodeWithoutUnderscores(diagnosticNode);
+			SyntaxNode? modifiedNode = GetNodeWithoutUnderscores(diagnosticNode);
 
 			if (modifiedNode == null || cancellationToken.IsCancellationRequested)
 				return document;
@@ -54,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
-		private static SyntaxNode GetNodeWithoutUnderscores(SyntaxNode diagnosticNode)
+		private static SyntaxNode? GetNodeWithoutUnderscores(SyntaxNode diagnosticNode)
 		{
 			switch (diagnosticNode)
 			{

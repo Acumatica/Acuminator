@@ -1,16 +1,20 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 {
@@ -37,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 			string codeActionName = nameof(Resources.PX1010Fix).GetLocalized().ToString();
 			CodeAction codeAction = CodeAction.Create(codeActionName, 
-													  cToken => InsertStartRowAssigmentsAsync(context.Document, root, invocation, cToken),
+													  cToken => InsertStartRowAssigmentsAsync(context.Document, root!, invocation, cToken),
 													  equivalenceKey: codeActionName);
 			context.RegisterCodeFix(codeAction, context.Diagnostics);			
 		}
@@ -52,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 		private Document InsertStartRowAssigments(Document document, InvocationExpressionSyntax invocationDeclaration,
 												 SyntaxNode root, CancellationToken cancellationToken)
 		{
-			MethodDeclarationSyntax methodDeclaration = invocationDeclaration.GetDeclaringMethodNode();
+			MethodDeclarationSyntax? methodDeclaration = invocationDeclaration.GetDeclaringMethodNode();
 
 			if (methodDeclaration?.Body == null || cancellationToken.IsCancellationRequested)
 				return document;

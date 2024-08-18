@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -57,11 +59,11 @@ namespace Acuminator.Analyzers.Utils
 			if (dummyServiceCaller == null)
 				return;
 
-			object loadTask = null;
+			object? loadTask = null;
 
 			try
 			{
-				loadTask = dummyServiceCaller.Invoke(null, Array.Empty<object>());
+				loadTask = dummyServiceCaller.Invoke(null, []);
 			}
 			catch
 			{

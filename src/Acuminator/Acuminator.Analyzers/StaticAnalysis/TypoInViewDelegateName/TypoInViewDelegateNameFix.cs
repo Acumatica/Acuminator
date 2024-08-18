@@ -1,16 +1,19 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
-using Acuminator.Utilities.Common;
-
 
 namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 {
