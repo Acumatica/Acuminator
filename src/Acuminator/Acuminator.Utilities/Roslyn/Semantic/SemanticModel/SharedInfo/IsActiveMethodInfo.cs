@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -43,12 +44,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 				isActiveCandidates.FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
 															method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
 															method.ReturnType.SpecialType == SpecialType.System_Boolean);
+			if (isActiveMethod == null)
+				return null;
 
-			SyntaxReference? isActiveMethodReference = isActiveMethod?.DeclaringSyntaxReferences.FirstOrDefault();
-
-			return isActiveMethodReference?.GetSyntax(cancellationToken) is MethodDeclarationSyntax isActiveMethodNode
-				? new IsActiveMethodInfo(isActiveMethodNode, isActiveMethod!, declarationOrder)
-				: null;
+			var isActiveMethodNode = isActiveMethod.GetSyntax(cancellationToken) as MethodDeclarationSyntax;
+			var isActiveMethodInfo = new IsActiveMethodInfo(isActiveMethodNode, isActiveMethod!, declarationOrder);
+			return isActiveMethodInfo;
 		}
 	}
 }
