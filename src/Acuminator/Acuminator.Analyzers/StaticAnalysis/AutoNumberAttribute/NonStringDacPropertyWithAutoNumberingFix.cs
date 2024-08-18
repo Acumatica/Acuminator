@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Collections.Immutable;
 using System.Composition;
@@ -6,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -15,7 +16,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 {
@@ -60,9 +60,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
-		private PropertyDeclarationSyntax GetPropertyNodeWithDiagnostic(SyntaxNode root, TextSpan diagnosticSpan)
+		private PropertyDeclarationSyntax? GetPropertyNodeWithDiagnostic(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			SyntaxNode node = root?.FindNode(diagnosticSpan);
+			SyntaxNode? node = root?.FindNode(diagnosticSpan);
 
 			return node switch
 			{

@@ -1,10 +1,14 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
 {
@@ -24,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
                 .GetSyntaxRootAsync(context.CancellationToken)
                 .ConfigureAwait(false);
 
-            if (!(root?.FindNode(context.Span) is MethodDeclarationSyntax node))
+            if (root?.FindNode(context.Span) is not MethodDeclarationSyntax node)
             {
                 return;
             }

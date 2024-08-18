@@ -1,7 +1,9 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
-using Acuminator.Utilities;
+﻿#nullable enable
+
+using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Dac

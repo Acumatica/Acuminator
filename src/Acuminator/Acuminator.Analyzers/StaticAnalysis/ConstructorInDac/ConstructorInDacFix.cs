@@ -1,8 +1,11 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -39,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInDac
         private async Task<Document> DeleteConstructorsAsync(Document document, TextSpan span, CancellationToken cancellationToken)
         {
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            SyntaxNode diagnosticNode = root?.FindNode(span);
+            SyntaxNode? diagnosticNode = root?.FindNode(span);
 
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;

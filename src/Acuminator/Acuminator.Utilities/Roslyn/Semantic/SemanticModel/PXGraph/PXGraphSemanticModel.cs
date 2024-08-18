@@ -422,8 +422,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		protected bool IsPXProtectedAccessAttributeDeclared() =>
-			GraphType == GraphType.PXGraphExtension && !Attributes.IsDefaultOrEmpty
-				? Attributes.Any(attrInfo => attrInfo.IsProtectedAccess)
-				: false;
+			GraphType == GraphType.PXGraphExtension && !Attributes.IsDefaultOrEmpty && 
+			Attributes.Any(attrInfo => attrInfo.IsProtectedAccess);
 	}
 }

@@ -1,10 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -34,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (CancellationToken.IsCancellationRequested)
 					return null;
 
-				MethodDeclarationSyntax methodDeclaration = Invocation.GetDeclaringMethodNode();
+				MethodDeclarationSyntax? methodDeclaration = Invocation.GetDeclaringMethodNode();
 
 				if (methodDeclaration == null || !SemanticModel.IsLocalVariable(methodDeclaration, VariableName))
 					return null;
@@ -121,7 +125,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					var declaratorStatement = declarator.GetStatementNode();
 
-					if (!_resolver.IsReacheableByControlFlow(declaratorStatement))
+					if (declaratorStatement == null || !_resolver.IsReacheableByControlFlow(declaratorStatement))
 						return;
 
 					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(declarator.Initializer.Value,
@@ -136,7 +140,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						return;
 
 					ExpressionSyntax curExpression = assignment;
-					AssignmentExpressionSyntax candidateAssignment = null;
+					AssignmentExpressionSyntax? candidateAssignment = null;
 
 					while (curExpression is AssignmentExpressionSyntax curAssignment)
 					{
@@ -149,12 +153,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						curExpression = curAssignment.Right;
 					}
 
-					if (candidateAssignment == null || IsCancelationRequested) //-V3063
-						return;
+					_resolver.CancellationToken.ThrowIfCancellationRequested();
+					var assignmentStatement = candidateAssignment?.GetStatementNode();
 
-					var assignmentStatement = candidateAssignment.GetStatementNode();
-
-					if (!_resolver.IsReacheableByControlFlow(assignmentStatement))
+					if (assignmentStatement == null || !_resolver.IsReacheableByControlFlow(assignmentStatement))
 						return;
 
 					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(curExpression, _resolver.SemanticModel,
