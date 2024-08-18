@@ -1,9 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -29,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (CancellationToken.IsCancellationRequested)
 					return false;
 
-				MethodDeclarationSyntax methodDeclaration = Invocation.GetDeclaringMethodNode();
+				MethodDeclarationSyntax? methodDeclaration = Invocation.GetDeclaringMethodNode();
 
 				if (methodDeclaration == null || CancellationToken.IsCancellationRequested)
 					return false;
@@ -38,12 +42,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				return _methodBodyWalker.IsValid && !CancellationToken.IsCancellationRequested;
 			}
 
-			public ITypeSymbol ResolveVariableType()
+			public ITypeSymbol? ResolveVariableType()
 			{
 				if (CancellationToken.IsCancellationRequested)
 					return null;
 
-				MethodDeclarationSyntax methodDeclaration = Invocation.GetDeclaringMethodNode();
+				MethodDeclarationSyntax? methodDeclaration = Invocation.GetDeclaringMethodNode();
 
 				if (methodDeclaration == null || !SemanticModel.IsLocalVariable(methodDeclaration, VariableName))
 					return null;
@@ -53,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (CancellationToken.IsCancellationRequested || !_methodBodyWalker.IsValid || _methodBodyWalker.Candidates.Count == 0)
 					return null;
 
-				TypeSyntax assignedType = GetTypeFromCandidates();
+				TypeSyntax? assignedType = GetTypeFromCandidates();
 
 				if (assignedType == null)
 					return null;
@@ -62,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				return symbolInfo.Symbol as ITypeSymbol;
 			}
 
-			private TypeSyntax GetTypeFromCandidates()
+			private TypeSyntax? GetTypeFromCandidates()
 			{
 				if (_methodBodyWalker.Candidates.Count == 0)
 					return null;
@@ -92,7 +96,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
-				public Stack<(StatementSyntax PotentialAssignment, TypeSyntax AssignedType)> Candidates { get; }
+				public Stack<(StatementSyntax PotentialAssignment, TypeSyntax? AssignedType)> Candidates { get; }
 
 				public bool IsValid
 				{
@@ -110,7 +114,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				public ResolveVarTypeMethodBodyWalker(BqlLocalVariableTypeResolver aResolver)
 				{
 					resolver = aResolver;
-					Candidates = new Stack<(StatementSyntax, TypeSyntax)>(capacity: 2);
+					Candidates = new Stack<(StatementSyntax, TypeSyntax?)>(capacity: 2);
 				}
 
 				public override void Visit(SyntaxNode node)
@@ -139,7 +143,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					var declaratorStatement = declarator.GetStatementNode();
 
-					if (!resolver.IsReacheableByControlFlow(declaratorStatement))
+					if (declaratorStatement == null || !resolver.IsReacheableByControlFlow(declaratorStatement))
 						return;
 
 					switch (declarator.Initializer.Value)
@@ -159,7 +163,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						return;
 
 					ExpressionSyntax curExpression = assignment;
-					AssignmentExpressionSyntax candidateAssignment = null;
+					AssignmentExpressionSyntax? candidateAssignment = null;
 
 					while (curExpression is AssignmentExpressionSyntax curAssignment)
 					{
@@ -172,12 +176,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						curExpression = curAssignment.Right;
 					}
 
-					if (candidateAssignment == null || IsCancelationRequested) //-V3063
-						return;
+					resolver.CancellationToken.ThrowIfCancellationRequested();
+					var assignmentStatement = candidateAssignment?.GetStatementNode();
 
-					var assignmentStatement = candidateAssignment.GetStatementNode();
-
-					if (!resolver.IsReacheableByControlFlow(assignmentStatement))
+					if (assignmentStatement == null || !resolver.IsReacheableByControlFlow(assignmentStatement))
 						return;
 
 					switch (curExpression)
@@ -259,7 +261,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					var symbolInfo = resolver.SemanticModel.GetSymbolInfo(invocation);
 
-					if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol))
+					if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
 						return true;
 
 					if (methodSymbol.IsStatic || !BqlModifyingMethods.IsBqlModifyingInstanceMethod(methodSymbol, resolver.PXContext))
