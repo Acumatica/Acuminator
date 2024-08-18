@@ -14,20 +14,20 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
+namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class PXActionOnNonPrimaryViewFix : CodeFixProvider
+	public class PXActionOnNonPrimaryDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView.Id);
+			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryView.Id);
+			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
 
 			if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
 				return;

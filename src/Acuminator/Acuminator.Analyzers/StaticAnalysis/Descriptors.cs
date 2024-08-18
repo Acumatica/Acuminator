@@ -89,7 +89,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1011", nameof(Resources.PX1011Title).GetLocalized(), Category.Acuminator, 
 	            DiagnosticSeverity.Warning, DiagnosticsShortName.PX1011);
 
-		public static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryView { get; } =
+		public static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryDac { get; } =
 			Rule("PX1012", nameof(Resources.PX1012Title).GetLocalized(), Category.Acuminator, 
 				DiagnosticSeverity.Warning, DiagnosticsShortName.PX1012);
 

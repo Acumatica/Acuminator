@@ -16,12 +16,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
+namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 {
-	public class PXActionOnNonPrimaryViewAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class PXActionOnNonPrimaryDacAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView);
+			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryDac);
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
 		{
@@ -80,7 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 				return;
 
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
-				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticProperties,
+				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryDac, location, diagnosticProperties,
 								  actionSymbol.Name, primaryDacName), 
 				pxContext.CodeAnalysisSettings);
 		}
