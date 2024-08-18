@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
+using System.Runtime.CompilerServices;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -53,7 +55,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				ArrayCreationExpressionSyntax arrayCreation
 					when arrayCreation.Initializer != null => arrayCreation.Initializer.Expressions.Count,
 
-				ArrayCreationExpressionSyntax arrayCreationWithouInitializer => TryGetSizeOfSingleDimensionalNonJaggedArray(arrayCreationWithouInitializer.Type, 
+				ArrayCreationExpressionSyntax arrayCreationWithouInitializer => TryGetSizeOfSingleDimensionalNonJaggedArray(arrayCreationWithouInitializer.Type,
 																															semanticModel, cancellationToken),
 				ImplicitArrayCreationExpressionSyntax implicitArrayCreation  => implicitArrayCreation.Initializer?.Expressions.Count,
 				InitializerExpressionSyntax initializerExpression
@@ -127,17 +129,13 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return declarations[0].GetSyntaxAsync(cancellationToken);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SyntaxNode? GetSyntax(this ISymbol? symbol, CancellationToken cancellationToken = default)
 		{
-			if (symbol == null)
+			if (symbol == null || !symbol.IsInSourceCode())
 				return null;
 
-			var declarations = symbol.DeclaringSyntaxReferences;
-
-			if (declarations.Length == 0)
-				return null;
-
-			return declarations[0].GetSyntax(cancellationToken);
+			return symbol.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken);
 		}
 
 		public static Location? GetLocation(this AttributeData? attribute, CancellationToken cancellationToken = default) =>
