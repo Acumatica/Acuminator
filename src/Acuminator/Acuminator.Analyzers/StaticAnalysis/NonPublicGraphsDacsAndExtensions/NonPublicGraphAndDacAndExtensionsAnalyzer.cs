@@ -38,10 +38,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				Descriptors.PX1022_NonPublicGraphExtension
 			);
 
-		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac?.IsInSource == true;
+		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => 
+			dac?.IsInSource == true;
 
-		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			graph != null;
+		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => 
+			graph?.IsInSource == true;
 
 		void IDacAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExtension) =>
 			CheckSymbolIsPublic(context, pxContext, dacOrDacExtension, 
