@@ -3,7 +3,6 @@
 using System.Collections.Immutable;
 
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
@@ -19,6 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			ImmutableArray.Create(Descriptors.PX1049_DatabaseQueriesInRowSelected);
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
+			base.ShouldAnalyze(pxContext, eventType) && 
 			pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled && eventType == EventType.RowSelected;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)

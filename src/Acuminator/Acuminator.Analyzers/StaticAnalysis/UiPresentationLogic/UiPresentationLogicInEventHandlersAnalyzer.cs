@@ -21,6 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 			ImmutableArray.Create(Descriptors.PX1070_UiPresentationLogicInEventHandlers);
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
+			base.ShouldAnalyze(pxContext, eventType) &&
 			eventType != EventType.RowSelected && 
 			eventType != EventType.CacheAttached;
 

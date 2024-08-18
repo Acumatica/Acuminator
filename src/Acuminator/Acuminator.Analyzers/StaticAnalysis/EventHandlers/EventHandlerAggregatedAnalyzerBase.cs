@@ -2,7 +2,6 @@
 
 using System.Collections.Immutable;
 
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis;

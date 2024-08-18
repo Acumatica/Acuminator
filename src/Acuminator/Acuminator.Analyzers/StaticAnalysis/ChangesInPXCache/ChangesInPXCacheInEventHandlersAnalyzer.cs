@@ -35,6 +35,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType)
 		{
+			if (!ShouldAnalyze(pxContext, eventType))
+				return false;
+
 			var eventSet = pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
 				? AnalyzedEventTypesForIsv
 				: AnalyzedEventTypes;
