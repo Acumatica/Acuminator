@@ -30,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		/// </summary>
 		/// <returns/>
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			pxContext.PXGraph.InitCacheMapping == null && 
+			base.ShouldAnalyze(pxContext, graph) && pxContext.PXGraph.InitCacheMapping == null && 
 			graph.ViewsByNames.Count > 0;
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphSemanticModel)
