@@ -11,6 +11,7 @@ using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -45,11 +46,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.GraphType"/>
 		public GraphType GraphType => BaseGraphModel.GraphType;
 
+		/// <inheritdoc cref="PXGraphSemanticModel.GraphOrGraphExtInfo"/>
+		public GraphOrGraphExtInfoBase GraphOrGraphExtInfo => BaseGraphModel.GraphOrGraphExtInfo;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.Node"/>
+		public ClassDeclarationSyntax? Node => BaseGraphModel.Node;
+
 		/// <inheritdoc cref="PXGraphSemanticModel.Symbol"/>
 		public INamedTypeSymbol Symbol => BaseGraphModel.Symbol;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.GraphSymbol"/>
 		public ITypeSymbol? GraphSymbol => BaseGraphModel.GraphSymbol;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclarationOrder"/>
+		public int DeclarationOrder => BaseGraphModel.DeclarationOrder;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.StaticConstructors"/>
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors => BaseGraphModel.StaticConstructors;
@@ -208,9 +218,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public static IEnumerable<PXGraphEventSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, 
 																		 GraphSemanticModelCreationOptions modelCreationOptions,
-																		 CancellationToken cancellation = default)
+																		 int? declarationOrder = null, CancellationToken cancellation = default)
 		{	
-			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, modelCreationOptions, cancellation);
+			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, modelCreationOptions, declarationOrder, cancellation);
 			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(graph, cancellation))
 												   .ToList();
 			return eventsGraphModels;
