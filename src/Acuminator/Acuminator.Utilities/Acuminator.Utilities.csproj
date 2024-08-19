@@ -15,6 +15,8 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
     <LangVersion>12.0</LangVersion>
     <RestorePackagesPath>../../packages</RestorePackagesPath>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="DiagnosticSuppression\IO\Validation\XmlSchema\SuppressionFileSchema.xsd" />
