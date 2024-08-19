@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -75,7 +76,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				var methodNode = GetMethodNode(methodSymbol, cancellationToken);
 
-				if (methodNode == null || !_rowEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphRowEventInfo> collectionToAdd))
+				if (!_rowEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphRowEventInfo> collectionToAdd))
 					return;
 
 				var eventToAdd = new GraphRowEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
@@ -91,7 +92,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				var methodNode = GetMethodNode(methodSymbol, cancellationToken);
 
-				if (methodNode == null || !_fieldEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphFieldEventInfo> collectionToAdd))
+				if (!_fieldEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphFieldEventInfo> collectionToAdd))
 					return;
 
 				var eventToAdd = new GraphFieldEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
@@ -103,9 +104,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 
 			private MethodDeclarationSyntax? GetMethodNode(IMethodSymbol methodSymbol, CancellationToken cancellationToken) =>
-				methodSymbol?.DeclaringSyntaxReferences.Length == 1
-					? methodSymbol.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken) as MethodDeclarationSyntax
-					: null;
+				methodSymbol.GetSyntax(cancellationToken) as MethodDeclarationSyntax;
 		}
 	}
 }
