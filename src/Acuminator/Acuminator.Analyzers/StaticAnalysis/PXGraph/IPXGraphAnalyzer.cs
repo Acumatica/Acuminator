@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;

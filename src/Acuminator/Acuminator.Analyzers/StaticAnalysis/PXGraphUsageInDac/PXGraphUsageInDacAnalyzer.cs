@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Linq;
 using System.Collections.Immutable;
 using System.Collections.Generic;

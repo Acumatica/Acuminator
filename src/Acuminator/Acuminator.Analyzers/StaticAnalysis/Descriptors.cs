@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Concurrent;
 
 using Acuminator.Utilities.Common;

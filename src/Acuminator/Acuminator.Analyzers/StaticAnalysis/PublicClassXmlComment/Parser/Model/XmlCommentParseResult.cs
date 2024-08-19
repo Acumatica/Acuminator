@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal enum XmlCommentParseResult : byte

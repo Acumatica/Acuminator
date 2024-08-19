@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Threading;
 
 using Acuminator.Utilities.Roslyn;

@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Linq;
 
 using Acuminator.Utilities.Common;

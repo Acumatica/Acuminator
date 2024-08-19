@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using Acuminator.Utilities.Common;
 
 using Microsoft.CodeAnalysis;

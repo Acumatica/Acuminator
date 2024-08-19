@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;

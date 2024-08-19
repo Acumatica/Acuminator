@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading.Tasks;

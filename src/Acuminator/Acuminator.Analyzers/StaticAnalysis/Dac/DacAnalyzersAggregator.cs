@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;

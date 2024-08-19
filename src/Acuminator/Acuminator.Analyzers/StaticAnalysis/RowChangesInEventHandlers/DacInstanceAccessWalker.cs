@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
