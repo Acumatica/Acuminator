@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -211,9 +212,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		
-
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphImpl(
+		private static IEnumerable<(MethodDeclarationSyntax? Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphImpl(
 																	this ITypeSymbol graph, IDictionary<string, DataViewInfo> viewsByName,
 																	PXContext pxContext, bool inheritance, CancellationToken cancellation)
 		{
@@ -230,7 +229,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphOrGraphExtension(
+		private static IEnumerable<(MethodDeclarationSyntax? Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphOrGraphExtension(
 															this ITypeSymbol graphOrExtension, IDictionary<string, DataViewInfo> viewsByName,
 															PXContext pxContext, CancellationToken cancellation)
 		{
@@ -238,16 +237,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 												   where method.IsValidViewDelegate(pxContext) && viewsByName.ContainsKey(method.Name)
 												   select method;
 
-			foreach (IMethodSymbol d in delegates)
+			foreach (IMethodSymbol viewDelegage in delegates)
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				SyntaxReference reference = d.DeclaringSyntaxReferences.FirstOrDefault();
-
-				if (reference?.GetSyntax(cancellation) is MethodDeclarationSyntax declaration)
-				{
-					yield return (declaration, d);
-				}
+				var declaration = viewDelegage.GetSyntax(cancellation) as MethodDeclarationSyntax;
+				yield return (declaration, viewDelegage);
 			}
 		}
 
