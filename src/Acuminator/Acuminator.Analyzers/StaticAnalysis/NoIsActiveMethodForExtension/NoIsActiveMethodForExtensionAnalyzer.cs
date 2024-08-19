@@ -82,8 +82,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 			// ShouldAnalyze already filtered everything and left only graph extensions without IsActive
 			// We just need to report them
-			var syntaxNode = graphExtension.Symbol.GetSyntax(symbolContext.CancellationToken);
-			Location? location = (syntaxNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? syntaxNode?.GetLocation();
+			Location? location = graphExtension.Node?.Identifier.GetLocation() ?? graphExtension.Node?.GetLocation();
 
 			if (location == null)
 				return;
