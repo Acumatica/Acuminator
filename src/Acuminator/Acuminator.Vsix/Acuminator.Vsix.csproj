@@ -13,6 +13,8 @@
     </NuGetPackageImportStamp>
     <UseCodebase>true</UseCodebase>
     <TargetFrameworkProfile />
+	<Nullable>enable</Nullable>
+	<WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
