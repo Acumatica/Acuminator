@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -39,6 +40,8 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			private set;
 		}
 
+#pragma warning disable CS8774 // Member must have a non-null value when exiting.
+		[MemberNotNull(nameof(RoslynDTOType), nameof(DtoFields), nameof(DtoProperties))]
 		protected static void InitializeSharedStaticData(object roslynDTO)
 		{
 			roslynDTO.ThrowOnNull();
@@ -52,5 +55,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				DtoProperties = RoslynDTOType.GetProperties(bindingFlags).ToDictionary(property => property.Name);
 			}
 		}
+#pragma warning restore CS8774
 	}
 }

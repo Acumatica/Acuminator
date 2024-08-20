@@ -304,7 +304,7 @@ namespace Acuminator.Vsix.Coloriser
 					return;
 				}
 
-				IClassificationType braceClassificationType = _tagger.Provider[_braceLevel];
+				IClassificationType? braceClassificationType = _tagger.Provider[_braceLevel];
 
 				try
 				{
@@ -428,15 +428,18 @@ namespace Acuminator.Vsix.Coloriser
 				AddClassificationTag(span, classificationType);
 			}
 
-			private void AddClassificationTag(TextSpan span, IClassificationType classificationType)
+			private void AddClassificationTag(TextSpan span, IClassificationType? classificationType)
 			{
+				if (classificationType == null || _tagger.Snapshot == null)
+					return;
+
 				ITagSpan<IClassificationTag> tag = span.ToClassificationTagSpan(_tagger.Snapshot, classificationType);
 				_tagger.ClassificationTagsCache.AddTag(tag);
 			}
 
 			private void AddOutliningTagToBQL(TextSpan span)
 			{
-				if (AcuminatorVSPackage.Instance?.UseBqlOutlining == false)
+				if (!AcuminatorVSPackage.Instance.UseBqlOutlining || _tagger.Snapshot == null)
 					return;
 
 				ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(_tagger.Snapshot);
@@ -452,7 +455,8 @@ namespace Acuminator.Vsix.Coloriser
 															 .OfType<AttributeSyntax>()
 															 .FirstOrDefault();
 
-				if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.Count == 0 || _cancellationToken.IsCancellationRequested)
+				if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.Count == 0 || _cancellationToken.IsCancellationRequested ||
+					_tagger.Snapshot == null)
 				{
 					return;
 				}
@@ -477,7 +481,7 @@ namespace Acuminator.Vsix.Coloriser
 							}
 						case QualifiedNameSyntax qualifiedName:
 							{
-								string identifierText = _tagger.Snapshot.GetText(qualifiedName.Span);
+								string? identifierText = _tagger.Snapshot?.GetText(qualifiedName.Span);
 								return !identifierText.IsNullOrWhiteSpace()
 									? $"[{identifierText}]"
 									: null;
@@ -494,7 +498,10 @@ namespace Acuminator.Vsix.Coloriser
 					return;
 
 				_visitedNodesCounter = 0;
+
+#pragma warning disable VSTHRD110 // Observe result of async calls
 				Shell.ThreadHelper.JoinableTaskFactory.RunAsync(_tagger.RaiseTagsChangedAsync);
+#pragma warning restore VSTHRD110 // Observe result of async calls
 			}
 
 			/// <summary>

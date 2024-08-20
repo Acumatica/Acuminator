@@ -77,32 +77,32 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		private DiagnosticData(object roslynDiagnosticDTO)
 		{
-			Id = DtoFields[nameof(Id)].GetValue<string>(roslynDiagnosticDTO);
-			Category = DtoFields[nameof(Category)].GetValue<string>(roslynDiagnosticDTO); 
+			Id 		 	= DtoFields![nameof(Id)].GetValue<string>(roslynDiagnosticDTO);
+			Category 	= DtoFields[nameof(Category)].GetValue<string>(roslynDiagnosticDTO); 
 			 
-			Message = DtoFields[nameof(Message)].GetValue<string>(roslynDiagnosticDTO);
+			Message 	= DtoFields[nameof(Message)].GetValue<string>(roslynDiagnosticDTO);
 			Description = DtoFields[nameof(Description)].GetValue<string>(roslynDiagnosticDTO);
-			Title = DtoFields[nameof(Title)].GetValue<string>(roslynDiagnosticDTO);
-			HelpLink = DtoFields[nameof(HelpLink)].GetValue<string>(roslynDiagnosticDTO);
+			Title 		= DtoFields[nameof(Title)].GetValue<string>(roslynDiagnosticDTO);
+			HelpLink 	= DtoFields[nameof(HelpLink)].GetValue<string>(roslynDiagnosticDTO);
 
-			Severity = DtoFields[nameof(Severity)].GetValue<DiagnosticSeverity>(roslynDiagnosticDTO);
+			Severity 		= DtoFields[nameof(Severity)].GetValue<DiagnosticSeverity>(roslynDiagnosticDTO);
 			DefaultSeverity = DtoFields[nameof(DefaultSeverity)].GetValue<DiagnosticSeverity>(roslynDiagnosticDTO);
 
 			IsEnabledByDefault = DtoFields[nameof(IsEnabledByDefault)].GetValue<bool>(roslynDiagnosticDTO);
-			WarningLevel = DtoFields[nameof(WarningLevel)].GetValue<int>(roslynDiagnosticDTO);
-			CustomTags = DtoFields[nameof(CustomTags)].GetValue<IList<string>>(roslynDiagnosticDTO);
+			WarningLevel 	   = DtoFields[nameof(WarningLevel)].GetValue<int>(roslynDiagnosticDTO);
+			CustomTags 		   = DtoFields[nameof(CustomTags)].GetValue<IList<string>>(roslynDiagnosticDTO);
 
-			Properties = DtoFields[nameof(Properties)].GetValue<ImmutableDictionary<string, string>>(roslynDiagnosticDTO);
+			Properties 	 = DtoFields[nameof(Properties)].GetValue<ImmutableDictionary<string, string>>(roslynDiagnosticDTO);
 			IsSuppressed = DtoFields[nameof(IsSuppressed)].GetValue<bool>(roslynDiagnosticDTO);
-			ProjectId = DtoFields[nameof(ProjectId)].GetValue<ProjectId>(roslynDiagnosticDTO);
-			DocumentId = DtoProperties[nameof(DocumentId)].GetValue<DocumentId>(roslynDiagnosticDTO);
+			ProjectId 	 = DtoFields[nameof(ProjectId)].GetValue<ProjectId>(roslynDiagnosticDTO);
+			DocumentId 	 = DtoProperties![nameof(DocumentId)].GetValue<DocumentId>(roslynDiagnosticDTO);
 
 			DataLocation = GetDiagnosticLocationWrapper(roslynDiagnosticDTO);
 		}
 
 		private DiagnosticDataLocation? GetDiagnosticLocationWrapper(object roslynDiagnosticDTO)
 		{
-			object roslynDiagnosticLocationDTO = DtoFields[nameof(DataLocation)].GetValue(roslynDiagnosticDTO);
+			object roslynDiagnosticLocationDTO = DtoFields![nameof(DataLocation)].GetValue(roslynDiagnosticDTO);
 			return roslynDiagnosticLocationDTO != null
 				? DiagnosticDataLocation.Create(roslynDiagnosticLocationDTO)
 				: null;

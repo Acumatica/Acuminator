@@ -85,7 +85,7 @@ namespace Acuminator.Vsix.Coloriser
             _classificationTagsCache.SetCancellation(CancellationToken.None);
             _outliningTagsCache.SetCancellation(CancellationToken.None);
 
-            Task<ParsedDocument> getDocumentTask = ParsedDocument.ResolveAsync(Snapshot, CancellationToken.None);
+            Task<ParsedDocument?>? getDocumentTask = ParsedDocument.ResolveAsync(snapshot, CancellationToken.None);
 
             if (getDocumentTask == null)    // Razor cshtml returns a null document for some reason.        
                 return ClassificationTagsCache.ProcessedTags; 
@@ -102,10 +102,11 @@ namespace Acuminator.Vsix.Coloriser
                 return ClassificationTagsCache.ProcessedTags;     // TODO: report this to someone.
             }
 
-            ParsedDocument document = getDocumentTask.Result;
+            ParsedDocument? document = getDocumentTask.Result;
 #pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
 
-			WalkDocumentSyntaxTreeForTags(document, CancellationToken.None);
+			if (document != null)
+				WalkDocumentSyntaxTreeForTags(document, CancellationToken.None);
             //documentCache = document;
             //isParsed = true;
           

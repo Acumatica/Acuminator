@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.Formatter
 
 		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
 		{
-			INamedTypeSymbol originalSymbol = GetOriginalTypeSymbol(node);
+			INamedTypeSymbol? originalSymbol = GetOriginalTypeSymbol(node);
 
 			if (originalSymbol != null)
 			{

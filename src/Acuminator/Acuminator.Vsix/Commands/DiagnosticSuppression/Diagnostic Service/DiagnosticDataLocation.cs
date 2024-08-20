@@ -7,7 +7,6 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Common.Reflection;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
@@ -77,7 +76,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		private DiagnosticDataLocation(object roslynLocationDTO)
 		{
-			DocumentId          = DtoFields[nameof(DocumentId)].GetValue<DocumentId>(roslynLocationDTO);
+			DocumentId          = DtoFields![nameof(DocumentId)].GetValue<DocumentId>(roslynLocationDTO);
 			SourceSpan          = DtoFields[nameof(SourceSpan)].GetValue<TextSpan?>(roslynLocationDTO);
 			MappedFilePath      = DtoFields[nameof(MappedFilePath)].GetValue<string>(roslynLocationDTO);
 			MappedStartLine     = DtoFields[nameof(MappedStartLine)].GetValue<int>(roslynLocationDTO);

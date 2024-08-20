@@ -93,7 +93,7 @@ namespace Acuminator.Vsix
 
 		public static AcuminatorVSPackage Instance { get; private set; } = null!;
 
-		private Lazy<GeneralOptionsPage?> _generalOptionsPage =
+		private readonly Lazy<GeneralOptionsPage?> _generalOptionsPage =
 			new Lazy<GeneralOptionsPage?>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
 
 		public GeneralOptionsPage? GeneralOptionsPage => _generalOptionsPage.Value;
@@ -365,7 +365,7 @@ namespace Acuminator.Vsix
 			return missingOldDocument || addedNewDocument;
 
 			//---------------------------------Local function--------------------------------------------------------
-			HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project? project) =>
+			static HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project? project) =>
 				project?.GetSuppressionFiles()
 						.Select(file => file.Id)
 						.ToHashSet() ?? [];
@@ -382,7 +382,10 @@ namespace Acuminator.Vsix
 
 		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
-			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
+			var codeAnalysisSettings = GeneralOptionsPage != null 
+				? new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage)
+				: CodeAnalysisSettings.Default;
+
 			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
 
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
@@ -393,7 +396,7 @@ namespace Acuminator.Vsix
 
 		private void InitializeOutOfProcessSettingsSharing()
 		{
-			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace))
+			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace) || GeneralOptionsPage == null)
 				return;
 
 			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
