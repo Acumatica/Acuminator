@@ -313,7 +313,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPXAction(this ITypeSymbol typeSymbol, PXContext pxContext) =>
-			typeSymbol.InheritsFrom(pxContext?.PXAction.Type);
+			typeSymbol.InheritsFrom(pxContext.CheckIfNull().PXAction.Type);
 
 		public static bool IsCustomBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{

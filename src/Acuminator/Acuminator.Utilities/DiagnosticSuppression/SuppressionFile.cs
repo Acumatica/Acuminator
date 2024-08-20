@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		/// </summary>
 		internal bool GenerateSuppressionBase { get; }
 
-		private ConcurrentDictionary<SuppressMessage, object> Messages { get; } = new ConcurrentDictionary<SuppressMessage, object>();
+		private ConcurrentDictionary<SuppressMessage, object?> Messages { get; } = new ConcurrentDictionary<SuppressMessage, object?>();
 
 		public HashSet<SuppressMessage> CopyMessages() => Messages.Keys.ToHashSet();
 
@@ -116,7 +116,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		internal XDocument MessagesToDocument(ISuppressionFileSystemService fileSystemService)
 		{
 			fileSystemService.ThrowOnNull();
-			XDocument document;
+			XDocument? document;
 
 			lock (fileSystemService)
 			{
@@ -148,7 +148,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
 		{
-			XDocument document;
+			XDocument? document;
 
 			lock (fileSystemService)
 			{
@@ -157,10 +157,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			if (document == null)
 			{
-				return new HashSet<SuppressMessage>();
+				return [];
 			}
 
-			HashSet<SuppressMessage> suppressionMessages = new HashSet<SuppressMessage>();
+			var suppressionMessages = new HashSet<SuppressMessage>();
 
 			foreach (XElement suppressionMessageXml in document.Root.Elements(SuppressMessageElement))
 			{

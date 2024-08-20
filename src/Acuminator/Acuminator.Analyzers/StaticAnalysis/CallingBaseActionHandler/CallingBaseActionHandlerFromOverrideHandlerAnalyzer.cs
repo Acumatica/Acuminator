@@ -109,6 +109,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 
 				var originalMethodSymbol = methodSymbol.OriginalDefinition?.OverriddenMethod ?? methodSymbol.OriginalDefinition;
 
+				if (originalMethodSymbol == null)
+					return;
+
 				// Case Base.SomeAction.Press(adapter)
 				if (PxContext.PXAction.Press.Contains(originalMethodSymbol) &&
 					invocationNode.Expression is MemberAccessExpressionSyntax memberAccess && memberAccess.Expression != null)
