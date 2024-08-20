@@ -143,7 +143,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			private bool IsMethodForbidden(IMethodSymbol symbol)
 			{
 				return symbol.ContainingType?.OriginalDefinition != null
-				       && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(_pxContext.PXCache.Type!)
+				       && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(_pxContext.PXCache.Type)
 				       && MethodNames.Contains(symbol.Name);
 			}
 		}

@@ -56,8 +56,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 
 			var pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
 			var lists = new List<INamedTypeSymbol> {
-									pxContext.AttributeTypes.PXIntListAttribute.Type!,
-									pxContext.AttributeTypes.PXStringListAttribute.Type! };
+									pxContext.AttributeTypes.PXIntListAttribute.Type,
+									pxContext.AttributeTypes.PXStringListAttribute.Type };
 
 			var attributeTypes = property.GetAttributes()
 										 .Select(a => a.AttributeClass);
@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			string attributeIdentifier = listAttribute.InheritsFromOrEquals(pxContext.AttributeTypes.PXIntListAttribute.Type!)
+			string attributeIdentifier = listAttribute.InheritsFromOrEquals(pxContext.AttributeTypes.PXIntListAttribute.Type)
 				? pxContext.FieldAttributes.PXIntAttribute.Name
 				: pxContext.FieldAttributes.PXStringAttribute.Name;
 

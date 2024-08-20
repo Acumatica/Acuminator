@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var attributes = symbol.GetAttributes();
-			var pxUIFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type!;
+			var pxUIFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type;
 			var pxButtonAttributeType = pxContext.AttributeTypes.PXButtonAttribute;
 			var pxOverrideAttributeType = pxContext.AttributeTypes.PXOverrideAttribute;
 			var hasPXUIFieldAttribute = false;
