@@ -84,7 +84,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				case FieldEventCategoryNodeViewModel _:
 					childToNavigateTo = GetChildToNavigateToFromFieldEvents();
 
-					if (!(childToNavigateTo is FieldEventNodeViewModel fieldEventNode))
+					if (childToNavigateTo is not FieldEventNodeViewModel fieldEventNode)
 						return;
 
 					fieldEventNode.DacFieldVM.IsExpanded = true;
