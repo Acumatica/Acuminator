@@ -15,6 +15,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	{
 		public class InstanceCreatedEventsSymbols : SymbolsSetForTypeBase
 	    {
+#pragma warning disable CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
+			public sealed override INamedTypeSymbol? Type => base.Type;
+#pragma warning restore CS8764
+
 			public IMethodSymbol? AddHandler { get; }
 
 		    internal InstanceCreatedEventsSymbols(Compilation compilation) : base(compilation, DelegateNames.InstanceCreatedEvents)

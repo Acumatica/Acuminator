@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Acuminator.Utilities.Roslyn.Constants;
 
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -21,7 +20,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         public int MinAutoNumberLength => _minAutoNumberLength;
 
-        public INamedTypeSymbol NumberingSequence => Compilation.GetTypeByMetadataName(TypeFullNames.NumberingSequence);
+#pragma warning disable CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
+		public sealed override INamedTypeSymbol? Type => base.Type;
+#pragma warning restore CS8764
+
+		public INamedTypeSymbol NumberingSequence => Compilation.GetTypeByMetadataName(TypeFullNames.NumberingSequence);
 
         internal AutoNumberAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.AutoNumberAttribute)
         {

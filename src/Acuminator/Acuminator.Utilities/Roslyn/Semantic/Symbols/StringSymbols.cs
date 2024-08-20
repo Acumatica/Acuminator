@@ -14,8 +14,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		internal StringSymbols(Compilation compilation) :
 						  base(compilation, compilation.GetSpecialType(SpecialType.System_String))
 		{
-			StringFormat = Type?.GetMembers(nameof(string.Format)) ?? ImmutableArray<ISymbol>.Empty;
-			StringConcat = Type?.GetMembers(nameof(string.Concat)) ?? ImmutableArray<ISymbol>.Empty;
+			StringFormat = Type.GetMembers(nameof(string.Format));
+			StringConcat = Type.GetMembers(nameof(string.Concat));
 		}
 	}
 }
