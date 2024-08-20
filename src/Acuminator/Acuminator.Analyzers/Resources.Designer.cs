@@ -1456,6 +1456,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add missing &quot;{0}&quot; BQL field to DAC.
+        /// </summary>
+        public static string PX1065FixFormat {
+            get {
+                return ResourceManager.GetString("PX1065FixFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC field property &quot;{0}&quot; has Acumatica attributes on declared on it but does not have a corresponding BQL field. Such properties are not supported..
+        /// </summary>
+        public static string PX1065TitleFormat {
+            get {
+                return ResourceManager.GetString("PX1065TitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {
