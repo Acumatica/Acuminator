@@ -46,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull();
 
-			return view.CheckIfNull().InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type!);
+			return view.CheckIfNull().InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type);
 		}
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull();
 
-			if (graph?.InheritsFrom(pxContext.PXGraph.Type!) != true)
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
 				return new OverridableItemsCollection<DataViewInfo>();
 
 			var viewsByName = new OverridableItemsCollection<DataViewInfo>(capacity: EstimatedNumberOfViewsInGraph);
@@ -142,7 +142,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (member is not IFieldSymbol field || field.DeclaredAccessibility != Accessibility.Public)
 					continue;
 
-				if (field.Type is not INamedTypeSymbol fieldType || !fieldType.InheritsFrom(pxContext.PXSelectBase.Type!))
+				if (field.Type is not INamedTypeSymbol fieldType || !fieldType.InheritsFrom(pxContext.PXSelectBase.Type))
 					continue;
 
 				yield return (field, fieldType);
@@ -251,7 +251,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																						AddViewInfoWithOrderDelegate<TInfo> addGraphExtensionViewInfo)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
+			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return new OverridableItemsCollection<TInfo>();
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);

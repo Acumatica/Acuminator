@@ -8,6 +8,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 	/// </summary>
 	public interface IIOErrorProcessor
 	{
-		void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null);
+		void ProcessError(Exception exception, [CallerMemberName]string? reportedFrom = null);
 	}
 }

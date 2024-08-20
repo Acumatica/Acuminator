@@ -207,7 +207,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{ pxContext.FieldAttributes.PXLongAttribute,    pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXIntAttribute,     pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXShortAttribute,   pxContext.SystemTypes.Int16 },
-				{ pxContext.FieldAttributes.PXStringAttribute,  pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXStringAttribute,  pxContext.SystemTypes.String.Type },
 				{ pxContext.FieldAttributes.PXByteAttribute,    pxContext.SystemTypes.Byte },
 				{ pxContext.FieldAttributes.PXDecimalAttribute, pxContext.SystemTypes.Decimal },
 				{ pxContext.FieldAttributes.PXDoubleAttribute,  pxContext.SystemTypes.Double },
@@ -232,7 +232,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{ pxContext.FieldAttributes.PXDBLongAttribute,         pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXDBIntAttribute,          pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXDBShortAttribute,        pxContext.SystemTypes.Int16 },
-				{ pxContext.FieldAttributes.PXDBStringAttribute,       pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXDBStringAttribute,       pxContext.SystemTypes.String.Type },
 				{ pxContext.FieldAttributes.PXDBByteAttribute,         pxContext.SystemTypes.Byte },
 				{ pxContext.FieldAttributes.PXDBDecimalAttribute,      pxContext.SystemTypes.Decimal },
 				{ pxContext.FieldAttributes.PXDBDoubleAttribute,       pxContext.SystemTypes.Double },
@@ -244,7 +244,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{ pxContext.FieldAttributes.PXDBIdentityAttribute,     pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXDBBinaryAttribute,       pxContext.SystemTypes.ByteArray },
-				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.SystemTypes.String.Type },
 				{ pxContext.FieldAttributes.PXDBAttributeAttribute,    pxContext.SystemTypes.StringArray },
 				{ pxContext.FieldAttributes.PXDBDataLengthAttribute,   pxContext.SystemTypes.Int64 },
 			};
@@ -286,11 +286,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			var wellKnownNonDataTypeAttributes = ImmutableArray.CreateBuilder<INamedTypeSymbol>(initialCapacity: 6);
 
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXUIFieldAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXUIFieldAttribute.Type);
 			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXDefaultAttribute);
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXStringListAttribute.Type!);
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXIntListAttribute.Type!);
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXSelectorAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXStringListAttribute.Type);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXIntListAttribute.Type);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXSelectorAttribute.Type);
 			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXForeignReferenceAttribute);
 
 			return wellKnownNonDataTypeAttributes.ToImmutable();

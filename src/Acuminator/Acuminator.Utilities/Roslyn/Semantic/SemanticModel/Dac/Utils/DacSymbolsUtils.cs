@@ -130,7 +130,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			pxContext.ThrowOnNull();
 
-			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type!) != true)
+			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type) != true)
 				return null;
 
 			INamedTypeSymbol baseViewType;

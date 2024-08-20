@@ -168,7 +168,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				   typeHierarchyNames.Contains(TypeNames.BqlCommand);
 		}
 
-		public static bool IsBqlCommand(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsBqlCommand(this ITypeSymbol typeSymbol, PXContext? pxContext)
 		{
 			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
 				return false;

@@ -59,7 +59,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
+			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return [];
 
 			INamedTypeSymbol? extensionBaseType = graphExtension.GetBaseTypesAndThis()

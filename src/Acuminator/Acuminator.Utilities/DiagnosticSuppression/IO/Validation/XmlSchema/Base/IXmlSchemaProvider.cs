@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using System.Xml.Schema;
+﻿using System.Xml.Schema;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
@@ -11,6 +10,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		/// <summary>
 		/// Gets XML schema.
 		/// </summary>
-		XmlSchema GetXmlSchema();
+		XmlSchema? GetXmlSchema();
 	}
 }

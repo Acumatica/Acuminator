@@ -12,16 +12,16 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 	/// </summary>
 	public class DocumentChangeActionWithOptionalPreview : SimpleCodeActionWithOptionalPreview
 	{
-		private readonly Func<CancellationToken, Task<Document>> _createChangedDocument;
+		private readonly Func<CancellationToken, Task<Document?>> _createChangedDocument;
 
-		public DocumentChangeActionWithOptionalPreview(string title, Func<CancellationToken, Task<Document>> createChangedDocument, bool displayPreview, 
-													   string equivalenceKey = null) :
+		public DocumentChangeActionWithOptionalPreview(string title, Func<CancellationToken, Task<Document?>> createChangedDocument, bool displayPreview, 
+													   string? equivalenceKey = null) :
 												  base(title, equivalenceKey, displayPreview)
 		{
 			_createChangedDocument = createChangedDocument.CheckIfNull();
 		}
 
-		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
+		protected override Task<Document?> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
 			_createChangedDocument(cancellationToken);
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Xml.Linq;
+
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
@@ -15,12 +15,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		{
 		}
 
-		public SuppressionFileWithChangesTrackingSystemService(IIOErrorProcessor errorProcessor) : 
+		public SuppressionFileWithChangesTrackingSystemService(IIOErrorProcessor? errorProcessor) : 
 														  base(errorProcessor, null)
 		{
 		}
 
-		public SuppressionFileWithChangesTrackingSystemService(IIOErrorProcessor errorProcessor, SuppressionFileValidation customValidation) : 
+		public SuppressionFileWithChangesTrackingSystemService(IIOErrorProcessor? errorProcessor, SuppressionFileValidation? customValidation) : 
 														  base(errorProcessor, customValidation)
 		{
 		}
