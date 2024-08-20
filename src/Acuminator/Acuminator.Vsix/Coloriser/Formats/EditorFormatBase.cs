@@ -1,8 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Media;
-using System.ComponentModel.Composition;
 
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
@@ -19,7 +20,7 @@ namespace Acuminator.Vsix.Coloriser
 {
     internal abstract class EditorFormatBase : ClassificationFormatDefinition, IDisposable
     {
-        private readonly string _classificationTypeName;
+        private readonly string? _classificationTypeName;
 
         protected EditorFormatBase()
         {

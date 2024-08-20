@@ -1,11 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.Text.Tagging;
-using System.Collections;
-using Acuminator.Utilities;
+
 using Acuminator.Utilities.Common;
 
 using Shell = Microsoft.VisualStudio.Shell;
@@ -14,13 +15,13 @@ namespace Acuminator.Vsix.Coloriser
 {
     public class BackgroundTagging : IDisposable
     {
-        private static TaskScheduler _vsTaskScheduler;
+        private static TaskScheduler? _vsTaskScheduler;
 
         private CancellationTokenSource _cancellationTokenSource = new();
 
         public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 
-        public Task TaggingTask { get; private set; }
+        public Task? TaggingTask { get; private set; }
 
         private bool _isDisposed;
 

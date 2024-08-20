@@ -1,22 +1,26 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Classification;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Classification;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Tagging;
 
 using Shell = Microsoft.VisualStudio.Shell;
 
@@ -26,55 +30,55 @@ namespace Acuminator.Vsix.Coloriser
 	{
 		protected class PXColoriserSyntaxWalker : CSharpSyntaxWalker
 		{
-            private const string VarKeyword = "var";
+			private const string VarKeyword = "var";
 
-            private long _visitedNodesCounter = 0;
-            private readonly PXRoslynColorizerTagger _tagger;
+			private long _visitedNodesCounter = 0;
+			private readonly PXRoslynColorizerTagger _tagger;
 			private readonly ParsedDocument _document;
-            private int _braceLevel;
-            private int _attributeLevel;                  
-            private readonly CancellationToken _cancellationToken;
+			private int _braceLevel;
+			private int _attributeLevel;
+			private readonly CancellationToken _cancellationToken;
 
-            private long _bqlDeepnessLevel;
+			private long _bqlDeepnessLevel;
 
-            private bool IsInsideBqlCommand => _bqlDeepnessLevel > 0;
+			private bool IsInsideBqlCommand => _bqlDeepnessLevel > 0;
 
-            public PXColoriserSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
-                                      base(SyntaxWalkerDepth.Node)
+			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
+									  base(SyntaxWalkerDepth.Node)
 			{
 				_tagger = tagger.CheckIfNull();
 				_document = parsedDocument.CheckIfNull();
-                _cancellationToken = cToken;
-            }
+				_cancellationToken = cToken;
+			}
 
-            public override void VisitIdentifierName(IdentifierNameSyntax node)
-            {
-                if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitIdentifierName(node);
+			public override void VisitIdentifierName(IdentifierNameSyntax node)
+			{
+				if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitIdentifierName(node);
 
-                    return;
-                }
+					return;
+				}
 
-                string nodeText = node.Identifier.ValueText;
-                TextSpan span = node.Span;
+				string nodeText = node.Identifier.ValueText;
+				TextSpan span = node.Span;
 
-                if (_cancellationToken.IsCancellationRequested || IsVar(nodeText))
-                    return;
+				if (_cancellationToken.IsCancellationRequested || IsVar(nodeText))
+					return;
 
-                ITypeSymbol typeSymbol = GetTypeSymbolFromIdentifierNode(node);
+				ITypeSymbol? typeSymbol = GetTypeSymbolFromIdentifierNode(node);
 
-                if (typeSymbol == null)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)                    
-                        base.VisitIdentifierName(node);                 
+				if (typeSymbol == null)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitIdentifierName(node);
 
-                    return;
-                }
+					return;
+				}
 
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
 				if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
 				{
@@ -88,222 +92,222 @@ namespace Acuminator.Vsix.Coloriser
 
 				ColorIdentifierTypeSymbol(typeSymbol, span, isTypeParameter: false);
 
-                if (!_cancellationToken.IsCancellationRequested)
-                    base.VisitIdentifierName(node);
+				if (!_cancellationToken.IsCancellationRequested)
+					base.VisitIdentifierName(node);
 
-                UpdateCodeEditorIfNecessary();
-            }
+				UpdateCodeEditorIfNecessary();
+			}
 
-            public override void VisitGenericName(GenericNameSyntax genericNode)
-            {
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+			public override void VisitGenericName(GenericNameSyntax genericNode)
+			{
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
 				SemanticModel semanticModel = _document.GetSemanticModel(_cancellationToken);
-                ITypeSymbol typeSymbol = semanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
-              
-                if (typeSymbol == null)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
+				ITypeSymbol? typeSymbol = semanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
 
-                    return;
-                }
+				if (typeSymbol == null)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitGenericName(genericNode);
 
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+					return;
+				}
 
-                if (genericNode.IsUnboundGenericName)
-                {
-                    typeSymbol = typeSymbol.OriginalDefinition;
-                }
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
-                PXCodeType? coloredCodeType = typeSymbol.GetCodeTypeFromGenericName();
-                IClassificationType classificationType = coloredCodeType.HasValue 
-                    ? _tagger.Provider[coloredCodeType.Value]
-                    : null;
+				if (genericNode.IsUnboundGenericName)
+				{
+					typeSymbol = typeSymbol.OriginalDefinition;
+				}
 
-                if (classificationType == null)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
+				PXCodeType? coloredCodeType = typeSymbol.GetCodeTypeFromGenericName();
+				IClassificationType? classificationType = coloredCodeType.HasValue
+					? _tagger.Provider[coloredCodeType.Value]
+					: null;
 
-                    UpdateCodeEditorIfNecessary();
-                    return;
-                }
+				if (classificationType == null)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitGenericName(genericNode);
 
-                if (coloredCodeType.Value == PXCodeType.BqlCommand)            //-V3080
-                    ColorAndOutlineBqlCommandBeginning(genericNode, classificationType);
-                else
-                    ColorAndOutlineBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
+					UpdateCodeEditorIfNecessary();
+					return;
+				}
 
-                UpdateCodeEditorIfNecessary();
-            }
+				if (coloredCodeType!.Value == PXCodeType.BqlCommand)
+					ColorAndOutlineBqlCommandBeginning(genericNode, classificationType);
+				else
+					ColorAndOutlineBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ColorAndOutlineBqlCommandBeginning(GenericNameSyntax genericNode, IClassificationType classificationType)
-            {
-                try
-                {
-                    _bqlDeepnessLevel++;
-                    var typeArgumentList = genericNode.TypeArgumentList;
+				UpdateCodeEditorIfNecessary();
+			}
 
-                    if (typeArgumentList.Arguments.Count > 1)
-                    {
-                        AddOutliningTagToBQL(typeArgumentList.Span);
-                    }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private void ColorAndOutlineBqlCommandBeginning(GenericNameSyntax genericNode, IClassificationType classificationType)
+			{
+				try
+				{
+					_bqlDeepnessLevel++;
+					var typeArgumentList = genericNode.TypeArgumentList;
 
-                    AddClassificationTag(genericNode.Identifier.Span, classificationType);
+					if (typeArgumentList.Arguments.Count > 1)
+					{
+						AddOutliningTagToBQL(typeArgumentList.Span);
+					}
 
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
-                }
-                finally
-                {
-                    _bqlDeepnessLevel--;
-                }
-            }
+					AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ColorAndOutlineBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, 
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitGenericName(genericNode);
+				}
+				finally
+				{
+					_bqlDeepnessLevel--;
+				}
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private void ColorAndOutlineBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol,
 															 IClassificationType classificationType, PXCodeType coloredCodeType)
-            {
-                if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
+			{
+				if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitGenericName(genericNode);
 
-                    return;
-                }
-                                 
-                switch (coloredCodeType)
-                {
-                    case PXCodeType.BqlOperator:
-                        ColorAndOutlineBqlOperator(genericNode, typeSymbol, classificationType);
-                        return;
-                    case PXCodeType.BqlParameter:
-                        ColorBqlParameter(genericNode, typeSymbol, classificationType);
-                        return;
-                    case PXCodeType.PXAction:
-                        {
-                            if (AcuminatorVSPackage.Instance?.PXActionColoringEnabled == true)
-                                AddClassificationTag(genericNode.Identifier.Span, classificationType);
+					return;
+				}
 
-                            if (!_cancellationToken.IsCancellationRequested)
-                                base.VisitGenericName(genericNode);
+				switch (coloredCodeType)
+				{
+					case PXCodeType.BqlOperator:
+						ColorAndOutlineBqlOperator(genericNode, typeSymbol, classificationType);
+						return;
+					case PXCodeType.BqlParameter:
+						ColorBqlParameter(genericNode, typeSymbol, classificationType);
+						return;
+					case PXCodeType.PXAction:
+						{
+							if (AcuminatorVSPackage.Instance?.PXActionColoringEnabled == true)
+								AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-                            return;
-                        }
-                }                           
-            }
+							if (!_cancellationToken.IsCancellationRequested)
+								base.VisitGenericName(genericNode);
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ColorAndOutlineBqlOperator(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, IClassificationType classificationType)
-            {
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+							return;
+						}
+				}
+			}
 
-                try
-                {
-                    _bqlDeepnessLevel++;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private void ColorAndOutlineBqlOperator(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, IClassificationType classificationType)
+			{
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
-                    if (AcuminatorVSPackage.Instance?.UseBqlOutlining == true && AcuminatorVSPackage.Instance?.UseBqlDetailedOutlining == true)
-                    {
-                        TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
+				try
+				{
+					_bqlDeepnessLevel++;
 
-                        if (outliningSpan.HasValue)
-                        {
-                            AddOutliningTagToBQL(outliningSpan.Value);
-                        }
-                    }
+					if (AcuminatorVSPackage.Instance?.UseBqlOutlining == true && AcuminatorVSPackage.Instance?.UseBqlDetailedOutlining == true)
+					{
+						TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
 
-                    AddClassificationTag(genericNode.Identifier.Span, classificationType);
+						if (outliningSpan.HasValue)
+						{
+							AddOutliningTagToBQL(outliningSpan.Value);
+						}
+					}
 
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
-                }
-                finally
-                {
-                    _bqlDeepnessLevel--;
-                }
-            }
+					AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ColorBqlParameter(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, IClassificationType classificationType)
-            {
-                try
-                {
-                    _bqlDeepnessLevel++;
-                    AddClassificationTag(genericNode.Identifier.Span, classificationType);
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitGenericName(genericNode);
+				}
+				finally
+				{
+					_bqlDeepnessLevel--;
+				}
+			}
 
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);                
-                }
-                finally
-                {
-                    _bqlDeepnessLevel--;
-                }
-            }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private void ColorBqlParameter(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, IClassificationType classificationType)
+			{
+				try
+				{
+					_bqlDeepnessLevel++;
+					AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-            public override void VisitQualifiedName(QualifiedNameSyntax node)
-            {
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitGenericName(genericNode);
+				}
+				finally
+				{
+					_bqlDeepnessLevel--;
+				}
+			}
 
-                if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitQualifiedName(node);
+			public override void VisitQualifiedName(QualifiedNameSyntax node)
+			{
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
-                    return;
-                }
+				if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitQualifiedName(node);
+
+					return;
+				}
 
 				var semanticModel = _document.GetSemanticModel(_cancellationToken);
 
-                TextSpan leftSpan = node.Left.Span;
-                TextSpan rightSpan = node.Right.Span;    
-                ITypeSymbol typeSymbol = semanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
+				TextSpan leftSpan = node.Left.Span;
+				TextSpan rightSpan = node.Right.Span;
+				ITypeSymbol? typeSymbol = semanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
 
-                if (typeSymbol == null)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitQualifiedName(node);
+				if (typeSymbol == null)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitQualifiedName(node);
 
-                    return;
-                }
+					return;
+				}
 
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
-                if (typeSymbol.IsBqlConstant())
-                {
-                    AddClassificationTag(leftSpan, _tagger.Provider[PXCodeType.BQLConstantPrefix]);
-                    AddClassificationTag(rightSpan, _tagger.Provider[PXCodeType.BQLConstantEnding]);
-                }
+				if (typeSymbol.IsBqlConstant())
+				{
+					AddClassificationTag(leftSpan, _tagger.Provider[PXCodeType.BQLConstantPrefix]);
+					AddClassificationTag(rightSpan, _tagger.Provider[PXCodeType.BQLConstantEnding]);
+				}
 
-                if (!_cancellationToken.IsCancellationRequested)
-                    base.VisitQualifiedName(node);
+				if (!_cancellationToken.IsCancellationRequested)
+					base.VisitQualifiedName(node);
 
-                UpdateCodeEditorIfNecessary();
-            }
-          
-            public override void VisitTypeArgumentList(TypeArgumentListSyntax node)
-            {
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+				UpdateCodeEditorIfNecessary();
+			}
 
-                if (_bqlDeepnessLevel == 0)
-                {
-                    if (!_cancellationToken.IsCancellationRequested)
-                        base.VisitTypeArgumentList(node);
+			public override void VisitTypeArgumentList(TypeArgumentListSyntax node)
+			{
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
-                    return;
-                }
+				if (_bqlDeepnessLevel == 0)
+				{
+					if (!_cancellationToken.IsCancellationRequested)
+						base.VisitTypeArgumentList(node);
+
+					return;
+				}
 
 				IClassificationType braceClassificationType = _tagger.Provider[_braceLevel];
 
 				try
-				{				
+				{
 					_braceLevel = (_braceLevel + 1) % ColoringConstants.MaxBraceLevel;
 
 					if (braceClassificationType != null && !_cancellationToken.IsCancellationRequested)
@@ -318,72 +322,72 @@ namespace Acuminator.Vsix.Coloriser
 				finally
 				{
 					_braceLevel = _braceLevel == 0
-						? ColoringConstants.MaxBraceLevel - 1 
+						? ColoringConstants.MaxBraceLevel - 1
 						: _braceLevel - 1;
 				}
 
-                UpdateCodeEditorIfNecessary();
-            }
+				UpdateCodeEditorIfNecessary();
+			}
 
-            public override void VisitAttributeList(AttributeListSyntax node)
-            {
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+			public override void VisitAttributeList(AttributeListSyntax node)
+			{
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
-                _attributeLevel++;
+				_attributeLevel++;
 
-                try
-                {
-                    if (_attributeLevel <= OutliningConstants.MaxAttributeOutliningLevel)
-                    {
-                        AddOutliningTagToAttribute(node);
-                    }
+				try
+				{
+					if (_attributeLevel <= OutliningConstants.MaxAttributeOutliningLevel)
+					{
+						AddOutliningTagToAttribute(node);
+					}
 
-                    if (!_cancellationToken.IsCancellationRequested)
-                    {
-                        base.VisitAttributeList(node);
-                    }
-                }
-                finally
-                {
-                    _attributeLevel--;
-                }
-            }
+					if (!_cancellationToken.IsCancellationRequested)
+					{
+						base.VisitAttributeList(node);
+					}
+				}
+				finally
+				{
+					_attributeLevel--;
+				}
+			}
 
-            public override void Visit(SyntaxNode node)
-            {
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
+			public override void Visit(SyntaxNode node)
+			{
+				if (_cancellationToken.IsCancellationRequested)
+					return;
 
-                if (_visitedNodesCounter < long.MaxValue)
-                    _visitedNodesCounter++;
+				if (_visitedNodesCounter < long.MaxValue)
+					_visitedNodesCounter++;
 
-                base.Visit(node);
-            }
+				base.Visit(node);
+			}
 
-            #region Visit XML comments methods
-            public override void VisitXmlCrefAttribute(XmlCrefAttributeSyntax node)
-            {
-                return;  //To prevent coloring in XML comments don't call base method
-            }
+			#region Visit XML comments methods
+			public override void VisitXmlCrefAttribute(XmlCrefAttributeSyntax node)
+			{
+				return;  //To prevent coloring in XML comments don't call base method
+			}
 
-            public override void VisitXmlComment(XmlCommentSyntax node)
-            {
-                return;  //To prevent coloring in XML comments don't call base method
-            }
+			public override void VisitXmlComment(XmlCommentSyntax node)
+			{
+				return;  //To prevent coloring in XML comments don't call base method
+			}
 
-            public override void VisitCrefBracketedParameterList(CrefBracketedParameterListSyntax node)
-            {
-                return;  //To prevent coloring in XML comments don't call base method
-            }
+			public override void VisitCrefBracketedParameterList(CrefBracketedParameterListSyntax node)
+			{
+				return;  //To prevent coloring in XML comments don't call base method
+			}
 
-            public override void VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node)
-            {
-                return;  //To prevent coloring in XML comments don't call base method
-            }
+			public override void VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node)
+			{
+				return;  //To prevent coloring in XML comments don't call base method
+			}
 			#endregion
 
-			private ITypeSymbol GetTypeSymbolFromIdentifierNode(SyntaxNode node)
+			private ITypeSymbol? GetTypeSymbolFromIdentifierNode(SyntaxNode node)
 			{
 				var semanticModel = _document.GetSemanticModel(_cancellationToken);
 				var symbolInfo = semanticModel.GetSymbolInfo(node);
@@ -410,95 +414,95 @@ namespace Acuminator.Vsix.Coloriser
 
 			private void ColorIdentifierTypeSymbol(ITypeSymbol typeSymbol, TextSpan span, bool isTypeParameter)
 			{
-				PXCodeType? coloredCodeType = typeSymbol.GetCodeTypeFromIdentifier(skipValidation: isTypeParameter, 
+				PXCodeType? coloredCodeType = typeSymbol.GetCodeTypeFromIdentifier(skipValidation: isTypeParameter,
 																							checkItself: isTypeParameter);
-				IClassificationType classificationType = coloredCodeType.HasValue
+				IClassificationType? classificationType = coloredCodeType.HasValue
 					? _tagger.Provider[coloredCodeType.Value]
 					: null;
 
-				if (classificationType == null || 
-				   (coloredCodeType.Value == PXCodeType.PXGraph && AcuminatorVSPackage.Instance?.PXGraphColoringEnabled == false) ||
+				if (classificationType == null ||
+				   (coloredCodeType!.Value == PXCodeType.PXGraph && AcuminatorVSPackage.Instance?.PXGraphColoringEnabled == false) ||
 				   (coloredCodeType.Value == PXCodeType.PXAction && AcuminatorVSPackage.Instance?.PXActionColoringEnabled == false))
 					return;
 
 				AddClassificationTag(span, classificationType);
 			}
 
-            private void AddClassificationTag(TextSpan span, IClassificationType classificationType)
-            {
-                ITagSpan<IClassificationTag> tag = span.ToClassificationTagSpan(_tagger.Snapshot, classificationType);
-                _tagger.ClassificationTagsCache.AddTag(tag);
-            }
+			private void AddClassificationTag(TextSpan span, IClassificationType classificationType)
+			{
+				ITagSpan<IClassificationTag> tag = span.ToClassificationTagSpan(_tagger.Snapshot, classificationType);
+				_tagger.ClassificationTagsCache.AddTag(tag);
+			}
 
-            private void AddOutliningTagToBQL(TextSpan span)
-            {
-                if (AcuminatorVSPackage.Instance?.UseBqlOutlining == false)
-                    return;
+			private void AddOutliningTagToBQL(TextSpan span)
+			{
+				if (AcuminatorVSPackage.Instance?.UseBqlOutlining == false)
+					return;
 
-                ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(_tagger.Snapshot);
-                _tagger.OutliningsTagsCache.AddTag(tag);
-            }
-         
-            private void AddOutliningTagToAttribute(AttributeListSyntax attributeListNode)
-            {
-                if (AcuminatorVSPackage.Instance?.UseBqlOutlining != true || attributeListNode.Attributes.Count > 1)
-                    return;
+				ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(_tagger.Snapshot);
+				_tagger.OutliningsTagsCache.AddTag(tag);
+			}
 
-                AttributeSyntax attribute = attributeListNode.ChildNodes()
-                                                             .OfType<AttributeSyntax>()
-                                                             .FirstOrDefault();
+			private void AddOutliningTagToAttribute(AttributeListSyntax attributeListNode)
+			{
+				if (AcuminatorVSPackage.Instance?.UseBqlOutlining != true || attributeListNode.Attributes.Count > 1)
+					return;
 
-                if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.Count == 0 || _cancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
+				AttributeSyntax attribute = attributeListNode.ChildNodes()
+															 .OfType<AttributeSyntax>()
+															 .FirstOrDefault();
 
-                string collapsedText = GetAttributeName(attribute);
-                ITagSpan<IOutliningRegionTag> tag = attributeListNode.Span.ToOutliningTagSpan(_tagger.Snapshot, collapsedText);
-                _tagger.OutliningsTagsCache.AddTag(tag);
-            }
+				if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.Count == 0 || _cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
 
-            private string GetAttributeName(AttributeSyntax attribute)
-            {
-                foreach (SyntaxNode childNode in attribute.ChildNodes())
-                {
-                    if (_cancellationToken.IsCancellationRequested)
-                        return null;
+				string? collapsedText = GetAttributeName(attribute);
+				ITagSpan<IOutliningRegionTag> tag = attributeListNode.Span.ToOutliningTagSpan(_tagger.Snapshot, collapsedText);
+				_tagger.OutliningsTagsCache.AddTag(tag);
+			}
 
-                    switch (childNode)
-                    {
-                        case IdentifierNameSyntax attributeName:
-                            {
-                                return $"[{attributeName.Identifier.ValueText}]";
-                            }
-                        case QualifiedNameSyntax qualifiedName:
-                            {
-                                string identifierText = _tagger.Snapshot.GetText(qualifiedName.Span);
-                                return !identifierText.IsNullOrWhiteSpace()
-                                    ? $"[{identifierText}]"
-                                    : null;
-                            }
-                    }
-                }
+			private string? GetAttributeName(AttributeSyntax attribute)
+			{
+				foreach (SyntaxNode childNode in attribute.ChildNodes())
+				{
+					if (_cancellationToken.IsCancellationRequested)
+						return null;
 
-                return null;
-            }
+					switch (childNode)
+					{
+						case IdentifierNameSyntax attributeName:
+							{
+								return $"[{attributeName.Identifier.ValueText}]";
+							}
+						case QualifiedNameSyntax qualifiedName:
+							{
+								string identifierText = _tagger.Snapshot.GetText(qualifiedName.Span);
+								return !identifierText.IsNullOrWhiteSpace()
+									? $"[{identifierText}]"
+									: null;
+							}
+					}
+				}
 
-            private void UpdateCodeEditorIfNecessary()
-            {
-                if (_visitedNodesCounter <= ColoringConstants.ChunkSize || _cancellationToken.IsCancellationRequested)
-                    return;
+				return null;
+			}
 
-                _visitedNodesCounter = 0;
+			private void UpdateCodeEditorIfNecessary()
+			{
+				if (_visitedNodesCounter <= ColoringConstants.ChunkSize || _cancellationToken.IsCancellationRequested)
+					return;
+
+				_visitedNodesCounter = 0;
 				Shell.ThreadHelper.JoinableTaskFactory.RunAsync(_tagger.RaiseTagsChangedAsync);
-            }
+			}
 
-            /// <summary>
-            /// Check if node is var keyword
-            /// </summary>
-            /// <param name="nodeText">The node text.</param>
-            /// <returns/>         
-            private static bool IsVar(string nodeText) => nodeText == VarKeyword;           
-        }
-    }
+			/// <summary>
+			/// Check if node is var keyword
+			/// </summary>
+			/// <param name="nodeText">The node text.</param>
+			/// <returns/>         
+			private static bool IsVar(string nodeText) => nodeText == VarKeyword;
+		}
+	}
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,11 +18,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class ViewNodeViewModel : GraphMemberNodeViewModel, IElementWithTooltip
 	{
-		public DataViewInfo ViewInfo => MemberInfo as DataViewInfo;
+		public DataViewInfo ViewInfo => (MemberInfo as DataViewInfo)!;
 
 		public override Icon NodeIcon { get; } 
 
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
+		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo, bool isExpanded = false) :
 							base(viewCategoryVM, viewCategoryVM, viewInfo, isExpanded)
@@ -80,15 +82,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		TooltipInfo IElementWithTooltip.CalculateTooltip()
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			string tooltip = GetTooltip();
+			string? tooltip = GetTooltip();
 			return tooltip.IsNullOrWhiteSpace()
 				? null
 				: new TooltipInfo(tooltip) { TrimExcess = true };
 		}
 
-		private string GetTooltip()
+		private string? GetTooltip()
 		{
 			if (ViewInfo.Symbol?.Locations.Length != 1 || ViewInfo.Symbol.Locations[0].IsInMetadata || Tree.CodeMapViewModel.Workspace == null)
 			{
@@ -96,7 +98,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
-			SyntaxNode viewSyntaxNode = ViewInfo.Symbol.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default);
+			SyntaxNode? viewSyntaxNode = ViewInfo.Symbol.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default);
 
 			switch (viewSyntaxNode)
 			{

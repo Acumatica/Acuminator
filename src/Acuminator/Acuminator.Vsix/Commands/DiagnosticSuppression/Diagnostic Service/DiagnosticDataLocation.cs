@@ -1,15 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Dynamic;
-using System.Linq;
-using System.Threading;
-using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Diagnostics;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Common.Reflection;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -19,7 +18,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	/// </summary>
 	internal sealed class DiagnosticDataLocation : RoslynDTOWrapperBase<DiagnosticDataLocation>
 	{
-		public static Type DiagnosticDataLocationType
+		public static Type? DiagnosticDataLocationType
 		{
 			get;
 			private set;
@@ -58,7 +57,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		public int OriginalEndColumn { get; }
 		#endregion
 
-		public static DiagnosticDataLocation Create(object roslynLocationDTO)
+		public static DiagnosticDataLocation? Create(object roslynLocationDTO)
 		{
 			roslynLocationDTO.ThrowOnNull();
 

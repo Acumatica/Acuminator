@@ -27,7 +27,7 @@ namespace Acuminator.Utilities.Common
 		/// <param name="action">The action.</param>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEach<T>(this IEnumerable<T> source, Action<T?> action)
+		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
 		{
 			action.ThrowOnNull();
 

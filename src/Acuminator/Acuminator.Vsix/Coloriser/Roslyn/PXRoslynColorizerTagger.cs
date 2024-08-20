@@ -1,22 +1,15 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.ComponentModel.Composition;
-using CSharp = Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Classification;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Differencing;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Tagging;
-using Acuminator.Utilities;
+
 using Acuminator.Utilities.Common;
 
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -135,7 +128,7 @@ namespace Acuminator.Vsix.Coloriser
             if (!documentTaskResult.IsSuccess)
                 return ClassificationTagsCache.ProcessedTags;
 
-            ParsedDocument document = documentTaskResult.Result;            
+            ParsedDocument? document = documentTaskResult.Result;            
             
             if (document == null || cToken.IsCancellationRequested)
                 return ClassificationTagsCache.ProcessedTags;

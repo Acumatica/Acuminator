@@ -1,8 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -21,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public FieldEventNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 								  base(dacFieldVM?.GraphEventsCategoryVM, dacFieldVM, eventInfo, isExpanded)
 		{
-			DacFieldVM = dacFieldVM;
+			DacFieldVM = dacFieldVM!;
 			Name = eventInfo.EventType.ToString();
 		}
 

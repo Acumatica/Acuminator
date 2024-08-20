@@ -1,11 +1,15 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+
 using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
@@ -32,7 +36,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		/// <summary>
 		/// Gets the instance of the command.
 		/// </summary>
-		public static SuppressDiagnosticInSuppressionFileCommand Instance
+		public static SuppressDiagnosticInSuppressionFileCommand? Instance
 		{
 			get;
 			private set;
@@ -90,7 +94,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			var workspace = await Package.GetVSWorkspaceAsync();
-			Project project = workspace?.CurrentSolution?.GetProject(projectId);
+			Project? project = workspace?.CurrentSolution?.GetProject(projectId);
 
 			if (project?.AssemblyName == null)
 				return default;
@@ -101,7 +105,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return (suppressionFile, project);
 		}
 
-		private void ShowErrorMessage(TextDocument suppressionFile, Project project)
+		private void ShowErrorMessage(TextDocument? suppressionFile, Project project)
 		{
 			LocalizableResourceString errorMessage;
 

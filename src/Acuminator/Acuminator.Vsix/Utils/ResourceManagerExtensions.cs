@@ -1,13 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Resources;
-
-
-
 
 namespace Acuminator.Vsix.Utilities
 {
@@ -15,7 +12,7 @@ namespace Acuminator.Vsix.Utilities
 	{       
         public static string GetStringResourceSafe(this ResourceManager resourceManager, string resourceKey)
         {
-			string result = null;
+			string? result = null;
 
 			try
 			{

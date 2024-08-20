@@ -1,31 +1,22 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+
 using Document = Microsoft.CodeAnalysis.Document;
 using Shell = Microsoft.VisualStudio.Shell;
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
-using Microsoft.VisualStudio.ComponentModelHost;
+using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -117,7 +108,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (componentModel == null)
 				return new List<DiagnosticData>();
 
-			List<DiagnosticData> diagnosticData = null;
+			List<DiagnosticData>? diagnosticData = null;
 
 			try
 			{

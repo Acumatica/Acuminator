@@ -1,13 +1,11 @@
-﻿using System;
-using System.ComponentModel.Design;
-using System.Globalization;
-using System.Threading;
+﻿#nullable enable
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows
 {
@@ -31,14 +29,14 @@ namespace Acuminator.Vsix.ToolWindows
 			OpenToolWindowAsync()
 				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(OpenToolWindowAsync)}/{typeof(TWindow).Name}");
 
-		protected virtual async Task<TWindow> OpenToolWindowAsync()
+		protected virtual async Task<TWindow?> OpenToolWindowAsync()
 		{
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			// Get the instance number 0 of this tool window. This window is single instance so this instance
 			// is actually the only one.
 			// The last flag is set to true so that if the tool window does not exists it will be created.
-			ToolWindowPane window = Package.FindToolWindow(typeof(TWindow), id: 0, create: true);
+			ToolWindowPane? window = Package.FindToolWindow(typeof(TWindow), id: 0, create: true);
 			
 			if (window?.Frame == null)
 			{

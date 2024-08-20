@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,20 +20,20 @@ namespace Acuminator.Vsix.Utilities
 			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
 			: 0;
 
-		public static string GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize, int prependLength = 0)
+		public static string? GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize, int prependLength = 0)
 		{
 			if (tabSize <= 0)
 			{
 				throw new ArgumentException("Tab size must be positive", nameof(tabSize));
 			}
 
-			string syntaxNodeString = syntaxNode?.ToString();
+			string? syntaxNodeString = syntaxNode?.ToString();
 
 			if (syntaxNodeString.IsNullOrWhiteSpace())
 				return syntaxNodeString;
 
 			prependLength = tabSize * (prependLength / tabSize);
-			var indentLength = prependLength + syntaxNode.GetNodeIndentLength(tabSize);
+			var indentLength = prependLength + syntaxNode!.GetNodeIndentLength(tabSize);
 
 			if (indentLength == 0)
 				return syntaxNodeString;
@@ -87,7 +89,7 @@ namespace Acuminator.Vsix.Utilities
 		}
 
 	
-		public static string RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment) =>
+		public static string? RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment) =>
 			codeFragment?.Replace(PxDataNamespacePrefix, string.Empty)
 						?.Replace(PxObjectsNamespacePrefix, string.Empty);
 

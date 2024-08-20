@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -39,8 +41,8 @@ namespace Acuminator.Vsix.Utilities
 		/// <param name="fileOnlyIf">
 		/// An optional exception filter that must return <c>true</c> for the exception to be reported to the VS activity log.
 		/// </param>
-		public static void FileAndForget(this Task task, string faultEventName, string faultDescription = null,
-										 Func<Exception, bool> fileOnlyIf = null)
+		public static void FileAndForget(this Task task, string faultEventName, string? faultDescription = null,
+										 Func<Exception, bool>? fileOnlyIf = null)
 		{
 			task.ThrowOnNull();
 			faultEventName.ThrowOnNullOrEmpty();
@@ -54,8 +56,8 @@ namespace Acuminator.Vsix.Utilities
 #pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 		}
 
-		private static async Task ProcessTaskAndLogFailuresAsync(Task task, string faultEventName, string faultDescription, 
-																 Func<Exception, bool> fileOnlyIf)
+		private static async Task ProcessTaskAndLogFailuresAsync(Task task, string faultEventName, string? faultDescription, 
+																 Func<Exception, bool>? fileOnlyIf)
 		{
 			try
 			{

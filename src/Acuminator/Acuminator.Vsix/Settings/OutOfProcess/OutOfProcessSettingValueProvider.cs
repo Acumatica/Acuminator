@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace Acuminator.Vsix.Settings
 	/// </summary>
 	internal static class OutOfProcessSettingValueProvider
 	{
-		internal static bool IsOutOfProcessEnabled(this AcuminatorVSPackage package, Workspace workspace)
+		internal static bool IsOutOfProcessEnabled(this AcuminatorVSPackage package, Workspace? workspace)
 		{
 			package.ThrowOnNull();
 			package.VSVersion.ThrowOnNull($"{nameof(AcuminatorVSPackage)}.{nameof(AcuminatorVSPackage.VSVersion)}");
@@ -41,10 +43,10 @@ namespace Acuminator.Vsix.Settings
 											  where type.IsClass && type.IsAbstract && type.IsSealed && !type.IsPublic && type.Name == "RemoteHostOptions"
 											  select type)
 											.SingleOrDefault();
-				MethodInfo isUsingServiceHubOutOfProcess = remoteHostOptionsType?.GetMethod("IsUsingServiceHubOutOfProcess",
-																							BindingFlags.Static | BindingFlags.Public);
+				MethodInfo? isUsingServiceHubOutOfProcess = remoteHostOptionsType?.GetMethod("IsUsingServiceHubOutOfProcess",
+																							 BindingFlags.Static | BindingFlags.Public);
 
-				object isOutOfProcessFromRoslynInternalsObj = isUsingServiceHubOutOfProcess?.Invoke(null, [workspace.Services]);
+				object? isOutOfProcessFromRoslynInternalsObj = isUsingServiceHubOutOfProcess?.Invoke(null, [workspace.Services]);
 
 				if (isOutOfProcessFromRoslynInternalsObj is bool isOutOfProcessFromRoslynInternals)
 					return isOutOfProcessFromRoslynInternals;

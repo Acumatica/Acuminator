@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public override Icon NodeIcon => Icon.PXOverride;
 
-		public PXOverrideInfo PXOverrideInfo => MemberInfo as PXOverrideInfo;
+		public PXOverrideInfo PXOverrideInfo => (MemberInfo as PXOverrideInfo)!;
 
 		public PXOverrideNodeViewModel(PXOverridesCategoryNodeViewModel pxOverridesCategoryVM, 
 									   PXOverrideInfo pxOverrideInfo, bool isExpanded = false) :

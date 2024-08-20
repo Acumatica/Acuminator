@@ -1,16 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Dynamic;
 using System.Linq;
-using System.Threading;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -25,19 +21,19 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
 		private static int _areStaticMembersInitialized = NOT_INITIALIZED;
 
-		public static Type RoslynDTOType
+		public static Type? RoslynDTOType
 		{
 			get;
 			private set;
 		}
 
-		protected static Dictionary<string, FieldInfo> DtoFields
+		protected static Dictionary<string, FieldInfo>? DtoFields
 		{
 			get;
 			private set;
 		}
 
-		protected static Dictionary<string, PropertyInfo> DtoProperties
+		protected static Dictionary<string, PropertyInfo>? DtoProperties
 		{
 			get;
 			private set;

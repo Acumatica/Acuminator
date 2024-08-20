@@ -1,15 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Dynamic;
-using System.Linq;
-using System.Threading;
-using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Common.Reflection;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -19,7 +17,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	/// </summary>
 	internal sealed class DiagnosticData : RoslynDTOWrapperBase<DiagnosticData>
 	{
-		public static Type DiagnosticDataType
+		public static Type? DiagnosticDataType
 		{
 			get;
 			private set;
@@ -56,10 +54,10 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		public DocumentId DocumentId { get; }
 
-		public DiagnosticDataLocation DataLocation { get; }
+		public DiagnosticDataLocation? DataLocation { get; }
 		#endregion
 
-		public static DiagnosticData Create(object roslynDiagnosticDTO)
+		public static DiagnosticData? Create(object roslynDiagnosticDTO)
 		{
 			roslynDiagnosticDTO.ThrowOnNull();
 
@@ -102,7 +100,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			DataLocation = GetDiagnosticLocationWrapper(roslynDiagnosticDTO);
 		}
 
-		private DiagnosticDataLocation GetDiagnosticLocationWrapper(object roslynDiagnosticDTO)
+		private DiagnosticDataLocation? GetDiagnosticLocationWrapper(object roslynDiagnosticDTO)
 		{
 			object roslynDiagnosticLocationDTO = DtoFields[nameof(DataLocation)].GetValue(roslynDiagnosticDTO);
 			return roslynDiagnosticLocationDTO != null

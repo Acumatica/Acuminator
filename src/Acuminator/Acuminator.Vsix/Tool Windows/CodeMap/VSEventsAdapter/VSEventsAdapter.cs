@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,11 +26,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public bool SubscribedOnVsEventsSuccessfully { get; private set; }
 
-		public event Action AfterSolutionClosing;
-		public event DocumentClosingDelegate DocumentClosing;
-		public event WindowActivatedDelegate WindowActivated;
-		public event WindowShowingOrHidingDelegate WindowHiding;
-		public event WindowShowingOrHidingDelegate WindowShowing;
+		public event Action? AfterSolutionClosing;
+		public event DocumentClosingDelegate? DocumentClosing;
+		public event WindowActivatedDelegate? WindowActivated;
+		public event WindowShowingOrHidingDelegate? WindowHiding;
+		public event WindowShowingOrHidingDelegate? WindowShowing;
 
 		protected VSEventsAdapter()
 		{
@@ -40,7 +42,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			VSEventsAdapter adapter;
 
-			if (SharedVsSettings.VSVersion.VS2022OrNewer)
+			if (SharedVsSettings.VSVersion?.VS2022OrNewer == true)
 				adapter = new VSEventsAdapterVS2022();
 			else
 				adapter = new VSEventsAdapterVS2019();
