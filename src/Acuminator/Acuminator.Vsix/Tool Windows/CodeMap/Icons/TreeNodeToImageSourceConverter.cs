@@ -41,7 +41,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						string iconKey = iconViewModel.IconType.ToString();
 						string smallIconKey = iconKey + SmallIconSuffix;
 
-						if (_resourceDictionary.TryGetValue(smallIconKey, out BitmapImage icon) ||
+						if (_resourceDictionary.TryGetValue(smallIconKey, out BitmapImage? icon) ||
 							_resourceDictionary.TryGetValue(iconKey, out icon))
 						{
 							return icon;
@@ -61,7 +61,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							iconKey += themeSuffix;
 						}
 
-						return _resourceDictionary.TryGetValue(iconKey, out BitmapImage icon)
+						return _resourceDictionary.TryGetValue(iconKey, out BitmapImage? icon)
 							? icon
 							: null;
 					}

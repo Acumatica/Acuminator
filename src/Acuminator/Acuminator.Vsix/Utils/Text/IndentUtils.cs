@@ -1,7 +1,7 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -20,6 +20,7 @@ namespace Acuminator.Vsix.Utilities
 			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
 			: 0;
 
+		[return: NotNullIfNotNull(parameterName: nameof(syntaxNode))]
 		public static string? GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize, int prependLength = 0)
 		{
 			if (tabSize <= 0)

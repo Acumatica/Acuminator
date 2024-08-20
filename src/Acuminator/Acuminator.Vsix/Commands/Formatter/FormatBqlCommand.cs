@@ -74,7 +74,7 @@ namespace Acuminator.Vsix.Formatter
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
+			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null || Package.DisposalToken.IsCancellationRequested)
 				return;

@@ -36,7 +36,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		protected virtual async Task CommandCallbackAsync()
 		{		
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
+			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null)
 				return;
@@ -103,10 +103,10 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		protected async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
 			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			IComponentModel componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>();
+			IComponentModel? componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>();
 
 			if (componentModel == null)
-				return new List<DiagnosticData>();
+				return [];
 
 			List<DiagnosticData>? diagnosticData = null;
 
@@ -122,10 +122,10 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			}
 			catch
 			{
-				return new List<DiagnosticData>();
+				return [];
 			}
 
-			return diagnosticData ?? new List<DiagnosticData>();
+			return diagnosticData ?? [];
 		}
 
 		protected virtual Task SuppressDiagnosticsAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot, 

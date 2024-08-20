@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#nullable enable
+
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -17,11 +17,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		private class VSEventsAdapterVS2019 : VSEventsAdapter
 		{
-			private EnvDTE.SolutionEvents _solutionEvents;
-			private EnvDTE.WindowEvents _windowEvents;
-			private EnvDTE.DocumentEvents _documentEvents;
-			private EnvDTE80.WindowVisibilityEvents _visibilityEvents;
+			private EnvDTE.SolutionEvents? _solutionEvents;
+			private EnvDTE.WindowEvents? _windowEvents;
+			private EnvDTE.DocumentEvents? _documentEvents;
+			private EnvDTE80.WindowVisibilityEvents? _visibilityEvents;
 
+			[MemberNotNullWhen(returnValue: true, 
+							   nameof(_solutionEvents), nameof(_windowEvents), nameof(_documentEvents), nameof(_visibilityEvents))]
 			protected override bool TryInitialize()
 			{
 				ThreadHelper.ThrowIfNotOnUIThread();
@@ -43,28 +45,40 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			protected override bool TrySubscribeAdapterOnVSEvents()
 			{
-				_solutionEvents.AfterClosing += RaiseAfterSolutionClosingEvent;
+				if (_solutionEvents != null)
+					_solutionEvents.AfterClosing += RaiseAfterSolutionClosingEvent;
 
-				_documentEvents.DocumentClosing += RaiseDocumentClosingEvent;
+				if (_documentEvents != null)
+					_documentEvents.DocumentClosing += RaiseDocumentClosingEvent;
 
-				_windowEvents.WindowActivated += RaiseWindowActivatedEvent;
-							
-				_visibilityEvents.WindowShowing += RaiseWindowShowingEvent;
-				_visibilityEvents.WindowHiding += RaiseWindowHidingEvent;
-				
+				if (_windowEvents != null)
+					_windowEvents.WindowActivated += RaiseWindowActivatedEvent;
+
+				if (_visibilityEvents != null)
+				{
+					_visibilityEvents.WindowShowing += RaiseWindowShowingEvent;
+					_visibilityEvents.WindowHiding += RaiseWindowHidingEvent;
+				}
+
 				return true;
 			}
 
 			public override bool TryUnsubscribeAdapterFromVSEvents()
 			{
-				_solutionEvents.AfterClosing -= RaiseAfterSolutionClosingEvent;
+				if (_solutionEvents != null)
+					_solutionEvents.AfterClosing -= RaiseAfterSolutionClosingEvent;
 
-				_documentEvents.DocumentClosing -= RaiseDocumentClosingEvent;
+				if (_documentEvents != null)
+					_documentEvents.DocumentClosing -= RaiseDocumentClosingEvent;
 
-				_windowEvents.WindowActivated -= RaiseWindowActivatedEvent;
+				if (_windowEvents != null)
+					_windowEvents.WindowActivated -= RaiseWindowActivatedEvent;
 
-				_visibilityEvents.WindowShowing -= RaiseWindowShowingEvent;
-				_visibilityEvents.WindowHiding -= RaiseWindowHidingEvent;
+				if (_visibilityEvents != null)
+				{
+					_visibilityEvents.WindowShowing -= RaiseWindowShowingEvent;
+					_visibilityEvents.WindowHiding -= RaiseWindowHidingEvent;
+				}
 
 				return true;
 			}	

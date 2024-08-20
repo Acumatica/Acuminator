@@ -35,6 +35,10 @@ namespace Acuminator.Vsix.Coloriser
             tagger.ThrowOnNull();
 
             var backgroundTagging = new BackgroundTagging();
+
+			if (tagger.Snapshot is null)
+				return backgroundTagging;
+
             var taggingTask = tagger.GetTagsAsyncImplementationAsync(tagger.Snapshot, backgroundTagging.CancellationToken);
 
             if (taggingTask == null)

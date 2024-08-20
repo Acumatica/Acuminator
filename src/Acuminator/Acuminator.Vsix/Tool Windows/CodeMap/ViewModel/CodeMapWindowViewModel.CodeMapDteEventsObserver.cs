@@ -199,7 +199,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				}
 
 				var activeWpfTextViewTask = activeWpfTextView != null
-					? Task.FromResult(activeWpfTextView)
+					? Task.FromResult<IWpfTextView?>(activeWpfTextView)
 					: AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
 
 				await _codeMapViewModel.RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument);

@@ -76,7 +76,7 @@ namespace Acuminator.Vsix.Coloriser
 			TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 
 			if (!_taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
-				return Enumerable.Empty<ITagSpan<IClassificationTag>>();
+				return [];
 
 			return activeTagger.GetTagsSynchronousImplementation(snapshot);
 		}

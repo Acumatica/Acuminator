@@ -71,7 +71,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			TextSpan span = syntaxReference.Span;
 			string filePath = syntaxReference.SyntaxTree.FilePath;
-			Workspace workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+			Workspace? workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
 			if (workspace?.CurrentSolution == null)
 				return;
@@ -85,7 +85,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
 			var attributeListNode = AttributeInfo.AttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
-			string tooltip;
+			string? tooltip;
 
 			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
 			{
