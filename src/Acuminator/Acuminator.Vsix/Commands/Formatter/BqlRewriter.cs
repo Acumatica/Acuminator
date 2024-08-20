@@ -1,12 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Acuminator.Analyzers;
+
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Vsix.Formatter
 {
@@ -48,8 +50,8 @@ namespace Acuminator.Vsix.Formatter
 			if (node.TypeArgumentList.Arguments.Count <= 1)
 				return base.VisitGenericName(node);
 
-			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
-			INamedTypeSymbol originalSymbol = typeSymbol?.OriginalDefinition; // get generic type
+			INamedTypeSymbol? typeSymbol = GetTypeSymbol(node);
+			INamedTypeSymbol? originalSymbol = typeSymbol?.OriginalDefinition; // get generic type
 			
 			if (originalSymbol != null 
 				&& (originalSymbol.InheritsFromOrEqualsGeneric(Context.PXSelectBase) 

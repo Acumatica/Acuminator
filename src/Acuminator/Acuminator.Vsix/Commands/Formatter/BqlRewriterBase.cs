@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,7 +34,7 @@ namespace Acuminator.Vsix.Formatter
 		{
 		}
 		
-		protected INamedTypeSymbol GetTypeSymbol(SyntaxNode node)
+		protected INamedTypeSymbol? GetTypeSymbol(SyntaxNode node)
 		{
 			TypeInfo typeInfo = _semanticModel.Compilation.ContainsSyntaxTree(node.SyntaxTree)
 				? _semanticModel.GetTypeInfo(node)
@@ -40,12 +43,12 @@ namespace Acuminator.Vsix.Formatter
 			return typeInfo.Type as INamedTypeSymbol;
 		}
 
-		protected INamedTypeSymbol GetOriginalTypeSymbol(SyntaxNode node)
+		protected INamedTypeSymbol? GetOriginalTypeSymbol(SyntaxNode node)
 		{
 			return GetTypeSymbol(node)?.OriginalDefinition;
 		}
 
-		protected T OnNewLineAndIndented<T>(T node)
+		protected T? OnNewLineAndIndented<T>(T node)
 			where T : SyntaxNode
 		{
 			if (node == null) return null;
@@ -60,12 +63,12 @@ namespace Acuminator.Vsix.Formatter
 		/// </summary>
 		protected SyntaxNode RewriteGenericNode(GenericNameSyntax node, BqlRewriterBase rewriter)
 		{
-			GenericNameSyntax newNode = OnNewLineAndIndented(node);
+			GenericNameSyntax? newNode = OnNewLineAndIndented(node);
 
 			if (newNode?.TypeArgumentList == null)
 				return node;
 
-			TypeArgumentListSyntax newTypeArgsListNode = rewriter.Visit(newNode.TypeArgumentList) as TypeArgumentListSyntax;
+			TypeArgumentListSyntax? newTypeArgsListNode = rewriter.Visit(newNode.TypeArgumentList) as TypeArgumentListSyntax;
 
 			if (newTypeArgsListNode == null)
 				return newNode;

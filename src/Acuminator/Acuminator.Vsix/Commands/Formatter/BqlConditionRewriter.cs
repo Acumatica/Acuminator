@@ -1,7 +1,8 @@
-﻿using Acuminator.Analyzers;
+﻿#nullable enable
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities;
+
 using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Vsix.Formatter
@@ -27,7 +28,7 @@ namespace Acuminator.Vsix.Formatter
 			bool moveWhereToNextLine = _firstWhereInParenthesis || _externalMode;
 			_firstWhereInParenthesis = false;
 
-			INamedTypeSymbol originalSymbol = GetOriginalTypeSymbol(node);
+			INamedTypeSymbol? originalSymbol = GetOriginalTypeSymbol(node);
 			
 			if (originalSymbol != null)
 			{

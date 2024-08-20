@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Vsix.Formatter

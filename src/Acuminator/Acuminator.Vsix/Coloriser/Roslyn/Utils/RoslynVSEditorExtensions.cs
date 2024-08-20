@@ -20,8 +20,8 @@ namespace Acuminator.Vsix.Coloriser
 		}
 
         public static ITagSpan<IOutliningRegionTag> ToOutliningTagSpan(this TextSpan span, ITextSnapshot snapshot, 
-                                                                       string collapsedText = null, 
-                                                                       string toolTipText = null)
+                                                                       string? collapsedText = null, 
+                                                                       string? toolTipText = null)
         {
             if (collapsedText.IsNullOrWhiteSpace())
                 collapsedText = OutliningConstants.DefaultCollapsedBQLRegionText;

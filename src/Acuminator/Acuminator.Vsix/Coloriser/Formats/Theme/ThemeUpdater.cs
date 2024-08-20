@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Windows.Media;
-using System.ComponentModel.Composition;
+﻿#nullable enable
+
+using System;
 
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
@@ -25,14 +23,14 @@ namespace Acuminator.Vsix.Coloriser
 		private const string MefItemsGuidString = "75A05685-00A8-4DED-BAE5-E7A50BFA929A";
 		private Guid _mefItemsGuid = new Guid(MefItemsGuidString);
 
-		private IClassificationFormatMapService _classificationFormatMapService;
-		private IClassificationTypeRegistryService _classificationRegistry;
-		private IVsFontAndColorStorage _fontAndColorStorage;
-		private IVsFontAndColorCacheManager _fontAndColorCacheManager;
+		private IClassificationFormatMapService? _classificationFormatMapService;
+		private IClassificationTypeRegistryService? _classificationRegistry;
+		private IVsFontAndColorStorage? _fontAndColorStorage;
+		private IVsFontAndColorCacheManager? _fontAndColorCacheManager;
 
 		private readonly IServiceProvider _serviceProvider;
 
-		public event EventHandler<AcuminatorThemeChangedEventArgs> AcuminatorThemeChanged;
+		public event EventHandler<AcuminatorThemeChangedEventArgs>? AcuminatorThemeChanged;
 
 		public static ThemeUpdater Instance { get; } = new ThemeUpdater();
 

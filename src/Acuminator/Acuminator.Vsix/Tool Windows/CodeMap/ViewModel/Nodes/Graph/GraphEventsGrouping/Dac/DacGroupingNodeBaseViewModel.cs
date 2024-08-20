@@ -1,13 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
 using System.Threading.Tasks;
-using System.Threading;
+
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -52,11 +51,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
 		protected DacGroupingNodeBaseViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName, bool isExpanded) :
-												base(graphEventsCategoryVM?.Tree, graphEventsCategoryVM, isExpanded)
+												base(graphEventsCategoryVM?.Tree!, graphEventsCategoryVM, isExpanded)
 		{
 			dacName.ThrowOnNullOrWhiteSpace();
 
-			GraphEventsCategoryVM = graphEventsCategoryVM;
+			GraphEventsCategoryVM = graphEventsCategoryVM!;
 			DacName = dacName;
 
 			Children.CollectionChanged += DacChildrenChanged;
@@ -74,7 +73,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public async override Task NavigateToItemAsync()
 		{
-			TreeNodeViewModel childToNavigateTo = null;
+			TreeNodeViewModel? childToNavigateTo = null;
 
 			switch (GraphEventsCategoryVM)
 			{
@@ -108,7 +107,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			child is FieldEventNodeViewModel ||
 			child is CacheAttachedNodeViewModel;
 
-		protected TreeNodeViewModel GetChildToNavigateToFromFieldEvents()
+		protected TreeNodeViewModel? GetChildToNavigateToFromFieldEvents()
 		{
 			if (AllowNavigation != true || Children.Count == 0)
 				return null;

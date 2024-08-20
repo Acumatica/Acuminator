@@ -1,10 +1,14 @@
-﻿using Acuminator.Vsix.Formatter;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Acuminator.Vsix.Formatter;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace Acuminator.Vsix.BqlFixer
@@ -20,7 +24,7 @@ namespace Acuminator.Vsix.BqlFixer
 
 		public override SyntaxNode VisitIncompleteMember(IncompleteMemberSyntax node)
 		{
-			if (!(node.Type is GenericNameSyntax baseNode)
+			if (node.Type is not GenericNameSyntax baseNode
 				|| IsClosedNode(baseNode))
 				return node;
 
@@ -42,7 +46,7 @@ namespace Acuminator.Vsix.BqlFixer
 			}
 
 			var resulterGeneric = typeSyntaxes[0].nodes.First() as GenericNameSyntax;
-			var variableName = SyntaxFactory.VariableDeclarator(identifierName.Identifier);
+			var variableName = SyntaxFactory.VariableDeclarator(identifierName!.Identifier);
 			var variableDeclaration = SyntaxFactory.VariableDeclaration(resulterGeneric).AddVariables(variableName);
 			var fieldDeclaration = SyntaxFactory.FieldDeclaration(variableDeclaration).WithModifiers(node.Modifiers);
 
@@ -57,18 +61,18 @@ namespace Acuminator.Vsix.BqlFixer
 
 		private IList<(List<TypeSyntax> nodes, GenericNameSyntax lastNode)> DeconstructLastNode(
 			GenericNameSyntax node,
-			out IdentifierNameSyntax identifierName)
+			out IdentifierNameSyntax? identifierName)
 		{
-			IdentifierNameSyntax name = null;
+			IdentifierNameSyntax? name = null;
 			var result = Enumerable
 				.Repeat((new List<TypeSyntax>(), node), 1)
-				.Union(DeconstructLastNodeRecursively(node, name_ => name = name_))
+				.Union(DeconstructLastNodeRecursively(node, name_ => name = name_)!)
 				.ToArray();
 			identifierName = name;
 			return result;
 		}
 
-		private IEnumerable<(List<TypeSyntax>, GenericNameSyntax)> DeconstructLastNodeRecursively(
+		private IEnumerable<(List<TypeSyntax>, GenericNameSyntax?)> DeconstructLastNodeRecursively(
 			GenericNameSyntax node,
 			Action<IdentifierNameSyntax> fieldNameUtilizer)
 		{
@@ -96,9 +100,9 @@ namespace Acuminator.Vsix.BqlFixer
 		}
 
 
-		private TypeArgumentListSyntax GetTypeArgumentList(TypeSyntax typeSyntax)
+		private TypeArgumentListSyntax? GetTypeArgumentList(TypeSyntax typeSyntax)
 		{
-			if (!(typeSyntax is GenericNameSyntax generic))
+			if (typeSyntax is not GenericNameSyntax generic)
 				return null;
 
 			return generic.TypeArgumentList;

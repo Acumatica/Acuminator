@@ -1,8 +1,11 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Editor;
@@ -10,6 +13,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
@@ -40,7 +44,7 @@ namespace Acuminator.Vsix.BqlFixer
 		{
 			get;
 			private set;
-		}
+		} = null!;
 
 		/// <summary>
 		/// Initializes the singleton instance of the command.
@@ -142,8 +146,8 @@ namespace Acuminator.Vsix.BqlFixer
 			oldDocument.ThrowOnNull();
 			newDocument.ThrowOnNull();
 
-			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
-			Solution newSolution = newDocument.Project?.Solution;
+			Workspace? workspace = oldDocument.Project?.Solution?.Workspace;
+			Solution? newSolution = newDocument.Project?.Solution;
 
 			if (workspace != null && newSolution != null)
 			{
