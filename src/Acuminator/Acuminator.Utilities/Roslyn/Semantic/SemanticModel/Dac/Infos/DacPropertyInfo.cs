@@ -47,6 +47,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary
 		public bool HasBqlField { get; }
 
+		/// <summary>
+		///  True if this property has Acumatica attributes, false if not.
+		/// </summary>
+		public bool HasAcumaticaAttributes { get; }
+
 		/// <value>
 		/// The type of the property.
 		/// </value>
@@ -102,18 +107,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			bool isIdentity = false;
 			bool isPrimaryKey = false;
 			bool isAutoNumbering = false;
+			bool hasAcumaticaAttributes = false;
 
 			foreach (DacFieldAttributeInfo attributeInfo in Attributes)
 			{
-				isIdentity = isIdentity || attributeInfo.IsIdentity;
-				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
-				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
+				isIdentity 			   = isIdentity || attributeInfo.IsIdentity;
+				isPrimaryKey 		   = isPrimaryKey || attributeInfo.IsKey;
+				isAutoNumbering 	   = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
+				hasAcumaticaAttributes = hasAcumaticaAttributes || attributeInfo.IsAcumaticaAttribute;
 			}
 	
-			EffectivePropertyType = effectivePropertyType;
-			IsIdentity = isIdentity;
-			IsKey = isPrimaryKey;
-			IsAutoNumbering = isAutoNumbering;
+			EffectivePropertyType  = effectivePropertyType;
+			IsIdentity 			   = isIdentity;
+			IsKey 				   = isPrimaryKey;
+			IsAutoNumbering 	   = isAutoNumbering;
+			HasAcumaticaAttributes = hasAcumaticaAttributes;
 		}
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax? node, IPropertySymbol property, int declarationOrder,
