@@ -110,7 +110,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override bool ShouldMakeSpecificAnalysisForDacKeys(PXContext context, DacSemanticModel dac) =>
 			base.ShouldMakeSpecificAnalysisForDacKeys(context, dac) &&
-			dac.DacFieldProperties.Any(property => property.IsKey);
+			dac.DacFieldPropertiesWithBqlFields.Any(property => property.IsKey);
 
 		protected override void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
 															List<INamedTypeSymbol> keyDeclarations, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
@@ -292,7 +292,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private string GetHashForDacKeys(DacSemanticModel dac)
 		{
-			var dacKeys = dac.DacFieldProperties.Where(property => property.IsKey)
+			var dacKeys = dac.DacFieldPropertiesWithBqlFields.Where(property => property.IsKey)
 										   .Select(property => dac.BqlFieldsByNames[property.Name].Symbol);
 
 			return GetHashForSetOfDacFields(dacKeys, areFieldsOrdered: false);

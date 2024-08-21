@@ -43,9 +43,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableArray<DacFieldAttributeInfo> Attributes { get; }
 
 		/// <summary>
-		///  True if this property is DAC property - it has a corresponding DAC field.
+		///  True if this property has a corresponding DAC field.
 		/// </summary
-		public bool IsDacProperty { get; }
+		public bool HasBqlField { get; }
 
 		/// <value>
 		/// The type of the property.
@@ -79,9 +79,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public bool IsAutoNumbering { get; }
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
-								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos, 
+								  int declarationOrder, bool hasBqlField, IEnumerable<DacFieldAttributeInfo> attributeInfos, 
 								  DacPropertyInfo baseInfo) :
-							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
+							 this(node, symbol, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos)
 		{
 			Base = baseInfo.CheckIfNull();
 
@@ -90,11 +90,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
-								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos) :
+								  int declarationOrder, bool hasBqlField, IEnumerable<DacFieldAttributeInfo> attributeInfos) :
 							 base(node, symbol, declarationOrder)
 		{
 			Attributes = attributeInfos.ToImmutableArray();
-			IsDacProperty = isDacProperty;
+			HasBqlField = hasBqlField;
 
 			DeclaredDbBoundness = Attributes.Select(a => a.DbBoundness).Combine();
 			EffectiveDbBoundness = DeclaredDbBoundness;
@@ -128,13 +128,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 													 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacBqlFieldInfo> dacFields,
 													 DacPropertyInfo? baseInfo = null)
 		{
-			bool isDacProperty = dacFields.ContainsKey(property.Name);
+			bool hasBqlField = dacFields.ContainsKey(property.Name);
 			var attributeInfos = GetAttributeInfos(property, dbBoundnessCalculator);
 			var effectivePropertyType = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;
 
 			return baseInfo != null
-				? new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos, baseInfo)
-				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos);
+				? new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos, baseInfo)
+				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos);
 		}
 
 		private static IEnumerable<DacFieldAttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator dbBoundnessCalculator)
