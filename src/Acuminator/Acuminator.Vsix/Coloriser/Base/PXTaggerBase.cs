@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,12 +44,12 @@ namespace Acuminator.Vsix.Coloriser
     public abstract class PXTaggerBase : IDisposable
     {
 #pragma warning disable CS0067
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        public event EventHandler<SnapshotSpanEventArgs>? TagsChanged;
 #pragma warning restore CS0067
 
         protected ITextBuffer Buffer { get; }
 
-        protected internal ITextSnapshot Snapshot { get; private set; }
+        protected internal ITextSnapshot? Snapshot { get; private set; }
 
         protected bool ColoringSettingsChanged { get; private set; }
 

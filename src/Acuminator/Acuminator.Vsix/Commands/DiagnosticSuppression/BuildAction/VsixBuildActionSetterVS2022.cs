@@ -1,17 +1,19 @@
 ﻿#nullable enable
 
 using System;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
-using Microsoft.VisualStudio.Threading;
-using Acuminator.Utilities.DiagnosticSuppression.BuildAction;
-
-using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-using Acuminator.Utilities;
-using Acuminator.Vsix.Logger;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression.BuildAction;
+using Acuminator.Vsix.Logger;
+using Acuminator.Vsix.Utilities;
+
+using Microsoft.VisualStudio.Threading;
+
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -25,7 +27,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace();
 			buildActionToSet.ThrowOnNullOrWhiteSpace();
 
-			if (!SharedVsSettings.VSVersion.VS2022OrNewer)
+			if (!SharedVsSettings.VSVersion?.VS2022OrNewer == true)
 				return false;
 
 			try

@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -29,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 								  Descriptors.PX1016_NoIsActiveMethodForGraphExtension);
 
 		public bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dacExtension) =>
-			dacExtension?.DacType == DacType.DacExtension && dacExtension.IsActiveMethodInfo == null &&
+			dacExtension?.DacType == DacType.DacExtension && dacExtension.IsInSource && dacExtension.IsActiveMethodInfo == null &&
 			!dacExtension.Symbol.IsAbstract && !dacExtension.Symbol.IsGenericType && !dacExtension.IsMappedCacheExtension;
 
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacExtension)
@@ -38,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 			// ShouldAnalyze already filtered everything and left only DAC extensions without IsActive
 			// We just need to report them
-			Location location = dacExtension.Node.Identifier.GetLocation();
+			Location? location = dacExtension.Node?.Identifier.GetLocation();
 
 			if (location == null)
 				return;
@@ -50,8 +49,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 		public bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
-			if (graphExtension.Type != GraphType.PXGraphExtension || graphExtension.IsActiveMethodInfo != null ||
-				graphExtension.Symbol.IsGenericType)
+			if (graphExtension == null || !graphExtension.IsInSource || graphExtension.GraphType == GraphType.PXGraph || 
+				graphExtension.IsActiveMethodInfo != null || graphExtension.Symbol.IsGenericType)
 			{  
 				return false; 
 			}
@@ -82,8 +81,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 			// ShouldAnalyze already filtered everything and left only graph extensions without IsActive
 			// We just need to report them
-			var syntaxNode = graphExtension.Symbol.GetSyntax(symbolContext.CancellationToken);
-			Location? location = (syntaxNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? syntaxNode?.GetLocation();
+			Location? location = graphExtension.Node?.Identifier.GetLocation() ?? graphExtension.Node?.GetLocation();
 
 			if (location == null)
 				return;

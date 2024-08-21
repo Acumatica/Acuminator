@@ -1,15 +1,18 @@
-﻿using Acuminator.Utilities.Roslyn.Semantic;
+﻿
+using System.Collections.Immutable;
+using System.Composition;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
-using System.Composition;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 {
@@ -58,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				.GetSyntaxRootAsync(cancellation)
 				.ConfigureAwait(false);
 
-			if (!(root?.FindNode(span) is ClassDeclarationSyntax node))
+			if (root?.FindNode(span) is not ClassDeclarationSyntax node)
 			{
 				return document;
 			}

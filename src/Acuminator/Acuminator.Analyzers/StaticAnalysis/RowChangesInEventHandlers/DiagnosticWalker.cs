@@ -1,11 +1,14 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -137,7 +140,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				}
 			}
 
-
 			private bool IsMethodForbidden(IMethodSymbol symbol)
 			{
 				return symbol.ContainingType?.OriginalDefinition != null
@@ -145,6 +147,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				       && MethodNames.Contains(symbol.Name);
 			}
 		}
-
 	}
 }

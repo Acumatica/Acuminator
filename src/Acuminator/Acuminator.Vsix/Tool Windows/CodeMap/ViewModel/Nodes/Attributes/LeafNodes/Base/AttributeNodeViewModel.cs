@@ -22,6 +22,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected const string AttributeSuffix = nameof(System.Attribute);
 
+		public bool IsInSource => AttributeInfo.IsInSource;
+
+		public bool IsInMetadata => AttributeInfo.IsInMetadata;
+
 		public AttributeInfoBase AttributeInfo { get; }
 
 		public override string Name
@@ -64,14 +68,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public async override Task NavigateToItemAsync()
 		{
-			var syntaxReference = AttributeInfo.AttributeData.ApplicationSyntaxReference;
-
-			if (syntaxReference?.SyntaxTree == null)
+			if (IsInMetadata)
 				return;
 
+			var syntaxReference = AttributeInfo.AttributeData.ApplicationSyntaxReference;
 			TextSpan span = syntaxReference.Span;
 			string filePath = syntaxReference.SyntaxTree.FilePath;
-			Workspace workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+			Workspace? workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
 			if (workspace?.CurrentSolution == null)
 				return;
@@ -85,7 +88,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
 			var attributeListNode = AttributeInfo.AttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
-			string tooltip;
+			string? tooltip;
 
 			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
 			{

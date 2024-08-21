@@ -175,5 +175,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				_						 => null
 			};
 		}
+
+		/// <summary>
+		/// Query if <paramref name="symbol"/> is declared in source code.
+		/// </summary>
+		/// <param name="symbol">The symbol to check.</param>
+		/// <returns>
+		/// True if <paramref name="symbol"/> is in source code, false if not.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsInSourceCode(this ISymbol symbol) =>
+			!symbol.DeclaringSyntaxReferences.IsDefaultOrEmpty;
 	}
 }

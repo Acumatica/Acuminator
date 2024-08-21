@@ -13,6 +13,9 @@
     </NuGetPackageImportStamp>
     <UseCodebase>true</UseCodebase>
     <TargetFrameworkProfile />
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
+    <NoWarn>CS0168</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -500,6 +503,8 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveForGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
+    <Compile Include="Utils\Polyfills\NotNullIfNotNullAttribute.cs" />
+    <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
     <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />

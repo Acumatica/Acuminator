@@ -1,13 +1,16 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
+﻿
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 {

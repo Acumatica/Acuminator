@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -26,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			var node = root?.FindNode(context.Span) as PropertyDeclarationSyntax;
 
 			if (node == null)
@@ -35,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 			context.RegisterCodeFix(
 				CodeAction.Create(
 					Resources.PX1002Fix,
-					cancellationToken => InsertTypeAttributeAsync(context.Document, root, node, cancellationToken),
+					cancellationToken => InsertTypeAttributeAsync(context.Document, root!, node, cancellationToken),
 					Resources.PX1002Fix),
 				context.Diagnostics);
 		}
@@ -46,12 +49,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-			IPropertySymbol property = semanticModel?.GetDeclaredSymbol(propertyDeclaration, cancellationToken);
+			IPropertySymbol? property = semanticModel?.GetDeclaredSymbol(propertyDeclaration, cancellationToken);
 
 			if (property == null)
 				return document;
 
-			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
+			var pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
 			var lists = new List<INamedTypeSymbol> {
 									pxContext.AttributeTypes.PXIntListAttribute.Type,
 									pxContext.AttributeTypes.PXStringListAttribute.Type };

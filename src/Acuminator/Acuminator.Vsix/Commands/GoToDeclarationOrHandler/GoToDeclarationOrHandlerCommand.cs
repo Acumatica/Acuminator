@@ -84,28 +84,28 @@ namespace Acuminator.Vsix.GoToDeclaration
 		
 		private async Task CommandCallbackAsync()
 		{
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
+			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
-			ITextSnapshotLine caretLine = caretPosition.GetContainingLine();
+			ITextSnapshotLine? caretLine = caretPosition.GetContainingLine();
 
 			if (caretLine == null)
 				return;
 
-			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document? document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 			if (document == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
-			Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync();
-			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync();
+			Task<SyntaxNode?> syntaxRootTask = document.GetSyntaxRootAsync();
+			Task<SemanticModel?> semanticModelTask = document.GetSemanticModelAsync();
 			await Task.WhenAll(syntaxRootTask, semanticModelTask);
 
 			#pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
-			SyntaxNode syntaxRoot = syntaxRootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
+			SyntaxNode? syntaxRoot = syntaxRootTask.Result;
+			SemanticModel? semanticModel = semanticModelTask.Result;
 			#pragma warning restore VSTHRD002, VSTHRD103
 
 			if (syntaxRoot == null || semanticModel == null)
@@ -162,7 +162,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			PXGraphSemanticModel? graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType, modelCreationOptions)
 																		  ?.FirstOrDefault();
 
-			if (graphSemanticModel == null || graphSemanticModel.Type == GraphType.None)
+			if (graphSemanticModel == null)
 				return;
 
 			switch (memberSymbol)
@@ -350,7 +350,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		private async Task ExpandAllRegionsContainingSpanAsync(SnapshotSpan selectedSpan, IWpfTextView textView)
 		{
-			IOutliningManager outliningManager = await ServiceProvider.GetOutliningManagerAsync(textView);
+			IOutliningManager? outliningManager = await ServiceProvider.GetOutliningManagerAsync(textView);
 
 			if (outliningManager == null)
 				return;

@@ -68,7 +68,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 		/// </summary>
 		private class ViewDeclarationOrderAnalyzerForTests : ViewDeclarationOrderAnalyzer
 		{
-			public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => true;
+			public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => graph?.IsInSource == true;
 		}
 	}
 }

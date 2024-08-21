@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Immutable;
 
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
@@ -52,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlace
 				graphViewDelegateWalker.Visit(del.Node);
 			}
 
-			if (graphOrGraphExtension.Type == GraphType.PXGraphExtension)
+			if (graphOrGraphExtension.GraphType == GraphType.PXGraphExtension)
 			{
 				CheckIsActiveMethod(context, pxContext, Descriptors.PX1056_PXGraphCreationInIsActiveMethod, graphOrGraphExtension.IsActiveMethodInfo);
 				CheckIsActiveMethod(context, pxContext, Descriptors.PX1056_PXGraphCreationInIsActiveForGraphMethod, 

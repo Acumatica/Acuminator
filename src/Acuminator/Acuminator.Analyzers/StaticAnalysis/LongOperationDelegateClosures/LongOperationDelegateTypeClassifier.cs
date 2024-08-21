@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				case DelegateNames.SetProcessDelegate:
 					var setDelegateSymbol = semanticModel.GetSymbolInfo(methodAccessNode, cancellationToken).Symbol as IMethodSymbol;
 
-					if (setDelegateSymbol != null && setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBase.Type!))
+					if (setDelegateSymbol != null && setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBase.Type))
 						return LongOperationDelegateType.ProcessingDelegate;
 
 					return null;

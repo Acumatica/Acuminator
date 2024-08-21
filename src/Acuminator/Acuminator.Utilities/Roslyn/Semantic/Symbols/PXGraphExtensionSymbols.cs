@@ -1,9 +1,7 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
@@ -21,8 +19,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		internal PXGraphExtensionSymbols(PXContext pxContext) : base(pxContext.Compilation, TypeFullNames.PXGraphExtension)
         {
-			Initialize = Type!.CheckIfNull()
-							  .GetMethods(DelegateNames.Initialize).FirstOrDefault();
+			Initialize = Type.GetMethods(DelegateNames.Initialize).FirstOrDefault();
 			Configure  = Type.GetConfigureMethodFromBaseGraphOrGraphExtension(pxContext);
 		}
     }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,7 +9,6 @@ using System.Windows.Data;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.ToolWindows.Common;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -19,10 +20,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (!(value is IElementWithTooltip elementWithTooltip))
+			if (value is not IElementWithTooltip elementWithTooltip)
 				return Binding.DoNothing;
 
-			TooltipInfo tooltipInfo = elementWithTooltip.CalculateTooltip();
+			TooltipInfo? tooltipInfo = elementWithTooltip.CalculateTooltip();
 
 			if (tooltipInfo == null)
 				return Binding.DoNothing;

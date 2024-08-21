@@ -1,11 +1,13 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public class StaticConstructorInfo : NodeSymbolItem<ConstructorDeclarationSyntax, IMethodSymbol>
 	{
-		public StaticConstructorInfo(ConstructorDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder)
+		public StaticConstructorInfo(ConstructorDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder)
 			: base(node, symbol, declarationOrder)
 		{
 		}

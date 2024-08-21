@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-using System.Diagnostics;
+using System;
 
 using Acuminator.Utilities.Common;
 
@@ -30,12 +30,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 
-		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder) :
+		public ActionHandlerInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder) :
 							base(node, symbol, declarationOrder)
 		{
 		}
 
-		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder, ActionHandlerInfo baseInfo) :
+		public ActionHandlerInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder, ActionHandlerInfo baseInfo) :
 							this(node, symbol, declarationOrder)
 		{
 			Base = baseInfo.CheckIfNull();

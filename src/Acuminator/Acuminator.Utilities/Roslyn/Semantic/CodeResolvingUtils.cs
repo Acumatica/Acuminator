@@ -168,7 +168,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				   typeHierarchyNames.Contains(TypeNames.BqlCommand);
 		}
 
-		public static bool IsBqlCommand(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsBqlCommand(this ITypeSymbol typeSymbol, PXContext? pxContext)
 		{
 			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
 				return false;
@@ -313,7 +313,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPXAction(this ITypeSymbol typeSymbol, PXContext pxContext) =>
-			typeSymbol.InheritsFrom(pxContext?.PXAction.Type);
+			typeSymbol.InheritsFrom(pxContext.CheckIfNull().PXAction.Type);
 
 		public static bool IsCustomBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{

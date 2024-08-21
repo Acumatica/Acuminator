@@ -1,6 +1,9 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.CodeAnalysis;
+﻿
+using System.Collections.Concurrent;
+
 using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -17,15 +20,15 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private static readonly ConcurrentDictionary<Category, string> _categoryMapping = new ConcurrentDictionary<Category, string>();
 
         private static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, 
-												 string diagnosticShortName, LocalizableString messageFormat = null, LocalizableString description = null,
-												 string diagnosticDefaultJustification = null)
+												 string diagnosticShortName, LocalizableString? messageFormat = null, LocalizableString? description = null,
+												 string? diagnosticDefaultJustification = null)
 		{
 			bool isEnabledByDefault = true;
 			messageFormat = messageFormat ?? title;
 			string diagnosticLink = $"{DocumentationLinkPrefix}/{id}.{DocumentatonFileExtension}";
 			string[] customTags = diagnosticDefaultJustification.IsNullOrWhiteSpace()
-				? new[] { diagnosticShortName }
-				: new[] { diagnosticShortName, diagnosticDefaultJustification };
+				? [diagnosticShortName]
+				: [diagnosticShortName, diagnosticDefaultJustification];
 
 			return new DiagnosticDescriptor(id, title, messageFormat, _categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
 											isEnabledByDefault, description, diagnosticLink, customTags);
@@ -85,7 +88,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1011", nameof(Resources.PX1011Title).GetLocalized(), Category.Acuminator, 
 	            DiagnosticSeverity.Warning, DiagnosticsShortName.PX1011);
 
-		public static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryView { get; } =
+		public static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryDac { get; } =
 			Rule("PX1012", nameof(Resources.PX1012Title).GetLocalized(), Category.Acuminator, 
 				DiagnosticSeverity.Warning, DiagnosticsShortName.PX1012);
 

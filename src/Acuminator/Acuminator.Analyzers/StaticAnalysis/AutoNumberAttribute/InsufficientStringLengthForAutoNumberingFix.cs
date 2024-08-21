@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -16,7 +17,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 {
@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 																					 int minLengthForAutoNumbering, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			AttributeArgumentSyntax attributeArgument = GetAttributeArgumentNodeToBeReplaced(root, diagnosticSpan);
+			AttributeArgumentSyntax? attributeArgument = GetAttributeArgumentNodeToBeReplaced(root, diagnosticSpan);
 
 			if (attributeArgument == null || cancellationToken.IsCancellationRequested)
 				return document;
@@ -66,9 +66,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			return document.WithSyntaxRoot(modifiedRoot);
 		}		
 
-		private AttributeArgumentSyntax GetAttributeArgumentNodeToBeReplaced(SyntaxNode root, TextSpan diagnosticSpan)
+		private AttributeArgumentSyntax? GetAttributeArgumentNodeToBeReplaced(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			SyntaxNode node = root?.FindNode(diagnosticSpan);
+			SyntaxNode? node = root?.FindNode(diagnosticSpan);
 
 			return node switch
 			{
@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			};
 		}
 
-		private AttributeArgumentSyntax SearchForAttributeArgumentToBeReplaced(AttributeSyntax attribute)
+		private AttributeArgumentSyntax? SearchForAttributeArgumentToBeReplaced(AttributeSyntax attribute)
 		{
 			var arguments = attribute.ArgumentList.Arguments;
 			var candidateAttributes = new List<AttributeArgumentSyntax>(capacity: 1);

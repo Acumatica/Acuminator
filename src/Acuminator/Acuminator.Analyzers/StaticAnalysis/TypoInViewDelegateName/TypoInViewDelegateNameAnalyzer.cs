@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -21,9 +20,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
     {
 	    public const string ViewFieldNameProperty = "field";
 		private const int MaximumDistance = 2;
-
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName);

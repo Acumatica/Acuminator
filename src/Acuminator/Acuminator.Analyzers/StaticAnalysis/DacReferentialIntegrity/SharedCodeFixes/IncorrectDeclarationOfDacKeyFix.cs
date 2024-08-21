@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -184,7 +185,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																				   ClassDeclarationSyntax dacNode, RefIntegrityDacKeyType keyType,
 																				   CancellationToken cancellation)
 		{
-			string containerName = keyType switch
+			string? containerName = keyType switch
 			{ 
 				RefIntegrityDacKeyType.ForeignKey => ReferentialIntegrity.ForeignKeyClassName,
 				RefIntegrityDacKeyType.UniqueKey  => ReferentialIntegrity.UniqueKeyClassName,
@@ -297,15 +298,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return primaryKeyPosition + 1;
 		}
 
-		private ClassDeclarationSyntax CreateKeysContainerClassNode(SyntaxGenerator generator, string containerName, 
+		private ClassDeclarationSyntax? CreateKeysContainerClassNode(SyntaxGenerator generator, string containerName, 
 																	List<ClassDeclarationSyntax> keyNodesNotInContainer)
 		{
-			ClassDeclarationSyntax containerClassDeclaration =
+			ClassDeclarationSyntax? containerClassDeclaration =
 				generator.ClassDeclaration(containerName, typeParameters: null,
 										   Accessibility.Public, DeclarationModifiers.Static,
 										   members: keyNodesNotInContainer.Select(RemoveStructuredTriviaFromKeyNode)) as ClassDeclarationSyntax;
 
-			return containerClassDeclaration.WithTrailingTrivia(EndOfLine(Environment.NewLine));
+			return containerClassDeclaration?.WithTrailingTrivia(EndOfLine(Environment.NewLine));
 		}
 
 		private ClassDeclarationSyntax RemoveStructuredTriviaFromKeyNode(ClassDeclarationSyntax keyNode)

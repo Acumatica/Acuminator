@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -87,7 +86,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 				var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
 				// Case Base.PXSelectBaseGenIns.Select()
-				if (PxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
+				if (PxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol!))
 				{
 					reported = TryToReport(expressionSymbol, node);
 				}

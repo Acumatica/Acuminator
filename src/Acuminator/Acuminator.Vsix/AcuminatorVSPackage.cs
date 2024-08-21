@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -33,24 +35,24 @@ using Acuminator.Utilities;
 
 namespace Acuminator.Vsix
 {
-    /// <summary>
-    /// This is the class that implements the package exposed by this assembly.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The minimum requirement for a class to be considered a valid package for Visual Studio
-    /// is to implement the IVsPackage interface and register itself with the shell.
-    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the
-    /// IVsPackage interface and uses the registration attributes defined in the framework to
-    /// register itself and its components with the shell. These attributes tell the pkgdef creation
-    /// utility what data to put into .pkgdef file.
-    /// </para>
-    /// <para>
-    /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
-    /// </para>
-    /// </remarks>
-    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+	/// <summary>
+	/// This is the class that implements the package exposed by this assembly.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// The minimum requirement for a class to be considered a valid package for Visual Studio
+	/// is to implement the IVsPackage interface and register itself with the shell.
+	/// This package uses the helper classes defined inside the Managed Package Framework (MPF)
+	/// to do it: it derives from the Package class that provides the implementation of the
+	/// IVsPackage interface and uses the registration attributes defined in the framework to
+	/// register itself and its components with the shell. These attributes tell the pkgdef creation
+	/// utility what data to put into .pkgdef file.
+	/// </para>
+	/// <para>
+	/// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
+	/// </para>
+	/// </remarks>
+	[PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 	[InstalledProductRegistration(productName: "#110", productDetails: "#112", productId: PackageVersion, IconResourceID = 400)] // Info on this package for Help/About
 	[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -81,46 +83,46 @@ namespace Acuminator.Vsix
 		/// </summary>
 		public const string AcuminatorDefaultCommandSetGuidString = "3cd59430-1e8d-40af-b48d-9007624b3d77";
 
-		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace _vsWorkspace;
+		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace? _vsWorkspace;
 
-        private const int INSTANCE_UNINITIALIZED = 0;
-        private const int INSTANCE_INITIALIZED = 1;
-        private static int _instanceInitialized;
+		private const int INSTANCE_UNINITIALIZED = 0;
+		private const int INSTANCE_INITIALIZED = 1;
+		private static int _instanceInitialized;
 
-		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
+		private OutOfProcessSettingsUpdater? _outOfProcessSettingsUpdater;
 
-		public static AcuminatorVSPackage Instance { get; private set; }
+		public static AcuminatorVSPackage Instance { get; private set; } = null!;
 
-		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
-			new Lazy<GeneralOptionsPage>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
+		private readonly Lazy<GeneralOptionsPage?> _generalOptionsPage =
+			new Lazy<GeneralOptionsPage?>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
 
-		public GeneralOptionsPage GeneralOptionsPage => _generalOptionsPage.Value;
+		public GeneralOptionsPage? GeneralOptionsPage => _generalOptionsPage.Value;
 
 		internal AcuminatorLogger AcuminatorLogger
 		{
 			get;
 			private set;
-		}
+		} = null!;
 
 		internal VSVersion VSVersion
 		{
 			get;
 			private set;
+		} = null!;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
+		/// </summary>
+		public AcuminatorVSPackage()
+		{
+			// Inside this method you can place any initialization code that does not require
+			// any Visual Studio service because at this point the package object is created but
+			// not sited yet inside Visual Studio environment. The place to do all the other
+			// initialization is the Initialize method.
+
+			SetupSingleton(this);
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
-        /// </summary>
-        public AcuminatorVSPackage()
-        {
-            // Inside this method you can place any initialization code that does not require
-            // any Visual Studio service because at this point the package object is created but
-            // not sited yet inside Visual Studio environment. The place to do all the other
-            // initialization is the Initialize method.
-        
-            SetupSingleton(this);
-		}
-        
 		/// <summary>
 		/// Force load package. 
 		/// A hack method which is called from analyzers to ensure that the package is loaded before diagnostics are executed.
@@ -134,36 +136,36 @@ namespace Acuminator.Vsix
 				if (ThreadHelper.JoinableTaskFactory == null)
 					return;
 			}
-			catch(Exception ex) 
+			catch (Exception ex)
 			{
 				return;
 			}
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			IVsShell shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
+			IVsShell? shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
 
 			if (shell == null)
-				return;			
+				return;
 
 			var packageToBeLoadedGuid = new Guid(PackageGuidString);
 			shell.LoadPackage(ref packageToBeLoadedGuid, out var _);
 			await System.Threading.Tasks.TaskScheduler.Default;
 		}
 
-        private static void SetupSingleton(AcuminatorVSPackage package)
-        {
-            if (package == null)
-                return;
-
-            if (Interlocked.CompareExchange(ref _instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
-            {
-                Instance = package;
-            }
-        }
+#pragma warning disable CS8774 // Member must have a non-null value when exiting.
+		[MemberNotNull(nameof(Instance))]
+		private static void SetupSingleton(AcuminatorVSPackage package)
+		{
+			if (Interlocked.CompareExchange(ref _instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
+			{
+				Instance = package;
+			}
+		}
+#pragma warning restore CS8774
 
 		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-		{			
+		{
 			// When initialized asynchronously, the current thread may be a background thread at this point.
 			// Do any initialization that requires the UI thread after switching to the UI thread
 			await base.InitializeAsync(cancellationToken, progress);
@@ -188,7 +190,7 @@ namespace Acuminator.Vsix
 												   currentStep: 2, TotalLoadSteps);
 			progress?.Report(progressData);
 			InitializeLogger();
-			#endregion	
+			#endregion
 
 			#region Initialize CodeSnippets		
 			cancellationToken.ThrowIfCancellationRequested();
@@ -222,7 +224,7 @@ namespace Acuminator.Vsix
 			}
 			#endregion
 
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done, 
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
 												   currentStep: 6, TotalLoadSteps);
 			progress?.Report(progressData);
 		}
@@ -252,6 +254,7 @@ namespace Acuminator.Vsix
 			{
 				ActivityLog.TryLogError(PackageName,
 					$"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
+				throw;
 			}
 		}
 
@@ -261,7 +264,7 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
-			OleMenuCommandService oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>();
+			OleMenuCommandService? oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>();
 
 			if (oleCommandService == null)
 			{
@@ -269,7 +272,7 @@ namespace Acuminator.Vsix
 				AcuminatorLogger.LogException(loadCommandServiceException, logOnlyFromAcuminatorAssemblies: false, LogMode.Error);
 				return;
 			}
-			
+
 			FormatBqlCommand.Initialize(this, oleCommandService);
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
 			BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
@@ -362,24 +365,27 @@ namespace Acuminator.Vsix
 			return missingOldDocument || addedNewDocument;
 
 			//---------------------------------Local function--------------------------------------------------------
-			HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project project) =>
+			static HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project? project) =>
 				project?.GetSuppressionFiles()
 						.Select(file => file.Id)
-						.ToHashSet() ?? new HashSet<DocumentId>();
+						.ToHashSet() ?? [];
 		}
 
 		private void SetupSuppressionManager()
-        {
-            SuppressionManager.InitOrReset(_vsWorkspace, generateSuppressionBase: false, 
-										   errorProcessorFabric: () => new VsixIOErrorProcessor(),
-										   buildActionSetterFabric: () => SharedVsSettings.VSVersion.VS2022OrNewer 
-																			? new VsixBuildActionSetterVS2022() 
-																			: new VsixBuildActionSetterVS2019());
-        }
-
-        private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
-			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
+			SuppressionManager.InitOrReset(_vsWorkspace, generateSuppressionBase: false,
+										   errorProcessorFabric: () => new VsixIOErrorProcessor(),
+										   buildActionSetterFabric: () => SharedVsSettings.VSVersion?.VS2022OrNewer == true
+																			? new VsixBuildActionSetterVS2022()
+																			: new VsixBuildActionSetterVS2019());
+		}
+
+		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
+		{
+			var codeAnalysisSettings = GeneralOptionsPage != null 
+				? new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage)
+				: CodeAnalysisSettings.Default;
+
 			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
 
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
@@ -390,7 +396,7 @@ namespace Acuminator.Vsix
 
 		private void InitializeOutOfProcessSettingsSharing()
 		{
-			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace))
+			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace) || GeneralOptionsPage == null)
 				return;
 
 			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
@@ -411,17 +417,17 @@ namespace Acuminator.Vsix
 		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
 
 
-        public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
+		public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
 
-        public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
+		public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
 
 		public bool UseBqlDetailedOutlining => GeneralOptionsPage?.UseBqlDetailedOutlining ?? true;
 
-        public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
-        
-        public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
+		public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
 
-        public bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? false;
-        #endregion
-    }
+		public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
+
+		public bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? false;
+		#endregion
+	}
 }

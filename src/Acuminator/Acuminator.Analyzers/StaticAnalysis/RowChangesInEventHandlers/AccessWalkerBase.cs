@@ -1,5 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -47,6 +48,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 			protected abstract bool Predicate(ExpressionSyntax node);
 		}
-
 	}
 }

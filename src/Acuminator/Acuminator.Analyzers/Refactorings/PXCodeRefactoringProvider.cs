@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
+using System;
 using System.Threading.Tasks;
 
 using Acuminator.Analyzers.Settings.OutOfProcess;
@@ -17,7 +16,7 @@ namespace Acuminator.Analyzers.Refactorings
 	{
 		private readonly bool _settingsProvidedExternally;
 
-		protected CodeAnalysisSettings CodeAnalysisSettings
+		protected CodeAnalysisSettings? CodeAnalysisSettings
 		{
 			get;
 			private set;
@@ -27,7 +26,7 @@ namespace Acuminator.Analyzers.Refactorings
 		/// Constructor.
 		/// </summary>
 		/// <param name="codeAnalysisSettings">(Optional) The code analysis settings for unit tests.</param>
-		protected PXCodeRefactoringProvider(CodeAnalysisSettings codeAnalysisSettings = null)
+		protected PXCodeRefactoringProvider(CodeAnalysisSettings? codeAnalysisSettings = null)
 		{
 			CodeAnalysisSettings = codeAnalysisSettings;
 			_settingsProvidedExternally = codeAnalysisSettings != null;
@@ -42,7 +41,7 @@ namespace Acuminator.Analyzers.Refactorings
 			if (!_settingsProvidedExternally)
 				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values after potential package load
 
-			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
+			if (!CodeAnalysisSettings!.StaticAnalysisEnabled)
 				return;
 
 			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);

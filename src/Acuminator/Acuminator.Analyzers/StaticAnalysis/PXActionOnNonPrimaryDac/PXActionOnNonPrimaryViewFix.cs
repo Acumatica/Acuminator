@@ -1,8 +1,10 @@
-﻿using System.Collections.Immutable;
+﻿
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -11,20 +13,20 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
+namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class PXActionOnNonPrimaryViewFix : CodeFixProvider
+	public class PXActionOnNonPrimaryDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView.Id);
+			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryView.Id);
+			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
 
 			if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
 				return;
@@ -37,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
 																.ConfigureAwait(false);
-			INamedTypeSymbol mainDacType = semanticModel?.Compilation.GetTypeByMetadataName(mainDacMetadata);
+			INamedTypeSymbol? mainDacType = semanticModel?.Compilation.GetTypeByMetadataName(mainDacMetadata);
 
 			if (mainDacType == null || context.CancellationToken.IsCancellationRequested)
 				return;
@@ -55,13 +57,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 																	INamedTypeSymbol mainDacType)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			GenericNameSyntax pxActionTypeDeclaration = root?.FindNode(span) as GenericNameSyntax;
+			GenericNameSyntax? pxActionTypeDeclaration = root?.FindNode(span) as GenericNameSyntax;
 
 			if (pxActionTypeDeclaration == null || cancellationToken.IsCancellationRequested)
 				return document;
 
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			TypeSyntax mainDacTypeNode = generator.TypeExpression(mainDacType) as TypeSyntax;
+			TypeSyntax? mainDacTypeNode = generator.TypeExpression(mainDacType) as TypeSyntax;
 
 			if (mainDacType == null || cancellationToken.IsCancellationRequested)
 				return document;

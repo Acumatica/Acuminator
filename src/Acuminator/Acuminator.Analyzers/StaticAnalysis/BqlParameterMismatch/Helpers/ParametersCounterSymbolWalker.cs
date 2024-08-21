@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿
+using System.Linq;
 using System.Threading;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -15,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		protected class ParametersCounterSymbolWalker : SymbolVisitor
 		{
 			private readonly bool _isAcumatica2018R2;
-			private readonly INamedTypeSymbol _iViewConfig2018R2;
+			private readonly INamedTypeSymbol? _iViewConfig2018R2;
 
 			private readonly SyntaxNodeAnalysisContext _syntaxContext;
 			private readonly CancellationToken _cancellationToken;

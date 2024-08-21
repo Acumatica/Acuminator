@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.Formatter
@@ -10,7 +12,7 @@ namespace Acuminator.Vsix.Formatter
 		{
 		}
 
-		public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
+		public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node)
 		{
 			return OnNewLineAndIndented(node);
 		}

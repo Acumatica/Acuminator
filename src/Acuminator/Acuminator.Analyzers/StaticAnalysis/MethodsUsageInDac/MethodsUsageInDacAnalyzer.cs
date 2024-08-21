@@ -1,16 +1,19 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Syntax;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 {
@@ -26,7 +29,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			SemanticModel semanticModel = context.Compilation.GetSemanticModel(dac.Node.SyntaxTree);
+
+			// Node is not null here because DAC aggregated analyzers run only on DACs declared in source code
+			SemanticModel? semanticModel = context.Compilation.GetSemanticModel(dac.Node!.SyntaxTree);
 
 			if (semanticModel == null)
 				return;
@@ -79,7 +84,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 		private void AnalyzeMethodInvocationInDacProperty(DacPropertyInfo property, HashSet<INamedTypeSymbol> whiteList,
 														  SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
 		{
-			foreach (SyntaxNode node in property.Node.DescendantNodes())
+			// Node is not null here because DAC aggregated analyzers run only on DACs declared in source code,
+			// and only properties declared in DAC are analyzed
+			foreach (SyntaxNode node in property.Node!.DescendantNodes())
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 

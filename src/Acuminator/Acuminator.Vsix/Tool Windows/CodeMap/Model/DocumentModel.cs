@@ -9,11 +9,9 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -74,10 +72,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return false;
 
 				var candidateSymbols = rootCandidatesRetriever.GetCodeMapRootCandidates(compilationUnit, context, SemanticModel, cancellationToken);
+				int declarationOrder = 0;
 
 				foreach (var (candidateSymbol, candidateNode) in candidateSymbols)
 				{
-					if (semanticModelFactory.TryToInferSemanticModel(candidateSymbol, candidateNode, context, out ISemanticModel codeMapSemanticModel, cancellationToken) &&
+					if (semanticModelFactory.TryToInferSemanticModel(candidateSymbol, candidateNode, context, out ISemanticModel? codeMapSemanticModel, 
+																	 declarationOrder, cancellationToken) &&
 						codeMapSemanticModel != null)
 					{
 						_codeMapSemanticModels.Add(codeMapSemanticModel);

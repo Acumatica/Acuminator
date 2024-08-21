@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -328,7 +327,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			Location dacLocation = dac.Node.GetLocation();
+			Location? dacLocation = dac.Node?.GetLocation();
 			var keysNotInContainerLocations = GetKeysLocations(keysNotInContainer, symbolContext.CancellationToken).ToList(capacity: keysNotInContainer.Count);
 
 			if (dacLocation == null || keysNotInContainerLocations.Count == 0)
@@ -355,7 +354,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private void ReportNoForeignKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
-			var location = dac.Node.Identifier.GetLocation() ?? dac.Node.GetLocation();
+			var location = dac.Node?.Identifier.GetLocation() ?? dac.Node?.GetLocation();
 
 			if (location != null)
 			{

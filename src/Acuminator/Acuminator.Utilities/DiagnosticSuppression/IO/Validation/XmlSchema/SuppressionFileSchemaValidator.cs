@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
+
 using Acuminator.Utilities.Common;
-using System.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
@@ -28,11 +25,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			_xmlSchemaSet.Add(Schema);
 		}
 
-		public static SuppressionFileSchemaValidator Create(IXmlSchemaProvider customXmlSchemaProvider = null, 
-															IIOErrorProcessor errorProcessor = null)
+		public static SuppressionFileSchemaValidator? Create(IXmlSchemaProvider? customXmlSchemaProvider = null, 
+															 IIOErrorProcessor? errorProcessor = null)
 		{
 			IXmlSchemaProvider xmlSchemaProvider = customXmlSchemaProvider ?? new EmbeddedResourceXmlSchemaProvider();
-			XmlSchema schema;
+			XmlSchema? schema;
 
 			try
 			{
@@ -46,7 +43,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			
 			if (schema == null)
 			{
-				Exception exception = new Exception("Failed to load schema for the suppression file. The suppression file won't be validated");
+				var exception = new Exception("Failed to load schema for the suppression file. The suppression file won't be validated");
 				errorProcessor?.ProcessError(exception);
 				return null;
 			}
@@ -78,7 +75,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		protected virtual void OnSchemaError(ValidationLog validationLog, object sender, ValidationEventArgs e)
 		{
 			string errorMsg = $"Validation event: {e.Message} | Severity: {e.Severity}";
-			string location = GetLocationDescription(sender);
+			string? location = GetLocationDescription(sender);
 
 			if (location != null)
 			{
@@ -88,9 +85,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			validationLog.LogError(errorMsg);
 		}		
 
-		protected virtual string GetLocationDescription(object sender)
+		protected virtual string? GetLocationDescription(object sender)
 		{
-			XElement suppressionMesage = sender is XAttribute attribute
+			XElement? suppressionMesage = sender is XAttribute attribute
 				? GetSuppressionMessageElement(attribute.Parent)
 				: sender is XElement element
 					? GetSuppressionMessageElement(element)
@@ -104,7 +101,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 				   $"Next Node: {suppressionMesage.NextNode?.ToString()}";
 		}
 
-		private XElement GetSuppressionMessageElement(XElement element)
+		private XElement? GetSuppressionMessageElement(XElement element)
 		{
 			while (element != null && element.Name != SuppressionFile.SuppressMessageElement)
 				element = element.Parent;

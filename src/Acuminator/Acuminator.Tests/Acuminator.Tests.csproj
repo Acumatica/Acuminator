@@ -602,6 +602,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrder_CheckForVersionTests.cs" />
     <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\CodeAnalysisSettingsSerializationTests.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacFields_OnlyBqlFields.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\RegularDac.cs" />
+    <Compile Include="Tests\Utilities\SemanticModels\RoslynTestContext.cs" />
+    <Compile Include="Tests\Utilities\SemanticModels\SemanticModelTestsBase.cs" />
+    <Compile Include="Tests\Utilities\SemanticModels\Dac\DacSemanticModelTests.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\Graph\GraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\GraphWithSetupViews.cs" />
     <Compile Include="Tests\Utilities\Version\PackageVersionTests.cs" />
@@ -671,11 +676,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacNonAbstractFieldType\Sources\SOOrderNotAbstractField.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacNonAbstractFieldType\Sources\SOOrderNotAbstractField_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacFieldAttributesTypeMismatch_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\GraphWithNonPrimaryDacView.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\GraphWithNonPrimaryDacView_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryDac\Sources\GraphWithNonPrimaryDacView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryDac\Sources\GraphWithNonPrimaryDacView_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\NoPrimaryViewForPrimaryDac.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\DerivedGraphWithBaseGraphPrimaryDac.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryView\Sources\DerivedGraphWithBaseGraphPrimaryDac_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryDac\Sources\DerivedGraphWithBaseGraphPrimaryDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXActionOnNonPrimaryDac\Sources\DerivedGraphWithBaseGraphPrimaryDac_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacExtensionWithUnderscores.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacExtensionWithUnderscores_Expected.cs" />
@@ -793,7 +798,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtension_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXActionOnNonPrimaryView\PXActionOnNonPrimaryViewTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXActionOnNonPrimaryDac\PXActionOnNonPrimaryDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\StartRowResetForPaging\StartRowResetForPagingTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrderTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature.cs" />

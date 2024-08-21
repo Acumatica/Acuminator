@@ -1,13 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Options;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -16,8 +12,6 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.Settings;
-using Microsoft.VisualStudio.Settings;
 
 using EnvDTE80;
 using Acuminator.Utilities;
@@ -38,20 +32,20 @@ namespace Acuminator.Vsix.Utilities
 		/// <typeparam name="TService">Type of the service.</typeparam>
 		/// <param name="serviceProvider">The package Service Provider.</param>
 		/// <returns/>
-		public static TService GetService<TService>(this IServiceProvider serviceProvider)
+		public static TService? GetService<TService>(this IServiceProvider serviceProvider)
 		where TService : class
 		{
 			return serviceProvider?.GetService(typeof(TService)) as TService;
 		}
 
-		public static TActual GetService<TRequested, TActual>(this IServiceProvider serviceProvider)
+		public static TActual? GetService<TRequested, TActual>(this IServiceProvider serviceProvider)
 		where TRequested : class
 		where TActual : class
 		{	
 			return serviceProvider?.GetService(typeof(TRequested)) as TActual;
 		}
 
-		public static async Task<TService> GetServiceAsync<TService>(this Shell.IAsyncServiceProvider serviceProvider)
+		public static async Task<TService?> GetServiceAsync<TService>(this Shell.IAsyncServiceProvider serviceProvider)
 		where TService : class
 		{
 			if (serviceProvider == null)
@@ -61,7 +55,7 @@ namespace Acuminator.Vsix.Utilities
 			return service as TService;
 		}
 
-		public static async Task<TActual> GetServiceAsync<TRequested, TActual>(this Shell.IAsyncServiceProvider serviceProvider)
+		public static async Task<TActual?> GetServiceAsync<TRequested, TActual>(this Shell.IAsyncServiceProvider serviceProvider)
 		where TRequested : class
 		where TActual : class
 		{
@@ -72,32 +66,32 @@ namespace Acuminator.Vsix.Utilities
 			return service as TActual;
 		}
 
-		internal static async Task<VisualStudioWorkspace> GetVSWorkspaceAsync(this Shell.IAsyncServiceProvider serviceProvider)
+		internal static async Task<VisualStudioWorkspace?> GetVSWorkspaceAsync(this Shell.IAsyncServiceProvider serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
 
 			var service = await serviceProvider.GetServiceAsync(typeof(SComponentModel));
-			IComponentModel componentModel = service as IComponentModel;
+			IComponentModel? componentModel = service as IComponentModel;
 			return componentModel?.GetService<VisualStudioWorkspace>();
 		}
 
-		internal static async Task<string> GetSolutionPathAsync(this Shell.IAsyncServiceProvider serviceProvider)
+		internal static async Task<string?> GetSolutionPathAsync(this Shell.IAsyncServiceProvider serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
 
-			VisualStudioWorkspace workspace = await serviceProvider.GetVSWorkspaceAsync();	
+			VisualStudioWorkspace? workspace = await serviceProvider.GetVSWorkspaceAsync();	
 			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
 		}
 
-		internal static async Task<IOutliningManager> GetOutliningManagerAsync(this Shell.IAsyncServiceProvider serviceProvider, ITextView textView)
+		internal static async Task<IOutliningManager?> GetOutliningManagerAsync(this Shell.IAsyncServiceProvider serviceProvider, ITextView textView)
 		{
 			if (serviceProvider == null || textView == null)
 				return null;
 
-			IComponentModel componentModel = await serviceProvider.GetServiceAsync<SComponentModel, IComponentModel>();
-			IOutliningManagerService outliningManagerService = componentModel?.GetService<IOutliningManagerService>();
+			IComponentModel? componentModel = await serviceProvider.GetServiceAsync<SComponentModel, IComponentModel>();
+			IOutliningManagerService? outliningManagerService = componentModel?.GetService<IOutliningManagerService>();
 
 			if (outliningManagerService == null)
 				return null;
@@ -105,12 +99,12 @@ namespace Acuminator.Vsix.Utilities
 			return outliningManagerService.GetOutliningManager(textView);
 		}
 
-		internal static async Task<IWpfTextView> GetWpfTextViewAsync(this Shell.IAsyncServiceProvider serviceProvider)
+		internal static async Task<IWpfTextView?> GetWpfTextViewAsync(this Shell.IAsyncServiceProvider serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
 
-			IVsTextManager textManager = await serviceProvider.GetServiceAsync<SVsTextManager, IVsTextManager>();
+			IVsTextManager? textManager = await serviceProvider.GetServiceAsync<SVsTextManager, IVsTextManager>();
 			
 			if (textManager == null || textManager.GetActiveView(1, null, out IVsTextView textView) != VSConstants.S_OK)
 				return null;
@@ -126,7 +120,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <returns>
 		/// The IVsTextView for this file, if it is open, null otherwise.
 		/// </returns>
-		internal static async Task<IWpfTextView> GetWpfTextViewByFilePathAsync(this Shell.IAsyncServiceProvider serviceProvider, string filePath)
+		internal static async Task<IWpfTextView?> GetWpfTextViewByFilePathAsync(this Shell.IAsyncServiceProvider? serviceProvider, string? filePath)
 		{
 			if (filePath.IsNullOrWhiteSpace() || serviceProvider == null)
 				return null;
@@ -136,7 +130,7 @@ namespace Acuminator.Vsix.Utilities
 				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
-			DTE2 dte2 = await serviceProvider.GetServiceAsync<Shell.Interop.SDTE, DTE2>();
+			DTE2? dte2 = await serviceProvider.GetServiceAsync<Shell.Interop.SDTE, DTE2>();
 			var oleServiceProvider = dte2 as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 			if (dte2 == null || oleServiceProvider == null)
@@ -153,13 +147,13 @@ namespace Acuminator.Vsix.Utilities
 			return null;
 		}
 
-		private static async Task<IWpfTextView> GetWpfTextViewFromTextViewAsync(this Shell.IAsyncServiceProvider serviceProvider, IVsTextView vsTextView)
+		private static async Task<IWpfTextView?> GetWpfTextViewFromTextViewAsync(this Shell.IAsyncServiceProvider serviceProvider, IVsTextView vsTextView)
 		{
 			if (vsTextView == null)
 				return null;
 
-			IComponentModel componentModel = await serviceProvider.GetServiceAsync<SComponentModel, IComponentModel>();
-			IVsEditorAdaptersFactoryService vsEditorAdaptersFactoryService = componentModel?.GetService<IVsEditorAdaptersFactoryService>();
+			IComponentModel? componentModel = await serviceProvider.GetServiceAsync<SComponentModel, IComponentModel>();
+			IVsEditorAdaptersFactoryService? vsEditorAdaptersFactoryService = componentModel?.GetService<IVsEditorAdaptersFactoryService>();
 			return vsEditorAdaptersFactoryService?.GetWpfTextView(vsTextView);
 		}
 
@@ -168,7 +162,7 @@ namespace Acuminator.Vsix.Utilities
 		/// </summary>
 		/// <param name="serviceProvider">The package Service Provider.</param>
 		/// <returns/>
-		internal static async Task<List<IVsTaskItem>> GetErrorListAsync(this Shell.IAsyncServiceProvider serviceProvider)
+		internal static async Task<List<IVsTaskItem>?> GetErrorListAsync(this Shell.IAsyncServiceProvider serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;

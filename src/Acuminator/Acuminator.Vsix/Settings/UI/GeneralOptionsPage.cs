@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +25,8 @@ namespace Acuminator.Vsix
 
 		private bool _colorSettingsChanged;
 		private bool _codeAnalysisSettingsChanged;
-		public event EventHandler<SettingChangedEventArgs> ColoringSettingChanged;
-		public event EventHandler<SettingChangedEventArgs> CodeAnalysisSettingChanged;
+		public event EventHandler<SettingChangedEventArgs>? ColoringSettingChanged;
+		public event EventHandler<SettingChangedEventArgs>? CodeAnalysisSettingChanged;
 		
 		private bool _coloringEnabled = true;
 

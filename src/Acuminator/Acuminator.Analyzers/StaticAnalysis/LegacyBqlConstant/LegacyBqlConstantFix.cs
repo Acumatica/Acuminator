@@ -1,14 +1,18 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
@@ -39,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				return;
 			}
 
-			SimpleBaseTypeSyntax newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
+			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
 
 			if (newBaseType != null)
 			{
@@ -52,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 			}
 		}
 
-		private SimpleBaseTypeSyntax CreateBaseType(string typeName, string constantName)
+		private SimpleBaseTypeSyntax? CreateBaseType(string typeName, string constantName)
 		{
 			if (!LegacyBqlFieldAnalyzer.PropertyTypeToFieldType.ContainsKey(typeName))
 				return null;

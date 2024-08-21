@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -130,7 +131,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetRawDacBqlFieldsFromDacImpl(this ITypeSymbol dac,
+		private static IEnumerable<(ClassDeclarationSyntax? Node, INamedTypeSymbol Symbol)> GetRawDacBqlFieldsFromDacImpl(this ITypeSymbol dac,
 																								PXContext pxContext, bool includeFromInheritanceChain,
 																								CancellationToken cancellation)
 		{
@@ -146,22 +147,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetRawDacBqlFieldsFromDacOrDacExtension(
+		private static IEnumerable<(ClassDeclarationSyntax? Node, INamedTypeSymbol Symbol)> GetRawDacBqlFieldsFromDacOrDacExtension(
 																								this ITypeSymbol dacOrDacExtension,
 																								PXContext pxContext, CancellationToken cancellation)
 		{
-			IEnumerable<INamedTypeSymbol> dacFields = dacOrDacExtension.GetTypeMembers()
-																	   .Where(type => type.IsDacField(pxContext)); 
-			foreach (INamedTypeSymbol field in dacFields)
+			IEnumerable<INamedTypeSymbol> dacBqlFields = dacOrDacExtension.GetTypeMembers()
+																		  .Where(type => type.IsDacField(pxContext)); 
+			foreach (INamedTypeSymbol bqlField in dacBqlFields)
 			{
 				cancellation.ThrowIfCancellationRequested();
+				var bqlFieldNode = bqlField.GetSyntax(cancellation) as ClassDeclarationSyntax;
 
-				SyntaxReference reference = field.DeclaringSyntaxReferences.FirstOrDefault();
-
-				if (reference?.GetSyntax(cancellation) is ClassDeclarationSyntax declaration)
-				{
-					yield return (declaration, field);
-				}
+				yield return (bqlFieldNode, bqlField);
 			}
 		}
 	}

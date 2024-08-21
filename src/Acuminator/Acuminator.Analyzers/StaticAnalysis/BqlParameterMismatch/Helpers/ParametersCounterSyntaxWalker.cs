@@ -1,6 +1,9 @@
-﻿using System.Threading;
+﻿
+using System.Threading;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -41,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(genericNode, _cancellationToken);
 
-				if (!(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+				if (symbolInfo.Symbol is not ITypeSymbol typeSymbol)
 				{
 					_cancellationToken.ThrowIfCancellationRequested();
 					base.VisitGenericName(genericNode);
@@ -63,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				_cancellationToken.ThrowIfCancellationRequested();
 				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(identifierNode, _cancellationToken);
 
-				if (!(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+				if (symbolInfo.Symbol is not ITypeSymbol typeSymbol)
 					return;
 
 				ParametersCounter.CountParametersInTypeSymbolForIdentifierNode(typeSymbol, _cancellationToken);

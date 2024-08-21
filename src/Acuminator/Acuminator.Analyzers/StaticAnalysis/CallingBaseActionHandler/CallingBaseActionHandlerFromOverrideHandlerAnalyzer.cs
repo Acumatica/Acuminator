@@ -1,12 +1,10 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -24,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 			ImmutableArray.Create(Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraphExtension;
+			base.ShouldAnalyze(pxContext, graph) && graph.GraphType == GraphType.PXGraphExtension;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
@@ -110,6 +108,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 				}
 
 				var originalMethodSymbol = methodSymbol.OriginalDefinition?.OverriddenMethod ?? methodSymbol.OriginalDefinition;
+
+				if (originalMethodSymbol == null)
+					return;
 
 				// Case Base.SomeAction.Press(adapter)
 				if (PxContext.PXAction.Press.Contains(originalMethodSymbol) &&

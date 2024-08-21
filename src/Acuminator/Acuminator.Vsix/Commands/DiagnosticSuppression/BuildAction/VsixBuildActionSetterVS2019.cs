@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace();
 			buildActionToSet.ThrowOnNullOrWhiteSpace();
 
-			if (SharedVsSettings.VSVersion.VS2022OrNewer)
+			if (SharedVsSettings.VSVersion?.VS2022OrNewer == true)
 				return false;
 
 			try

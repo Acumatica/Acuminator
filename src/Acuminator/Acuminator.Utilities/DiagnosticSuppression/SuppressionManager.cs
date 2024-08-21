@@ -48,23 +48,23 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			BuildActionSetter = buildActionSetter;
 		}
 
-		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo>? additionalFiles,
 									   Func<ISuppressionFileSystemService>? fileSystemServiceFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(additionalFiles, fileSystemServiceFabric, null, buildActionSetterFabric);
 
-		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo>? additionalFiles,
 									   Func<IIOErrorProcessor>? errorProcessorFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(additionalFiles, null, errorProcessorFabric, buildActionSetterFabric);
 
-		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
+		public static void InitOrReset(Workspace? workspace, bool generateSuppressionBase, 
 									   Func<ISuppressionFileSystemService>? fileSystemServiceFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfo(generateSuppressionBase),
 						fileSystemServiceFabric, null, buildActionSetterFabric);
 
-		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase,
+		public static void InitOrReset(Workspace? workspace, bool generateSuppressionBase,
 									   Func<IIOErrorProcessor>? errorProcessorFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null)
 		{

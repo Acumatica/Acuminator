@@ -1,9 +1,10 @@
-﻿namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
+﻿#nullable enable
+
+namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public enum GraphType
 	{
 		PXGraph,
-		PXGraphExtension,
-		None
+		PXGraphExtension
 	}
 }

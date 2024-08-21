@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -91,7 +90,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			};
 
 			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, GraphSemanticModelCreationOptions.CollectAll, 
-																  context.CancellationToken);
+																  cancellation: context.CancellationToken);
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var graphsEnrichedWithEvents = from graphOrExtension in inferredGraphs

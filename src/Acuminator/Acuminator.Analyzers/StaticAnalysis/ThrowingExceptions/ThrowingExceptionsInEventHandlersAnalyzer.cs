@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -28,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 			eventType != EventType.None;
 
 		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphOrGraphExtension) => 
-			graphOrGraphExtension != null && !graphOrGraphExtension.Symbol.IsStatic;
+			graphOrGraphExtension?.IsInSource == true && !graphOrGraphExtension.Symbol.IsStatic;
 
 		/// <summary>
 		/// Analyze events outside graphs and graph extensions.
@@ -91,7 +90,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				context.CancellationToken.ThrowIfCancellationRequested();
 				walker ??= new ThrowInGraphEventsWalker(context, pxContext, eventType, graphOrGraphExtensionWithEvents);
 
-				graphEvent.Node.Accept(walker);
+				// Node is not null because analysis runs only for graphs declared in source
+				graphEvent.Node!.Accept(walker);
 			}
 		}
 	}

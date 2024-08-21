@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.Formatter
@@ -12,7 +14,7 @@ namespace Acuminator.Vsix.Formatter
 		{
 		}
 
-		public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
+		public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
 		{
 			if (!_visited)
 			{

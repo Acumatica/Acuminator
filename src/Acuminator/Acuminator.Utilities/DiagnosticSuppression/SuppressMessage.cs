@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Xml.Linq;
+
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Acuminator.Utilities.Common;
-using System.Xml.Linq;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -73,24 +75,24 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			_hashCode = hash;
 		}
 
-		public static SuppressMessage? MessageFromElement(XElement element)
+		public static SuppressMessage? MessageFromElement(XElement? element)
 		{
-			string id = element?.Attribute(IdAttribute)?.Value;
+			string? id = element?.Attribute(IdAttribute)?.Value;
 			if (id.IsNullOrWhiteSpace())
 				return null;
 
-			string target = element.Element(TargetElement)?.Value;
+			string? target = element!.Element(TargetElement)?.Value;
 			if (target.IsNullOrWhiteSpace())
 				return null;
 
-			string syntaxNode = element.Element(SyntaxNodeElement)?.Value;
+			string? syntaxNode = element.Element(SyntaxNodeElement)?.Value;
 			if (syntaxNode.IsNullOrWhiteSpace())
 				return null;
 
 			return new SuppressMessage(id, target, syntaxNode);
 		}
 
-		public XElement ToXml()
+		public XElement? ToXml()
 		{
 			if (!IsValid)
 				return null;
@@ -112,15 +114,15 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public override string ToString() => $"ID={Id}, Target={Target}";
 
-		internal static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
-																					 CancellationToken cancellation = default)
+		internal static (string? Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
+																						CancellationToken cancellation = default)
 		{
 			return diagnostic?.Location != null
 				? GetSuppressionInfo(semanticModel, diagnostic.Id, diagnostic.Location.SourceSpan, cancellation)
 				: (null, default);
 		}
 
-		internal static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, string diagnosticID, 
+		internal static (string? Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, string diagnosticID, 
 																					  TextSpan diagnosticSpan, CancellationToken cancellation = default)
 		{
 			cancellation.ThrowIfCancellationRequested();
@@ -155,7 +157,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return (assemblyName, message);
 		}
 
-		private static SyntaxNode FindTargetNode(SyntaxNode node)
+		private static SyntaxNode? FindTargetNode(SyntaxNode node)
 		{
 			var targetNode = node?.AncestorsAndSelf().FirstOrDefault(a => _targetKinds.Contains(a.Kind()));
 

@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Immutable;
 
 using Acuminator.Utilities;
@@ -54,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				{
 					return Descriptors.PX1001_PXGraphCreateInstance;
 				}
-				else if (typeSymbol.InheritsFrom(_pxContext.PXGraph.Type!))
+				else if (typeSymbol.InheritsFrom(_pxContext.PXGraph.Type))
 				{
 					return Descriptors.PX1001_PXGraphCreateInstance;
 				}

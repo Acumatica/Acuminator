@@ -1,8 +1,10 @@
-﻿using System.Collections.Immutable;
+﻿
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -39,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken)
 											.ConfigureAwait(false);
-			ClassDeclarationSyntax dacFieldDeclaration = root?.FindNode(span) as ClassDeclarationSyntax;
+			var dacFieldDeclaration = root?.FindNode(span) as ClassDeclarationSyntax;
 
 			if (dacFieldDeclaration == null || cancellationToken.IsCancellationRequested)
 				return document;

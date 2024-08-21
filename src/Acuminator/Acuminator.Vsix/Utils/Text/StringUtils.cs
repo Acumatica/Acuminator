@@ -1,7 +1,7 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
@@ -26,6 +26,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <returns>
 		/// A trimmed text with suffix <paramref name="overflowSuffix"/>.
 		/// </returns>
+		[return: NotNullIfNotNull(parameterName: nameof(text))]
 		public static string? TrimExcess(this string? text, int? maxTextLength = null, string? overflowSuffix = null)
 		{
 			maxTextLength ??= MaxLength;

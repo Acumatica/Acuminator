@@ -259,14 +259,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			var activeWpfTextViewTask = activeWpfTextView != null
-				? Task.FromResult(activeWpfTextView)
+				? Task.FromResult<IWpfTextView?>(activeWpfTextView)
 				: AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
 
 			await RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument);
 		}
 
 		[SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks", Justification = "Task is part of implementation")]
-		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView>? activeWpfTextViewTask, Document? activeDocument = null)
+		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView?>? activeWpfTextViewTask, Document? activeDocument = null)
 		{
 			ClearCodeMap();
 			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();

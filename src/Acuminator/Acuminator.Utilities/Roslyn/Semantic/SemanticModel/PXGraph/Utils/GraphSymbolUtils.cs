@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull();
 
-			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
+			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return null;
 
 			var baseGraphExtensionType = graphExtension.GetBaseTypesAndThis()
@@ -60,7 +60,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			return containingType.GetMembers()
 								 .OfType<IFieldSymbol>()
-								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBase.Type!))
+								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBase.Type))
 								 .Any(field => string.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
@@ -102,9 +102,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (graphOrExtension == null)
 				return null;
 
-			bool isGraph = graphOrExtension.InheritsFrom(pxContext.PXGraph.Type!);
+			bool isGraph = graphOrExtension.InheritsFrom(pxContext.PXGraph.Type);
 
-			if (!isGraph && !graphOrExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
+			if (!isGraph && !graphOrExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return null;
 
 			ITypeSymbol? graph = isGraph

@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public static AttributeListSyntax GetAttributeList(this INamedTypeSymbol type, AttributeArgumentListSyntax argumentList = null)
+		public static AttributeListSyntax GetAttributeList(this INamedTypeSymbol type, AttributeArgumentListSyntax? argumentList = null)
 		{
 			type.ThrowOnNull();
 

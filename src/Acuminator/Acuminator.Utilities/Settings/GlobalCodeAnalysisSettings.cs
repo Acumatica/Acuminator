@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Composition;
-using System.Linq;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities
@@ -13,7 +12,7 @@ namespace Acuminator.Utilities
 		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
 		private static int _isInitialized = NOT_INITIALIZED;
 
-		private static CodeAnalysisSettings _cachedSettings;
+		private static CodeAnalysisSettings? _cachedSettings;
 
 		public static CodeAnalysisSettings Instance => _cachedSettings ?? CodeAnalysisSettings.Default;
 

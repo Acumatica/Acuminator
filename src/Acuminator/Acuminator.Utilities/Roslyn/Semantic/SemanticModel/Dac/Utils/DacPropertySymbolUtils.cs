@@ -7,6 +7,7 @@ using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -128,7 +129,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		private static IEnumerable<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> GetRawPropertiesFromDacImpl(this ITypeSymbol dac, PXContext pxContext,
+		private static IEnumerable<(PropertyDeclarationSyntax? Node, IPropertySymbol Symbol)> GetRawPropertiesFromDacImpl(this ITypeSymbol dac, PXContext pxContext,
 																														 bool includeFromInheritanceChain,
 																														 CancellationToken cancellation)
 		{
@@ -144,9 +145,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		private static IEnumerable<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> GetRawPropertiesFromDacOrDacExtensionImpl(this ITypeSymbol dacOrExtension,
-																																	   PXContext pxContext,
-																																	   CancellationToken cancellation)
+		private static IEnumerable<(PropertyDeclarationSyntax? Node, IPropertySymbol Symbol)> GetRawPropertiesFromDacOrDacExtensionImpl(this ITypeSymbol dacOrExtension,
+																																		PXContext pxContext,
+																																		CancellationToken cancellation)
 		{
 			var dacProperties = dacOrExtension.GetMembers().OfType<IPropertySymbol>()
 														   .Where(p => p.DeclaredAccessibility == Accessibility.Public && !p.IsStatic);
@@ -155,10 +156,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				if (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is PropertyDeclarationSyntax node)
-				{
-					yield return (node, property);
-				}
+				var propertyNode = property.GetSyntax(cancellation) as PropertyDeclarationSyntax;
+				yield return (propertyNode, property);
 			}
 		}
 

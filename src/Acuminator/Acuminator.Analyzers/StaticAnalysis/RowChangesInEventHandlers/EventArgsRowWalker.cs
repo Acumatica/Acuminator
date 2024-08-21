@@ -1,6 +1,8 @@
-﻿using Acuminator.Utilities.Common;
+﻿
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

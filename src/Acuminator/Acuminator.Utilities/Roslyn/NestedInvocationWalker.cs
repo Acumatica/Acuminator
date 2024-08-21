@@ -100,14 +100,14 @@ namespace Acuminator.Utilities.Roslyn
 		/// </remarks>
 		protected virtual HashSet<INamedTypeSymbol> GetTypesToBypass() =>
 			[
-				PxContext.PXGraph.Type!,
-				PxContext.PXView.Type!,
-				PxContext.PXCache.Type!,
-				PxContext.PXCache.GenericType!,
-				PxContext.PXAction.Type!,
-				PxContext.PXSelectBaseGeneric.Type!,
+				PxContext.PXGraph.Type,
+				PxContext.PXView.Type,
+				PxContext.PXCache.Type,
+				PxContext.PXCache.GenericType,
+				PxContext.PXAction.Type,
+				PxContext.PXSelectBaseGeneric.Type,
 				PxContext.PXAdapterType,
-				PxContext.PXDatabase.Type!
+				PxContext.PXDatabase.Type
 			];
 
 		protected void ThrowIfCancellationRequested() => CancellationToken.ThrowIfCancellationRequested();
@@ -173,6 +173,9 @@ namespace Acuminator.Utilities.Roslyn
 			{
 				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
 				var semanticModel = GetSemanticModel(nodeToReport.SyntaxTree);
+
+				if (semanticModel == null)
+					return;
 
 				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, Settings, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);

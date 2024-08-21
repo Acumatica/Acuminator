@@ -1,8 +1,11 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Acuminator.Utilities.Roslyn.Semantic;
+
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -11,14 +14,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	internal class NodeDeclarationOrderComparer : IComparer<TreeNodeViewModel>
 	{
-		public static readonly NodeDeclarationOrderComparer Instance = new NodeDeclarationOrderComparer();
+		public static readonly NodeDeclarationOrderComparer Instance = new();
 
 		private  NodeDeclarationOrderComparer() { }
 
 		public int Compare(TreeNodeViewModel x, TreeNodeViewModel y)
 		{
-			SymbolItem symbolX = (x as INodeWithSymbolItem)?.Symbol;
-			SymbolItem symbolY = (y as INodeWithSymbolItem)?.Symbol;
+			SymbolItem? symbolX = (x as INodeWithSymbolItem)?.Symbol;
+			SymbolItem? symbolY = (y as INodeWithSymbolItem)?.Symbol;
 
 			if (symbolX == null && symbolY == null)		//Always place nodes without symbol first
 				return 0;

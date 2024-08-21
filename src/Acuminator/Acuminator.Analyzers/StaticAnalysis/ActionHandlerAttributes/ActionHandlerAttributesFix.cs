@@ -1,10 +1,4 @@
-﻿using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,6 +6,15 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 {
@@ -76,9 +79,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                 return document;
             }
 
-            var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
-			var pxButtonAttributeList = pxContext.AttributeTypes.PXButtonAttribute.GetAttributeList();
-			var pxUIFieldAttributeList = pxContext.AttributeTypes.PXUIFieldAttribute.Type.GetAttributeList();
+            var pxContext 				= new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
+			var pxButtonAttributeList 	= pxContext.AttributeTypes.PXButtonAttribute.GetAttributeList();
+			var pxUIFieldAttributeList 	= pxContext.AttributeTypes.PXUIFieldAttribute.Type.GetAttributeList();
             var attributeListCollection = new List<AttributeListSyntax>();
 
             switch (option)

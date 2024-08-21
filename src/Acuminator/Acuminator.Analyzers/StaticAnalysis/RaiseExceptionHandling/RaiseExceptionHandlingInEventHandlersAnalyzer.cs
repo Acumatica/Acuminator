@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -34,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 			);
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
-			AnalyzedEventTypes.Contains(eventType);
+			base.ShouldAnalyze(pxContext, eventType) && AnalyzedEventTypes.Contains(eventType);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{

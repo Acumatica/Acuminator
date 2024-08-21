@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -11,7 +12,6 @@ using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -19,7 +19,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Text;
 
 using PXReferentialIntegritySymbols = Acuminator.Utilities.Roslyn.Semantic.Symbols.PXReferentialIntegritySymbols;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -46,17 +45,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			await Task.WhenAll(rootTask, semanticModelTask).ConfigureAwait(false);
 
 			var root = rootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
+			SemanticModel? semanticModel = semanticModelTask.Result;
 
-			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax dacNode))
+			if (root?.FindNode(context.Span) is not ClassDeclarationSyntax dacNode)
 				return;
 
-			INamedTypeSymbol dacTypeSymbol = semanticModel?.GetDeclaredSymbol(dacNode, context.CancellationToken);
+			INamedTypeSymbol? dacTypeSymbol = semanticModel?.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
 			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ReferentialIntegrity.PrimaryKeyClassName))
 				return;
 
-			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
+			var pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
 
 			if (pxContext.ReferentialIntegritySymbols.PrimaryKeyOf == null)
 				return;
@@ -75,8 +74,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
-			List<DacPropertyInfo> dacKeys = dacSemanticModel?.DacFieldProperties
+			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation: cancellation);
+
+			if (dacSemanticModel?.IsInSource != true)
+				return Task.FromResult(document);
+
+			List<DacPropertyInfo>? dacKeys = dacSemanticModel.DacFieldProperties
 															 .Where(property => property.IsKey)
 															 .OrderBy(property => property.DeclarationOrder)
 															 .ToList(capacity: 4);
@@ -99,7 +102,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return Task.FromResult(modifiedDocument);
 		}
 
-		private ClassDeclarationSyntax CreatePrimaryKeyNode(Document document, PXContext pxContext, DacSemanticModel dacSemanticModel,
+		private ClassDeclarationSyntax? CreatePrimaryKeyNode(Document document, PXContext pxContext, DacSemanticModel dacSemanticModel,
 															List<DacPropertyInfo> dacKeys)
 		{
 			var generator = SyntaxGenerator.GetGenerator(document);
@@ -131,6 +134,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var findMethodNode = generator.MethodDeclaration(DelegateNames.PrimaryKeyFindMethod, parameters,
 															 typeParameters: null, returnType,
 															 Accessibility.Public, DeclarationModifiers.Static) as MethodDeclarationSyntax;
+			findMethodNode.ThrowOnNull();
+
 			if (findMethodNode.Body != null)
 				findMethodNode = findMethodNode.RemoveNode(findMethodNode.Body, SyntaxRemoveOptions.KeepNoTrivia);
 
@@ -145,9 +150,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			if (statementTooLongForOneLine)		
 			{
-				var trivia = dacSemanticModel.Node.GetLeadingTrivia()
-												  .Add(Whitespace("\t\t"))
-												  .Where(trivia => trivia.IsKind(SyntaxKind.WhitespaceTrivia));
+				// Node checked earlier
+				var trivia = dacSemanticModel.Node!.GetLeadingTrivia()
+												   .Add(Whitespace("\t\t"))
+												   .Where(trivia => trivia.IsKind(SyntaxKind.WhitespaceTrivia));
 
 				findByInvocation = findByInvocation.WithLeadingTrivia(trivia);
 			}

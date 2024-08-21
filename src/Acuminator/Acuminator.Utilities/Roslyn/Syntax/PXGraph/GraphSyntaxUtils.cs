@@ -71,7 +71,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 
 				foreach (ClassDeclarationSyntax classNode in declaredClasses)
 				{
-					ITypeSymbol classTypeSymbol = classNode.GetTypeSymbolFromClassDeclaration(semanticModel, cancellationToken);
+					ITypeSymbol? classTypeSymbol = classNode.GetTypeSymbolFromClassDeclaration(semanticModel, cancellationToken);
 
 					if (classTypeSymbol != null && classTypeSymbol.IsPXGraphOrExtension(context))
 					{
@@ -81,8 +81,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 			}
 		}
 
-		public static ITypeSymbol GetTypeSymbolFromClassDeclaration(this ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel,
-																	CancellationToken cancellationToken = default)
+		public static ITypeSymbol? GetTypeSymbolFromClassDeclaration(this ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel,
+																	 CancellationToken cancellationToken = default)
 		{
 			classDeclaration.ThrowOnNull();
 			semanticModel.ThrowOnNull();

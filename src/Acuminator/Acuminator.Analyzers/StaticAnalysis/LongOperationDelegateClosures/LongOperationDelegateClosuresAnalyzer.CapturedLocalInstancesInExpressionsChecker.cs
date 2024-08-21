@@ -1,11 +1,9 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 

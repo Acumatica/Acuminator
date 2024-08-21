@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -45,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull();
 
-			return view.CheckIfNull().InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type!);
+			return view.CheckIfNull().InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type);
 		}
 
 		/// <summary>
@@ -61,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull();
 
-			if (graph?.InheritsFrom(pxContext.PXGraph.Type!) != true)
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
 				return new OverridableItemsCollection<DataViewInfo>();
 
 			var viewsByName = new OverridableItemsCollection<DataViewInfo>(capacity: EstimatedNumberOfViewsInGraph);
@@ -141,7 +142,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (member is not IFieldSymbol field || field.DeclaredAccessibility != Accessibility.Public)
 					continue;
 
-				if (field.Type is not INamedTypeSymbol fieldType || !fieldType.InheritsFrom(pxContext.PXSelectBase.Type!))
+				if (field.Type is not INamedTypeSymbol fieldType || !fieldType.InheritsFrom(pxContext.PXSelectBase.Type))
 					continue;
 
 				yield return (field, fieldType);
@@ -211,9 +212,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		
-
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphImpl(
+		private static IEnumerable<(MethodDeclarationSyntax? Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphImpl(
 																	this ITypeSymbol graph, IDictionary<string, DataViewInfo> viewsByName,
 																	PXContext pxContext, bool inheritance, CancellationToken cancellation)
 		{
@@ -230,7 +229,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphOrGraphExtension(
+		private static IEnumerable<(MethodDeclarationSyntax? Node, IMethodSymbol Symbol)> GetRawViewDelegatesFromGraphOrGraphExtension(
 															this ITypeSymbol graphOrExtension, IDictionary<string, DataViewInfo> viewsByName,
 															PXContext pxContext, CancellationToken cancellation)
 		{
@@ -238,16 +237,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 												   where method.IsValidViewDelegate(pxContext) && viewsByName.ContainsKey(method.Name)
 												   select method;
 
-			foreach (IMethodSymbol d in delegates)
+			foreach (IMethodSymbol viewDelegage in delegates)
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				SyntaxReference reference = d.DeclaringSyntaxReferences.FirstOrDefault();
-
-				if (reference?.GetSyntax(cancellation) is MethodDeclarationSyntax declaration)
-				{
-					yield return (declaration, d);
-				}
+				var declaration = viewDelegage.GetSyntax(cancellation) as MethodDeclarationSyntax;
+				yield return (declaration, viewDelegage);
 			}
 		}
 
@@ -256,7 +251,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																						AddViewInfoWithOrderDelegate<TInfo> addGraphExtensionViewInfo)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
+			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return new OverridableItemsCollection<TInfo>();
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);

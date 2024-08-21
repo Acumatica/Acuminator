@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
+﻿
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Acuminator.Utilities.Roslyn.Constants;
-using System;
-using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 {

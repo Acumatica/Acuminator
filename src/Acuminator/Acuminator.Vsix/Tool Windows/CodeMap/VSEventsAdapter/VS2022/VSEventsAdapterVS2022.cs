@@ -1,23 +1,19 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
 
-using Acuminator.Utilities;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
-using System.Diagnostics;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -35,9 +31,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			private static readonly EventsMappingInfoVS2022 _mappingInfo = new EventsMappingInfoVS2022();			
 			private static readonly Dictionary<string, EventInfo> _vsEventInfos = new Dictionary<string, EventInfo>();
 
-			private static dynamic _dte;	// DTE must be dynamic for proper runtime binding to different DTE types in different VS
+			private static dynamic? _dte;	// DTE must be dynamic for proper runtime binding to different DTE types in different VS
 
-			private Dictionary<string, object> _eventObjectsByEventTypeName;
+			private Dictionary<string, object>? _eventObjectsByEventTypeName;
 			private readonly Dictionary<string, Delegate> _eventHandlers = new Dictionary<string, Delegate>();
 
 			protected override bool TryInitialize()
@@ -50,7 +46,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				//Store reference to COM events objects from DTE to prevent them from being GC-ed and to use them in Reflection
 				_eventObjectsByEventTypeName = new Dictionary<string, object>
 				{
-					 [typeof(EnvDTE.SolutionEvents).FullName]           = _dte.Events.SolutionEvents,
+					 [typeof(EnvDTE.SolutionEvents).FullName]           = _dte!.Events.SolutionEvents,
 					 [typeof(EnvDTE.DocumentEvents).FullName]           = _dte.Events.DocumentEvents,
 					 [typeof(EnvDTE.WindowEvents).FullName]             = _dte.Events.WindowEvents,
 					 [typeof(EnvDTE80.WindowVisibilityEvents).FullName] = _dte.Events.WindowVisibilityEvents,
@@ -81,7 +77,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											  .FirstOrDefault(assembly => assembly.GetName().Name == dteAssemblyVS2022);
 			}
 
-			private static object GetDTE(Assembly interopAssembly)
+			private static object? GetDTE(Assembly interopAssembly)
 			{
 				string dteTypeName = typeof(EnvDTE.DTE).FullName;
 				Type dteType = interopAssembly.ExportedTypes.FirstOrDefault(t => t.FullName == dteTypeName);
@@ -104,7 +100,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (!vsEventTypes.TryGetValue(vsEventTypeName, out Type eventTypeVS2022))
 						continue;
 
-					EventInfo eventInfo = GetEventInfoFromComWrapperType(eventTypeVS2022, eventName);
+					EventInfo? eventInfo = GetEventInfoFromComWrapperType(eventTypeVS2022, eventName);
 
 					if (eventInfo != null)
 					{
@@ -118,7 +114,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								.Where(typeVS2022 => _mappingInfo.EventTypeNames.Contains(typeVS2022.FullName))
 								.ToDictionary(type => type.FullName);
 
-			private static EventInfo GetEventInfoFromComWrapperType(Type eventType, string eventName)
+			private static EventInfo? GetEventInfoFromComWrapperType(Type eventType, string eventName)
 			{
 				EventInfo eventInfo = eventType.GetEvent(eventName, BindingFlags.Public | BindingFlags.Instance);
 
@@ -155,7 +151,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				string eventTypeName = _mappingInfo.EventTypeNamesByEventNames[eventName];
 
 				if (!_mappingInfo.EventNamesToAdapterEventHandlers.TryGetValue(eventName, out MethodInfo adapterHandlerMethodInfo) ||
-					!_eventObjectsByEventTypeName.TryGetValue(eventTypeName,out object eventObject) ||
+					_eventObjectsByEventTypeName?.TryGetValue(eventTypeName, out object eventObject) != true ||
 					!_vsEventInfos.TryGetValue(eventName, out EventInfo eventInfo))
 				{
 					return false;
@@ -201,7 +197,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				string eventTypeName = _mappingInfo.EventTypeNamesByEventNames[eventName];
 
-				if (!_eventObjectsByEventTypeName.TryGetValue(eventTypeName, out object eventObject) ||
+				if (_eventObjectsByEventTypeName?.TryGetValue(eventTypeName, out object eventObject) != true ||
 					!_vsEventInfos.TryGetValue(eventName, out EventInfo eventInfo) ||
 					!_eventHandlers.TryGetValue(eventName, out Delegate eventHandler))
 				{

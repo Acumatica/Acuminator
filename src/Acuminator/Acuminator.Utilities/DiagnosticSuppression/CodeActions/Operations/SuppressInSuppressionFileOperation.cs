@@ -27,7 +27,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 		public override void Apply(Workspace workspace, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			SuppressionFile suppressionFile = SuppressionManager.Instance.GetSuppressionFile(AssemblyName);
+			SuppressionFile? suppressionFile = SuppressionManager.Instance?.GetSuppressionFile(AssemblyName);
 
 			if (suppressionFile == null)
 			{

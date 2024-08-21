@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -63,7 +62,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			foreach (DacPropertyInfo property in invalidProperties.Where(p => dacOrDacExtension.Symbol.Equals(p.Symbol.ContainingSymbol)))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				RegisterForbiddenFieldDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
+
+				// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+				// and these properties are declared in the DAC type itself
+				RegisterForbiddenFieldDiagnosticForIdentifier(property.Node!.Identifier, pxContext, context);
 			}
 		}
 
@@ -104,7 +106,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			foreach (DacPropertyInfo property in propertiesWithInvalidPrefix)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				RegisterCompanyPrefixDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
+
+				// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+				// and these properties are declared in the DAC type itself
+				RegisterCompanyPrefixDiagnosticForIdentifier(property.Node!.Identifier, pxContext, context);
 			}
 		}
 

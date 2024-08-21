@@ -1,6 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
@@ -13,7 +16,7 @@ namespace Acuminator.Vsix.Coloriser
     {    
         protected bool HasReferenceToAcumaticaPlatform { get; private set; }
 
-        public Workspace Workspace { get; private set; }
+        public Workspace? Workspace { get; private set; }
 
         /// <summary>
         /// Initializes the base fields - <see cref="Workspace"/> and <see cref="HasReferenceToAcumaticaPlatform"/>.

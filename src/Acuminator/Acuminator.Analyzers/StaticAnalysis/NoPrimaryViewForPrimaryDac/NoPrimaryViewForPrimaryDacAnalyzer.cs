@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,12 +6,9 @@ using System.Linq;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -24,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			ImmutableArray.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraph &&
+			base.ShouldAnalyze(pxContext, graph) && graph.GraphType == GraphType.PXGraph &&
 			!graph.Symbol.IsAbstract && !graph.Symbol.IsUnboundGenericType;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graph)
@@ -55,16 +51,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 		private static Location? GetLocation(PXGraphEventSemanticModel graph, ITypeSymbol declaredPrimaryDacType,
 											 SymbolAnalysisContext context)
 		{
-			if (!(graph.Symbol.GetSyntax(context.CancellationToken) is ClassDeclarationSyntax graphNode))
-				return null;
-
-			SemanticModel? semanticModel = context.Compilation.GetSemanticModel(graphNode.SyntaxTree);
+			// Node is not null - aggregated graph analysis is run only on graphs in the source code 
+			SemanticModel? semanticModel = context.Compilation.GetSemanticModel(graph.Node!.SyntaxTree);
 
 			if (semanticModel == null)
-				return graphNode.Identifier.GetLocation();
+				return graph.Node.Identifier.GetLocation();
 
-			var baseClassesTypeNodes = graphNode.BaseList.Types.Select(baseTypeNode => baseTypeNode.Type)
-															   .OfType<GenericNameSyntax>();
+			var baseClassesTypeNodes = graph.Node.BaseList.Types.Select(baseTypeNode => baseTypeNode.Type)
+																.OfType<GenericNameSyntax>();
 
 			foreach (GenericNameSyntax baseClassTypeNode in baseClassesTypeNodes)
 			{
@@ -75,7 +69,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 					return location;
 			}
 
-			return graphNode.Identifier.GetLocation();
+			return graph.Node.Identifier.GetLocation();
 		}
 
 		private static Location? GetLocationFromBaseClassTypeNode(GenericNameSyntax baseClassTypeNode, INamedTypeSymbol? baseClassTypeSymbol,
