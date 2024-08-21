@@ -11,19 +11,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public class DataViewDelegateInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>, IWriteableBaseItem<DataViewDelegateInfo>
 	{
+		protected DataViewDelegateInfo? _baseInfo;
+
 		/// <summary>
 		/// The overriden item if any
 		/// </summary>
-		public DataViewDelegateInfo? Base
-		{
-			get;
-			internal set;
-		}
+		public DataViewDelegateInfo? Base => _baseInfo;
 
 		DataViewDelegateInfo? IWriteableBaseItem<DataViewDelegateInfo>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set 
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
 		}
 
 		public DataViewDelegateInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder)
@@ -34,7 +38,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public DataViewDelegateInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder, DataViewDelegateInfo baseInfo)
 			: this(node, symbol, declarationOrder)
 		{
-			Base = baseInfo.CheckIfNull();
+			_baseInfo = baseInfo.CheckIfNull();
+			CombineWithBaseInfo(_baseInfo);
 		}
 
 		/// <summary>
@@ -57,6 +62,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				currentDelegate = currentDelegate.Base;
 				counter++;
 			}
+		}
+
+		void IWriteableBaseItem<DataViewDelegateInfo>.CombineWithBaseInfo(DataViewDelegateInfo baseInfo) => 
+			CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(DataViewDelegateInfo baseInfo)
+		{
 		}
 	}
 }

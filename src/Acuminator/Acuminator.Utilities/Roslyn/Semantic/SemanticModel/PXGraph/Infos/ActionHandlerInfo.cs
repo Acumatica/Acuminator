@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 
 using Acuminator.Utilities.Common;
 
@@ -14,19 +12,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// </summary>
 	public class ActionHandlerInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>, IWriteableBaseItem<ActionHandlerInfo>
 	{
+		protected ActionHandlerInfo? _baseInfo;
+
 		/// <summary>
 		/// The overriden handler if any
 		/// </summary>
-		public ActionHandlerInfo? Base
-		{
-			get;
-			internal set;
-		}
+		public ActionHandlerInfo? Base => _baseInfo;
 
 		ActionHandlerInfo? IWriteableBaseItem<ActionHandlerInfo>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set 
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
 		}
 
 
@@ -38,7 +40,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ActionHandlerInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder, ActionHandlerInfo baseInfo) :
 							this(node, symbol, declarationOrder)
 		{
-			Base = baseInfo.CheckIfNull();
+			_baseInfo = baseInfo.CheckIfNull();
+			CombineWithBaseInfo(_baseInfo);
+		}
+
+		void IWriteableBaseItem<ActionHandlerInfo>.CombineWithBaseInfo(ActionHandlerInfo baseInfo) => CombineWithBaseInfo(baseInfo);
+
+		protected void CombineWithBaseInfo(ActionHandlerInfo baseInfo)
+		{
 		}
 	}
 }

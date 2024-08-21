@@ -24,9 +24,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public DacBqlFieldInfo? BqlFieldInfo { get; }
 
-		public DacFieldInfo? Base { get; set; }
+		protected DacFieldInfo? _baseInfo;
 
-		DacFieldInfo? IOverridableItem<DacFieldInfo>.Base => Base;
+		public DacFieldInfo? Base => _baseInfo;
+
+		DacFieldInfo? IWriteableBaseItem<DacFieldInfo>.Base
+		{
+			get => Base;
+			set 
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
+		}
 
 		public int DeclarationOrder => PropertyInfo?.DeclarationOrder ?? BqlFieldInfo!.DeclarationOrder;
 
@@ -85,6 +97,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public bool IsDeclaredInType(ITypeSymbol? type) =>
 			 PropertyInfo?.Symbol.IsDeclaredInType(type) ?? BqlFieldInfo!.Symbol.IsDeclaredInType(type);
+
+		void IWriteableBaseItem<DacFieldInfo>.CombineWithBaseInfo(DacFieldInfo baseInfo) => CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(DacFieldInfo baseInfo)
+		{
+			// No need to combine anything here, combination is done in the constructor
+		}
 
 		protected readonly record struct DacFieldMetadata(bool IsDacProperty, bool IsKey, bool IsIdentity, bool IsAutoNumbering,
 														  ITypeSymbol? FieldPropertyType, ITypeSymbol? EffectivePropertyType, 
