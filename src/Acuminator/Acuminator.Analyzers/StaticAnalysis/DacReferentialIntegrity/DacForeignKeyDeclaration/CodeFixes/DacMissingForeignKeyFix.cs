@@ -158,9 +158,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacFieldPropertiesWithBqlFields
-				where !dacProperty.Attributes.IsDefaultOrEmpty && 
-					   dacProperty.DeclaredDbBoundness == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
-					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
+				where dacProperty.HasAcumaticaAttributesEffective && 
+					  dacProperty.EffectiveDbBoundness == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
+					  dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
 				orderby dacProperty.DeclarationOrder ascending
 				select dacProperty;
 

@@ -130,7 +130,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 																								   BqlFieldsByNames, PropertiesByNames);
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 
-			IsFullyUnbound  = DacFieldPropertiesWithBqlFields.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
+			IsFullyUnbound  = DacFieldPropertiesWithAcumaticaAttributes.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
 			IsProjectionDac = CheckIfDacIsProjection();
 		}
 
