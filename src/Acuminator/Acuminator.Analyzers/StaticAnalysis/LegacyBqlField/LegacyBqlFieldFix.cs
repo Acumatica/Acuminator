@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -27,32 +27,38 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			var classNode = root.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
-			if (classNode == null)
-				return;
+			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1060_LegacyBqlField.Id);
 			if (diagnostic == null)
 				return;
 
-			if (diagnostic.Properties == null
-				|| !diagnostic.Properties.TryGetValue(LegacyBqlFieldAnalyzer.CorrespondingPropertyType, out string typeName)
-				|| typeName.IsNullOrEmpty()
-				|| context.CancellationToken.IsCancellationRequested)
+			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
+											 .ConfigureAwait(false);
+
+			var bqlFieldNode = root.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
+			if (bqlFieldNode == null)
+				return;
+
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			if (!diagnostic.TryGetPropertyValue(LegacyBqlFieldAnalyzer.CorrespondingPropertyType, out string? propertyTypeName) || 
+				propertyTypeName.IsNullOrWhiteSpace())
 			{
 				return;
 			}
 
-			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
+			string bqlFieldName = bqlFieldNode.Identifier.Text;
+			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(propertyTypeName, bqlFieldName);
 			if (newBaseType == null)
 				return;
-		
+
+			context.CancellationToken.ThrowIfCancellationRequested();
+
 			string title = nameof(Resources.PX1060Fix).GetLocalized().ToString();
 			context.RegisterCodeFix(
 				CodeAction.Create(title,
-								  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root, classNode, newBaseType)),
+								  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root, bqlFieldNode, newBaseType)),
 								  equivalenceKey: title),
 				context.Diagnostics); 
 		}
@@ -91,6 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				classNode.WithBaseList(
 					BaseList(
 						SingletonSeparatedList<BaseTypeSyntax>(newBaseType)));
+
 			var newRoot = root.ReplaceNode(classNode, newClassNode);
 			return oldDocument.WithSyntaxRoot(newRoot);
 		}
