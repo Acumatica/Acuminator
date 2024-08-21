@@ -143,7 +143,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			foreach (AttributeData attribute in property.GetAttributes())
 			{			
-				yield return DacFieldAttributeInfo.Create(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
+				yield return DacFieldAttributeInfo.CreateUnsafe(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
 
 				relativeDeclarationOrder++;
 			}
