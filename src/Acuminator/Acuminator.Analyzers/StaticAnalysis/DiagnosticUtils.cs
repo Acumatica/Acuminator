@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 
 using Acuminator.Utilities.Common;
@@ -15,7 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			diagnostic.ThrowOnNull();
 
 			return diagnostic.Properties.TryGetValue(DiagnosticProperty.RegisterCodeFix, out string registered) 
-				? registered == bool.TrueString
+				? bool.TrueString.Equals(registered, StringComparison.OrdinalIgnoreCase)
 				: considerRegisteredByDefault;
 		}
 
