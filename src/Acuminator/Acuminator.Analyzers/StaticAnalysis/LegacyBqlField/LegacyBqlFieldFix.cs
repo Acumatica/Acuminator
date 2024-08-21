@@ -57,17 +57,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				context.Diagnostics); 
 		}
 
-		private SimpleBaseTypeSyntax? CreateBaseType(string typeName, string dacFieldName)
+		private SimpleBaseTypeSyntax? CreateBaseType(string propertyTypeName, string bqlFieldName)
 		{
-			if (!LegacyBqlFieldAnalyzer.PropertyTypeToFieldType.ContainsKey(typeName))
+			var bqlTypeName = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName).NullIfWhiteSpace();
+
+			if (bqlTypeName == null)
 				return null;
 
-			string bqlTypeName = $"Bql{ LegacyBqlFieldAnalyzer.PropertyTypeToFieldType[typeName]}";
 			GenericNameSyntax fieldTypeNode =
 				GenericName(Identifier("Field"))
 					.WithTypeArgumentList(
 						TypeArgumentList(
-							SingletonSeparatedList<TypeSyntax>(IdentifierName(dacFieldName))));
+							SingletonSeparatedList<TypeSyntax>(IdentifierName(bqlFieldName))));
 
 			var newBaseType =
 				SimpleBaseType(
