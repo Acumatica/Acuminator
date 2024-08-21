@@ -13,7 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			diagnostic.ThrowOnNull();
 
-			return diagnostic.Properties.TryGetValue(DiagnosticProperty.RegisterCodeFix, out string registered) 
+			return TryGetPropertyValueInternal(diagnostic, DiagnosticProperty.RegisterCodeFix, out string? registered) 
 				? bool.TrueString.Equals(registered, StringComparison.OrdinalIgnoreCase)
 				: considerRegisteredByDefault;
 		}
