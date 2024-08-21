@@ -64,12 +64,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
-		public IEnumerable<DacPropertyInfo> DacFieldPropertiesWithBqlFields => Properties.Where(p => p.HasBqlField);
+		public IEnumerable<DacPropertyInfo> DacFieldPropertiesWithBqlFields => Properties.Where(p => p.HasBqlFieldEffective);
+
+		public IEnumerable<DacPropertyInfo> DacFieldPropertiesWithAcumaticaAttributes => 
+			Properties.Where(p => p.HasAcumaticaAttributesEffective);
 
 		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => p.Symbol.IsDeclaredInType(Symbol));
 
 		public IEnumerable<DacPropertyInfo> DeclaredDacFieldPropertiesWithBqlFields => 
-			Properties.Where(p => p.HasBqlField && p.Symbol.IsDeclaredInType(Symbol));
+			Properties.Where(p => p.HasBqlFieldEffective && p.Symbol.IsDeclaredInType(Symbol));
+
+		public IEnumerable<DacPropertyInfo> DeclaredDacFieldPropertiesWithAcumaticaAttributes =>
+			Properties.Where(p => p.HasAcumaticaAttributesEffective && p.Symbol.IsDeclaredInType(Symbol));
 
 		public ImmutableDictionary<string, DacBqlFieldInfo> BqlFieldsByNames { get; }
 		public IEnumerable<DacBqlFieldInfo> BqlFields => BqlFieldsByNames.Values;

@@ -40,22 +40,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <summary>
 		///  True if this property has a corresponding declared DAC field.
 		/// </summary
-		public bool DeclaredHasBqlField { get;  }
+		public bool HasBqlFieldDeclared { get;  }
 
 		/// <summary>
 		/// The effective indicator if this property has a corresponding DAC field including base properties.
 		/// </summary
-		public bool EffectiveHasBqlField { get; private set; }
+		public bool HasBqlFieldEffective { get; private set; }
 
 		/// <summary>
 		///  True if this property has declared Acumatica attributes, false if not.
 		/// </summary>
-		public bool DeclaredHasAcumaticaAttributes { get; private set; }
+		public bool HasAcumaticaAttributesDeclared { get; private set; }
 
 		/// <summary>
 		/// The effective indicator if this property has Acumatica attributes on it including base properties.
 		/// </summary>
-		public bool EffectiveHasAcumaticaAttributes { get; private set; }
+		public bool HasAcumaticaAttributesEffective { get; private set; }
 
 		/// <value>
 		/// The type of the property.
@@ -102,8 +102,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 							 base(node, symbol, declarationOrder)
 		{
 			Attributes 			 = attributeInfos.ToImmutableArray();
-			DeclaredHasBqlField  = hasBqlField;
-			EffectiveHasBqlField = hasBqlField;
+			HasBqlFieldDeclared  = hasBqlField;
+			HasBqlFieldEffective = hasBqlField;
 
 			DeclaredDbBoundness = Attributes.Select(a => a.DbBoundness).Combine();
 			EffectiveDbBoundness = DeclaredDbBoundness;
@@ -126,8 +126,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			IsKey 				  = isPrimaryKey;
 			IsAutoNumbering 	  = isAutoNumbering;
 
-			DeclaredHasAcumaticaAttributes  = hasAcumaticaAttributes;
-			EffectiveHasAcumaticaAttributes = hasAcumaticaAttributes;
+			HasAcumaticaAttributesDeclared  = hasAcumaticaAttributes;
+			HasAcumaticaAttributesEffective = hasAcumaticaAttributes;
 		}
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax? node, IPropertySymbol property, int declarationOrder,
@@ -170,8 +170,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			// TODO - need to add support for PXMergeAttributesAttribute in the future
 			EffectiveDbBoundness 			= DeclaredDbBoundness.Combine(baseProperty.EffectiveDbBoundness);
-			EffectiveHasBqlField 			= DeclaredHasBqlField || baseProperty.EffectiveHasBqlField;
-			EffectiveHasAcumaticaAttributes = DeclaredHasAcumaticaAttributes || baseProperty.EffectiveHasAcumaticaAttributes;
+			HasBqlFieldEffective 			= HasBqlFieldDeclared || baseProperty.HasBqlFieldEffective;
+			HasAcumaticaAttributesEffective = HasAcumaticaAttributesDeclared || baseProperty.HasAcumaticaAttributesEffective;
 		}
 	}
 }
