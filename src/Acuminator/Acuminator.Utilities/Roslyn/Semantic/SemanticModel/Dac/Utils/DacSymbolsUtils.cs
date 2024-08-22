@@ -89,7 +89,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: false;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacField(this ITypeSymbol typeSymbol)
+		public static bool IsDacBqlField(this ITypeSymbol typeSymbol)
 		{
 			if (!typeSymbol.BaseValidation())
 				return false;
@@ -103,7 +103,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacField(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsDacBqlField(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
 			typeSymbol.ThrowOnNull();
 

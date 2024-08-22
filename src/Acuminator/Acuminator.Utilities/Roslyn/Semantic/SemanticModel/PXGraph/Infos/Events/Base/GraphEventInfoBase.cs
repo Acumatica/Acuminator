@@ -59,7 +59,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (dacOrDacField.IsDAC())
 				return dacOrDacField.Name;
-			else if (dacOrDacField.IsDacField())
+			else if (dacOrDacField.IsDacBqlField())
 				return dacOrDacField.ContainingType?.Name ?? string.Empty;
 			else
 				return string.Empty;
