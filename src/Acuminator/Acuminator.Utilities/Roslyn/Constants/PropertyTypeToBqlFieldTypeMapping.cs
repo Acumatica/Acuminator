@@ -57,6 +57,12 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			{ "BqlByteArray" , "Byte[]" },
 		};
 
+		public static bool ContainsPropertyType(string propertyType) =>
+			_propertyTypeToBqlFieldType.ContainsKey(propertyType);
+
+		public static bool ContainsBqlFieldType(string bqlFieldType) =>
+			_bqlFieldTypeToPropertyType.ContainsKey(bqlFieldType);
+
 		public static string? GetBqlFieldType(string? propertyType)
 		{
 			if (propertyType.IsNullOrWhiteSpace())

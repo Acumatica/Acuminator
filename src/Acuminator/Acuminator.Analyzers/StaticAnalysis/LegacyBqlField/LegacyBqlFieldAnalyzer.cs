@@ -5,6 +5,7 @@ using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
@@ -19,22 +20,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1060_LegacyBqlField);
 
-		public static readonly ImmutableDictionary<string, string> PropertyTypeToFieldType = new Dictionary<string, string>
-		{
-			["String"] = "String",
-			["Guid"] = "Guid",
-			["DateTime"] = "DateTime",
-			["Boolean"] = "Bool",
-			["Byte"] = "Byte",
-			["Int16"] = "Short",
-			["Int32"] = "Int",
-			["Int64"] = "Long",
-			["Single"] = "Float",
-			["Double"] = "Double",
-			["Decimal"] = "Decimal",
-			["Byte[]"] = "ByteArray",
-		}.ToImmutableDictionary();
-
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
 			pxContext.IsAcumatica2019R1_OrGreater && 
 			base.ShouldAnalyze(pxContext, dac);
@@ -48,13 +33,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				if (dacField.Symbol.BaseType.SpecialType != SpecialType.System_Object || AlreadyStronglyTyped(dacField.Symbol, pxContext))
 					continue;
 
-				Location location = dacField.Symbol.Locations.FirstOrDefault();
+				Location? location = dacField.Symbol.Locations.FirstOrDefault();
 
-				if (location != null && dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
-				{
+				if (location == null || !dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
+					continue;
+
 					string? propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
 
-					if (propertyTypeName == null || !PropertyTypeToFieldType.ContainsKey(propertyTypeName))
+				if (propertyTypeName == null || !PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(propertyTypeName))
 						continue;
 
 					var args = ImmutableDictionary.CreateBuilder<string, string>();
@@ -64,7 +50,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 						pxContext.CodeAnalysisSettings);
 				}
 			}
-		}
 
 		internal static bool AlreadyStronglyTyped(INamedTypeSymbol dacFieldType, PXContext pxContext) =>
 			dacFieldType.AllInterfaces.Any(t =>

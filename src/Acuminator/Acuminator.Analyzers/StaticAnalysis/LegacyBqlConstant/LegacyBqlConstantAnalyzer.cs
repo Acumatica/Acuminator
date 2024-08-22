@@ -6,7 +6,9 @@ using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis;
@@ -72,10 +74,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				.FirstOrDefault(t => t.IsGenericType && t.InheritsFromOrEqualsGeneric(pxContext.BqlConstantType!))?
 				.TypeArguments[0];
 
-			if (constantUnderlyingType == null)
+			if (constantUnderlyingType == null || constantUnderlyingType.Name.IsNullOrWhiteSpace())
 				return false;
 
-			if (LegacyBqlFieldAnalyzer.PropertyTypeToFieldType.ContainsKey(constantUnderlyingType.Name))
+			if (PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(constantUnderlyingType.Name))
 			{
 				constantType = constantUnderlyingType.Name;
 				return true;
