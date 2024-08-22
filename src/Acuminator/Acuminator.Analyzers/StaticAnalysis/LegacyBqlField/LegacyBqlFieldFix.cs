@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!diagnostic.TryGetPropertyValue(LegacyBqlFieldAnalyzer.CorrespondingPropertyType, out string? propertyTypeName) || 
+			if (!diagnostic.TryGetPropertyValue(DiagnosticProperty.PropertyType, out string? propertyTypeName) || 
 				propertyTypeName.IsNullOrWhiteSpace())
 			{
 				return;

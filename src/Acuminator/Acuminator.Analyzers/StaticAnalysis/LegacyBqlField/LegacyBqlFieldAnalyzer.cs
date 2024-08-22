@@ -15,8 +15,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 {
 	public class LegacyBqlFieldAnalyzer : DacAggregatedAnalyzerBase
 	{
-		public const string CorrespondingPropertyType = "CorrespondingPropertyType";
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1060_LegacyBqlField);
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
@@ -46,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 					continue;
 
 				var args = ImmutableDictionary.CreateBuilder<string, string>();
-				args.Add(CorrespondingPropertyType, propertyTypeName);
+				args.Add(DiagnosticProperty.PropertyType, propertyTypeName);
 				context.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacField.Name),
 					pxContext.CodeAnalysisSettings);
