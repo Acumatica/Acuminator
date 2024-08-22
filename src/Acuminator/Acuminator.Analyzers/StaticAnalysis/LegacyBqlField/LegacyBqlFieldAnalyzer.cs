@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -30,32 +29,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (dacField.Symbol.BaseType.SpecialType != SpecialType.System_Object || AlreadyStronglyTyped(dacField.Symbol, pxContext))
+				if (dacField.Symbol.BaseType.SpecialType != SpecialType.System_Object ||
+					dacField.Symbol.IsStronglyTypedBqlFieldOrBqlConstant(pxContext))
+				{
 					continue;
+				}
 
 				Location? location = dacField.Symbol.Locations.FirstOrDefault();
 
 				if (location == null || !dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
 					continue;
 
-					string? propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
+				string? propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
 
 				if (propertyTypeName == null || !PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(propertyTypeName))
-						continue;
+					continue;
 
-					var args = ImmutableDictionary.CreateBuilder<string, string>();
-					args.Add(CorrespondingPropertyType, propertyTypeName);
-					context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacField.Name),
-						pxContext.CodeAnalysisSettings);
-				}
+				var args = ImmutableDictionary.CreateBuilder<string, string>();
+				args.Add(CorrespondingPropertyType, propertyTypeName);
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacField.Name),
+					pxContext.CodeAnalysisSettings);
 			}
-
-		internal static bool AlreadyStronglyTyped(INamedTypeSymbol dacFieldType, PXContext pxContext) =>
-			dacFieldType.AllInterfaces.Any(t =>
-				t.IsGenericType
-				&& t.OriginalDefinition.Name == pxContext.IImplementType.Name
-				&& t.TypeArguments.First().AllInterfaces.Any(z => z.Name == pxContext.BqlTypes.BqlDataType.Name));
+		}
 
 		private static string? GetPropertyTypeName(IPropertySymbol property, PXContext pxContext) =>
 			property.Type switch

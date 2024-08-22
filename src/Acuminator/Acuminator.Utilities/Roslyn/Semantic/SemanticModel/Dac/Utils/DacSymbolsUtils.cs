@@ -118,6 +118,35 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return false;
 		}
 
+		public static bool IsStronglyTypedBqlFieldOrBqlConstant(this INamedTypeSymbol bqlFieldOrBqlConstantType, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull();
+
+			var allInterfaces = bqlFieldOrBqlConstantType.CheckIfNull().AllInterfaces;
+
+			if (allInterfaces.IsDefaultOrEmpty)
+				return false;
+
+			foreach (INamedTypeSymbol @interface in allInterfaces)
+			{
+				if (!@interface.IsGenericType || @interface.TypeArguments.IsDefaultOrEmpty)
+					continue;
+
+				if (!@interface.Equals(pxContext.IImplementType) &&
+					(@interface.OriginalDefinition == null || !@interface.OriginalDefinition.Equals(pxContext.IImplementType)))
+				{
+					continue;
+				}
+
+				var firstTypeArgument = @interface.TypeArguments[0];
+
+				if (firstTypeArgument.ImplementsInterface(pxContext.BqlTypes.IBqlDataType))
+					return true;
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Get view's DAC for which the view was declared.
 		/// </summary>
