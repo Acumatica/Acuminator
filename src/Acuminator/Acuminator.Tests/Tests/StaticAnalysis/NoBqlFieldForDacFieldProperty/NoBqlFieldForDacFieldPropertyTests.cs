@@ -50,6 +50,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(81, 17, "BinaryField2"));
 
 		[Theory]
+		[EmbeddedFileData("DacWithBqlFieldMissingInBaseDac.cs")]
+		public async Task DerivedDac_BasedDac_WithoutBqlFields(string actual) => await VerifyCSharpDiagnosticAsync(actual,
+			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(7, 15, "ShipmentNbr"),
+			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(16, 23, "ShipmentNbr"));
+
+		[Theory]
 		[EmbeddedFileData("DacWithoutBqlFields.cs", "DacWithoutBqlFields_Expected.cs")]
 		public async Task TestCodeFix(string actual, string expected) => 
 			await VerifyCSharpFixAsync(actual, expected);
