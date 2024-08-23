@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +8,8 @@ using Acuminator.Utilities.Roslyn.Constants;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Acuminator.Utilities.Roslyn.CodeGeneration
 {
@@ -38,8 +38,56 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 				return root;
 
 			return root.AddUsings(
-					SyntaxFactory.UsingDirective(
-						SyntaxFactory.ParseName(namespaceName)));
+							UsingDirective(
+								ParseName(namespaceName)));
+		}
+
+		public static ClassDeclarationSyntax? GenerateBqlField(string propertyTypeName, string bqlFieldName)
+		{
+			var bqlFieldBaseTypeNode = BaseTypeForBqlField(propertyTypeName, bqlFieldName);
+
+			if (bqlFieldBaseTypeNode == null)
+				return null;
+
+			var baseTypesListNode = BaseList(
+										SingletonSeparatedList<BaseTypeSyntax>(bqlFieldBaseTypeNode));
+			var bqlFieldTypeNode = ClassDeclaration(
+										attributeLists: default, 
+										TokenList(
+											Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AbstractKeyword)),
+										Identifier(bqlFieldName), typeParameterList: null, baseTypesListNode,
+										constraintClauses: default, members: default);
+			return bqlFieldTypeNode;
+		}
+
+		public static SimpleBaseTypeSyntax? BaseTypeForBqlField(string propertyTypeName, string bqlFieldName)
+		{
+			if (propertyTypeName.IsNullOrWhiteSpace() || bqlFieldName.IsNullOrWhiteSpace())
+				return null;
+
+			var bqlTypeName = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName).NullIfWhiteSpace();
+
+			if (bqlTypeName == null)
+				return null;
+
+			GenericNameSyntax fieldTypeNode =
+				GenericName(Identifier("Field"))
+					.WithTypeArgumentList(
+						TypeArgumentList(
+							SingletonSeparatedList<TypeSyntax>(IdentifierName(bqlFieldName))));
+			var newBaseType =
+				SimpleBaseType(
+					QualifiedName(
+						QualifiedName(
+							QualifiedName(
+								QualifiedName(
+									IdentifierName("PX"),
+									IdentifierName("Data")),
+									IdentifierName("BQL")),
+									IdentifierName(bqlTypeName)),
+						fieldTypeNode));
+
+			return newBaseType;
 		}
 	}
 }
