@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.CodeGeneration;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			}
 
 			string bqlFieldName = bqlFieldNode.Identifier.Text;
-			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(propertyTypeName, bqlFieldName);
+			SimpleBaseTypeSyntax? newBaseType = CodeGeneration.BaseTypeForBqlField(propertyTypeName, bqlFieldName);
 			if (newBaseType == null)
 				return;
 
@@ -61,34 +61,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 								  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root, bqlFieldNode, newBaseType)),
 								  equivalenceKey: title),
 				context.Diagnostics); 
-		}
-
-		private SimpleBaseTypeSyntax? CreateBaseType(string propertyTypeName, string bqlFieldName)
-		{
-			var bqlTypeName = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName).NullIfWhiteSpace();
-
-			if (bqlTypeName == null)
-				return null;
-
-			GenericNameSyntax fieldTypeNode =
-				GenericName(Identifier("Field"))
-					.WithTypeArgumentList(
-						TypeArgumentList(
-							SingletonSeparatedList<TypeSyntax>(IdentifierName(bqlFieldName))));
-
-			var newBaseType =
-				SimpleBaseType(
-					QualifiedName(
-						QualifiedName(
-							QualifiedName(
-								QualifiedName(
-									IdentifierName("PX"),
-									IdentifierName("Data")),
-									IdentifierName("BQL")),
-									IdentifierName(bqlTypeName)),
-						fieldTypeNode));
-
-			return newBaseType;
 		}
 
 		private Document GetDocumentWithUpdatedBqlField(Document oldDocument, SyntaxNode root, ClassDeclarationSyntax classNode, SimpleBaseTypeSyntax newBaseType)
