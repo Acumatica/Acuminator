@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		private void ReportDacPropertyWithoutBqlField(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dac, 
 													  DacFieldInfo dacField)
 		{
-			Location? location = GetLocationToReport(dac, dacField);
+			var (location, registerCodeFix) = GetLocationToReportAndCodeFixRegistration(dac, dacField);
 
 			if (location == null)
 				return;
@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			var properties = ImmutableDictionary<string, string>.Empty;
 			string? propertyTypeName = dacField.EffectivePropertyType?.GetSimplifiedName();
 
-			if (dacField.PropertyInfo?.IsInSource == true && propertyTypeName != null)
+			if (registerCodeFix && propertyTypeName != null)
 			{
 				properties = new Dictionary<string, string>
 				{
@@ -62,17 +62,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
 
-		private Location? GetLocationToReport(DacSemanticModel dac, DacFieldInfo dacField)
+		private (Location? Location, bool RegisterCodeFix) GetLocationToReportAndCodeFixRegistration(DacSemanticModel dac, DacFieldInfo dacField)
 		{
-			if (dacField.PropertyInfo?.IsInSource == true)
+			if (dacField.PropertyInfo?.IsInSource == true && dacField.IsDeclaredInType(dac.Symbol))
 			{
-				return dacField.PropertyInfo.Node.Identifier.GetLocation() ??
-					   dacField.PropertyInfo.Node.GetLocation() ??
-					   dac.Node!.Identifier.GetLocation();
+				var location = dacField.PropertyInfo.Node.Identifier.GetLocation() ??
+							   dacField.PropertyInfo.Node.GetLocation() ??
+							   dac.Node!.Identifier.GetLocation();
+
+				return (location, RegisterCodeFix: true);
 			}
 
 			// Node is not null because aggregated DAC analysis runs only on DACs from the source code
-			return dac.Node!.Identifier.GetLocation();
+			return (dac.Node!.Identifier.GetLocation(), RegisterCodeFix: false);
 		}
 	}
 }
