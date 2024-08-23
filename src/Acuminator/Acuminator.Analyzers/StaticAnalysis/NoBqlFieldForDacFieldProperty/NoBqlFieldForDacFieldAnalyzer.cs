@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -40,11 +41,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		{
 			Location? location = GetLocationToReport(dac, dacField);
 
-			if (location != null)
+			if (location == null)
+				return;
+
+			var properties = ImmutableDictionary<string, string>.Empty;
+
+			if (dacField.PropertyInfo?.IsInSource == true && dacField.EffectivePropertyType?.Name is not null)
 			{
-				var diagnostic = Diagnostic.Create(Descriptors.PX1065_NoBqlFieldForDacFieldProperty, location, dacField.Name);
-				symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+				properties = new Dictionary<string, string>
+				{
+					{ DiagnosticProperty.RegisterCodeFix, bool.TrueString },
+					{ DiagnosticProperty.DacFieldName,	  dacField.Name },
+					{ DiagnosticProperty.PropertyType,	  dacField.EffectivePropertyType.Name }
+				}
+				.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
 			}
+
+			var diagnostic = Diagnostic.Create(Descriptors.PX1065_NoBqlFieldForDacFieldProperty, location, properties, dacField.Name);
+			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
 
 		private Location? GetLocationToReport(DacSemanticModel dac, DacFieldInfo dacField)
