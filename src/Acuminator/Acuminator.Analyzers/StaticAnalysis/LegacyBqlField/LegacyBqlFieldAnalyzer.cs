@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				if (location == null || !dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
 					continue;
 
-				string? propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
+				string? propertyTypeName = property.EffectivePropertyType.GetSimplifiedName();
 
 				if (propertyTypeName == null || !PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(propertyTypeName))
 					continue;
@@ -50,14 +50,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 					pxContext.CodeAnalysisSettings);
 			}
 		}
-
-		private static string? GetPropertyTypeName(IPropertySymbol property, PXContext pxContext) =>
-			property.Type switch
-			{
-				IArrayTypeSymbol arrType                                        => arrType.ElementType.Name + "[]",
-				INamedTypeSymbol namedType when namedType.IsNullable(pxContext) => namedType.GetUnderlyingTypeFromNullable(pxContext)?.Name,
-				INamedTypeSymbol namedType                                      => namedType.Name,
-				_                                                               => null,
-			};
 	}
 }
