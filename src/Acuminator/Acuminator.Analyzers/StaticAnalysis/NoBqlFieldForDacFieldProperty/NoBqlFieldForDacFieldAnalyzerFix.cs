@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!diagnostic.IsRegisteredForCodeFix() ||
-				!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacName, out string? dacFieldame) ||
+				!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacFieldName, out string? dacFieldame) ||
 				dacFieldame.IsNullOrWhiteSpace())
 			{
 				return Task.CompletedTask;
