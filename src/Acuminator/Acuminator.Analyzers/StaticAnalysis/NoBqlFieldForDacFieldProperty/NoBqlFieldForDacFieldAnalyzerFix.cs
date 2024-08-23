@@ -128,7 +128,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 			if (members.Count == 0)
 			{
-				var newSingleBqlFieldNode = CodeGeneration.GenerateBqlField(propertyType, bqlFieldName, isFirstField: true);
+				var newSingleBqlFieldNode = CodeGeneration.GenerateBqlField(propertyWithoutBqlFieldNode, propertyType, 
+																			bqlFieldName, isFirstField: true);
 				return newSingleBqlFieldNode != null
 					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
 					: null;
@@ -139,9 +140,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (propertyMemberIndex < 0)
 				propertyMemberIndex = 0;
 
-			var newBqlFieldNode = CodeGeneration.GenerateBqlField(propertyType, bqlFieldName, isFirstField: propertyMemberIndex == 0);
-			var newMembers = members.Insert(propertyMemberIndex, newBqlFieldNode);
+			var newBqlFieldNode = CodeGeneration.GenerateBqlField(propertyWithoutBqlFieldNode, propertyType, bqlFieldName, 
+																  isFirstField: propertyMemberIndex == 0);
+			var propertyWithoutRegions = RemoveRegionsFromPropertyTrivia(propertyWithoutBqlFieldNode);
+			var newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions)
+									.Insert(propertyMemberIndex, newBqlFieldNode);
 			return newMembers;
+		}
+
+		private PropertyDeclarationSyntax RemoveRegionsFromPropertyTrivia(PropertyDeclarationSyntax property)
+		{
+			var leadingTrivia = property.GetLeadingTrivia();
+
+			if (leadingTrivia.Count == 0)
+				return property;
+
+			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
+
+			if (regionTrivias.Count == 0)
+				return property;
+
+			var newLeadingTrivia = leadingTrivia.Except(regionTrivias);
+			return property.WithLeadingTrivia(newLeadingTrivia);
 		}
 	}
 }

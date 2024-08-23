@@ -4,6 +4,7 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -42,7 +43,7 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 								ParseName(namespaceName)));
 		}
 
-		public static ClassDeclarationSyntax? GenerateBqlField(string propertyTypeName, string bqlFieldName,
+		public static ClassDeclarationSyntax? GenerateBqlField(PropertyDeclarationSyntax? property, string propertyTypeName, string bqlFieldName,
 															   bool isFirstField)
 		{
 			var bqlFieldBaseTypeNode = BaseTypeForBqlField(propertyTypeName, bqlFieldName);
@@ -67,6 +68,10 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 				: Token(leading: TriviaList(Space), SyntaxKind.CloseBraceToken, TriviaList(CarriageReturn, LineFeed));
 
 			bqlFieldNode = bqlFieldNode.WithCloseBraceToken(clostBracketToken);
+
+			if (property != null)
+				bqlFieldNode = CopyRegionsFromProperty(bqlFieldNode, property);
+
 			return bqlFieldNode;
 		}
 
@@ -101,6 +106,25 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 						fieldTypeNode));
 
 			return newBaseType;
+		}
+
+		private static ClassDeclarationSyntax CopyRegionsFromProperty(ClassDeclarationSyntax bqlFieldNode, PropertyDeclarationSyntax property)
+		{
+			var leadingTrivia = property.GetLeadingTrivia();
+
+			if (leadingTrivia.Count == 0)
+				return bqlFieldNode;
+
+			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
+
+			if (regionTrivias.Count == 0)
+				return bqlFieldNode;
+
+			var regionsTrivia = TriviaList(regionTrivias);
+			var bqlFieldNodeLeadingTrivia = bqlFieldNode.GetLeadingTrivia();
+			var newBqlFieldNodeTrivia = bqlFieldNodeLeadingTrivia.AddRange(regionsTrivia);
+
+			return bqlFieldNode.WithLeadingTrivia(newBqlFieldNodeTrivia);
 		}
 	}
 }
