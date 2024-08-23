@@ -42,7 +42,8 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 								ParseName(namespaceName)));
 		}
 
-		public static ClassDeclarationSyntax? GenerateBqlField(string propertyTypeName, string bqlFieldName)
+		public static ClassDeclarationSyntax? GenerateBqlField(string propertyTypeName, string bqlFieldName,
+															   bool isFirstField)
 		{
 			var bqlFieldBaseTypeNode = BaseTypeForBqlField(propertyTypeName, bqlFieldName);
 
@@ -51,13 +52,22 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 
 			var baseTypesListNode = BaseList(
 										SingletonSeparatedList<BaseTypeSyntax>(bqlFieldBaseTypeNode));
-			var bqlFieldTypeNode = ClassDeclaration(
-										attributeLists: default, 
-										TokenList(
-											Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AbstractKeyword)),
-										Identifier(bqlFieldName), typeParameterList: null, baseTypesListNode,
-										constraintClauses: default, members: default);
-			return bqlFieldTypeNode;
+			var bqlFieldNode = ClassDeclaration(
+									attributeLists: default,
+									TokenList(
+										Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AbstractKeyword)),
+									Identifier(bqlFieldName), typeParameterList: null, baseTypesListNode,
+									constraintClauses: default, members: default)
+								.WithOpenBraceToken(
+									Token(leading: TriviaList(), SyntaxKind.OpenBraceToken, TriviaList()));
+
+			var clostBracketToken = isFirstField
+				? Token(leading: TriviaList(Space), SyntaxKind.CloseBraceToken, 
+						TriviaList(CarriageReturn, LineFeed, CarriageReturn, LineFeed))
+				: Token(leading: TriviaList(Space), SyntaxKind.CloseBraceToken, TriviaList(CarriageReturn, LineFeed));
+
+			bqlFieldNode = bqlFieldNode.WithCloseBraceToken(clostBracketToken);
+			return bqlFieldNode;
 		}
 
 		public static SimpleBaseTypeSyntax? BaseTypeForBqlField(string propertyTypeName, string bqlFieldName)
@@ -74,7 +84,10 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 				GenericName(Identifier("Field"))
 					.WithTypeArgumentList(
 						TypeArgumentList(
-							SingletonSeparatedList<TypeSyntax>(IdentifierName(bqlFieldName))));
+							SingletonSeparatedList<TypeSyntax>(IdentifierName(bqlFieldName)))
+						.WithGreaterThanToken(
+							Token(leading: TriviaList(), SyntaxKind.GreaterThanToken, TriviaList(Space))));
+
 			var newBaseType =
 				SimpleBaseType(
 					QualifiedName(

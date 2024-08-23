@@ -109,12 +109,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (dacNode == null)
 				return document;
 
-			var newBqlFieldNode = CodeGeneration.GenerateBqlField(propertyType, bqlFieldName);
-			
-			if (newBqlFieldNode == null)
-				return document;
-
-			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, newBqlFieldNode);
+			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, propertyType);
 
 			if (newDacMembers == null)
 				return document;
@@ -127,18 +122,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 		private SyntaxList<MemberDeclarationSyntax>? CreateMembersListWithBqlField(ClassDeclarationSyntax dacNode, 
 																				   PropertyDeclarationSyntax propertyWithoutBqlFieldNode,
-																				   ClassDeclarationSyntax newBqlFieldNode)
+																				   string bqlFieldName, string propertyType)
 		{
 			var members = dacNode.Members;
 
 			if (members.Count == 0)
-				return SingletonList<MemberDeclarationSyntax>(newBqlFieldNode);
+			{
+				var newSingleBqlFieldNode = CodeGeneration.GenerateBqlField(propertyType, bqlFieldName, isFirstField: true);
+				return newSingleBqlFieldNode != null
+					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
+					: null;
+			}
 
 			int propertyMemberIndex = dacNode.Members.IndexOf(propertyWithoutBqlFieldNode);
 
 			if (propertyMemberIndex < 0)
 				propertyMemberIndex = 0;
 
+			var newBqlFieldNode = CodeGeneration.GenerateBqlField(propertyType, bqlFieldName, isFirstField: propertyMemberIndex == 0);
 			var newMembers = members.Insert(propertyMemberIndex, newBqlFieldNode);
 			return newMembers;
 		}
