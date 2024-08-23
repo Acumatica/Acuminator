@@ -81,11 +81,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			string bqlFieldName = dacFieldame.FirstCharToLower();
+
+			// equivalence key should not contain format arguments to allow mass code fixes
+			string equivalenceKey = nameof(Resources.PX1065FixFormat).GetLocalized().ToString();
 			string codeActionName = nameof(Resources.PX1065FixFormat).GetLocalized(bqlFieldName).ToString();
 			var codeAction = CodeAction.Create(codeActionName,
 											   cToken => AddBqlFieldAsync(context.Document, bqlFieldName, propertyType,
 																		  context.Span, cToken),
-											   equivalenceKey: codeActionName);
+											   equivalenceKey);
 			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
