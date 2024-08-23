@@ -45,10 +45,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 				return;
 
 			string codeActionName = nameof(Resources.PX1012Fix).GetLocalized(mainDacName).ToString();
+			string equivalenceKey = nameof(Resources.PX1012Fix).GetLocalized().ToString();
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
 								  cToken => ChangePXActionDeclarationAsync(context.Document, context.Span, cToken, mainDacType),
-								  equivalenceKey: codeActionName);
+								  equivalenceKey);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
 		}
