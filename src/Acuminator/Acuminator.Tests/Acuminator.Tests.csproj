@@ -275,6 +275,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationCorrect_MessagePassedFromPXExceptionInfo.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationPXExceptionInfoWithHardcodedStrings.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\Override_DacAndBaseGraph.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\DacWithoutBqlFields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\DacWithoutBqlFields_Expected.cs" />
+    <Compile Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\NoBqlFieldForDacFieldPropertyTests.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
