@@ -283,6 +283,7 @@
     <Compile Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\NoBqlFieldForDacFieldPropertyTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\DacWithBqlFieldMissingInBaseDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\DacWithBqlFieldMissingInBaseDac_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\DacWithBqlFieldMissingInExternalBaseDac.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
