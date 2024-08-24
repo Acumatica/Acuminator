@@ -80,5 +80,8 @@ namespace PX.Analyzers.Test.Sources
 		[PXDBBinary]
 		public Byte[] BinaryField2 { get; set; }
 		#endregion
+
+		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+		public bool HasGuidField => GuidField != null;
 	}
 }
