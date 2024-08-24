@@ -13,10 +13,12 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell;
 
 using Document = Microsoft.CodeAnalysis.Document;
 using Shell = Microsoft.VisualStudio.Shell;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
+using Task = System.Threading.Tasks.Task;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -103,7 +105,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		protected async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
 			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			IComponentModel? componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>();
+			IComponentModel? componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>(throwOnFailure: false);
 
 			if (componentModel == null)
 				return [];
