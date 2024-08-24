@@ -85,7 +85,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			node.ThrowOnNull();
 
 			int depth = 0;
-			SyntaxNode curNode = node.Parent;
+			SyntaxNode? curNode = node.Parent;
 
 			while (curNode != null)
 			{
@@ -113,7 +113,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				return 0;
 
 			int depth = 0;
-			SyntaxNode curNode = node.Parent;
+			SyntaxNode? curNode = node.Parent;
 
 			while (curNode != null && curNode is not TRoot)
 			{
@@ -155,32 +155,32 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return depth;
 		}
 
-		public static SyntaxNode LowestCommonAncestor(SyntaxNode nodeX, SyntaxNode nodeY)
+		public static SyntaxNode? LowestCommonAncestor(SyntaxNode nodeX, SyntaxNode nodeY)
 		{
 			int depthX = nodeX.Depth();            //Depth is average O(log n) operation, worst case is O(n) but it isn't the case for the syntax tree which is wide but not very deep
 			int depthY = nodeY.Depth();
 
-			SyntaxNode currentX = nodeX;
-			SyntaxNode currentY = nodeY;
+			SyntaxNode? currentX = nodeX;
+			SyntaxNode? currentY = nodeY;
 
 			while (depthX != depthY)                //First get nodes on the equal levels of depth
 			{
 				if (depthX > depthY)
 				{
-					currentX = currentX.Parent;
+					currentX = currentX?.Parent;
 					depthX--;
 				}
 				else
 				{
-					currentY = currentY.Parent;
+					currentY = currentY?.Parent;
 					depthY--;
 				}
 			}
 
 			while (!Equals(currentX, currentY))          //Then move up the branches until nodes coincide
 			{
-				currentX = currentX.Parent;
-				currentY = currentY.Parent;
+				currentX = currentX?.Parent;
+				currentY = currentY?.Parent;
 			}
 
 			return currentX;

@@ -98,7 +98,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					Candidates = new Stack<(StatementSyntax, int?)>(capacity: 2);
 				}
 
-				public override void Visit(SyntaxNode node)
+				public override void Visit(SyntaxNode? node)
 				{
 					if (IsCancelationRequested)
 					{
@@ -209,7 +209,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					try
 					{
-						ControlFlowAnalysis controlFlow = _resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
+						ControlFlowAnalysis? controlFlow = invocation.GetStatementNode() is StatementSyntax statement
+							? _resolver.SemanticModel.AnalyzeControlFlow(statement)
+							: null;
 
 						if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
 							return true;

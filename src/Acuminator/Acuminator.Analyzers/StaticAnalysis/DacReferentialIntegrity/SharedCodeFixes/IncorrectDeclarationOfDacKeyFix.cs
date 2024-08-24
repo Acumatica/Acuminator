@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
             var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
 
             if (diagnostic == null || diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null ||
-				!diagnostic.IsRegisteredForCodeFix() || !diagnostic.Properties.TryGetValue(nameof(RefIntegrityDacKeyType), out string dacKeyTypeString) ||
+				!diagnostic.IsRegisteredForCodeFix() || !diagnostic.Properties.TryGetValue(nameof(RefIntegrityDacKeyType), out string? dacKeyTypeString) ||
                 dacKeyTypeString.IsNullOrWhiteSpace() || !Enum.TryParse(dacKeyTypeString, out RefIntegrityDacKeyType dacKeyType))
             {
                 return;
@@ -100,7 +100,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private void RegisterCodeFixForUniqueKeys(CodeFixContext context, ClassDeclarationSyntax dacNode, SyntaxNode root, ClassDeclarationSyntax keyNode, 
 												  Diagnostic diagnostic)
 		{
-			bool isMultipleUniqueKeysFix = diagnostic.Properties.TryGetValue(nameof(UniqueKeyCodeFixType), out string uniqueCodeFixTypeString) &&
+			bool isMultipleUniqueKeysFix = diagnostic.Properties.TryGetValue(nameof(UniqueKeyCodeFixType), out string? uniqueCodeFixTypeString) &&
 										   !uniqueCodeFixTypeString.IsNullOrWhiteSpace() &&
 										   Enum.TryParse(uniqueCodeFixTypeString, out UniqueKeyCodeFixType uniqueCodeFixType) &&
 										   uniqueCodeFixType == UniqueKeyCodeFixType.MultipleUniqueKeys;
@@ -155,14 +155,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 
 			SyntaxNode trackingRoot = root.TrackNodes(dacNode, keyNode);
-			keyNode = trackingRoot.GetCurrentNode(keyNode);
+			keyNode = trackingRoot.GetCurrentNode(keyNode)!;
 
 			if (keyNode == null)
 				return document;
 
-			trackingRoot = trackingRoot.RemoveNode(keyNode, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);
+			trackingRoot = trackingRoot.RemoveNode(keyNode, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives)!;
 			cancellation.ThrowIfCancellationRequested();
-			dacNode = trackingRoot.GetCurrentNode(dacNode);
+			dacNode = trackingRoot.GetCurrentNode(dacNode)!;
 
 			if (dacNode == null)
 				return document;
@@ -213,13 +213,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			var nodesToTrack = keyNodesNotInContainer.Concat(keysContainerNode.ToEnumerable());
 			SyntaxNode trackingRoot = root.TrackNodes(nodesToTrack);
-			var keyNodesInChangedTree = keyNodesNotInContainer.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
-															  .Where(keyNode => keyNode != null)
-															  .ToList(capacity: keyNodesNotInContainer.Count);
+			List<ClassDeclarationSyntax> keyNodesInChangedTree = keyNodesNotInContainer
+																	.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
+																	.Where(keyNode => keyNode != null)
+																	.ToList(capacity: keyNodesNotInContainer.Count)!;
 			if (keyNodesInChangedTree.Count == 0)
 				return root;
 
-			trackingRoot = trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);	
+			trackingRoot = trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives)!;
 			
 			var keysContainerNodeInChangedTree = trackingRoot.GetCurrentNode(keysContainerNode);
 
@@ -241,7 +242,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			var nodesToTrack = keyNodesNotInContainer.Concat(dacNode.ToEnumerable());
 			SyntaxNode trackingRoot = root.TrackNodes(nodesToTrack);
-			dacNode = trackingRoot.GetCurrentNode(dacNode);
+			dacNode = trackingRoot.GetCurrentNode(dacNode)!;
 
 			if (dacNode == null)
 				return root;
@@ -252,19 +253,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var generator = SyntaxGenerator.GetGenerator(document);
 			var keysContainerNode = CreateKeysContainerClassNode(generator, containerName, keyNodesNotInContainer)
-															.WithAdditionalAnnotations(Formatter.Annotation);
+										?.WithAdditionalAnnotations(Formatter.Annotation);
 			var newDacNode = generator.InsertMembers(dacNode, positionToInsertKeysContainer, keysContainerNode);
 
 			cancellation.ThrowIfCancellationRequested();
 
 			trackingRoot = trackingRoot.ReplaceNode(dacNode, newDacNode);
-			var keyNodesInChangedTree = keyNodesNotInContainer.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
-															  .Where(keyNode => keyNode != null)
-															  .ToList(capacity: keyNodesNotInContainer.Count);
+			List<ClassDeclarationSyntax> keyNodesInChangedTree = keyNodesNotInContainer
+																	.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
+																	.Where(keyNode => keyNode != null)
+																	.ToList(capacity: keyNodesNotInContainer.Count)!;
 			if (keyNodesInChangedTree.Count == 0)
 				return root;
 
-			return trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);
+			return trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives)!;
 		}
 
 		private int GetPositionToInsertUKContainer(ClassDeclarationSyntax dacNode)

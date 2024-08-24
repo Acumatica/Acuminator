@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				return;
 
 			bool registerCodeFix = RegisterCodeFix(methodDeclaration, selectInvocation);
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}.ToImmutableDictionary();
@@ -92,7 +92,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 		private static ILocalSymbol? GetReferenceToStartRow(MethodDeclarationSyntax methodDeclaration, SemanticModel semanticModel,
 															PXContext pxContext, CancellationToken cancellationToken)
 		{
-			DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(methodDeclaration.Body);
+			DataFlowAnalysis? df = semanticModel.AnalyzeDataFlow(methodDeclaration.Body!);
 
 			if (df == null || !df.Succeeded || cancellationToken.IsCancellationRequested)
 				return null;
@@ -140,7 +140,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 			foreach (InvocationExpressionSyntax invocation in invocationsWithStartRowPassedArg)
 			{
-				var symbol = (IMethodSymbol)semanticModel.GetSymbolInfo(invocation, cancellationToken).Symbol;
+				var symbol = semanticModel.GetSymbolInfo(invocation, cancellationToken).Symbol as IMethodSymbol;
 
 				if (cancellationToken.IsCancellationRequested)
 					return default;
@@ -171,7 +171,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			{
 				if (memberAccess.Parent is AssignmentExpressionSyntax assigment &&
 					assigment.Right is LiteralExpressionSyntax literalExpression &&
-					literalExpression.Token.Value.ToString() == "0")
+					literalExpression.Token.Value?.ToString() == "0")
 				{
 					lastAssigment = assigment;
 				}
@@ -188,8 +188,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				return false;
 
 			int selectInvocationEnd = selectInvocation.Span.End;
-			var statements = methodDeclaration.Body.DescendantNodesAndSelf()
-												   .OfType<StatementSyntax>();
+			var statements = methodDeclaration.Body!.DescendantNodesAndSelf()
+													.OfType<StatementSyntax>();
 
 			foreach (StatementSyntax statement in statements)
 			{
