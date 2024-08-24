@@ -23,7 +23,6 @@ using Acuminator.Utilities.Common;
 
 using FbqlCommand = PX.Data.BQL.Fluent.FbqlCommand;
 
-
 namespace Acuminator.Tests.Verification
 {
 	public static class VerificationHelper
@@ -48,7 +47,10 @@ namespace Acuminator.Tests.Verification
 
 		private static readonly MetadataReference[] DotNetReferences;
 		private static readonly MetadataReference[] MetadataReferences;
-			
+		
+		private static readonly MetadataReference ExternalDependencyReference = 
+			MetadataReference.CreateFromFile(typeof(ExternalDependency.NoBqlFieldForDacFieldProperty.BaseDacWithoutBqlField).Assembly.Location);
+
 		static VerificationHelper()
 		{
 			List<MetadataReference> dotNetReferences = new(capacity: 5);
@@ -60,16 +62,17 @@ namespace Acuminator.Tests.Verification
 			AddMetadataReferenceIfDllExists(dotNetReferences, "System.Runtime.dll");
 
 			DotNetReferences = dotNetReferences.ToArray();
-			MetadataReferences = DotNetReferences.Concat(new[]
-			{
+			MetadataReferences = DotNetReferences.Concat(
+			[
 				CSharpSymbolsReference,
 				CodeAnalysisReference,
 				PXDataReference,
 				PXCommonReference,
 				PXCommonStdReference,
 				PXObjectsReference,
-				FluentBqlReference
-			})
+				FluentBqlReference,
+				ExternalDependencyReference
+			])
 			.ToArray();
 		}
 

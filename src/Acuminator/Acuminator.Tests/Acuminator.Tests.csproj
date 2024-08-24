@@ -839,6 +839,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FormatterTests.playlist" />
+    <Content Include="ExternalDependency\Dll\ExternalDependency.dll" />
     <Content Include="Tests\DiagnosticSuppression\SuppressionFileIO\Examples\PX.Objects.acuminator" />
   </ItemGroup>
   <ItemGroup>
