@@ -100,7 +100,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (node == null)
 				return null;
 
-			SyntaxNode current = node;
+			SyntaxNode? current = node;
 
 			while (current != null && current is not StatementSyntax)
 			{
@@ -132,7 +132,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 		public static StatementSyntax? GetNextStatement(this StatementSyntax? statement)
 		{
-			if (statement == null)
+			if (statement?.Parent == null)
 				return null;
 
 			using var enumerator = statement.Parent.ChildNodes()
@@ -150,7 +150,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 					}
 					else
 					{
-						switch (curStatement.Parent.Parent.Kind())
+						switch (curStatement.Parent?.Parent?.Kind())
 						{
 							case SyntaxKind.MethodDeclaration:
 							case SyntaxKind.OperatorDeclaration:

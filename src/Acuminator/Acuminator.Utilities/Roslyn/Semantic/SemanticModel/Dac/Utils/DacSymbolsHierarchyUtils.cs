@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
                 return [];
             }
 
-            var extensionBaseType = dacExtension.BaseType;
+            var extensionBaseType = dacExtension.BaseType!;
             var typeArguments = extensionBaseType.TypeArguments;
             var dacType = typeArguments.LastOrDefault();
 

@@ -107,7 +107,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				var attributes = symbolToCheck.GetAttributes();
 				return attributes.IsDefaultOrEmpty
 					? false
-					: attributes.Any(a => a.AttributeClass.Equals(attributeType));
+					: attributes.Any(a => a.AttributeClass?.Equals(attributeType) ?? false);
 			}
 
 			bool HasDerivedAttribute(TSymbol symbolToCheck)
@@ -115,7 +115,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				var attributes = symbolToCheck.GetAttributes();
 				return attributes.IsDefaultOrEmpty
 					? false
-					: attributes.Any(a => a.AttributeClass.InheritsFromOrEquals(attributeType));
+					: attributes.Any(a => a.AttributeClass?.InheritsFromOrEquals(attributeType) ?? false);
 			}
 		}
 

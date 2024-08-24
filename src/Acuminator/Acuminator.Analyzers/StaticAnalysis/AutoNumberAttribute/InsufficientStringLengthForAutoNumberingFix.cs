@@ -30,8 +30,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
-																.ConfigureAwait(false);
+			SemanticModel? semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
+																 .ConfigureAwait(false);
 			if (semanticModel == null)
 				return;
 
@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		private async Task<Document> MakeStringLengthSufficientForAutoNumberingAsync(Document document, TextSpan diagnosticSpan, 
 																					 int minLengthForAutoNumbering, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			AttributeArgumentSyntax? attributeArgument = GetAttributeArgumentNodeToBeReplaced(root, diagnosticSpan);
 
 			if (attributeArgument == null || cancellationToken.IsCancellationRequested)
@@ -62,11 +62,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			if (modifiedArgument == null)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(attributeArgument, modifiedArgument);
+			var modifiedRoot = root!.ReplaceNode(attributeArgument, modifiedArgument);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}		
 
-		private AttributeArgumentSyntax? GetAttributeArgumentNodeToBeReplaced(SyntaxNode root, TextSpan diagnosticSpan)
+		private AttributeArgumentSyntax? GetAttributeArgumentNodeToBeReplaced(SyntaxNode? root, TextSpan diagnosticSpan)
 		{
 			SyntaxNode? node = root?.FindNode(diagnosticSpan);
 
@@ -85,6 +85,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 
 		private AttributeArgumentSyntax? SearchForAttributeArgumentToBeReplaced(AttributeSyntax attribute)
 		{
+			if (attribute.ArgumentList == null)
+				return null;
+
 			var arguments = attribute.ArgumentList.Arguments;
 			var candidateAttributes = new List<AttributeArgumentSyntax>(capacity: 1);
 
