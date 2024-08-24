@@ -81,8 +81,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 				: null;
 		}
 
-		private (string FormatArg, ImmutableDictionary<string, string>? Properties)? GetDiagnosticFormatArgsAndProperties(ISymbol staticFieldOrProperty,
-																														  bool isView, bool isAction)
+		private (string FormatArg, ImmutableDictionary<string, string?>? Properties)? GetDiagnosticFormatArgsAndProperties(ISymbol staticFieldOrProperty,
+																														   bool isView, bool isAction)
 		{
 			if (isView)
 			{
@@ -110,9 +110,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			}
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(bool isViewOrAction, bool isProperty, string codeFixFormatArg)
+		private ImmutableDictionary<string, string?> CreateDiagnosticProperties(bool isViewOrAction, bool isProperty, string codeFixFormatArg)
 		{
-			var properties = ImmutableDictionary.CreateBuilder<string, string>();
+			var properties = ImmutableDictionary.CreateBuilder<string, string?>();
 			properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, codeFixFormatArg);
 
 			if (isViewOrAction)

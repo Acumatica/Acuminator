@@ -57,8 +57,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			if (semanticModel == null)
 				return graph.Node.Identifier.GetLocation();
 
-			var baseClassesTypeNodes = graph.Node.BaseList.Types.Select(baseTypeNode => baseTypeNode.Type)
-																.OfType<GenericNameSyntax>();
+			var baseClassesTypeNodes = graph.Node.BaseList!.Types.Select(baseTypeNode => baseTypeNode.Type)
+																 .OfType<GenericNameSyntax>();
 
 			foreach (GenericNameSyntax baseClassTypeNode in baseClassesTypeNodes)
 			{

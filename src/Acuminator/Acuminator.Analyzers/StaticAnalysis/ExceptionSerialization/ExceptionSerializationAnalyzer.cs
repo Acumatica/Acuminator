@@ -108,7 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			var allBackingFieldsByAssociatedSymbols = members.OfType<IFieldSymbol>()
 															 .Where(field => !field.IsStatic && !field.IsConst && field.AssociatedSymbol != null)
 															 .GroupBy(field => field.AssociatedSymbol)
-															 .ToDictionary(groupedByAssociatedSymbol => groupedByAssociatedSymbol.Key,
+															 .ToDictionary(groupedByAssociatedSymbol => groupedByAssociatedSymbol.Key!,
 																		   groupedByAssociatedSymbol => groupedByAssociatedSymbol.First());
 			return from member in members
 				   where member.IsExplicitlyDeclared() && exceptionType.Equals(member.ContainingType) &&
@@ -154,9 +154,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 																  bool hasNewSerializableData)
 		{
 			var diagnosticPropertes =
-				ImmutableDictionary<string, string>.Empty
-												   .Add(ExceptionSerializationDiagnosticProperties.HasNewDataForSerialization, 
-														hasNewSerializableData.ToString());
+				ImmutableDictionary<string, string?>.Empty
+													.Add(ExceptionSerializationDiagnosticProperties.HasNewDataForSerialization, 
+														 hasNewSerializableData.ToString());
 
 			var diagnostic = Diagnostic.Create(Descriptors.PX1063_NoSerializationConstructorInException, location, diagnosticPropertes);
 			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);

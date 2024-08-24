@@ -27,12 +27,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1010_StartRowResetForPaging.Id);
+			Diagnostic? diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1010_StartRowResetForPaging.Id);
 
 			if (diagnostic?.IsRegisteredForCodeFix() != true || context.CancellationToken.IsCancellationRequested)
 				return;
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+			SyntaxNode? root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
 			var invocation = root?.FindNode(context.Span) as InvocationExpressionSyntax;
 
 			if (invocation == null)

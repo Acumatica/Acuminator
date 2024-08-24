@@ -130,8 +130,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 		private void RegisterCompanyPrefixDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
 		{
-			var diagnosticProperties = ImmutableDictionary<string, string>.Empty
-																		  .Add(DiagnosticProperty.RegisterCodeFix, bool.FalseString);
+			var diagnosticProperties = ImmutableDictionary<string, string?>.Empty
+																		   .Add(DiagnosticProperty.RegisterCodeFix, bool.FalseString);
 			context.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(
 					Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName, identifier.GetLocation(), diagnosticProperties),

@@ -66,17 +66,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 
 			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (_method?.Body == null)
+					return _document;
+
 				var semanticModel = await _document.GetSemanticModelAsync(cancellationToken)
 												   .ConfigureAwait(false);
-
-				if (semanticModel == null || cancellationToken.IsCancellationRequested)
+				if (semanticModel == null)
 					return _document;
 
 				var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 				var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken)
 											 .ConfigureAwait(false);
-
-				if (oldRoot == null || cancellationToken.IsCancellationRequested)
+				if (oldRoot == null)
 					return _document;
 
 				var newRoot = oldRoot;
@@ -90,7 +93,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				var newMethod = _method.WithReturnType(newReturnType)
 									   .WithParameterList(newParametersList);
 
-				ControlFlowAnalysis controlFlow = semanticModel.AnalyzeControlFlow(_method.Body);
+				ControlFlowAnalysis? controlFlow = semanticModel.AnalyzeControlFlow(_method.Body);
 
 				if (controlFlow != null && controlFlow.Succeeded && controlFlow.ReturnStatements.IsEmpty)
 				{

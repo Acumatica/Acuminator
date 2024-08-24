@@ -80,7 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 		private static CheckedSymbolKind? GetCheckedSymbolKind(Diagnostic diagnostic)
 		{
-			if (diagnostic.Properties.TryGetValue(nameof(CheckedSymbolKind), out string checkedSymbolKindStr) &&
+			if (diagnostic.TryGetPropertyValue(nameof(CheckedSymbolKind), out string? checkedSymbolKindStr) && !checkedSymbolKindStr.IsNullOrWhiteSpace() &&
 				Enum.TryParse(checkedSymbolKindStr, out CheckedSymbolKind checkedSymbolKind))
 			{
 				return checkedSymbolKind;

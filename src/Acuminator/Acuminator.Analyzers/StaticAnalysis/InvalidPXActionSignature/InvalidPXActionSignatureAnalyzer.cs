@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			foreach (IMethodSymbol method in actionHandlerWithBadSignature)
 			{
 				symbolContext.CancellationToken.ThrowIfCancellationRequested();
-				Location methodLocation = method.Locations.FirstOrDefault();
+				Location? methodLocation = method.Locations.FirstOrDefault();
 
 				if (methodLocation != null)
 				{

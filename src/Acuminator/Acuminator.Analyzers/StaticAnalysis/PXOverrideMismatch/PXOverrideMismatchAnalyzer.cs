@@ -99,7 +99,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 				if (methodsCompatibility == MethodsCompatibility.ParametersMatchWithDelegate)
 				{
-					if (pxOverrideMethod.Parameters[pxOverrideMethod.Parameters.Length - 1].Type is not INamedTypeSymbol @delegate || @delegate.TypeKind != TypeKind.Delegate)
+					if (pxOverrideMethod.Parameters[pxOverrideMethod.Parameters.Length - 1].Type is not INamedTypeSymbol @delegate || 
+						@delegate.TypeKind != TypeKind.Delegate)
 					{
 						return false;
 					}
@@ -112,9 +113,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 				return false;
 			}
 
-			private static bool CheckExactMatch(IMethodSymbol pxOverrideMethod, IMethodSymbol delegateInvokeMethod)
+			private static bool CheckExactMatch(IMethodSymbol pxOverrideMethod, IMethodSymbol? delegateInvokeMethod)
 			{
-				if (!pxOverrideMethod.ReturnType.Equals(delegateInvokeMethod.ReturnType))
+				if (delegateInvokeMethod == null || !pxOverrideMethod.ReturnType.Equals(delegateInvokeMethod.ReturnType))
 				{
 					return false;
 				}

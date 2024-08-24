@@ -114,7 +114,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 			var removeOptions = SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives;
 			var memberDeclarationWithRemovedTags = memberDeclaration.RemoveNodes(allNodesToDelete, removeOptions);
-			var newMemberDeclaration = AddInheritdocTagToDeclaration(memberDeclarationWithRemovedTags, inheritdocTag);
+			var newMemberDeclaration = AddInheritdocTagToDeclaration(memberDeclarationWithRemovedTags!, inheritdocTag);
 
 			return newMemberDeclaration;
 		}

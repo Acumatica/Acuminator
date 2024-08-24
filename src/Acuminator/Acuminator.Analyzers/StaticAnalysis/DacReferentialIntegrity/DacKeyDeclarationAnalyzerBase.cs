@@ -85,8 +85,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				if (usedDacFields.Count == 0)
 					continue;
 
-				var unboundDacFieldsInKey = usedDacFields.Where(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo dacProperty) &&
-																			dacProperty.DeclaredDbBoundness == DbBoundnessType.Unbound);
+				var unboundDacFieldsInKey = 
+					usedDacFields.Where(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo? dacProperty) &&
+													dacProperty.DeclaredDbBoundness == DbBoundnessType.Unbound);
 				ClassDeclarationSyntax? keyNode = null;
 
 				foreach (ITypeSymbol unboundDacFieldInKey in unboundDacFieldsInKey)
@@ -293,7 +294,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 
 			var additionalLocations = new[] { dacLocation };
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ nameof(RefIntegrityDacKeyType),  dacKeyType.ToString() }
 			};

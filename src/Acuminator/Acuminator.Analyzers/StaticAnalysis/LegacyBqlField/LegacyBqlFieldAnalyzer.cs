@@ -27,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (dacField.Symbol.BaseType.SpecialType != SpecialType.System_Object ||
+				if (dacField.Symbol.BaseType?.SpecialType != SpecialType.System_Object ||
 					dacField.Symbol.IsStronglyTypedBqlFieldOrBqlConstant(pxContext))
 				{
 					continue;
@@ -35,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 				Location? location = dacField.Symbol.Locations.FirstOrDefault();
 
-				if (location == null || !dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
+				if (location == null || !dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo? property))
 					continue;
 
 				string? propertyTypeName = property.EffectivePropertyType.GetSimplifiedName();
@@ -43,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				if (propertyTypeName == null || !PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(propertyTypeName))
 					continue;
 
-				var args = ImmutableDictionary.CreateBuilder<string, string>();
+				var args = ImmutableDictionary.CreateBuilder<string, string?>();
 				args.Add(DiagnosticProperty.PropertyType, propertyTypeName);
 				context.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacField.Name),

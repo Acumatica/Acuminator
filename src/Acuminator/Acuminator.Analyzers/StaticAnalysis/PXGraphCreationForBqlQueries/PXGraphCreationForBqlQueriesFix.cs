@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
@@ -40,12 +39,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				for (int i = 0;
 					diagnostic.Properties.TryGetValue(
 						PXGraphCreationForBqlQueriesAnalyzer.IdentifierNamePropertyPrefix + i,
-						out string value);
+						out string? value);
 					i++)
 				{
-					string identifierName = value;
+					string? identifierName = value;
 
-					if (identifierName.IsNullOrWhiteSpace()) continue;
+					if (identifierName.IsNullOrWhiteSpace()) 
+						continue;
 
 					string equivalenceKey = codeFixResourceName.GetLocalized().ToString();
 					string codeActionName = codeFixResourceName.GetLocalized(node.ToString(), identifierName.ToString()).ToString();

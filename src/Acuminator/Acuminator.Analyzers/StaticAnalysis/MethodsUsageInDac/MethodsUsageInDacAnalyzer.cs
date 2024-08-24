@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -43,33 +42,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 			}
 
 			HashSet<INamedTypeSymbol> whiteList = GetWhitelist(pxContext);
-			
+
 			foreach (DacPropertyInfo property in dac.AllDeclaredProperties)
 			{
 				AnalyzeMethodInvocationInDacProperty(property, whiteList, context, pxContext, semanticModel);
 			}
-		}	
+		}
 
-        private HashSet<INamedTypeSymbol> GetWhitelist(PXContext pxContext)
-        {
-            return new HashSet<INamedTypeSymbol>
-            {
-                pxContext.SystemTypes.Bool,
-                pxContext.SystemTypes.Byte,
-                pxContext.SystemTypes.Int16,
-                pxContext.SystemTypes.Int32,
-                pxContext.SystemTypes.Int64,
-                pxContext.SystemTypes.Decimal,
-                pxContext.SystemTypes.Float,
-                pxContext.SystemTypes.Double,
-                pxContext.SystemTypes.String.Type,
-                pxContext.SystemTypes.Guid,
-                pxContext.SystemTypes.DateTime,
-                pxContext.SystemTypes.TimeSpan,
-                pxContext.SystemTypes.Enum,
-                pxContext.SystemTypes.Nullable
-            };
-        }
+		private HashSet<INamedTypeSymbol> GetWhitelist(PXContext pxContext)
+		{
+			return new HashSet<INamedTypeSymbol>
+			{
+				pxContext.SystemTypes.Bool,
+				pxContext.SystemTypes.Byte,
+				pxContext.SystemTypes.Int16,
+				pxContext.SystemTypes.Int32,
+				pxContext.SystemTypes.Int64,
+				pxContext.SystemTypes.Decimal,
+				pxContext.SystemTypes.Float,
+				pxContext.SystemTypes.Double,
+				pxContext.SystemTypes.String.Type,
+				pxContext.SystemTypes.Guid,
+				pxContext.SystemTypes.DateTime,
+				pxContext.SystemTypes.TimeSpan,
+				pxContext.SystemTypes.Enum,
+				pxContext.SystemTypes.Nullable
+			};
+		}
 
 		private void AnalyzeMethodDeclarationInDac(MethodDeclarationSyntax method, SymbolAnalysisContext context, PXContext pxContext)
 		{
@@ -92,20 +91,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 
 				if (node is InvocationExpressionSyntax invocation)
 				{
-					ISymbol symbol = semanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol;
+					ISymbol? symbol = semanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol;
 
-                    if (symbol == null || !(symbol is IMethodSymbol method) || method.IsStatic || method.IsExtensionMethod)
-                        continue;
+					if (symbol is not IMethodSymbol method || method.IsStatic || method.IsExtensionMethod)
+						continue;
 
 					bool inWhitelist = whiteList.Contains(method.ContainingType) ||
 									   whiteList.Contains(method.ContainingType.ConstructedFrom);
-                    if (inWhitelist)
-                        continue;
+					if (inWhitelist)
+						continue;
 
-                    context.ReportDiagnosticWithSuppressionCheck(
+					context.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations, invocation.GetLocation()),
 						pxContext.CodeAnalysisSettings);
-                }
+				}
 				else if (node is ObjectCreationExpressionSyntax)
 				{
 					context.ReportDiagnosticWithSuppressionCheck(
@@ -113,6 +112,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 						pxContext.CodeAnalysisSettings);
 				}
 			}
-		}	
+		}
 	}
 }
