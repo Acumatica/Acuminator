@@ -79,21 +79,29 @@ namespace Acuminator.Tests.Verification
 			var document = CreateDocument(oldSource, language);
 			var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }, checkOnlyFirstDocument: true).ConfigureAwait(false);
 			var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false);
-			var attempts = analyzerDiagnostics.Length;
+			int attempts = analyzerDiagnostics.Length;
+			int diagnosticToUseIndex = 0;
 
 			for (int i = 0; i < attempts; ++i)
 			{
+				if (diagnosticToUseIndex > (analyzerDiagnostics.Length - 1))
+					break;
+
 				var actions = new List<CodeAction>();
-				var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+				var context = new CodeFixContext(document, analyzerDiagnostics[diagnosticToUseIndex], (a, d) => actions.Add(a), CancellationToken.None);
 				await codeFixProvider.RegisterCodeFixesAsync(context).ConfigureAwait(false);
 
 				if (!actions.Any())
 				{
-					break;
+					diagnosticToUseIndex++;		// increase diagnostic counter to try next found diagnostic
+					continue;
 				}
 
 				document = await ApplyCodeActionAsync(document, actions.ElementAt(codeFixIndex)).ConfigureAwait(false);		
-				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }, checkOnlyFirstDocument: true).ConfigureAwait(false);
+				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, [document], checkOnlyFirstDocument: true).ConfigureAwait(false);
+
+				// Reset diagnostic index to use to try first diagnostic again
+				diagnosticToUseIndex = 0;
 
 				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
 
