@@ -102,7 +102,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				suppressionCodeActions.Add(suppressWithSuppressionFileCodeAction);
 			}
 
-			return CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions.ToImmutable());
+			return CodeAction.Create(groupCodeActionName, suppressionCodeActions.ToImmutable(), isInlinable: false);
 		}
 
 		protected virtual CodeAction GetSuppressWithCommentCodeAction(Diagnostic diagnostic, CodeFixContext context, bool isNested)
@@ -171,11 +171,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			SyntaxNode? modifiedRoot;
 
 			if (leadingTrivia.Count > 0)
-				modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), suppressionCommentTrivias);
+				modifiedRoot = root!.InsertTriviaAfter(leadingTrivia.Last(), suppressionCommentTrivias);
 			else
 			{
 				var nodeWithSuppressionComment = nodeToPlaceComment.WithLeadingTrivia(suppressionCommentTrivias);
-				modifiedRoot = root.ReplaceNode(nodeToPlaceComment, nodeWithSuppressionComment);
+				modifiedRoot = root!.ReplaceNode(nodeToPlaceComment, nodeWithSuppressionComment);
 			}
 
 			return modifiedRoot != null

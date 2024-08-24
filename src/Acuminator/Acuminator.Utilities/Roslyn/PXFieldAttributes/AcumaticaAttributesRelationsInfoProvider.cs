@@ -258,7 +258,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			var allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy = 
 				attributeType.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes()
-							 .Where(application => application.AttributeClass.InheritsFrom(eventSubscriberAttribute));
+							 .Where(application => application.AttributeClass != null && 
+												   application.AttributeClass.InheritsFrom(eventSubscriberAttribute));
 
 			foreach (AttributeData aggregatedAttributeApplication in allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy)
 			{
@@ -291,7 +292,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{
 					var allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy =
 						aggregatedAttributeWithApplication.Type.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes()
-															   .Where(application => application.AttributeClass.InheritsFrom(eventSubscriberAttribute));
+															   .Where(application => application.AttributeClass != null && 
+																					 application.AttributeClass.InheritsFrom(eventSubscriberAttribute));
 
 					foreach (AttributeData aggregatedOnAggregateAttributeApplication in allDeclaredAcumaticaAttributesApplicationsOnClassHierarchy)
 					{

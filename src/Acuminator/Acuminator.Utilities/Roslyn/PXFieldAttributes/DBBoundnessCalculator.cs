@@ -70,7 +70,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributeApplication.ThrowOnNull();
 
-			if (!attributeApplication.AttributeClass.IsAcumaticaAttribute(Context))
+			if (attributeApplication.AttributeClass == null || !attributeApplication.AttributeClass.IsAcumaticaAttribute(Context))
 				return DbBoundnessType.NotDefined;
 
 			// First, check if the attribute is present in the set of known non-data-type attributes or is derived from them

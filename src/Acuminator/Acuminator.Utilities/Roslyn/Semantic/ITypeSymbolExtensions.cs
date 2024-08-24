@@ -370,7 +370,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			type.ThrowOnNull();
 			baseType.ThrowOnNull();
 
-			ITypeSymbol current = type;
+			ITypeSymbol? current = type;
 			int depth = 0;
 
 			while (current != null && !current.Equals(baseType))
@@ -379,13 +379,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				depth++;
 			}
 
-			return current != null ? depth : (int?)null;
+			return current != null ? depth : null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol) =>
 			typeSymbol.GetAllAttributesApplicationsDefinedOnThisAndBaseTypes()
-					  .Select(a => a.AttributeClass);
+					  .Select(a => a.AttributeClass)
+					  .Where(attrType => attrType != null)!;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<AttributeData> GetAllAttributesApplicationsDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
@@ -480,7 +481,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				if (!ctr.IsDefinition)
 					continue;
 
-				SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
+				SyntaxReference? reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
 				if (reference == null)
 					continue;
 
@@ -505,7 +506,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
+				SyntaxReference? reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
 
 				if (reference?.GetSyntax(cancellation) is not ConstructorDeclarationSyntax node)
 					continue;

@@ -106,7 +106,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			return flattenedAttributes.Contains(autoNumberAttribute);
 		}
 
-		private static bool IsAcumaticaPlatformAttribute(ImmutableHashSet<ITypeSymbol> flattenedAttributes, INamedTypeSymbol attributeType, 
+		private static bool IsAcumaticaPlatformAttribute(ImmutableHashSet<ITypeSymbol> flattenedAttributes, INamedTypeSymbol? attributeType, 
 														 PXContext pxContext) =>
 			flattenedAttributes.Count > 0 || pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attributeType);
 	}

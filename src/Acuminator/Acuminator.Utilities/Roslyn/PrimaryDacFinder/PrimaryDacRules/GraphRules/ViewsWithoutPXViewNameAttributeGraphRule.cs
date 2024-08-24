@@ -25,7 +25,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 
 		public ViewsWithoutPXViewNameAttributeGraphRule(PXContext context, double? customWeight = null) : base(customWeight)
 		{
-			_pxViewNameAttribute = context.CheckIfNull().Compilation.GetTypeByMetadataName(TypeFullNames.PXViewNameAttribute);
+			_pxViewNameAttribute = context.CheckIfNull().Compilation.GetTypeByMetadataName(TypeFullNames.PXViewNameAttribute).CheckIfNull();
 		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
@@ -45,7 +45,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 				if (attributes.IsDefaultOrEmpty)
 					continue;
 
-				bool viewHasViewNameAttribute = attributes.SelectMany(a => a.AttributeClass.GetBaseTypesAndThis())
+				bool viewHasViewNameAttribute = attributes.SelectMany(a => a.AttributeClass?.GetBaseTypesAndThis() ?? [])
 														  .Any(baseType => baseType.Equals(_pxViewNameAttribute));
 				if (!viewHasViewNameAttribute)
 				{

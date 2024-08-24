@@ -28,16 +28,16 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 			if (dacFinder.GraphSemanticModel.GraphSymbol == null || dacFinder.GraphViews.Length == 0)
 				return [];
 
-			bool firstNameFound = dacFinder.GraphSemanticModel.ViewsByNames.TryGetValue(_firstName, out DataViewInfo firstView);
-			bool secondNameFound = dacFinder.GraphSemanticModel.ViewsByNames.TryGetValue(_secondName, out DataViewInfo secondView);
+			bool firstNameFound = dacFinder.GraphSemanticModel.ViewsByNames.TryGetValue(_firstName, out DataViewInfo? firstView);
+			bool secondNameFound = dacFinder.GraphSemanticModel.ViewsByNames.TryGetValue(_secondName, out DataViewInfo? secondView);
 
 			if (!firstNameFound || !secondNameFound)
 			{
 				return [];
 			}
 
-			ITypeSymbol? firstDacCandidate = firstView.Type.GetDacFromView(dacFinder.PxContext);
-			ITypeSymbol? secondDacCandidate = secondView.Type.GetDacFromView(dacFinder.PxContext);
+			ITypeSymbol? firstDacCandidate = firstView!.Type.GetDacFromView(dacFinder.PxContext);
+			ITypeSymbol? secondDacCandidate = secondView!.Type.GetDacFromView(dacFinder.PxContext);
 
 			var dacCandidate = ChooseDacCandidate(firstDacCandidate, secondDacCandidate);
 			return dacCandidate != null ? [dacCandidate] : [];

@@ -8,29 +8,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
 	public class AttributeSymbols : SymbolsSetBase
 	{
-		public INamedTypeSymbol ObsoleteAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.ObsoleteAttribute);
+		public INamedTypeSymbol ObsoleteAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.ObsoleteAttribute)!;
 
-		public INamedTypeSymbol PXInternalUseOnlyAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXInternalUseOnlyAttribute);
+		public INamedTypeSymbol PXInternalUseOnlyAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXInternalUseOnlyAttribute)!;
 
-		public INamedTypeSymbol PXImportAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXImportAttribute);
-		public INamedTypeSymbol PXHiddenAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXHiddenAttribute);
-		public INamedTypeSymbol PXCacheNameAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXCacheNameAttribute);
-		public INamedTypeSymbol PXPrimaryGraphAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXPrimaryGraphAttribute);
-		public INamedTypeSymbol? PXPrimaryGraphBaseAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXPrimaryGraphBaseAttribute);
-		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXCopyPasteHiddenViewAttribute);
-		public INamedTypeSymbol PXOverrideAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXOverrideAttribute);
+		public INamedTypeSymbol PXImportAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXImportAttribute)!;
+		public INamedTypeSymbol PXHiddenAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXHiddenAttribute)!;
+		public INamedTypeSymbol PXCacheNameAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXCacheNameAttribute)!;
+		public INamedTypeSymbol PXPrimaryGraphAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXPrimaryGraphAttribute)!;
+		public INamedTypeSymbol? PXPrimaryGraphBaseAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXPrimaryGraphBaseAttribute)!;
+		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXCopyPasteHiddenViewAttribute)!;
+		public INamedTypeSymbol PXOverrideAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXOverrideAttribute)!;
 
-		public INamedTypeSymbol PXEventSubscriberAttribute  => Compilation.GetTypeByMetadataName(TypeFullNames.PXEventSubscriberAttribute);
-		public INamedTypeSymbol PXAttributeFamily           => Compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute);
-		public INamedTypeSymbol PXAggregateAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXAggregateAttribute);
-		public INamedTypeSymbol PXDefaultAttribute          => Compilation.GetTypeByMetadataName(TypeFullNames.PXDefaultAttribute);
-		public INamedTypeSymbol PXUnboundDefaultAttribute   => Compilation.GetTypeByMetadataName(TypeFullNames.PXUnboundDefaultAttribute);
-        public INamedTypeSymbol PXButtonAttribute           => Compilation.GetTypeByMetadataName(TypeFullNames.PXButtonAttribute);
-        public INamedTypeSymbol PXParentAttribute           => Compilation.GetTypeByMetadataName(TypeFullNames.PXParentAttribute);
-        public INamedTypeSymbol PXDBDefaultAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBDefaultAttribute);
-        public INamedTypeSymbol PXForeignReferenceAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXForeignReferenceAttribute);
-        public INamedTypeSymbol PXDimensionSelectorAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDimensionSelectorAttribute);
-        public INamedTypeSymbol PXProjectionAttribute		 => Compilation.GetTypeByMetadataName(TypeFullNames.PXProjectionAttribute);
+		public INamedTypeSymbol PXEventSubscriberAttribute  => Compilation.GetTypeByMetadataName(TypeFullNames.PXEventSubscriberAttribute)!;
+		public INamedTypeSymbol PXAttributeFamily           => Compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute)!;
+		public INamedTypeSymbol PXAggregateAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXAggregateAttribute)!;
+		public INamedTypeSymbol PXDefaultAttribute          => Compilation.GetTypeByMetadataName(TypeFullNames.PXDefaultAttribute)!;
+		public INamedTypeSymbol PXUnboundDefaultAttribute   => Compilation.GetTypeByMetadataName(TypeFullNames.PXUnboundDefaultAttribute)!;
+        public INamedTypeSymbol PXButtonAttribute           => Compilation.GetTypeByMetadataName(TypeFullNames.PXButtonAttribute)!;
+        public INamedTypeSymbol PXParentAttribute           => Compilation.GetTypeByMetadataName(TypeFullNames.PXParentAttribute)!;
+        public INamedTypeSymbol PXDBDefaultAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBDefaultAttribute)!;
+        public INamedTypeSymbol PXForeignReferenceAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXForeignReferenceAttribute)!;
+        public INamedTypeSymbol PXDimensionSelectorAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDimensionSelectorAttribute)!;
+        public INamedTypeSymbol PXProjectionAttribute		 => Compilation.GetTypeByMetadataName(TypeFullNames.PXProjectionAttribute)!;
         public INamedTypeSymbol? PXProtectedAccessAttribute  => Compilation.GetTypeByMetadataName(TypeFullNames.PXProtectedAccessAttribute);
 
 		private readonly Lazy<PXUIFieldAttributeSymbols> _pxUiFieldAttribute;

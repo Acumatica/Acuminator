@@ -70,11 +70,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol originalAttribute) =>
 			GetDacFieldTypeAttributeInfos(originalAttribute, preparedFlattenedAttributes: null);
 
-		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol originalAttribute, 
+		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol? originalAttribute, 
 																						  ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributes)
 		{
+			if (originalAttribute == null)
+				return [];
+
 			if (IsWellKnownNonDataTypeAttribute(originalAttribute))
-				return Array.Empty<DataTypeAttributeInfo>();
+				return [];
 
 			var flattenedAttributes = preparedFlattenedAttributes ?? originalAttribute.GetThisAndAllAggregatedAttributes(_pxContext, includeBaseTypes: true);
 			return GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(originalAttribute, flattenedAttributes);

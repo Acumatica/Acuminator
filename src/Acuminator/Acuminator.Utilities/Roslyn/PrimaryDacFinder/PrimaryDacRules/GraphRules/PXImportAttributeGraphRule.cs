@@ -33,13 +33,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 					continue;
 
 				var importAttributeType = dacFinder.PxContext.AttributeTypes.PXImportAttribute;
-				var importAttributeData = attributes.FirstOrDefault(a => a.AttributeClass.Equals(importAttributeType));
+				var importAttributeData = attributes.FirstOrDefault(a => a.AttributeClass?.Equals(importAttributeType) ?? false);
 
 				if (importAttributeData == null)
 					continue;
 				
 				var dacArgType = (from arg in importAttributeData.ConstructorArguments
-								  where arg.Kind == TypedConstantKind.Type && arg.Type.IsDAC(dacFinder.PxContext)
+								  where arg.Kind == TypedConstantKind.Type && arg.Type != null && arg.Type.IsDAC(dacFinder.PxContext)
 								  select arg.Type)
 								 .FirstOrDefault();
 

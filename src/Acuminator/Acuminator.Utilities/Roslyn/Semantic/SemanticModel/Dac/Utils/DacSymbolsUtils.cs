@@ -167,9 +167,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			if (pxView.IsFbqlView(pxContext))
 			{
 
-				baseViewType = pxView.BaseType.ContainingType.GetBaseTypesAndThis()
-															 .OfType<INamedTypeSymbol>()
-															 .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf));
+				baseViewType = pxView.BaseType!.ContainingType.GetBaseTypesAndThis()
+															  .OfType<INamedTypeSymbol>()
+															  .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf));
 			}
 			else
 			{

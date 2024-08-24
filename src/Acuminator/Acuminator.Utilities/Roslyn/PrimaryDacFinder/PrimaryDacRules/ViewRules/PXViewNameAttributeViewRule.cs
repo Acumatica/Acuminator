@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 
 		public PXViewNameAttributeViewRule(PXContext context, double? weight = null) : base(weight)
 		{
-			_pxViewNameAttribute = context.CheckIfNull().Compilation.GetTypeByMetadataName(TypeFullNames.PXViewNameAttribute);
+			_pxViewNameAttribute = context.CheckIfNull().Compilation.GetTypeByMetadataName(TypeFullNames.PXViewNameAttribute)!;
 		}
 
 		public override bool SatisfyRule(PrimaryDacFinder? dacFinder, DataViewInfo viewInfo)
@@ -34,7 +34,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 			if (attributes.IsDefaultOrEmpty)
 				return false;
 
-			return attributes.SelectMany(a => a.AttributeClass.GetBaseTypesAndThis())
+			return attributes.SelectMany(a => a.AttributeClass?.GetBaseTypesAndThis() ?? [])
 							 .Any(baseType => baseType.Equals(_pxViewNameAttribute));
 		}
 	}

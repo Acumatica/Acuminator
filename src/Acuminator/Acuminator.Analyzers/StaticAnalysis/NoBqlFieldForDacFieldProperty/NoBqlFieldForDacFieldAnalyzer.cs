@@ -44,12 +44,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (location == null)
 				return;
 
-			var properties = ImmutableDictionary<string, string>.Empty;
+			var properties = ImmutableDictionary<string, string?>.Empty;
 			string? propertyTypeName = dacField.EffectivePropertyType?.GetSimplifiedName();
 
 			if (registerCodeFix && propertyTypeName != null)
 			{
-				properties = new Dictionary<string, string>
+				properties = new Dictionary<string, string?>
 				{
 					{ DiagnosticProperty.RegisterCodeFix, bool.TrueString },
 					{ DiagnosticProperty.DacFieldName,	  dacField.Name },

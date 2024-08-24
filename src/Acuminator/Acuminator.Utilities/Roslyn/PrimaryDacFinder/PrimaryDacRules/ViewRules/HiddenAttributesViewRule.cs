@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 				return false;
 
 			INamedTypeSymbol hiddenAttribute = dacFinder.PxContext.AttributeTypes.PXHiddenAttribute;
-			bool hasHiddenAttribute = attributes.Any(a => a.AttributeClass.Equals(hiddenAttribute));
+			bool hasHiddenAttribute = attributes.Any(a => a.AttributeClass?.Equals(hiddenAttribute) ?? false);
 
 			if (hasHiddenAttribute)
 				return true;
@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 			dacFinder.CancellationToken.ThrowIfCancellationRequested();
 
 			INamedTypeSymbol copyPasteHiddenViewAttribute = dacFinder.PxContext.AttributeTypes.PXCopyPasteHiddenViewAttribute;
-			return attributes.Any(a => a.AttributeClass.InheritsFromOrEquals(copyPasteHiddenViewAttribute));
+			return attributes.Any(a => a.AttributeClass?.InheritsFromOrEquals(copyPasteHiddenViewAttribute) ?? false);
 		}
 	}
 }

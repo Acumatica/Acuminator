@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			{
 				TextDocument? roslynSuppressionFile = AddAdditionalSuppressionDocumentToProject(project);
 
-				if (roslynSuppressionFile == null || !project.Solution.Workspace.TryApplyChanges(roslynSuppressionFile.Project.Solution))
+				if (roslynSuppressionFile?.FilePath == null || !project.Solution.Workspace.TryApplyChanges(roslynSuppressionFile.Project.Solution))
 					return null;
 
 				return Instance?.LoadSuppressionFileFrom(roslynSuppressionFile.FilePath);
@@ -45,6 +45,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			public TextDocument? AddAdditionalSuppressionDocumentToProject(Project project)
 			{
 				project.ThrowOnNull();
+
+				if (project.FilePath.IsNullOrWhiteSpace())
+					return null;
 
 				string suppressionFileName = project.AssemblyName + SuppressionFile.SuppressionFileExtension;
 				string? projectDir = Instance?._fileSystemService.GetFileDirectory(project.FilePath);
