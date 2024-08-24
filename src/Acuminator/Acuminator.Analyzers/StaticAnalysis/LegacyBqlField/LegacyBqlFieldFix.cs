@@ -36,7 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
 											 .ConfigureAwait(false);
 
-			var bqlFieldNode = root.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
+			var bqlFieldNode = root?.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
 			if (bqlFieldNode == null)
 				return;
 
@@ -58,7 +58,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			string title = nameof(Resources.PX1060Fix).GetLocalized().ToString();
 			context.RegisterCodeFix(
 				CodeAction.Create(title,
-								  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root, bqlFieldNode, newBaseType)),
+								  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root!, bqlFieldNode, newBaseType)),
 								  equivalenceKey: title),
 				context.Diagnostics); 
 		}

@@ -103,7 +103,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		{
 			foreach (DataViewInfo view in viewsToShowDiagnostic)
 			{
-				Location viewLocation = view.Symbol.Locations.FirstOrDefault();
+				Location? viewLocation = view.Symbol.Locations.FirstOrDefault();
 
 				if (viewLocation == null)
 					continue;

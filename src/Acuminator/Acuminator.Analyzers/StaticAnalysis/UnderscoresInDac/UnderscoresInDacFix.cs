@@ -41,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 
 		private async Task<Document> ChangeUnderscoredNamesAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			SyntaxNode? diagnosticNode = root?.FindNode(span);
 
 			if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			if (modifiedNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(diagnosticNode, modifiedNode);
+			var modifiedRoot = root!.ReplaceNode(diagnosticNode, modifiedNode);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 

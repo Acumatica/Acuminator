@@ -82,8 +82,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
                 return;
             }
 
-            var diagnosticProperties = ImmutableDictionary<string, string>.Empty
-																		  .Add(DiagnosticProperty.IsBoundField, bool.FalseString);
+            var diagnosticProperties = ImmutableDictionary<string, string?>.Empty
+																		   .Add(DiagnosticProperty.IsBoundField, bool.FalseString);
             var descriptor = dacOrExtension.DacType == DacType.Dac
 				? Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC 
 				: Descriptors.PX1030_DefaultAttibuteToExistingRecordsError;
@@ -103,8 +103,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             if (attributeLocation == null)
                 return;
 
-            var diagnosticProperties = ImmutableDictionary<string, string>.Empty
-																		  .Add(DiagnosticProperty.IsBoundField, bool.TrueString);
+            var diagnosticProperties = ImmutableDictionary<string, string?>.Empty
+																		   .Add(DiagnosticProperty.IsBoundField, bool.TrueString);
             var diagnostic = Diagnostic.Create(Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning, attributeLocation, diagnosticProperties);
 
             symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);

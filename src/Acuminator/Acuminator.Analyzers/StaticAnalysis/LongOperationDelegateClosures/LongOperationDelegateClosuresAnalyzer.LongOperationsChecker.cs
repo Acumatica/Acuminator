@@ -663,7 +663,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			private SyntaxNode? GetDeclarationContainingCallSite(SyntaxNode callSiteNode)
 			{
-				SyntaxNode curNode = callSiteNode.Parent;
+				SyntaxNode? curNode = callSiteNode.Parent;
 
 				while (curNode != null)
 				{
