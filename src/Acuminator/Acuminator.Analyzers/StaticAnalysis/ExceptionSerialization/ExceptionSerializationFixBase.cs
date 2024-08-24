@@ -60,7 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			if (exceptionDeclaration == null)
 				return document;
 
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			SemanticModel? semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
 			if (semanticModel == null)
 				return document;
@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 				return document;
 
 			cancellationToken.ThrowIfCancellationRequested();
-			var changedRoot = root.ReplaceNode(exceptionDeclaration, modifiedExceptionDeclaration) as CompilationUnitSyntax;
+			var changedRoot = root!.ReplaceNode(exceptionDeclaration, modifiedExceptionDeclaration) as CompilationUnitSyntax;
 
 			if (changedRoot == null)
 				return document;

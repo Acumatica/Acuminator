@@ -35,7 +35,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				cancellation.ThrowIfCancellationRequested();
 				var attributes = method.GetAttributes();
 
-				if (!attributes.IsEmpty && attributes.Any(a => a.AttributeClass.Equals(pxOverrideAttribute)))
+				if (!attributes.IsEmpty && attributes.Any(a => a.AttributeClass?.Equals(pxOverrideAttribute) ?? false))
 				{
 					yield return new PXOverrideInfo(method, declarationOrder);
 					declarationOrder++;

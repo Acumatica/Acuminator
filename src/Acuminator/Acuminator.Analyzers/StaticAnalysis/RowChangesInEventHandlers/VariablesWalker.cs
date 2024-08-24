@@ -45,9 +45,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				{
 					var dataFlow = methodSyntax.Body != null
 						? semanticModel.AnalyzeDataFlow(methodSyntax.Body)
-						: semanticModel.AnalyzeDataFlow(methodSyntax.ExpressionBody.Expression);
+						: semanticModel.AnalyzeDataFlow(methodSyntax.ExpressionBody!.Expression);
 
-					if (dataFlow.Succeeded)
+					if (dataFlow?.Succeeded == true)
 					{
 						_variables = dataFlow.WrittenInside
 							.Intersect(dataFlow.VariablesDeclared)
@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				foreach (var variableDeclarator in variableDeclaration.Variables.Where(v => v.Initializer?.Value != null))
 				{
 					var variableSymbol = _semanticModel.GetDeclaredSymbol(variableDeclarator, _cancellationToken) as ILocalSymbol;
-					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, variableDeclarator.Initializer.Value);
+					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, variableDeclarator.Initializer!.Value);
 				}
 			}
 
