@@ -19,11 +19,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 	public class NoBqlFieldForDacFieldPropertyTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData("DacWithoutBqlFields_Expected.cs")]
-		public async Task RegularDac_WithBqlFields_ShouldNotShowDiagnostic(string actual) => 
-			await VerifyCSharpDiagnosticAsync(actual);
-
-		[Theory]
 		[EmbeddedFileData("DacWithoutBqlFields.cs")]
 		public async Task RegularDac_WithoutBqlFields(string actual) => await VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(13, 16, "BoolField"),
@@ -52,13 +47,28 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		[Theory]
 		[EmbeddedFileData("DacWithBqlFieldMissingInBaseDac.cs")]
 		public async Task DerivedDac_BasedDac_WithoutBqlFields(string actual) => await VerifyCSharpDiagnosticAsync(actual,
-			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(7, 15, "ShipmentNbr"),
-			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(16, 23, "ShipmentNbr"));
+			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(8, 15, "ShipmentNbr"),
+			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(23, 23, "ShipmentNbr"));
 
 		[Theory]
 		[EmbeddedFileData("DacWithoutBqlFields.cs", "DacWithoutBqlFields_Expected.cs")]
-		public async Task TestCodeFix(string actual, string expected) => 
+		public async Task RegularDac_AddBqlFields_CodeFix(string actual, string expected) => 
 			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithBqlFieldMissingInBaseDac.cs", "DacWithBqlFieldMissingInBaseDac_Expected.cs")]
+		public async Task MissingBqlFieldInBaseDac_AddBqlFields_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithoutBqlFields_Expected.cs")]
+		public async Task RegularDac_WithBqlFields_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData("DacWithBqlFieldMissingInBaseDac_Expected.cs")]
+		public async Task DerivedDac_BqlFieldInBaseDac_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
 			new DacAnalyzersAggregator(

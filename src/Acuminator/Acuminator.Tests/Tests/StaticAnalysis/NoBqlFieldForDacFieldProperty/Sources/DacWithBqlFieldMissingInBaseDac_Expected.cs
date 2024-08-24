@@ -18,6 +18,7 @@ namespace PX.Analyzers.Test.Sources
 		#region Status
 		public abstract class status : PX.Data.BQL.BqlString.Field<status> { }
 		#endregion
+		public abstract class shipmentNbr : PX.Data.BQL.BqlInt.Field<shipmentNbr> { }
 
 		[PXInt]
 		public virtual int? ShipmentNbr { get; set; }
