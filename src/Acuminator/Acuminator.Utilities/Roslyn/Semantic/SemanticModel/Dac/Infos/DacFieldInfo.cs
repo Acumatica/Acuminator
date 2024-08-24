@@ -151,5 +151,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 											effectiveDbBoundness ?? DbBoundnessType.NotDefined);
 			}
 		}
+
+		public override string ToString() => Name;
 	}
 }
