@@ -212,7 +212,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			ImmutableArray<AttributeData> attributes = messageContainerType.GetAttributes();
 			return attributes.IsDefaultOrEmpty
 				? false
-				: attributes.Any(a => a.AttributeClass.Equals(_pxContext.Localization.PXLocalizableAttribute));
+				: attributes.Any(a => a.AttributeClass?.Equals(_pxContext.Localization.PXLocalizableAttribute) ?? false);
 		}
 
 		private bool CheckThatMessageSymbolIsFieldWithConstant(ExpressionSyntax messageExpression, ISymbol messageSymbolWithStringType)
@@ -234,7 +234,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (!isFormatMethod)
 				return false;
 
-			Optional<object> constString = SemanticModel.GetConstantValue(messageExpression, Cancellation);
+			Optional<object?> constString = SemanticModel.GetConstantValue(messageExpression, Cancellation);
 
 			if (!constString.HasValue || constString.Value is not string stringConstant)
 				return false;

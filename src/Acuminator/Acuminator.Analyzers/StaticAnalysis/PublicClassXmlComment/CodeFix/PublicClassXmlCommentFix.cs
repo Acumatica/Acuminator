@@ -64,7 +64,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 		private Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			if (diagnostic?.Properties == null || 
-				!diagnostic.Properties.TryGetValue(DocumentationDiagnosticProperties.ParseResult, out string value) ||
+				!diagnostic.Properties.TryGetValue(DocumentationDiagnosticProperties.ParseResult, out string? value) ||
 				!Enum.TryParse(value, out XmlCommentParseResult parseResult) || IsCorrectParseResult(parseResult))
 			{
 				return Task.CompletedTask;
@@ -95,14 +95,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.CodeFix
 
 		private void RegisterCodeFixForProjectionDacProperty(CodeFixContext context, Diagnostic diagnostic, XmlCommentParseResult parseResult)
 		{
-			if (!diagnostic.Properties.TryGetValue(DocumentationDiagnosticProperties.MappedDacMetadataName, out string mappedOriginalDacName) ||
+			if (!diagnostic.Properties.TryGetValue(DocumentationDiagnosticProperties.MappedDacMetadataName, out string? mappedOriginalDacName) ||
 				mappedOriginalDacName.IsNullOrWhiteSpace())
 			{
 				return;
 			}
 
-			if (!diagnostic.Properties.TryGetValue(DocumentationDiagnosticProperties.MappedDacPropertyName, out string mappedPropertyName) ||
-				mappedOriginalDacName.IsNullOrWhiteSpace())
+			if (!diagnostic.Properties.TryGetValue(DocumentationDiagnosticProperties.MappedDacPropertyName, out string? mappedPropertyName) ||
+				mappedPropertyName.IsNullOrWhiteSpace())
 			{
 				return;
 			}

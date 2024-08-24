@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 
 			var delegateCandidates = from method in graphModel.Symbol.GetMethods()
 									 where method.ContainingType.Equals(graphModel.Symbol) && !method.IsOverride &&
-										   (!graphModel.ViewDelegatesByNames.TryGetValue(method.Name, out DataViewDelegateInfo delegateInfo) || !method.Equals(delegateInfo.Symbol)) &&
+										   (!graphModel.ViewDelegatesByNames.TryGetValue(method.Name, out DataViewDelegateInfo? delegateInfo) || !method.Equals(delegateInfo.Symbol)) &&
 										   method.IsValidViewDelegate(pxContext) && !method.IsValidActionHandler(pxContext)
 									 select method;
 
@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 
 				if (nearestViewName != null && !method.Locations.IsEmpty)
 				{
-					var properties = ImmutableDictionary.CreateBuilder<string, string>();
+					var properties = ImmutableDictionary.CreateBuilder<string, string?>();
 					properties.Add(ViewFieldNameProperty, nearestViewName);
 
 					context.ReportDiagnosticWithSuppressionCheck(

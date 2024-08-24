@@ -78,13 +78,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			var propertiesToRemove = modifiedDac.Members.OfType<PropertyDeclarationSyntax>() //-V3080
 														.Where(p => identifierToRemove.Equals(p.Identifier.Text, 
 																							  StringComparison.OrdinalIgnoreCase));
-			modifiedDac = modifiedDac.RemoveNodes(propertiesToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);
+			modifiedDac = modifiedDac.RemoveNodes(propertiesToRemove, SyntaxRemoveOptions.KeepExteriorTrivia)!;
 
 			var dacFieldsToRemove = modifiedDac.Members.OfType<ClassDeclarationSyntax>()
 													   .Where(dacField => identifierToRemove.Equals(dacField.Identifier.Text, 
 																									StringComparison.OrdinalIgnoreCase));
-			modifiedDac = modifiedDac.RemoveNodes(dacFieldsToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);
-			var modifiedRoot = root.ReplaceNode(dacDeclaration, modifiedDac);
+			modifiedDac = modifiedDac.RemoveNodes(dacFieldsToRemove, SyntaxRemoveOptions.KeepExteriorTrivia)!;
+			var modifiedRoot = root!.ReplaceNode(dacDeclaration, modifiedDac);
 
 			if (cancellationToken.IsCancellationRequested)
 				return document;
@@ -107,9 +107,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 			var trackingDacDeclaration = dacDeclaration.TrackNodes(regionNodesToRemove);
 
+			if (trackingDacDeclaration == null) 
+				return dacDeclaration;
+
 			foreach (DirectiveTriviaSyntax regionDirective in regionNodesToRemove)
 			{
-				SyntaxNode regionInModifiedDeclaration = trackingDacDeclaration.GetCurrentNode(regionDirective);
+				SyntaxNode? regionInModifiedDeclaration = trackingDacDeclaration.GetCurrentNode(regionDirective);
 
 				if (regionInModifiedDeclaration == null)
 					continue;
@@ -134,9 +137,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 					newParentToken = parentToken.WithTrailingTrivia(newTrivia);
 				}
 
-				SyntaxNode parentNode = regionInModifiedDeclaration.ParentTrivia.Token.Parent;
-				SyntaxNode newParentNode = parentNode.ReplaceToken(parentToken, newParentToken);
-				trackingDacDeclaration = trackingDacDeclaration.ReplaceNode(parentNode, newParentNode);
+				SyntaxNode? parentNode = regionInModifiedDeclaration.ParentTrivia.Token.Parent;
+				SyntaxNode? newParentNode = parentNode?.ReplaceToken(parentToken, newParentToken);
+
+				if (newParentNode != null)
+					trackingDacDeclaration = trackingDacDeclaration.ReplaceNode(parentNode!, newParentNode);
 			}
 
 			return trackingDacDeclaration;

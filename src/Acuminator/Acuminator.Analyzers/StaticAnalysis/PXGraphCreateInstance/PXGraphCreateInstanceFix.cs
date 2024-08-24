@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				_cancellation = cancellation;
 			}
 
-			public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+			public override SyntaxNode? VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 			{
 				_cancellation.ThrowIfCancellationRequested();
 
@@ -90,7 +90,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			var rewriter = new Rewriter(pxContext, document, semanticModel, cancellation);
 			var newNode = rewriter.Visit(nodeWithDiagnostic);
-			var newRoot = root.ReplaceNode(nodeWithDiagnostic, newNode);
+
+			if (newNode == null)
+				return document;
+
+			var newRoot = root!.ReplaceNode(nodeWithDiagnostic, newNode);
 
 			return document.WithSyntaxRoot(newRoot);
 		}

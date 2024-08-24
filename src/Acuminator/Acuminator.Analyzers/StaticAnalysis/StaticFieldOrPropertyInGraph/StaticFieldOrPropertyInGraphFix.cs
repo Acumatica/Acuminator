@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			if (diagnostic.Properties?.Count is null or 0)
 				return null;
 
-			return diagnostic.Properties.TryGetValue(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, out string value)
+			return diagnostic.Properties.TryGetValue(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, out string? value)
 				? value
 				: null;
 		}
@@ -107,8 +107,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var modifiedRoot = root.ReplaceNode(propertyDeclaration, readonlyPropertyDeclaration);
-			return document.WithSyntaxRoot(modifiedRoot);
+			var modifiedRoot = root?.ReplaceNode(propertyDeclaration, readonlyPropertyDeclaration);
+			return modifiedRoot == null
+				? document
+				: document.WithSyntaxRoot(modifiedRoot);
 		}
 
 		private async Task<Document> ChangeModifiersAsync(Document document, TextSpan span, Func<SyntaxTokenList, SyntaxTokenList?> modifiersChanger,
@@ -130,8 +132,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var modifiedRoot = root.ReplaceNode(memberDeclaration, memberDeclarationWithChangedModifiers);
-			return document.WithSyntaxRoot(modifiedRoot);
+			var modifiedRoot = root?.ReplaceNode(memberDeclaration, memberDeclarationWithChangedModifiers);
+			return modifiedRoot == null
+				? document
+				: document.WithSyntaxRoot(modifiedRoot);
 		}
 
 		private static MemberDeclarationSyntax? ChangeModifiers(MemberDeclarationSyntax memberDeclaration,
