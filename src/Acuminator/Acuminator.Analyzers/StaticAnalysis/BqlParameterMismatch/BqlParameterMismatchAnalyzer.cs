@@ -122,7 +122,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			if (accessExpression == null)
 				return;
 
-			ITypeSymbol callerStaticType = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken).Type;
+			ITypeSymbol? callerStaticType = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken).Type;
 
 			if (callerStaticType == null)
 				return;
@@ -267,7 +267,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentWhichCanBeArray.Expression, syntaxContext.CancellationToken);
-			ITypeSymbol typeSymbol = typeInfo.Type;
+			ITypeSymbol? typeSymbol = typeInfo.Type;
 
 			if (typeSymbol == null)
 				return 0;
@@ -288,7 +288,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 																	InvocationExpressionSyntax invocation, ExpressionSyntax accessExpression)
 		{
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
-			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
+			ITypeSymbol? containingType = typeInfo.ConvertedType ?? typeInfo.Type;
 
 			if (containingType == null || !containingType.IsBqlCommand(pxContext) || containingType.IsCustomBqlCommand(pxContext) ||
 				IsFbqlViewType(containingType))

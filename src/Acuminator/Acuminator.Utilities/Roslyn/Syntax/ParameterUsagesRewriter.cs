@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			_cancellation = cancellation;
 		}
 
-		public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
+		public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
 		{
 			_cancellation.ThrowIfCancellationRequested();
 

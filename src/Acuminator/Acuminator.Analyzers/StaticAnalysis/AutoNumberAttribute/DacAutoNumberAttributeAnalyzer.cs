@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
@@ -138,11 +137,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			if (syntaxNode is not AttributeSyntax attributeSyntaxNode)
 				return stringAttribute.AttributeData.GetLocation(context.CancellationToken);
 
-			var argumentsList = attributeSyntaxNode.ArgumentList.Arguments;
-			
-			for (int i = 0; i < argumentsList.Count; i++)
+			var argumentsList = attributeSyntaxNode.ArgumentList?.Arguments;
+
+			if (argumentsList == null || argumentsList.Value.Count == 0)
+				return stringAttribute.AttributeData.GetLocation(context.CancellationToken);
+
+			for (int i = 0; i < argumentsList.Value.Count; i++)
 			{
-				AttributeArgumentSyntax argumenNode = argumentsList[i];
+				AttributeArgumentSyntax argumenNode = argumentsList.Value[i];
 
 				if (argumenNode.NameEquals != null)		//filter out attribute property argument setters like "IsDirty = true"
 					continue;

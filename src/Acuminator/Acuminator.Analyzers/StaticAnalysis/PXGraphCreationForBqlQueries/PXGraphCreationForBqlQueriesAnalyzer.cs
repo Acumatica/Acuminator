@@ -223,9 +223,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			return true;
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
+		private ImmutableDictionary<string, string?> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
 		{
-			var builder = ImmutableDictionary.CreateBuilder<string, string>();
+			var builder = ImmutableDictionary.CreateBuilder<string, string?>();
 			int i = 0;
 
 			foreach (var graph in availableGraphs)

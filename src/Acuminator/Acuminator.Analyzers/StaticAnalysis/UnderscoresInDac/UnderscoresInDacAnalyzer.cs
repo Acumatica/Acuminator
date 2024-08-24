@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 
 			bool registerCodeFix = !IdentifierContainsOnlyUnderscores(identifier.ValueText);
 
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}.ToImmutableDictionary();

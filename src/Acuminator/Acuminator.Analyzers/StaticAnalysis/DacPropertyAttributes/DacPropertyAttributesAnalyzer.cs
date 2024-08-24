@@ -275,7 +275,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static void ReportIncompatibleTypesDiagnostics(DacPropertyInfo property, DacFieldAttributeInfo fieldAttribute,
 															   SymbolAnalysisContext symbolContext, PXContext pxContext, bool registerCodeFix)
 		{
-			var diagnosticProperties = ImmutableDictionary.Create<string, string>()
+			var diagnosticProperties = ImmutableDictionary.Create<string, string?>()
 														  .Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
 
 			// Node not null here because aggregated DAC analysers by default run only on DACs in source 

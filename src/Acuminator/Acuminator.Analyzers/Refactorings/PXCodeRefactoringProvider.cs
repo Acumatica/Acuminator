@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers.Refactorings
 			if (!CodeAnalysisSettings!.StaticAnalysisEnabled)
 				return;
 
-			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+			SemanticModel? semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 
 			if (semanticModel?.Compilation == null)
 				return;

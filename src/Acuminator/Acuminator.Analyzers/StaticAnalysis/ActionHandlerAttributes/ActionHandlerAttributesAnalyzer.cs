@@ -85,8 +85,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 			var fixOption = !hasPXUIFieldAttribute && !hasPXButtonAttribute ? FixOption.AddBothAttributes :
 				!hasPXUIFieldAttribute ? FixOption.AddPXUIFieldAttribute :
 				FixOption.AddPXButtonAttribute;
-			var properties = ImmutableDictionary<string, string>.Empty
-				.Add(FixOptionKey, fixOption.ToString());
+			var properties = ImmutableDictionary<string, string?>.Empty
+																 .Add(FixOptionKey, fixOption.ToString());
 			var diagnostic = Diagnostic.Create(
 				Descriptors.PX1092_MissingAttributesOnActionHandler,
 				node.Identifier.GetLocation(),

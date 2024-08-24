@@ -40,15 +40,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInDac
 
         private async Task<Document> DeleteConstructorsAsync(Document document, TextSpan span, CancellationToken cancellationToken)
         {
-            SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             SyntaxNode? diagnosticNode = root?.FindNode(span);
 
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;
 
-            var modifiedRoot = root.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepTrailingTrivia | SyntaxRemoveOptions.KeepLeadingTrivia);
+            var modifiedRoot = root!.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepTrailingTrivia | SyntaxRemoveOptions.KeepLeadingTrivia);
 
-            return document.WithSyntaxRoot(modifiedRoot);
+            return document.WithSyntaxRoot(modifiedRoot!);
         }
 
        

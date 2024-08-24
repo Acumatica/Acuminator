@@ -39,8 +39,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 
 		private async Task<Document> MarkDacFieldAsAbstractAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken)
-											.ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken)
+											 .ConfigureAwait(false);
 			var dacFieldDeclaration = root?.FindNode(span) as ClassDeclarationSyntax;
 
 			if (dacFieldDeclaration == null || cancellationToken.IsCancellationRequested)
@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 			if (dacFieldDeclaration.Modifiers.Contains(abstractToken))
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(dacFieldDeclaration, dacFieldDeclaration.AddModifiers(abstractToken));
+			var modifiedRoot = root!.ReplaceNode(dacFieldDeclaration, dacFieldDeclaration.AddModifiers(abstractToken));
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 	}
