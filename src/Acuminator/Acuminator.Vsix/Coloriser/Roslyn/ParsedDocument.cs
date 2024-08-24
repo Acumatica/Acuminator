@@ -42,7 +42,7 @@ namespace Acuminator.Vsix.Coloriser
 			Snapshot = snapshot;
 		}
 
-		public SemanticModel GetSemanticModel(CancellationToken cancellationToken = default) =>
+		public SemanticModel? GetSemanticModel(CancellationToken cancellationToken = default) =>
 			Document.TryGetSemanticModel(out var semanticModel)
 				? semanticModel
 				: ThreadHelper.JoinableTaskFactory.Run(() => Document.GetSemanticModelAsync(cancellationToken));

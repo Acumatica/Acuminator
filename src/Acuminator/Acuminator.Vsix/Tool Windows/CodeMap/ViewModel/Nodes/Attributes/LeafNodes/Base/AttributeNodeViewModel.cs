@@ -68,10 +68,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public async override Task NavigateToItemAsync()
 		{
-			if (IsInMetadata)
+			var syntaxReference = AttributeInfo.AttributeData.ApplicationSyntaxReference;
+
+			if (syntaxReference == null)
 				return;
 
-			var syntaxReference = AttributeInfo.AttributeData.ApplicationSyntaxReference;
 			TextSpan span = syntaxReference.Span;
 			string filePath = syntaxReference.SyntaxTree.FilePath;
 			Workspace? workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();

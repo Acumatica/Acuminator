@@ -49,17 +49,17 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (caretLine == null)
 				return;
 
-			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document? document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 			if (document == null || !document.SupportsSyntaxTree /*|| document.SourceCodeKind ==*/)
 				return;
 
-			Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync(Package.DisposalToken);
-			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync(Package.DisposalToken);
+			Task<SyntaxNode?> syntaxRootTask = document.GetSyntaxRootAsync(Package.DisposalToken);
+			Task<SemanticModel?> semanticModelTask = document.GetSemanticModelAsync(Package.DisposalToken);
 			await Task.WhenAll(syntaxRootTask, semanticModelTask);
 
 #pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
-			SyntaxNode syntaxRoot = syntaxRootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
+			SyntaxNode? syntaxRoot = syntaxRootTask.Result;
+			SemanticModel? semanticModel = semanticModelTask.Result;
 #pragma warning restore VSTHRD002, VSTHRD103
 
 			if (syntaxRoot == null || semanticModel == null || !IsPlatformReferenced(semanticModel) ||

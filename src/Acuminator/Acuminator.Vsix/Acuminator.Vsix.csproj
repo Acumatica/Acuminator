@@ -14,7 +14,7 @@
     <UseCodebase>true</UseCodebase>
     <TargetFrameworkProfile />
     <Nullable>enable</Nullable>
-    <!--<WarningsAsErrors>Nullable</WarningsAsErrors>-->
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
     <NoWarn>CS0168</NoWarn>
   </PropertyGroup>
   <PropertyGroup>

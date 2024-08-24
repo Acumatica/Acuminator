@@ -64,7 +64,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			var parameterTypesString =  methodNode.ParameterList.Parameters
-																.Select(p => p.Type.ToString())
+																.Where(p => p.Type != null)
+																.Select(p => p.Type!.ToString())
 																.Join(", ");
 			string name = methodNode.Identifier.ToString() + $"({parameterTypesString})";
 			return name;

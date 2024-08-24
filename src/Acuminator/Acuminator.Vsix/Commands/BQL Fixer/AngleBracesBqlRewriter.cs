@@ -46,6 +46,10 @@ namespace Acuminator.Vsix.BqlFixer
 			}
 
 			var resulterGeneric = typeSyntaxes[0].nodes.First() as GenericNameSyntax;
+
+			if (resulterGeneric == null)
+				return node;
+
 			var variableName = SyntaxFactory.VariableDeclarator(identifierName!.Identifier);
 			var variableDeclaration = SyntaxFactory.VariableDeclaration(resulterGeneric).AddVariables(variableName);
 			var fieldDeclaration = SyntaxFactory.FieldDeclaration(variableDeclaration).WithModifiers(node.Modifiers);

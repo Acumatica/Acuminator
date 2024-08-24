@@ -294,7 +294,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		[SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Method is event handler")]
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
-			if (e == null || !(sender is Workspace newWorkspace) || Document == null)
+			if (e?.DocumentId == null || sender is not Workspace newWorkspace || Document == null)
 				return;
 
 			if (!ThreadHelper.CheckAccess())

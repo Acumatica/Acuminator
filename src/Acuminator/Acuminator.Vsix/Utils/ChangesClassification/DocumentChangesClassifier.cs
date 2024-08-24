@@ -1,18 +1,19 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Vsix.Utilities;
 
-
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Vsix.ChangesClassification
 {
@@ -78,7 +79,7 @@ namespace Acuminator.Vsix.ChangesClassification
 
 			while (!containingNode.IsKind(SyntaxKind.CompilationUnit))
 			{
-				ContainmentModeChange containingModeChange = GetContainingSpanNewContainmentModeForTextChange(textChange, containingNode.Span);
+				ContainmentModeChange containingModeChange = GetContainingSpanNewContainmentModeForTextChange(textChange, containingNode!.Span);
 				ChangeInfluenceScope? changesScope = containingNode switch
 				{
 					MemberDeclarationSyntax memberDeclaration             => GetChangeScopeFromTypeMemberNode(memberDeclaration, textChange, containingModeChange),
@@ -144,7 +145,7 @@ namespace Acuminator.Vsix.ChangesClassification
 		protected virtual ChangeInfluenceScope? GetChangeScopeFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase,
 																					   in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
-			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);	
+			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText!.Length);	
 			TextSpan? methodBodySpan = methodNodeBase.Body?.Span;       //First check body of the property because it is most common place for changes
 
 			if (methodBodySpan == null && methodNodeBase is MethodDeclarationSyntax methodNode)
@@ -179,7 +180,7 @@ namespace Acuminator.Vsix.ChangesClassification
 		protected virtual ChangeInfluenceScope? GetChangeScopeFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
 																						 in TextChange textChange, ContainmentModeChange containingModeChange)
 		{	
-			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);
+			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText!.Length);
 			TextSpan? bodySpan = propertyNodeBase.AccessorList?.Span ?? propertyNodeBase switch     //First check body of the property because it is most common place for changes
 			{
 				PropertyDeclarationSyntax property => property.ExpressionBody?.Span,
@@ -214,7 +215,7 @@ namespace Acuminator.Vsix.ChangesClassification
 		{
 			var lengthFromChangeStart = existingContainingSpan.End - textChange.Span.Start;
 
-			return textChange.NewText.Length == lengthFromChangeStart
+			return textChange.NewText!.Length == lengthFromChangeStart
 				? ContainmentModeChange.StillContaining
 				: lengthFromChangeStart < textChange.NewText.Length
 						? ContainmentModeChange.NotContaining

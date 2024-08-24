@@ -94,7 +94,7 @@ namespace Acuminator.Vsix.Utilities
 			codeFragment?.Replace(PxDataNamespacePrefix, string.Empty)
 						?.Replace(PxObjectsNamespacePrefix, string.Empty);
 
-		public static int GetNodeIndentLength(this SyntaxNode node, int tabSize)
+		public static int GetNodeIndentLength(this SyntaxNode? node, int tabSize)
 		{
 			if (tabSize <= 0)
 			{
@@ -104,7 +104,7 @@ namespace Acuminator.Vsix.Utilities
 			if (node == null)
 				return 0;
 
-			SyntaxNode currentNode = node;
+			SyntaxNode? currentNode = node;
 
 			while (currentNode != null)
 			{

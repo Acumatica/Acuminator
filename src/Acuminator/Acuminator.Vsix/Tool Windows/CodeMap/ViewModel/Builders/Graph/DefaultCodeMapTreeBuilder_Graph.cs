@@ -204,9 +204,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(ViewNodeViewModel viewNode)
 		{
 			var hasViewDelegate = viewNode.MemberCategory.GraphSemanticModel.ViewDelegatesByNames.TryGetValue(viewNode.MemberSymbol.Name,
-																											  out DataViewDelegateInfo viewDelegate);
+																											  out DataViewDelegateInfo? viewDelegate);
 			return hasViewDelegate
-				? new GraphMemberInfoNodeViewModel(viewNode, viewDelegate, GraphMemberInfoType.ViewDelegate).ToEnumerable()
+				? new GraphMemberInfoNodeViewModel(viewNode, viewDelegate!, GraphMemberInfoType.ViewDelegate).ToEnumerable()
 				: DefaultValue;
 		}
 
@@ -214,9 +214,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var hasActionHandler =
 				actionNode.MemberCategory.GraphSemanticModel.ActionHandlersByNames.TryGetValue(actionNode.MemberSymbol.Name,
-																							   out ActionHandlerInfo actionHandler);
+																							   out ActionHandlerInfo? actionHandler);
 			return hasActionHandler
-				? new GraphMemberInfoNodeViewModel(actionNode, actionHandler, GraphMemberInfoType.ActionHandler).ToEnumerable()
+				? new GraphMemberInfoNodeViewModel(actionNode, actionHandler!, GraphMemberInfoType.ActionHandler).ToEnumerable()
 				: DefaultValue;
 		}
 
