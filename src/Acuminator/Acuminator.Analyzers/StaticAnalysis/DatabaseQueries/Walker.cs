@@ -41,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 				.Concat(PxContext.AttributeTypes.PXSelectorAttribute.Select)
 				.Concat(PxContext.AttributeTypes.PXSelectorAttribute.GetItem)
 				.Concat(PxContext.PXView.Select)
-				.ToImmutableHashSet();
+				.ToImmutableHashSet<IMethodSymbol>(SymbolEqualityComparer.Default);
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)

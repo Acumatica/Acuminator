@@ -31,7 +31,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			if (declaredPrimaryDacType == null || declaredPrimaryDacType is ITypeParameterSymbol)
 				return;
 
-			bool hasViewForPrimaryDac = graph.Views.Select(view => view.DAC).Contains(declaredPrimaryDacType);
+			bool hasViewForPrimaryDac = graph.Views.Select(view => view.DAC)
+												   .Contains(declaredPrimaryDacType, SymbolEqualityComparer.Default);
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (hasViewForPrimaryDac)

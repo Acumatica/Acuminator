@@ -102,7 +102,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			var fieldAttributeDataTypes = (from attrInfo in attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType)
 										   where attrInfo.IsFieldAttribute && attrInfo.DataType != null
 										   select attrInfo.DataType)
-										  .ToHashSet();
+										  .ToHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 
 			if (fieldAttributeDataTypes.Count != 1) 
 				return document;

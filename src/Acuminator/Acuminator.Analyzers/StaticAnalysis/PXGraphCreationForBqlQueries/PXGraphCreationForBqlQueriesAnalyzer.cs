@@ -133,7 +133,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 																 CancellationToken cancellation) =>
 			bqlSelectGraphArgNodes.Select(graphArgSyntax => semanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, cancellation))
 								  .Where(graphArgSymbol => graphArgSymbol != null && (graphArgSymbol is not IPropertySymbol or IFieldSymbol))
-								  .ToHashSet()!;
+								  .ToHashSet(SymbolEqualityComparer.Default)!;
 
 		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode body, List<ISymbol> existingGraphs, SemanticModel semanticModel,
 																			ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, 

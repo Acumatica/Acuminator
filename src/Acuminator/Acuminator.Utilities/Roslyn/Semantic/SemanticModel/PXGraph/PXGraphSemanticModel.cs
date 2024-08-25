@@ -187,7 +187,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var processingViewSymbols = Views.Where(v => v.IsProcessing)
 											 .Select(v => v.Symbol)
-											 .ToImmutableHashSet();
+											 .ToImmutableHashSet(SymbolEqualityComparer.Default);
 			IsProcessing = processingViewSymbols.Count > 0;
 
 			if (!IsProcessing)
@@ -336,7 +336,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				GraphInitializerInfo info = new GraphInitializerInfo(GraphInitializerType.InstanceCreatedDelegate, initDelegateInfo.Node,
 																	 initDelegateInfo.Symbol, initDelegateInfo.DeclarationOrder);
-				PXGraphSemanticModel existingModel = models.FirstOrDefault(m => m.Symbol.Equals(initDelegateInfo.GraphTypeSymbol));
+				PXGraphSemanticModel existingModel = models.FirstOrDefault(m => m.Symbol.Equals(initDelegateInfo.GraphTypeSymbol, 
+																								SymbolEqualityComparer.Default));
 				PXGraphSemanticModel implicitModel;
 
 				if (existingModel != null)

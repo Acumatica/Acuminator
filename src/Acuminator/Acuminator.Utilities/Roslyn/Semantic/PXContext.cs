@@ -182,7 +182,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				.Concat(AttributeTypes.PXStringListAttribute.AppendList)
 				.Concat(AttributeTypes.PXStringListAttribute.SetLocalizable)
 				.Concat(AttributeTypes.PXIntListAttribute.SetList)
-				.ToImmutableHashSet();
+				.ToImmutableHashSet<IMethodSymbol>(SymbolEqualityComparer.Default);
 		}
 	}
 }

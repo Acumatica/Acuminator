@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 
 		private HashSet<INamedTypeSymbol> GetWhitelist(PXContext pxContext)
 		{
-			return new HashSet<INamedTypeSymbol>
+			return new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default)
 			{
 				pxContext.SystemTypes.Bool,
 				pxContext.SystemTypes.Byte,

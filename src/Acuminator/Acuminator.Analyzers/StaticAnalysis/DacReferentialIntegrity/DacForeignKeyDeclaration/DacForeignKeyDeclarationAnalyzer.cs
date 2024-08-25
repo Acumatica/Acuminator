@@ -370,7 +370,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			return containerDeclaredIncorrectly
 				? keyDeclarations
-				: keyDeclarations.Where(key => !foreignKeysContainer!.Equals(key.ContainingType) && !key.GetContainingTypes().Contains(foreignKeysContainer))
+				: keyDeclarations.Where(key => !foreignKeysContainer!.Equals(key.ContainingType, SymbolEqualityComparer.Default) && 
+											   !key.GetContainingTypes().Contains(foreignKeysContainer, SymbolEqualityComparer.Default))
 								 .ToList(capacity: keyDeclarations.Count);
 		}
 	}

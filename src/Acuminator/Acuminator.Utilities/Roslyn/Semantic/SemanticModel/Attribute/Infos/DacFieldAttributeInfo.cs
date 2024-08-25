@@ -51,7 +51,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 										bool isAcumaticaAttribute) :
 								   base(attributeData, declarationOrder)
 		{
-			FlattenedAcumaticaAttributes = (flattenedAttributeApplications as ImmutableHashSet<AttributeWithApplication>) ?? flattenedAttributeApplications.ToImmutableHashSet();
+			FlattenedAcumaticaAttributes = (flattenedAttributeApplications as ImmutableHashSet<AttributeWithApplication>) ?? 
+											flattenedAttributeApplications.ToImmutableHashSet();
 			AggregatedAttributeMetadata  = attributeInfos.ToImmutableArray();
 			DbBoundness                  = dbBoundness;
 			IsKey                        = isKey;
@@ -68,7 +69,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		{
 			var flattenedAttributeApplications = attribute.GetThisAndAllAggregatedAttributesWithApplications(dbBoundnessCalculator.Context, includeBaseTypes: true);
 			var flattenedAttributeTypes = flattenedAttributeApplications.Count > 0
-				? flattenedAttributeApplications.Select(attributeWithApplication => attributeWithApplication.Type).ToImmutableHashSet()
+				? flattenedAttributeApplications.Select(attributeWithApplication => attributeWithApplication.Type)
+												.ToImmutableHashSet<ITypeSymbol>(SymbolEqualityComparer.Default)
 				: ImmutableHashSet<ITypeSymbol>.Empty;
 
 			var aggregatedMetadata	    = dbBoundnessCalculator.AttributesMetadataProvider
@@ -108,6 +110,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		private static bool IsAcumaticaPlatformAttribute(ImmutableHashSet<ITypeSymbol> flattenedAttributes, INamedTypeSymbol? attributeType, 
 														 PXContext pxContext) =>
-			flattenedAttributes.Count > 0 || pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attributeType);
+			flattenedAttributes.Count > 0 || pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attributeType, SymbolEqualityComparer.Default);
 	}
 }
