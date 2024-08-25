@@ -168,6 +168,27 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
+		/// An <see cref="ImmutableArray{TSymbol}"/> method that query if <paramref name="source"/> contains the given <paramref name="item"/>.
+		/// </summary>
+		/// <typeparam name="TSymbol">Type of the symbol.</typeparam>
+		/// <param name="source">The immutable array to act on.</param>
+		/// <param name="item">The item.</param>
+		/// <param name="comparer">The comparer.</param>
+		/// <returns>
+		/// True if the object is in this collection, false if not.
+		/// </returns>
+		/// <remarks>
+		/// This method is an optimization to prevent boxing.
+		/// </remarks>
+		public static bool ImmutableArrayContains<TCollectionItem, TItem>(ImmutableArray<TCollectionItem> source, TItem item,
+																		  IEqualityComparer<TCollectionItem?>? comparer)
+		where TCollectionItem : ISymbol
+		where TItem : TCollectionItem
+		{
+			return source.Contains(item, comparer);
+		}
+
+		/// <summary>
 		/// An <see cref="ImmutableArray{TSymbol}"/> extension method that query if <paramref name="source"/> contains the given <paramref name="item"/>.
 		/// </summary>
 		/// <typeparam name="TSymbol">Type of the symbol.</typeparam>
@@ -180,13 +201,15 @@ namespace Acuminator.Utilities.Common
 		/// <remarks>
 		/// This method is an optimization to prevent boxing.
 		/// </remarks>
-		public static bool Contains<TSymbol>(this ImmutableArray<TSymbol> source, TSymbol item, IEqualityComparer<TSymbol?>? comparer)
-		where TSymbol : ISymbol
+		public static bool Contains<TCollectionItem, TItem>(this ImmutableArray<TCollectionItem> source, TItem item, 
+															IEqualityComparer<TCollectionItem?>? comparer)
+		where TCollectionItem : ISymbol
+		where TItem : TCollectionItem
 		{
 			if (source.Length == 0)
 				return false;
 
-			comparer ??= (SymbolEqualityComparer.Default as IEqualityComparer<TSymbol?>) ?? EqualityComparer<TSymbol?>.Default;
+			comparer ??= (SymbolEqualityComparer.Default as IEqualityComparer<TCollectionItem?>) ?? EqualityComparer<TCollectionItem?>.Default;
 
 			for (int i = 0; i < source.Length; i++)
 			{
