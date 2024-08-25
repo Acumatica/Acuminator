@@ -40,13 +40,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 			if (syntaxContext.Node is not CompilationUnitSyntax compilationUnitSyntax)
 				return;
-		
-			var semanticModel = pxContext.Compilation.GetSemanticModel(compilationUnitSyntax.SyntaxTree);
-
-			if (semanticModel == null)
-				return;
-
-			var commentsWalker = new InternalApiCallsWalker(syntaxContext, pxContext, semanticModel);
+			
+			var commentsWalker = new InternalApiCallsWalker(syntaxContext, pxContext, syntaxContext.SemanticModel);
 			compilationUnitSyntax.Accept(commentsWalker);
 		}
 	}

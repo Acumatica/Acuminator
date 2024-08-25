@@ -29,12 +29,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var redeclaredActionNamesHashSet = graphExtension.Actions
-				.Where(action => graphExtension.Symbol.Equals(action.Symbol?.ContainingSymbol) && action.Base != null)
+				.Where(action => graphExtension.Symbol.Equals(action.Symbol?.ContainingSymbol, SymbolEqualityComparer.Default) && action.Base != null)
 				.Select(action => action.Symbol.Name)
 				.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 			var redeclaredHandlersWithoutActionsList = graphExtension.ActionHandlers
-				.Where(handler => graphExtension.Symbol.Equals(handler.Symbol?.ContainingSymbol) && handler.Base != null &&
+				.Where(handler => graphExtension.Symbol.Equals(handler.Symbol?.ContainingSymbol, SymbolEqualityComparer.Default) && handler.Base != null &&
 								  !redeclaredActionNamesHashSet.Contains(handler.Symbol.Name))
 				.ToList();
 

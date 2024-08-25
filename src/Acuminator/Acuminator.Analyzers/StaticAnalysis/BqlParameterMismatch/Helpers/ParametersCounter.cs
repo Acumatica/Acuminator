@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				IsCountingValid = true;
 				_bqlParameterType = _pxContext.BQL.BqlParameter;
 
-				_customPredicatesWithWeights = new Dictionary<ITypeSymbol, int>
+				_customPredicatesWithWeights = new Dictionary<ITypeSymbol, int>(SymbolEqualityComparer.Default)
 				{
 					{ _pxContext.BQL.AreDistinct, AreDistinctWeight },
 					{ _pxContext.BQL.AreSame, AreSameWeight }
@@ -144,9 +144,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (_bqlParameterType == null)		//In case of Acumatica version without FBQL 
 					return false;
 
-				var fbqlStyleParameter = typeSymbol.GetBaseTypesAndThis()
-												   .FirstOrDefault(t => t.Equals(_bqlParameterType) || 
-																		t.OriginalDefinition.Equals(_bqlParameterType)) as INamedTypeSymbol;
+				var fbqlStyleParameter = 
+					typeSymbol.GetBaseTypesAndThis()
+							  .FirstOrDefault(t => t.Equals(_bqlParameterType, SymbolEqualityComparer.Default) || 
+												   t.OriginalDefinition.Equals(_bqlParameterType, SymbolEqualityComparer.Default)) as INamedTypeSymbol;
 
 				if (fbqlStyleParameter == null || fbqlStyleParameter.TypeArguments.IsDefaultOrEmpty)
 					return false;

@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_semanticModel = semanticModel.CheckIfNull();
 				_pxContext = pxContext.CheckIfNull();
 				_analysisMode = analysisMode;
-				_rowVariables = rowVariables.ToImmutableHashSet();
+				_rowVariables = rowVariables.ToImmutableHashSet<ILocalSymbol>(SymbolEqualityComparer.Default);
 				_messageArgs = messageArgs;
 
 				_variableMemberAccessWalker = new VariableMemberAccessWalker(_rowVariables, semanticModel);

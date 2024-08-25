@@ -63,7 +63,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return;
 			}
 
-			var isSetParametersDelegate = PxContext.PXProcessingBase.SetParametersDelegate.Equals(methodSymbol.OriginalDefinition);
+			var isSetParametersDelegate = 
+				PxContext.PXProcessingBase.SetParametersDelegate.Equals(methodSymbol.OriginalDefinition, SymbolEqualityComparer.Default);
 
 			if (isSetParametersDelegate)
 			{
