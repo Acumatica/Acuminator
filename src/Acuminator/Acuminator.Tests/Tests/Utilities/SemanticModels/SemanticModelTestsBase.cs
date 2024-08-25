@@ -47,7 +47,7 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels
 			await Task.WhenAll(compilationTask, rootTask, semanticModelTask).ConfigureAwait(false);
 
 #pragma warning disable VSTHRD103 // Call async methods when in an async method
-			Compilation compilation 	 = compilationTask.Result;
+			Compilation? compilation 	 = compilationTask.Result;
 			SyntaxNode? root 			 = rootTask.Result;
 			SemanticModel? semanticModel = semanticModelTask.Result;
 #pragma warning restore VSTHRD103 // Call async methods when in an async method
@@ -58,8 +58,8 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels
 			CodeAnalysisSettings codeAnalysisSettings = customAnalysisSettings ?? CodeAnalysisSettings.Default
 																									  .WithStaticAnalysisEnabled()
 																									  .WithRecursiveAnalysisEnabled();
-			PXContext pxContext = new PXContext(compilation, codeAnalysisSettings);
-			return new RoslynTestContext(document, semanticModel, root, pxContext);
+			PXContext pxContext = new PXContext(compilation!, codeAnalysisSettings);
+			return new RoslynTestContext(document, semanticModel!, root!, pxContext);
 		}
 	}
 }

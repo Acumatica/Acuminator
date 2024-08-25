@@ -40,10 +40,10 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Graph
 														 .FirstOrDefault();
 			graphOrGraphExtDeclaration.Should().NotBeNull();
 
-			INamedTypeSymbol graphOrGraphExtSymbol = context.SemanticModel.GetDeclaredSymbol(graphOrGraphExtDeclaration);
+			INamedTypeSymbol? graphOrGraphExtSymbol = context.SemanticModel.GetDeclaredSymbol(graphOrGraphExtDeclaration);
 			graphOrGraphExtSymbol.Should().NotBeNull();
 
-			var graphSemanticModel = PXGraphSemanticModel.InferExplicitModel(context.PXContext, graphOrGraphExtSymbol,
+			var graphSemanticModel = PXGraphSemanticModel.InferExplicitModel(context.PXContext, graphOrGraphExtSymbol!,
 																			GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
 																			cancellation: cancellation);
 			graphSemanticModel.Should().NotBeNull();
