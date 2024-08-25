@@ -38,7 +38,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			ThrowIfCancellationRequested();
 
-			if (node.ArgumentList == null || !(node.Expression is MemberAccessExpressionSyntax memberAccess))
+			if (node.ArgumentList == null || node.Expression is not MemberAccessExpressionSyntax memberAccess)
 			{
 				return;
 			}

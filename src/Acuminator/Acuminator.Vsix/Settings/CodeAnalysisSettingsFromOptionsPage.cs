@@ -10,16 +10,14 @@ using Acuminator.Utilities.Common;
 namespace Acuminator.Vsix.Settings
 {
 	[Export(typeof(CodeAnalysisSettings))]
-	class CodeAnalysisSettingsFromOptionsPage : CodeAnalysisSettings
+	internal class CodeAnalysisSettingsFromOptionsPage : CodeAnalysisSettings
 	{
 		private readonly GeneralOptionsPage _optionsPage;
 
 		[ImportingConstructor]
 		public CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage optionsPage)
 		{
-			optionsPage.ThrowOnNull(nameof(optionsPage));
-
-			_optionsPage = optionsPage;
+			_optionsPage = optionsPage.CheckIfNull();
 		}
 
 		public override bool RecursiveAnalysisEnabled => _optionsPage.RecursiveAnalysisEnabled;

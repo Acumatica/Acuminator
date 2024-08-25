@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -26,10 +24,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			AncestorChildY = ancestorChildY;
 		}
 
-		public override bool Equals(object obj) =>
-			obj is LCAResultForTwoNodes other
-				? Equals(other)
-				: false;
+		public override bool Equals(object obj) => obj is LCAResultForTwoNodes other && Equals(other);
 
 		public bool Equals(LCAResultForTwoNodes other) =>
 			Equals(Ancestor, other.Ancestor) && Equals(AncestorChildX, other.AncestorChildX) && Equals(AncestorChildY, other.AncestorChildY);

@@ -76,7 +76,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var overridesChain = configureMethodCandidate.GetOverriddenAndThis().ToList();
-				var originalVirtualMethod = overridesChain[overridesChain.Count - 1];
+				var originalVirtualMethod = overridesChain[^1];
 
 				if (originalConfigureMethod.Equals(originalVirtualMethod))
 				{

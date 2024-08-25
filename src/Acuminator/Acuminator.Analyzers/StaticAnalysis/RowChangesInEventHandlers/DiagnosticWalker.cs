@@ -27,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				"SetDefaultExt",
 			};
 
-			private SymbolAnalysisContext _context;
+			private readonly SymbolAnalysisContext _context;
 			private readonly SemanticModel _semanticModel;
 			private readonly PXContext _pxContext;
 			private readonly RowChangesAnalysisMode _analysisMode;

@@ -16,7 +16,7 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression.SuppressionFileIO
 	public class SuppressionFileIOTests
 	{
 		private const string RelativeTestPath = @"Tests\DiagnosticSuppression\SuppressionFileIO\Examples";
-		private SuppressionFileTestService _fileService = new SuppressionFileTestService();
+		private readonly SuppressionFileTestService _fileService = new SuppressionFileTestService();
 
 		[Fact]
 		public void CheckSuppressionMessageConversion_FromXml()

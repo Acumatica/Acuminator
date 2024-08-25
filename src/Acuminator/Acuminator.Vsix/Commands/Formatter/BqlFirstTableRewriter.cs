@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.Formatter
 {
-	class BqlFirstTableRewriter : BqlRewriterBase
+	internal class BqlFirstTableRewriter : BqlRewriterBase
 	{
 		private bool _visited;
 
