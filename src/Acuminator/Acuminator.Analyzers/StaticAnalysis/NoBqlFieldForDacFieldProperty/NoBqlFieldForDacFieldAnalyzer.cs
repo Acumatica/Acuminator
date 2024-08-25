@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			);
 
 		public override bool ShouldAnalyze(PXContext pxContext, [NotNullWhen(true)] DacSemanticModel dac) => 
-			base.ShouldAnalyze(pxContext, dac) && dac.DacType == DacType.Dac && dac.DacFieldsByNames.Count > 0;
+			base.ShouldAnalyze(pxContext, dac) && dac.DacFieldsByNames.Count > 0;
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dac)
 		{
@@ -36,10 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			}
 		}
 
-		private void ReportDacPropertyWithoutBqlField(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dac, 
+		private void ReportDacPropertyWithoutBqlField(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrDacExt, 
 													  DacFieldInfo dacField)
 		{
-			var (location, registerCodeFix) = GetLocationToReportAndCodeFixRegistration(dac, dacField);
+			var (location, registerCodeFix) = GetLocationToReportAndCodeFixRegistration(dacOrDacExt, dacField);
 
 			if (location == null)
 				return;
