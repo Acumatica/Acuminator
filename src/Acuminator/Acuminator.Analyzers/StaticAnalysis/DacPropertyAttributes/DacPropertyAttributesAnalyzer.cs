@@ -208,8 +208,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				DacFieldAttributeInfo dataTypeAttribute = typeAttributesOnDacProperty[0];
 				var dataTypeFromAttribute = dataTypeAttribute.AggregatedAttributeMetadata
 															 .Where(atrMetadata => atrMetadata.IsFieldAttribute && atrMetadata.DataType != null)
-															 .Select(atrMetadata => atrMetadata.DataType)
-															 .Distinct()
+															 .Select(atrMetadata => atrMetadata.DataType!)
+															 .Distinct<ITypeSymbol>(SymbolEqualityComparer.Default)
 															 .FirstOrDefault();
 		
 				CheckAttributeAndPropertyTypesForCompatibility(property, dataTypeAttribute, dataTypeFromAttribute, pxContext, symbolContext);
@@ -241,8 +241,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				}
 
 				int countOfDeclaredNonNullDataTypes = dataTypeAttributes.Where(atrMetadata => atrMetadata.DataType != null)
-																		.Select(atrMetadata => atrMetadata.DataType)
-																		.Distinct()
+																		.Select(atrMetadata => atrMetadata.DataType!)
+																		.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default)
 																		.Count();
 				hasNonNullDataType = hasNonNullDataType || countOfDeclaredNonNullDataTypes > 0;
 
@@ -266,7 +266,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				return;
 			}
 
-			if (!dataTypeFromAttribute.Equals(property.EffectivePropertyType))
+			if (!dataTypeFromAttribute.Equals(property.EffectivePropertyType, SymbolEqualityComparer.Default))
 			{
 				ReportIncompatibleTypesDiagnostics(property, dataTypeAttribute, symbolContext, pxContext, registerCodeFix: true);
 			}

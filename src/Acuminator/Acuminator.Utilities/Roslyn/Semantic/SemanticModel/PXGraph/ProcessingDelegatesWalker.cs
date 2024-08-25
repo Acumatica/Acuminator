@@ -72,7 +72,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 			else
 			{
-				var isSetProcessDelegate = PxContext.PXProcessingBase.SetProcessDelegate.Contains(methodSymbol.OriginalDefinition);
+				var isSetProcessDelegate = 
+					PxContext.PXProcessingBase.SetProcessDelegate.Contains<IMethodSymbol>(methodSymbol.OriginalDefinition, SymbolEqualityComparer.Default);
 
 				if (isSetProcessDelegate)
 				{

@@ -142,7 +142,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			var nodesToVisit = body.DescendantNodesAndSelf()
 								   .Where(n => n is not ExpressionSyntax expressionNode || 
 											  !bqlSelectGraphArgNodesToSkip.Contains(expressionNode));
-			var graphSymbolsUsages = new Dictionary<ISymbol, List<SyntaxNode>>();
+			var graphSymbolsUsages = new Dictionary<ISymbol, List<SyntaxNode>>(SymbolEqualityComparer.Default);
 
 			foreach (var subNode in nodesToVisit)
 			{
@@ -197,10 +197,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// If there is only a single local variable available then there are no other graphs in the context to use other than this local variable.
 			// This is the case of static graph methods used by processing views where a graph instance is created and used inside the static method. 
 			// We allow such cases.
-			if (availableGraphsNotUsedBeforeBqlQuery.Count == 1 && localVar.Equals(availableGraphsNotUsedBeforeBqlQuery[0]))
+			if (availableGraphsNotUsedBeforeBqlQuery.Count == 1 && localVar.Equals(availableGraphsNotUsedBeforeBqlQuery[0], SymbolEqualityComparer.Default))
 				return;
 
-			var diagnosticProperties = CreateDiagnosticProperties(availableGraphsNotUsedBeforeBqlQuery.Where(graph => !localVar.Equals(graph)), pxContext);
+			var diagnosticProperties = CreateDiagnosticProperties(
+											availableGraphsNotUsedBeforeBqlQuery.Where(graph => !localVar.Equals(graph, SymbolEqualityComparer.Default)), 
+											pxContext);
 			context.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable, graphArgSyntax.GetLocation(), diagnosticProperties),
 				pxContext.CodeAnalysisSettings);

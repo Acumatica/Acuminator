@@ -255,12 +255,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			if (containerDeclaredIncorrectly)
 			{
-				return keyDeclarations.Where(key => !key.Equals(primaryKey)).ToList(capacity: keyDeclarations.Count - 1);
+				return keyDeclarations.Where(key => !key.Equals(primaryKey, SymbolEqualityComparer.Default))
+									  .ToList(capacity: keyDeclarations.Count - 1);
 			}
 			else
 			{
-				return keyDeclarations.Where(key => !key.Equals(primaryKey) && !Equals(key.ContainingType, uniqueKeysContainer) && 
-													!key.GetContainingTypes().Contains(uniqueKeysContainer))
+				return keyDeclarations.Where(key => !key.Equals(primaryKey, SymbolEqualityComparer.Default) && 
+													!SymbolEqualityComparer.Default.Equals(key.ContainingType, uniqueKeysContainer) && 
+													!key.GetContainingTypes().Contains(uniqueKeysContainer, SymbolEqualityComparer.Default))
 									  .ToList(capacity: keyDeclarations.Count - 1);
 			}
 		}
@@ -293,7 +295,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private string GetHashForDacKeys(DacSemanticModel dac)
 		{
 			var dacKeys = dac.DacFieldPropertiesWithBqlFields.Where(property => property.IsKey)
-										   .Select(property => dac.BqlFieldsByNames[property.Name].Symbol);
+															 .Select(property => dac.BqlFieldsByNames[property.Name].Symbol);
 
 			return GetHashForSetOfDacFields(dacKeys, areFieldsOrdered: false);
 		}

@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 				keyAttributes.AddRange(propertyKeyAttributes);
 
-				if (dac.Symbol.Equals(property.Symbol.ContainingType))
+				if (dac.Symbol.Equals(property.Symbol.ContainingType, SymbolEqualityComparer.Default))
 				{
 					declaredInDacKeyAttributes.AddRange(propertyKeyAttributes);
 				}

@@ -68,7 +68,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private Stack<SyntaxNode> NodesStack { get; set; } = new Stack<SyntaxNode>();
 
-        private HashSet<IMethodSymbol> MethodsInStack { get; set; } = new HashSet<IMethodSymbol>();
+        private HashSet<IMethodSymbol> MethodsInStack { get; set; } = new HashSet<IMethodSymbol>(SymbolEqualityComparer.Default);
 
 		private readonly Lazy<HashSet<INamedTypeSymbol>> _typesToBypass;
 		private readonly Func<IMethodSymbol, bool>? _extraBypassCheck;
@@ -308,7 +308,7 @@ namespace Acuminator.Utilities.Roslyn
 			try
 			{
 				NodesStack                      = new Stack<SyntaxNode>();
-				MethodsInStack                  = new HashSet<IMethodSymbol>();
+				MethodsInStack                  = new HashSet<IMethodSymbol>(SymbolEqualityComparer.Default);
 				OriginalNode                    = null;
 				NodeCurrentlyVisitedRecursively = null;
 

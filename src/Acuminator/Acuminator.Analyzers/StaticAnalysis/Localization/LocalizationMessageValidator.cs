@@ -153,8 +153,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			}
 
 			return messageSymbolWithStringType != null &&
-				(_pxContext.SystemTypes.String.StringFormat.Contains(messageSymbolWithStringType) ||
-				 _pxContext.SystemTypes.String.StringConcat.Contains(messageSymbolWithStringType));
+				(_pxContext.SystemTypes.String.StringFormat.Contains(messageSymbolWithStringType, SymbolEqualityComparer.Default) ||
+				 _pxContext.SystemTypes.String.StringConcat.Contains(messageSymbolWithStringType, SymbolEqualityComparer.Default));
 		}
 
 		private void CheckThatMessageIsNotMethodCallPassedToBaseConstructor(ISymbol? messageSymbolWithStringType, ExpressionSyntax messageExpression)
@@ -192,7 +192,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 			return messageProperty.ContainingType.InheritsFromOrEquals(_pxContext.Exceptions.PXException) &&
 				   messageProperty.GetOverriddenAndThis()
-								  .Contains(_pxContext.Exceptions.PXException_Message);
+								  .Contains(_pxContext.Exceptions.PXException_Message, SymbolEqualityComparer.Default);
 		}
 
 		private bool IsPXExceptionInfoMessageFormatProperty(IPropertySymbol messageProperty)
@@ -204,7 +204,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			}
 
 			return messageProperty.ContainingType.InheritsFromOrEquals(_pxContext.Exceptions.PXExceptionInfo) &&
-				   messageProperty.Equals(_pxContext.Exceptions.PXExceptionInfo_MessageFormat);
+				   messageProperty.Equals(_pxContext.Exceptions.PXExceptionInfo_MessageFormat, SymbolEqualityComparer.Default);
 		}
 
 		private bool IsLocalizableMessagesContainer(ITypeSymbol messageContainerType)
@@ -212,7 +212,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			ImmutableArray<AttributeData> attributes = messageContainerType.GetAttributes();
 			return attributes.IsDefaultOrEmpty
 				? false
-				: attributes.Any(a => a.AttributeClass?.Equals(_pxContext.Localization.PXLocalizableAttribute) ?? false);
+				: attributes.Any(a => a.AttributeClass?.Equals(_pxContext.Localization.PXLocalizableAttribute, 
+																SymbolEqualityComparer.Default) ?? false);
 		}
 
 		private bool CheckThatMessageSymbolIsFieldWithConstant(ExpressionSyntax messageExpression, ISymbol messageSymbolWithStringType)

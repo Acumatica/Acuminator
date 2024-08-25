@@ -113,7 +113,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 					return;
 
 				// Case Base.SomeAction.Press(adapter)
-				if (PxContext.PXAction.Press.Contains(originalMethodSymbol) &&
+				if (PxContext.PXAction.Press.Contains<IMethodSymbol>(originalMethodSymbol, SymbolEqualityComparer.Default) &&
 					invocationNode.Expression is MemberAccessExpressionSyntax memberAccess && memberAccess.Expression != null)
 				{
 					var expressionSymbol = GetSymbol<ISymbol>(memberAccess.Expression);

@@ -1,5 +1,4 @@
-﻿
-using Acuminator.Utilities.Common;
+﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
@@ -30,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 			var methodSymbol = GetSymbol<IMethodSymbol>(node);
 			methodSymbol = methodSymbol?.OriginalDefinition?.OverriddenMethod ?? methodSymbol?.OriginalDefinition;
 
-			if (methodSymbol != null && PxContext.PXAction.Press.Contains(methodSymbol))
+			if (methodSymbol != null && PxContext.PXAction.Press.Contains(methodSymbol, SymbolEqualityComparer.Default))
 			{
 				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
 			}

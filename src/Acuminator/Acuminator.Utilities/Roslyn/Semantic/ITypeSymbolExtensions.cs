@@ -49,7 +49,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				// for a type parameter we can consider its generic constraints like "where T : SomeClass" as its base types
 				IEnumerable<ITypeSymbol> constraintTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
 																	    .SelectMany(constraint => constraint.GetBaseTypesIterator(includeThis: true))
-																	    .Distinct();
+																	    .Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 				return includeThis 
 					? constraintTypes.PrependItem(typeParameter)
 					: constraintTypes;
@@ -197,7 +197,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				typeList = typeList.ConcatStructList(type.AllInterfaces);
 			}
 
-			return typeList.Any(t => t.Equals(baseType));
+			return typeList.Any(t => t.Equals(baseType, SymbolEqualityComparer.Default));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -215,7 +215,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				typeList = typeList.ConcatStructList(type.AllInterfaces);
 
 			return typeList.Select(t => t.OriginalDefinition)
-						   .Any(t => t.Equals(baseType.OriginalDefinition));
+						   .Any(t => t.Equals(baseType.OriginalDefinition, SymbolEqualityComparer.Default));
 		}
 
 		public static bool InheritsFrom(this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces = false)
@@ -230,7 +230,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				baseTypes = baseTypes.ConcatStructList(type.AllInterfaces);
 			}
 			
-			return baseTypes.Any(t => t.Equals(baseType));
+			return baseTypes.Any(t => t.Equals(baseType, SymbolEqualityComparer.Default));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -247,10 +247,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			// Interface types themselves are not included into AllInterfaces set, they do not implement themselves from Roslyn POV.
 			// However, for simplicity in Acuminator analysis we can assume equality of type and interfaceType as a special case of type implementing interfaceType interface.
 			// Therefore, we need to check type if it's an interface if it equals to the interfaceType
-			if (type.TypeKind == TypeKind.Interface && type.Equals(interfaceType))
+			if (type.TypeKind == TypeKind.Interface && type.Equals(interfaceType, SymbolEqualityComparer.Default))
 				return true;
 
-			return type.AllInterfaces.Any(t => t.Equals(interfaceType));
+			return type.AllInterfaces.Any(t => t.Equals(interfaceType, SymbolEqualityComparer.Default));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -327,7 +327,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				: GetAllConstraintTypesImplementation(typeParameterSymbol)
 							.Where(type => type.TypeKind != TypeKind.Interface);
 
-			return constraintTypes.Distinct();
+			return constraintTypes.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 
 			//---------------------------------Local Functions--------------------------------------------------------
 			IEnumerable<ITypeSymbol> GetAllConstraintTypesImplementation(ITypeParameterSymbol typeParameter, int recursionLevel = 0)
@@ -373,7 +373,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			ITypeSymbol? current = type;
 			int depth = 0;
 
-			while (current != null && !current.Equals(baseType))
+			while (current != null && !current.Equals(baseType, SymbolEqualityComparer.Default))
 			{
 				current = current.BaseType;
 				depth++;
@@ -412,7 +412,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static bool IsNullable(this ITypeSymbol? typeSymbol, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull();
-			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable) ?? false;
+			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable, SymbolEqualityComparer.Default) ?? false;
 		}
 
 		/// <summary>

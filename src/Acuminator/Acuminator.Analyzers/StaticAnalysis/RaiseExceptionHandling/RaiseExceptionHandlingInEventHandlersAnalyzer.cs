@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 				methodSymbol = methodSymbol?.OriginalDefinition?.OverriddenMethod ?? methodSymbol?.OriginalDefinition;
 
-				if (methodSymbol != null && PxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
+				if (methodSymbol != null && PxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol, SymbolEqualityComparer.Default))
 				{
 					if (!Settings.IsvSpecificAnalyzersEnabled && _eventType == EventType.FieldSelecting)
 					{
