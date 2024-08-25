@@ -57,7 +57,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private Dictionary<INamedTypeSymbol, List<ITypeSymbol>> GetUsedDacFieldsByKey(DacSemanticModel dac, List<INamedTypeSymbol> keys) =>
 			keys.Select(key => (Key: key, KeyFields: GetOrderedDacFieldsUsedByKey(dac, key)))
 				.ToDictionary(keyWithFields => keyWithFields.Key, 
-							  keyWithFields => keyWithFields.KeyFields);
+							  keyWithFields => keyWithFields.KeyFields,
+							  SymbolEqualityComparer.Default as IEqualityComparer<INamedTypeSymbol>);
 
 		protected abstract List<ITypeSymbol> GetOrderedDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol key);
 

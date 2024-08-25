@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 
 					var symbolInfo = semanticModel.GetSymbolInfo(node.Type, _parent.CancellationToken);
 					return symbolInfo.Symbol?.OriginalDefinition != null
-					       && symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope);
+					       && symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope, SymbolEqualityComparer.Default);
 				}
 			}
 

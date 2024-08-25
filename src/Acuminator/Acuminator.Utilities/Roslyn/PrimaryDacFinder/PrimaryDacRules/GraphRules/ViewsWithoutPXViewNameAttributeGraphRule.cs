@@ -46,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 					continue;
 
 				bool viewHasViewNameAttribute = attributes.SelectMany(a => a.AttributeClass?.GetBaseTypesAndThis() ?? [])
-														  .Any(baseType => baseType.Equals(_pxViewNameAttribute));
+														  .Any(baseType => baseType.Equals(_pxViewNameAttribute, SymbolEqualityComparer.Default));
 				if (!viewHasViewNameAttribute)
 				{
 					if (viewInfo.DAC != null)

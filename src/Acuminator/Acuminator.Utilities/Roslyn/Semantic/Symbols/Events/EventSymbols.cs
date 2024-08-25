@@ -70,7 +70,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
 		{
-			var map = new Dictionary<ITypeSymbol, EventType>()
+			var map = new Dictionary<ITypeSymbol, EventType>(SymbolEqualityComparer.Default)
 				{
 					{ eventSymbols.PXRowSelectingEventArgs, EventType.RowSelecting },
 					{ eventSymbols.PXRowSelectedEventArgs, EventType.RowSelected },

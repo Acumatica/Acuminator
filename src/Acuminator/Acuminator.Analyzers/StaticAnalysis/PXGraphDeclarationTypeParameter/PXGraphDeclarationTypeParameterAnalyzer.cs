@@ -64,7 +64,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 
 			var graphTypeArgument = context.SemanticModel.GetTypeInfo(graphArgumentIdentifier).Type;
 
-			if (typeSymbol.Equals(graphTypeArgument) || graphTypeArgument?.Kind == SymbolKind.TypeParameter)
+			if (typeSymbol.Equals(graphTypeArgument, SymbolEqualityComparer.Default) || graphTypeArgument?.Kind == SymbolKind.TypeParameter)
 			{
 				return;
 			}
@@ -91,9 +91,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 					continue;
 				}
 
-				var isGraphBaseType = baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraph) ||
-									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac) ||
-									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField);
+				var isGraphBaseType = baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraph, SymbolEqualityComparer.Default) ||
+									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac, SymbolEqualityComparer.Default) ||
+									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField, SymbolEqualityComparer.Default);
 
 				if (!isGraphBaseType)
 				{

@@ -471,7 +471,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 				// If the method has PXButton attribute then do more flexible search for adapter parameter.
 				// Check if the method has a single adapter parameter and if yes then return it
-				var adapterParameters = actionHandlerMethod.Parameters.Where(parameter => parameter.Type.Equals(PxContext.PXAdapterType))
+				var adapterParameters = actionHandlerMethod.Parameters.Where(parameter => parameter.Type.Equals(PxContext.PXAdapterType, SymbolEqualityComparer.Default))
 																	  .ToList(capacity: 1);
 				return adapterParameters.Count == 1
 					? (AdapterParameter: adapterParameters[0], HasPXButtonAttribute: true)

@@ -37,7 +37,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 			var symbolInfo = _semanticModel.GetSymbolInfo(node, _cancellation);
 
-			if (symbolInfo.Symbol != null && symbolInfo.Symbol.Equals(_parameter))
+			if (symbolInfo.Symbol != null && symbolInfo.Symbol.Equals(_parameter, SymbolEqualityComparer.Default))
 			{
 				var replacement = _replaceWith;
 

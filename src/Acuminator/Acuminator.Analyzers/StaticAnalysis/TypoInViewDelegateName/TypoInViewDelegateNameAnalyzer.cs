@@ -33,8 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 				return;
 
 			var delegateCandidates = from method in graphModel.Symbol.GetMethods()
-									 where method.ContainingType.Equals(graphModel.Symbol) && !method.IsOverride &&
-										   (!graphModel.ViewDelegatesByNames.TryGetValue(method.Name, out DataViewDelegateInfo? delegateInfo) || !method.Equals(delegateInfo.Symbol)) &&
+									 where method.ContainingType.Equals(graphModel.Symbol, SymbolEqualityComparer.Default) && !method.IsOverride &&
+										   (!graphModel.ViewDelegatesByNames.TryGetValue(method.Name, out DataViewDelegateInfo? delegateInfo) || 
+										    !method.Equals(delegateInfo.Symbol, SymbolEqualityComparer.Default)) &&
 										   method.IsValidViewDelegate(pxContext) && !method.IsValidActionHandler(pxContext)
 									 select method;
 

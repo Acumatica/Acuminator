@@ -99,7 +99,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 
 			extensions.AddRange(graphExtension.GetExtensionWithBaseTypes().Reverse());
-			return extensions.Distinct();
+			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
 
 		private static IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder(ITypeSymbol graphType, ITypeSymbol graphExtension, 
@@ -124,7 +124,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				extensions.AddRange(graphType.GetGraphWithBaseTypes());
 			}
 
-			return extensions.Distinct();
+			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
 	}
 }

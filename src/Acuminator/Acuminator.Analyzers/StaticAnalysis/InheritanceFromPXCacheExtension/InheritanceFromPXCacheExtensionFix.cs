@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 			var genericArgs = new List<ITypeSymbol>();
 			INamedTypeSymbol? currentType = classType.BaseType;
 
-			while (currentType != null && !currentType.Equals(pxContext.PXCacheExtensionType))
+			while (currentType != null && !currentType.Equals(pxContext.PXCacheExtensionType, SymbolEqualityComparer.Default))
 			{
 				if (currentType.Name == TypeNames.PXCacheExtension)
 				{

@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 				return false;
 
 			INamedTypeSymbol hiddenAttribute = dacFinder.PxContext.AttributeTypes.PXHiddenAttribute;
-			bool hasHiddenAttribute = attributes.Any(a => a.AttributeClass?.Equals(hiddenAttribute) ?? false);
+			bool hasHiddenAttribute = attributes.Any(a => a.AttributeClass?.Equals(hiddenAttribute, SymbolEqualityComparer.Default) ?? false);
 
 			if (hasHiddenAttribute)
 				return true;

@@ -35,7 +35,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 				return false;
 
 			return attributes.SelectMany(a => a.AttributeClass?.GetBaseTypesAndThis() ?? [])
-							 .Any(baseType => baseType.Equals(_pxViewNameAttribute));
+							 .Any(baseType => baseType.Equals(_pxViewNameAttribute, SymbolEqualityComparer.Default));
 		}
 	}
 }

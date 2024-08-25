@@ -64,7 +64,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 				return true;
 
 			ITypeSymbol pxActionDacType = actionTypeArgs[0];
-			return pxActionDacType.Equals(primaryDAC);
+			return pxActionDacType.Equals(primaryDAC, SymbolEqualityComparer.Default);
 		}
 
 		private static void RegisterDiagnosticForAction(ISymbol actionSymbol, string primaryDacName, 

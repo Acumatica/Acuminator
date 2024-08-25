@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			var eventAttributes	= eventInfo.Symbol.GetAttributes();
 
 			// PXOverridden events can't be converted either
-			if (!eventAttributes.IsDefaultOrEmpty && eventAttributes.Any(a => pxOverrideAttribute.Equals(a.AttributeClass)))
+			if (!eventAttributes.IsDefaultOrEmpty && eventAttributes.Any(a => pxOverrideAttribute.Equals(a.AttributeClass, SymbolEqualityComparer.Default)))
 				return false;
 
 			// check that there is a corresponding generic event args symbol

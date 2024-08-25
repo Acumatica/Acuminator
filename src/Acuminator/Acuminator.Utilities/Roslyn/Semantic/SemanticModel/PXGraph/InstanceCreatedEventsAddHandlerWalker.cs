@@ -39,7 +39,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (semanticModel == null || methodSymbol == null || methodSymbol.TypeParameters.IsDefaultOrEmpty)
 				return;
 
-			bool isCreationDelegateAddition = PxContext.PXGraph.InstanceCreatedEvents.AddHandler?.Equals(methodSymbol.ConstructedFrom) ?? false;
+			bool isCreationDelegateAddition = 
+				PxContext.PXGraph.InstanceCreatedEvents.AddHandler?.Equals(methodSymbol.ConstructedFrom, SymbolEqualityComparer.Default) ?? false;
 
 			if (isCreationDelegateAddition)
 			{

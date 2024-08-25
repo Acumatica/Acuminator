@@ -49,7 +49,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 				return null;
 			else if (firstDacCandidate != null && secondDacCandidate != null)
 			{
-				return firstDacCandidate.Equals(secondDacCandidate)
+				return firstDacCandidate.Equals(secondDacCandidate, SymbolEqualityComparer.Default)
 					? firstDacCandidate
 					: null;
 			}

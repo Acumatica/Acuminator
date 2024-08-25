@@ -117,7 +117,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 				var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
 
-				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXView.Type) && symbol.Name == DelegateNames.StartRow)
+				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXView.Type, SymbolEqualityComparer.Default) && 
+					symbol.Name == DelegateNames.StartRow)
 				{
 					return localSymbol;
 				}

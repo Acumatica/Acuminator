@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			var actionHandlerWithBadSignature = from method in pxGraph.Symbol.GetMethods()
-												where pxGraph.Symbol.Equals(method.ContainingType) &&
+												where pxGraph.Symbol.Equals(method.ContainingType, SymbolEqualityComparer.Default) &&
 													  CheckIfDiagnosticShouldBeRegisteredForMethod(method, pxContext) &&
 													  pxGraph.ActionsByNames.ContainsKey(method.Name)
 												select method;
@@ -48,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				return true;
 
 			return method.ReturnType.SpecialType == SpecialType.System_Collections_IEnumerable &&
-				(method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType));
+				(method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType, SymbolEqualityComparer.Default));
 		}
 	}
 }
