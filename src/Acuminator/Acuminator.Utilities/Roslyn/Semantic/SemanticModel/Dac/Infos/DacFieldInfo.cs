@@ -42,20 +42,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public int DeclarationOrder => PropertyInfo?.DeclarationOrder ?? BqlFieldInfo!.DeclarationOrder;
 
-		public bool HasFieldProperty { get; }
+		/// <summary>
+		/// Flag indicating whether the DAC field has a DAC field property in the containing DAC or DAC extension, 
+		/// and their base and chained types.
+		/// </summary>
+		public bool HasFieldProperty { get; private set; }
 
-		public bool HasBqlField { get; }
+		/// <summary>
+		/// Flag indicating whether the DAC field has a DAC BQL field in the containing DAC or DAC extension, 
+		/// and their base and chained types.
+		/// </summary>
+		public bool HasBqlField { get; private set; }
 
 		/// <value>
 		/// The type of the DAC field property.
 		/// </value>
-		public ITypeSymbol? FieldPropertyType { get; }
+		public ITypeSymbol? FieldPropertyType { get; private set; }
 
 		/// <value>
 		/// The effective type of the property. For reference types and non nullable value types it is the same as <see cref="PropertyType"/>. 
 		/// For nulable value types it is the underlying type extracted from nullable. It is <c>T</c> for <see cref="Nullable{T}"/>.
 		/// </value>
-		public ITypeSymbol? EffectivePropertyType { get; }
+		public ITypeSymbol? EffectivePropertyType { get; private set; }
 
 		/// <summary>
 		/// The DB boundness calculated from attributes declared on this DAC property.
@@ -65,15 +73,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <summary>
 		/// The effective bound type for this DAC field obtained by the combination of <see cref="DeclaredDbBoundness"/>s of this propety's override chain. 
 		/// </summary>
-		public DbBoundnessType EffectiveDbBoundness { get; }
+		public DbBoundnessType EffectiveDbBoundness { get; private set; }
 
-		public bool IsIdentity { get; }
+		public bool IsIdentity { get; private set; }
 
-		public bool IsKey { get; }
+		public bool IsKey { get; private set; }
 
-		public bool IsAutoNumbering { get; }
+		public bool IsAutoNumbering { get; private set; }
 
-		public bool HasAcumaticaAttributes { get; }
+		public bool HasAcumaticaAttributes { get; private set; }
+
+		public DacFieldInfo(DacPropertyInfo? dacPropertyInfo, DacBqlFieldInfo? dacBqlFieldInfo, DacFieldInfo baseInfo) :
+					   this(dacPropertyInfo, dacBqlFieldInfo)
+		{
+			_baseInfo = baseInfo.CheckIfNull();
+			CombineWithBaseInfo(baseInfo);
+		}
 
 		public DacFieldInfo(DacPropertyInfo? dacPropertyInfo, DacBqlFieldInfo? dacBqlFieldInfo)
 		{
@@ -85,17 +100,32 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Name 		 = PropertyInfo?.Name ?? BqlFieldInfo!.Name.ToPascalCase();
 			DacType 	 = PropertyInfo?.Symbol.ContainingType ?? BqlFieldInfo!.Symbol.ContainingType;
 
-			DacFieldMetadata metadata = DacFieldMetadata.FromDacFieldInfo(this);
-			HasFieldProperty	   = metadata.HasFieldProperty;
-			HasBqlField 		   = metadata.HasBqlField;
-			IsIdentity 			   = metadata.IsIdentity;
-			IsKey 				   = metadata.IsKey;
-			IsAutoNumbering 	   = metadata.IsAutoNumbering;
-			FieldPropertyType 	   = metadata.FieldPropertyType;
-			EffectivePropertyType  = metadata.EffectivePropertyType;
-			DeclaredDbBoundness    = metadata.DeclaredDbBoundness;
-			EffectiveDbBoundness   = metadata.EffectiveDbBoundness;
-			HasAcumaticaAttributes = metadata.HasAcumaticaAttributes;
+			HasBqlField = dacBqlFieldInfo != null;
+
+			if (dacPropertyInfo != null)
+			{
+				HasFieldProperty 	   = true;
+				IsKey 				   = dacPropertyInfo.IsKey;
+				IsIdentity 			   = dacPropertyInfo.IsIdentity;
+				IsAutoNumbering 	   = dacPropertyInfo.IsAutoNumbering;
+				FieldPropertyType 	   = dacPropertyInfo.PropertyType;
+				EffectivePropertyType  = dacPropertyInfo.EffectivePropertyType;
+				DeclaredDbBoundness    = dacPropertyInfo.DeclaredDbBoundness;
+				EffectiveDbBoundness   = dacPropertyInfo.EffectiveDbBoundness;
+				HasAcumaticaAttributes = dacPropertyInfo.HasAcumaticaAttributesEffective;
+			}
+			else
+			{
+				HasFieldProperty 	   = false;
+				IsKey 				   = false;
+				IsIdentity 			   = false;
+				IsAutoNumbering 	   = false;
+				FieldPropertyType 	   = null;
+				EffectivePropertyType  = null;
+				DeclaredDbBoundness    = DbBoundnessType.NotDefined;
+				EffectiveDbBoundness   = DbBoundnessType.NotDefined;
+				HasAcumaticaAttributes = false;
+			}
 		}
 
 		public bool IsDeclaredInType(ITypeSymbol? type) =>
@@ -105,51 +135,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		private void CombineWithBaseInfo(DacFieldInfo baseInfo)
 		{
-			// No need to combine anything here, combination is done in the constructor
-		}
+			HasAcumaticaAttributes = HasAcumaticaAttributes || baseInfo.HasAcumaticaAttributes;
+			HasBqlField 		   = HasBqlField 			|| baseInfo.HasBqlField;
+			HasFieldProperty 	   = HasFieldProperty 		|| baseInfo.HasFieldProperty;
+			IsKey 				   = IsKey 					|| baseInfo.IsKey;
+			IsIdentity 			   = IsIdentity 			|| baseInfo.IsIdentity;
+			IsAutoNumbering 	   = IsAutoNumbering 		|| baseInfo.IsAutoNumbering;
+			HasAcumaticaAttributes = HasAcumaticaAttributes || baseInfo.HasAcumaticaAttributes;
 
-		protected readonly record struct DacFieldMetadata(bool HasBqlField, bool HasFieldProperty, bool HasAcumaticaAttributes, bool IsKey, 
-														  bool IsIdentity, bool IsAutoNumbering, ITypeSymbol? FieldPropertyType,
-														  ITypeSymbol? EffectivePropertyType, DbBoundnessType DeclaredDbBoundness, 
-														  DbBoundnessType EffectiveDbBoundness)
-		{
-			public static DacFieldMetadata FromDacFieldInfo(DacFieldInfo fieldInfo)
-			{
-				var fieldsChain = fieldInfo.ThisAndOverridenItems();
-				bool hasBqlField = false;
-				bool hasFieldProperty = false;
-				bool? isKey = null, isIdentity = null, isAutoNumbering = null, hasAcumaticaAttributes = null;
-				ITypeSymbol? fieldPropertyType = null, effectivePropertyType = null;
-				DbBoundnessType? declaredDbBoundness = null, effectiveDbBoundness = null;
+			FieldPropertyType	  ??= baseInfo.FieldPropertyType;
+			EffectivePropertyType ??= baseInfo.EffectivePropertyType;
 
-				foreach (DacFieldInfo fieldInChain in fieldsChain)
-				{
-					var propertyInfo = fieldInChain.PropertyInfo;
-
-					if (propertyInfo != null)
-					{
-						hasFieldProperty = true;
-						isKey 				   ??= propertyInfo.IsKey;
-						isIdentity 			   ??= propertyInfo.IsIdentity;
-						isAutoNumbering 	   ??= propertyInfo.IsAutoNumbering;
-						fieldPropertyType 	   ??= propertyInfo.PropertyType;
-						effectivePropertyType  ??= propertyInfo.EffectivePropertyType;
-						declaredDbBoundness    ??= propertyInfo.DeclaredDbBoundness;
-						effectiveDbBoundness   ??= propertyInfo.EffectiveDbBoundness;
-						hasAcumaticaAttributes ??= propertyInfo.HasAcumaticaAttributesEffective;
-					}
-
-					if (fieldInChain.BqlFieldInfo != null)
-					{
-						hasBqlField = true;
-					}
-				}
-
-				return new DacFieldMetadata(hasBqlField, hasFieldProperty, hasAcumaticaAttributes ?? false, 
-											isKey ?? false, isIdentity ?? false, isAutoNumbering ?? false,
-											fieldPropertyType, effectivePropertyType, declaredDbBoundness ?? DbBoundnessType.NotDefined,
-											effectiveDbBoundness ?? DbBoundnessType.NotDefined);
-			}
+			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
 		}
 
 		public override string ToString() => Name;
