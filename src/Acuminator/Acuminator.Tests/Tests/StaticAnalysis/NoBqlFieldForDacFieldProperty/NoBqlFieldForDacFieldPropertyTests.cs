@@ -102,7 +102,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new NoBqlFieldForDacFieldAnalyzer());
+				new Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty.NoBqlFieldForDacFieldProperty());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new NoBqlFieldForDacFieldAnalyzerFix();
 
