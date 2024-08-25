@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	public sealed partial class SuppressionManager
 	{
 		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
-		private static object _initializationLocker = new object();
+		private static readonly object _initializationLocker = new object();
 
 		internal static SuppressionManager? Instance
 		{

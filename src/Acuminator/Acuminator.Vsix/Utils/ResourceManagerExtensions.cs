@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.Utilities
 	{       
         public static string GetStringResourceSafe(this ResourceManager resourceManager, string resourceKey)
         {
-			string? result = null;
+			string? result;
 
 			try
 			{

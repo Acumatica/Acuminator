@@ -85,7 +85,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 
 			return newDocument;
 
-			AttributeArgumentListSyntax CreateDefaultArgumentList()
+			//---------------------------------------------Local Function-------------------------------------------------------
+			static AttributeArgumentListSyntax CreateDefaultArgumentList()
 			{
 				var pxCacheNameDefaultArgumentValue = nameof(Resources.PX1094PXCacheNameDefaultArgumentValue).GetLocalized().ToString();
 

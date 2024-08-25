@@ -24,20 +24,8 @@ namespace Acuminator.Tests.Verification
 		{
 		}
 
-		public AndConstraint<GenericCollectionAssertions<Location>> BeEquivalentTo(
-			params (int Line, int Column)[] expected)
+		public AndConstraint<GenericCollectionAssertions<Location>> BeEquivalentTo(params (int Line, int Column)[] expected)
 		{
-			void Assert((int Line, int Column) expectedLocation, Location actualLocation)
-			{
-				var actualSpan = actualLocation.GetLineSpan();
-				var actualLinePosition = actualSpan.StartLinePosition;
-				int actualLine = actualLinePosition.Line + 1;
-				int actualColumn = actualLinePosition.Character + 1;
-
-				actualLine.Should().Be(expectedLocation.Line);
-				actualColumn.Should().Be(expectedLocation.Column);
-			}
-
 			var actual = Subject.ToArray();
 			actual.Should().HaveCount(expected.Length);
 
@@ -47,6 +35,18 @@ namespace Acuminator.Tests.Verification
 			}
 
 			return new AndConstraint<GenericCollectionAssertions<Location>>(this);
+
+			//------------------------------------Local Function--------------------------------------
+			static void Assert((int Line, int Column) expectedLocation, Location actualLocation)
+			{
+				var actualSpan = actualLocation.GetLineSpan();
+				var actualLinePosition = actualSpan.StartLinePosition;
+				int actualLine = actualLinePosition.Line + 1;
+				int actualColumn = actualLinePosition.Character + 1;
+
+				actualLine.Should().Be(expectedLocation.Line);
+				actualColumn.Should().Be(expectedLocation.Column);
+			}
 		}
 	}
 }

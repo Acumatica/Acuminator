@@ -34,7 +34,7 @@ namespace Acuminator.Vsix.Coloriser
 		internal IClassificationFormatMapService _classificationFormatMapService = null!;  //Set via MEF
 
 		private const string TextCategory = "text";
-		private static object _syncRoot = new object();
+		private static readonly object _syncRoot = new object();
 		private static bool _isPriorityIncreased;
 
 		[MemberNotNullWhen(returnValue: true, nameof(_codeColoringClassificationTypes), nameof(_braceTypeByLevel))]

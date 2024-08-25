@@ -56,7 +56,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			string eventName = Symbol.Name;
 
-			if (eventName.Length < 5 || eventName[0] == '_' || eventName[eventName.Length - 1] == '_')
+			if (eventName.Length < 5 || eventName[0] == '_' || eventName[^1] == '_')
 			{
 				return string.Empty;
 			}
