@@ -166,5 +166,35 @@ namespace Acuminator.Utilities.Common
 
 			return builder.ToImmutable();
 		}
+
+		/// <summary>
+		/// An <see cref="ImmutableArray{TSymbol}"/> extension method that query if <paramref name="source"/> contains the given <paramref name="item"/>.
+		/// </summary>
+		/// <typeparam name="TSymbol">Type of the symbol.</typeparam>
+		/// <param name="source">The immutable array to act on.</param>
+		/// <param name="item">The item.</param>
+		/// <param name="comparer">The comparer.</param>
+		/// <returns>
+		/// True if the object is in this collection, false if not.
+		/// </returns>
+		/// <remarks>
+		/// This method is an optimization to prevent boxing.
+		/// </remarks>
+		public static bool Contains<TSymbol>(this ImmutableArray<TSymbol> source, TSymbol item, IEqualityComparer<TSymbol?>? comparer)
+		where TSymbol : ISymbol
+		{
+			if (source.Length == 0)
+				return false;
+
+			comparer ??= (SymbolEqualityComparer.Default as IEqualityComparer<TSymbol?>) ?? EqualityComparer<TSymbol?>.Default;
+
+			for (int i = 0; i < source.Length; i++)
+			{
+				if (comparer.Equals(source[i], item))
+					return true;
+			}
+
+			return false;
+		}
 	}
 }
