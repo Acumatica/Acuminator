@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis;
@@ -60,11 +61,10 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task SanityCheck(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode) await document.GetSyntaxRootAsync();
+			var walker = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var node = (await document.GetSyntaxRootAsync().ConfigureAwait(false)) as CSharpSyntaxNode;
 
-			node.Accept(walker);
+			node?.Accept(walker);
 			
 			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 4));
 		}
@@ -74,27 +74,26 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task StaticMethod(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode) (await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
-			node.Accept(walker);
+			var node = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 4));
 		}
 
 		[Theory]
 		[EmbeddedFileData("PropertyGetter.cs")]
-		public async Task PropertyGetter(string text) //-V3013
+		public async Task PropertyGetter(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 16));
 		}
@@ -103,13 +102,12 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		[EmbeddedFileData("PropertyGetterConditionalAccess.cs")]
 		public async Task PropertyGetterConditionalAccess(string text)
 		{
-			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			Document document = CreateDocument(text);			
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 16));
 		}
@@ -119,12 +117,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task PropertySetter(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
@@ -134,12 +131,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task PropertySetterFromInitializer(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 26));
 		}
@@ -149,12 +145,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task Property_ShouldNotFindAnything(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEmpty();
 		}
@@ -164,12 +159,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task Constructor(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 14));
 		}
@@ -179,12 +173,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task LocalLambda(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 20));
 		}
@@ -194,12 +187,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task InstanceMethod(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
@@ -209,12 +201,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task InstanceExpressionBodiedMethod(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
@@ -224,12 +215,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task InstanceMethodConditionalAccess(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
@@ -239,12 +229,11 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task SeparateFiles(string text1, string text2)
 		{
 			Document document = CreateCSharpDocument(text1, text2);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First(n => n.Identifier.Text == "Foo");
-
-			node.Accept(walker);
+			var walker 		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>()
+													   .FirstOrDefault(n => n.Identifier.Text == "Foo");
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
@@ -254,14 +243,20 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		public async Task MultipleReportedDiagnostics(string text)
 		{
 			Document document = CreateDocument(text);
-			Compilation compilation = await document.Project.GetCompilationAsync();
-			var walker = new ExceptionWalker(compilation, CancellationToken.None);
-			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
-				.OfType<ClassDeclarationSyntax>().First();
+			var walker		  = await GetExceptionWalkerAsync(document).ConfigureAwait(false);
+			var root 		  = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var node 		  = root?.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-			node.Accept(walker);
+			node?.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
+		}
+
+		private async Task<ExceptionWalker> GetExceptionWalkerAsync(Document document)
+		{
+			Compilation? compilation = await document.Project.GetCompilationAsync(default);
+			compilation.ThrowOnNull();
+			return new ExceptionWalker(compilation, default);
 		}
 	}
 }
