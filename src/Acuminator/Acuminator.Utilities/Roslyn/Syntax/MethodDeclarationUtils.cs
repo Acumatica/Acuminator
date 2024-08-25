@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
@@ -18,12 +16,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				return null;
 
 			if (invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode &&
-				memberAccessNode.OperatorToken.Kind() == SyntaxKind.DotToken)
+				memberAccessNode.OperatorToken.IsKind(SyntaxKind.DotToken))
 			{
 				return memberAccessNode.Expression;
 			}
 			else if (invocationNode.Expression is MemberBindingExpressionSyntax memberBindingNode &&
-					 memberBindingNode.OperatorToken.Kind() == SyntaxKind.DotToken &&
+					 memberBindingNode.OperatorToken.IsKind(SyntaxKind.DotToken) &&
 					 invocationNode.Parent is ConditionalAccessExpressionSyntax conditionalAccessNode)
 			{
 				return conditionalAccessNode.Expression;

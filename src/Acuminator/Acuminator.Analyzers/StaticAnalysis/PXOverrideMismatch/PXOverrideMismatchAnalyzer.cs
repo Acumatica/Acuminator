@@ -14,7 +14,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PXOverrideMismatchAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
@@ -34,8 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 				.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
 				.SelectMany(t => t.GetBaseTypesAndThis())
 				.OfType<INamedTypeSymbol>()
-				.Distinct()
-				.Where(baseType => !directBaseTypesAndThis.Contains(baseType))
+				.Distinct<INamedTypeSymbol>(SymbolEqualityComparer.Default)
+				.Where(baseType => !directBaseTypesAndThis.Contains(baseType, SymbolEqualityComparer.Default))
 				.ToList();
 
 			foreach (PXOverrideInfo pxOverride in graphExtension.PXOverrides)
@@ -115,7 +114,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 			private static bool CheckExactMatch(IMethodSymbol pxOverrideMethod, IMethodSymbol? delegateInvokeMethod)
 			{
-				if (delegateInvokeMethod == null || !pxOverrideMethod.ReturnType.Equals(delegateInvokeMethod.ReturnType))
+				if (delegateInvokeMethod == null || 
+					!pxOverrideMethod.ReturnType.Equals(delegateInvokeMethod.ReturnType, SymbolEqualityComparer.Default))
 				{
 					return false;
 				}
@@ -137,7 +137,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			{
 				for (var i = 0; i < sourceParameters.Length; i++)
 				{
-					if (!sourceParameters[i].Type.Equals(targetParameters[i].Type))
+					if (!sourceParameters[i].Type.Equals(targetParameters[i].Type, SymbolEqualityComparer.Default))
 					{
 						return false;
 					}

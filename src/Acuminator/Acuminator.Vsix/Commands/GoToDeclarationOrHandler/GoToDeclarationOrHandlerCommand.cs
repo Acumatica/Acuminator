@@ -218,8 +218,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				viewDelegateInfoToNavigateTo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType?.Equals(viewSymbol.ContainingType) ?? false)
-															.FirstOrDefault();
+				viewDelegateInfoToNavigateTo = 
+					viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType?.Equals(viewSymbol.ContainingType, SymbolEqualityComparer.Default) ?? false)
+								 .FirstOrDefault();
 			}
 
 			if (viewDelegateInfoToNavigateTo.Node is not MethodDeclarationSyntax methodNode || methodNode.SyntaxTree == null)
@@ -307,9 +308,11 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				return candidates.Where(symbol => (symbol.ContainingType != null && symbol.ContainingType.Equals(methodSymbol.ContainingType) ||
+				return candidates.Where(symbol => (symbol.ContainingType != null && 
+												   symbol.ContainingType.Equals(methodSymbol.ContainingType, SymbolEqualityComparer.Default) ||
 												  (symbol.ContainingType?.OriginalDefinition != null && 
-												   symbol.ContainingType.OriginalDefinition.Equals(methodSymbol.ContainingType.OriginalDefinition))))
+												   symbol.ContainingType.OriginalDefinition.Equals(methodSymbol.ContainingType.OriginalDefinition, 
+																									SymbolEqualityComparer.Default))))
 								 .FirstOrDefault();
 			}
 		}

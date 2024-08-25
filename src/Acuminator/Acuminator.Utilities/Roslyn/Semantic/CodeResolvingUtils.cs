@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic.Symbols;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Acuminator.Utilities.Roslyn.Constants;
-using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -179,14 +181,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				return true;
 
 			List<ITypeSymbol> typeHierarchy = typeSymbol.GetBaseTypesAndThis().ToList();
-			return typeHierarchy.Contains(pxContext.PXSelectBase.Type) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
+			return typeHierarchy.Contains(pxContext.PXSelectBase.Type, SymbolEqualityComparer.Default) || 
+				   typeHierarchy.Contains(pxContext.BQL.BqlCommand, SymbolEqualityComparer.Default);
 		}
 
 		public static bool IsFbqlView(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
 			if (pxContext.BQL.PXViewOf_BasedOn == null || pxContext.BQL.PXViewOf == null || typeSymbol?.BaseType == null)
 				return false;
-			else if (!typeSymbol.BaseType.OriginalDefinition.Equals(pxContext.BQL.PXViewOf_BasedOn))
+			else if (!typeSymbol.BaseType.OriginalDefinition.Equals(pxContext.BQL.PXViewOf_BasedOn, SymbolEqualityComparer.Default))
 			{
 				return false;
 			}
@@ -368,9 +371,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			bqlTypeSymbol.ThrowOnNull();
 			context.ThrowOnNull();
 
-			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.PXSetupTypes;
+			var setupTypes = ImmutableArray<ITypeSymbol>.CastUp(context.BQL.PXSetupTypes);
 			return bqlTypeSymbol.GetBaseTypesAndThis()
-								.Any(type => setupTypes.Contains(type.OriginalDefinition));
+								.Any(type => EnumerableExtensions.ImmutableArrayContains(setupTypes, type.OriginalDefinition, 
+																						 SymbolEqualityComparer.Default));
 		}
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)

@@ -148,7 +148,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			{
 				var symbol = semanticModel.GetSymbolOrFirstCandidate(subNode, cancellation);
 
-				if (symbol != null && existingGraphs.Contains(symbol))
+				if (symbol != null && existingGraphs.Contains(symbol, SymbolEqualityComparer.Default))
 				{
 					if (graphSymbolsUsages.TryGetValue(symbol, out List<SyntaxNode> usageNodes))
 						usageNodes.Add(subNode);

@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public override bool Equals(object obj) => obj is AttributeWithApplication other && Equals(other);
 
 		public bool Equals(AttributeWithApplication other) =>
-			Type.Equals(other.Type) && Application.Equals(other.Application);
+			Type.Equals(other.Type, SymbolEqualityComparer.Default) && Application.Equals(other.Application);
 
 		public override int GetHashCode()
 		{
@@ -39,7 +39,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			unchecked
 			{
-				hash = 23 * hash + Type.GetHashCode();
+				hash = 23 * hash + SymbolEqualityComparer.Default.GetHashCode(Type);
 				hash = 23 * hash + Application.GetHashCode();
 			}
 
