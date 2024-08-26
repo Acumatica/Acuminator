@@ -48,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new ForbiddenFieldsInDacAnalyzer(),
 			new DacUiAttributesAnalyzer(),
 			new InheritanceFromPXCacheExtensionAnalyzer(),
-			new NoBqlFieldForDacFieldProperty.NoBqlFieldForDacFieldProperty(),
+			new NoBqlFieldForDacFieldProperty.NoBqlFieldForDacFieldPropertyAnalyzer(),
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
 			new KeyFieldDeclarationAnalyzer(),

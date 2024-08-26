@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 {
-	public class NoBqlFieldForDacFieldProperty : DacAggregatedAnalyzerBase
+	public class NoBqlFieldForDacFieldPropertyAnalyzer : DacAggregatedAnalyzerBase
 	{
 		private const int MaximumStringDistance = 2;
 
