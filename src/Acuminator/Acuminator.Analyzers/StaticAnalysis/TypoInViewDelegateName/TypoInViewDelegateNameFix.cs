@@ -54,7 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 			cToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await document.GetSemanticModelAsync(cToken).ConfigureAwait(false);
-			var methodSymbol = semanticModel.GetDeclaredSymbol(methodNode);
+			var methodSymbol = semanticModel?.GetDeclaredSymbol(methodNode);
 
 			if (methodSymbol == null)
 				return document.Project.Solution;
