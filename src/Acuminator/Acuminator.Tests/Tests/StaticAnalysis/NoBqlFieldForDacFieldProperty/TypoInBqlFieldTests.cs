@@ -28,23 +28,18 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(8, 15, "ShipmentNbr"),
 		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(23, 23, "ShipmentNbr"));
 
-		//[Theory]
-		//[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithBqlFieldMissingInBaseDac.cs")]
-		//public async Task DacExtension_BasedDac_WithoutBqlFields(string actual) => await VerifyCSharpDiagnosticAsync(actual,
-		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(9, 22, "ShipmentNbr"),
-		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(18, 16, "Selected"),
-		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(34, 23, "ShipmentNbr"));
+		[Theory]
+		[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithTyposInBqlField.cs")]
+		public async Task DacExtension_BqlFieldsWithTypos_InExtension_AndBasedDac(string actual) => 
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(14, 17, "Status"),
+				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "Selected"));
 
 		//[Theory]
 		//[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInExternalBaseDac.cs")]
 		//public async Task DerivedDac_BasedDacInExternalDll_WithoutBqlFields(string actual) => await VerifyCSharpDiagnosticAsync(actual,
 		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(8, 15, "ShipmentNbr"),
 		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(12, 25, "OrderNbr"));
-
-		//[Theory]
-		//[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithBqlFieldMissingInExternalBaseDac.cs")]
-		//public async Task DacExtension_BasedDacInExternalDll_WithoutBqlFields(string actual) => await VerifyCSharpDiagnosticAsync(actual,
-		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(11, 22, "ShipmentNbr"));
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacWithSingleWrongBqlFields.cs", @"TypoInBqlField\DacWithSingleWrongBqlFields_Expected.cs")]
@@ -56,10 +51,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		//public async Task TypoInBqlFieldInBaseDac_AddBqlFields_CodeFix(string actual, string expected) =>
 		//	await VerifyCSharpFixAsync(actual, expected);
 
-		//[Theory]
-		//[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithBqlFieldMissingInBaseDac.cs", "DacExtensionWithBqlFieldMissingInBaseDac_Expected.cs")]
-		//public async Task TypoInBqlFieldInBaseDacExtension_AddBqlFields_CodeFix(string actual, string expected) =>
-		//	await VerifyCSharpFixAsync(actual, expected);
+		[Theory]
+		[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithTyposInBqlField.cs", @"TypoInBqlField\DacExtensionWithTyposInBqlField_Expected.cs")]
+		public async Task DacExtension_BqlFieldsWithTypos_InExtension_AndBasedDac_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacWithSingleWrongBqlFields_Expected.cs")]
@@ -71,10 +66,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		//public async Task DerivedDac_BqlFieldInBaseDac_AfterFix_ShouldNotShowDiagnostic(string actual) =>
 		//	await VerifyCSharpDiagnosticAsync(actual);
 
-		//[Theory]
-		//[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithBqlFieldMissingInBaseDac_Expected.cs")]
-		//public async Task DacExtension_BqlFieldInBaseDac_AfterFix_ShouldNotShowDiagnostic(string actual) =>
-		//	await VerifyCSharpDiagnosticAsync(actual);
+		[Theory]
+		[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithTyposInBqlField_Expected.cs")]
+		public async Task DacExtension_BqlFieldsWithTypos_InExtension_AndBasedDac_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
 			new DacAnalyzersAggregator(
