@@ -20,7 +20,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacWithSingleWrongBqlFields.cs")]
 		public async Task RegularDac_SingleBqlField_WithTypo(string actual) => await VerifyCSharpDiagnosticAsync(actual,
-			Descriptors.PX1066_TypoInBqlFieldName.CreateFor(10, 25, "NoteID"));
+			Descriptors.PX1066_TypoInBqlFieldName.CreateFor(10, 25, "NoteID"),
+			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(13, 16, "NoteID"));
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacWithMultipleWrongBqlFields.cs")]
@@ -28,10 +29,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			await VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(10, 25, "NoteID"),
 				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(10, 25, "NoteID1"),
+				Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(13, 16, "NoteID"),
 				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(15, 25, "NoteID"),
 				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(15, 25, "NoteID1"),
 				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "NoteID"),
-				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "NoteID1"));
+				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "NoteID1"),
+				Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(20, 16, "NoteID1"));
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs")]
@@ -43,7 +46,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		public async Task DacExtension_BqlFieldsWithTypos_InExtension_AndBasedDac(string actual) => 
 			await VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(14, 17, "Status"),
-				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "Selected"));
+				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "Selected"),
+				Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(21, 16, "Selected"));
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacWithSingleWrongBqlFields.cs", @"TypoInBqlField\DacWithSingleWrongBqlFields_Expected.cs")]
@@ -56,7 +60,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
-		[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs", "DacWithBqlFieldMissingInBaseDac_Expected.cs")]
+		[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs", @"TypoInBqlField\DacWithBqlFieldMissingInBaseDac_Expected.cs")]
 		public async Task TypoInBqlFieldInBaseDac_AddBqlFields_CodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
