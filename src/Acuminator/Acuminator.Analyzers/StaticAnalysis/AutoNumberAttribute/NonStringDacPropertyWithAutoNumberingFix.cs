@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Immutable;
 using System.Composition;
@@ -19,21 +18,19 @@ using Microsoft.CodeAnalysis.Text;
 namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class NonStringDacPropertyWithAutoNumberingFix : CodeFixProvider
+	public class NonStringDacPropertyWithAutoNumberingFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			ImmutableArray.Create(Descriptors.PX1019_AutoNumberOnDacPropertyWithNonStringType.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			string codeActionName = nameof(Resources.PX1019Fix).GetLocalized().ToString();
 			CodeAction codeAction = CodeAction.Create(codeActionName,
 													  cToken => ChangePropertyTypeToStringAsync(context.Document, context.Span, cToken),
 													  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 

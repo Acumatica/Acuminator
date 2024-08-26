@@ -19,26 +19,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class DacExtensionDefaultAttributeFix : CodeFixProvider
+	public class DacExtensionDefaultAttributeFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(
-                Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.Id,
-                Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.Id,
-                Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.Id);
+				Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.Id,
+				Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.Id,
+				Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => 
-                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.Id ||
-                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.Id ||
-                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.Id);
-
-			if (diagnostic == null)
-				return;
-
 			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			SyntaxNode? codeFixNode = root?.FindNode(context.Span);
 			AttributeSyntax? attributeNode = codeFixNode as AttributeSyntax;
@@ -53,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 					CodeAction.Create(codeActionNameBound,
 							cToken => AddToAttributePersistingCheckNothing(context.Document, context.Span, isBoundField, cToken),
 							equivalenceKey: codeActionNameBound);
-				context.RegisterCodeFix(codeActionBound, context.Diagnostics);
+				context.RegisterCodeFix(codeActionBound, diagnostic);
 
 
 				if (!isBoundField)
@@ -62,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 						CodeAction.Create(codeActionNameUnbound,
 							cToken => ReplaceAttributeToPXUnboundDefault(context.Document, context.Span, cToken),
 							equivalenceKey: codeActionNameUnbound);
-					context.RegisterCodeFix(codeActionUnbound, context.Diagnostics);
+					context.RegisterCodeFix(codeActionUnbound, diagnostic);
 				}
 
 			}
@@ -134,7 +124,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 					modifiedRoot = root.ReplaceNode(attributeNode, newAttribute.Attributes[0]);
 			}
 
-			return modifiedRoot != null 
+			return modifiedRoot != null
 				? document.WithSyntaxRoot(modifiedRoot)
 				: document;
 
@@ -155,7 +145,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			}
 		}
 
-		public static bool IsBoundField(Diagnostic diagnostic) => 
+		public static bool IsBoundField(Diagnostic diagnostic) =>
 			diagnostic.IsFlagSet(DiagnosticProperty.IsBoundField);
 	}
 

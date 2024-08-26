@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -19,19 +18,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class PXActionOnNonPrimaryDacFix : CodeFixProvider
+	public class PXActionOnNonPrimaryDacFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
-			Diagnostic? diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
-
-			if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
-				return;
+			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacName, out string? mainDacName) ||
 				!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacMetadataName, out string? mainDacMetadata) ||

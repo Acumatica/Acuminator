@@ -21,14 +21,12 @@ using Microsoft.CodeAnalysis.Formatting;
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class InvalidPXActionSignatureFix : CodeFixProvider
+	public class InvalidPXActionSignatureFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
 											 .ConfigureAwait(false);

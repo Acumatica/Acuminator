@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -26,16 +25,14 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class DacMissingPrimaryKeyFix : CodeFixProvider
+	public class DacMissingPrimaryKeyFix : PXCodeFixProvider
 	{
 		private const int MaxNumberOfKeysForOneLineStatement = 3;
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1033_MissingDacPrimaryKeyDeclaration.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public async override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

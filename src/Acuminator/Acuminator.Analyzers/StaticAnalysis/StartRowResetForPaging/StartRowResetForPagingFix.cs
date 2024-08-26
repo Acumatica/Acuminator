@@ -18,21 +18,19 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 {
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-    public class StartRowResetForPagingFix : CodeFixProvider
+    public class StartRowResetForPagingFix : PXCodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(Descriptors.PX1010_StartRowResetForPaging.Id);
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
-			Diagnostic? diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1010_StartRowResetForPaging.Id);
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (diagnostic?.IsRegisteredForCodeFix() != true || context.CancellationToken.IsCancellationRequested)
+			if (!diagnostic.IsRegisteredForCodeFix())
 				return;
 
-			SyntaxNode? root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			var invocation = root?.FindNode(context.Span) as InvocationExpressionSyntax;
 
 			if (invocation == null)

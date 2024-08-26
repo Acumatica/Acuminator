@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -26,22 +25,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 	}
 
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class ActionHandlerAttributesFix : CodeFixProvider
+	public class ActionHandlerAttributesFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var diagnostic = context.Diagnostics
-									.FirstOrDefault(d => d.Id.Equals(Descriptors.PX1092_MissingAttributesOnActionHandler.Id));
-
-			if (diagnostic == null || 
-				!diagnostic.TryGetPropertyValue(ActionHandlerAttributesAnalyzer.FixOptionKey, out string? value) ||
+			if (!diagnostic.TryGetPropertyValue(ActionHandlerAttributesAnalyzer.FixOptionKey, out string? value) ||
 				!Enum.TryParse(value, out FixOption option))
 			{
 				return Task.CompletedTask;
@@ -53,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				cancellation => FixActionHandlerAttributes(context.Document, context.Span, option, cancellation),
 				equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 

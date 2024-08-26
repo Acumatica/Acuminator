@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -21,14 +20,12 @@ using Microsoft.CodeAnalysis.Text;
 namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class InsufficientStringLengthForAutoNumberingFix : CodeFixProvider
+	public class InsufficientStringLengthForAutoNumberingFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			ImmutableArray.Create(Descriptors.PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			SemanticModel? semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
 																 .ConfigureAwait(false);
@@ -43,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 													  cToken => MakeStringLengthSufficientForAutoNumberingAsync(context.Document, context.Span, minLengthForAutoNumbering, cToken),
 													  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private async Task<Document> MakeStringLengthSufficientForAutoNumberingAsync(Document document, TextSpan diagnosticSpan, 

@@ -17,14 +17,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class DatabaseQueriesInRowSelectingFix : CodeFixProvider
+	public class DatabaseQueriesInRowSelectingFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			if (context.CancellationToken.IsCancellationRequested) return;
 

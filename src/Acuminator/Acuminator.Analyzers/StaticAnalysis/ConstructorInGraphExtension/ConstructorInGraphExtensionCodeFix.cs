@@ -20,14 +20,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class ConstructorInGraphExtensionCodeFix : CodeFixProvider
+	public class ConstructorInGraphExtensionCodeFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1040_ConstructorInGraphExtension.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -43,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 				var codeAction = CodeAction.Create(title,
 												   cToken => MoveCodeFromConstructorToInitialize(context.Document, root!, constructorNode, cToken),
 												   equivalenceKey: title);
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 		}
 

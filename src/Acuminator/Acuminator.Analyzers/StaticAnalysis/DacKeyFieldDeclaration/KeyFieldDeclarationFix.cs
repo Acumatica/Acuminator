@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -8,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -22,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class KeyFieldDeclarationFix : CodeFixProvider
+	public class KeyFieldDeclarationFix : PXCodeFixProvider
 	{
 		private enum CodeFixModes
 		{
@@ -30,20 +28,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			EditKeyFieldAttributes,
 			RemoveIdentityAttribute
 		}
-
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 		
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
 
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
-
-			if (diagnostic == null)
-				return Task.FromResult(false);
 
 			Document document = context.Document;
 			List<Location> attributeLocations = diagnostic.AdditionalLocations.ToList(capacity: diagnostic.AdditionalLocations.Count + 1);

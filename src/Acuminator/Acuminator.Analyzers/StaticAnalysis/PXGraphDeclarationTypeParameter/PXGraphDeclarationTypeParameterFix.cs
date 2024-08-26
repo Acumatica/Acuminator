@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -14,14 +13,12 @@ using Microsoft.CodeAnalysis.Text;
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class PXGraphDeclarationTypeParameterFix : CodeFixProvider
+	public class PXGraphDeclarationTypeParameterFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1093_GraphDeclarationViolation.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

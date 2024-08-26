@@ -17,21 +17,14 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class LegacyBqlConstantFix : CodeFixProvider
+	public class LegacyBqlConstantFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1061_LegacyBqlConstant.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1061_LegacyBqlConstant.Id);
-			if (diagnostic == null)
-				return;
-
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			var constantNode = root?.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();

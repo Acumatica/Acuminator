@@ -15,7 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	{
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override sealed Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			var diagnostics = context.Diagnostics;

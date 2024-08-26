@@ -18,14 +18,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class MissingTypeListAttributeFix : CodeFixProvider
+	public class MissingTypeListAttributeFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

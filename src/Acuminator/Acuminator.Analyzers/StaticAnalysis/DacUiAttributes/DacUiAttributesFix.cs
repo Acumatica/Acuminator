@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class DacUiAttributesFix : CodeFixProvider
+	public class DacUiAttributesFix : PXCodeFixProvider
 	{
 		private enum FixOption
 		{
@@ -28,9 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1094_DacShouldHaveUiAttribute.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
