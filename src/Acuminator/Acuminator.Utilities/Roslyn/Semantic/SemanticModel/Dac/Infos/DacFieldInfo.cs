@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 	/// <summary>
 	/// Information about a DAC field - a pair consisting of a DAC field property and a DAC BQL field declared in the same type.
 	/// </summary>
-	public class DacFieldInfo : IWriteableBaseItem<DacFieldInfo>
+	public class DacFieldInfo : IWriteableBaseItem<DacFieldInfo>, IEquatable<DacFieldInfo>
 	{
 		public string Name { get; }
 
@@ -172,5 +172,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public override string ToString() => Name;
+
+		public override bool Equals(object obj) => Equals(obj as DacFieldInfo);
+
+		public bool Equals(DacFieldInfo? other) =>
+			other != null &&
+			SymbolEqualityComparer.Default.Equals(PropertyInfo?.Symbol, other.PropertyInfo?.Symbol) &&
+			Equals(BqlFieldInfo, other.BqlFieldInfo);
+
+		public override int GetHashCode()
+		{
+			int hash = 17;
+
+			unchecked
+			{
+				hash = hash * 23 + SymbolEqualityComparer.Default.GetHashCode(PropertyInfo?.Symbol);
+				hash = hash * 23 + (BqlFieldInfo?.GetHashCode() ?? 0);
+			}
+			
+			return hash;
+		}
 	}
 }
