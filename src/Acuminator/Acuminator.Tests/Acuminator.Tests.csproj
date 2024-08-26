@@ -280,6 +280,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\Override_DacAndBaseGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacWithoutBqlFields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacWithoutBqlFields_Expected.cs" />
+    <Compile Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\TypoInBqlFieldTests.cs" />
     <Compile Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\NoBqlFieldForDacFieldPropertyTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacWithBqlFieldMissingInBaseDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacWithBqlFieldMissingInBaseDac_Expected.cs" />
@@ -287,6 +288,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacExtensionWithBqlFieldMissingInBaseDac_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacExtensionWithBqlFieldMissingInBaseDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacExtensionWithBqlFieldMissingInExternalBaseDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacWithSingleWrongBqlFields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacWithSingleWrongBqlFields_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
