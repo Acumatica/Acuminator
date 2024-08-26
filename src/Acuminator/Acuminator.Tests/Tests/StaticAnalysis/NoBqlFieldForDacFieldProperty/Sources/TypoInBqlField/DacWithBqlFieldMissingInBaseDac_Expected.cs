@@ -7,9 +7,7 @@ namespace PX.Analyzers.Test.Sources
 	[PXHidden]
 	public class DerivedDac : BaseDac
 	{
-		[PXString]
-		[PXUIField(DisplayName = "Status")]
-		public string Status { get; set; }
+		public new abstract class status : PX.Data.BQL.BqlString.Field<status> { }
 	}
 
 	[PXHidden]
@@ -17,11 +15,11 @@ namespace PX.Analyzers.Test.Sources
 	{
 		#region Status
 		public abstract class status : PX.Data.BQL.BqlString.Field<status> { }
-		#endregion
-		public abstract class shipmentNbr : PX.Data.BQL.BqlInt.Field<shipmentNbr> { }
 
-		[PXInt]
-		public virtual int? ShipmentNbr { get; set; }
+		[PXString]
+		[PXUIField(DisplayName = "Status")]
+		public string Status { get; set; }
+		#endregion
 
 		public virtual string ExtraData { get; set; }
 	}

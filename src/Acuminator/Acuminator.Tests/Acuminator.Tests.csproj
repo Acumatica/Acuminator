@@ -292,6 +292,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\MissingBqlField\DacExtensionWithBqlFieldMissingInExternalBaseDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacExtensionWithTyposInBqlField.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacExtensionWithTyposInBqlField_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacWithBqlFieldMissingInBaseDac_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacWithSingleWrongBqlFields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoBqlFieldForDacFieldProperty\Sources\TypoInBqlField\DacWithSingleWrongBqlFields_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />

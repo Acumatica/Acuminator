@@ -33,11 +33,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "NoteID"),
 				Descriptors.PX1066_TypoInBqlFieldName.CreateFor(17, 25, "NoteID1"));
 
-		//[Theory]
-		//[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs")]
-		//public async Task DerivedDac_BasedDac_WithoutBqlFields(string actual) => await VerifyCSharpDiagnosticAsync(actual,
-		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(8, 15, "ShipmentNbr"),
-		//	Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(23, 23, "ShipmentNbr"));
+		[Theory]
+		[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs")]
+		public async Task DerivedDac_TypoInHidingBqlField_FromBaseDac(string actual) => await VerifyCSharpDiagnosticAsync(actual,
+			Descriptors.PX1066_TypoInBqlFieldName.CreateFor(10, 29, "Status"));
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithTyposInBqlField.cs")]
@@ -56,10 +55,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		public async Task RegularDac_MultipleBqlField_Rename(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
-		//[Theory]
-		//[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs", "DacWithBqlFieldMissingInBaseDac_Expected.cs")]
-		//public async Task TypoInBqlFieldInBaseDac_AddBqlFields_CodeFix(string actual, string expected) =>
-		//	await VerifyCSharpFixAsync(actual, expected);
+		[Theory]
+		[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac.cs", "DacWithBqlFieldMissingInBaseDac_Expected.cs")]
+		public async Task TypoInBqlFieldInBaseDac_AddBqlFields_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithTyposInBqlField.cs", @"TypoInBqlField\DacExtensionWithTyposInBqlField_Expected.cs")]
@@ -76,10 +75,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		public async Task RegularDac_MultipleBqlField_AfterRename_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
 
-		//[Theory]
-		//[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac_Expected.cs")]
-		//public async Task DerivedDac_BqlFieldInBaseDac_AfterFix_ShouldNotShowDiagnostic(string actual) =>
-		//	await VerifyCSharpDiagnosticAsync(actual);
+		[Theory]
+		[EmbeddedFileData(@"TypoInBqlField\DacWithBqlFieldMissingInBaseDac_Expected.cs")]
+		public async Task DerivedDac_BqlFieldInBaseDac_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 		[EmbeddedFileData(@"TypoInBqlField\DacExtensionWithTyposInBqlField_Expected.cs")]
