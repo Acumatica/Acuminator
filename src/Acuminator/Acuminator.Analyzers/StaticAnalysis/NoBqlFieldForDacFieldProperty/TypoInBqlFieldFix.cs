@@ -24,6 +24,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1066_TypoInBqlFieldName.Id);
 
+#pragma warning disable CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
+
+		public override FixAllProvider? GetFixAllProvider() => null!;    // no batch fixer for this code fix
+
+#pragma warning restore CS8764
+
 		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
@@ -39,8 +45,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (bqlFieldName.IsNullOrWhiteSpace() || propertyName == bqlFieldName)
 				return Task.CompletedTask;
 
-			// equivalence key should not contain format arguments to allow mass code fixes
-			string equivalenceKey = nameof(Resources.PX1066FixFormat).GetLocalized().ToString();
+			// equivalence key should not contain format arguments to allow mass code fixes,
+			// but it should be different for different diagnostics on the same node
+			int diagnosticIndex = context.Diagnostics.IndexOf(diagnostic);
+			string equivalenceKey = nameof(Resources.PX1066FixFormat).GetLocalized().ToString() + diagnosticIndex.ToString();
 			string codeActionName = nameof(Resources.PX1066FixFormat).GetLocalized(bqlFieldName).ToString();
 			var codeAction = CodeAction.Create(codeActionName,
 											   cToken => FixTypoInBqlFieldName(context.Document, context.Span, bqlFieldName, cToken),
