@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			var dacExtNode = root?.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
 			
 			if (dacExtNode != null)

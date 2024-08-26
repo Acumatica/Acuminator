@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 			if (semanticModel == null)
 				return document;
 
-			var methodSymbol = semanticModel.GetDeclaredSymbol(constructorNode);
+			var methodSymbol = semanticModel.GetDeclaredSymbol(constructorNode, cancellationToken);
 			var initializeSymbol = methodSymbol?.ContainingType
 												.GetMethods("Initialize")
 												.FirstOrDefault(m => m.IsOverride
