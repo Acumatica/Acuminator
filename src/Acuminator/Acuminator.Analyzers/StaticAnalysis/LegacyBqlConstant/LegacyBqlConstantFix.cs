@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 					CodeAction.Create(title,
 									  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root!, constantNode, newBaseType)),
 									  equivalenceKey: title),
-					context.Diagnostics);
+					diagnostic);
 			}
 		}
 

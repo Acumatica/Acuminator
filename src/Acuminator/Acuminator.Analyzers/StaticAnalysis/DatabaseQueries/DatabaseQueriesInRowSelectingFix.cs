@@ -36,7 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 				string title = nameof(Resources.PX1042Fix).GetLocalized().ToString();
 				context.RegisterCodeFix(CodeAction.Create(title, 
 					c => AddConnectionScopeAsync(context.Document, node, c), title),
-					context.Diagnostics);
+					diagnostic);
 			}
 		}
 

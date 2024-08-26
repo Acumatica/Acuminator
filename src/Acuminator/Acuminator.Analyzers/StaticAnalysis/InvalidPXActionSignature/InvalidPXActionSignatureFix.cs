@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			string codeActionName = nameof(Resources.PX1000Fix).GetLocalized().ToString();
 			context.RegisterCodeFix(
 				new ChangeSignatureAction(codeActionName, context.Document, method),
-				context.Diagnostics);
+				diagnostic);
 		}
 
 		//-------------------------------------Code Action for Fix---------------------------------------------------------------------------

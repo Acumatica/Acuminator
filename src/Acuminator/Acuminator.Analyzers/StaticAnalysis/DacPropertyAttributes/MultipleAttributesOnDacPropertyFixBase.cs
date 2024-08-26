@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 																					  removePredicate, cToken),
 								  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		protected abstract string GetCodeActionName();

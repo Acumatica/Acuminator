@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 											   cancellation => MakePropertyTypeNullable(document, root, propertyNode, cancellation),
 											   equivalenceKey: title);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private static Task<Document> MakePropertyTypeNullable(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyNode,

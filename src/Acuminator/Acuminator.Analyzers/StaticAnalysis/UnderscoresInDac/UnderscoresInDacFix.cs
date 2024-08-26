@@ -30,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 													  cToken => ChangeUnderscoredNamesAsync(context.Document, context.Span, cToken),
 													  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 

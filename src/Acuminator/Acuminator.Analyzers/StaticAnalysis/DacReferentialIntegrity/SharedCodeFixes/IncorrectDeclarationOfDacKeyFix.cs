@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																							  shouldChangeLocation, cancellation),
 														   equivalenceKey: codeActionTitle);
 
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						context.RegisterCodeFix(codeAction, diagnostic);
 						return;
 					}
 				case RefIntegrityDacKeyType.UniqueKey:
@@ -86,7 +86,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																														 RefIntegrityDacKeyType.ForeignKey, cancellation),
 														   equivalenceKey: codeActionTitle);
 
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						context.RegisterCodeFix(codeAction, diagnostic);
 						return;
 					}
 			}
@@ -108,7 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																												 RefIntegrityDacKeyType.UniqueKey, cancellation),
 												   equivalenceKey: codeActionTitle);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 			else if (keyNode.Identifier.Text != ReferentialIntegrity.UniqueKeyClassName)
 			{
@@ -119,7 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																					  shouldChangeLocation: false, cancellation),
 												   equivalenceKey: codeActionTitle);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 		}
 

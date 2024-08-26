@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 					Resources.PX1002Fix,
 					cancellationToken => InsertTypeAttributeAsync(context.Document, root!, node, cancellationToken),
 					Resources.PX1002Fix),
-				context.Diagnostics);
+				diagnostic);
 		}
 
 		private async Task<Document> InsertTypeAttributeAsync(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyDeclaration,

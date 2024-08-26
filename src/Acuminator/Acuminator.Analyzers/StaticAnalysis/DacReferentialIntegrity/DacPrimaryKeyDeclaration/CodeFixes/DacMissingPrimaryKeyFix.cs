@@ -63,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																								  dacTypeSymbol, cancellation),
 											   equivalenceKey: codeActionTitle);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private Task<Document> AddPrimaryKeyDeclarationToDacAsync(Document document, SyntaxNode root, ClassDeclarationSyntax dacNode, PXContext pxContext,

@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 			var codeAction = CodeAction.Create(title, cancellation => RewriteGraphConstructionAsync(context.Document, context.Span, cancellation),
 											   equivalenceKey: title);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 

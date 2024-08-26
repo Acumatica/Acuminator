@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 			var codeAction = CodeAction.Create(title, 
 											   cToken => FixTypoInViewDelegateName(document, methodNode, fieldName, cToken), 
 											   equivalenceKey: title);
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private static async Task<Solution> FixTypoInViewDelegateName(Document document, MethodDeclarationSyntax methodNode, 

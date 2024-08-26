@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 													  cancellation => ChangeBaseTypeToPXCacheExtensionOverloadAsync(context.Document, root!, node, cancellation),
 													  equivalenceKey: title);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private static async Task<Document> ChangeBaseTypeToPXCacheExtensionOverloadAsync(Document document, SyntaxNode root, ClassDeclarationSyntax node,

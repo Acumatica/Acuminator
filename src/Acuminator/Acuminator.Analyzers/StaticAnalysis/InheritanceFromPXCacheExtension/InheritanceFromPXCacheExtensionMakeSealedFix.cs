@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 												cancellation => MakeDacExtensionSealedAsync(document, root!, dacExtNode, cancellation),
 												equivalenceKey: title);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 		}
 

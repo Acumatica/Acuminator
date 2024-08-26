@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			CodeAction codeAction = CodeAction.Create(codeActionName,
 													  cToken => DeleteForbiddenFieldsAsync(context.Document, context.Span, cToken),
 													  equivalenceKey: codeActionName);
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 
 			return Task.CompletedTask;
 		}

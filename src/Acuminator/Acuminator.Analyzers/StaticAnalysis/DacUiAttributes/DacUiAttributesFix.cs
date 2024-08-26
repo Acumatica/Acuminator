@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXHiddenAttribute, cancellation),
 				equivalenceKey: addPXHiddenTitle);
 
-			context.RegisterCodeFix(addPXHiddenAction, context.Diagnostics);
+			context.RegisterCodeFix(addPXHiddenAction, diagnostic);
 
 			var addPXCacheNameTitle = nameof(Resources.PX1094FixPXCacheNameAttribute).GetLocalized().ToString();
 			var addPXCacheNameAction = CodeAction.Create(
@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXCacheNameAttribute, cancellation),
 				equivalenceKey: addPXCacheNameTitle);
 
-			context.RegisterCodeFix(addPXCacheNameAction, context.Diagnostics);
+			context.RegisterCodeFix(addPXCacheNameAction, diagnostic);
 
 			return Task.CompletedTask;
 		}

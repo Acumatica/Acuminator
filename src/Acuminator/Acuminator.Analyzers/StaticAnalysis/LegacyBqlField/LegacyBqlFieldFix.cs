@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				CodeAction.Create(title,
 								  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root!, bqlFieldNode, newBaseType)),
 								  equivalenceKey: title),
-				context.Diagnostics); 
+				diagnostic); 
 		}
 
 		private Document GetDocumentWithUpdatedBqlField(Document oldDocument, SyntaxNode root, ClassDeclarationSyntax classNode, SimpleBaseTypeSyntax newBaseType)

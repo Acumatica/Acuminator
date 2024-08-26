@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 											   cancellation => DeleteOtherPrimaryKeyDeclarationsFromDacAsync(context.Document, diagnostic.AdditionalLocations, cancellation),
 											   equivalenceKey: codeActionTitle);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 

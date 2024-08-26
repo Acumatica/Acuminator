@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			CodeAction codeAction = CodeAction.Create(codeActionName, 
 													  cToken => InsertStartRowAssigmentsAsync(context.Document, root!, invocation, cToken),
 													  equivalenceKey: codeActionName);
-			context.RegisterCodeFix(codeAction, context.Diagnostics);			
+			context.RegisterCodeFix(codeAction, diagnostic);			
 		}
 
 		private Task<Document> InsertStartRowAssigmentsAsync(Document document, SyntaxNode root, InvocationExpressionSyntax invocation,
