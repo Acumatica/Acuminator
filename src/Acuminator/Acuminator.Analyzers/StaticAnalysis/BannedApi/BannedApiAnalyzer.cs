@@ -67,8 +67,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BannedApi
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 			ImmutableArray.Create
 			(
-				Descriptors.PX1065_ForbiddenApiUsage_NoDetails,
-				Descriptors.PX1065_ForbiddenApiUsage_WithDetails
+				Descriptors.PX1099_ForbiddenApiUsage_NoDetails,
+				Descriptors.PX1099_ForbiddenApiUsage_WithDetails
 			);
 
 		private readonly IApiStorage? _customBannedApi;

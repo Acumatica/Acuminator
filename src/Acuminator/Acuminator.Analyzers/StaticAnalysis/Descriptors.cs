@@ -351,14 +351,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1064_NoGetObjectDataOverrideInExceptionWithNewFields { get; } =
 			Rule("PX1064", nameof(Resources.PX1064Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1064);
 
-		public static DiagnosticDescriptor PX1065_ForbiddenApiUsage_NoDetails { get; } =
-			Rule("PX1065", nameof(Resources.PX1065Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1065,
-				 messageFormat: nameof(Resources.PX1065TitleFormat));
-
-		public static DiagnosticDescriptor PX1065_ForbiddenApiUsage_WithDetails { get; } =
-			Rule("PX1065", nameof(Resources.PX1065Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1065,
-				 messageFormat: nameof(Resources.PX1065TitleFormatWithDetails));
-
 		public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1070);
 
@@ -445,5 +437,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1096_PXOverrideMustMatchSignature { get; } =
 			Rule("PX1096", nameof(Resources.PX1096Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1096);
+
+		public static DiagnosticDescriptor PX1099_ForbiddenApiUsage_NoDetails { get; } =
+			Rule("PX1099", nameof(Resources.PX1099Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1099,
+				 messageFormat: nameof(Resources.PX1099TitleFormat));
+
+		public static DiagnosticDescriptor PX1099_ForbiddenApiUsage_WithDetails { get; } =
+			Rule("PX1099", nameof(Resources.PX1099Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1099,
+				 messageFormat: nameof(Resources.PX1099TitleFormatWithDetails));
 	}
 }
