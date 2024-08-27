@@ -1,10 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Resources;
 using System.Windows;
 
 
@@ -23,7 +20,7 @@ namespace Acuminator.Vsix.Utilities
 		/// <param name="key">Key.</param>
 		/// <param name="value">Returned value in case of succeed, default otherwise.</param>
 		/// <returns></returns>
-		public static bool TryGetValue<T>(this ResourceDictionary resources, object key, out T value)
+		public static bool TryGetValue<T>(this ResourceDictionary resources, object key, out T? value)
 		{
 			value = default(T);
 			

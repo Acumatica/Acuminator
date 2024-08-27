@@ -15,6 +15,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	{
 		public class InstanceCreatedEventsSymbols : SymbolsSetForTypeBase
 	    {
+#pragma warning disable CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
+			public sealed override INamedTypeSymbol? Type => base.Type;
+#pragma warning restore CS8764
+
 			public IMethodSymbol? AddHandler { get; }
 
 		    internal InstanceCreatedEventsSymbols(Compilation compilation) : base(compilation, DelegateNames.InstanceCreatedEvents)
@@ -40,9 +44,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         {
 			Type.ThrowOnNull();
 
-			GenericTypeGraph = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1);
-			GenericTypeGraphDac = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2);
-			GenericTypeGraphDacField = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3);
+			GenericTypeGraph = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1)!;
+			GenericTypeGraphDac = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2)!;
+			GenericTypeGraphDacField = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3)!;
 
 			CreateInstance = Type.GetMethods(DelegateNames.CreateInstance).ToImmutableArray();
 			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(Compilation);

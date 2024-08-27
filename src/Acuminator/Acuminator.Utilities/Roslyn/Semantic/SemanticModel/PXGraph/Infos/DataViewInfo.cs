@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public class DataViewInfo : SymbolItem<ISymbol>, IWriteableBaseItem<DataViewInfo>
-	{	
+	{
 		/// <summary>
 		/// Indicates whether the data view is processing data view
 		/// </summary>
@@ -68,19 +68,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		protected override string DebuggerDisplay => $"{base.DebuggerDisplay} |Type: {Type.ToString()}";
 
+		protected DataViewInfo? _baseInfo;
+
 		/// <summary>
 		/// The overriden item if any
 		/// </summary>
-		public DataViewInfo? Base
-		{
-			get;
-			internal set;
-		}
+		public DataViewInfo? Base => _baseInfo;
 
 		DataViewInfo? IWriteableBaseItem<DataViewInfo>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
 		}
 
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder)
@@ -103,7 +107,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder, DataViewInfo baseInfo)
 					 : this(symbol, type, pxContext, declarationOrder)
 		{
-			Base = baseInfo.CheckIfNull(nameof(baseInfo));
+			_baseInfo = baseInfo.CheckIfNull(nameof(baseInfo));
+			CombineWithBaseInfo(_baseInfo);
+		}
+
+		void IWriteableBaseItem<DataViewInfo>.CombineWithBaseInfo(DataViewInfo baseInfo) => CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(DataViewInfo baseInfo)
+		{
+			
 		}
 	}
 }

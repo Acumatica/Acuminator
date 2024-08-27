@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private const string TargetElement = "target";
 		private const string SyntaxNodeElement = "syntaxNode";
 
-		private static HashSet<SyntaxKind> _targetKinds = 
+		private static readonly HashSet<SyntaxKind> _targetKinds = 
 		[
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.StructDeclaration,
@@ -78,7 +78,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			_hashCode = hash;
 		}
 
-		public static SuppressMessage? MessageFromElement(XElement element)
+		public static SuppressMessage? MessageFromElement(XElement? element)
 		{
 			string? id = element?.Attribute(IdAttribute)?.Value;
 			if (id.IsNullOrWhiteSpace())
@@ -118,7 +118,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public override string ToString() => $"ID={Id}, Target={Target}";
 
 		internal static (string? Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
-																					 CancellationToken cancellation = default)
+																						CancellationToken cancellation = default)
 		{
 			return diagnostic?.Location != null
 				? GetSuppressionInfo(semanticModel, diagnostic.Id, diagnostic.Location.SourceSpan, cancellation)

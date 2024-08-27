@@ -162,7 +162,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 				return diagnosticsRaw.Select(rawData => DiagnosticData.Create(rawData))
 									 .Where(diagnosticData => diagnosticData != null)
-									 .ToList(capacity: 1);
+									 .ToList(capacity: 1)!;
 			}
 			catch (Exception e)
 			{
@@ -190,7 +190,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 				return diagnosticsRaw.Select(rawData => DiagnosticData.Create(rawData))
 									 .Where(diagnosticData => diagnosticData != null && IsAcuminatorDiagnostic(diagnosticData))
-									 .ToList(capacity: 1);
+									 .ToList(capacity: 1)!;
 			}
 			catch (Exception e)
 			{

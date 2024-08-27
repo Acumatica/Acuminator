@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace();
 			buildActionToSet.ThrowOnNullOrWhiteSpace();
 
-			if (SharedVsSettings.VSVersion.VS2022OrNewer)
+			if (SharedVsSettings.VSVersion?.VS2022OrNewer == true)
 				return false;
 
 			try
@@ -48,12 +48,10 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 			try
 			{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 				EnvDTE.DTE? dte = await AcuminatorVSPackage.Instance.GetServiceAsync<EnvDTE.DTE>();
 
 				if (dte == null)
 					return false;
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
 				EnvDTE.ProjectItem? suppressionFileDteItem = dte.Solution.FindProjectItem(roslynSuppressionFilePath);
 

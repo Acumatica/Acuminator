@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -15,14 +14,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PXOverrideMismatchAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1096_PXOverrideMustMatchSignature);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graphExtension) =>
-			base.ShouldAnalyze(pxContext, graphExtension) && graphExtension.Type == GraphType.PXGraphExtension &&
+			base.ShouldAnalyze(pxContext, graphExtension) && graphExtension.GraphType == GraphType.PXGraphExtension &&
 			!graphExtension.PXOverrides.IsDefaultOrEmpty;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
@@ -35,8 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 				.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeGraph: true)
 				.SelectMany(t => t.GetBaseTypesAndThis())
 				.OfType<INamedTypeSymbol>()
-				.Distinct()
-				.Where(baseType => !directBaseTypesAndThis.Contains(baseType))
+				.Distinct<INamedTypeSymbol>(SymbolEqualityComparer.Default)
+				.Where(baseType => !directBaseTypesAndThis.Contains(baseType, SymbolEqualityComparer.Default))
 				.ToList();
 
 			foreach (PXOverrideInfo pxOverride in graphExtension.PXOverrides)
@@ -100,7 +98,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 
 				if (methodsCompatibility == MethodsCompatibility.ParametersMatchWithDelegate)
 				{
-					if (pxOverrideMethod.Parameters[pxOverrideMethod.Parameters.Length - 1].Type is not INamedTypeSymbol @delegate || @delegate.TypeKind != TypeKind.Delegate)
+					if (pxOverrideMethod.Parameters[pxOverrideMethod.Parameters.Length - 1].Type is not INamedTypeSymbol @delegate || 
+						@delegate.TypeKind != TypeKind.Delegate)
 					{
 						return false;
 					}
@@ -113,9 +112,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 				return false;
 			}
 
-			private static bool CheckExactMatch(IMethodSymbol pxOverrideMethod, IMethodSymbol delegateInvokeMethod)
+			private static bool CheckExactMatch(IMethodSymbol pxOverrideMethod, IMethodSymbol? delegateInvokeMethod)
 			{
-				if (!pxOverrideMethod.ReturnType.Equals(delegateInvokeMethod.ReturnType))
+				if (delegateInvokeMethod == null || 
+					!pxOverrideMethod.ReturnType.Equals(delegateInvokeMethod.ReturnType, SymbolEqualityComparer.Default))
 				{
 					return false;
 				}
@@ -137,7 +137,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch
 			{
 				for (var i = 0; i < sourceParameters.Length; i++)
 				{
-					if (!sourceParameters[i].Type.Equals(targetParameters[i].Type))
+					if (!sourceParameters[i].Type.Equals(targetParameters[i].Type, SymbolEqualityComparer.Default))
 					{
 						return false;
 					}

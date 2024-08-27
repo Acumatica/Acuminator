@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Threading;
+﻿
+using System.Linq;
 using System.Collections.Immutable;
 using System.Collections.Generic;
 
@@ -28,7 +28,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			SemanticModel semanticModel = context.Compilation.GetSemanticModel(dac.Node.SyntaxTree);
+
+			// Node is not null here because DAC aggregated analyzer runs only on DACs and DAC extensions declared in source code
+			SemanticModel semanticModel = context.Compilation.GetSemanticModel(dac.Node!.SyntaxTree);
 
 			if (semanticModel == null)
 				return;

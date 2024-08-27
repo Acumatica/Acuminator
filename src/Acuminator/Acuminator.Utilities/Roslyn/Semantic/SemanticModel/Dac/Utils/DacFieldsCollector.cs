@@ -70,9 +70,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		where TSymbol : ISymbol
 		{
 			return infos.SelectMany(info => info.ThisAndOverridenItems())
-						.GroupBy(info => info.Symbol.ContainingType as ITypeSymbol)
+						.GroupBy(info => info.Symbol.ContainingType,
+								 SymbolEqualityComparer.Default as IEqualityComparer<ITypeSymbol>)
 						.ToDictionary(groupedByType => groupedByType.Key,
-									  elementSelector: GroupInfosByName);
+									  elementSelector: GroupInfosByName,
+									  SymbolEqualityComparer.Default as IEqualityComparer<ITypeSymbol>);
 
 			//--------------------------------Local Function---------------------------------------------------------------
 			// Infos should be grouped by name with duplicates, allowing multiple infos with the same name.

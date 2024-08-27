@@ -65,7 +65,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (serviceProvider == null)
 				return;
 
-			Workspace? workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+			Workspace? workspace = await AcuminatorVSPackage.Instance!.GetVSWorkspaceAsync();
 
 			if (workspace == null)
 				return;

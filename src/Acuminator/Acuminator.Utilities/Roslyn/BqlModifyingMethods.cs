@@ -60,14 +60,14 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (containingType == null)
 				return false;
-			else if (containingType.Equals(context.BQL.BqlCommand))
+			else if (containingType.Equals(context.BQL.BqlCommand, SymbolEqualityComparer.Default))
 				return BqlCommandInstanceBqlModifiers.Contains(methodSymbol.Name);
-			else if (containingType.Equals(context.BQL.PXSelectBaseGenericType) ||
-					 containingType.OriginalDefinition.Equals(context.BQL.PXSelectBaseGenericType))
+			else if (containingType.Equals(context.BQL.PXSelectBaseGenericType, SymbolEqualityComparer.Default) ||
+					 containingType.OriginalDefinition.Equals(context.BQL.PXSelectBaseGenericType, SymbolEqualityComparer.Default))
 			{
 				return PXSelectbaseBqlModifiers.Contains(methodSymbol.Name);
 			}
-			else if (containingType.Equals(context.PXView.Type))
+			else if (containingType.Equals(context.PXView.Type, SymbolEqualityComparer.Default))
 				return PXViewBqlModifiers.Contains(methodSymbol.Name);
 			else
 				return false;

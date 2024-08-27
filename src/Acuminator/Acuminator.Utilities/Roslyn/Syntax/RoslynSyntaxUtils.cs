@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
+using System.Runtime.CompilerServices;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,7 +29,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (containingMethod.Body == null)
 				return false;
 
-			DataFlowAnalysis dataFlowAnalysis = semanticModel.AnalyzeDataFlow(containingMethod.Body);
+			DataFlowAnalysis? dataFlowAnalysis = semanticModel.AnalyzeDataFlow(containingMethod.Body);
 
 			if (dataFlowAnalysis == null || !dataFlowAnalysis.Succeeded)
 				return false;
@@ -53,7 +55,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				ArrayCreationExpressionSyntax arrayCreation
 					when arrayCreation.Initializer != null => arrayCreation.Initializer.Expressions.Count,
 
-				ArrayCreationExpressionSyntax arrayCreationWithouInitializer => TryGetSizeOfSingleDimensionalNonJaggedArray(arrayCreationWithouInitializer.Type, 
+				ArrayCreationExpressionSyntax arrayCreationWithouInitializer => TryGetSizeOfSingleDimensionalNonJaggedArray(arrayCreationWithouInitializer.Type,
 																															semanticModel, cancellationToken),
 				ImplicitArrayCreationExpressionSyntax implicitArrayCreation  => implicitArrayCreation.Initializer?.Expressions.Count,
 				InitializerExpressionSyntax initializerExpression
@@ -124,20 +126,16 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (declarations.Length == 0)
 				return Task.FromResult<SyntaxNode?>(null);
 
-			return declarations[0].GetSyntaxAsync(cancellationToken);
+			return declarations[0].GetSyntaxAsync(cancellationToken)!;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SyntaxNode? GetSyntax(this ISymbol? symbol, CancellationToken cancellationToken = default)
 		{
-			if (symbol == null)
+			if (symbol == null || !symbol.IsInSourceCode())
 				return null;
 
-			var declarations = symbol.DeclaringSyntaxReferences;
-
-			if (declarations.Length == 0)
-				return null;
-
-			return declarations[0].GetSyntax(cancellationToken);
+			return symbol.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken);
 		}
 
 		public static Location? GetLocation(this AttributeData? attribute, CancellationToken cancellationToken = default) =>
@@ -171,12 +169,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			switch (member)
 			{		
 				case FieldDeclarationSyntax fieldDeclaration:
-					VariableDeclaratorSyntax firstFieldDeclaration = fieldDeclaration.Declaration.Variables.FirstOrDefault();
+					VariableDeclaratorSyntax? firstFieldDeclaration = fieldDeclaration.Declaration.Variables.FirstOrDefault();
 					return firstFieldDeclaration != null 
 						? semanticModel.GetDeclaredSymbol(firstFieldDeclaration, cancellationToken)?.DeclaredAccessibility
 						: null;
 				case EventFieldDeclarationSyntax eventFieldDeclaration:
-					VariableDeclaratorSyntax firstEventDeclaration = eventFieldDeclaration.Declaration.Variables.FirstOrDefault();     //for field event declaration
+					VariableDeclaratorSyntax? firstEventDeclaration = eventFieldDeclaration.Declaration.Variables.FirstOrDefault();     //for field event declaration
 					return firstEventDeclaration != null 
 						? semanticModel.GetDeclaredSymbol(firstEventDeclaration, cancellationToken)?.DeclaredAccessibility
 						: null;
@@ -333,6 +331,32 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			}
 
 			return false;
+		}
+
+		public static List<SyntaxTrivia> GetRegionDirectiveLinesFromTrivia(this in SyntaxTriviaList trivias)
+		{
+			if (trivias.Count == 0)
+				return [];
+
+			var regionTrivias = new List<SyntaxTrivia>(2);
+			SyntaxTrivia? previousTrivia = null;
+
+			for (int i = 0; i < trivias.Count; i++)
+			{
+				var trivia = trivias[i];
+
+				if (trivia.Kind() is SyntaxKind.RegionDirectiveTrivia or SyntaxKind.EndRegionDirectiveTrivia)
+				{
+					if (previousTrivia.HasValue && previousTrivia.Value.IsKind(SyntaxKind.WhitespaceTrivia))
+						regionTrivias.Add(previousTrivia.Value);
+
+					regionTrivias.Add(trivia);
+				}
+
+				previousTrivia = trivia;
+			}
+
+			return regionTrivias;
 		}
 	}
 }

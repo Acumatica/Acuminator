@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -202,7 +203,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawActionHandlersFromGraphImpl(
+		private static IEnumerable<(MethodDeclarationSyntax? Node, IMethodSymbol Symbol)> GetRawActionHandlersFromGraphImpl(
 																this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
 																PXContext pxContext, CancellationToken cancellation, bool inheritance)
 		{
@@ -218,7 +219,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawActionHandlersFromGraphOrGraphExtension(
+		private static IEnumerable<(MethodDeclarationSyntax? Node, IMethodSymbol Symbol)> GetRawActionHandlersFromGraphOrGraphExtension(
 															this ITypeSymbol graphOrExtension, IDictionary<string, ActionInfo> actionsByName,
 															PXContext pxContext, CancellationToken cancellation)
 		{
@@ -230,12 +231,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				SyntaxReference reference = handler.DeclaringSyntaxReferences.FirstOrDefault();
-
-				if (reference?.GetSyntax(cancellation) is MethodDeclarationSyntax declaration)
-				{
-					yield return (declaration, handler);
-				}
+				var declaration = handler.GetSyntax(cancellation) as MethodDeclarationSyntax;
+				yield return (declaration, handler);
 			}
 		}
 		#endregion
@@ -245,7 +242,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																		AddActionInfoWithOrderDelegate<TInfo> addGraphExtensionActionInfoWithOrder)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type!))
+			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtension.Type))
 				return new OverridableItemsCollection<TInfo>();
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);

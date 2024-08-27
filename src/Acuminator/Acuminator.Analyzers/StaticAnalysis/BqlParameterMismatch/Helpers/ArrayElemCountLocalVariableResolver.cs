@@ -1,10 +1,13 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -34,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (CancellationToken.IsCancellationRequested)
 					return null;
 
-				MethodDeclarationSyntax methodDeclaration = Invocation.GetDeclaringMethodNode();
+				MethodDeclarationSyntax? methodDeclaration = Invocation.GetDeclaringMethodNode();
 
 				if (methodDeclaration == null || !SemanticModel.IsLocalVariable(methodDeclaration, VariableName))
 					return null;
@@ -95,7 +98,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					Candidates = new Stack<(StatementSyntax, int?)>(capacity: 2);
 				}
 
-				public override void Visit(SyntaxNode node)
+				public override void Visit(SyntaxNode? node)
 				{
 					if (IsCancelationRequested)
 					{
@@ -121,7 +124,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					var declaratorStatement = declarator.GetStatementNode();
 
-					if (!_resolver.IsReacheableByControlFlow(declaratorStatement))
+					if (declaratorStatement == null || !_resolver.IsReacheableByControlFlow(declaratorStatement))
 						return;
 
 					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(declarator.Initializer.Value,
@@ -136,7 +139,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						return;
 
 					ExpressionSyntax curExpression = assignment;
-					AssignmentExpressionSyntax candidateAssignment = null;
+					AssignmentExpressionSyntax? candidateAssignment = null;
 
 					while (curExpression is AssignmentExpressionSyntax curAssignment)
 					{
@@ -149,12 +152,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						curExpression = curAssignment.Right;
 					}
 
-					if (candidateAssignment == null || IsCancelationRequested) //-V3063
-						return;
+					_resolver.CancellationToken.ThrowIfCancellationRequested();
+					var assignmentStatement = candidateAssignment?.GetStatementNode();
 
-					var assignmentStatement = candidateAssignment.GetStatementNode();
-
-					if (!_resolver.IsReacheableByControlFlow(assignmentStatement))
+					if (assignmentStatement == null || !_resolver.IsReacheableByControlFlow(assignmentStatement))
 						return;
 
 					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(curExpression, _resolver.SemanticModel,
@@ -208,7 +209,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					try
 					{
-						ControlFlowAnalysis controlFlow = _resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
+						ControlFlowAnalysis? controlFlow = invocation.GetStatementNode() is StatementSyntax statement
+							? _resolver.SemanticModel.AnalyzeControlFlow(statement)
+							: null;
 
 						if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
 							return true;

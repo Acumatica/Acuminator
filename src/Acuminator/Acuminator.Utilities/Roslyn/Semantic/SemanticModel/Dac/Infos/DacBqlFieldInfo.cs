@@ -4,51 +4,69 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
-using System.Collections.Generic;
+using System;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
-	public class DacBqlFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, IWriteableBaseItem<DacBqlFieldInfo>
+	public class DacBqlFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, 
+								   IWriteableBaseItem<DacBqlFieldInfo>,
+								   IEquatable<DacBqlFieldInfo>
 	{
+		protected DacBqlFieldInfo? _baseInfo;
+
 		/// <summary>
 		/// The overriden dac field if any
 		/// </summary>
-		public DacBqlFieldInfo? Base
-		{
-			get;
-			internal set;
-		}
+		public DacBqlFieldInfo? Base => _baseInfo;
 	
 		DacBqlFieldInfo? IWriteableBaseItem<DacBqlFieldInfo>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set 
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
 		}
 
-		protected DacBqlFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder) :
+		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder) :
 							 base(node, bqlField, declarationOrder)
 		{
 		}
 
-		protected DacBqlFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder, DacBqlFieldInfo baseInfo) :
+		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder, DacBqlFieldInfo baseInfo) :
 							 this(node, bqlField, declarationOrder)
 		{
-			Base = baseInfo.CheckIfNull();
+			_baseInfo = baseInfo.CheckIfNull();
+			CombineWithBaseInfo(baseInfo);
 		}
 
-		public static DacBqlFieldInfo Create(PXContext pxContext, ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder,
+		public static DacBqlFieldInfo Create(PXContext pxContext, ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder,
 											 DacBqlFieldInfo? baseInfo = null)
 		{
 			return CreateUnsafe(pxContext.CheckIfNull(), node, bqlField.CheckIfNull(), declarationOrder, baseInfo);
 		}
 
-		internal static DacBqlFieldInfo CreateUnsafe(PXContext pxContext, ClassDeclarationSyntax node, INamedTypeSymbol bqlField, int declarationOrder,
+		internal static DacBqlFieldInfo CreateUnsafe(PXContext pxContext, ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder,
 													 DacBqlFieldInfo? baseInfo = null)
 		{
 			return baseInfo != null
 				? new DacBqlFieldInfo(node, bqlField, declarationOrder, baseInfo)
 				: new DacBqlFieldInfo(node, bqlField, declarationOrder);
 		}
+
+		void IWriteableBaseItem<DacBqlFieldInfo>.CombineWithBaseInfo(DacBqlFieldInfo baseInfo) => CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(DacBqlFieldInfo baseInfo)
+		{
+		}
+
+		public override bool Equals(object obj) => Equals(obj as DacBqlFieldInfo);
+
+		public bool Equals(DacBqlFieldInfo? other) => SymbolEqualityComparer.Default.Equals(Symbol, other?.Symbol);
+
+		public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(Symbol);
 	}
 }

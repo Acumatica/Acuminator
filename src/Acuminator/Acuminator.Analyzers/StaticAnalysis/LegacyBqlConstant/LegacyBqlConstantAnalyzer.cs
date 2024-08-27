@@ -1,13 +1,13 @@
-﻿#nullable enable
-
+﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Collections.Immutable;
 using System.Linq;
 
-using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -43,13 +43,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 
 			if (context.Symbol is INamedTypeSymbol constant)
 			{
-				if (!IsConstant(constant, pxContext, out string? constantType) || LegacyBqlFieldAnalyzer.AlreadyStronglyTyped(constant, pxContext))
+				if (!IsConstant(constant, pxContext, out string? constantType) || constant.IsStronglyTypedBqlFieldOrBqlConstant(pxContext))
 					return;
 
-				Location location = constant.Locations.FirstOrDefault();
+				Location? location = constant.Locations.FirstOrDefault();
 				if (location != null)
 				{
-					var properties = ImmutableDictionary.CreateBuilder<string, string>();
+					var properties = ImmutableDictionary.CreateBuilder<string, string?>();
 					properties.Add(CorrespondingType, constantType);
 
 					context.ReportDiagnosticWithSuppressionCheck(
@@ -72,10 +72,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				.FirstOrDefault(t => t.IsGenericType && t.InheritsFromOrEqualsGeneric(pxContext.BqlConstantType!))?
 				.TypeArguments[0];
 
-			if (constantUnderlyingType == null)
+			if (constantUnderlyingType == null || constantUnderlyingType.Name.IsNullOrWhiteSpace())
 				return false;
 
-			if (LegacyBqlFieldAnalyzer.PropertyTypeToFieldType.ContainsKey(constantUnderlyingType.Name))
+			if (PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(constantUnderlyingType.Name))
 			{
 				constantType = constantUnderlyingType.Name;
 				return true;

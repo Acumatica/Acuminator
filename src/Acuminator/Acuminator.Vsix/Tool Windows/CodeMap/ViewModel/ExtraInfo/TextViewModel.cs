@@ -1,12 +1,11 @@
-﻿using System;
-using System.Windows;
+﻿#nullable enable
+
+using System;
 using System.Windows.Media;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -18,9 +17,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Color? LightThemeForeground { get; }
 
-		private string _tooltip;
+		private string? _tooltip;
 
-		public string Tooltip
+		public string? Tooltip
 		{
 			get => _tooltip;
 			set

@@ -1,14 +1,17 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.Utilities
@@ -120,7 +123,7 @@ namespace Acuminator.Vsix.Utilities
                 return projectionBuffer.GetSourceBuffersRecursive();
             }
 
-            return new [] { textBuffer };
+            return [textBuffer];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -160,15 +163,15 @@ namespace Acuminator.Vsix.Utilities
 		/// Get file path from the text buffer. Must be accessed only from UI thread.
 		/// </summary>
 		/// <param name="textBuffer">The textBuffer to act on.</param>
-		public static string GetFilePath(this ITextBuffer textBuffer)
+		public static string? GetFilePath(this ITextBuffer textBuffer)
 		{
 			textBuffer.ThrowOnNull();
 			Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 					
 			textBuffer.Properties.TryGetPropertySafe(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer),
-													 out Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter);
+													 out Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer? bufferAdapter);
 
-			if (!(bufferAdapter is Microsoft.VisualStudio.Shell.Interop.IPersistFileFormat persistFileFormat))
+			if (bufferAdapter is not Microsoft.VisualStudio.Shell.Interop.IPersistFileFormat persistFileFormat)
 			{
 				return null;
 			}
@@ -281,7 +284,7 @@ namespace Acuminator.Vsix.Utilities
 
         #region PropertyCollection
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryGetPropertySafe<TProperty>(this PropertyCollection propertyCollection, object key, out TProperty value)
+        public static bool TryGetPropertySafe<TProperty>(this PropertyCollection propertyCollection, object key, out TProperty? value)
         {
             try
             {
@@ -345,7 +348,7 @@ namespace Acuminator.Vsix.Utilities
         /// Create an ITextBuffer with the specified content type and lines
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ITextBuffer CreateTextBuffer(this ITextBufferFactoryService textBufferFactoryService, IContentType contentType, params string[] lines)
+        public static ITextBuffer CreateTextBuffer(this ITextBufferFactoryService textBufferFactoryService, IContentType? contentType, params string[] lines)
         {
             textBufferFactoryService.ThrowOnNull();
 

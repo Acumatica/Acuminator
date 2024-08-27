@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 		private readonly Func<CancellationToken, Task<Document>> _createChangedDocument;
 
 		public DocumentChangeActionWithOptionalPreview(string title, Func<CancellationToken, Task<Document>> createChangedDocument, bool displayPreview, 
-													   string equivalenceKey = null) :
+													   string? equivalenceKey = null) :
 												  base(title, equivalenceKey, displayPreview)
 		{
 			_createChangedDocument = createChangedDocument.CheckIfNull();

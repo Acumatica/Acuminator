@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -26,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 		public StartRowResetForPagingAnalyzer() : this(null)
 		{ }
 
-		public StartRowResetForPagingAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public StartRowResetForPagingAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -36,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 		private static void AnalyzeDelegate(SymbolAnalysisContext syntaxContext, PXContext pxContext)
 		{
-			IMethodSymbol method = syntaxContext.Symbol as IMethodSymbol;
+			IMethodSymbol? method = syntaxContext.Symbol as IMethodSymbol;
 
 			if (!IsDiagnosticValid(method, syntaxContext, pxContext))
 				return;
@@ -48,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				return;
 
 			SemanticModel semanticModel = syntaxContext.Compilation.GetSemanticModel(declaration.SyntaxTree);
-			ILocalSymbol refStartRow = GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken);
+			ILocalSymbol? refStartRow = GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken);
 
 			if (refStartRow == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -58,13 +60,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			if (selectSymbol == null || selectInvocation == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			AssignmentExpressionSyntax lastAssigment = GetLastStartRowResetAssignment(methodDeclaration);
+			AssignmentExpressionSyntax? lastAssigment = GetLastStartRowResetAssignment(methodDeclaration);
 
 			if (lastAssigment != null && lastAssigment.SpanStart > selectInvocation.Span.End)
 				return;
 
 			bool registerCodeFix = RegisterCodeFix(methodDeclaration, selectInvocation);
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}.ToImmutableDictionary();
@@ -75,7 +77,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				pxContext.CodeAnalysisSettings);
 		}
 
-		private static bool IsDiagnosticValid(IMethodSymbol method, SymbolAnalysisContext syntaxContext, PXContext pxContext)
+		private static bool IsDiagnosticValid([NotNullWhen(returnValue: true)] IMethodSymbol? method, SymbolAnalysisContext syntaxContext, 
+											  PXContext pxContext)
 		{
 			if (method == null || method.IsAbstract || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable ||
 				method.DeclaringSyntaxReferences.Length != 1)
@@ -86,10 +89,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			return method.IsDelegateForViewInPXGraph(pxContext);
 		}
 
-		private static ILocalSymbol GetReferenceToStartRow(MethodDeclarationSyntax methodDeclaration, SemanticModel semanticModel,
-														   PXContext pxContext, CancellationToken cancellationToken)
+		private static ILocalSymbol? GetReferenceToStartRow(MethodDeclarationSyntax methodDeclaration, SemanticModel semanticModel,
+															PXContext pxContext, CancellationToken cancellationToken)
 		{
-			DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(methodDeclaration.Body);
+			DataFlowAnalysis? df = semanticModel.AnalyzeDataFlow(methodDeclaration.Body!);
 
 			if (df == null || !df.Succeeded || cancellationToken.IsCancellationRequested)
 				return null;
@@ -114,7 +117,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 				var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
 
-				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXView.Type) && symbol.Name == DelegateNames.StartRow)
+				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXView.Type, SymbolEqualityComparer.Default) && 
+					symbol.Name == DelegateNames.StartRow)
 				{
 					return localSymbol;
 				}
@@ -137,7 +141,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 			foreach (InvocationExpressionSyntax invocation in invocationsWithStartRowPassedArg)
 			{
-				var symbol = (IMethodSymbol)semanticModel.GetSymbolInfo(invocation, cancellationToken).Symbol;
+				var symbol = semanticModel.GetSymbolInfo(invocation, cancellationToken).Symbol as IMethodSymbol;
 
 				if (cancellationToken.IsCancellationRequested)
 					return default;
@@ -156,9 +160,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			return default;
 		}
 
-		private static AssignmentExpressionSyntax GetLastStartRowResetAssignment(MethodDeclarationSyntax methodDeclaration)
+		private static AssignmentExpressionSyntax? GetLastStartRowResetAssignment(MethodDeclarationSyntax methodDeclaration)
 		{
-			AssignmentExpressionSyntax lastAssigment = null;
+			AssignmentExpressionSyntax? lastAssigment = null;
 			var startRowAccesses = methodDeclaration.DescendantNodes()
 													.OfType<MemberAccessExpressionSyntax>()
 													.Where(m => m.Name is IdentifierNameSyntax i &&
@@ -168,7 +172,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			{
 				if (memberAccess.Parent is AssignmentExpressionSyntax assigment &&
 					assigment.Right is LiteralExpressionSyntax literalExpression &&
-					literalExpression.Token.Value.ToString() == "0")
+					literalExpression.Token.Value?.ToString() == "0")
 				{
 					lastAssigment = assigment;
 				}
@@ -185,8 +189,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				return false;
 
 			int selectInvocationEnd = selectInvocation.Span.End;
-			var statements = methodDeclaration.Body.DescendantNodesAndSelf()
-												   .OfType<StatementSyntax>();
+			var statements = methodDeclaration.Body!.DescendantNodesAndSelf()
+													.OfType<StatementSyntax>();
 
 			foreach (StatementSyntax statement in statements)
 			{
@@ -198,7 +202,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 						if (gotoStatement.IsKind(SyntaxKind.GotoStatement))
 							return false;
 
-						SwitchSectionSyntax switchSectionWithGoTo = gotoStatement.Parent<SwitchSectionSyntax>();
+						SwitchSectionSyntax? switchSectionWithGoTo = gotoStatement.Parent<SwitchSectionSyntax>();
 
 						if (switchSectionWithGoTo == null || switchSectionWithGoTo.Span.OverlapsWith(selectInvocation.Span)) 
 							return false;

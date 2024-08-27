@@ -26,5 +26,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			get;
 			set;
 		}
+
+		void CombineWithBaseInfo(T baseInfo);
 	}
 }

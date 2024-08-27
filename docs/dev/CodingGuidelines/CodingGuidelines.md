@@ -11,6 +11,7 @@
     * [Indentation Depth](#indentation-depth)
     * [Control Flow Statements](#control-flow-statements)
     * [Local Functions](#local-functions)
+    * [Nullable Reference Types Analysis](#nullable-reference-types-analysis)
 * [Best Practices](#best-practices)
     * [Diagnostic and Code Fix Messages Style](#diagnostic-and-code-fix-messages-style) 
     * [Analyzers](#analyzers)
@@ -173,6 +174,23 @@ The local functions can be used in the following three cases:
 
 * If you implement an async method with the argument check.
 * If you need better grouping of the public method with the private methods that only this public method uses. The general .NET convention recommends that you put all public methods above the private ones. However, you can improve readability by grouping private methods that are related to only one public method as its local functions. The number of these local functions should be no more than three.
+
+### Nullable Reference Types Analysis
+
+Acuminator actively uses [nullable reference types analysis](https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references) from C# 8. This feature is enabled by default in the Acuminator codebase except unit tests. 
+The nullable reference types analysis helps to avoid null reference exceptions and improve the overall code quality. Thus, it is mandatory to use it. 
+
+The nullability analysis will work by default in `Acuminator.Analyzers` and `Acuminator.Utilities` projects. New code added to these projects will be checked automaically. 
+
+However, the analysis is disabled in the unit tests projects, and it works strange in the `Acuminator.Vsix` project probably because it is a special VS SDK project and it adds some unusual specifics. 
+Nullable analysis warnings are not displayed in the code editor in the `Acuminator.Vsix` project unless there is an explicit pragrma directive enabling nullability analysis. 
+However, the analysis errors are still displayed in the *Output* tool window.
+
+Due to the reasons explained above, you must add nullable pragma directive as a first line to every new code file in these projects:
+
+```C#
+#nullable enable
+```
 
 ## Best Practices
 

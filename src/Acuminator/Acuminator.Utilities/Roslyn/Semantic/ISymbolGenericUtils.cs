@@ -66,7 +66,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (type == null || symbol.ContainingType == null)
 				return false;
 
-			return symbol.ContainingType.Equals(type) || symbol.ContainingType.Equals(type.OriginalDefinition);
+			return symbol.ContainingType.Equals(type, SymbolEqualityComparer.Default) || 
+				   symbol.ContainingType.Equals(type.OriginalDefinition, SymbolEqualityComparer.Default);
 		}
 
 		/// <summary>
@@ -107,7 +108,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				var attributes = symbolToCheck.GetAttributes();
 				return attributes.IsDefaultOrEmpty
 					? false
-					: attributes.Any(a => a.AttributeClass.Equals(attributeType));
+					: attributes.Any(a => a.AttributeClass?.Equals(attributeType, SymbolEqualityComparer.Default) ?? false);
 			}
 
 			bool HasDerivedAttribute(TSymbol symbolToCheck)
@@ -115,7 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				var attributes = symbolToCheck.GetAttributes();
 				return attributes.IsDefaultOrEmpty
 					? false
-					: attributes.Any(a => a.AttributeClass.InheritsFromOrEquals(attributeType));
+					: attributes.Any(a => a.AttributeClass?.InheritsFromOrEquals(attributeType) ?? false);
 			}
 		}
 
@@ -175,5 +176,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				_						 => null
 			};
 		}
+
+		/// <summary>
+		/// Query if <paramref name="symbol"/> is declared in source code.
+		/// </summary>
+		/// <param name="symbol">The symbol to check.</param>
+		/// <returns>
+		/// True if <paramref name="symbol"/> is in source code, false if not.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsInSourceCode(this ISymbol symbol) =>
+			!symbol.DeclaringSyntaxReferences.IsDefaultOrEmpty;
 	}
 }

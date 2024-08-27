@@ -31,13 +31,13 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			_cancellation = cancellation;
 		}
 
-		public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
+		public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
 		{
 			_cancellation.ThrowIfCancellationRequested();
 
 			var symbolInfo = _semanticModel.GetSymbolInfo(node, _cancellation);
 
-			if (symbolInfo.Symbol != null && symbolInfo.Symbol.Equals(_parameter))
+			if (symbolInfo.Symbol != null && symbolInfo.Symbol.Equals(_parameter, SymbolEqualityComparer.Default))
 			{
 				var replacement = _replaceWith;
 

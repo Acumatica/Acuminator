@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,15 +24,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (attributes.IsDefaultOrEmpty)
 				return false;
 
-			var shortAttributeNames = attributes.Select(attr => GetAttributeShortName(attr.AttributeClass.Name));
-
+			var shortAttributeNames = attributes.Where(attr => attr.AttributeClass != null)
+												.Select(attr => GetAttributeShortName(attr.AttributeClass!.Name));
 			return CheckAttributeNamesForDocumentationExclusion(shortAttributeNames, checkForPXHidden);
 		}
 
 		public bool CheckIfAttributesDisableDiagnostic(MemberDeclarationSyntax member, bool checkForPXHidden)
 		{
 			var shortAttributeNames = member.GetAttributes()
-											.Select(attr => GetAttributeShortName(attr));
+											.Select(GetAttributeShortName);
 
 			return CheckAttributeNamesForDocumentationExclusion(shortAttributeNames, checkForPXHidden);
 		}

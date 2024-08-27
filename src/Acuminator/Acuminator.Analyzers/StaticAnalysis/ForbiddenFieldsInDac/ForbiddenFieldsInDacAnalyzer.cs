@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -60,10 +59,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 									where dacOrDacExtension.PropertiesByNames.ContainsKey(forbiddenFieldName)
 									select dacOrDacExtension.PropertiesByNames[forbiddenFieldName];
 
-			foreach (DacPropertyInfo property in invalidProperties.Where(p => dacOrDacExtension.Symbol.Equals(p.Symbol.ContainingSymbol)))
+			foreach (DacPropertyInfo property in invalidProperties.Where(p => dacOrDacExtension.Symbol.Equals(p.Symbol.ContainingSymbol, 
+																											  SymbolEqualityComparer.Default)))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				RegisterForbiddenFieldDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
+
+				// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+				// and these properties are declared in the DAC type itself
+				RegisterForbiddenFieldDiagnosticForIdentifier(property.Node!.Identifier, pxContext, context);
 			}
 		}
 
@@ -97,14 +100,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 														PXContext pxContext, SymbolAnalysisContext context)
 		{
 			var propertiesWithInvalidPrefix = 
-				dacOrDacExtension.DeclaredDacFieldProperties
+				dacOrDacExtension.DeclaredDacFieldPropertiesWithBqlFields
 								 .Where(property => property.Name.StartsWith(CompanyPrefix, StringComparison.OrdinalIgnoreCase) &&
 													forbiddenNames.All(field => !field.Equals(property.Name, StringComparison.OrdinalIgnoreCase)));
 
 			foreach (DacPropertyInfo property in propertiesWithInvalidPrefix)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				RegisterCompanyPrefixDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
+
+				// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+				// and these properties are declared in the DAC type itself
+				RegisterCompanyPrefixDiagnosticForIdentifier(property.Node!.Identifier, pxContext, context);
 			}
 		}
 
@@ -125,8 +131,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 		private void RegisterCompanyPrefixDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
 		{
-			var diagnosticProperties = ImmutableDictionary<string, string>.Empty
-																		  .Add(DiagnosticProperty.RegisterCodeFix, bool.FalseString);
+			var diagnosticProperties = ImmutableDictionary<string, string?>.Empty
+																		   .Add(DiagnosticProperty.RegisterCodeFix, bool.FalseString);
 			context.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(
 					Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName, identifier.GetLocation(), diagnosticProperties),

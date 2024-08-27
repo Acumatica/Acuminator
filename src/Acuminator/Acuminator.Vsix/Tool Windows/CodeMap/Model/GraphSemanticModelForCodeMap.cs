@@ -39,7 +39,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			var declaredConstructors = from constructor in graphOrExtension.InstanceConstructors
 									   where !constructor.IsImplicitlyDeclared && 
-											  constructor.ContainingType.Equals(graphOrExtension)
+											  constructor.ContainingType.Equals(graphOrExtension, SymbolEqualityComparer.Default)
 									   select constructor;
 			int declarationOrder = 0;
 
@@ -55,7 +55,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var baseMemberOverrides = from member in graphOrExtension.GetMembers()
 									  where !member.IsImplicitlyDeclared && member.IsOverride && 
 											 member.CanBeReferencedByName &&
-											 member.ContainingType.Equals(graphOrExtension)
+											 member.ContainingType.Equals(graphOrExtension, SymbolEqualityComparer.Default)
 									  select member;
 			int declarationOrder = 0;
 

@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -23,11 +21,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 	/// <summary>
 	/// A multiple attributes on DAC property fix base class.
 	/// </summary>
-	public abstract class MultipleAttributesOnDacPropertyFixBase : CodeFixProvider
+	public abstract class MultipleAttributesOnDacPropertyFixBase : PXCodeFixProvider
 	{
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -60,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 																					  removePredicate, cToken),
 								  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		protected abstract string GetCodeActionName();
@@ -76,10 +72,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var modifiedRoot = root.ReplaceNode(propertyDeclaration, propertyModified);
-			return Task.FromResult(document.WithSyntaxRoot(modifiedRoot));		
-		}
+			if (propertyModified == null)
+				return Task.FromResult(document);
 
+			var modifiedRoot = root.ReplaceNode(propertyDeclaration, propertyModified);
+			var modifiedDocument = document.WithSyntaxRoot(modifiedRoot);
+			return Task.FromResult(modifiedDocument);
+		}
 
 
 		private class MultipleAttributesRemover : CSharpSyntaxRewriter

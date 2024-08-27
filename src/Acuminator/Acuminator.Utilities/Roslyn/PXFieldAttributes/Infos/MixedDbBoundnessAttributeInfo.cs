@@ -56,7 +56,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public override bool Equals(DataTypeAttributeInfo? other) => Equals(other as MixedDbBoundnessAttributeInfo);
 
 		public bool Equals(MixedDbBoundnessAttributeInfo? other) =>
-			base.Equals(other) && IsDbBoundByDefault == other.IsDbBoundByDefault && AttributeType.Equals(other.AttributeType);
+			base.Equals(other) && IsDbBoundByDefault == other.IsDbBoundByDefault && 
+			AttributeType.Equals(other.AttributeType, SymbolEqualityComparer.Default);
 
 		public override int GetHashCode()
 		{
@@ -65,7 +66,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			unchecked
 			{
 				hash = 23 * hash + IsDbBoundByDefault.GetValueOrDefault().GetHashCode();
-				hash = 23 * hash + AttributeType.GetHashCode();
+				hash = 23 * hash + SymbolEqualityComparer.Default.GetHashCode(AttributeType);
 			}
 
 			return hash;

@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -22,9 +21,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 	    public const string ViewFieldNameProperty = "field";
 		private const int MaximumDistance = 2;
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName);
 
@@ -37,8 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 				return;
 
 			var delegateCandidates = from method in graphModel.Symbol.GetMethods()
-									 where method.ContainingType.Equals(graphModel.Symbol) && !method.IsOverride &&
-										   (!graphModel.ViewDelegatesByNames.TryGetValue(method.Name, out DataViewDelegateInfo delegateInfo) || !method.Equals(delegateInfo.Symbol)) &&
+									 where method.ContainingType.Equals(graphModel.Symbol, SymbolEqualityComparer.Default) && !method.IsOverride &&
+										   (!graphModel.ViewDelegatesByNames.TryGetValue(method.Name, out DataViewDelegateInfo? delegateInfo) || 
+										    !method.Equals(delegateInfo.Symbol, SymbolEqualityComparer.Default)) &&
 										   method.IsValidViewDelegate(pxContext) && !method.IsValidActionHandler(pxContext)
 									 select method;
 
@@ -51,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 
 				if (nearestViewName != null && !method.Locations.IsEmpty)
 				{
-					var properties = ImmutableDictionary.CreateBuilder<string, string>();
+					var properties = ImmutableDictionary.CreateBuilder<string, string?>();
 					properties.Add(ViewFieldNameProperty, nearestViewName);
 
 					context.ReportDiagnosticWithSuppressionCheck(

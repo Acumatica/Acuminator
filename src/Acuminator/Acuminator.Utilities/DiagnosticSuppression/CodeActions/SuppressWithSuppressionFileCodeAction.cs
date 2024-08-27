@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.CodeActions;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -22,7 +24,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 		protected Diagnostic Diagnostic { get; }
 
 		public SuppressWithSuppressionFileCodeAction(CodeFixContext context, Diagnostic diagnostic, 
-													 string title, string equivalenceKey = null) :
+													 string title, string? equivalenceKey = null) :
 												base(title, equivalenceKey, displayPreview: false)
 		{
 			Context = context;
@@ -32,24 +34,24 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 		protected override async Task<IEnumerable<CodeActionOperation>> ComputeOperationsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			Project project = Context.Document?.Project;
+			Project? project = Context.Document?.Project;
 
 			if (project == null)
-				return null;
+				return [];
 
-			SemanticModel semanticModel = await Context.Document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			SemanticModel? semanticModel = await Context.Document!.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
 			if (semanticModel == null)
-				return null;
+				return [];
 
-			SuppressionFile suppressionFile = SuppressionManager.Instance.GetSuppressionFile(project.AssemblyName);
+			SuppressionFile? suppressionFile = SuppressionManager.Instance?.GetSuppressionFile(project.AssemblyName);
 
 			if (suppressionFile == null)
 			{
-				IEnumerable<CodeActionOperation> operationsToCreateSuppresionFile = GetOperationsToCreateSuppressionFile(project);
+				IEnumerable<CodeActionOperation>? operationsToCreateSuppresionFile = GetOperationsToCreateSuppressionFile(project);
 
 				if (operationsToCreateSuppresionFile == null)
-					return null;
+					return [];
 
 				var operationsWithSuppressionFileCreation = new List<CodeActionOperation>(4);
 				operationsWithSuppressionFileCreation.AddRange(operationsToCreateSuppresionFile);
@@ -75,10 +77,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 			}
 		}
 
-		private IEnumerable<CodeActionOperation> GetOperationsToCreateSuppressionFile(Project project)
+		private IEnumerable<CodeActionOperation>? GetOperationsToCreateSuppressionFile(Project project)
 		{
 			string suppressionFileName = project.AssemblyName + SuppressionFile.SuppressionFileExtension;
-			TextDocument projectSuppressionFile =
+			TextDocument? projectSuppressionFile =
 				project.AdditionalDocuments.FirstOrDefault(d => string.Equals(suppressionFileName, d.Name, StringComparison.OrdinalIgnoreCase)) ??
 				SuppressionManager.CreateRoslynAdditionalFile(project);
 

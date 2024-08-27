@@ -8,7 +8,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		SuppressionFileValidation FileValidation { get; }
 
-		XDocument Load(string path);
+		XDocument? Load(string path);
 
 		bool Save(XDocument document, string path);
 

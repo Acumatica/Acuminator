@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {

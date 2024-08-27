@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	public sealed partial class SuppressionManager
 	{
 		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
-		private static object _initializationLocker = new object();
+		private static readonly object _initializationLocker = new object();
 
 		internal static SuppressionManager? Instance
 		{
@@ -48,23 +48,23 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			BuildActionSetter = buildActionSetter;
 		}
 
-		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo>? additionalFiles,
 									   Func<ISuppressionFileSystemService>? fileSystemServiceFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(additionalFiles, fileSystemServiceFabric, null, buildActionSetterFabric);
 
-		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo>? additionalFiles,
 									   Func<IIOErrorProcessor>? errorProcessorFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(additionalFiles, null, errorProcessorFabric, buildActionSetterFabric);
 
-		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
+		public static void InitOrReset(Workspace? workspace, bool generateSuppressionBase, 
 									   Func<ISuppressionFileSystemService>? fileSystemServiceFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null) =>
 			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfo(generateSuppressionBase),
 						fileSystemServiceFabric, null, buildActionSetterFabric);
 
-		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase,
+		public static void InitOrReset(Workspace? workspace, bool generateSuppressionBase,
 									   Func<IIOErrorProcessor>? errorProcessorFabric = null,
 									   Func<ICustomBuildActionSetter>? buildActionSetterFabric = null)
 		{

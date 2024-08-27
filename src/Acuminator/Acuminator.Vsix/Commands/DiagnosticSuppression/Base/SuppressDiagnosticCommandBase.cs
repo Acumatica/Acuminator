@@ -1,31 +1,24 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell;
+
 using Document = Microsoft.CodeAnalysis.Document;
 using Shell = Microsoft.VisualStudio.Shell;
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
-using Microsoft.VisualStudio.ComponentModelHost;
+using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
+using Task = System.Threading.Tasks.Task;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -45,7 +38,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		protected virtual async Task CommandCallbackAsync()
 		{		
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
+			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null)
 				return;
@@ -56,17 +49,17 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (caretLine == null)
 				return;
 
-			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document? document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 			if (document == null || !document.SupportsSyntaxTree /*|| document.SourceCodeKind ==*/)
 				return;
 
-			Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync(Package.DisposalToken);
-			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync(Package.DisposalToken);
+			Task<SyntaxNode?> syntaxRootTask = document.GetSyntaxRootAsync(Package.DisposalToken);
+			Task<SemanticModel?> semanticModelTask = document.GetSemanticModelAsync(Package.DisposalToken);
 			await Task.WhenAll(syntaxRootTask, semanticModelTask);
 
 #pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
-			SyntaxNode syntaxRoot = syntaxRootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
+			SyntaxNode? syntaxRoot = syntaxRootTask.Result;
+			SemanticModel? semanticModel = semanticModelTask.Result;
 #pragma warning restore VSTHRD002, VSTHRD103
 
 			if (syntaxRoot == null || semanticModel == null || !IsPlatformReferenced(semanticModel) ||
@@ -112,12 +105,12 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		protected async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
 			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			IComponentModel componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>();
+			IComponentModel? componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>(throwOnFailure: false);
 
 			if (componentModel == null)
-				return new List<DiagnosticData>();
+				return [];
 
-			List<DiagnosticData> diagnosticData = null;
+			List<DiagnosticData>? diagnosticData = null;
 
 			try
 			{
@@ -131,10 +124,10 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			}
 			catch
 			{
-				return new List<DiagnosticData>();
+				return [];
 			}
 
-			return diagnosticData ?? new List<DiagnosticData>();
+			return diagnosticData ?? [];
 		}
 
 		protected virtual Task SuppressDiagnosticsAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot, 

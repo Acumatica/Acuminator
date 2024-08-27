@@ -1,12 +1,11 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.ToolWindows.Common;
-using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 
@@ -16,7 +15,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public override Icon NodeIcon => Icon.Action;
 
-		public ActionInfo ActionInfo => MemberInfo as ActionInfo;
+		public ActionInfo ActionInfo => (MemberInfo as ActionInfo)!;
 
 		public ActionNodeViewModel(ActionCategoryNodeViewModel actionCategoryVM, ActionInfo actionInfo, bool isExpanded = false) :
 							  base(actionCategoryVM, actionCategoryVM, actionInfo, isExpanded)

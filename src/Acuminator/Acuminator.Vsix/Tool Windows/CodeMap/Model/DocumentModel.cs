@@ -9,11 +9,9 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -65,7 +63,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				SemanticModel = await GetSemanticModelAsync(cancellationToken);
 				Root = await GetRootAsync(cancellationToken);
 
-				if (!(Root is CompilationUnitSyntax compilationUnit))
+				if (SemanticModel == null || Root is not CompilationUnitSyntax compilationUnit)
 					return false;
 
 				PXContext context = new PXContext(SemanticModel.Compilation, codeAnalysisSettings: null);
@@ -74,10 +72,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return false;
 
 				var candidateSymbols = rootCandidatesRetriever.GetCodeMapRootCandidates(compilationUnit, context, SemanticModel, cancellationToken);
+				int declarationOrder = 0;
 
 				foreach (var (candidateSymbol, candidateNode) in candidateSymbols)
 				{
-					if (semanticModelFactory.TryToInferSemanticModel(candidateSymbol, candidateNode, context, out ISemanticModel codeMapSemanticModel, cancellationToken) &&
+					if (semanticModelFactory.TryToInferSemanticModel(candidateSymbol, candidateNode, context, out ISemanticModel? codeMapSemanticModel, 
+																	 declarationOrder, cancellationToken) &&
 						codeMapSemanticModel != null)
 					{
 						_codeMapSemanticModels.Add(codeMapSemanticModel);
@@ -92,18 +92,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private Task<SemanticModel> GetSemanticModelAsync(CancellationToken cancellationToken)
+		private Task<SemanticModel?> GetSemanticModelAsync(CancellationToken cancellationToken)
 		{
 			if (Document.TryGetSemanticModel(out var semanticModel))
-				return Task.FromResult(semanticModel);
+				return Task.FromResult<SemanticModel?>(semanticModel);
 
 			return Document.GetSemanticModelAsync(cancellationToken);
 		}
 
-		private Task<SyntaxNode> GetRootAsync(CancellationToken cancellationToken)
+		private Task<SyntaxNode?> GetRootAsync(CancellationToken cancellationToken)
 		{
 			if (Document.TryGetSyntaxRoot(out var root))
-				return Task.FromResult(root);
+				return Task.FromResult<SyntaxNode?>(root);
 
 			return Document.GetSyntaxRootAsync(cancellationToken);
 		}

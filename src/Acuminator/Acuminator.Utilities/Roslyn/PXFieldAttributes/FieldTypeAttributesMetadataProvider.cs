@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public ImmutableArray<MixedDbBoundnessAttributeInfo> SortedDacFieldTypeAttributesWithMixedDbBoundness { get; }
 
-		public ImmutableArray<INamedTypeSymbol> WellKnownNonDataTypeAttributes { get; }
+		public ImmutableArray<ITypeSymbol> WellKnownNonDataTypeAttributes { get; }
 
 		private readonly INamedTypeSymbol _pxDBCalcedAttribute;
 		private readonly INamedTypeSymbol _pxDBScalarAttribute;
@@ -46,13 +46,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			var attributesCalcedOnDbSide = new List<INamedTypeSymbol>(capacity: 2) { _pxDBScalarAttribute, _pxDBCalcedAttribute };
 			AttributesCalcedOnDbSide = attributesCalcedOnDbSide.ToImmutableArray();
 
-			UnboundDacFieldTypeAttributesWithFieldType = GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext).ToImmutableDictionary();
-			BoundDacFieldTypeAttributesWithFieldType = GetBoundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext).ToImmutableDictionary();
+			UnboundDacFieldTypeAttributesWithFieldType = GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext)
+															.ToImmutableDictionary(SymbolEqualityComparer.Default);
+			BoundDacFieldTypeAttributesWithFieldType = GetBoundDacFieldTypeAttributesWithCorrespondingTypes(_pxContext)
+															.ToImmutableDictionary(SymbolEqualityComparer.Default);
 
 			AllDacFieldTypeAttributes = UnboundDacFieldTypeAttributesWithFieldType.Keys
 										.Concat(BoundDacFieldTypeAttributesWithFieldType.Keys)
 										.Concat(attributesCalcedOnDbSide)
-										.ToImmutableHashSet();
+										.ToImmutableHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 
 			SortedDacFieldTypeAttributesWithMixedDbBoundness = GetDacFieldTypeAttributesWithMixedDbBoundness(_pxContext)
 																.OrderBy(typeWithValue => typeWithValue.AttributeType, TypeSymbolsByHierachyComparer.Instance)
@@ -64,17 +66,21 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public bool IsWellKnownNonDataTypeAttribute(ITypeSymbol attribute)
 		{
 			var attributeTypeHierarchy = attribute.GetBaseTypesAndThis();
-			return attributeTypeHierarchy.Any(type => WellKnownNonDataTypeAttributes.Contains(type));
+			return attributeTypeHierarchy.Any(type => EnumerableExtensions.ImmutableArrayContains(WellKnownNonDataTypeAttributes, type, 
+																								  SymbolEqualityComparer.Default));
 		}
 
 		public IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol originalAttribute) =>
 			GetDacFieldTypeAttributeInfos(originalAttribute, preparedFlattenedAttributes: null);
 
-		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol originalAttribute, 
+		internal IReadOnlyCollection<DataTypeAttributeInfo> GetDacFieldTypeAttributeInfos(ITypeSymbol? originalAttribute, 
 																						  ImmutableHashSet<ITypeSymbol>? preparedFlattenedAttributes)
 		{
+			if (originalAttribute == null)
+				return [];
+
 			if (IsWellKnownNonDataTypeAttribute(originalAttribute))
-				return Array.Empty<DataTypeAttributeInfo>();
+				return [];
 
 			var flattenedAttributes = preparedFlattenedAttributes ?? originalAttribute.GetThisAndAllAggregatedAttributes(_pxContext, includeBaseTypes: true);
 			return GetDacFieldTypeAttributeInfos_NoWellKnownNonDataTypeAttributesCheck(originalAttribute, flattenedAttributes);
@@ -103,7 +109,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			var dacFieldTypeAttributesInFlattenedSet = AllDacFieldTypeAttributes.Intersect(flattenedAttributes);
 
 			if (dacFieldTypeAttributesInFlattenedSet.Count == 0)
-				return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? Array.Empty<DataTypeAttributeInfo>();
+				return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? [];
 
 			foreach (ITypeSymbol dacFieldTypeAttribute in dacFieldTypeAttributesInFlattenedSet)
 			{
@@ -120,7 +126,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				typeAttributeInfos.Add(attributeInfo);
 			}
 
-			return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? Array.Empty<DataTypeAttributeInfo>();
+			return typeAttributeInfos as IReadOnlyCollection<DataTypeAttributeInfo> ?? [];
 		}
 
 		/// <summary>
@@ -155,7 +161,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				if (mixedDbBoundnessAttributeInfos == null)
 				{
 					mixedDbBoundnessAttributeInfos = new(capacity: 1) { mixedBoundnessAttribute };
-					checkedMixedAttributes = mixedBoundnessAttribute.AcumaticaAttributesHierarchy.ToHashSet();
+					checkedMixedAttributes = mixedBoundnessAttribute.AcumaticaAttributesHierarchy
+																	.ToHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 				}
 				else
 				{
@@ -171,7 +178,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 																						  List<MixedDbBoundnessAttributeInfo> mixedDbBoundnessAttributeInfos)
 		{
 			bool presentInMixedAttribuesHierarchy =
-				mixedDbBoundnessAttributeInfos.Any(info => info.AcumaticaAttributesHierarchy.Contains(dacFieldTypeAttribute));
+				mixedDbBoundnessAttributeInfos.Any(info => info.AcumaticaAttributesHierarchy.Contains(dacFieldTypeAttribute, 
+																									  SymbolEqualityComparer.Default));
 
 			// If data type attribute is present in the hierarchy of one of mixed boundness metadata attributes
 			// then we need to check if dacFieldTypeAttribute is also directly aggregated on originalAttribute
@@ -187,9 +195,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private DataTypeAttributeInfo? GetDacFieldTypeAttributeInfo(ITypeSymbol dacFieldTypeAttribute)
 		{
-			if (dacFieldTypeAttribute.Equals(_pxDBScalarAttribute))
+			if (dacFieldTypeAttribute.Equals(_pxDBScalarAttribute, SymbolEqualityComparer.Default))
 				return new DataTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
-			else if (dacFieldTypeAttribute.Equals(_pxDBCalcedAttribute))
+			else if (dacFieldTypeAttribute.Equals(_pxDBCalcedAttribute, SymbolEqualityComparer.Default))
 				return new DataTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 			else if (BoundDacFieldTypeAttributesWithFieldType.TryGetValue(dacFieldTypeAttribute, out var boundFieldType))
 				return new DataTypeAttributeInfo(FieldTypeAttributeKind.BoundTypeAttribute, boundFieldType);
@@ -202,12 +210,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private static Dictionary<ITypeSymbol, ITypeSymbol?> GetUnboundDacFieldTypeAttributesWithCorrespondingTypes(PXContext pxContext)
 		{
-			var types = new Dictionary<ITypeSymbol, ITypeSymbol?>
+			var types = new Dictionary<ITypeSymbol, ITypeSymbol?>(SymbolEqualityComparer.Default)
 			{
 				{ pxContext.FieldAttributes.PXLongAttribute,    pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXIntAttribute,     pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXShortAttribute,   pxContext.SystemTypes.Int16 },
-				{ pxContext.FieldAttributes.PXStringAttribute,  pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXStringAttribute,  pxContext.SystemTypes.String.Type },
 				{ pxContext.FieldAttributes.PXByteAttribute,    pxContext.SystemTypes.Byte },
 				{ pxContext.FieldAttributes.PXDecimalAttribute, pxContext.SystemTypes.Decimal },
 				{ pxContext.FieldAttributes.PXDoubleAttribute,  pxContext.SystemTypes.Double },
@@ -227,12 +235,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private static Dictionary<ITypeSymbol, ITypeSymbol?> GetBoundDacFieldTypeAttributesWithCorrespondingTypes(PXContext pxContext)
 		{
-			var types = new Dictionary<ITypeSymbol, ITypeSymbol?>
+			var types = new Dictionary<ITypeSymbol, ITypeSymbol?>(SymbolEqualityComparer.Default)
 			{
 				{ pxContext.FieldAttributes.PXDBLongAttribute,         pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXDBIntAttribute,          pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXDBShortAttribute,        pxContext.SystemTypes.Int16 },
-				{ pxContext.FieldAttributes.PXDBStringAttribute,       pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXDBStringAttribute,       pxContext.SystemTypes.String.Type },
 				{ pxContext.FieldAttributes.PXDBByteAttribute,         pxContext.SystemTypes.Byte },
 				{ pxContext.FieldAttributes.PXDBDecimalAttribute,      pxContext.SystemTypes.Decimal },
 				{ pxContext.FieldAttributes.PXDBDoubleAttribute,       pxContext.SystemTypes.Double },
@@ -244,7 +252,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{ pxContext.FieldAttributes.PXDBIdentityAttribute,     pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXDBBinaryAttribute,       pxContext.SystemTypes.ByteArray },
-				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.SystemTypes.String.Type! },
+				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.SystemTypes.String.Type },
 				{ pxContext.FieldAttributes.PXDBAttributeAttribute,    pxContext.SystemTypes.StringArray },
 				{ pxContext.FieldAttributes.PXDBDataLengthAttribute,   pxContext.SystemTypes.Int64 },
 			};
@@ -282,15 +290,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 			.Where(attributeTypeWithIsDbFieldValue => attributeTypeWithIsDbFieldValue != null)!;
 
-		private static ImmutableArray<INamedTypeSymbol> GetWellKnownNonDataTypeAttributes(PXContext pxContext)
+		private static ImmutableArray<ITypeSymbol> GetWellKnownNonDataTypeAttributes(PXContext pxContext)
 		{
-			var wellKnownNonDataTypeAttributes = ImmutableArray.CreateBuilder<INamedTypeSymbol>(initialCapacity: 6);
+			var wellKnownNonDataTypeAttributes = ImmutableArray.CreateBuilder<ITypeSymbol>(initialCapacity: 6);
 
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXUIFieldAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXUIFieldAttribute.Type);
 			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXDefaultAttribute);
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXStringListAttribute.Type!);
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXIntListAttribute.Type!);
-			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXSelectorAttribute.Type!);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXStringListAttribute.Type);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXIntListAttribute.Type);
+			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXSelectorAttribute.Type);
 			wellKnownNonDataTypeAttributes.Add(pxContext.AttributeTypes.PXForeignReferenceAttribute);
 
 			return wellKnownNonDataTypeAttributes.ToImmutable();

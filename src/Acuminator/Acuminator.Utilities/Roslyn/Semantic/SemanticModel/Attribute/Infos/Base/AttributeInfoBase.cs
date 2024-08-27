@@ -17,6 +17,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public abstract class AttributeInfoBase
 	{
+		public bool IsInSource { get; }
+
+		public bool IsInMetadata => !IsInSource;
+
 		/// <summary>
 		/// The attribute placement.
 		/// </summary>
@@ -43,6 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		{
 			AttributeData    = attributeData.CheckIfNull();
 			DeclarationOrder = declarationOrder;
+			IsInSource       = attributeData.ApplicationSyntaxReference?.SyntaxTree != null;
 		}
 	}
 }

@@ -34,8 +34,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol IEnumerable => Compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
 
-		public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName);
-		public INamedTypeSymbol TimeSpan => Compilation.GetTypeByMetadataName(typeof(TimeSpan).FullName);
+		public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName)!;
+		public INamedTypeSymbol TimeSpan => Compilation.GetTypeByMetadataName(typeof(TimeSpan).FullName)!;
 
 		internal SystemTypeSymbols(Compilation compilation) : base(compilation)
 		{

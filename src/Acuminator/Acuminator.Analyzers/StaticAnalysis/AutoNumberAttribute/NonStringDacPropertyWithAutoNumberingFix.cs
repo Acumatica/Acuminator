@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -15,32 +14,29 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class NonStringDacPropertyWithAutoNumberingFix : CodeFixProvider
+	public class NonStringDacPropertyWithAutoNumberingFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			ImmutableArray.Create(Descriptors.PX1019_AutoNumberOnDacPropertyWithNonStringType.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			string codeActionName = nameof(Resources.PX1019Fix).GetLocalized().ToString();
 			CodeAction codeAction = CodeAction.Create(codeActionName,
 													  cToken => ChangePropertyTypeToStringAsync(context.Document, context.Span, cToken),
 													  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 
 		private async Task<Document> ChangePropertyTypeToStringAsync(Document document, TextSpan diagnosticSpan, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var propertyNode = GetPropertyNodeWithDiagnostic(root, diagnosticSpan);
 
 			if (propertyNode == null)
@@ -56,13 +52,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			if (modifiedPropertyNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(propertyNode, modifiedPropertyNode);
+			var modifiedRoot = root!.ReplaceNode(propertyNode, modifiedPropertyNode);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
-		private PropertyDeclarationSyntax GetPropertyNodeWithDiagnostic(SyntaxNode root, TextSpan diagnosticSpan)
+		private PropertyDeclarationSyntax? GetPropertyNodeWithDiagnostic(SyntaxNode? root, TextSpan diagnosticSpan)
 		{
-			SyntaxNode node = root?.FindNode(diagnosticSpan);
+			SyntaxNode? node = root?.FindNode(diagnosticSpan);
 
 			return node switch
 			{

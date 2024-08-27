@@ -1,11 +1,14 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				"SetDefaultExt",
 			};
 
-			private SymbolAnalysisContext _context;
+			private readonly SymbolAnalysisContext _context;
 			private readonly SemanticModel _semanticModel;
 			private readonly PXContext _pxContext;
 			private readonly RowChangesAnalysisMode _analysisMode;
@@ -43,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_semanticModel = semanticModel.CheckIfNull();
 				_pxContext = pxContext.CheckIfNull();
 				_analysisMode = analysisMode;
-				_rowVariables = rowVariables.ToImmutableHashSet();
+				_rowVariables = rowVariables.ToImmutableHashSet<ILocalSymbol>(SymbolEqualityComparer.Default);
 				_messageArgs = messageArgs;
 
 				_variableMemberAccessWalker = new VariableMemberAccessWalker(_rowVariables, semanticModel);
@@ -137,7 +140,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				}
 			}
 
-
 			private bool IsMethodForbidden(IMethodSymbol symbol)
 			{
 				return symbol.ContainingType?.OriginalDefinition != null
@@ -145,6 +147,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				       && MethodNames.Contains(symbol.Name);
 			}
 		}
-
 	}
 }

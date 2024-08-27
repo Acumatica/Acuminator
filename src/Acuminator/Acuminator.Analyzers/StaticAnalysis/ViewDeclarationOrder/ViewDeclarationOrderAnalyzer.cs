@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -30,15 +29,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		/// </summary>
 		/// <returns/>
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			pxContext.PXGraph.InitCacheMapping == null && 
+			base.ShouldAnalyze(pxContext, graph) && pxContext.PXGraph.InitCacheMapping == null && 
 			graph.ViewsByNames.Count > 0;
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphSemanticModel)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.DAC != null)
-																			  .ToLookup(view => view.DAC!);
+			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel)
+															.Where(view => view.DAC != null)
+															.ToLookup(view => view.DAC!,
+																			 SymbolEqualityComparer.Default as IEqualityComparer<ITypeSymbol>);
 			if (viewsGroupedByDAC.Count == 0)
 				return;
 
@@ -104,7 +105,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		{
 			foreach (DataViewInfo view in viewsToShowDiagnostic)
 			{
-				Location viewLocation = view.Symbol.Locations.FirstOrDefault();
+				Location? viewLocation = view.Symbol.Locations.FirstOrDefault();
 
 				if (viewLocation == null)
 					continue;

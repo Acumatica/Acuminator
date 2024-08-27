@@ -1,11 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.Coloriser
@@ -19,26 +22,26 @@ namespace Acuminator.Vsix.Coloriser
 			  new ClassificationTag(classificationType));
 		}
 
-        public static ITagSpan<IOutliningRegionTag> ToOutliningTagSpan(this TextSpan span, ITextSnapshot snapshot, 
-                                                                       string collapsedText = null, 
-                                                                       string toolTipText = null)
-        {
-            if (collapsedText.IsNullOrWhiteSpace())
-                collapsedText = OutliningConstants.DefaultCollapsedBQLRegionText;
+		public static ITagSpan<IOutliningRegionTag> ToOutliningTagSpan(this TextSpan span, ITextSnapshot snapshot,
+																	   string? collapsedText = null,
+																	   string? toolTipText = null)
+		{
+			if (collapsedText.IsNullOrWhiteSpace())
+				collapsedText = OutliningConstants.DefaultCollapsedBQLRegionText;
 
-            if (toolTipText.IsNullOrWhiteSpace())
-                toolTipText = snapshot.GetText(span);
+			if (toolTipText.IsNullOrWhiteSpace())
+				toolTipText = snapshot.GetText(span);
 
-            if (toolTipText.Length > OutliningConstants.HintTooltipMaxLength)
-                toolTipText = toolTipText.Substring(OutliningConstants.HintTooltipMaxLength) + OutliningConstants.SuffixForTooLongTooltips;
+			if (toolTipText.Length > OutliningConstants.HintTooltipMaxLength)
+				toolTipText = toolTipText.Substring(OutliningConstants.HintTooltipMaxLength) + OutliningConstants.SuffixForTooLongTooltips;
 
-            return new TagSpan<IOutliningRegionTag>(
-              new SnapshotSpan(snapshot, span.Start, span.Length),
-              new OutliningRegionTag(isDefaultCollapsed: false, isImplementation: false,
-                                     collapsedForm: collapsedText, collapsedHintForm: toolTipText));
-        }
+			return new TagSpan<IOutliningRegionTag>(
+			  new SnapshotSpan(snapshot, span.Start, span.Length),
+			  new OutliningRegionTag(isDefaultCollapsed: false, isImplementation: false,
+									 collapsedForm: collapsedText, collapsedHintForm: toolTipText));
+		}
 
 
-        public static string GetText(this ITextSnapshot snapshot, TextSpan span) => snapshot.GetText(span.Start, span.Length);
+		public static string GetText(this ITextSnapshot snapshot, TextSpan span) => snapshot.GetText(span.Start, span.Length);
 	}
 }

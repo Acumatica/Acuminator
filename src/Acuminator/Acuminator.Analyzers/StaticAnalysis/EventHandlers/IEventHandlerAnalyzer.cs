@@ -1,6 +1,8 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+﻿
+using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers

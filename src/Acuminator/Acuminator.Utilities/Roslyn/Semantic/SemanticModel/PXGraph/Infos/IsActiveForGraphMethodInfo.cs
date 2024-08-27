@@ -22,7 +22,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		internal const int IsActiveForGraphDeclarationOrderToPlaceItSecond = IsActiveMethodInfo.IsActiveDeclarationOrderToPlaceItFirst + 1;
 
-		public IsActiveForGraphMethodInfo(MethodDeclarationSyntax node, IMethodSymbol isActiveForGraphMethod, int declarationOrder) :
+		public IsActiveForGraphMethodInfo(MethodDeclarationSyntax? node, IMethodSymbol isActiveForGraphMethod, int declarationOrder) :
 									 base(node, isActiveForGraphMethod, declarationOrder)
 		{
 		}

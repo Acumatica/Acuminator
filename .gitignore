@@ -253,3 +253,4 @@ ModelManifest.xml
 .fake/
 
 C:\Repos\Analyzer\PX.Analyzers\PX.Analyzers.Test\Sources\BQL\GoodBQL - Copy.cs
+/src/Acuminator/Acuminator.Tests/ExternalDependency/Dll

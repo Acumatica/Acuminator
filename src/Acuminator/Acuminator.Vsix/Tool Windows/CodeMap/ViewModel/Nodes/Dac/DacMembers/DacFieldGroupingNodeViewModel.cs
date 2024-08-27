@@ -29,8 +29,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DacFieldInfo FieldInfo { get; }
 
-		public bool IsDacProperty => FieldInfo.IsDacProperty;
-
 		public bool IsKey => FieldInfo.IsKey;
 
 		public bool IsIdentity => FieldInfo.IsIdentity;

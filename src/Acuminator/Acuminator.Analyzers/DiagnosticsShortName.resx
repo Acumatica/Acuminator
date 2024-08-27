@@ -405,4 +405,10 @@
   <data name="PX1099" xml:space="preserve">
     <value>ForbiddenApiUsage</value>
   </data>
+  <data name="PX1065" xml:space="preserve">
+    <value>NoBqlFieldForDacFieldProperty</value>
+  </data>
+  <data name="PX1066" xml:space="preserve">
+    <value>TypoInBqlFieldName</value>
+  </data>
 </root>

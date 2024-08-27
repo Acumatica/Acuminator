@@ -1,11 +1,13 @@
 ﻿#nullable enable
 
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Roslyn.Constants;
 using System;
+using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -25,7 +27,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		{
 			Type.ThrowOnNull();
 
-			GenericType = Compilation.GetTypeByMetadataName(TypeFullNames.PXCache1);
+			GenericType = Compilation.GetTypeByMetadataName(TypeFullNames.PXCache1)!;
 
 			Insert = Type.GetMethods(DelegateNames.Insert).ToImmutableArray();
 			Update = Type.GetMethods(DelegateNames.Update).ToImmutableArray();

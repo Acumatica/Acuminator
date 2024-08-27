@@ -17,11 +17,11 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 	{
 		public sealed override string Title { get; }
 
-		public sealed override string EquivalenceKey { get; }
+		public sealed override string? EquivalenceKey { get; }
 
 		public bool DisplayPreview { get; }
 
-		public SimpleCodeActionWithOptionalPreview(string title, string equivalenceKey, bool displayPreview)
+		public SimpleCodeActionWithOptionalPreview(string title, string? equivalenceKey, bool displayPreview)
 		{
 			title.ThrowOnNullOrWhiteSpace();
 
@@ -31,11 +31,11 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 		}
 
 		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
-			Task.FromResult<Document>(null);
+			Task.FromResult<Document>(null!);
 
 		protected override Task<IEnumerable<CodeActionOperation>> ComputePreviewOperationsAsync(CancellationToken cancellationToken) =>
 			DisplayPreview
 				? base.ComputePreviewOperationsAsync(cancellationToken)
-				: Task.FromResult<IEnumerable<CodeActionOperation>>(null);
+				: Task.FromResult<IEnumerable<CodeActionOperation>>([]);
 	}
 }

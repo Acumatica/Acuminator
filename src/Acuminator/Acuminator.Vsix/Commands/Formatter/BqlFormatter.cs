@@ -1,12 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
+
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
 using Microsoft.VisualStudio.Text.Editor;
 
 using Enumerable = System.Linq.Enumerable;

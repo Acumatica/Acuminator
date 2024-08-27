@@ -13,9 +13,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	public abstract class GraphEventInfoBase<TEventInfoType> : GraphEventInfoBase, IWriteableBaseItem<TEventInfoType>
 	where TEventInfoType : GraphEventInfoBase<TEventInfoType>
 	{
+		protected TEventInfoType? _baseInfo;
+
 		/// <summary>
 		/// The base event. 
-		/// </summary>		
+		/// </summary>
 		/// <remarks>
 		/// Internal setter is used for two reasons:
 		/// 1) Perfomance - to avoid allocation of objects during retrieval of overrides hierarchy.  
@@ -24,29 +26,39 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// This will lead to a two concrete implementations of collection for <see cref="GraphRowEventInfo"/> and <see cref="GraphFieldEventInfo"/> 
 		/// or to a hard to read code in the <see cref="PXGraphEventSemanticModel.EventsCollector"/> if we choose to pass the delegates to the generic collection class. 
 		/// </remarks>
-		public TEventInfoType? Base
-		{
-			get;
-			internal set;
-		}
+		public TEventInfoType? Base => _baseInfo;
 
 		TEventInfoType? IWriteableBaseItem<TEventInfoType>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set 
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
 		}
 
-		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		protected GraphEventInfoBase(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType) :
 								base(node, symbol, declarationOrder, signatureType, eventType)
 		{		
 		}
 
-		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		protected GraphEventInfoBase(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType, TEventInfoType baseEventInfo)
 							  : base(node, symbol, declarationOrder, signatureType, eventType)
 		{
-			Base = baseEventInfo.CheckIfNull();
+			_baseInfo = baseEventInfo.CheckIfNull();
+			CombineWithBaseInfo(baseEventInfo);
+		}
+
+		void IWriteableBaseItem<TEventInfoType>.CombineWithBaseInfo(TEventInfoType baseInfo) => CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(TEventInfoType baseInfo)
+		{
+
 		}
 	}
 }

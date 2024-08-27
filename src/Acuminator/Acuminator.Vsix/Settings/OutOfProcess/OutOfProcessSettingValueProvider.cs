@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.Settings
 	/// </summary>
 	internal static class OutOfProcessSettingValueProvider
 	{
-		internal static bool IsOutOfProcessEnabled(this AcuminatorVSPackage package, Workspace workspace)
+		internal static bool IsOutOfProcessEnabled(this AcuminatorVSPackage package, Workspace? workspace)
 		{
 			package.ThrowOnNull();
 			package.VSVersion.ThrowOnNull($"{nameof(AcuminatorVSPackage)}.{nameof(AcuminatorVSPackage.VSVersion)}");

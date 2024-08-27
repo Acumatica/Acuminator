@@ -1,12 +1,15 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -24,7 +27,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			SyntaxToken dacIdentifier = dacOrDacExt.Node.Identifier;
+			// Node is not null here because DAC aggregated analyzer runs only on DACs and DAC extensions declared in source code
+			SyntaxToken dacIdentifier = dacOrDacExt.Node!.Identifier;
 			
 			//DAC Extensions can have underscores in the class namespace
 			if (dacOrDacExt.DacType == DacType.Dac)
@@ -32,10 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 
 			var fieldsIdentifiers = dacOrDacExt.DeclaredBqlFields.Where(field => CheckDacMemberAccessibility(field.Symbol) && 
 																			  dacOrDacExt.PropertiesByNames.ContainsKey(field.Name))
-															  .SelectMany(field => field.Node.GetIdentifiers());
+																 .SelectMany(field => field.Node.GetIdentifiers());
 
 			var propertiesIdentifiers = dacOrDacExt.AllDeclaredProperties.Where(property => CheckDacMemberAccessibility(property.Symbol))
-																	  .SelectMany(property => property.Node.GetIdentifiers());
+																		 .SelectMany(property => property.Node.GetIdentifiers());
 
 			var identifiersToCheck = fieldsIdentifiers.Concat(propertiesIdentifiers);
 
@@ -53,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 
 			bool registerCodeFix = !IdentifierContainsOnlyUnderscores(identifier.ValueText);
 
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}.ToImmutableDictionary();

@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using Acuminator.Analyzers;
+﻿#nullable enable
+
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Vsix.Formatter
 {
@@ -14,13 +14,13 @@ namespace Acuminator.Vsix.Formatter
 		{
 		}
 
-		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
+		public override SyntaxNode? VisitGenericName(GenericNameSyntax node)
 		{
-			INamedTypeSymbol originalSymbol = GetOriginalTypeSymbol(node);
+			INamedTypeSymbol? originalSymbol = GetOriginalTypeSymbol(node);
 
 			if (originalSymbol != null)
 			{
-				INamedTypeSymbol currentType = null;
+				INamedTypeSymbol? currentType = null;
 				if (originalSymbol.InheritsFromOrEqualsGeneric(Context.GroupByBase))
 				{
 					currentType = Context.GroupByBase;
@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.Formatter
 					SyntaxTriviaList trivia = DefaultLeadingTrivia;
 					if (node.TypeArgumentList.Arguments.Count > 1) // GroupBy node changes for AggregateFunction (Min / Max / etc.)
 					{
-						INamedTypeSymbol nextParam = GetTypeSymbol(node.TypeArgumentList.Arguments[1])?.OriginalDefinition;
+						INamedTypeSymbol? nextParam = GetTypeSymbol(node.TypeArgumentList.Arguments[1])?.OriginalDefinition;
 						if (nextParam != null && !nextParam.InheritsFromOrEqualsGeneric(currentType, true))
 							trivia = IndentedDefaultTrivia;
 					}

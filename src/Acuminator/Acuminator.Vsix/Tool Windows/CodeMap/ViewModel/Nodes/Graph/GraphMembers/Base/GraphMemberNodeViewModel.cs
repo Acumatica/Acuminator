@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿#nullable enable
+
+using System;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
-using System.Threading.Tasks;
-using System.Threading;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -34,10 +36,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, TreeNodeViewModel parent, SymbolItem memberInfo, 
 										bool isExpanded = false) :
-								   base(graphMemberCategoryVM?.Tree, parent, isExpanded)
+								   base(graphMemberCategoryVM?.Tree!, parent, isExpanded)
 		{
 			MemberInfo = memberInfo.CheckIfNull();
-			MemberCategory = graphMemberCategoryVM;
+			MemberCategory = graphMemberCategoryVM!;
 		}
 
 		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();

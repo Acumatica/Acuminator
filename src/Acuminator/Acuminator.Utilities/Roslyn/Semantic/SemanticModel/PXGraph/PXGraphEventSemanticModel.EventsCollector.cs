@@ -1,12 +1,15 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
@@ -19,37 +22,37 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			private readonly PXGraphEventSemanticModel _graphEventSemanticModel;
 
 			private readonly Dictionary<EventType, OverridableItemsCollection<GraphRowEventInfo>> _rowEvents = 
-				new Dictionary<EventType, OverridableItemsCollection<GraphRowEventInfo>>
+				new()
 				{
-					[EventType.RowSelecting] = new OverridableItemsCollection<GraphRowEventInfo>(),
-					[EventType.RowSelected] = new OverridableItemsCollection<GraphRowEventInfo>(),
+					[EventType.RowSelecting]  = [],
+					[EventType.RowSelected]   = [],
 
-					[EventType.RowInserting] = new OverridableItemsCollection<GraphRowEventInfo>(),
-					[EventType.RowInserted] = new OverridableItemsCollection<GraphRowEventInfo>(),
+					[EventType.RowInserting]  = [],
+					[EventType.RowInserted]   = [],
 
-					[EventType.RowUpdating] = new OverridableItemsCollection<GraphRowEventInfo>(),
-					[EventType.RowUpdated] = new OverridableItemsCollection<GraphRowEventInfo>(),
+					[EventType.RowUpdating]   = [],
+					[EventType.RowUpdated] 	  = [],
 
-					[EventType.RowDeleting] = new OverridableItemsCollection<GraphRowEventInfo>(),
-					[EventType.RowDeleted] = new OverridableItemsCollection<GraphRowEventInfo>(),
+					[EventType.RowDeleting]   = [],
+					[EventType.RowDeleted] 	  = [],
 
-					[EventType.RowPersisting] = new OverridableItemsCollection<GraphRowEventInfo>(),
-					[EventType.RowPersisted] = new OverridableItemsCollection<GraphRowEventInfo>(),
+					[EventType.RowPersisting] = [],
+					[EventType.RowPersisted]  = [],
 				};
 
 			private readonly Dictionary<EventType, OverridableItemsCollection<GraphFieldEventInfo>> _fieldEvents =
-				new Dictionary<EventType, OverridableItemsCollection<GraphFieldEventInfo>>
+				new()
 				{
-					[EventType.FieldSelecting] = new OverridableItemsCollection<GraphFieldEventInfo>(),
-					[EventType.FieldDefaulting] = new OverridableItemsCollection<GraphFieldEventInfo>(),
-					[EventType.FieldVerifying] = new OverridableItemsCollection<GraphFieldEventInfo>(),
-					[EventType.FieldUpdating] = new OverridableItemsCollection<GraphFieldEventInfo>(),
-					[EventType.FieldUpdated] = new OverridableItemsCollection<GraphFieldEventInfo>(),
+					[EventType.FieldSelecting] 	  = [],
+					[EventType.FieldDefaulting]   = [],
+					[EventType.FieldVerifying] 	  = [],
+					[EventType.FieldUpdating] 	  = [],
+					[EventType.FieldUpdated] 	  = [],
 
-					[EventType.CacheAttached] = new OverridableItemsCollection<GraphFieldEventInfo>(),
+					[EventType.CacheAttached] 	  = [],
 
-					[EventType.CommandPreparing] = new OverridableItemsCollection<GraphFieldEventInfo>(),
-					[EventType.ExceptionHandling] = new OverridableItemsCollection<GraphFieldEventInfo>(),				
+					[EventType.CommandPreparing]  = [],
+					[EventType.ExceptionHandling] = [],
 				};
 
 			public EventsCollector(PXGraphEventSemanticModel graphEventSemanticModel, PXContext context)
@@ -58,12 +61,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				_graphEventSemanticModel = graphEventSemanticModel;
 			}
 
-			public OverridableItemsCollection<GraphRowEventInfo> GetRowEvents(EventType eventType) =>
+			public OverridableItemsCollection<GraphRowEventInfo>? GetRowEvents(EventType eventType) =>
 				_rowEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphRowEventInfo> events)
 					? events
 					: null;
 
-			public OverridableItemsCollection<GraphFieldEventInfo> GetFieldEvents(EventType eventType) =>
+			public OverridableItemsCollection<GraphFieldEventInfo>? GetFieldEvents(EventType eventType) =>
 				_fieldEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphFieldEventInfo> events)
 					? events
 					: null;
@@ -73,10 +76,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				var methodNode = GetMethodNode(methodSymbol, cancellationToken);
 
-				if (methodNode == null || !_rowEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphRowEventInfo> collectionToAdd))
+				if (!_rowEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphRowEventInfo> collectionToAdd))
 					return;
 
-				GraphRowEventInfo eventToAdd = new GraphRowEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
+				var eventToAdd = new GraphRowEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
 
 				if (!eventToAdd.DacName.IsNullOrEmpty())
 				{
@@ -89,10 +92,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				var methodNode = GetMethodNode(methodSymbol, cancellationToken);
 
-				if (methodNode == null || !_fieldEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphFieldEventInfo> collectionToAdd))
+				if (!_fieldEvents.TryGetValue(eventType, out OverridableItemsCollection<GraphFieldEventInfo> collectionToAdd))
 					return;
 
-				GraphFieldEventInfo eventToAdd = new GraphFieldEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
+				var eventToAdd = new GraphFieldEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
 
 				if (!eventToAdd.DacName.IsNullOrEmpty() && !eventToAdd.DacFieldName.IsNullOrEmpty())
 				{
@@ -100,10 +103,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				}
 			}
 
-			private MethodDeclarationSyntax GetMethodNode(IMethodSymbol methodSymbol, CancellationToken cancellationToken) =>
-				methodSymbol?.DeclaringSyntaxReferences.Length == 1
-					? methodSymbol.DeclaringSyntaxReferences[0].GetSyntax(cancellationToken) as MethodDeclarationSyntax
-					: null;			
+			private MethodDeclarationSyntax? GetMethodNode(IMethodSymbol methodSymbol, CancellationToken cancellationToken) =>
+				methodSymbol.GetSyntax(cancellationToken) as MethodDeclarationSyntax;
 		}
 	}
 }

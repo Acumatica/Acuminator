@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -27,11 +26,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var ownDelegatesDictionary = pxGraph.ViewDelegates
-										 .Where(d => pxGraph.Symbol.Equals(d.Symbol.ContainingType))
+										 .Where(d => pxGraph.Symbol.Equals(d.Symbol.ContainingType, SymbolEqualityComparer.Default))
 										 .ToDictionary(d => d.Symbol.Name, d => d, StringComparer.OrdinalIgnoreCase);
 			var ownRelatedViewsHashSet = pxGraph.Views
 										 .Where(v => ownDelegatesDictionary.ContainsKey(v.Symbol.Name) &&
-													 pxGraph.Symbol.Equals(v.Symbol.ContainingType))
+													 pxGraph.Symbol.Equals(v.Symbol.ContainingType, SymbolEqualityComparer.Default))
 										 .Select(v => v.Symbol.Name)
 										 .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
 			var baseNonRedeclaredRelatedViewsBuilder = ImmutableHashSet<ISymbol>.Empty.ToBuilder();
@@ -41,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 				for (var curView = view; curView != null; curView = curView.Base)
 				{
 					if (ownDelegatesDictionary.ContainsKey(curView.Symbol.Name) &&
-						!pxGraph.Symbol.Equals(curView.Symbol.ContainingType) &&
+						!pxGraph.Symbol.Equals(curView.Symbol.ContainingType, SymbolEqualityComparer.Default) &&
 						!ownRelatedViewsHashSet.Contains(curView.Symbol.Name))
 					{
 						baseNonRedeclaredRelatedViewsBuilder.Add(curView.Symbol);
@@ -87,13 +86,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 				var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
 				// Case Base.PXSelectBaseGenIns.Select()
-				if (PxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
+				if (PxContext.PXSelectBaseGeneric.Select.Contains<IMethodSymbol>(methodSymbol!, SymbolEqualityComparer.Default))
 				{
 					reported = TryToReport(expressionSymbol, node);
 				}
 				// Case Base.PXSelectBaseGenIns.View.Select()
-				else if (PxContext.PXView.Select.Contains(symbol) &&
-						 PxContext.PXSelectBase.View.Equals(expressionSymbol) &&
+				else if (PxContext.PXView.Select.Contains(symbol, SymbolEqualityComparer.Default) &&
+						 PxContext.PXSelectBase.View.Equals(expressionSymbol, SymbolEqualityComparer.Default) &&
 						 node.Expression is MemberAccessExpressionSyntax expressionNode)
 				{
 					var innerExpressionSymbol = GetSymbol<ISymbol>(expressionNode.Expression);

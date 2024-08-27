@@ -9,6 +9,8 @@ using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 
+using Microsoft.CodeAnalysis;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacBqlFieldNodeViewModel : DacMemberNodeViewModel, IElementWithTooltip
@@ -31,6 +33,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
+			if (BqlFieldInfo.IsInMetadata)
+			{
+				var format = SymbolDisplayFormat.FullyQualifiedFormat
+												.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Omitted);
+				string? baseTypeName = BqlFieldInfo.Symbol.BaseType?.ToDisplayString(format);
+				string toolTip = baseTypeName != null
+					? $"{BqlFieldInfo.Name} : {baseTypeName}"
+					: BqlFieldInfo.Name;
+				return new TooltipInfo(toolTip);
+			}
+
 			if (Tree.CodeMapViewModel.Workspace == null)
 			{
 				string tooltipText = BqlFieldInfo.Node.ToString();

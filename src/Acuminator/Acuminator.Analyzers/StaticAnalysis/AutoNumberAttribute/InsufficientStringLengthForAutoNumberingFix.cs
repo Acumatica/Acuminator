@@ -16,22 +16,19 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class InsufficientStringLengthForAutoNumberingFix : CodeFixProvider
+	public class InsufficientStringLengthForAutoNumberingFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			ImmutableArray.Create(Descriptors.PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
-			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
-																.ConfigureAwait(false);
+			SemanticModel? semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
+																 .ConfigureAwait(false);
 			if (semanticModel == null)
 				return;
 
@@ -43,14 +40,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 													  cToken => MakeStringLengthSufficientForAutoNumberingAsync(context.Document, context.Span, minLengthForAutoNumbering, cToken),
 													  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private async Task<Document> MakeStringLengthSufficientForAutoNumberingAsync(Document document, TextSpan diagnosticSpan, 
 																					 int minLengthForAutoNumbering, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			AttributeArgumentSyntax attributeArgument = GetAttributeArgumentNodeToBeReplaced(root, diagnosticSpan);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			AttributeArgumentSyntax? attributeArgument = GetAttributeArgumentNodeToBeReplaced(root, diagnosticSpan);
 
 			if (attributeArgument == null || cancellationToken.IsCancellationRequested)
 				return document;
@@ -62,13 +59,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			if (modifiedArgument == null)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(attributeArgument, modifiedArgument);
+			var modifiedRoot = root!.ReplaceNode(attributeArgument, modifiedArgument);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}		
 
-		private AttributeArgumentSyntax GetAttributeArgumentNodeToBeReplaced(SyntaxNode root, TextSpan diagnosticSpan)
+		private AttributeArgumentSyntax? GetAttributeArgumentNodeToBeReplaced(SyntaxNode? root, TextSpan diagnosticSpan)
 		{
-			SyntaxNode node = root?.FindNode(diagnosticSpan);
+			SyntaxNode? node = root?.FindNode(diagnosticSpan);
 
 			return node switch
 			{
@@ -83,8 +80,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			};
 		}
 
-		private AttributeArgumentSyntax SearchForAttributeArgumentToBeReplaced(AttributeSyntax attribute)
+		private AttributeArgumentSyntax? SearchForAttributeArgumentToBeReplaced(AttributeSyntax attribute)
 		{
+			if (attribute.ArgumentList == null)
+				return null;
+
 			var arguments = attribute.ArgumentList.Arguments;
 			var candidateAttributes = new List<AttributeArgumentSyntax>(capacity: 1);
 

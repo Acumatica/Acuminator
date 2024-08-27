@@ -1,13 +1,14 @@
-﻿using System.Collections.Immutable;
+﻿
+using System.Collections.Immutable;
 using System.Linq;
-using System.Runtime.CompilerServices;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 {
@@ -25,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		public CallsToInternalAPIAnalyzer() : this(null)
 		{ }
 
-		public CallsToInternalAPIAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public CallsToInternalAPIAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -37,15 +38,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax))
+			if (syntaxContext.Node is not CompilationUnitSyntax compilationUnitSyntax)
 				return;
-		
-			var semanticModel = pxContext.Compilation.GetSemanticModel(compilationUnitSyntax.SyntaxTree);
-
-			if (semanticModel == null)
-				return;
-
-			var commentsWalker = new InternalApiCallsWalker(syntaxContext, pxContext, semanticModel);
+			
+			var commentsWalker = new InternalApiCallsWalker(syntaxContext, pxContext, syntaxContext.SemanticModel);
 			compilationUnitSyntax.Accept(commentsWalker);
 		}
 	}

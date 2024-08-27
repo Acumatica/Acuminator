@@ -1,8 +1,11 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Editor;
@@ -10,6 +13,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
@@ -40,7 +44,7 @@ namespace Acuminator.Vsix.BqlFixer
 		{
 			get;
 			private set;
-		}
+		} = null!;
 
 		/// <summary>
 		/// Initializes the singleton instance of the command.
@@ -62,25 +66,25 @@ namespace Acuminator.Vsix.BqlFixer
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
+			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null)
 				return;
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
-			ITextSnapshotLine caretLine = caretPosition.GetContainingLine();
+			ITextSnapshotLine? caretLine = caretPosition.GetContainingLine();
 
 			if (caretLine == null)
 				return;
 
-			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document? document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 			if (document == null)
 				return;
 
 			await TaskScheduler.Default;    //Go to background thread
 
-			SyntaxNode syntaxRoot = await document.GetSyntaxRootAsync();
-			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			SyntaxNode? syntaxRoot = await document.GetSyntaxRootAsync();
+			SemanticModel? semanticModel = await document.GetSemanticModelAsync();
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;
@@ -118,8 +122,8 @@ namespace Acuminator.Vsix.BqlFixer
 			#endregion
 			fixedRoot = new AngleBracesBqlRewriter(semanticModel).Visit(syntaxRoot);
 			var newDocument = document.WithSyntaxRoot(fixedRoot);
-			SyntaxNode newSyntaxRoot = await newDocument.GetSyntaxRootAsync();
-			SemanticModel newSemanticModel = await newDocument.GetSemanticModelAsync();
+			SyntaxNode? newSyntaxRoot = await newDocument.GetSyntaxRootAsync();
+			SemanticModel? newSemanticModel = await newDocument.GetSemanticModelAsync();
 
 			if (newSyntaxRoot == null || newSemanticModel == null)
 				return;
@@ -142,8 +146,8 @@ namespace Acuminator.Vsix.BqlFixer
 			oldDocument.ThrowOnNull();
 			newDocument.ThrowOnNull();
 
-			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
-			Solution newSolution = newDocument.Project?.Solution;
+			Workspace? workspace = oldDocument.Project?.Solution?.Workspace;
+			Solution? newSolution = newDocument.Project?.Solution;
 
 			if (workspace != null && newSolution != null)
 			{

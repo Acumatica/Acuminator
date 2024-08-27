@@ -37,7 +37,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 
 			IMethodSymbol? symbol = GetSymbol<IMethodSymbol>(node);
 
-			if (symbol != null && PxContext.PXGraph.CreateInstance.Contains(symbol.ConstructedFrom))
+			if (symbol != null && PxContext.PXGraph.CreateInstance.Contains<IMethodSymbol>(symbol.ConstructedFrom, SymbolEqualityComparer.Default))
 			{
 				ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
 			}

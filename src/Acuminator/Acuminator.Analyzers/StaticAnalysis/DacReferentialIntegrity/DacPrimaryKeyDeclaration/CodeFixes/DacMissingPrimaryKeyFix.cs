@@ -11,7 +11,6 @@ using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -19,7 +18,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Text;
 
 using PXReferentialIntegritySymbols = Acuminator.Utilities.Roslyn.Semantic.Symbols.PXReferentialIntegritySymbols;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -27,16 +25,14 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class DacMissingPrimaryKeyFix : CodeFixProvider
+	public class DacMissingPrimaryKeyFix : PXCodeFixProvider
 	{
 		private const int MaxNumberOfKeysForOneLineStatement = 3;
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1033_MissingDacPrimaryKeyDeclaration.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public async override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -46,17 +42,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			await Task.WhenAll(rootTask, semanticModelTask).ConfigureAwait(false);
 
 			var root = rootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
+			SemanticModel? semanticModel = semanticModelTask.Result;
 
-			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax dacNode))
+			if (root?.FindNode(context.Span) is not ClassDeclarationSyntax dacNode)
 				return;
 
-			INamedTypeSymbol dacTypeSymbol = semanticModel?.GetDeclaredSymbol(dacNode, context.CancellationToken);
+			INamedTypeSymbol? dacTypeSymbol = semanticModel?.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
 			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ReferentialIntegrity.PrimaryKeyClassName))
 				return;
 
-			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
+			var pxContext = new PXContext(semanticModel!.Compilation, codeAnalysisSettings: null);
 
 			if (pxContext.ReferentialIntegritySymbols.PrimaryKeyOf == null)
 				return;
@@ -67,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																								  dacTypeSymbol, cancellation),
 											   equivalenceKey: codeActionTitle);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private Task<Document> AddPrimaryKeyDeclarationToDacAsync(Document document, SyntaxNode root, ClassDeclarationSyntax dacNode, PXContext pxContext,
@@ -75,8 +71,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
-			List<DacPropertyInfo> dacKeys = dacSemanticModel?.DacFieldProperties
+			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation: cancellation);
+
+			if (dacSemanticModel?.IsInSource != true)
+				return Task.FromResult(document);
+
+			List<DacPropertyInfo>? dacKeys = dacSemanticModel.DacFieldPropertiesWithBqlFields
 															 .Where(property => property.IsKey)
 															 .OrderBy(property => property.DeclarationOrder)
 															 .ToList(capacity: 4);
@@ -85,6 +85,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return Task.FromResult(document);
 
 			var primaryKeyNode = CreatePrimaryKeyNode(document, pxContext, dacSemanticModel, dacKeys);
+
+			if (primaryKeyNode == null)
+				return Task.FromResult(document);
+
 			var newDacNode = dacNode.WithMembers(
 										dacNode.Members.Insert(0, primaryKeyNode));
 
@@ -99,7 +103,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return Task.FromResult(modifiedDocument);
 		}
 
-		private ClassDeclarationSyntax CreatePrimaryKeyNode(Document document, PXContext pxContext, DacSemanticModel dacSemanticModel,
+		private ClassDeclarationSyntax? CreatePrimaryKeyNode(Document document, PXContext pxContext, DacSemanticModel dacSemanticModel,
 															List<DacPropertyInfo> dacKeys)
 		{
 			var generator = SyntaxGenerator.GetGenerator(document);
@@ -131,6 +135,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var findMethodNode = generator.MethodDeclaration(DelegateNames.PrimaryKeyFindMethod, parameters,
 															 typeParameters: null, returnType,
 															 Accessibility.Public, DeclarationModifiers.Static) as MethodDeclarationSyntax;
+			findMethodNode.ThrowOnNull();
+
 			if (findMethodNode.Body != null)
 				findMethodNode = findMethodNode.RemoveNode(findMethodNode.Body, SyntaxRemoveOptions.KeepNoTrivia);
 
@@ -138,16 +144,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 												.Select(parameter => Argument(
 																			IdentifierName(parameter.Identifier)));
 			var findByInvocation =
-				generator.InvocationExpression(
-								IdentifierName(DelegateNames.PrimaryKeyFindByMethod), findByCallArguments) as InvocationExpressionSyntax;
+				(generator.InvocationExpression(
+								IdentifierName(DelegateNames.PrimaryKeyFindByMethod), findByCallArguments) as InvocationExpressionSyntax)!;
 
 			bool statementTooLongForOneLine = dacKeys.Count > MaxNumberOfKeysForOneLineStatement;
 
 			if (statementTooLongForOneLine)		
 			{
-				var trivia = dacSemanticModel.Node.GetLeadingTrivia()
-												  .Add(Whitespace("\t\t"))
-												  .Where(trivia => trivia.IsKind(SyntaxKind.WhitespaceTrivia));
+				// Node checked earlier
+				var trivia = dacSemanticModel.Node!.GetLeadingTrivia()
+												   .Add(Whitespace("\t\t"))
+												   .Where(trivia => trivia.IsKind(SyntaxKind.WhitespaceTrivia));
 
 				findByInvocation = findByInvocation.WithLeadingTrivia(trivia);
 			}
@@ -161,8 +168,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 														.WithTrailingTrivia(Whitespace(" "), EndOfLine(Environment.NewLine)));
 			}
 
-			return findMethodNode.WithExpressionBody(arrowExpression)
-								 .WithSemicolonToken(
+			return findMethodNode!.WithExpressionBody(arrowExpression)
+								  .WithSemicolonToken(
 										Token(SyntaxKind.SemicolonToken));
 		}
 

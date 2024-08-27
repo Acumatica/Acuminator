@@ -3,10 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Resources;
-
-using Acuminator.Vsix.Logger;
 
 namespace Acuminator.Vsix.Utilities
 {
@@ -14,7 +11,7 @@ namespace Acuminator.Vsix.Utilities
 	{       
         public static string GetStringResourceSafe(this ResourceManager resourceManager, string resourceKey)
         {
-			string? result = null;
+			string? result;
 
 			try
 			{

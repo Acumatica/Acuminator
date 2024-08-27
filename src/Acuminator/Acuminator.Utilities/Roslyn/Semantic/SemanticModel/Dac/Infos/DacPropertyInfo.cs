@@ -16,36 +16,46 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
 	public class DacPropertyInfo : NodeSymbolItem<PropertyDeclarationSyntax, IPropertySymbol>, IWriteableBaseItem<DacPropertyInfo>
 	{
+		protected DacPropertyInfo? _baseInfo;
+
 		/// <summary>
 		/// The overriden property if any
 		/// </summary>
-		public DacPropertyInfo? Base
-		{
-			get;
-			internal set;
-		}
+		public DacPropertyInfo? Base => _baseInfo;
 
 		DacPropertyInfo? IWriteableBaseItem<DacPropertyInfo>.Base
 		{
 			get => Base;
 			set
 			{
-				Base = value;
-				
+				_baseInfo = value;
+
 				if (value != null)
-				{
-					// TODO - need to add support for PXMergeAttributesAttribute in the future
-					EffectiveDbBoundness = DeclaredDbBoundness.Combine(value.EffectiveDbBoundness);
-				}
+					CombineWithBaseInfo(value);
 			}
 		}
 
 		public ImmutableArray<DacFieldAttributeInfo> Attributes { get; }
 
 		/// <summary>
-		///  True if this property is DAC property - it has a corresponding DAC field.
+		///  True if this property has a corresponding declared DAC field.
 		/// </summary
-		public bool IsDacProperty { get; }
+		public bool HasBqlFieldDeclared { get;  }
+
+		/// <summary>
+		/// The effective indicator if this property has a corresponding DAC field including base properties.
+		/// </summary
+		public bool HasBqlFieldEffective { get; private set; }
+
+		/// <summary>
+		///  True if this property has declared Acumatica attributes, false if not.
+		/// </summary>
+		public bool HasAcumaticaAttributesDeclared { get; private set; }
+
+		/// <summary>
+		/// The effective indicator if this property has Acumatica attributes on it including base properties.
+		/// </summary>
+		public bool HasAcumaticaAttributesEffective { get; private set; }
 
 		/// <value>
 		/// The type of the property.
@@ -78,22 +88,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public bool IsAutoNumbering { get; }
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
-								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
-							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
+		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+								  int declarationOrder, bool hasBqlField, IEnumerable<DacFieldAttributeInfo> attributeInfos, 
+								  DacPropertyInfo baseInfo) :
+							 this(node, symbol, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos)
 		{
-			Base = baseInfo.CheckIfNull();
-
-			// TODO - need to add support for PXMergeAttributesAttribute in the future
-			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
+			_baseInfo = baseInfo.CheckIfNull();
+			CombineWithBaseInfo(baseInfo);
 		}
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
-								  int declarationOrder, bool isDacProperty, IEnumerable<DacFieldAttributeInfo> attributeInfos) :
+		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+								  int declarationOrder, bool hasBqlField, IEnumerable<DacFieldAttributeInfo> attributeInfos) :
 							 base(node, symbol, declarationOrder)
 		{
-			Attributes = attributeInfos.ToImmutableArray();
-			IsDacProperty = isDacProperty;
+			Attributes 			 = attributeInfos.ToImmutableArray();
+			HasBqlFieldDeclared  = hasBqlField;
+			HasBqlFieldEffective = hasBqlField;
 
 			DeclaredDbBoundness = Attributes.Select(a => a.DbBoundness).Combine();
 			EffectiveDbBoundness = DeclaredDbBoundness;
@@ -101,21 +111,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			bool isIdentity = false;
 			bool isPrimaryKey = false;
 			bool isAutoNumbering = false;
+			bool hasAcumaticaAttributes = false;
 
 			foreach (DacFieldAttributeInfo attributeInfo in Attributes)
 			{
-				isIdentity = isIdentity || attributeInfo.IsIdentity;
-				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
-				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
+				isIdentity 			   = isIdentity || attributeInfo.IsIdentity;
+				isPrimaryKey 		   = isPrimaryKey || attributeInfo.IsKey;
+				isAutoNumbering 	   = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
+				hasAcumaticaAttributes = hasAcumaticaAttributes || attributeInfo.IsAcumaticaAttribute;
 			}
 	
 			EffectivePropertyType = effectivePropertyType;
-			IsIdentity = isIdentity;
-			IsKey = isPrimaryKey;
-			IsAutoNumbering = isAutoNumbering;
+			IsIdentity 			  = isIdentity;
+			IsKey 				  = isPrimaryKey;
+			IsAutoNumbering 	  = isAutoNumbering;
+
+			HasAcumaticaAttributesDeclared  = hasAcumaticaAttributes;
+			HasAcumaticaAttributesEffective = hasAcumaticaAttributes;
 		}
 
-		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
+		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax? node, IPropertySymbol property, int declarationOrder,
 											 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacBqlFieldInfo> dacFields,
 											 DacPropertyInfo? baseInfo = null)
 		{
@@ -123,17 +138,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 								dbBoundnessCalculator.CheckIfNull(), dacFields.CheckIfNull(), baseInfo);
 		}
 
-		internal static DacPropertyInfo CreateUnsafe(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
+		internal static DacPropertyInfo CreateUnsafe(PXContext context, PropertyDeclarationSyntax? node, IPropertySymbol property, int declarationOrder,
 													 DbBoundnessCalculator dbBoundnessCalculator, IDictionary<string, DacBqlFieldInfo> dacFields,
 													 DacPropertyInfo? baseInfo = null)
 		{
-			bool isDacProperty = dacFields.ContainsKey(property.Name);
+			bool hasBqlField = dacFields.ContainsKey(property.Name);
 			var attributeInfos = GetAttributeInfos(property, dbBoundnessCalculator);
 			var effectivePropertyType = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;
 
 			return baseInfo != null
-				? new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos, baseInfo)
-				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos);
+				? new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos, baseInfo)
+				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos);
 		}
 
 		private static IEnumerable<DacFieldAttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator dbBoundnessCalculator)
@@ -142,10 +157,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			foreach (AttributeData attribute in property.GetAttributes())
 			{			
-				yield return DacFieldAttributeInfo.Create(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
+				yield return DacFieldAttributeInfo.CreateUnsafe(attribute, dbBoundnessCalculator, relativeDeclarationOrder);
 
 				relativeDeclarationOrder++;
 			}
-		}			
+		}
+
+		void IWriteableBaseItem<DacPropertyInfo>.CombineWithBaseInfo(DacPropertyInfo baseInfo) => 
+			CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(DacPropertyInfo baseProperty)
+		{
+			// TODO - need to add support for PXMergeAttributesAttribute in the future
+			EffectiveDbBoundness 			= DeclaredDbBoundness.Combine(baseProperty.EffectiveDbBoundness);
+			HasBqlFieldEffective 			= HasBqlFieldDeclared || baseProperty.HasBqlFieldEffective;
+			HasAcumaticaAttributesEffective = HasAcumaticaAttributesDeclared || baseProperty.HasAcumaticaAttributesEffective;
+		}
 	}
 }

@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -24,16 +23,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1062_StaticFieldOrPropertyInGraph);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; 
-
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel graphOrExtension)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			var graphStaticFieldsAndProperties = from member in graphOrExtension.Symbol.GetMembers()
 												 where member.IsStatic && member.IsExplicitlyDeclared() &&
-													   graphOrExtension.Symbol.Equals(member.ContainingType) &&
+													   graphOrExtension.Symbol.Equals(member.ContainingType, SymbolEqualityComparer.Default) &&
 													   member is IPropertySymbol or IFieldSymbol { IsConst: false }
 												 select member;
 
@@ -85,8 +81,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 				: null;
 		}
 
-		private (string FormatArg, ImmutableDictionary<string, string>? Properties)? GetDiagnosticFormatArgsAndProperties(ISymbol staticFieldOrProperty,
-																														  bool isView, bool isAction)
+		private (string FormatArg, ImmutableDictionary<string, string?>? Properties)? GetDiagnosticFormatArgsAndProperties(ISymbol staticFieldOrProperty,
+																														   bool isView, bool isAction)
 		{
 			if (isView)
 			{
@@ -114,9 +110,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			}
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(bool isViewOrAction, bool isProperty, string codeFixFormatArg)
+		private ImmutableDictionary<string, string?> CreateDiagnosticProperties(bool isViewOrAction, bool isProperty, string codeFixFormatArg)
 		{
-			var properties = ImmutableDictionary.CreateBuilder<string, string>();
+			var properties = ImmutableDictionary.CreateBuilder<string, string?>();
 			properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, codeFixFormatArg);
 
 			if (isViewOrAction)

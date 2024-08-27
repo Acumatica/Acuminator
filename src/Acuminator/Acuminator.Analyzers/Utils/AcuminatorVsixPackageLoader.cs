@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Acuminator.Analyzers.Utils
 		private const string ForceLoadPackageAsync = "ForceLoadPackageAsync";
 
 		private static volatile bool _vsixPackageLoadWasDone;
-		private static object _acuminatorVsixPackageLoaderLock = new object();
+		private static readonly object _acuminatorVsixPackageLoaderLock = new object();
 
 		/// <summary>
 		/// Ensures that package loaded. A hack - the only known way to force the package load due to completely random default loading of packages by Visual Studio 
@@ -57,11 +58,11 @@ namespace Acuminator.Analyzers.Utils
 			if (dummyServiceCaller == null)
 				return;
 
-			object loadTask = null;
+			object? loadTask = null;
 
 			try
 			{
-				loadTask = dummyServiceCaller.Invoke(null, Array.Empty<object>());
+				loadTask = dummyServiceCaller.Invoke(null, []);
 			}
 			catch
 			{

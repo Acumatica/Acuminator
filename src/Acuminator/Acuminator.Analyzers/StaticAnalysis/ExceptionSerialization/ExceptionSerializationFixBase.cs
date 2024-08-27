@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
@@ -19,21 +17,14 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 {
-	public abstract class ExceptionSerializationFixBase : CodeFixProvider
+	public abstract class ExceptionSerializationFixBase : PXCodeFixProvider
 	{
 		protected const string SerializationInfoParameterName = "info";
 		protected const string StreamingContextParameterName = "context";
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
-
-			if (diagnostic == null)
-				return Task.CompletedTask;
 
 			string addSerializationMemberTitle = GetCodeFixTitle(diagnostic);
 			var addSerializationMemberCodeAction =
@@ -61,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			if (exceptionDeclaration == null)
 				return document;
 
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			SemanticModel? semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
 			if (semanticModel == null)
 				return document;
@@ -84,7 +75,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 				return document;
 
 			cancellationToken.ThrowIfCancellationRequested();
-			var changedRoot = root.ReplaceNode(exceptionDeclaration, modifiedExceptionDeclaration) as CompilationUnitSyntax;
+			var changedRoot = root!.ReplaceNode(exceptionDeclaration, modifiedExceptionDeclaration) as CompilationUnitSyntax;
 
 			if (changedRoot == null)
 				return document;
@@ -114,8 +105,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 		protected bool IsMethodUsedForSerialization(IMethodSymbol method, PXContext pxContext) =>
 			method.Parameters.Length == 2 &&
-			pxContext.Serialization.SerializationInfo.Equals(method.Parameters[0]?.Type)  &&
-			pxContext.Serialization.StreamingContext.Equals(method.Parameters[1]?.Type);
+			pxContext.Serialization.SerializationInfo.Equals(method.Parameters[0]?.Type, SymbolEqualityComparer.Default)  &&
+			pxContext.Serialization.StreamingContext.Equals(method.Parameters[1]?.Type, SymbolEqualityComparer.Default);
 
 		protected SyntaxNode[] GenerateSerializationMemberParameters(SyntaxGenerator generator, PXContext pxContext) =>
 			new[]

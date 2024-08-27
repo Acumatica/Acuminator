@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
@@ -31,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExt)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			var autoNumberProperties = dacOrDacExt.DeclaredDacFieldProperties.Where(property => property.IsAutoNumbering);
+			var autoNumberProperties = dacOrDacExt.DeclaredDacFieldPropertiesWithBqlFields.Where(property => property.IsAutoNumbering);
 
 			foreach (DacPropertyInfo dacProperty in autoNumberProperties)
 			{
@@ -54,7 +52,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		private void ReportDacPropertyTypeIsNotString(SymbolAnalysisContext context, PXContext pxContext, DacPropertyInfo dacProperty)
 		{
 			var autoNumberingAttribute = dacProperty.Attributes.FirstOrDefault(a => a.IsAutoNumberAttribute);
-			var propertyTypeLocation = dacProperty.Node.Type.GetLocation();
+
+			// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+			// and these properties are declared in the DAC type itself
+			var propertyTypeLocation = dacProperty.Node!.Type.GetLocation();
 
 			if (propertyTypeLocation != null)
 			{
@@ -136,11 +137,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			if (syntaxNode is not AttributeSyntax attributeSyntaxNode)
 				return stringAttribute.AttributeData.GetLocation(context.CancellationToken);
 
-			var argumentsList = attributeSyntaxNode.ArgumentList.Arguments;
-			
-			for (int i = 0; i < argumentsList.Count; i++)
+			var argumentsList = attributeSyntaxNode.ArgumentList?.Arguments;
+
+			if (argumentsList == null || argumentsList.Value.Count == 0)
+				return stringAttribute.AttributeData.GetLocation(context.CancellationToken);
+
+			for (int i = 0; i < argumentsList.Value.Count; i++)
 			{
-				AttributeArgumentSyntax argumenNode = argumentsList[i];
+				AttributeArgumentSyntax argumenNode = argumentsList.Value[i];
 
 				if (argumenNode.NameEquals != null)		//filter out attribute property argument setters like "IsDirty = true"
 					continue;

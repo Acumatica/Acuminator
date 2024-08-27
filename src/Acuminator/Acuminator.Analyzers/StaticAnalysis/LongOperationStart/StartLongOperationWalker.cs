@@ -1,10 +1,13 @@
-﻿using Acuminator.Utilities.Common;
+﻿
+using System;
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
@@ -24,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
         {
             ThrowIfCancellationRequested();
 
-            IMethodSymbol methodSymbol = GetSymbol<IMethodSymbol>(node);
+            IMethodSymbol? methodSymbol = GetSymbol<IMethodSymbol>(node);
 
 			if (methodSymbol == null)
 			{
@@ -32,8 +35,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 				return;
 			}
 
-            if (PxContext.StartOperation.Contains(methodSymbol) || 
-				(!methodSymbol.IsDefinition && methodSymbol.OriginalDefinition != null && PxContext.StartOperation.Contains(methodSymbol.OriginalDefinition)))
+            if (PxContext.StartOperation.Contains(methodSymbol, SymbolEqualityComparer.Default) || 
+				(!methodSymbol.IsDefinition && methodSymbol.OriginalDefinition != null && 
+				  PxContext.StartOperation.Contains(methodSymbol.OriginalDefinition, SymbolEqualityComparer.Default)))
             {
                 ReportDiagnostic(_reportDiagnostic, _descriptor, node);
             }

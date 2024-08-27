@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -224,7 +223,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			SymbolInfo crefSymbolInfo = _semanticModel.GetSymbolInfo(crefAttribute.Cref, _cancellation);
 			ISymbol? crefSymbol = crefSymbolInfo.Symbol ?? crefSymbolInfo.CandidateSymbols.FirstOrDefault();
 
-			return crefSymbol is IPropertySymbol referencedProperty && mappedDacProperty!.Equals(referencedProperty);
+			return crefSymbol is IPropertySymbol referencedProperty && mappedDacProperty!.Equals(referencedProperty, SymbolEqualityComparer.Default);
 		}
 
 		private DiagnosticDescriptor? GetDiagnosticFromParseResult(XmlCommentParseResult parseResult, bool isProjectionProperty) =>

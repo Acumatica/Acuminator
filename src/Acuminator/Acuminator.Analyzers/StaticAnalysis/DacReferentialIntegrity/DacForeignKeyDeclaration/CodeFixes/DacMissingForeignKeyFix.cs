@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -29,14 +28,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class DacMissingForeignKeyFix : CodeFixProvider
+	public class DacMissingForeignKeyFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1034_MissingDacForeignKeyDeclaration.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public async override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -61,7 +58,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																										  dacNode, dacTypeSymbol, cancellation),
 											   equivalenceKey: codeActionTitle);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private Task<Document> AddForeignKeyDeclarationTemplateToDacAsync(Document document, SyntaxNode root, SemanticModel semanticModel, PXContext pxContext, 
@@ -150,18 +147,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (foreignKeyAttributes.Count == 0)
 				return new List<DacPropertyInfo>();
 			
-			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
+			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation: cancellation);
 
 			if (dacSemanticModel == null || dacSemanticModel.DacType != DacType.Dac)
 				return new List<DacPropertyInfo>();
 
-			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type!;
+			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type;
 			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
 			var dacPropertiesWithForeignKeys = 
-				from dacProperty in dacSemanticModel.DacFieldProperties
-				where !dacProperty.Attributes.IsDefaultOrEmpty && 
-					   dacProperty.DeclaredDbBoundness == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
-					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
+				from dacProperty in dacSemanticModel.DacFieldPropertiesWithBqlFields
+				where dacProperty.HasAcumaticaAttributesEffective && 
+					  dacProperty.EffectiveDbBoundness == DbBoundnessType.DbBound &&								//only Bound FKs should work correctly
+					  dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
 				orderby dacProperty.DeclarationOrder ascending
 				select dacProperty;
 
@@ -186,8 +183,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																	  .SelectMany(type => type.GetMembers(selectorAttributeProperty));
 
 				var selectorAttributeCandidateMemberTypes = 
-					from type in attribute.AttributeType.GetBaseTypesAndThis()
-														.TakeWhile(attrType => !pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attrType))
+					from type in attribute
+									.AttributeType
+									.GetBaseTypesAndThis()
+									.TakeWhile(attrType => !pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attrType, SymbolEqualityComparer.Default))
 					from member in type.GetMembers(selectorAttributeProperty)
 					select member switch
 					{

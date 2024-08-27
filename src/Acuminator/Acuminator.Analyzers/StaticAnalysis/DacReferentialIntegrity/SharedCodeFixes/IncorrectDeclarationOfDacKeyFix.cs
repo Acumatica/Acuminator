@@ -21,7 +21,7 @@ using static Acuminator.Utilities.Roslyn.Constants.TypeNames;
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class IncorrectDeclarationOfDacKeyFix : CodeFixProvider
+	public class IncorrectDeclarationOfDacKeyFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			new[]
@@ -34,16 +34,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			.Distinct()
             .ToImmutableArray();
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-            var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
-
-            if (diagnostic == null || diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null ||
-				!diagnostic.IsRegisteredForCodeFix() || !diagnostic.Properties.TryGetValue(nameof(RefIntegrityDacKeyType), out string dacKeyTypeString) ||
+            if (diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null ||
+				!diagnostic.IsRegisteredForCodeFix() || !diagnostic.Properties.TryGetValue(nameof(RefIntegrityDacKeyType), out string? dacKeyTypeString) ||
                 dacKeyTypeString.IsNullOrWhiteSpace() || !Enum.TryParse(dacKeyTypeString, out RefIntegrityDacKeyType dacKeyType))
             {
                 return;
@@ -74,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																							  shouldChangeLocation, cancellation),
 														   equivalenceKey: codeActionTitle);
 
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						context.RegisterCodeFix(codeAction, diagnostic);
 						return;
 					}
 				case RefIntegrityDacKeyType.UniqueKey:
@@ -90,7 +86,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																														 RefIntegrityDacKeyType.ForeignKey, cancellation),
 														   equivalenceKey: codeActionTitle);
 
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						context.RegisterCodeFix(codeAction, diagnostic);
 						return;
 					}
 			}
@@ -99,7 +95,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private void RegisterCodeFixForUniqueKeys(CodeFixContext context, ClassDeclarationSyntax dacNode, SyntaxNode root, ClassDeclarationSyntax keyNode, 
 												  Diagnostic diagnostic)
 		{
-			bool isMultipleUniqueKeysFix = diagnostic.Properties.TryGetValue(nameof(UniqueKeyCodeFixType), out string uniqueCodeFixTypeString) &&
+			bool isMultipleUniqueKeysFix = diagnostic.Properties.TryGetValue(nameof(UniqueKeyCodeFixType), out string? uniqueCodeFixTypeString) &&
 										   !uniqueCodeFixTypeString.IsNullOrWhiteSpace() &&
 										   Enum.TryParse(uniqueCodeFixTypeString, out UniqueKeyCodeFixType uniqueCodeFixType) &&
 										   uniqueCodeFixType == UniqueKeyCodeFixType.MultipleUniqueKeys;
@@ -112,7 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																												 RefIntegrityDacKeyType.UniqueKey, cancellation),
 												   equivalenceKey: codeActionTitle);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 			else if (keyNode.Identifier.Text != ReferentialIntegrity.UniqueKeyClassName)
 			{
@@ -123,7 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																					  shouldChangeLocation: false, cancellation),
 												   equivalenceKey: codeActionTitle);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 		}
 
@@ -154,14 +150,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 
 			SyntaxNode trackingRoot = root.TrackNodes(dacNode, keyNode);
-			keyNode = trackingRoot.GetCurrentNode(keyNode);
+			keyNode = trackingRoot.GetCurrentNode(keyNode)!;
 
 			if (keyNode == null)
 				return document;
 
-			trackingRoot = trackingRoot.RemoveNode(keyNode, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);
+			trackingRoot = trackingRoot.RemoveNode(keyNode, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives)!;
 			cancellation.ThrowIfCancellationRequested();
-			dacNode = trackingRoot.GetCurrentNode(dacNode);
+			dacNode = trackingRoot.GetCurrentNode(dacNode)!;
 
 			if (dacNode == null)
 				return document;
@@ -184,7 +180,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																				   ClassDeclarationSyntax dacNode, RefIntegrityDacKeyType keyType,
 																				   CancellationToken cancellation)
 		{
-			string containerName = keyType switch
+			string? containerName = keyType switch
 			{ 
 				RefIntegrityDacKeyType.ForeignKey => ReferentialIntegrity.ForeignKeyClassName,
 				RefIntegrityDacKeyType.UniqueKey  => ReferentialIntegrity.UniqueKeyClassName,
@@ -212,13 +208,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			var nodesToTrack = keyNodesNotInContainer.Concat(keysContainerNode.ToEnumerable());
 			SyntaxNode trackingRoot = root.TrackNodes(nodesToTrack);
-			var keyNodesInChangedTree = keyNodesNotInContainer.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
-															  .Where(keyNode => keyNode != null)
-															  .ToList(capacity: keyNodesNotInContainer.Count);
+			List<ClassDeclarationSyntax> keyNodesInChangedTree = keyNodesNotInContainer
+																	.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
+																	.Where(keyNode => keyNode != null)
+																	.ToList(capacity: keyNodesNotInContainer.Count)!;
 			if (keyNodesInChangedTree.Count == 0)
 				return root;
 
-			trackingRoot = trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);	
+			trackingRoot = trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives)!;
 			
 			var keysContainerNodeInChangedTree = trackingRoot.GetCurrentNode(keysContainerNode);
 
@@ -240,7 +237,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			var nodesToTrack = keyNodesNotInContainer.Concat(dacNode.ToEnumerable());
 			SyntaxNode trackingRoot = root.TrackNodes(nodesToTrack);
-			dacNode = trackingRoot.GetCurrentNode(dacNode);
+			dacNode = trackingRoot.GetCurrentNode(dacNode)!;
 
 			if (dacNode == null)
 				return root;
@@ -251,19 +248,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var generator = SyntaxGenerator.GetGenerator(document);
 			var keysContainerNode = CreateKeysContainerClassNode(generator, containerName, keyNodesNotInContainer)
-															.WithAdditionalAnnotations(Formatter.Annotation);
+										?.WithAdditionalAnnotations(Formatter.Annotation);
 			var newDacNode = generator.InsertMembers(dacNode, positionToInsertKeysContainer, keysContainerNode);
 
 			cancellation.ThrowIfCancellationRequested();
 
 			trackingRoot = trackingRoot.ReplaceNode(dacNode, newDacNode);
-			var keyNodesInChangedTree = keyNodesNotInContainer.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
-															  .Where(keyNode => keyNode != null)
-															  .ToList(capacity: keyNodesNotInContainer.Count);
+			List<ClassDeclarationSyntax> keyNodesInChangedTree = keyNodesNotInContainer
+																	.Select(keyNode => trackingRoot.GetCurrentNode(keyNode))
+																	.Where(keyNode => keyNode != null)
+																	.ToList(capacity: keyNodesNotInContainer.Count)!;
 			if (keyNodesInChangedTree.Count == 0)
 				return root;
 
-			return trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);
+			return trackingRoot.RemoveNodes(keyNodesInChangedTree, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives)!;
 		}
 
 		private int GetPositionToInsertUKContainer(ClassDeclarationSyntax dacNode)
@@ -297,15 +295,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return primaryKeyPosition + 1;
 		}
 
-		private ClassDeclarationSyntax CreateKeysContainerClassNode(SyntaxGenerator generator, string containerName, 
+		private ClassDeclarationSyntax? CreateKeysContainerClassNode(SyntaxGenerator generator, string containerName, 
 																	List<ClassDeclarationSyntax> keyNodesNotInContainer)
 		{
-			ClassDeclarationSyntax containerClassDeclaration =
+			ClassDeclarationSyntax? containerClassDeclaration =
 				generator.ClassDeclaration(containerName, typeParameters: null,
 										   Accessibility.Public, DeclarationModifiers.Static,
 										   members: keyNodesNotInContainer.Select(RemoveStructuredTriviaFromKeyNode)) as ClassDeclarationSyntax;
 
-			return containerClassDeclaration.WithTrailingTrivia(EndOfLine(Environment.NewLine));
+			return containerClassDeclaration?.WithTrailingTrivia(EndOfLine(Environment.NewLine));
 		}
 
 		private ClassDeclarationSyntax RemoveStructuredTriviaFromKeyNode(ClassDeclarationSyntax keyNode)

@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -324,7 +323,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			bool isDiagnosticForProjectionDacProperty = mappedOriginalDacProperty != null;
-			var properties = new Dictionary<string, string>
+			var properties = new Dictionary<string, string?>
 			{
 				{ DocumentationDiagnosticProperties.ParseResult, parseResult.ToString() },
 				{ DocumentationDiagnosticProperties.IsProjectionDacProperty, isDiagnosticForProjectionDacProperty.ToString() }

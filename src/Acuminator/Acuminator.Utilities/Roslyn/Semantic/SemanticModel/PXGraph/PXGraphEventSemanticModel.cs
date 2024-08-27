@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -11,6 +12,7 @@ using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -42,15 +44,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.ConfiguresWorkflow"/>
 		public bool ConfiguresWorkflow => BaseGraphModel.ConfiguresWorkflow;
 
-		/// <inheritdoc cref="PXGraphSemanticModel.Type"/>
-		public GraphType Type => BaseGraphModel.Type;
+		/// <inheritdoc cref="PXGraphSemanticModel.GraphType"/>
+		public GraphType GraphType => BaseGraphModel.GraphType;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.GraphOrGraphExtInfo"/>
+		public GraphOrGraphExtInfoBase GraphOrGraphExtInfo => BaseGraphModel.GraphOrGraphExtInfo;
+
+		[MemberNotNullWhen(returnValue: false, nameof(Node))]
+		public bool IsInMetadata => GraphOrGraphExtInfo.IsInMetadata;
+
+		[MemberNotNullWhen(returnValue: true, nameof(Node))]
+		public bool IsInSource => GraphOrGraphExtInfo.IsInSource;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.Node"/>
+		public ClassDeclarationSyntax? Node => BaseGraphModel.Node;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.Symbol"/>
 		public INamedTypeSymbol Symbol => BaseGraphModel.Symbol;
 
-
 		/// <inheritdoc cref="PXGraphSemanticModel.GraphSymbol"/>
 		public ITypeSymbol? GraphSymbol => BaseGraphModel.GraphSymbol;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclarationOrder"/>
+		public int DeclarationOrder => BaseGraphModel.DeclarationOrder;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.StaticConstructors"/>
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors => BaseGraphModel.StaticConstructors;
@@ -174,58 +190,32 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_cancellation = cancellation;
 			BaseGraphModel = baseGraphModel;
 
-			if (BaseGraphModel.Type != GraphType.None)
-			{
-				var eventsCollector = InitializeEvents();
-			
-				RowSelectingByName = GetRowEvents(eventsCollector, EventType.RowSelecting);
-				RowSelectedByName = GetRowEvents(eventsCollector, EventType.RowSelected);
+			var eventsCollector = InitializeEvents();
 
-				RowInsertingByName = GetRowEvents(eventsCollector, EventType.RowInserting);
-				RowInsertedByName = GetRowEvents(eventsCollector, EventType.RowInserted);
+			RowSelectingByName = GetRowEvents(eventsCollector, EventType.RowSelecting);
+			RowSelectedByName  = GetRowEvents(eventsCollector, EventType.RowSelected);
 
-				RowUpdatingByName = GetRowEvents(eventsCollector, EventType.RowUpdating);
-				RowUpdatedByName = GetRowEvents(eventsCollector, EventType.RowUpdated);
+			RowInsertingByName = GetRowEvents(eventsCollector, EventType.RowInserting);
+			RowInsertedByName  = GetRowEvents(eventsCollector, EventType.RowInserted);
 
-				RowDeletingByName = GetRowEvents(eventsCollector, EventType.RowDeleting);
-				RowDeletedByName = GetRowEvents(eventsCollector, EventType.RowDeleted);
+			RowUpdatingByName = GetRowEvents(eventsCollector, EventType.RowUpdating);
+			RowUpdatedByName  = GetRowEvents(eventsCollector, EventType.RowUpdated);
 
-				RowPersistingByName = GetRowEvents(eventsCollector, EventType.RowPersisting);
-				RowPersistedByName = GetRowEvents(eventsCollector, EventType.RowPersisted);
+			RowDeletingByName = GetRowEvents(eventsCollector, EventType.RowDeleting);
+			RowDeletedByName  = GetRowEvents(eventsCollector, EventType.RowDeleted);
 
-				FieldSelectingByName = GetFieldEvents(eventsCollector, EventType.FieldSelecting);
-				FieldDefaultingByName = GetFieldEvents(eventsCollector, EventType.FieldDefaulting);
-				FieldVerifyingByName = GetFieldEvents(eventsCollector, EventType.FieldVerifying);
-				FieldUpdatingByName = GetFieldEvents(eventsCollector, EventType.FieldUpdating);
-				FieldUpdatedByName = GetFieldEvents(eventsCollector, EventType.FieldUpdated);
+			RowPersistingByName = GetRowEvents(eventsCollector, EventType.RowPersisting);
+			RowPersistedByName  = GetRowEvents(eventsCollector, EventType.RowPersisted);
 
-				CacheAttachedByName = GetFieldEvents(eventsCollector, EventType.CacheAttached);
-				CommandPreparingByName = GetFieldEvents(eventsCollector, EventType.CommandPreparing);
-				ExceptionHandlingByName = GetFieldEvents(eventsCollector, EventType.ExceptionHandling);
-			}
-			else
-			{
-				RowSelectingByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowSelectedByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowInsertingByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowInsertedByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowUpdatingByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowUpdatedByName        = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowDeletingByName       = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowDeletedByName        = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowPersistingByName     = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
-				RowPersistedByName      = ImmutableDictionary<string, GraphRowEventInfo>.Empty;
+			FieldSelectingByName  = GetFieldEvents(eventsCollector, EventType.FieldSelecting);
+			FieldDefaultingByName = GetFieldEvents(eventsCollector, EventType.FieldDefaulting);
+			FieldVerifyingByName  = GetFieldEvents(eventsCollector, EventType.FieldVerifying);
+			FieldUpdatingByName   = GetFieldEvents(eventsCollector, EventType.FieldUpdating);
+			FieldUpdatedByName 	  = GetFieldEvents(eventsCollector, EventType.FieldUpdated);
 
-				FieldSelectingByName    = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-				FieldDefaultingByName   = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-				FieldVerifyingByName    = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-				FieldUpdatingByName     = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-				FieldUpdatedByName      = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-
-				CacheAttachedByName     = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-				CommandPreparingByName  = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-				ExceptionHandlingByName = ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
-			}
+			CacheAttachedByName 	= GetFieldEvents(eventsCollector, EventType.CacheAttached);
+			CommandPreparingByName 	= GetFieldEvents(eventsCollector, EventType.CommandPreparing);
+			ExceptionHandlingByName = GetFieldEvents(eventsCollector, EventType.ExceptionHandling);
 		}
 
 		public static PXGraphEventSemanticModel EnrichGraphModelWithEvents(PXGraphSemanticModel baseGraphModel, 
@@ -235,9 +225,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public static IEnumerable<PXGraphEventSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, 
 																		 GraphSemanticModelCreationOptions modelCreationOptions,
-																		 CancellationToken cancellation = default)
+																		 int? declarationOrder = null, CancellationToken cancellation = default)
 		{	
-			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, modelCreationOptions, cancellation);
+			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, modelCreationOptions, declarationOrder, cancellation);
 			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(graph, cancellation))
 												   .ToList();
 			return eventsGraphModels;
@@ -245,28 +235,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public IEnumerable<GraphEventInfoBase> GetEventsByEventType(EventType eventType) => eventType switch
 		{
-			EventType.RowSelecting      => RowSelectingEvents,
-			EventType.RowSelected       => RowSelectedEvents,
-			EventType.RowInserting      => RowInsertingEvents,
-			EventType.RowInserted       => RowInsertedEvents,
-			EventType.RowUpdating       => RowUpdatingEvents,
-			EventType.RowUpdated        => RowUpdatedEvents,
-			EventType.RowDeleting       => RowDeletingEvents,
-			EventType.RowDeleted        => RowDeletedEvents,
-			EventType.RowPersisting     => RowPersistingEvents,
-			EventType.RowPersisted      => RowPersistedEvents,
+			EventType.RowSelecting 		=> RowSelectingEvents,
+			EventType.RowSelected 		=> RowSelectedEvents,
+			EventType.RowInserting 		=> RowInsertingEvents,
+			EventType.RowInserted 		=> RowInsertedEvents,
+			EventType.RowUpdating 		=> RowUpdatingEvents,
+			EventType.RowUpdated 		=> RowUpdatedEvents,
+			EventType.RowDeleting 		=> RowDeletingEvents,
+			EventType.RowDeleted 		=> RowDeletedEvents,
+			EventType.RowPersisting 	=> RowPersistingEvents,
+			EventType.RowPersisted 		=> RowPersistedEvents,
 
-			EventType.FieldSelecting    => FieldSelectingEvents,
-			EventType.FieldDefaulting   => FieldDefaultingEvents,
-			EventType.FieldVerifying    => FieldVerifyingEvents,
-			EventType.FieldUpdating     => FieldUpdatingEvents,
-			EventType.FieldUpdated      => FieldUpdatedEvents,
+			EventType.FieldSelecting 	=> FieldSelectingEvents,
+			EventType.FieldDefaulting 	=> FieldDefaultingEvents,
+			EventType.FieldVerifying 	=> FieldVerifyingEvents,
+			EventType.FieldUpdating 	=> FieldUpdatingEvents,
+			EventType.FieldUpdated 		=> FieldUpdatedEvents,
 
-			EventType.CacheAttached     => CacheAttachedEvents,
-			EventType.CommandPreparing  => CommandPreparingEvents,
+			EventType.CacheAttached 	=> CacheAttachedEvents,
+			EventType.CommandPreparing 	=> CommandPreparingEvents,
 			EventType.ExceptionHandling => ExceptionHandlingEvents,
-			EventType.None              => Enumerable.Empty<GraphEventInfoBase>(),
-			_                           => throw new NotSupportedException($"Event type { eventType } is not supported")
+			EventType.None 				=> [],
+			_ 							=> throw new NotSupportedException($"Event type {eventType} is not supported")
 		};
 
 		public IEnumerable<GraphEventInfoBase> GetAllEvents()
@@ -352,7 +342,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															   ?.GetGraphWithBaseTypes()
 																.Reverse();
 
-			if (BaseGraphModel.Type == GraphType.PXGraphExtension)
+			if (BaseGraphModel.GraphType == GraphType.PXGraphExtension)
 			{
 				baseTypes = baseTypes?.Concat(
 										BaseGraphModel.Symbol.GetGraphExtensionWithBaseExtensions(PXContext, 
@@ -365,20 +355,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private ImmutableDictionary<string, GraphRowEventInfo> GetRowEvents(EventsCollector eventsCollector, EventType eventType)
 		{
-			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, GraphRowEventInfo>();
-
-			OverridableItemsCollection<GraphRowEventInfo> rawCollection = eventsCollector.GetRowEvents(eventType);
-			return rawCollection?.ToImmutableDictionary() ?? ImmutableDictionary.Create<string, GraphRowEventInfo>();
+			OverridableItemsCollection<GraphRowEventInfo>? rawCollection = eventsCollector.GetRowEvents(eventType);
+			return rawCollection?.ToImmutableDictionary() ?? ImmutableDictionary<string, GraphRowEventInfo>.Empty;
 		}
 
 		private ImmutableDictionary<string, GraphFieldEventInfo> GetFieldEvents(EventsCollector eventsCollector, EventType eventType)
 		{
-			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, GraphFieldEventInfo>();
-
-			OverridableItemsCollection<GraphFieldEventInfo> rawCollection = eventsCollector.GetFieldEvents(eventType);
-			return rawCollection.ToImmutableDictionary() ?? ImmutableDictionary.Create<string, GraphFieldEventInfo>();
+			OverridableItemsCollection<GraphFieldEventInfo>? rawCollection = eventsCollector.GetFieldEvents(eventType);
+			return rawCollection?.ToImmutableDictionary() ?? ImmutableDictionary<string, GraphFieldEventInfo>.Empty;
 		}
 
 		private GraphEventCategory GetEventCategoryByEventType(EventType eventType) =>

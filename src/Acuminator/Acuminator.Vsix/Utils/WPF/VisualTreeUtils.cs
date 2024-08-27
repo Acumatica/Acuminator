@@ -1,9 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+
 using Acuminator.Utilities.Common;
 
 
@@ -28,7 +31,7 @@ namespace Acuminator.Vsix.Utilities
 			//-------------------------------------------Local function-----------------------------------
 			IEnumerable<FrameworkElement> GetVisualAncestorsImpl()
 			{
-				FrameworkElement currentAncestor = VisualTreeHelper.GetParent(uiElement) as FrameworkElement;
+				FrameworkElement? currentAncestor = VisualTreeHelper.GetParent(uiElement) as FrameworkElement;
 
 				while (currentAncestor != null)
 				{
@@ -56,7 +59,7 @@ namespace Acuminator.Vsix.Utilities
 			return GetVisualDescendantsImpl(uiElement, elementChildrenCount);
 
 			//-------------------------------------------Local function-----------------------------------
-			IEnumerable<FrameworkElement> GetVisualDescendantsImpl(FrameworkElement parent, int childrenCount)
+			static IEnumerable<FrameworkElement> GetVisualDescendantsImpl(FrameworkElement parent, int childrenCount)
 			{
 				for (int i = 0; i < childrenCount; i++)
 				{

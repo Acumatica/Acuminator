@@ -84,28 +84,28 @@ namespace Acuminator.Vsix.GoToDeclaration
 		
 		private async Task CommandCallbackAsync()
 		{
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
+			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
-			ITextSnapshotLine caretLine = caretPosition.GetContainingLine();
+			ITextSnapshotLine? caretLine = caretPosition.GetContainingLine();
 
 			if (caretLine == null)
 				return;
 
-			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document? document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 			if (document == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
-			Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync();
-			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync();
+			Task<SyntaxNode?> syntaxRootTask = document.GetSyntaxRootAsync();
+			Task<SemanticModel?> semanticModelTask = document.GetSemanticModelAsync();
 			await Task.WhenAll(syntaxRootTask, semanticModelTask);
 
 			#pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
-			SyntaxNode syntaxRoot = syntaxRootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
+			SyntaxNode? syntaxRoot = syntaxRootTask.Result;
+			SemanticModel? semanticModel = semanticModelTask.Result;
 			#pragma warning restore VSTHRD002, VSTHRD103
 
 			if (syntaxRoot == null || semanticModel == null)
@@ -162,7 +162,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			PXGraphSemanticModel? graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType, modelCreationOptions)
 																		  ?.FirstOrDefault();
 
-			if (graphSemanticModel == null || graphSemanticModel.Type == GraphType.None)
+			if (graphSemanticModel == null)
 				return;
 
 			switch (memberSymbol)
@@ -182,12 +182,12 @@ namespace Acuminator.Vsix.GoToDeclaration
 		private async Task NavigateToPXActionHandlerAsync(Document document, IWpfTextView textView, ISymbol actionSymbol,
 														  PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
-			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo actionHandler))
+			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo? actionHandler))
 				return;
 
 			IWpfTextView? textViewToNavigateTo = textView;
 
-			if (actionHandler.Node is not MethodDeclarationSyntax handlerNode || handlerNode.SyntaxTree == null)
+			if (actionHandler?.Node is not MethodDeclarationSyntax handlerNode || handlerNode.SyntaxTree == null)
 				return;
 
 			if (handlerNode.SyntaxTree.FilePath != document.FilePath)
@@ -204,7 +204,8 @@ namespace Acuminator.Vsix.GoToDeclaration
 		private async Task NavigateToPXViewDelegateAsync(Document document, IWpfTextView textView, ISymbol viewSymbol, 
 														 PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
-			if (!graphSemanticModel.ViewDelegatesByNames.TryGetValue(viewSymbol.Name, out DataViewDelegateInfo viewDelegate))
+			if (!graphSemanticModel.ViewDelegatesByNames.TryGetValue(viewSymbol.Name, out DataViewDelegateInfo? viewDelegate) ||
+				viewDelegate == null)
 				return;
 
 			var viewDelegates = viewDelegate.GetDelegateWithAllOverrides().ToList();
@@ -217,8 +218,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				viewDelegateInfoToNavigateTo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType?.Equals(viewSymbol.ContainingType) ?? false)
-															.FirstOrDefault();
+				viewDelegateInfoToNavigateTo = 
+					viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType?.Equals(viewSymbol.ContainingType, SymbolEqualityComparer.Default) ?? false)
+								 .FirstOrDefault();
 			}
 
 			if (viewDelegateInfoToNavigateTo.Node is not MethodDeclarationSyntax methodNode || methodNode.SyntaxTree == null)
@@ -306,16 +308,18 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				return candidates.Where(symbol => (symbol.ContainingType != null && symbol.ContainingType.Equals(methodSymbol.ContainingType) ||
+				return candidates.Where(symbol => (symbol.ContainingType != null && 
+												   symbol.ContainingType.Equals(methodSymbol.ContainingType, SymbolEqualityComparer.Default) ||
 												  (symbol.ContainingType?.OriginalDefinition != null && 
-												   symbol.ContainingType.OriginalDefinition.Equals(methodSymbol.ContainingType.OriginalDefinition))))
+												   symbol.ContainingType.OriginalDefinition.Equals(methodSymbol.ContainingType.OriginalDefinition, 
+																									SymbolEqualityComparer.Default))))
 								 .FirstOrDefault();
 			}
 		}
 
 		private async Task<IWpfTextView?> OpenOtherDocumentForNavigationAndGetItsTextViewAsync(Document originalDocument, SyntaxTree syntaxTreeToNavigate)
 		{
-			DocumentId documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxTreeToNavigate);
+			DocumentId? documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxTreeToNavigate);
 
 			if (documentToNavigateId == null)
 				return null;
@@ -350,7 +354,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		private async Task ExpandAllRegionsContainingSpanAsync(SnapshotSpan selectedSpan, IWpfTextView textView)
 		{
-			IOutliningManager outliningManager = await ServiceProvider.GetOutliningManagerAsync(textView);
+			IOutliningManager? outliningManager = await ServiceProvider.GetOutliningManagerAsync(textView);
 
 			if (outliningManager == null)
 				return;

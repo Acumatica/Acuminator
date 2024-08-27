@@ -1,10 +1,10 @@
-﻿using System.Collections.Immutable;
-using Acuminator.Utilities;
+﻿
+using System.Collections.Immutable;
+
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-
-
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {

@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -160,8 +159,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				}
 			}
 
+			// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+			// and these properties are declared in the DAC type itself
 			if (hasUnboundTypeAttribute || (!hasPXDBCalcedAttribute && !hasPXDBScalarAttribute) ||
-				property.Node.Identifier.GetLocation() is not Location location)
+				property.Node!.Identifier.GetLocation() is not Location location)
 			{
 				return;
 			}
@@ -207,8 +208,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				DacFieldAttributeInfo dataTypeAttribute = typeAttributesOnDacProperty[0];
 				var dataTypeFromAttribute = dataTypeAttribute.AggregatedAttributeMetadata
 															 .Where(atrMetadata => atrMetadata.IsFieldAttribute && atrMetadata.DataType != null)
-															 .Select(atrMetadata => atrMetadata.DataType)
-															 .Distinct()
+															 .Select(atrMetadata => atrMetadata.DataType!)
+															 .Distinct<ITypeSymbol>(SymbolEqualityComparer.Default)
 															 .FirstOrDefault();
 		
 				CheckAttributeAndPropertyTypesForCompatibility(property, dataTypeAttribute, dataTypeFromAttribute, pxContext, symbolContext);
@@ -240,8 +241,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				}
 
 				int countOfDeclaredNonNullDataTypes = dataTypeAttributes.Where(atrMetadata => atrMetadata.DataType != null)
-																		.Select(atrMetadata => atrMetadata.DataType)
-																		.Distinct()
+																		.Select(atrMetadata => atrMetadata.DataType!)
+																		.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default)
 																		.Count();
 				hasNonNullDataType = hasNonNullDataType || countOfDeclaredNonNullDataTypes > 0;
 
@@ -265,7 +266,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				return;
 			}
 
-			if (!dataTypeFromAttribute.Equals(property.EffectivePropertyType))
+			if (!dataTypeFromAttribute.Equals(property.EffectivePropertyType, SymbolEqualityComparer.Default))
 			{
 				ReportIncompatibleTypesDiagnostics(property, dataTypeAttribute, symbolContext, pxContext, registerCodeFix: true);
 			}
@@ -274,9 +275,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static void ReportIncompatibleTypesDiagnostics(DacPropertyInfo property, DacFieldAttributeInfo fieldAttribute,
 															   SymbolAnalysisContext symbolContext, PXContext pxContext, bool registerCodeFix)
 		{
-			var diagnosticProperties = ImmutableDictionary.Create<string, string>()
+			var diagnosticProperties = ImmutableDictionary.Create<string, string?>()
 														  .Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
-			Location? propertyTypeLocation = property.Node.Type.GetLocation();
+
+			// Node not null here because aggregated DAC analysers by default run only on DACs in source 
+			// and these properties are declared in the DAC type itself
+			Location? propertyTypeLocation = property.Node!.Type.GetLocation();
 			Location? attributeLocation = fieldAttribute.AttributeData.GetLocation(symbolContext.CancellationToken);
 
 			if (propertyTypeLocation != null)

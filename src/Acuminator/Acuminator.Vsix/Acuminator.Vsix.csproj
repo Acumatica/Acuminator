@@ -13,6 +13,9 @@
     </NuGetPackageImportStamp>
     <UseCodebase>true</UseCodebase>
     <TargetFrameworkProfile />
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
+    <NoWarn>CS0168</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -500,6 +503,8 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveForGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
+    <Compile Include="Utils\Polyfills\NotNullIfNotNullAttribute.cs" />
+    <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
     <Compile Include="Utils\Storage\AcuminatorMyDocumentsStorage.cs" />
     <Compile Include="Utils\Storage\VersionFile.cs" />
@@ -629,7 +634,6 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utils\PolyfillsForVS2017.cs" />
     <Compile Include="Utils\Version\VSVersionProvider.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
@@ -680,8 +684,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Community.VisualStudio.Toolkit.15">
-      <Version>15.0.394</Version>
+    <PackageReference Include="Community.VisualStudio.Toolkit.16">
+      <Version>16.0.522</Version>
     </PackageReference>
     <PackageReference Include="Community.VisualStudio.VSCT">
       <Version>16.0.29.6</Version>
@@ -689,19 +693,21 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis">
-      <Version>2.10.0</Version>
+      <Version>3.11.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
-      <Version>2.9.2</Version>
+      <Version>3.3.4</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
-      <Version>2.10.0</Version>
+      <Version>3.11.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.LanguageServices">
-      <Version>2.10.0</Version>
+      <Version>3.11.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK" ExcludeAssets="Runtime">
-      <Version>15.0.1</Version>
+      <Version>16.10.31321.278</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
       <Version>17.0.5234</Version>

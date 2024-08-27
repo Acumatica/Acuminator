@@ -1,16 +1,13 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 {
-	public partial class ForbiddenFieldsInDacFix : CodeFixProvider
+	public partial class ForbiddenFieldsInDacFix : PXCodeFixProvider
 	{	
 		/// <summary>
 		/// The #regions rewriter helper.

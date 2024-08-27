@@ -1,10 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Windows.Input;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows
@@ -12,7 +11,7 @@ namespace Acuminator.Vsix.ToolWindows
 	public class Command : ICommand
 	{
 		private readonly Action<object> _actionToExecute;
-		private readonly Predicate<object> _canExecute;
+		private readonly Predicate<object>? _canExecute;
 
 		#region ICommand Members
 		public event EventHandler CanExecuteChanged
@@ -40,7 +39,7 @@ namespace Acuminator.Vsix.ToolWindows
 		/// </summary>
 		/// <param name="actionToExecute">The execution logic.</param>
 		/// <param name="canExecute">The predicate to determine if action can execute.</param>
-		public Command(Action<object> actionToExecute, Predicate<object> canExecute)
+		public Command(Action<object> actionToExecute, Predicate<object>? canExecute)
 		{				
 			_actionToExecute = actionToExecute.CheckIfNull();
 			_canExecute = canExecute;

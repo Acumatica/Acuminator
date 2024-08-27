@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -19,15 +18,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature);
 
-		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
-
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphEventSemanticModel pxGraph)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			var actionHandlerWithBadSignature = from method in pxGraph.Symbol.GetMethods()
-												where pxGraph.Symbol.Equals(method.ContainingType) &&
+												where pxGraph.Symbol.Equals(method.ContainingType, SymbolEqualityComparer.Default) &&
 													  CheckIfDiagnosticShouldBeRegisteredForMethod(method, pxContext) &&
 													  pxGraph.ActionsByNames.ContainsKey(method.Name)
 												select method;
@@ -35,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			foreach (IMethodSymbol method in actionHandlerWithBadSignature)
 			{
 				symbolContext.CancellationToken.ThrowIfCancellationRequested();
-				Location methodLocation = method.Locations.FirstOrDefault();
+				Location? methodLocation = method.Locations.FirstOrDefault();
 
 				if (methodLocation != null)
 				{
@@ -52,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				return true;
 
 			return method.ReturnType.SpecialType == SpecialType.System_Collections_IEnumerable &&
-				(method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType));
+				(method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType, SymbolEqualityComparer.Default));
 		}
 	}
 }

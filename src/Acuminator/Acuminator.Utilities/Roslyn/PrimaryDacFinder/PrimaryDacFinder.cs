@@ -48,10 +48,12 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			_viewsWithScores = GraphViews.Where(viewInfo => viewInfo.DAC != null)
 										 .ToDictionary(keySelector: viewInfo => viewInfo.Symbol, 
-													   elementSelector: viewInfo => (viewInfo, new Score(0.0)));
+													   elementSelector: viewInfo => (viewInfo, new Score(0.0)),
+													   SymbolEqualityComparer.Default);
 
 			_dacWithViewsLookup = _viewsWithScores.Values.ToLookup(viewAndScore => viewAndScore.View.DAC!,
-																   viewAndScore => viewAndScore.View);
+																   viewAndScore => viewAndScore.View,
+																   SymbolEqualityComparer.Default as IEqualityComparer<ITypeSymbol>);
 
 			_absoluteRules  = rules.Where(rule => rule.IsAbsolute).ToList(capacity: 4);
 			_heuristicRules = rules.Where(rule => !rule.IsAbsolute).ToList(capacity: 16);
@@ -67,7 +69,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			PXGraphSemanticModel? graphSemanticModel = PXGraphSemanticModel.InferModels(pxContext, graphOrGraphExtension, 
 																					   GraphSemanticModelCreationOptions.CollectGeneralGraphInfo, 
-																					   cancellationToken)
+																					   cancellation: cancellationToken)
 																		  ?.FirstOrDefault();
 			return graphSemanticModel != null 
 				? Create(pxContext, graphSemanticModel, cancellationToken, customRulesProvider)
@@ -128,7 +130,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			var maxScoredViews = _viewsWithScores.ItemsWithMaxValues(viewWithDacAndScore => viewWithDacAndScore.Value.Score.Value);
 			var maxScoredDACs = maxScoredViews.Select(viewWithDacAndScore => viewWithDacAndScore.Value.View.DAC!)
-											  .ToHashSet();
+											  .ToHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 			return maxScoredDACs.Count == 1
 				? maxScoredDACs.FirstOrDefault()
 				: null;
@@ -137,7 +139,9 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 		private ITypeSymbol? ApplyRule(PrimaryDacRuleBase rule)
 		{
 			var (dacCandidates, viewCandidates) = GetDacAndViewCandidates(rule);
-			List<ITypeSymbol>? dacCandidatesList = dacCandidates?.Where(dac => dac != null).Distinct().ToList()!;
+			List<ITypeSymbol>? dacCandidatesList = dacCandidates?.Where(dac => dac != null)!
+																 .Distinct<ITypeSymbol>(SymbolEqualityComparer.Default)
+																 .ToList()!;
 
 			if (dacCandidatesList?.Count is null or 0)
 				return null;

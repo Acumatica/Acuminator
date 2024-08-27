@@ -1,13 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
+
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Vsix.Formatter
 {
@@ -25,9 +24,9 @@ namespace Acuminator.Vsix.Formatter
 		}
 
 
-		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
+		public override SyntaxNode? VisitGenericName(GenericNameSyntax node)
 		{
-			INamedTypeSymbol originalSymbol = GetOriginalTypeSymbol(node);
+			INamedTypeSymbol? originalSymbol = GetOriginalTypeSymbol(node);
 
 			if (originalSymbol != null)
 			{

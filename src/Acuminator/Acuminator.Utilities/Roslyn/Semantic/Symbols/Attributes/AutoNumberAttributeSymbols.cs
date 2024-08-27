@@ -1,75 +1,79 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Acuminator.Utilities.Roslyn.Constants;
 
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class AutoNumberAttributeSymbols : SymbolsSetForTypeBase
-    {
-        private const int DefaultMinAutoNumberLength = 15;
-        private const string NumberingSequenceStartNbrFieldName = "StartNbr";
+	public class AutoNumberAttributeSymbols : SymbolsSetForTypeBase
+	{
+		private const int DefaultMinAutoNumberLength = 15;
+		private const string NumberingSequenceStartNbrFieldName = "StartNbr";
 
-        private static object _locker = new object();
-        private static volatile bool _isMinAutoNumberLengthInitialized;
+		private static object _locker = new object();
+		private static volatile bool _isMinAutoNumberLengthInitialized;
 
-        private static int _minAutoNumberLength;
+		private static int _minAutoNumberLength;
 
-        public int MinAutoNumberLength => _minAutoNumberLength;
+		public int MinAutoNumberLength => _minAutoNumberLength;
 
-        public INamedTypeSymbol NumberingSequence => Compilation.GetTypeByMetadataName(TypeFullNames.NumberingSequence);
+#pragma warning disable CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
+		public sealed override INamedTypeSymbol? Type => base.Type;
+#pragma warning restore CS8764
 
-        internal AutoNumberAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.AutoNumberAttribute)
-        {
-            InitializeMinAutoNumberLength();
-        }
+		public INamedTypeSymbol NumberingSequence => Compilation.GetTypeByMetadataName(TypeFullNames.NumberingSequence)!;
 
-        private void InitializeMinAutoNumberLength()
-        {
-            if (!_isMinAutoNumberLengthInitialized)
-            {
-                lock (_locker)
-                {
-                    if (!_isMinAutoNumberLengthInitialized)
-                    {
-                        _minAutoNumberLength = ReadMinAutoNumberLengthFromNumberingSequence();
-                        _isMinAutoNumberLengthInitialized = true;
-                    }
-                }
-            }
-        }
+		internal AutoNumberAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.AutoNumberAttribute)
+		{
+			InitializeMinAutoNumberLength();
+		}
 
-        private int ReadMinAutoNumberLengthFromNumberingSequence()
-        {
-            var numberingSequenceDac = NumberingSequence;
+		private void InitializeMinAutoNumberLength()
+		{
+			if (!_isMinAutoNumberLengthInitialized)
+			{
+				lock (_locker)
+				{
+					if (!_isMinAutoNumberLengthInitialized)
+					{
+						_minAutoNumberLength = ReadMinAutoNumberLengthFromNumberingSequence();
+						_isMinAutoNumberLengthInitialized = true;
+					}
+				}
+			}
+		}
 
-            if (numberingSequenceDac == null)
-                return DefaultMinAutoNumberLength;
+		private int ReadMinAutoNumberLengthFromNumberingSequence()
+		{
+			var numberingSequenceDac = NumberingSequence;
 
-            var startNbrProperty = numberingSequenceDac.GetMembers(NumberingSequenceStartNbrFieldName)
-                                                       .FirstOrDefault() as IPropertySymbol;
-            if (startNbrProperty == null)
-                return DefaultMinAutoNumberLength;
+			if (numberingSequenceDac == null)
+				return DefaultMinAutoNumberLength;
 
-            var stringAttribute = Compilation.GetTypeByMetadataName(TypeFullNames.PXDBStringAttribute);
+			var startNbrProperty = numberingSequenceDac.GetMembers(NumberingSequenceStartNbrFieldName)
+													   .FirstOrDefault() as IPropertySymbol;
+			if (startNbrProperty == null)
+				return DefaultMinAutoNumberLength;
 
-            if (stringAttribute == null)
-                return DefaultMinAutoNumberLength;
+			var stringAttribute = Compilation.GetTypeByMetadataName(TypeFullNames.PXDBStringAttribute);
 
-            var stringAttributeData = startNbrProperty.GetAttributes()
-                                                      .FirstOrDefault(a => a.AttributeClass.InheritsFromOrEquals(stringAttribute));
+			if (stringAttribute == null)
+				return DefaultMinAutoNumberLength;
 
-            if (stringAttributeData == null || stringAttributeData.ConstructorArguments.IsDefaultOrEmpty)
-                return DefaultMinAutoNumberLength;
+			var stringAttributeData = startNbrProperty
+										.GetAttributes()
+										.FirstOrDefault(a => a.AttributeClass?.InheritsFromOrEquals(stringAttribute) ?? false);
 
-            TypedConstant lengthArg = stringAttributeData.ConstructorArguments[0];
-            return lengthArg.Value is int length
-                ? length
-                : DefaultMinAutoNumberLength;
-        }
-    }
+			if (stringAttributeData == null || stringAttributeData.ConstructorArguments.IsDefaultOrEmpty)
+				return DefaultMinAutoNumberLength;
+
+			TypedConstant lengthArg = stringAttributeData.ConstructorArguments[0];
+			return lengthArg.Value is int length
+				? length
+				: DefaultMinAutoNumberLength;
+		}
+	}
 }

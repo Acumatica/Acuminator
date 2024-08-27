@@ -1,13 +1,16 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using Microsoft.VisualStudio.Text.Tagging;
-using System.Collections;
+
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -59,7 +62,7 @@ namespace Acuminator.Vsix.Coloriser
 
         public void AddTags(IEnumerable<ITagSpan<TTag>> tags)
         {
-            List<ITagSpan<TTag>> tagsCopy = tags?.ToList();
+            List<ITagSpan<TTag>>? tagsCopy = tags?.ToList();
 
             if (tagsCopy.IsNullOrEmpty() || CancellationToken.IsCancellationRequested)
                 return;

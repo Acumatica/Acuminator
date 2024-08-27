@@ -1,27 +1,28 @@
-﻿#nullable enable
-
+﻿
 using System;
+using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
 using Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute;
 using Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration;
 using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
+using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
 using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
 using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
 using Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension;
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute;
+using Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty;
+using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
+using Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
-using Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute;
-using Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions;
-using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
-using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
-using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -29,7 +30,6 @@ using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Dac
 {
@@ -48,6 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new ForbiddenFieldsInDacAnalyzer(),
 			new DacUiAttributesAnalyzer(),
 			new InheritanceFromPXCacheExtensionAnalyzer(),
+			new NoBqlFieldForDacFieldProperty.NoBqlFieldForDacFieldPropertyAnalyzer(),
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
 			new KeyFieldDeclarationAnalyzer(),
@@ -76,7 +77,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			if (context.Symbol is not INamedTypeSymbol type)
 				return;
 
-			var inferredDacModel = DacSemanticModel.InferModel(pxContext, type, context.CancellationToken);
+			var inferredDacModel = DacSemanticModel.InferModel(pxContext, type, cancellation: context.CancellationToken);
 
 			if (inferredDacModel == null)
 				return;

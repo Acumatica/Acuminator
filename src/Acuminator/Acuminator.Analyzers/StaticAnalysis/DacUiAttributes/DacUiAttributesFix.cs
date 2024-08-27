@@ -1,20 +1,23 @@
-﻿using Acuminator.Utilities.Roslyn.Semantic;
+﻿
+using System.Collections.Immutable;
+using System.Composition;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
-using System.Composition;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class DacUiAttributesFix : CodeFixProvider
+	public class DacUiAttributesFix : PXCodeFixProvider
 	{
 		private enum FixOption
 		{
@@ -25,9 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1094_DacShouldHaveUiAttribute.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -37,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXHiddenAttribute, cancellation),
 				equivalenceKey: addPXHiddenTitle);
 
-			context.RegisterCodeFix(addPXHiddenAction, context.Diagnostics);
+			context.RegisterCodeFix(addPXHiddenAction, diagnostic);
 
 			var addPXCacheNameTitle = nameof(Resources.PX1094FixPXCacheNameAttribute).GetLocalized().ToString();
 			var addPXCacheNameAction = CodeAction.Create(
@@ -45,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXCacheNameAttribute, cancellation),
 				equivalenceKey: addPXCacheNameTitle);
 
-			context.RegisterCodeFix(addPXCacheNameAction, context.Diagnostics);
+			context.RegisterCodeFix(addPXCacheNameAction, diagnostic);
 
 			return Task.CompletedTask;
 		}
@@ -58,7 +59,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				.GetSyntaxRootAsync(cancellation)
 				.ConfigureAwait(false);
 
-			if (!(root?.FindNode(span) is ClassDeclarationSyntax node))
+			if (root?.FindNode(span) is not ClassDeclarationSyntax node)
 			{
 				return document;
 			}
@@ -82,7 +83,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 
 			return newDocument;
 
-			AttributeArgumentListSyntax CreateDefaultArgumentList()
+			//---------------------------------------------Local Function-------------------------------------------------------
+			static AttributeArgumentListSyntax CreateDefaultArgumentList()
 			{
 				var pxCacheNameDefaultArgumentValue = nameof(Resources.PX1094PXCacheNameDefaultArgumentValue).GetLocalized().ToString();
 

@@ -1,12 +1,15 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 {
@@ -21,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (!dac.BqlFieldsByNames.TryGetValue(property.Name, out DacBqlFieldInfo field))
+				if (!dac.BqlFieldsByNames.TryGetValue(property.Name, out DacBqlFieldInfo? field))
 					continue;
 
 				if (property.Symbol.Type is INamedTypeSymbol propertyType && propertyType.IsValueType &&

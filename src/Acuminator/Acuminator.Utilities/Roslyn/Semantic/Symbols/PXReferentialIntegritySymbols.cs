@@ -60,19 +60,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         public INamedTypeSymbol KeysRelation { get; }
 
-        public INamedTypeSymbol PrimaryKeyOf => Compilation.GetTypeByMetadataName(TypeFullNames.PrimaryKeyOf);
+        public INamedTypeSymbol PrimaryKeyOf => Compilation.GetTypeByMetadataName(TypeFullNames.PrimaryKeyOf)!;
 
-        public INamedTypeSymbol CompositeKey2 => Compilation.GetTypeByMetadataName(TypeFullNames.CompositeKey2);
+        public INamedTypeSymbol CompositeKey2 => Compilation.GetTypeByMetadataName(TypeFullNames.CompositeKey2)!;
 
         internal PXReferentialIntegritySymbols(Compilation compilation) : base(compilation)
         {
-            IPrimaryKey = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKey);
-            IPrimaryKeyOf1 = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKeyOf1);
+            IPrimaryKey = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKey)!;
+            IPrimaryKeyOf1 = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKeyOf1)!;
 
-            IForeignKey = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKey);
-            IForeignKeyTo1 = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKeyTo1);
+            IForeignKey = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKey)!;
+            IForeignKeyTo1 = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKeyTo1)!;
 
-            KeysRelation = Compilation.GetTypeByMetadataName(TypeFullNames.KeysRelation);
+            KeysRelation = Compilation.GetTypeByMetadataName(TypeFullNames.KeysRelation)!;
         }
 
         public INamedTypeSymbol GetPrimaryKeyBy_TypeSymbol(int arity)
@@ -81,7 +81,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
                 throw new ArgumentOutOfRangeException(nameof(arity));
 
             string primaryKeyByTypeName = $"{TypeFullNames.PrimaryKeyOfBy}`{arity}";
-            return Compilation.GetTypeByMetadataName(primaryKeyByTypeName);
+            return Compilation.GetTypeByMetadataName(primaryKeyByTypeName)!;
         }
     }
 }

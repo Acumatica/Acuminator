@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -61,7 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				return ImmutableDictionary<string, IPropertySymbol>.Empty;
 			}
 
-			if (pxContext.IsAcumatica2024R1_OrGreater && ContainingType.BaseType.Equals(pxContext.PXBqlTable))
+			if (pxContext.IsAcumatica2024R1_OrGreater && ContainingType.BaseType.Equals(pxContext.PXBqlTable, SymbolEqualityComparer.Default))
 				return ImmutableDictionary<string, IPropertySymbol>.Empty;
 
 			var builder		 = ImmutableDictionary.CreateBuilder<string, IPropertySymbol>(StringComparer.OrdinalIgnoreCase);

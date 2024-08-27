@@ -128,9 +128,7 @@ namespace Acuminator.Utilities.Common
 
 			for (int i = start, j = end; i < j; i++, j--)
 			{
-				T tmp = array[i];
-				array[i] = array[j];
-				array[j] = tmp;
+				(array[j], array[i]) = (array[i], array[j]);
 			}
 		}
 

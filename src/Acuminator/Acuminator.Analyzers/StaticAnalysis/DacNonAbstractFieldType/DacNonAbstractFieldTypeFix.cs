@@ -3,6 +3,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -14,14 +15,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class DacNonAbstractFieldTypeFix : CodeFixProvider
+	public class DacNonAbstractFieldTypeFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1024_DacNonAbstractFieldType.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			return Task.Run(() =>
 			{
@@ -31,15 +30,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 									  cToken => MarkDacFieldAsAbstractAsync(context.Document, context.Span, cToken),
 									  equivalenceKey: codeActionName);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}, context.CancellationToken);
 		}
 
 		private async Task<Document> MarkDacFieldAsAbstractAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken)
-											.ConfigureAwait(false);
-			ClassDeclarationSyntax dacFieldDeclaration = root?.FindNode(span) as ClassDeclarationSyntax;
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken)
+											 .ConfigureAwait(false);
+			var dacFieldDeclaration = root?.FindNode(span) as ClassDeclarationSyntax;
 
 			if (dacFieldDeclaration == null || cancellationToken.IsCancellationRequested)
 				return document;
@@ -49,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 			if (dacFieldDeclaration.Modifiers.Contains(abstractToken))
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(dacFieldDeclaration, dacFieldDeclaration.AddModifiers(abstractToken));
+			var modifiedRoot = root!.ReplaceNode(dacFieldDeclaration, dacFieldDeclaration.AddModifiers(abstractToken));
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 	}

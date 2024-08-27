@@ -89,7 +89,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: false;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacField(this ITypeSymbol typeSymbol)
+		public static bool IsDacBqlField(this ITypeSymbol typeSymbol)
 		{
 			if (!typeSymbol.BaseValidation())
 				return false;
@@ -103,7 +103,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacField(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsDacBqlField(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
 			typeSymbol.ThrowOnNull();
 
@@ -118,6 +118,36 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return false;
 		}
 
+		public static bool IsStronglyTypedBqlFieldOrBqlConstant(this INamedTypeSymbol bqlFieldOrBqlConstantType, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull();
+
+			var allInterfaces = bqlFieldOrBqlConstantType.CheckIfNull().AllInterfaces;
+
+			if (allInterfaces.IsDefaultOrEmpty)
+				return false;
+
+			foreach (INamedTypeSymbol @interface in allInterfaces)
+			{
+				if (!@interface.IsGenericType || @interface.TypeArguments.IsDefaultOrEmpty)
+					continue;
+
+				if (!@interface.Equals(pxContext.IImplementType, SymbolEqualityComparer.Default) &&
+					(@interface.OriginalDefinition == null || 
+					 !@interface.OriginalDefinition.Equals(pxContext.IImplementType, SymbolEqualityComparer.Default)))
+				{
+					continue;
+				}
+
+				var firstTypeArgument = @interface.TypeArguments[0];
+
+				if (firstTypeArgument.ImplementsInterface(pxContext.BqlTypes.IBqlDataType))
+					return true;
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Get view's DAC for which the view was declared.
 		/// </summary>
@@ -130,7 +160,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			pxContext.ThrowOnNull();
 
-			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type!) != true)
+			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type) != true)
 				return null;
 
 			INamedTypeSymbol baseViewType;
@@ -138,9 +168,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			if (pxView.IsFbqlView(pxContext))
 			{
 
-				baseViewType = pxView.BaseType.ContainingType.GetBaseTypesAndThis()
-															 .OfType<INamedTypeSymbol>()
-															 .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf));
+				baseViewType = pxView.BaseType!.ContainingType
+											   .GetBaseTypesAndThis()
+											   .OfType<INamedTypeSymbol>()
+											   .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf, SymbolEqualityComparer.Default));
 			}
 			else
 			{

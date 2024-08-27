@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -38,10 +37,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 				Descriptors.PX1022_NonPublicGraphExtension
 			);
 
-		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac != null;
+		bool IDacAnalyzer.ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => 
+			dac?.IsInSource == true;
 
 		bool IPXGraphAnalyzer.ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) => 
-			graph != null && graph.Type != GraphType.None;
+			graph?.IsInSource == true;
 
 		void IDacAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExtension) =>
 			CheckSymbolIsPublic(context, pxContext, dacOrDacExtension, 
@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 		void IPXGraphAnalyzer.Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphOrGraphExtension) =>
 			CheckSymbolIsPublic(context, pxContext, graphOrGraphExtension, 
-								checkedSymbolKind: graphOrGraphExtension.Type == GraphType.PXGraph
+								checkedSymbolKind: graphOrGraphExtension.GraphType == GraphType.PXGraph
 													? CheckedSymbolKind.Graph
 													: CheckedSymbolKind.GraphExtension);
 
@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 			var modifierSetsLocationsForTypeDeclarations = 
 				GetBadModifierSetsLocationsForTypeDeclarations(dacOrGraphOrExtensionModel.Symbol, context.CancellationToken);
-			ImmutableDictionary<string, string>? diagnosticProperties = null;
+			ImmutableDictionary<string, string?>? diagnosticProperties = null;
 
 			foreach (ModifierSetsLocations typeDeclarationModifierSetsLocations in modifierSetsLocationsForTypeDeclarations)
 			{
@@ -76,8 +76,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 				foreach (Location modifierSetLocation in typeDeclarationModifierSetsLocations)
 				{
-					diagnosticProperties ??= ImmutableDictionary<string, string>.Empty
-																				.Add(nameof(CheckedSymbolKind), checkedSymbolKind.ToString());
+					diagnosticProperties ??= ImmutableDictionary<string, string?>.Empty
+																				 .Add(nameof(CheckedSymbolKind), checkedSymbolKind.ToString());
 
 					var diagnostic = Diagnostic.Create(descriptor, modifierSetLocation, diagnosticProperties);
 					context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
@@ -225,7 +225,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 					var lastModifier  = modifiersSet[^1];
 					var span		  = TextSpan.FromBounds(firstModifier.SpanStart, lastModifier.Span.End);
 
-					return Location.Create(firstModifier.SyntaxTree, span);
+					return Location.Create(firstModifier.SyntaxTree!, span);
 				}
 			}
 		}

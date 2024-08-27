@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections;
 using System.Collections.Immutable;
@@ -22,14 +21,12 @@ using Microsoft.CodeAnalysis.Formatting;
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class InvalidPXActionSignatureFix : CodeFixProvider
+	public class InvalidPXActionSignatureFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
 											 .ConfigureAwait(false);
@@ -42,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			string codeActionName = nameof(Resources.PX1000Fix).GetLocalized().ToString();
 			context.RegisterCodeFix(
 				new ChangeSignatureAction(codeActionName, context.Document, method),
-				context.Diagnostics);
+				diagnostic);
 		}
 
 		//-------------------------------------Code Action for Fix---------------------------------------------------------------------------
@@ -67,17 +64,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 
 			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (_method?.Body == null)
+					return _document;
+
 				var semanticModel = await _document.GetSemanticModelAsync(cancellationToken)
 												   .ConfigureAwait(false);
-
-				if (semanticModel == null || cancellationToken.IsCancellationRequested)
+				if (semanticModel == null)
 					return _document;
 
 				var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 				var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken)
 											 .ConfigureAwait(false);
-
-				if (oldRoot == null || cancellationToken.IsCancellationRequested)
+				if (oldRoot == null)
 					return _document;
 
 				var newRoot = oldRoot;
@@ -91,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				var newMethod = _method.WithReturnType(newReturnType)
 									   .WithParameterList(newParametersList);
 
-				ControlFlowAnalysis controlFlow = semanticModel.AnalyzeControlFlow(_method.Body);
+				ControlFlowAnalysis? controlFlow = semanticModel.AnalyzeControlFlow(_method.Body);
 
 				if (controlFlow != null && controlFlow.Succeeded && controlFlow.ReturnStatements.IsEmpty)
 				{

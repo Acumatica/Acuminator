@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
@@ -17,12 +18,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		/// <summary>
 		/// Gets XML schema from the given assembly embedded resources.
 		/// </summary>
-		public  XmlSchema GetXmlSchema()
+		public  XmlSchema? GetXmlSchema()
 		{
 			try
 			{
 				Assembly utilsAssembly = typeof(SuppressionFileSchemaValidator).Assembly;
-				string schemaResourceFullName = GetSchemaResourceFullName(utilsAssembly);
+				string? schemaResourceFullName = GetSchemaResourceFullName(utilsAssembly);
 
 				if (schemaResourceFullName.IsNullOrWhiteSpace())
 					return null;
@@ -41,7 +42,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			}
 		}
 
-		protected virtual string GetSchemaResourceFullName(Assembly curentAssembly) =>
+		protected virtual string? GetSchemaResourceFullName(Assembly curentAssembly) =>
 			curentAssembly.GetManifestResourceNames()
 						 ?.FirstOrDefault(rName => rName.EndsWith(SharedConstants.SuppressionFileXmlSchemaFileName));
 	}

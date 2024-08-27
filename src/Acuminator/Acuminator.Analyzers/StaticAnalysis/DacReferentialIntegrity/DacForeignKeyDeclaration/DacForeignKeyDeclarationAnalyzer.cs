@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -228,7 +227,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override Location? GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
 		{
-			if (keyNode.BaseList.Types.Count == 0)
+			if (keyNode.BaseList?.Types.Count is null or 0)
 				return null;
 
 			BaseTypeSyntax baseTypeNode = keyNode.BaseList.Types[0];
@@ -314,8 +313,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 			}
 
-			INamedTypeSymbol foreignKeysContainer = dac.Symbol.GetTypeMembers(ReferentialIntegrity.ForeignKeyClassName)
-															  .FirstOrDefault();
+			INamedTypeSymbol? foreignKeysContainer = dac.Symbol.GetTypeMembers(ReferentialIntegrity.ForeignKeyClassName)
+															   .FirstOrDefault();
 
 			//We can register code fix only if there is no FK nested type in DAC or there is a public static FK class. Otherwise we will break the code.
 			bool registerCodeFix = foreignKeysContainer == null ||
@@ -328,14 +327,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			Location dacLocation = dac.Node.GetLocation();
+			Location? dacLocation = dac.Node?.GetLocation();
 			var keysNotInContainerLocations = GetKeysLocations(keysNotInContainer, symbolContext.CancellationToken).ToList(capacity: keysNotInContainer.Count);
 
 			if (dacLocation == null || keysNotInContainerLocations.Count == 0)
 				return;
 
 			var dacLocationArray = new[] { dacLocation };
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ nameof(RefIntegrityDacKeyType), RefIntegrityDacKeyType.ForeignKey.ToString() },
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
@@ -355,7 +354,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private void ReportNoForeignKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
-			var location = dac.Node.Identifier.GetLocation() ?? dac.Node.GetLocation();
+			var location = dac.Node?.Identifier.GetLocation() ?? dac.Node?.GetLocation();
 
 			if (location != null)
 			{
@@ -371,7 +370,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			return containerDeclaredIncorrectly
 				? keyDeclarations
-				: keyDeclarations.Where(key => !foreignKeysContainer!.Equals(key.ContainingType) && !key.GetContainingTypes().Contains(foreignKeysContainer))
+				: keyDeclarations.Where(key => !foreignKeysContainer!.Equals(key.ContainingType, SymbolEqualityComparer.Default) && 
+											   !key.GetContainingTypes().Contains(foreignKeysContainer, SymbolEqualityComparer.Default))
 								 .ToList(capacity: keyDeclarations.Count);
 		}
 	}

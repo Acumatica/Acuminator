@@ -1,7 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Immutable;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 using Acuminator.Utilities.Common;
 
@@ -14,19 +11,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// </summary>
 	public class ActionInfo : SymbolItem<ISymbol>, IWriteableBaseItem<ActionInfo>
 	{
+		protected ActionInfo? _baseInfo;
+
 		/// <summary>
 		/// The overriden action if any
 		/// </summary>
-		public ActionInfo? Base
-		{
-			get;
-			internal set;
-		}
+		public ActionInfo? Base => _baseInfo;
 
 		ActionInfo? IWriteableBaseItem<ActionInfo>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set 
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
 		}
 
 		/// <summary>
@@ -53,7 +54,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem, ActionInfo baseInfo) :
 					 this(symbol, type, declarationOrder, isSystem)
 		{
-			Base = baseInfo.CheckIfNull();
+			_baseInfo = baseInfo.CheckIfNull();
+			CombineWithBaseInfo(_baseInfo);
+		}
+
+		void IWriteableBaseItem<ActionInfo>.CombineWithBaseInfo(ActionInfo baseInfo) => CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(ActionInfo baseInfo)
+		{
+			
 		}
 	}
 }

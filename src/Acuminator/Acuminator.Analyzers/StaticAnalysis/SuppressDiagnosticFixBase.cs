@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -103,7 +102,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				suppressionCodeActions.Add(suppressWithSuppressionFileCodeAction);
 			}
 
-			return CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions.ToImmutable());
+			// Use reflection based factory to create group code action with nested actions and custom priority.
+			// Setting code action priority is impossible via Roslyn public API.
+			var groupCodeAction = 
+				CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions.ToImmutable()) ??
+				CodeAction.Create(groupCodeActionName, suppressionCodeActions.ToImmutable(), isInlinable: false);
+
+			return groupCodeAction;
 		}
 
 		protected virtual CodeAction GetSuppressWithCommentCodeAction(Diagnostic diagnostic, CodeFixContext context, bool isNested)
@@ -116,8 +121,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			}
 			else
 			{
-				string commentCodeActionFormat = nameof(Resources.SuppressDiagnosticWithCommentNonNestedCodeActionTitle).GetLocalized().ToString();
-				commentCodeActionName = string.Format(commentCodeActionFormat, diagnostic.Id);
+				commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentNonNestedCodeActionTitle)
+												.GetLocalized(diagnostic.Id).ToString();
 			}
 
 			return CodeAction.Create(commentCodeActionName,
@@ -172,11 +177,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			SyntaxNode? modifiedRoot;
 
 			if (leadingTrivia.Count > 0)
-				modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), suppressionCommentTrivias);
+				modifiedRoot = root!.InsertTriviaAfter(leadingTrivia.Last(), suppressionCommentTrivias);
 			else
 			{
 				var nodeWithSuppressionComment = nodeToPlaceComment.WithLeadingTrivia(suppressionCommentTrivias);
-				modifiedRoot = root.ReplaceNode(nodeToPlaceComment, nodeWithSuppressionComment);
+				modifiedRoot = root!.ReplaceNode(nodeToPlaceComment, nodeWithSuppressionComment);
 			}
 
 			return modifiedRoot != null

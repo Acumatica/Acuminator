@@ -1,38 +1,39 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading.Tasks;
 
+using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-    public class ActionHandlerReturnTypeFix : CodeFixProvider
-    {
-        public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-            ImmutableArray.Create(Descriptors.PX1013_PXActionHandlerInvalidReturnType.Id);
+	public class ActionHandlerReturnTypeFix : PXCodeFixProvider
+	{
+		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+			ImmutableArray.Create(Descriptors.PX1013_PXActionHandlerInvalidReturnType.Id);
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            context.CancellationToken.ThrowIfCancellationRequested();
+			var root = await context.Document
+				.GetSyntaxRootAsync(context.CancellationToken)
+				.ConfigureAwait(false);
 
-            var root = await context.Document
-                .GetSyntaxRootAsync(context.CancellationToken)
-                .ConfigureAwait(false);
+			if (root?.FindNode(context.Span) is not MethodDeclarationSyntax node)
+			{
+				return;
+			}
 
-            if (!(root?.FindNode(context.Span) is MethodDeclarationSyntax node))
-            {
-                return;
-            }
+			var changeReturnTypeTitle = nameof(Resources.PX1013Fix).GetLocalized().ToString();
+			var codeFixAction = new InvalidPXActionSignatureFix.ChangeSignatureAction(changeReturnTypeTitle, context.Document, node);
 
-            var changeReturnTypeTitle = nameof(Resources.PX1013Fix).GetLocalized().ToString();
-            var codeFixAction = new InvalidPXActionSignatureFix.ChangeSignatureAction(changeReturnTypeTitle, context.Document, node);
-
-            context.RegisterCodeFix(codeFixAction, context.Diagnostics);
-        }
-    }
+			context.RegisterCodeFix(codeFixAction, diagnostic);
+		}
+	}
 }

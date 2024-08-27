@@ -98,19 +98,19 @@
 		internal const string PXUnboundDefaultAttribute = "PX.Data.PXUnboundDefaultAttribute";
 		internal const string PXButtonAttribute = "PX.Data.PXButtonAttribute";
 
-		internal const string BqlDataTypeType = "PX.Data.BQL.IBqlDataType";
-		internal const string BqlStringType = "PX.Data.BQL.IBqlString";
-		internal const string BqlGuidType = "PX.Data.BQL.IBqlGuid";
-		internal const string BqlDateTimeType = "PX.Data.BQL.IBqlDateTime";
-		internal const string BqlBoolType = "PX.Data.BQL.IBqlBool";
-		internal const string BqlByteType = "PX.Data.BQL.IBqlByte";
-		internal const string BqlShortType = "PX.Data.BQL.IBqlShort";
-		internal const string BqlIntType = "PX.Data.BQL.IBqlInt";
-		internal const string BqlLongType = "PX.Data.BQL.IBqlLong";
-		internal const string BqlFloatType = "PX.Data.BQL.IBqlFloat";
-		internal const string BqlDoubleType = "PX.Data.BQL.IBqlDouble";
-		internal const string BqlDecimalType = "PX.Data.BQL.IBqlDecimal";
-		internal const string BqlByteArrayType = "PX.Data.BQL.IBqlByteArray";
+		internal const string IBqlDataTypeType = "PX.Data.BQL.IBqlDataType";
+		internal const string IBqlStringType = "PX.Data.BQL.IBqlString";
+		internal const string IBqlGuidType = "PX.Data.BQL.IBqlGuid";
+		internal const string IBqlDateTimeType = "PX.Data.BQL.IBqlDateTime";
+		internal const string IBqlBoolType = "PX.Data.BQL.IBqlBool";
+		internal const string IBqlByteType = "PX.Data.BQL.IBqlByte";
+		internal const string IBqlShortType = "PX.Data.BQL.IBqlShort";
+		internal const string IBqlIntType = "PX.Data.BQL.IBqlInt";
+		internal const string IBqlLongType = "PX.Data.BQL.IBqlLong";
+		internal const string IBqlFloatType = "PX.Data.BQL.IBqlFloat";
+		internal const string IBqlDoubleType = "PX.Data.BQL.IBqlDouble";
+		internal const string IBqlDecimalType = "PX.Data.BQL.IBqlDecimal";
+		internal const string IBqlByteArrayType = "PX.Data.BQL.IBqlByteArray";
 
 		internal const string CustomPredicate = "PX.Data.CustomPredicate";
 		internal const string AreSame2 = "PX.Data.AreSame`2";

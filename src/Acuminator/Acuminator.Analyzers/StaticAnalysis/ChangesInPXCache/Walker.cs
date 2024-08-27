@@ -1,10 +1,13 @@
-﻿using Acuminator.Utilities.Common;
+﻿
+using System.Linq;
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Linq;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
@@ -44,12 +47,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 			var methodSymbol = symbol.OriginalDefinition?.OverriddenMethod ?? symbol.OriginalDefinition;
 
 			return methodSymbol != null &&
-				   (PxContext.PXCache.Insert.Any(i => methodSymbol.Equals(i)) ||
-                   PxContext.PXCache.Update.Any(u => methodSymbol.Equals(u)) ||
-                   PxContext.PXCache.Delete.Any(d => methodSymbol.Equals(d)) ||
-                   PxContext.PXSelectBaseGeneric.Insert.Any(i => methodSymbol.Equals(i)) ||
-                   PxContext.PXSelectBaseGeneric.Update.Any(u => methodSymbol.Equals(u)) ||
-                   PxContext.PXSelectBaseGeneric.Delete.Any(d => methodSymbol.Equals(d)));
+				   (PxContext.PXCache.Insert.Any(i => methodSymbol.Equals(i, SymbolEqualityComparer.Default)) ||
+                   PxContext.PXCache.Update.Any(u => methodSymbol.Equals(u, SymbolEqualityComparer.Default)) ||
+                   PxContext.PXCache.Delete.Any(d => methodSymbol.Equals(d, SymbolEqualityComparer.Default)) ||
+                   PxContext.PXSelectBaseGeneric.Insert.Any(i => methodSymbol.Equals(i, SymbolEqualityComparer.Default)) ||
+                   PxContext.PXSelectBaseGeneric.Update.Any(u => methodSymbol.Equals(u, SymbolEqualityComparer.Default)) ||
+                   PxContext.PXSelectBaseGeneric.Delete.Any(d => methodSymbol.Equals(d, SymbolEqualityComparer.Default)));
 		}
 	}
 }

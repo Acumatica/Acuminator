@@ -1,7 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿
 using System.Collections.Immutable;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities;
+
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 {

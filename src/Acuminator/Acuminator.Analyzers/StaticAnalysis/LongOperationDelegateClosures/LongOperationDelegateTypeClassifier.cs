@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return null;
 
 			cancellationToken.ThrowIfCancellationRequested();
-			string? methodName = null;
+			string? methodName;
 
 			switch (longOperationSetupMethodInvocationNode?.Expression)
 			{
@@ -53,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				case DelegateNames.SetProcessDelegate:
 					var setDelegateSymbol = semanticModel.GetSymbolInfo(methodAccessNode, cancellationToken).Symbol as IMethodSymbol;
 
-					if (setDelegateSymbol != null && setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBase.Type!))
+					if (setDelegateSymbol != null && setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBase.Type))
 						return LongOperationDelegateType.ProcessingDelegate;
 
 					return null;
@@ -62,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					var longRunDelegate = semanticModel.GetSymbolInfo(methodAccessNode, cancellationToken).Symbol as IMethodSymbol;
 
 					if (longRunDelegate != null && longRunDelegate.IsStatic && longRunDelegate.DeclaredAccessibility == Accessibility.Public &&
-						pxContext.PXLongOperation.Equals(longRunDelegate.ContainingType))
+						pxContext.PXLongOperation.Equals(longRunDelegate.ContainingType, SymbolEqualityComparer.Default))
 					{
 						return LongOperationDelegateType.LongRunDelegate;
 					}

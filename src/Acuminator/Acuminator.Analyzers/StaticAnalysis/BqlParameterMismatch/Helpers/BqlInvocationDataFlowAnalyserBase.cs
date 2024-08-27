@@ -1,9 +1,12 @@
-﻿using System;
+﻿
+using System;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -35,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				SyntaxContext = syntaxContext;
 				PXContext = pxContext;
 				Invocation = invocation;
-				InvocationStatement = Invocation.GetStatementNode();
+				InvocationStatement = Invocation.GetStatementNode()!;
 				VariableName = identifierNode.Identifier.ValueText;
 			}
 
@@ -55,7 +58,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						return (true, false);
 				}
 
-				DataFlowAnalysis flowAnalysisWithAssignment = null;
+				DataFlowAnalysis? flowAnalysisWithAssignment = null;
 
 				try
 				{
@@ -76,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			protected bool IsReacheableByControlFlow(StatementSyntax statement)
 			{
-				ControlFlowAnalysis controlFlow = null;
+				ControlFlowAnalysis? controlFlow;
 
 				try
 				{

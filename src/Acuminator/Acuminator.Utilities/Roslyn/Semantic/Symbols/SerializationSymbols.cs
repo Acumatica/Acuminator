@@ -13,9 +13,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
     {
         internal SerializationSymbols(Compilation compilation) : base(compilation)
         {
-			NonSerializedAttribute = Compilation.GetTypeByMetadataName(typeof(NonSerializedAttribute).FullName);
-			SerializationInfo      = Compilation.GetTypeByMetadataName(typeof(SerializationInfo).FullName);
-			StreamingContext       = Compilation.GetTypeByMetadataName(typeof(StreamingContext).FullName);
+			NonSerializedAttribute = Compilation.GetTypeByMetadataName(typeof(NonSerializedAttribute).FullName)!;
+			SerializationInfo      = Compilation.GetTypeByMetadataName(typeof(SerializationInfo).FullName)!;
+			StreamingContext       = Compilation.GetTypeByMetadataName(typeof(StreamingContext).FullName)!;
 		}
 
 		public INamedTypeSymbol NonSerializedAttribute { get; }
@@ -24,8 +24,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol StreamingContext { get; }
 
-		public INamedTypeSymbol ReflectionSerializer => Compilation.GetTypeByMetadataName(TypeFullNames.Serialization.ReflectionSerializer);
+		public INamedTypeSymbol ReflectionSerializer => Compilation.GetTypeByMetadataName(TypeFullNames.Serialization.ReflectionSerializer)!;
 
-		public INamedTypeSymbol PXReflectionSerializer => Compilation.GetTypeByMetadataName(TypeFullNames.Serialization.PXReflectionSerializer);
+		public INamedTypeSymbol PXReflectionSerializer => Compilation.GetTypeByMetadataName(TypeFullNames.Serialization.PXReflectionSerializer)!;
 	}
 }

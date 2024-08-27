@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -84,8 +82,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 		private static bool IsSerializationConstructor(IMethodSymbol constructor, PXContext pxContext) =>
 			constructor.Parameters.Length == 2 &&
-			pxContext.Serialization.SerializationInfo.Equals(constructor.Parameters[0].Type) &&
-			pxContext.Serialization.StreamingContext.Equals(constructor.Parameters[1].Type);
+			pxContext.Serialization.SerializationInfo.Equals(constructor.Parameters[0].Type, SymbolEqualityComparer.Default) &&
+			pxContext.Serialization.StreamingContext.Equals(constructor.Parameters[1].Type, SymbolEqualityComparer.Default);
 
 		private static bool HasGetObjectDataOverride(PXContext pxContext, INamedTypeSymbol exceptionType) =>
 			exceptionType.GetMethods()
@@ -96,8 +94,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 			method.DeclaredAccessibility == Accessibility.Public &&
 			method.Name == DelegateNames.Serialization.GetObjectData &&
 			method.Parameters.Length == 2 &&
-			pxContext.Serialization.SerializationInfo.Equals(method.Parameters[0].Type) &&
-			pxContext.Serialization.StreamingContext.Equals(method.Parameters[1].Type);
+			pxContext.Serialization.SerializationInfo.Equals(method.Parameters[0].Type, SymbolEqualityComparer.Default) &&
+			pxContext.Serialization.StreamingContext.Equals(method.Parameters[1].Type, SymbolEqualityComparer.Default);
 
 		private static IEnumerable<ISymbol> GetSerializableFieldsAndProperties(INamedTypeSymbol exceptionType, PXContext pxContext)
 		{
@@ -108,11 +106,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 			var allBackingFieldsByAssociatedSymbols = members.OfType<IFieldSymbol>()
 															 .Where(field => !field.IsStatic && !field.IsConst && field.AssociatedSymbol != null)
-															 .GroupBy(field => field.AssociatedSymbol)
-															 .ToDictionary(groupedByAssociatedSymbol => groupedByAssociatedSymbol.Key,
-																		   groupedByAssociatedSymbol => groupedByAssociatedSymbol.First());
+															 .GroupBy(field => field.AssociatedSymbol, 
+																			   SymbolEqualityComparer.Default)
+															 .ToDictionary(groupedByAssociatedSymbol => groupedByAssociatedSymbol.Key!,
+																		   groupedByAssociatedSymbol => groupedByAssociatedSymbol.First(),
+																		   SymbolEqualityComparer.Default);
 			return from member in members
-				   where member.IsExplicitlyDeclared() && exceptionType.Equals(member.ContainingType) &&
+				   where member.IsExplicitlyDeclared() && exceptionType.Equals(member.ContainingType, SymbolEqualityComparer.Default) &&
 						 IsSerializableFieldOrProperty(member, pxContext, allBackingFieldsByAssociatedSymbols)
 				   select member;
 		}
@@ -146,7 +146,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 			bool hasNonSerializedAttributeDeclared = attributes.IsDefaultOrEmpty
 				? false
-				: attributes.Any(a => pxContext.Serialization.NonSerializedAttribute.Equals(a.AttributeClass));
+				: attributes.Any(a => pxContext.Serialization.NonSerializedAttribute.Equals(a.AttributeClass, SymbolEqualityComparer.Default));
 
 			return !hasNonSerializedAttributeDeclared;
 		}
@@ -155,9 +155,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 																  bool hasNewSerializableData)
 		{
 			var diagnosticPropertes =
-				ImmutableDictionary<string, string>.Empty
-												   .Add(ExceptionSerializationDiagnosticProperties.HasNewDataForSerialization, 
-														hasNewSerializableData.ToString());
+				ImmutableDictionary<string, string?>.Empty
+													.Add(ExceptionSerializationDiagnosticProperties.HasNewDataForSerialization, 
+														 hasNewSerializableData.ToString());
 
 			var diagnostic = Diagnostic.Create(Descriptors.PX1063_NoSerializationConstructorInException, location, diagnosticPropertes);
 			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);

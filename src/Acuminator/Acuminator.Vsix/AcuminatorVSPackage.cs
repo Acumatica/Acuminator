@@ -1,10 +1,29 @@
 ﻿#nullable enable
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Vsix.CodeSnippets;
+using Acuminator.Vsix.Coloriser;
+using Acuminator.Vsix.DiagnosticSuppression;
+using Acuminator.Vsix.Formatter;
+using Acuminator.Vsix.GoToDeclaration;
+using Acuminator.Vsix.Logger;
+using Acuminator.Vsix.Settings;
+using Acuminator.Vsix.ToolWindows.CodeMap;
+using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.Utilities.Storage;
+
+using Community.VisualStudio.Toolkit;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -13,45 +32,27 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Threading;
 
-using Community.VisualStudio.Toolkit;
-
-using System.ComponentModel.Design;
-
-using Acuminator.Vsix.Coloriser;
-using Acuminator.Vsix.CodeSnippets;
-using Acuminator.Vsix.GoToDeclaration;
-using Acuminator.Vsix.Settings;
-using Acuminator.Vsix.Logger;
-using Acuminator.Vsix.ToolWindows.CodeMap;
-using Acuminator.Vsix.DiagnosticSuppression;
-using Acuminator.Vsix.Formatter;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities;
-using Acuminator.Vsix.Utilities.Storage;
-
 
 namespace Acuminator.Vsix
 {
-    /// <summary>
-    /// This is the class that implements the package exposed by this assembly.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The minimum requirement for a class to be considered a valid package for Visual Studio
-    /// is to implement the IVsPackage interface and register itself with the shell.
-    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the
-    /// IVsPackage interface and uses the registration attributes defined in the framework to
-    /// register itself and its components with the shell. These attributes tell the pkgdef creation
-    /// utility what data to put into .pkgdef file.
-    /// </para>
-    /// <para>
-    /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
-    /// </para>
-    /// </remarks>
-    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+	/// <summary>
+	/// This is the class that implements the package exposed by this assembly.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// The minimum requirement for a class to be considered a valid package for Visual Studio
+	/// is to implement the IVsPackage interface and register itself with the shell.
+	/// This package uses the helper classes defined inside the Managed Package Framework (MPF)
+	/// to do it: it derives from the Package class that provides the implementation of the
+	/// IVsPackage interface and uses the registration attributes defined in the framework to
+	/// register itself and its components with the shell. These attributes tell the pkgdef creation
+	/// utility what data to put into .pkgdef file.
+	/// </para>
+	/// <para>
+	/// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
+	/// </para>
+	/// </remarks>
+	[PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 	[InstalledProductRegistration(productName: "#110", productDetails: "#112", productId: PackageVersion, IconResourceID = 400)] // Info on this package for Help/About
 	[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -84,17 +85,15 @@ namespace Acuminator.Vsix
 
 		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace? _vsWorkspace;
 
-        private const int INSTANCE_UNINITIALIZED = 0;
-        private const int INSTANCE_INITIALIZED = 1;
-        private static int _instanceInitialized;
+		private const int INSTANCE_UNINITIALIZED = 0;
+		private const int INSTANCE_INITIALIZED = 1;
+		private static int _instanceInitialized;
 
-		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
+		private OutOfProcessSettingsUpdater? _outOfProcessSettingsUpdater;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-		public static AcuminatorVSPackage Instance { get; private set; }
-#pragma warning restore CS8618
+		public static AcuminatorVSPackage Instance { get; private set; } = null!;
 
-		private Lazy<GeneralOptionsPage?> _generalOptionsPage = 
+		private readonly Lazy<GeneralOptionsPage?> _generalOptionsPage =
 			new Lazy<GeneralOptionsPage?>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
 
 		public GeneralOptionsPage? GeneralOptionsPage => _generalOptionsPage.Value;
@@ -103,13 +102,13 @@ namespace Acuminator.Vsix
 		{
 			get;
 			private set;
-		}
+		} = null!;
 
 		internal VSVersion VSVersion
 		{
 			get;
 			private set;
-		}
+		} = null!;
 
 		internal AcuminatorMyDocumentsStorage? MyDocumentsStorage
 		{
@@ -130,7 +129,7 @@ namespace Acuminator.Vsix
 
 			SetupSingleton(this);
 		}
-#pragma warning restore CS8618 
+#pragma warning restore CS8618
 
 		/// <summary>
 		/// Force load package. 
@@ -145,7 +144,7 @@ namespace Acuminator.Vsix
 				if (ThreadHelper.JoinableTaskFactory == null)
 					return;
 			}
-			catch(Exception ex) 
+			catch (Exception ex)
 			{
 				return;
 			}
@@ -155,26 +154,26 @@ namespace Acuminator.Vsix
 			IVsShell? shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
 
 			if (shell == null)
-				return;			
+				return;
 
 			var packageToBeLoadedGuid = new Guid(PackageGuidString);
 			shell.LoadPackage(ref packageToBeLoadedGuid, out var _);
 			await System.Threading.Tasks.TaskScheduler.Default;
 		}
 
-		private static void SetupSingleton(AcuminatorVSPackage? package)
+#pragma warning disable CS8774 // Member must have a non-null value when exiting.
+		[MemberNotNull(nameof(Instance))]
+		private static void SetupSingleton(AcuminatorVSPackage package)
 		{
-			if (package == null)
-				return;
-
 			if (Interlocked.CompareExchange(ref _instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
 			{
 				Instance = package;
 			}
 		}
+#pragma warning restore CS8774
 
 		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-		{			
+		{
 			// When initialized asynchronously, the current thread may be a background thread at this point.
 			// Do any initialization that requires the UI thread after switching to the UI thread
 			await base.InitializeAsync(cancellationToken, progress);
@@ -200,7 +199,7 @@ namespace Acuminator.Vsix
 												   currentStep: 2, TotalLoadSteps);
 			progress?.Report(progressData);
 			InitializeLogger();
-			#endregion	
+			#endregion
 
 			#region Initialize CodeSnippets		
 			cancellationToken.ThrowIfCancellationRequested();
@@ -234,7 +233,7 @@ namespace Acuminator.Vsix
 			}
 			#endregion
 
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done, 
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
 												   currentStep: 6, TotalLoadSteps);
 			progress?.Report(progressData);
 		}
@@ -264,6 +263,7 @@ namespace Acuminator.Vsix
 			{
 				ActivityLog.TryLogError(PackageName,
 					$"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
+				throw;
 			}
 		}
 
@@ -273,7 +273,7 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
-			OleMenuCommandService oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>();
+			OleMenuCommandService? oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>(throwOnFailure: false);
 
 			if (oleCommandService == null)
 			{
@@ -281,7 +281,7 @@ namespace Acuminator.Vsix
 				AcuminatorLogger.LogException(loadCommandServiceException, logOnlyFromAcuminatorAssemblies: false, LogMode.Error);
 				return;
 			}
-			
+
 			FormatBqlCommand.Initialize(this, oleCommandService);
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
 			BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
@@ -292,7 +292,7 @@ namespace Acuminator.Vsix
 		private async System.Threading.Tasks.Task<bool> IsSolutionLoadedAsync()
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
-			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>();
+			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>(throwOnFailure: false);
 
 			if (solutionService == null)
 				return false;
@@ -374,22 +374,22 @@ namespace Acuminator.Vsix
 			return missingOldDocument || addedNewDocument;
 
 			//---------------------------------Local function--------------------------------------------------------
-			HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project? project) =>
+			static HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project? project) =>
 				project?.GetSuppressionFiles()
 						.Select(file => file.Id)
-						.ToHashSet() ?? new HashSet<DocumentId>();
+						.ToHashSet() ?? [];
 		}
 
 		private void SetupSuppressionManager()
-        {
-            SuppressionManager.InitOrReset(_vsWorkspace!, generateSuppressionBase: false, 
+		{
+			SuppressionManager.InitOrReset(_vsWorkspace, generateSuppressionBase: false,
 										   errorProcessorFabric: () => new VsixIOErrorProcessor(),
-										   buildActionSetterFabric: () => SharedVsSettings.VSVersion!.VS2022OrNewer 
-																			? new VsixBuildActionSetterVS2022() 
+										   buildActionSetterFabric: () => SharedVsSettings.VSVersion?.VS2022OrNewer == true
+																			? new VsixBuildActionSetterVS2022()
 																			: new VsixBuildActionSetterVS2019());
-        }
+		}
 
-        private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
+		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
 			CodeAnalysisSettings codeAnalysisSettings;
 			BannedApiSettings bannedApiSettings;
@@ -435,21 +435,22 @@ namespace Acuminator.Vsix
 		#region Package Settings         
 		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
 
-        public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
 
-        public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
+		public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
+
+		public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
 
 		public bool UseBqlDetailedOutlining => GeneralOptionsPage?.UseBqlDetailedOutlining ?? true;
 
-        public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
-        
-        public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
+		public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
 
-        public bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? false;
+		public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
+
+		public bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? false;
 
 		public string? BannedApiFilePath => GeneralOptionsPage?.BannedApiFilePath;
 
 		public string? WhiteListApiFilePath => GeneralOptionsPage?.WhiteListApiFilePath;
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -11,11 +11,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 	/// </summary>
 	internal class LoadNewSuppressionFileOperation : SuppressionOperationBase
 	{
-		private readonly string _filePath;
+		private readonly string? _filePath;
 
 		public override string Title => "Load new suppression file code action operation";
 
-		public LoadNewSuppressionFileOperation(string filePath, string assemblyName) : base(assemblyName)
+		public LoadNewSuppressionFileOperation(string? filePath, string assemblyName) : base(assemblyName)
 		{
 			_filePath = filePath;
 		}
@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 		public override void Apply(Workspace workspace, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			SuppressionFile suppressionFile = _filePath.IsNullOrWhiteSpace()
+			SuppressionFile? suppressionFile = _filePath.IsNullOrWhiteSpace()
 				? null
 				: SuppressionManager.Instance?.LoadSuppressionFileFrom(_filePath);
 

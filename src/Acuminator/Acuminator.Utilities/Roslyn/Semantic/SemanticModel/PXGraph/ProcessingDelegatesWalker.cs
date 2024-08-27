@@ -38,7 +38,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			ThrowIfCancellationRequested();
 
-			if (node.ArgumentList == null || !(node.Expression is MemberAccessExpressionSyntax memberAccess))
+			if (node.ArgumentList == null || node.Expression is not MemberAccessExpressionSyntax memberAccess)
 			{
 				return;
 			}
@@ -63,7 +63,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return;
 			}
 
-			var isSetParametersDelegate = PxContext.PXProcessingBase.SetParametersDelegate.Equals(methodSymbol.OriginalDefinition);
+			var isSetParametersDelegate = 
+				PxContext.PXProcessingBase.SetParametersDelegate.Equals(methodSymbol.OriginalDefinition, SymbolEqualityComparer.Default);
 
 			if (isSetParametersDelegate)
 			{
@@ -71,7 +72,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 			else
 			{
-				var isSetProcessDelegate = PxContext.PXProcessingBase.SetProcessDelegate.Contains(methodSymbol.OriginalDefinition);
+				var isSetProcessDelegate = 
+					PxContext.PXProcessingBase.SetProcessDelegate.Contains<IMethodSymbol>(methodSymbol.OriginalDefinition, SymbolEqualityComparer.Default);
 
 				if (isSetProcessDelegate)
 				{

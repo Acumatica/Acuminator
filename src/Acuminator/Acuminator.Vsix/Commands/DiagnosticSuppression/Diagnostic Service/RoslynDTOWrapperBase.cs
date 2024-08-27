@@ -1,16 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Dynamic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading;
+
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -25,24 +22,26 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
 		private static int _areStaticMembersInitialized = NOT_INITIALIZED;
 
-		public static Type RoslynDTOType
+		public static Type? RoslynDTOType
 		{
 			get;
 			private set;
 		}
 
-		protected static Dictionary<string, FieldInfo> DtoFields
+		protected static Dictionary<string, FieldInfo>? DtoFields
 		{
 			get;
 			private set;
 		}
 
-		protected static Dictionary<string, PropertyInfo> DtoProperties
+		protected static Dictionary<string, PropertyInfo>? DtoProperties
 		{
 			get;
 			private set;
 		}
 
+#pragma warning disable CS8774 // Member must have a non-null value when exiting.
+		[MemberNotNull(nameof(RoslynDTOType), nameof(DtoFields), nameof(DtoProperties))]
 		protected static void InitializeSharedStaticData(object roslynDTO)
 		{
 			roslynDTO.ThrowOnNull();
@@ -56,5 +55,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				DtoProperties = RoslynDTOType.GetProperties(bindingFlags).ToDictionary(property => property.Name);
 			}
 		}
+#pragma warning restore CS8774
 	}
 }

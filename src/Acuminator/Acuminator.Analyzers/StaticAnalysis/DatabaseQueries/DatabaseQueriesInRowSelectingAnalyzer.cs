@@ -1,15 +1,15 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,6 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting);
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
+			base.ShouldAnalyze(pxContext, eventType) && 
 			eventType == EventType.RowSelecting && !pxContext.IsAcumatica2023R1_OrGreater;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
@@ -61,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 
 					var symbolInfo = semanticModel.GetSymbolInfo(node.Type, _parent.CancellationToken);
 					return symbolInfo.Symbol?.OriginalDefinition != null
-					       && symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope);
+					       && symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope, SymbolEqualityComparer.Default);
 				}
 			}
 

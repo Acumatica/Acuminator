@@ -7,8 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
@@ -74,22 +74,22 @@ namespace Acuminator.Vsix.Formatter
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
+			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
-			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document? document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (document == null)
 				return;
 
 			await TaskScheduler.Default;    //Go to background thread
 
-			BqlFormatter formatter = BqlFormatter.FromTextView(textView);		
-			SyntaxNode syntaxRoot = await document.GetSyntaxRootAsync();
-			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			BqlFormatter formatter = BqlFormatter.FromTextView(textView);
+
+			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync(default).ConfigureAwait(false);
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;

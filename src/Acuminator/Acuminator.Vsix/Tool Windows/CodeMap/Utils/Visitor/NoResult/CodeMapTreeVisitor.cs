@@ -12,10 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public virtual void VisitNode(TreeNodeViewModel node)
 		{
-			if (node != null)
-			{
-				node.AcceptVisitor(this);
-			}
+			node?.AcceptVisitor(this);
 		}
 
 		public virtual void DefaultVisit(TreeNodeViewModel nodeViewModel) { }

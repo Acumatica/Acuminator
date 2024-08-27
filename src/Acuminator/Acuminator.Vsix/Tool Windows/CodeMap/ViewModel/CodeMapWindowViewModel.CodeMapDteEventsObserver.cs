@@ -1,9 +1,13 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell;
+
 using Microsoft.CodeAnalysis;
 
 using Acuminator.Utilities;
@@ -12,7 +16,7 @@ using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
-
+using Task = System.Threading.Tasks.Task;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -107,7 +111,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				if (!ThreadHelper.CheckAccess())
 					return;
 
-				string windowObjectKind, windowKind, windowDocumentPath, documentLanguage;
+				string windowObjectKind, windowKind;
+				string? windowDocumentPath, documentLanguage;
 
 				try
 				{
@@ -185,7 +190,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await _codeMapViewModel.RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument: null);
 			}
 
-			private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
+			private async Task RefreshCodeMapAsync(IWpfTextView? activeWpfTextView = null, Document? activeDocument = null)
 			{
 				if (_codeMapViewModel.IsCalculating)
 					return;
@@ -196,7 +201,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				}
 
 				var activeWpfTextViewTask = activeWpfTextView != null
-					? Task.FromResult(activeWpfTextView)
+					? Task.FromResult<IWpfTextView?>(activeWpfTextView)
 					: AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
 
 				await _codeMapViewModel.RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument);

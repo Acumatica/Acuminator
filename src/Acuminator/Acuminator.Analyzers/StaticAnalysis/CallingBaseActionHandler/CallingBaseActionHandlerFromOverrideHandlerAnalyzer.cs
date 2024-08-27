@@ -1,12 +1,10 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -24,32 +22,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 			ImmutableArray.Create(Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphEventSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type == GraphType.PXGraphExtension;
+			base.ShouldAnalyze(pxContext, graph) && graph.GraphType == GraphType.PXGraphExtension;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var redeclaredActionNamesHashSet = graphExtension.Actions
-				.Where(action => graphExtension.Symbol.Equals(action.Symbol?.ContainingSymbol) && action.Base != null)
+				.Where(action => graphExtension.Symbol.Equals(action.Symbol?.ContainingSymbol, SymbolEqualityComparer.Default) && action.Base != null)
 				.Select(action => action.Symbol.Name)
 				.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 			var redeclaredHandlersWithoutActionsList = graphExtension.ActionHandlers
-				.Where(handler => graphExtension.Symbol.Equals(handler.Symbol?.ContainingSymbol) && handler.Base != null &&
+				.Where(handler => graphExtension.Symbol.Equals(handler.Symbol?.ContainingSymbol, SymbolEqualityComparer.Default) && handler.Base != null &&
 								  !redeclaredActionNamesHashSet.Contains(handler.Symbol.Name))
 				.ToList();
 
 			var baseHandlersHashSet = redeclaredHandlersWithoutActionsList
 				.SelectMany(handler => handler.JustOverridenItems()
 											  .Select(baseHandler => baseHandler.Symbol))
-				.ToHashSet();
+				.ToHashSet<IMethodSymbol>(SymbolEqualityComparer.Default);
 
 			var baseActionsHashSet = redeclaredHandlersWithoutActionsList
 				.SelectMany(handler => graphExtension.ActionsByNames[handler.Symbol.Name]
 													 .ThisAndOverridenItems()
 													 .Select(action => action.Symbol))
-				.ToHashSet();
+				.ToHashSet(SymbolEqualityComparer.Default);
 
 			var walker = new Walker(context, pxContext, baseActionsHashSet, baseHandlersHashSet);
 
@@ -111,8 +109,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 
 				var originalMethodSymbol = methodSymbol.OriginalDefinition?.OverriddenMethod ?? methodSymbol.OriginalDefinition;
 
+				if (originalMethodSymbol == null)
+					return;
+
 				// Case Base.SomeAction.Press(adapter)
-				if (PxContext.PXAction.Press.Contains(originalMethodSymbol) &&
+				if (PxContext.PXAction.Press.Contains<IMethodSymbol>(originalMethodSymbol, SymbolEqualityComparer.Default) &&
 					invocationNode.Expression is MemberAccessExpressionSyntax memberAccess && memberAccess.Expression != null)
 				{
 					var expressionSymbol = GetSymbol<ISymbol>(memberAccess.Expression);

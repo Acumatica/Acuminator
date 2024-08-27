@@ -56,9 +56,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		internal LocalizationSymbols(Compilation compilation) : base(compilation)
 		{
-			PXMessages = Compilation.GetTypeByMetadataName(PXMessagesMetadataName);
-			PXLocalizer = Compilation.GetTypeByMetadataName(PXLocalizerMetadataName);
-			PXLocalizableAttribute = Compilation.GetTypeByMetadataName(PXLocalizableAttributeMetadataName);
+			PXMessages = Compilation.GetTypeByMetadataName(PXMessagesMetadataName)!;
+			PXLocalizer = Compilation.GetTypeByMetadataName(PXLocalizerMetadataName)!;
+			PXLocalizableAttribute = Compilation.GetTypeByMetadataName(PXLocalizableAttributeMetadataName)!;
 
 			(PXMessagesSimpleMethods, PXMessagesFormatMethods) = 
 				GetLocalizationMethodsFromType(PXMessages, _pxMessagesSimpleMethodNames, _pxMessagesFormatMethodNames);

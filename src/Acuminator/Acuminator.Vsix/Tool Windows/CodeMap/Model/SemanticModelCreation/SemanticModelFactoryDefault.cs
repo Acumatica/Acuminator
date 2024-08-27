@@ -20,19 +20,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class SemanticModelFactoryDefault : ISemanticModelFactory
 	{
 		/// <summary>
-		/// Try to infer semantic model for <paramref name="rootSymbol"/>. 
-		/// If semantic model can't be inferred the <paramref name="semanticModel"/> is null and the method returns false.
+		/// Try to infer semantic model for <paramref name="rootSymbol"/>. If semantic model can't be inferred
+		/// the <paramref name="semanticModel"/> is null and the method returns false.
 		/// </summary>
 		/// <param name="rootSymbol">The root symbol.</param>
 		/// <param name="rootNode">The root node.</param>
 		/// <param name="context">The context.</param>
 		/// <param name="semanticModel">[out] The inferred semantic model.</param>
+		/// <param name="declarationOrder">(Optional) The declaration order of the <see cref="ISemanticModel.Symbol"/>.</param>
 		/// <param name="cancellationToken">(Optional) A token that allows processing to be cancelled.</param>
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
 		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, SyntaxNode rootNode, PXContext context, out ISemanticModel? semanticModel,
-													CancellationToken cancellationToken = default)
+													int? declarationOrder = null, CancellationToken cancellationToken = default)
 		{
 			rootSymbol.ThrowOnNull();
 			context.ThrowOnNull();
@@ -40,27 +41,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (rootSymbol.IsPXGraphOrExtension(context))
 			{
-				return TryToInferGraphOrGraphExtensionSemanticModel(rootSymbol, context, GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
+				return TryToInferGraphOrGraphExtensionSemanticModel(rootSymbol, context, declarationOrder, 
+																	GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
 																	out semanticModel, cancellationToken);
 			}
 			else if (rootSymbol.IsDacOrExtension(context))
 			{
-				return TryToInferDacOrDacExtensionSemanticModel(rootSymbol, context, out semanticModel, cancellationToken);
+				return TryToInferDacOrDacExtensionSemanticModel(rootSymbol, context, declarationOrder, out semanticModel, cancellationToken);
 			}
 
 			semanticModel = null;
 			return false;
 		}
 
-		protected virtual bool TryToInferGraphOrGraphExtensionSemanticModel(INamedTypeSymbol graphSymbol, PXContext context, 
+		protected virtual bool TryToInferGraphOrGraphExtensionSemanticModel(INamedTypeSymbol graphSymbol, PXContext context, int? declarationOrder,
 																			GraphSemanticModelCreationOptions modelCreationOptions,
 																			out ISemanticModel? graphSemanticModel,
 																			CancellationToken cancellationToken = default)
 		{
-			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, modelCreationOptions, cancellationToken)
+			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, modelCreationOptions,
+																		 declarationOrder, cancellationToken)
 															.FirstOrDefault();
-
-			if (graphSimpleModel == null || graphSimpleModel.Type == GraphType.None)
+			if (graphSimpleModel == null)
 			{
 				graphSemanticModel = null;
 				return false;
@@ -70,11 +72,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return true;
 		}
 
-		protected virtual bool TryToInferDacOrDacExtensionSemanticModel(INamedTypeSymbol dacSymbol, PXContext context,
-																		out ISemanticModel? dacSemanticModel,
+		protected virtual bool TryToInferDacOrDacExtensionSemanticModel(INamedTypeSymbol dacSymbol, PXContext context, int? declarationOrder,
+																		out ISemanticModel? dacSemanticModel, 
 																		CancellationToken cancellationToken = default)
 		{
-			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, cancellationToken);
+			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, declarationOrder, cancellationToken);
 			return dacSemanticModel != null;
 		}
 	}

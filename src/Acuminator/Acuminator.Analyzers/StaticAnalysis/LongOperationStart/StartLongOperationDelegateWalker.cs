@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -32,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 
 			IMethodSymbol? methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-			if (methodSymbol == null || !PxContext.StartOperation.Contains(methodSymbol))
+			if (methodSymbol == null || !PxContext.StartOperation.Contains<IMethodSymbol>(methodSymbol, SymbolEqualityComparer.Default))
 			{
 				base.VisitInvocationExpression(node);
 			}

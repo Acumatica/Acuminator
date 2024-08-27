@@ -1,12 +1,15 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Common;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -45,7 +48,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			foreach (ClassDeclarationSyntax classNode in declaredClasses)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				INamedTypeSymbol classTypeSymbol = GetTypeSymbolFromClassDeclaration(classNode, semanticModel, cancellationToken);
+				INamedTypeSymbol? classTypeSymbol = GetTypeSymbolFromClassDeclaration(classNode, semanticModel, cancellationToken);
 
 				if (classTypeSymbol != null && IsRootCandidate(classTypeSymbol, context))
 				{
@@ -58,8 +61,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			classTypeSymbol.IsPXGraphOrExtension(context) ||
 			classTypeSymbol.IsDacOrExtension(context);
 
-		protected INamedTypeSymbol GetTypeSymbolFromClassDeclaration(ClassDeclarationSyntax classNode, SemanticModel semanticModel,
-																	 CancellationToken cancellationToken)
+		protected INamedTypeSymbol? GetTypeSymbolFromClassDeclaration(ClassDeclarationSyntax classNode, SemanticModel semanticModel,
+																	  CancellationToken cancellationToken)
 		{
 			var typeSymbol = semanticModel.GetDeclaredSymbol(classNode, cancellationToken) as INamedTypeSymbol;
 

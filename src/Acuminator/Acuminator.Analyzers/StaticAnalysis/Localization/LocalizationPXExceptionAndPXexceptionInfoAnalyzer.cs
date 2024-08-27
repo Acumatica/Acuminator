@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -105,7 +104,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (syntaxContext.Node is not ClassDeclarationSyntax exceptionClassDeclaration)
 				return;
 
-			INamedTypeSymbol exceptionType = syntaxContext.SemanticModel.GetDeclaredSymbol(exceptionClassDeclaration, syntaxContext.CancellationToken);
+			INamedTypeSymbol? exceptionType = syntaxContext.SemanticModel.GetDeclaredSymbol(exceptionClassDeclaration, syntaxContext.CancellationToken);
 
 			if (exceptionType == null || !IsLocalizableException(exceptionType, pxContext))
 				return;

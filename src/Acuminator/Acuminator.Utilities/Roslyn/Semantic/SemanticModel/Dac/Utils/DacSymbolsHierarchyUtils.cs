@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
                 return [];
             }
 
-            var extensionBaseType = dacExtension.BaseType;
+            var extensionBaseType = dacExtension.BaseType!;
             var typeArguments = extensionBaseType.TypeArguments;
             var dacType = typeArguments.LastOrDefault();
 
@@ -86,7 +86,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			var pxBqlTable = pxContext.CheckIfNull().PXBqlTable;
 
 			if (dacType.BaseType == null || dacType.BaseType.SpecialType == SpecialType.System_Object ||
-				(pxBqlTable != null && dacType.BaseType.Equals(pxBqlTable)))
+				(pxBqlTable != null && dacType.BaseType.Equals(pxBqlTable, SymbolEqualityComparer.Default)))
 			{
 				return includeDacType ? [dacType] : [];
 			}
@@ -140,7 +140,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			// Optimization for hot path - most DACs have trivial type hierarchy
 			if (dacType.BaseType == null || dacType.BaseType.SpecialType == SpecialType.System_Object ||
-				(pxBqlTable != null && dacType.BaseType.Equals(pxBqlTable)))
+				(pxBqlTable != null && dacType.BaseType.Equals(pxBqlTable, SymbolEqualityComparer.Default)))
 			{
 				return includeDacType ? [dacType] : [];
 			}
@@ -151,7 +151,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			// instead of checking if the type implements IBqlTable interface. This is done to include a useful part of type hierarchy in a scenario 
 			// where the base non DAC type which declares some shared fields, for instance, PX.Objects.TX.TaxDetail class.
 			if (pxBqlTable != null)
-				dacHierarchy = dacHierarchy.TakeWhile(type => !type.Equals(pxBqlTable) && type.SpecialType != SpecialType.System_Object);
+			{
+				dacHierarchy = dacHierarchy.TakeWhile(type => !type.Equals(pxBqlTable, SymbolEqualityComparer.Default) &&
+							   type.SpecialType != SpecialType.System_Object);
+			}
 			else
 				dacHierarchy = dacHierarchy.TakeWhile(type => type.SpecialType != SpecialType.System_Object);
 
@@ -229,7 +232,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 
 			extensions.AddRange(dacExtension.GetDacExtensionWithBaseTypes().Reverse());
-			return extensions.Distinct();
+			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
 
 		private static IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder(ITypeSymbol dacType, ITypeSymbol dacExtension,
@@ -254,7 +257,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				extensions.AddRange(dacType.GetDacWithBaseTypes(pxContext));
 			}
 
-			return extensions.Distinct();
+			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
 	}
 }

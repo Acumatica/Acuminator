@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -20,21 +18,14 @@ using Microsoft.CodeAnalysis.Text;
 namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class StaticFieldOrPropertyInGraphFix : CodeFixProvider
+	public class StaticFieldOrPropertyInGraphFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1062_StaticFieldOrPropertyInGraph.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
-
-			if (diagnostic == null)
-				return Task.CompletedTask;
 			
 			string? codeFixFormatArg = GetCodeFixFormatArg(diagnostic);
 
@@ -44,7 +35,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			bool isViewOrAction = diagnostic.IsFlagSet(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction);
 
 			if (!isViewOrAction)
-			{		
+			{
+				string makeReadOnlyCodeActionEquivalenceKey = nameof(Resources.PX1062FixMakeReadOnlyFormat).GetLocalized().ToString();
 				string makeReadOnlyCodeActionName = nameof(Resources.PX1062FixMakeReadOnlyFormat).GetLocalized(codeFixFormatArg).ToString();
 
 				bool isProperty = diagnostic.IsFlagSet(StaticFieldOrPropertyInGraphDiagnosticProperties.IsProperty);
@@ -54,18 +46,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 						: cToken => ChangeModifiersAsync(context.Document, context.Span, AddReadOnlyToModifiers, cToken);
 
 				CodeAction makeReadOnlyCodeAction = CodeAction.Create(makeReadOnlyCodeActionName,
-															   createChangedDocumentFunc,
-															   equivalenceKey: makeReadOnlyCodeActionName);
+																	   createChangedDocumentFunc,
+																	   makeReadOnlyCodeActionEquivalenceKey);
 				
 				context.RegisterCodeFix(makeReadOnlyCodeAction, diagnostic);
 			}
 
+			string makeNonStaticCodeActionEquivalenceKey = nameof(Resources.PX1062FixMakeNonStaticFormat).GetLocalized().ToString();
 			string makeNonStaticCodeActionName = nameof(Resources.PX1062FixMakeNonStaticFormat).GetLocalized(codeFixFormatArg).ToString();
 			CodeAction makeNonStaticCodeAction =
 					CodeAction.Create(makeNonStaticCodeActionName, 
 									  cToken => ChangeModifiersAsync(context.Document, context.Span,
 																	 RemoveStaticModifier, cToken),
-									  equivalenceKey: makeNonStaticCodeActionName);
+									  makeNonStaticCodeActionEquivalenceKey);
 			context.RegisterCodeFix(makeNonStaticCodeAction, diagnostic);
 			return Task.CompletedTask;
 		}
@@ -75,12 +68,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 			if (diagnostic.Properties?.Count is null or 0)
 				return null;
 
-			return diagnostic.Properties.TryGetValue(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, out string value)
+			return diagnostic.Properties.TryGetValue(StaticFieldOrPropertyInGraphDiagnosticProperties.CodeFixFormatArg, out string? value)
 				? value
 				: null;
 		}
-
-		public static int P { get; set;  }
 
 		private async Task<Document> MakePropertyReadOnlyAsync(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
@@ -106,8 +97,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var modifiedRoot = root.ReplaceNode(propertyDeclaration, readonlyPropertyDeclaration);
-			return document.WithSyntaxRoot(modifiedRoot);
+			var modifiedRoot = root?.ReplaceNode(propertyDeclaration, readonlyPropertyDeclaration);
+			return modifiedRoot == null
+				? document
+				: document.WithSyntaxRoot(modifiedRoot);
 		}
 
 		private async Task<Document> ChangeModifiersAsync(Document document, TextSpan span, Func<SyntaxTokenList, SyntaxTokenList?> modifiersChanger,
@@ -129,8 +122,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var modifiedRoot = root.ReplaceNode(memberDeclaration, memberDeclarationWithChangedModifiers);
-			return document.WithSyntaxRoot(modifiedRoot);
+			var modifiedRoot = root?.ReplaceNode(memberDeclaration, memberDeclarationWithChangedModifiers);
+			return modifiedRoot == null
+				? document
+				: document.WithSyntaxRoot(modifiedRoot);
 		}
 
 		private static MemberDeclarationSyntax? ChangeModifiers(MemberDeclarationSyntax memberDeclaration,

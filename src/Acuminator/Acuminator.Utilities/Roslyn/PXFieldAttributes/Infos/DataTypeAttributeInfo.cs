@@ -37,7 +37,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (ReferenceEquals(this, other))
 				return true;
 
-			return Kind == other?.Kind && object.Equals(DataType, other.DataType) &&
+			return Kind == other?.Kind && SymbolEqualityComparer.Default.Equals(DataType, other.DataType) &&
 				   GetType() == other.GetType();
 		}
 
@@ -48,7 +48,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			unchecked
 			{
 				hash = 23 * hash + Kind.GetHashCode();
-				hash = 23 * hash + (DataType?.GetHashCode() ?? 0);
+				hash = 23 * hash + SymbolEqualityComparer.Default.GetHashCode(DataType);
 			}
 
 			return hash;

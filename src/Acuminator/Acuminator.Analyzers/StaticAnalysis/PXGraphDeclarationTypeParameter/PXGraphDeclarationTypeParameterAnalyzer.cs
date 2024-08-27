@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿
+using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities;
@@ -21,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 		public PXGraphDeclarationTypeParameterAnalyzer() : this(null)
 		{ }
 
-		public PXGraphDeclarationTypeParameterAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public PXGraphDeclarationTypeParameterAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -33,12 +34,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(context.Node is ClassDeclarationSyntax classDeclaration))
+			if (context.Node is not ClassDeclarationSyntax classDeclaration)
 			{
 				return;
 			}
 
-			var typeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
+			var typeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, context.CancellationToken);
 			if (typeSymbol == null || !typeSymbol.IsPXGraph(pxContext))
 			{
 				return;
@@ -63,7 +64,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 
 			var graphTypeArgument = context.SemanticModel.GetTypeInfo(graphArgumentIdentifier).Type;
 
-			if (typeSymbol.Equals(graphTypeArgument) || graphTypeArgument?.Kind == SymbolKind.TypeParameter)
+			if (typeSymbol.Equals(graphTypeArgument, SymbolEqualityComparer.Default) || graphTypeArgument?.Kind == SymbolKind.TypeParameter)
 			{
 				return;
 			}
@@ -73,8 +74,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				pxContext.CodeAnalysisSettings);
 		}
 
-		private TypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
-												SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
+		private TypeSyntax? GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
+												 SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
 		{
 			foreach (var typeSyntax in baseTypes)
 			{
@@ -85,14 +86,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 					continue;
 				}
 
-				if (!(context.SemanticModel.GetTypeInfo(typeSyntax.Type).Type is INamedTypeSymbol baseTypeSymbol))
+				if (context.SemanticModel.GetTypeInfo(typeSyntax.Type).Type is not INamedTypeSymbol baseTypeSymbol)
 				{
 					continue;
 				}
 
-				var isGraphBaseType = baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraph) ||
-									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac) ||
-									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField);
+				var isGraphBaseType = baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraph, SymbolEqualityComparer.Default) ||
+									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac, SymbolEqualityComparer.Default) ||
+									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField, SymbolEqualityComparer.Default);
 
 				if (!isGraphBaseType)
 				{

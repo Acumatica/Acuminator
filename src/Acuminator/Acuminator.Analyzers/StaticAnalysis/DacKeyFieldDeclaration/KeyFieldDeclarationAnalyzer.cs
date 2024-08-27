@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -32,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			var declaredInDacKeyAttributes = new List<DacFieldAttributeInfo>(capacity: 2);
 			bool containsIdentityKeys = false;
 
-			foreach (DacPropertyInfo property in dac.DacFieldProperties.Where(p => p.IsKey))
+			foreach (DacPropertyInfo property in dac.DacFieldPropertiesWithBqlFields.Where(p => p.IsKey))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -41,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 				keyAttributes.AddRange(propertyKeyAttributes);
 
-				if (dac.Symbol.Equals(property.Symbol.ContainingType))
+				if (dac.Symbol.Equals(property.Symbol.ContainingType, SymbolEqualityComparer.Default))
 				{
 					declaredInDacKeyAttributes.AddRange(propertyKeyAttributes);
 				}

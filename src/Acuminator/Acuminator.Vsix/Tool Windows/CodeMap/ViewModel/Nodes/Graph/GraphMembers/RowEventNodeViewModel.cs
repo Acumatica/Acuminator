@@ -1,13 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Immutable;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Common;
+
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
-using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -24,9 +20,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.RowEvent;
 
 		public RowEventNodeViewModel(DacGroupingNodeBaseViewModel dacViewModel, GraphRowEventInfo eventInfo, bool isExpanded = false) :
-								base(dacViewModel?.GraphEventsCategoryVM, dacViewModel, eventInfo, isExpanded)
+								base(dacViewModel?.GraphEventsCategoryVM!, dacViewModel!, eventInfo, isExpanded)
 		{
-			DacViewModel = dacViewModel;
+			DacViewModel = dacViewModel!;
 			Name = eventInfo.EventType.ToString();
 		}
 

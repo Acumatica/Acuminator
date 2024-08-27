@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.Collections.Immutable;
 using System.Threading;
 
@@ -40,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            if (pxContext.SystemTypes.IEnumerable.Equals(symbol.ReturnType))
+            if (pxContext.SystemTypes.IEnumerable.Equals(symbol.ReturnType, SymbolEqualityComparer.Default))
             {
                 return;
             }

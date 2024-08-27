@@ -2,19 +2,9 @@
 
 using System;
 using System.ComponentModel.Design;
-using System.Linq;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
+
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Acuminator.Utilities;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
