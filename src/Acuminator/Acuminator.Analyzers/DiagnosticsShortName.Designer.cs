@@ -691,15 +691,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ForbiddenApiUsage.
-        /// </summary>
-        public static string PX1065 {
-            get {
-                return ResourceManager.GetString("PX1065", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to UiPresentationLogicInEventHandlers.
         /// </summary>
         public static string PX1070 {
@@ -921,6 +912,15 @@ namespace Acuminator.Analyzers {
         public static string PX1096 {
             get {
                 return ResourceManager.GetString("PX1096", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ForbiddenApiUsage.
+        /// </summary>
+        public static string PX1099 {
+            get {
+                return ResourceManager.GetString("PX1099", resourceCulture);
             }
         }
     }

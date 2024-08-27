@@ -588,16 +588,6 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1064Title" xml:space="preserve">
     <value>The declaration of the exception class introduces new serializable fields but does not declare an override for the GetObjectData method. This will cause incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP.</value>
   </data>
-  <data name="PX1065Title" xml:space="preserve">
-    <value>The forbidden API is used</value>
-  </data>
-  <data name="PX1065TitleFormat" xml:space="preserve">
-    <value>The forbidden {0} "{1}" is used</value>
-  </data>
-  <data name="PX1065TitleFormatWithDetails" xml:space="preserve">
-    <value>The forbidden {0} "{1}" is used.
-Details: "{2}".</value>
-  </data>
   <data name="PX1070Title" xml:space="preserve">
     <value>The state of fields and actions can be configured only in the RowSelected event handler</value>
   </data>
@@ -699,6 +689,16 @@ Details: "{2}".</value>
   </data>
   <data name="PX1096Title" xml:space="preserve">
     <value>The signature of a method with the PXOverride attribute must match the overridden method</value>
+  </data>
+  <data name="PX1099Title" xml:space="preserve">
+    <value>The forbidden API is used</value>
+  </data>
+  <data name="PX1099TitleFormat" xml:space="preserve">
+    <value>The forbidden {0} "{1}" is used</value>
+  </data>
+  <data name="PX1099TitleFormatWithDetails" xml:space="preserve">
+    <value>The forbidden {0} "{1}" is used.
+Details: "{2}".</value>
   </data>
   <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
     <value>Suppress the {0} diagnostic with Acuminator</value>

@@ -327,9 +327,6 @@
   <data name="PX1064" xml:space="preserve">
     <value>ExceptionWithNewFieldsAndNoGetObjectDataOverride</value>
   </data>
-  <data name="PX1065" xml:space="preserve">
-    <value>ForbiddenApiUsage</value>
-  </data>
   <data name="PX1070" xml:space="preserve">
     <value>UiPresentationLogicInEventHandlers</value>
   </data>
@@ -404,5 +401,8 @@
   </data>
   <data name="PX1096" xml:space="preserve">
     <value>PXOverrideSignatureMismatch</value>
+  </data>
+  <data name="PX1099" xml:space="preserve">
+    <value>ForbiddenApiUsage</value>
   </data>
 </root>
