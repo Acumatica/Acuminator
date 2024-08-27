@@ -14,9 +14,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 
-namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
+namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 {
-    public class TypoInViewDelegateNameAnalyzer : PXGraphAggregatedAnalyzerBase
+    public class TypoInViewAndActionHandlerNameAnalyzer : PXGraphAggregatedAnalyzerBase
     {
 	    public const string ViewFieldNameProperty = "field";
 		private const int MaximumDistance = 2;

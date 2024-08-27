@@ -554,8 +554,8 @@
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInLongRunningOperationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Good.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_GraphExtension_Bad.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInActionHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelTests.cs" />
@@ -785,7 +785,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\StartRowResetForPaging\Sources\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeBad_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\StartRowResetForPaging\Sources\StartRowResetForPaging_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_SameName.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_Good_SameName.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\Sources\InheritanceFromPXMappedCacheExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidPXActionSignature\Sources\InvalidPXActionSignature_ValidParameters.cs" />
     <Compile Include="Tests\StaticAnalysis\NonNullableTypeForBqlField\NonNullableTypeForBqlFieldTests.cs" />
@@ -827,9 +827,9 @@
     <Compile Include="Helpers\EmbeddedFileDataAttribute.cs" />
     <Compile Include="Tests\StaticAnalysis\InvalidPXActionSignature\InvalidPXActionSignatureTests.cs" />
     <Compile Include="Tests\StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_Good_DifferentNames.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_Bad_Expected.cs" />
+    <Compile Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\TypoInViewAndActionHandlerNameTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Field.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Method.cs" />
@@ -841,8 +841,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Property_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\MethodWithNonSpecificPXGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderInOneGraph.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_Override.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_Good_Override.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\NoPrimaryViewForPrimaryDacTests.cs" />
     <Compile Include="Tests\Utilities\AttributeInformation\AttributeSymbolHelpersTests.cs" />
     <Compile Include="Verification\CodeFixVerifier.cs" />

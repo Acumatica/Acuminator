@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
 
-namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
+namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class TypoInViewDelegateNameFix : PXCodeFixProvider
@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!diagnostic.TryGetPropertyValue(TypoInViewDelegateNameAnalyzer.ViewFieldNameProperty, out string? fieldName) ||
+			if (!diagnostic.TryGetPropertyValue(TypoInViewAndActionHandlerNameAnalyzer.ViewFieldNameProperty, out string? fieldName) ||
 				fieldName.IsNullOrWhiteSpace() || fieldName.Length <= 1)
 			{
 				return;
