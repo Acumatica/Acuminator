@@ -555,6 +555,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_DerivedGraph.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_DerivedGraph_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewAndActionHandlerName\Sources\ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInActionHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />

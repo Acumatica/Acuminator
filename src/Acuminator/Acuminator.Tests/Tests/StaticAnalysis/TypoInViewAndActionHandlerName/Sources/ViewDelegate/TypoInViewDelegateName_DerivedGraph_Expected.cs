@@ -15,8 +15,7 @@ namespace PX.Analyzers.Test.Sources
 		public PXSelect<DAC> ViewInBaseGraph;
 	}
 
-	// Acuminator disable once PX1016 ExtensionDoesNotDeclareIsActiveMethod extension should be constantly active
-	public class SimpleGraphExtension : PXGraphExtension<SimpleGraph>
+	public class DerivedGraph : PXGraph<DerivedGraph>
 	{
 		public PXSelect<DAC> Documents;
 		public PXSelect<DAC> CurrentDocument;

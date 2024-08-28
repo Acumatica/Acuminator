@@ -55,21 +55,38 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.TypoInViewAndActionDelegateName
 
 		[Theory]
 		[EmbeddedFileData(@"ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad.cs")]
-		public Task TestDiagnostic_GraphExtension(string actual) =>
+		public Task GraphExtension_TyposInBaseGraph_ViewInBaseGraph(string actual) =>
 			 VerifyCSharpDiagnosticAsync(actual,
-				Descriptors.PX1005_TypoInViewDelegateName.CreateFor(line: 23, column: 22, messageArgs: "ViewInBaseGraph"),
-				Descriptors.PX1005_TypoInViewDelegateName.CreateFor(line: 35, column: 22, messageArgs: "Documents"),
-				Descriptors.PX1005_TypoInViewDelegateName.CreateFor(line: 45, column: 22, messageArgs: "ViewInBaseGraph"));
-
-		[Theory]
-		[EmbeddedFileData(@"ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs")]
-		public Task GraphExtension_ViewDelegateTypos_ShouldNotShowDiagnostic(string actual) => 
-			 VerifyCSharpDiagnosticAsync(actual);
+				Descriptors.PX1005_TypoInViewDelegateName.CreateFor(line: 24, column: 22, messageArgs: "Documents"),
+				Descriptors.PX1005_TypoInViewDelegateName.CreateFor(line: 34, column: 22, messageArgs: "ViewInBaseGraph"));
 
 		[Theory]
 		[EmbeddedFileData(@"ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad.cs",
 						  @"ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs")]
-		public Task GraphExtension_ViewDelegateTypos_CodeFix_Rename(string actual, string expected) => 
+		public Task GraphExtension_ViewDelegateTypos_ViewInBaseGraph_Rename(string actual, string expected) =>
 			VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"ViewDelegate\TypoInViewDelegateName_GraphExtension_Bad_Expected.cs")]
+		public Task GraphExtension_AfterCodeFix_ShouldNotShowDiagnostic(string actual) => 
+			 VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData(@"ViewDelegate\TypoInViewDelegateName_DerivedGraph.cs")]
+		public Task DerivedGraph_TyposInViewDelegates_ViewInBaseGraph(string actual) =>
+					 VerifyCSharpDiagnosticAsync(actual,
+						Descriptors.PX1005_TypoInViewDelegateName.CreateFor(line: 23, column: 22, messageArgs: "Documents"),
+						Descriptors.PX1005_TypoInViewDelegateName.CreateFor(line: 33, column: 22, messageArgs: "ViewInBaseGraph"));
+
+		[Theory]
+		[EmbeddedFileData(@"ViewDelegate\TypoInViewDelegateName_DerivedGraph.cs",
+						  @"ViewDelegate\TypoInViewDelegateName_DerivedGraph_Expected.cs")]
+		public Task DerivedGraph_ViewDelegateTypos_ViewInBaseGraph_Rename(string actual, string expected) =>
+			VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"ViewDelegate\TypoInViewDelegateName_DerivedGraph_Expected.cs")]
+		public Task DerivedGraph_AfterCodeFix_ShouldNotShowDiagnostic(string actual) =>
+			 VerifyCSharpDiagnosticAsync(actual);
 	}
 }

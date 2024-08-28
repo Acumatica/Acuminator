@@ -15,13 +15,12 @@ namespace PX.Analyzers.Test.Sources
 		public PXSelect<DAC> ViewInBaseGraph;
 	}
 
-	// Acuminator disable once PX1016 ExtensionDoesNotDeclareIsActiveMethod extension should be constantly active
-	public class SimpleGraphExtension : PXGraphExtension<SimpleGraph>
+	public class DerivedGraph : PXGraph<DerivedGraph>
 	{
 		public PXSelect<DAC> Documents;
 		public PXSelect<DAC> CurrentDocument;
 
-		public IEnumerable documents()
+		public IEnumerable documentss()
 		{
 			yield break;
 		}
@@ -31,7 +30,7 @@ namespace PX.Analyzers.Test.Sources
 			yield return Documents.Current;
 		}
 
-		public IEnumerable viewInBaseGraph()
+		public IEnumerable viewInBasGraph()
 		{
 			yield break;
 		}
