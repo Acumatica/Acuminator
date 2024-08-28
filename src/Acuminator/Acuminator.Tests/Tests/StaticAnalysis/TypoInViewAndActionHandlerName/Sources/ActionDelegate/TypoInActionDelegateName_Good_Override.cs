@@ -6,9 +6,11 @@ namespace PX.Analyzers.Test.Sources
 {
 	public class SomeBaseGraph : PXGraph<SomeBaseGraph>
 	{
-		public PXSelect<SomeDocument> Adjustments;
+		public PXAction<SomeDocument> Release;
 
-		public virtual IEnumerable adjustments()
+		[PXButton]
+		[PXUIField]
+		public virtual IEnumerable release(PXAdapter adapter)
 		{
 			yield break;
 		}
@@ -16,9 +18,11 @@ namespace PX.Analyzers.Test.Sources
 
 	public class SomeDerivedGraph : SomeBaseGraph
 	{
-		public PXSelect<SomeDocument> SOAdjustments;
+		public PXAction<SomeDocument> SORelease;
 
-		public override IEnumerable adjustments()
+		[PXButton]
+		[PXUIField]
+		public override IEnumerable release(PXAdapter adapter)
 		{
 			yield break;
 		}
@@ -27,9 +31,11 @@ namespace PX.Analyzers.Test.Sources
 	// Acuminator disable once PX1016 ExtensionDoesNotDeclareIsActiveMethod extension should be constantly active
 	public class SomeGraphExt : PXGraphExtension<SomeBaseGraph>
 	{
-		public PXSelect<SomeDocument> SOAdjustments;
+		public PXAction<SomeDocument> SORelease;
 
-		public IEnumerable adjustments()
+		[PXButton]
+		[PXUIField]
+		public IEnumerable release(PXAdapter adapter)
 		{
 			yield break;
 		}
