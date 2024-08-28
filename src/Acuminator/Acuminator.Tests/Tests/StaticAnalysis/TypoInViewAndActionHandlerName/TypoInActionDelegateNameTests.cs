@@ -45,7 +45,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.TypoInViewAndActionDelegateName
         [EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_Bad.cs")]
         public Task RegularGraph_TyposInActionDelegate(string actual) =>
 			VerifyCSharpDiagnosticAsync(actual,
-				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 16, column: 22, messageArgs: "Documents"));
+				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 14, column: 22, messageArgs: "Release"));
 
 		[Theory]
 	    [EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_Bad.cs",
@@ -57,8 +57,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.TypoInViewAndActionDelegateName
 		[EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_GraphExtension_Bad.cs")]
 		public Task GraphExtension_TyposInBaseGraph_ActionInBaseGraph(string actual) =>
 			 VerifyCSharpDiagnosticAsync(actual,
-				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 24, column: 22, messageArgs: "Documents"),
-				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 34, column: 22, messageArgs: "ActionInBaseGraph"));
+				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 26, column: 22, messageArgs: "ReleaseDocuments"),
+				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 40, column: 22, messageArgs: "ActionInBaseGraph"));
 
 		[Theory]
 		[EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_GraphExtension_Bad.cs",
@@ -74,9 +74,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.TypoInViewAndActionDelegateName
 		[Theory]
 		[EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_DerivedGraph.cs")]
 		public Task DerivedGraph_TyposInActionDelegates_ActionInBaseGraph(string actual) =>
-					 VerifyCSharpDiagnosticAsync(actual,
-						Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 23, column: 22, messageArgs: "Documents"),
-						Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 33, column: 22, messageArgs: "ActionInBaseGraph"));
+			VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 26, column: 22, messageArgs: "ReleaseDocuments"),
+				Descriptors.PX1005_TypoInActionDelegateName.CreateFor(line: 40, column: 22, messageArgs: "ActionInBaseGraph"));
 
 		[Theory]
 		[EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_DerivedGraph.cs",
@@ -87,6 +87,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.TypoInViewAndActionDelegateName
 		[Theory]
 		[EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_DerivedGraph_Expected.cs")]
 		public Task DerivedGraph_AfterCodeFix_ShouldNotShowDiagnostic(string actual) =>
+			 VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
+		[EmbeddedFileData(@"ActionDelegate\TypoInActionDelegateName_Bad_Expected.cs")]
+		public Task RegularGraph_AfterCodeFix_ShouldNotShowDiagnostic(string actual) =>
 			 VerifyCSharpDiagnosticAsync(actual);
 	}
 }
