@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Common;
@@ -18,7 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 	{
 		public const string ViewOrActionNameProperty = nameof(ViewOrActionNameProperty);
 
-		private const int MaximumDistance = 2;
+		private const int MaximumStringDistance = 2;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
@@ -155,46 +156,52 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (namesOfViewsOrActionsWithoutDelegates.Contains(candidateMethod.Name))
+				if (candidateMethod.Locations.IsDefaultOrEmpty || namesOfViewsOrActionsWithoutDelegates.Contains(candidateMethod.Name))
 					continue;
 
-				string? nearestViewOrActionName = FindNearestViewOrAction(namesOfViewsOrActionsWithoutDelegates, candidateMethod);
+				var nearestViewsOrActionsNames = FindNearestViewOrAction(namesOfViewsOrActionsWithoutDelegates, candidateMethod,
+																		 context.CancellationToken);
+				if (nearestViewsOrActionsNames.Count == 0)
+					continue;
 
-				if (nearestViewOrActionName != null && !candidateMethod.Locations.IsEmpty)
+				foreach (string viewOrActionName in nearestViewsOrActionsNames)
 				{
-					var properties = ImmutableDictionary.CreateBuilder<string, string?>();
-					properties.Add(ViewOrActionNameProperty, nearestViewOrActionName);
-
-					var location = candidateMethod.Locations.FirstOrDefault();
-
-					if (location == null)
-						continue;
-
+					var properties = ImmutableDictionary<string, string?>.Empty
+																		 .Add(ViewOrActionNameProperty, viewOrActionName);
+					var location = candidateMethod.Locations[0];
 					context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(diagnosticDescriptor, location, properties.ToImmutable(), nearestViewOrActionName),
+						Diagnostic.Create(diagnosticDescriptor, location, properties, viewOrActionName),
 						pxContext.CodeAnalysisSettings);
 				}
 			}
 		}
 
-		private string? FindNearestViewOrAction(IEnumerable<string> viewCandidatesNames, IMethodSymbol method)
+		private List<string> FindNearestViewOrAction(IEnumerable<string> viewsOrActionsNamesToMatch, IMethodSymbol candidateMethod,
+													 CancellationToken cancellation)
 		{
-			string methodName = method.Name.ToLowerInvariant();
-			int minDistance = int.MaxValue;
-			string? nearestViewOrActionName = null;
+			string candidateName 		 = candidateMethod.Name.ToLowerInvariant();
+			int minDistance 			 = int.MaxValue;
+			var nearestViewOrActionNames = new List<string>(capacity: 4);
 
-			foreach (var viewOrActionName in viewCandidatesNames)
+			foreach (var viewOrActionName in viewsOrActionsNamesToMatch)
 			{
-				int distance = StringExtensions.LevenshteinDistance(methodName, viewOrActionName.ToLowerInvariant());
+				cancellation.ThrowIfCancellationRequested();
 
-				if (distance <= MaximumDistance && distance < minDistance)
+				int distance = StringExtensions.LevenshteinDistance(candidateName, viewOrActionName.ToLowerInvariant());
+
+				if (distance > MaximumStringDistance || distance > minDistance)
+					continue;
+
+				if (distance < minDistance)
 				{
 					minDistance = distance;
-					nearestViewOrActionName = viewOrActionName;
+					nearestViewOrActionNames.Clear();
 				}
+
+				nearestViewOrActionNames.Add(viewOrActionName);
 			}
 
-			return nearestViewOrActionName;
+			return nearestViewOrActionNames;
 		}
 	}
 }
