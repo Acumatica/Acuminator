@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!diagnostic.TryGetPropertyValue(TypoInViewAndActionHandlerNameAnalyzer.ViewFieldNameProperty, out string? fieldName) ||
+			if (!diagnostic.TryGetPropertyValue(TypoInViewAndActionHandlerNameAnalyzer.ViewOrActionNameProperty, out string? fieldName) ||
 				fieldName.IsNullOrWhiteSpace() || fieldName.Length <= 1)
 			{
 				return;
