@@ -132,7 +132,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 																	  Dictionary<string, ActionHandlerInfo> declaredActionHandlersByName, PXContext pxContext)
 		{
 			var candidates = GetActionHandlerOrViewDelegateCandidates(declaredNonOverriddenMethods, declaredActionHandlersByName, pxContext)
-													.Where(method => method.IsValidActionHandler(pxContext) && !method.IsValidViewDelegate(pxContext));
+													.Where(method => method.IsValidActionHandler(pxContext));
 			return candidates;
 		}
 
