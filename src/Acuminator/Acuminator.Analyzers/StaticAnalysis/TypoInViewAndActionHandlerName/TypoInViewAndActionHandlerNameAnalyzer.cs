@@ -18,6 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 	public class TypoInViewAndActionHandlerNameAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public const string ViewOrActionNameProperty = nameof(ViewOrActionNameProperty);
+		public const string IsViewDelegateFlag  = nameof(IsViewDelegateFlag);
 
 		private const int MaximumStringDistance = 2;
 
@@ -59,7 +60,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 				var viewDelegateCandidates = GetViewDelegateCandidates(declaredNonOverriddenMethods, declaredViewDelegatesByName, pxContext);
 
 				AnalyzeCandidatesForViewOrActionDelegates(context, Descriptors.PX1005_TypoInViewDelegateName,
-														  viewDelegateCandidates, viewsWithoutDelegatesNames, pxContext);
+														  viewDelegateCandidates, viewsWithoutDelegatesNames, pxContext,
+														  isViewDelegateCandidatesCheck: true);
 			}
 		}
 
@@ -77,7 +79,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 				var actionHandlerCandidates = GetActionHandlerCandidates(declaredNonOverriddenMethods, declaredActionHandlersByName, pxContext);
 
 				AnalyzeCandidatesForViewOrActionDelegates(context, Descriptors.PX1005_TypoInActionDelegateName,
-														  actionHandlerCandidates, actionsWithoutDelegatesNames, pxContext);
+														  actionHandlerCandidates, actionsWithoutDelegatesNames, pxContext,
+														  isViewDelegateCandidatesCheck: false);
 			}
 		}
 
@@ -150,7 +153,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 
 		private void AnalyzeCandidatesForViewOrActionDelegates(SymbolAnalysisContext context, DiagnosticDescriptor diagnosticDescriptor,
 																IEnumerable<IMethodSymbol> viewOrActionDelegateCandidates,
-																HashSet<string> namesOfViewsOrActionsWithoutDelegates, PXContext pxContext)
+																HashSet<string> namesOfViewsOrActionsWithoutDelegates, PXContext pxContext,
+																bool isViewDelegateCandidatesCheck)
 		{
 			foreach (IMethodSymbol candidateMethod in viewOrActionDelegateCandidates)
 			{
@@ -166,8 +170,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 
 				foreach (string viewOrActionName in nearestViewsOrActionsNames)
 				{
-					var properties = ImmutableDictionary<string, string?>.Empty
-																		 .Add(ViewOrActionNameProperty, viewOrActionName);
+					var properties = new Dictionary<string, string?>
+					{
+						{ ViewOrActionNameProperty, viewOrActionName },
+						{ IsViewDelegateFlag, isViewDelegateCandidatesCheck.ToString() }
+					}
+					.ToImmutableDictionary();
+
 					var location = candidateMethod.Locations[0];
 					context.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(diagnosticDescriptor, location, properties, viewOrActionName),
