@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -20,61 +21,71 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 	public class TypoInViewOrActionDelegateNameFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName.Id);
+			new HashSet<string>
+			{
+				Descriptors.PX1005_TypoInViewDelegateName.Id,
+				Descriptors.PX1005_TypoInActionDelegateName.Id
+			}
+			.ToImmutableArray();
 
 		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!diagnostic.TryGetPropertyValue(TypoInViewAndActionHandlerNameAnalyzer.ViewOrActionNameProperty, out string? fieldName) ||
-				fieldName.IsNullOrWhiteSpace() || fieldName.Length <= 1)
+			if (!diagnostic.TryGetPropertyValue(TypoInViewAndActionHandlerNameAnalyzer.ViewOrActionNameProperty, out string? viewOrActionName) ||
+				viewOrActionName.IsNullOrWhiteSpace() || viewOrActionName.Length <= 1)
 			{
 				return;
 			}
 
+			bool isViewDelegate = diagnostic.IsFlagSet(TypoInViewAndActionHandlerNameAnalyzer.IsViewDelegateFlag);
+
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-			var methodNode = root?.FindNode(context.Span)?.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-			if (methodNode == null)
+			var viewOrActionDelegateMethodNode = root?.FindNode(context.Span)?.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+			if (viewOrActionDelegateMethodNode == null)
 				return;
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			string title = nameof(Resources.PX1005Fix).GetLocalized().ToString();
+			string title = isViewDelegate
+				? nameof(Resources.PX1005ViewDelegateFix).GetLocalized().ToString()
+				: nameof(Resources.PX1005ActionDelegateFix).GetLocalized().ToString();
 			var document = context.Document;
 			var codeAction = CodeAction.Create(title, 
-											   cToken => FixTypoInViewDelegateName(document, methodNode, fieldName, cToken), 
+											   cToken => FixTypoInViewDelegateName(document, viewOrActionDelegateMethodNode, viewOrActionName, cToken), 
 											   equivalenceKey: title);
 			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
-		private static async Task<Solution> FixTypoInViewDelegateName(Document document, MethodDeclarationSyntax methodNode, 
+		private static async Task<Solution> FixTypoInViewDelegateName(Document document, MethodDeclarationSyntax viewOrActionDelegateMethodNode, 
 																	  string fieldName, CancellationToken cToken)
 		{
 			cToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await document.GetSemanticModelAsync(cToken).ConfigureAwait(false);
-			var methodSymbol = semanticModel?.GetDeclaredSymbol(methodNode, cToken);
+			var viewOrActionDelegateMethodSymbol = semanticModel?.GetDeclaredSymbol(viewOrActionDelegateMethodNode, cToken);
 
-			if (methodSymbol == null)
+			if (viewOrActionDelegateMethodSymbol == null)
 				return document.Project.Solution;
 
-			string? newName = GenerateViewDelegateName(fieldName);
+			string? newName = GenerateViewOrActionDelegateName(fieldName);
 
 			if (newName == null)
 				return document.Project.Solution;
 
-			return await Renamer.RenameSymbolAsync(document.Project.Solution, methodSymbol, newName, document.Project.Solution.Options, cToken);
+			return await Renamer.RenameSymbolAsync(document.Project.Solution, viewOrActionDelegateMethodSymbol, newName,
+													document.Project.Solution.Options, cToken);
 		}
 
-		private static string? GenerateViewDelegateName(string viewName)
+		private static string? GenerateViewOrActionDelegateName(string viewOrActionName)
 		{
-			char firstChar = viewName[0];
+			char firstChar = viewOrActionName[0];
 
 			if (Char.IsUpper(firstChar))
-				return viewName.FirstCharToLower();
+				return viewOrActionName.FirstCharToLower();
 			else if (Char.IsLower(firstChar))
-				return viewName.ToPascalCase();
+				return viewOrActionName.ToPascalCase();
 			else
 				return null;
 		}
