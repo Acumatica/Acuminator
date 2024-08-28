@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.Rename;
 namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class TypoInViewDelegateNameFix : PXCodeFixProvider
+	public class TypoInViewOrActionDelegateNameFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName.Id);

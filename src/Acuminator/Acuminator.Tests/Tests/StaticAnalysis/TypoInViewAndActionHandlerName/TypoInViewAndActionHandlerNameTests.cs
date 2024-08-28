@@ -18,7 +18,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.TypoInViewAndActionDelegateName
 {
     public class TypoInViewAndActionHandlerNameTests : CodeFixVerifier
 	{
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new TypoInViewDelegateNameFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new TypoInViewOrActionDelegateNameFix();
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			 new PXGraphAnalyzer(CodeAnalysisSettings.Default, 
