@@ -16,7 +16,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1002](diagnostics/PX1002.md) | The field must have a type attribute that corresponds to the list attribute. | Error | Available |
 | [PX1003](diagnostics/PX1003.md) | Consider using a specific implementation of `PXGraph`. | Warning (ISV Level 2: Production Quality) | Unavailable |
 | [PX1004](diagnostics/PX1004.md) | The order of view declarations will cause the creation of two cache instances. | Message | Unavailable |
-| [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate name. | Warning (ISV Level 3: Informational) | Available |
+| [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate or action delegate name. | Warning (ISV Level 3: Informational) | Available |
 | [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs | Message | Unavailable |
 | [PX1007](diagnostics/PX1007.md) | The DAC, DAC extension, or DAC property should have a description in the "summary" XML tag or "inheritdoc" XML tag | Error | Available |
 | [PX1008](diagnostics/PX1008.md) | The reference to the screen graph or an action adapter in the long operation and processing delegates cause synchronous execution of the delegate. | Error | Unavailable |
