@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.TypoInViewAndActionDelegateName
 {
-    public class TypoInViewAndActionHandlerNameTests : CodeFixVerifier
+    public class TypoInViewDelegateNameTests : CodeFixVerifier
 	{
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new TypoInViewOrActionDelegateNameFix();
 
