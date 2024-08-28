@@ -15,7 +15,7 @@ namespace PX.Analyzers.Test.Sources
 		public PXSelect<DAC> ViewInBaseGraph;
 	}
 
-	public class DerivedGraph : PXGraph<DerivedGraph>
+	public class DerivedGraph : SimpleGraph
 	{
 		public PXSelect<DAC> Documents;
 		public PXSelect<DAC> CurrentDocument;

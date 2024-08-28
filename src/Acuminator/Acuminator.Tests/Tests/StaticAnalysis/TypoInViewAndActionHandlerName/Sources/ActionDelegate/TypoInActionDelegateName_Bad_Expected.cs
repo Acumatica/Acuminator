@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-
 using PX.Data;
 
 namespace PX.Analyzers.Test.Sources

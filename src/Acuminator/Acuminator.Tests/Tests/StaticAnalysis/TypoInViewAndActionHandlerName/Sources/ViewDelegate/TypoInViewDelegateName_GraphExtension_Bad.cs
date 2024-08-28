@@ -35,5 +35,5 @@ namespace PX.Analyzers.Test.Sources
 		{
 			yield break;
 		}
-	}	
+	}
 }
