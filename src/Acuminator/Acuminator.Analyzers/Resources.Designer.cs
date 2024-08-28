@@ -142,29 +142,56 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change the action delegate name to match the action name.
+        /// </summary>
+        public static string PX1005ActionDelegateFix {
+            get {
+                return ResourceManager.GetString("PX1005ActionDelegateFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A possible typo in the action delegate name. The action name for this delegate: {0}..
+        /// </summary>
+        public static string PX1005ActionDelegateMessageFormat {
+            get {
+                return ResourceManager.GetString("PX1005ActionDelegateMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A possible typo in the action delegate name.
+        /// </summary>
+        public static string PX1005ActionDelegateTitle {
+            get {
+                return ResourceManager.GetString("PX1005ActionDelegateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change the view delegate name to match the view name.
         /// </summary>
-        public static string PX1005Fix {
+        public static string PX1005ViewDelegateFix {
             get {
-                return ResourceManager.GetString("PX1005Fix", resourceCulture);
+                return ResourceManager.GetString("PX1005ViewDelegateFix", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}..
         /// </summary>
-        public static string PX1005MessageFormat {
+        public static string PX1005ViewDelegateMessageFormat {
             get {
-                return ResourceManager.GetString("PX1005MessageFormat", resourceCulture);
+                return ResourceManager.GetString("PX1005ViewDelegateMessageFormat", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A possible typo in the view delegate name.
         /// </summary>
-        public static string PX1005Title {
+        public static string PX1005ViewDelegateTitle {
             get {
-                return ResourceManager.GetString("PX1005Title", resourceCulture);
+                return ResourceManager.GetString("PX1005ViewDelegateTitle", resourceCulture);
             }
         }
         

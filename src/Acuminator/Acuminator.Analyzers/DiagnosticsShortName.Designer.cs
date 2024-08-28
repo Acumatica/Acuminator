@@ -106,11 +106,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TypoInActionDelegateName.
+        /// </summary>
+        public static string PX1005ActionDelegate {
+            get {
+                return ResourceManager.GetString("PX1005ActionDelegate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TypoInViewDelegateName.
         /// </summary>
-        public static string PX1005 {
+        public static string PX1005ViewDelegate {
             get {
-                return ResourceManager.GetString("PX1005", resourceCulture);
+                return ResourceManager.GetString("PX1005ViewDelegate", resourceCulture);
             }
         }
         
