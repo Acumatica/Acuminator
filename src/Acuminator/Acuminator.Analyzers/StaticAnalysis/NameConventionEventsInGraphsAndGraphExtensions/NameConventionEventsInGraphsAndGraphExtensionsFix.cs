@@ -119,8 +119,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			SyntaxNode cacheParameterReplacement = GetCacheParameterReplacement(newEventInfoParameterName);
 			var newMethodDeclaration = 
 				ReplaceParameterUsages(methodNode, cacheParameterSymbol, cacheParameterReplacement, semanticModel, cancellationToken)
-					.WithIdentifier(Identifier(EventHandlerMethodName))
-					.WithParameterList(newParametersList);
+					?.WithIdentifier(Identifier(EventHandlerMethodName))
+					?.WithParameterList(newParametersList);
+
+			if (newMethodDeclaration == null)
+				return Task.FromResult(document);
 
 			root = root.ReplaceNode(methodNode, newMethodDeclaration);
 			var modifiedDocument = document.WithSyntaxRoot(root);
@@ -184,12 +187,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			return Parameter(parameterName).WithType(parameterType);
 		}
 
-		private MethodDeclarationSyntax ReplaceParameterUsages(MethodDeclarationSyntax methodDeclaration, IParameterSymbol cacheParameter,
-															   SyntaxNode replacement, SemanticModel semanticModel, CancellationToken cancellation)
+		private MethodDeclarationSyntax? ReplaceParameterUsages(MethodDeclarationSyntax methodDeclaration, IParameterSymbol cacheParameter,
+																SyntaxNode replacement, SemanticModel semanticModel, CancellationToken cancellation)
 
 		{
 			var rewriter = new ParameterUsagesRewriter(cacheParameter, replacement, semanticModel, cancellation);
-			return (MethodDeclarationSyntax)methodDeclaration.Accept(rewriter);
+			return methodDeclaration.Accept(rewriter) as MethodDeclarationSyntax;
 		}
 	}
 }

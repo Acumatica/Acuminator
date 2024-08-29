@@ -129,7 +129,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				var capturedSymbols = dfa.DataFlowsIn
 										 .Concat(dfa.CapturedInside)
 										 .OfType<IParameterSymbol>()
-										 .Distinct();
+										 .Distinct<IParameterSymbol>(SymbolEqualityComparer.Default);
 
 				foreach (IParameterSymbol symbol in capturedSymbols)
 				{

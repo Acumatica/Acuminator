@@ -1,7 +1,7 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis;
@@ -94,12 +94,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 		}
 
 		private bool IsFormatMethodSymbol(IMethodSymbol method, PXContext pxContext) =>
-			pxContext.Localization.PXMessagesFormatMethods.Contains(method) || 
-			pxContext.Localization.PXLocalizerFormatMethods.Contains(method);
+			pxContext.Localization.PXMessagesFormatMethods.Contains(method, SymbolEqualityComparer.Default) || 
+			pxContext.Localization.PXLocalizerFormatMethods.Contains(method, SymbolEqualityComparer.Default);
 
 		private bool IsLocalizationNonFormatMethodSymbol(IMethodSymbol method, PXContext pxContext) =>
-			 pxContext.Localization.PXMessagesSimpleMethods.Contains(method) ||
-			 pxContext.Localization.PXLocalizerSimpleMethods.Contains(method);
+			 pxContext.Localization.PXMessagesSimpleMethods.Contains(method, SymbolEqualityComparer.Default) ||
+			 pxContext.Localization.PXLocalizerSimpleMethods.Contains(method, SymbolEqualityComparer.Default);
 
 		private ExpressionSyntax? GetStringArgumentExpressionFromLocalizationMethodInvocation(SyntaxNodeAnalysisContext syntaxContext,
 																							  InvocationExpressionSyntax localizationMethodInvocationNode)

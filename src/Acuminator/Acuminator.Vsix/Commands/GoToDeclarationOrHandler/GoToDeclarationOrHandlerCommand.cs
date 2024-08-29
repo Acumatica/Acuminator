@@ -182,12 +182,12 @@ namespace Acuminator.Vsix.GoToDeclaration
 		private async Task NavigateToPXActionHandlerAsync(Document document, IWpfTextView textView, ISymbol actionSymbol,
 														  PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
-			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo actionHandler))
+			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo? actionHandler))
 				return;
 
 			IWpfTextView? textViewToNavigateTo = textView;
 
-			if (actionHandler.Node is not MethodDeclarationSyntax handlerNode || handlerNode.SyntaxTree == null)
+			if (actionHandler?.Node is not MethodDeclarationSyntax handlerNode || handlerNode.SyntaxTree == null)
 				return;
 
 			if (handlerNode.SyntaxTree.FilePath != document.FilePath)
@@ -204,7 +204,8 @@ namespace Acuminator.Vsix.GoToDeclaration
 		private async Task NavigateToPXViewDelegateAsync(Document document, IWpfTextView textView, ISymbol viewSymbol, 
 														 PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
-			if (!graphSemanticModel.ViewDelegatesByNames.TryGetValue(viewSymbol.Name, out DataViewDelegateInfo viewDelegate))
+			if (!graphSemanticModel.ViewDelegatesByNames.TryGetValue(viewSymbol.Name, out DataViewDelegateInfo? viewDelegate) ||
+				viewDelegate == null)
 				return;
 
 			var viewDelegates = viewDelegate.GetDelegateWithAllOverrides().ToList();
@@ -217,8 +218,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				viewDelegateInfoToNavigateTo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType?.Equals(viewSymbol.ContainingType) ?? false)
-															.FirstOrDefault();
+				viewDelegateInfoToNavigateTo = 
+					viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType?.Equals(viewSymbol.ContainingType, SymbolEqualityComparer.Default) ?? false)
+								 .FirstOrDefault();
 			}
 
 			if (viewDelegateInfoToNavigateTo.Node is not MethodDeclarationSyntax methodNode || methodNode.SyntaxTree == null)
@@ -306,16 +308,18 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 			else
 			{
-				return candidates.Where(symbol => (symbol.ContainingType != null && symbol.ContainingType.Equals(methodSymbol.ContainingType) ||
+				return candidates.Where(symbol => (symbol.ContainingType != null && 
+												   symbol.ContainingType.Equals(methodSymbol.ContainingType, SymbolEqualityComparer.Default) ||
 												  (symbol.ContainingType?.OriginalDefinition != null && 
-												   symbol.ContainingType.OriginalDefinition.Equals(methodSymbol.ContainingType.OriginalDefinition))))
+												   symbol.ContainingType.OriginalDefinition.Equals(methodSymbol.ContainingType.OriginalDefinition, 
+																									SymbolEqualityComparer.Default))))
 								 .FirstOrDefault();
 			}
 		}
 
 		private async Task<IWpfTextView?> OpenOtherDocumentForNavigationAndGetItsTextViewAsync(Document originalDocument, SyntaxTree syntaxTreeToNavigate)
 		{
-			DocumentId documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxTreeToNavigate);
+			DocumentId? documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxTreeToNavigate);
 
 			if (documentToNavigateId == null)
 				return null;

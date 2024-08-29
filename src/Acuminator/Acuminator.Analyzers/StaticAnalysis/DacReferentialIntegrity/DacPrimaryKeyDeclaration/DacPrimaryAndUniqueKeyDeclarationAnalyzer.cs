@@ -72,16 +72,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (context.ReferentialIntegritySymbols.IPrimaryKeyOf1 != null)
 			{
 				// For Acumatica 2019R2 and later we use IPrimaryKeyOf<TDAC> interface
-				INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces
-																		 .FirstOrDefault(i => i.TypeArguments.Length == 1 && 
+				INamedTypeSymbol? primaryKeyInterface = primaryOrUniqueKey.AllInterfaces
+																		  .FirstOrDefault(i => i.TypeArguments.Length == 1 && 
 																							  i.Name == ReferentialIntegrity.IPrimaryKeyOfName);
-				parentDAC = primaryKeyInterface.TypeArguments[0];
+				parentDAC = primaryKeyInterface?.TypeArguments[0];
 			}
 			else
 			{
 				var by_Type = primaryOrUniqueKey.GetBaseTypes()
-											.OfType<INamedTypeSymbol>()
-											.FirstOrDefault(type => type.Name == ReferentialIntegrity.By_TypeName);
+												.OfType<INamedTypeSymbol>()
+												.FirstOrDefault(type => type.Name == ReferentialIntegrity.By_TypeName);
 
 				if (by_Type?.TopMostContainingType() is INamedTypeSymbol primaryKeyOf_Type && primaryKeyOf_Type.Name == ReferentialIntegrity.PrimaryKeyOfName &&
 					primaryKeyOf_Type.TypeArguments.Length == 1)
@@ -97,7 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override Location? GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
 		{
-			if (keyNode.BaseList.Types.Count == 0)
+			if (keyNode.BaseList?.Types.Count is null or 0)
 				return null;
 
 			BaseTypeSyntax baseTypeNode = keyNode.BaseList.Types[0];
@@ -230,7 +230,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 
 			var dacLocationArray = new[] { dacLocation };
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ nameof(RefIntegrityDacKeyType), RefIntegrityDacKeyType.UniqueKey.ToString() },
 				{ nameof(UniqueKeyCodeFixType), UniqueKeyCodeFixType.MultipleUniqueKeys.ToString() },
@@ -255,12 +255,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			if (containerDeclaredIncorrectly)
 			{
-				return keyDeclarations.Where(key => !key.Equals(primaryKey)).ToList(capacity: keyDeclarations.Count - 1);
+				return keyDeclarations.Where(key => !key.Equals(primaryKey, SymbolEqualityComparer.Default))
+									  .ToList(capacity: keyDeclarations.Count - 1);
 			}
 			else
 			{
-				return keyDeclarations.Where(key => !key.Equals(primaryKey) && !Equals(key.ContainingType, uniqueKeysContainer) && 
-													!key.GetContainingTypes().Contains(uniqueKeysContainer))
+				return keyDeclarations.Where(key => !key.Equals(primaryKey, SymbolEqualityComparer.Default) && 
+													!SymbolEqualityComparer.Default.Equals(key.ContainingType, uniqueKeysContainer) && 
+													!key.GetContainingTypes().Contains(uniqueKeysContainer, SymbolEqualityComparer.Default))
 									  .ToList(capacity: keyDeclarations.Count - 1);
 			}
 		}
@@ -293,7 +295,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private string GetHashForDacKeys(DacSemanticModel dac)
 		{
 			var dacKeys = dac.DacFieldPropertiesWithBqlFields.Where(property => property.IsKey)
-										   .Select(property => dac.BqlFieldsByNames[property.Name].Symbol);
+															 .Select(property => dac.BqlFieldsByNames[property.Name].Symbol);
 
 			return GetHashForSetOfDacFields(dacKeys, areFieldsOrdered: false);
 		}

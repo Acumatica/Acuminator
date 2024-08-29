@@ -31,18 +31,18 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 			Diagnostic = diagnostic.CheckIfNull();
 		}
 
-		protected override async Task<IEnumerable<CodeActionOperation>?> ComputeOperationsAsync(CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<CodeActionOperation>> ComputeOperationsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Project? project = Context.Document?.Project;
 
 			if (project == null)
-				return null;
+				return [];
 
 			SemanticModel? semanticModel = await Context.Document!.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
 			if (semanticModel == null)
-				return null;
+				return [];
 
 			SuppressionFile? suppressionFile = SuppressionManager.Instance?.GetSuppressionFile(project.AssemblyName);
 
@@ -51,7 +51,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 				IEnumerable<CodeActionOperation>? operationsToCreateSuppresionFile = GetOperationsToCreateSuppressionFile(project);
 
 				if (operationsToCreateSuppresionFile == null)
-					return null;
+					return [];
 
 				var operationsWithSuppressionFileCreation = new List<CodeActionOperation>(4);
 				operationsWithSuppressionFileCreation.AddRange(operationsToCreateSuppresionFile);

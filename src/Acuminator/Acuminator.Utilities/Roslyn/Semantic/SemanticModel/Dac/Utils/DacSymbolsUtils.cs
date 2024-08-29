@@ -132,8 +132,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				if (!@interface.IsGenericType || @interface.TypeArguments.IsDefaultOrEmpty)
 					continue;
 
-				if (!@interface.Equals(pxContext.IImplementType) &&
-					(@interface.OriginalDefinition == null || !@interface.OriginalDefinition.Equals(pxContext.IImplementType)))
+				if (!@interface.Equals(pxContext.IImplementType, SymbolEqualityComparer.Default) &&
+					(@interface.OriginalDefinition == null || 
+					 !@interface.OriginalDefinition.Equals(pxContext.IImplementType, SymbolEqualityComparer.Default)))
 				{
 					continue;
 				}
@@ -167,9 +168,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			if (pxView.IsFbqlView(pxContext))
 			{
 
-				baseViewType = pxView.BaseType.ContainingType.GetBaseTypesAndThis()
-															 .OfType<INamedTypeSymbol>()
-															 .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf));
+				baseViewType = pxView.BaseType!.ContainingType
+											   .GetBaseTypesAndThis()
+											   .OfType<INamedTypeSymbol>()
+											   .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf, SymbolEqualityComparer.Default));
 			}
 			else
 			{

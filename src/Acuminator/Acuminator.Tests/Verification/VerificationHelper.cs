@@ -150,10 +150,12 @@ namespace Acuminator.Tests.Verification
 			var projectId = ProjectId.CreateNewId(debugName: GeneratedProjectName);
 
 			var workspace = new AdhocWorkspace(); //-V3114
-			workspace.Options = workspace.Options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, true)
-												 .WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart)
-												 .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)
-												 .WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, 4);
+			var workspaceOptions = workspace.Options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, true)
+													.WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart)
+													.WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)
+													.WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, 4);
+
+			workspace.TryApplyChanges(workspace.CurrentSolution.WithOptions(workspaceOptions));
 
 			var solution = workspace.CurrentSolution
 									.AddProject(projectId, GeneratedProjectName, GeneratedProjectName, language)
@@ -166,7 +168,7 @@ namespace Acuminator.Tests.Verification
 				solution = solution.AddMetadataReference(projectId, dynamicReference);
 			}
 
-			var project = solution.GetProject(projectId);
+			var project = solution.GetProject(projectId).CheckIfNull();
 
 			// Prepare C# parsing and compilation options
 			var parseOptions = CreateParseOptions(project);
@@ -185,13 +187,13 @@ namespace Acuminator.Tests.Verification
 				count++;
 			}
 
-			return solution.GetProject(projectId);
+			return solution.GetProject(projectId).CheckIfNull();
 		}
 
 		private static ParseOptions CreateParseOptions(Project project)
 		{
-			var customeFeatures = new[] { KeyValuePair.Create("IOperation", "true") };
-			var projectFeatures = project.ParseOptions.Features.Union(customeFeatures);
+			var customFeatures = new[] { KeyValuePair.Create("IOperation", "true") };
+			var projectFeatures = project.ParseOptions?.Features.Union(customFeatures) ?? [];
 
 			return new CSharpParseOptions()
 						.WithKind(SourceCodeKind.Regular)			// as representing a complete .cs file
@@ -208,7 +210,7 @@ namespace Acuminator.Tests.Verification
 		{
 			var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(false);
 			var root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(false);
-			root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
+			root = Formatter.Format(root!, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
 			return root.GetText().ToString();
 		}
 
@@ -221,8 +223,9 @@ namespace Acuminator.Tests.Verification
 		public static async Task<Document> ApplyCodeActionAsync(Document document, CodeAction codeAction)
 		{
 			var operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(false);
+
 			var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
-			return solution.GetDocument(document.Id);
+			return solution.GetDocument(document.Id).CheckIfNull();
 		}
 
 
@@ -267,7 +270,7 @@ namespace Acuminator.Tests.Verification
 		public static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnosticsAsync(Document document, bool ignoreHiddenDiagnostics = true)
 		{
 			var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
-			IEnumerable<Diagnostic> diagnostics = semanticModel.GetDiagnostics();
+			IEnumerable<Diagnostic> diagnostics = semanticModel?.GetDiagnostics() ?? ImmutableArray<Diagnostic>.Empty;
 
 			if (ignoreHiddenDiagnostics)
 			{

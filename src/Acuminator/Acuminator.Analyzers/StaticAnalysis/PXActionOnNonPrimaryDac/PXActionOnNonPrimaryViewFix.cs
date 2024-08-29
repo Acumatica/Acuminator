@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -26,18 +28,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
+			Diagnostic? diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryDac.Id);
 
 			if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
 				return;
 
-			if (!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacName, out string mainDacName) ||
-				!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacMetadataName, out string mainDacMetadata))
+			if (!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacName, out string? mainDacName) ||
+				!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacMetadataName, out string? mainDacMetadata) ||
+				mainDacName.IsNullOrWhiteSpace() || mainDacMetadata.IsNullOrWhiteSpace())
 			{
 				return;
 			}
 
-			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
+			SemanticModel? semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
 																.ConfigureAwait(false);
 			INamedTypeSymbol? mainDacType = semanticModel?.Compilation.GetTypeByMetadataName(mainDacMetadata);
 
@@ -57,7 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 		private async Task<Document> ChangePXActionDeclarationAsync(Document document, TextSpan span, CancellationToken cancellationToken,
 																	INamedTypeSymbol mainDacType)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			GenericNameSyntax? pxActionTypeDeclaration = root?.FindNode(span) as GenericNameSyntax;
 
 			if (pxActionTypeDeclaration == null || cancellationToken.IsCancellationRequested)
@@ -66,7 +69,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
 			TypeSyntax? mainDacTypeNode = generator.TypeExpression(mainDacType) as TypeSyntax;
 
-			if (mainDacType == null || cancellationToken.IsCancellationRequested)
+			if (mainDacTypeNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
 			var modifiedTypeArgsSyntax = pxActionTypeDeclaration.TypeArgumentList
@@ -83,7 +86,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 			if (originalNode == null || modifiedNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(originalNode, modifiedNode);
+			var modifiedRoot = root!.ReplaceNode(originalNode, modifiedNode);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 	}

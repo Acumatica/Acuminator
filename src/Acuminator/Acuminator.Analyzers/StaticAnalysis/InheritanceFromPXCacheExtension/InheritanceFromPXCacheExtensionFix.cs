@@ -30,14 +30,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 		{
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
 											 .ConfigureAwait(false);
-			var node = root.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
+			var node = root?.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
 
 			if (node?.BaseList == null)
 				return;
 
 			string title = nameof(Resources.PX1009Fix).GetLocalized().ToString();
 			CodeAction codeAction = CodeAction.Create(title, 
-													  cancellation => ChangeBaseTypeToPXCacheExtensionOverloadAsync(context.Document, root, node, cancellation),
+													  cancellation => ChangeBaseTypeToPXCacheExtensionOverloadAsync(context.Document, root!, node, cancellation),
 													  equivalenceKey: title);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
@@ -53,13 +53,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 				return document;
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
-			INamedTypeSymbol classType = semanticModel.GetDeclaredSymbol(node, cancellationToken);
+			INamedTypeSymbol? classType = semanticModel.GetDeclaredSymbol(node, cancellationToken);
 
 			if (classType == null)
 				return document;
 	
 			var genericArgs = GetNewGenericArgumentsForFix(classType, pxContext);	
-			BaseTypeSyntax oldBaseNode = node.BaseList.Types.FirstOrDefault();
+			BaseTypeSyntax? oldBaseNode = node.BaseList?.Types.FirstOrDefault();
 
 			if (oldBaseNode == null)
 				return document;
@@ -68,6 +68,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 
 			var generator = SyntaxGenerator.GetGenerator(document);
 			var cacheExtensionTypeNode = generator.GenericName(TypeNames.PXCacheExtension, genericArgs) as TypeSyntax;
+
+			if (cacheExtensionTypeNode == null)
+				return document;
+
 			var newBaseNode = SyntaxFactory.SimpleBaseType(cacheExtensionTypeNode);
 			var newRoot = root.ReplaceNode(oldBaseNode, newBaseNode);
 
@@ -77,9 +81,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 		private static List<ITypeSymbol> GetNewGenericArgumentsForFix(INamedTypeSymbol classType, PXContext pxContext)
 		{
 			var genericArgs = new List<ITypeSymbol>();
-			INamedTypeSymbol currentType = classType.BaseType;
+			INamedTypeSymbol? currentType = classType.BaseType;
 
-			while (currentType != null && !currentType.Equals(pxContext.PXCacheExtensionType))
+			while (currentType != null && !currentType.Equals(pxContext.PXCacheExtensionType, SymbolEqualityComparer.Default))
 			{
 				if (currentType.Name == TypeNames.PXCacheExtension)
 				{

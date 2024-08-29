@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
 
 			if (root == null)
 				return document;
@@ -55,7 +55,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var nodesToRemove = locationsToRemove.Select(location => root.FindNode(location.SourceSpan))
 												 .OfType<ClassDeclarationSyntax>();
 
-			var newRoot = root.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);
+			var newRoot = root.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives)!;
 			var newDocument = document.WithSyntaxRoot(newRoot);
 
 			cancellation.ThrowIfCancellationRequested();

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
@@ -26,6 +27,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			var methodNode = root?.FindNode(context.Span)?.FirstAncestorOrSelf<MethodDeclarationSyntax>();
@@ -36,41 +39,51 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 			if (diagnostic == null)
 				return;
 
-			if (diagnostic.Properties == null
-			    || !diagnostic.Properties.TryGetValue(TypoInViewDelegateNameAnalyzer.ViewFieldNameProperty, out string fieldName)
-				|| fieldName.IsNullOrWhiteSpace() || fieldName.Length <= 1)
+			if (!diagnostic.TryGetPropertyValue(TypoInViewDelegateNameAnalyzer.ViewFieldNameProperty, out string? fieldName) ||
+				fieldName.IsNullOrWhiteSpace() || fieldName.Length <= 1)
 			{
 				return;
 			}
 
+			context.CancellationToken.ThrowIfCancellationRequested();
+
 			string title = nameof(Resources.PX1005Fix).GetLocalized().ToString();
-			context.RegisterCodeFix(
-				CodeAction.Create(title, async cToken =>
-				{
-					var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-					var methodSymbol = semanticModel.GetDeclaredSymbol(methodNode);
-					string newName = GenerateViewDelegateName(fieldName);
-					return await Renamer.RenameSymbolAsync(context.Document.Project.Solution, methodSymbol, newName, null, cToken);
-				}, title),
-				context.Diagnostics);
+			var document = context.Document;
+			var codeAction = CodeAction.Create(title, 
+											   cToken => FixTypoInViewDelegateName(document, methodNode, fieldName, cToken), 
+											   equivalenceKey: title);
+			context.RegisterCodeFix(codeAction, context.Diagnostics);
 		}
 
-		private static string GenerateViewDelegateName(string viewName)
+		private static async Task<Solution> FixTypoInViewDelegateName(Document document, MethodDeclarationSyntax methodNode, 
+																	  string fieldName, CancellationToken cToken)
 		{
-			var chars = viewName.ToCharArray();
-			char firstChar = chars[0];
+			cToken.ThrowIfCancellationRequested();
+
+			var semanticModel = await document.GetSemanticModelAsync(cToken).ConfigureAwait(false);
+			var methodSymbol = semanticModel.GetDeclaredSymbol(methodNode);
+
+			if (methodSymbol == null)
+				return document.Project.Solution;
+
+			string? newName = GenerateViewDelegateName(fieldName);
+
+			if (newName == null)
+				return document.Project.Solution;
+
+			return await Renamer.RenameSymbolAsync(document.Project.Solution, methodSymbol, newName, document.Project.Solution.Options, cToken);
+		}
+
+		private static string? GenerateViewDelegateName(string viewName)
+		{
+			char firstChar = viewName[0];
+
 			if (Char.IsUpper(firstChar))
-			{
-				firstChar = Char.ToLowerInvariant(firstChar);
-			}
+				return viewName.FirstCharToLower();
 			else if (Char.IsLower(firstChar))
-			{
-				firstChar = Char.ToUpperInvariant(firstChar);
-			}
-
-			chars[0] = firstChar;
-
-			return new string(chars);
+				return viewName.ToPascalCase();
+			else
+				return null;
 		}
 	}
 }

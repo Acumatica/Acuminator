@@ -60,10 +60,11 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
-				var attributes = typeSymbol.GetAttributes();
+				var attributes = typeSymbol?.GetAttributes() ?? ImmutableArray<AttributeData>.Empty;
 
 				foreach (var attribute in attributes)
 				{
+					attribute.AttributeClass.ThrowOnNull();
 					actual.Add(attribute.AttributeClass.IsDerivedFromOrAggregatesAttribute(pxdefaultAttribute, pxContext));
 				}
 			}
@@ -395,10 +396,10 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeSymbolHelpersTests
 								   .ToList(capacity: expectedSymbolNamesSets.Length);
 
 		private List<ITypeSymbol> GetTypeSymbolsFromNames(SemanticModel semanticModel, IEnumerable<string> symbolNames) =>
-			symbolNames.Select(symbolName => semanticModel.Compilation.GetTypeByMetadataName(symbolName))
+			symbolNames.Select(symbolName => semanticModel.Compilation.GetTypeByMetadataName(symbolName)!)
 					   .Where(typeSymbol => typeSymbol != null)
-					   .Distinct()
-					   .OrderBy(typeSymbol => typeSymbol.ToString())	
+					   .Distinct<INamedTypeSymbol>(SymbolEqualityComparer.Default)
+					   .OrderBy(typeSymbol => typeSymbol.ToString())
 					   .ToList<ITypeSymbol>();
 	}
 }

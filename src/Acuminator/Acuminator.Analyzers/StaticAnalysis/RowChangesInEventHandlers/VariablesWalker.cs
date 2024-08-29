@@ -27,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			private readonly ImmutableHashSet<ILocalSymbol>? _variables;
 			private readonly EventArgsRowWalker _eventArgsRowWalker;
 
-			private readonly ISet<ILocalSymbol> _result = new HashSet<ILocalSymbol>();
+			private readonly ISet<ILocalSymbol> _result = new HashSet<ILocalSymbol>(SymbolEqualityComparer.Default);
 			public ImmutableArray<ILocalSymbol> Result => _result.ToImmutableArray();
 
 			public VariablesWalker(MethodDeclarationSyntax methodSyntax, SemanticModel semanticModel, PXContext pxContext,
@@ -45,14 +45,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				{
 					var dataFlow = methodSyntax.Body != null
 						? semanticModel.AnalyzeDataFlow(methodSyntax.Body)
-						: semanticModel.AnalyzeDataFlow(methodSyntax.ExpressionBody.Expression);
+						: semanticModel.AnalyzeDataFlow(methodSyntax.ExpressionBody!.Expression);
 
-					if (dataFlow.Succeeded)
+					if (dataFlow?.Succeeded == true)
 					{
 						_variables = dataFlow.WrittenInside
-							.Intersect(dataFlow.VariablesDeclared)
+							.Intersect(dataFlow.VariablesDeclared, SymbolEqualityComparer.Default)
 							.OfType<ILocalSymbol>()
-							.ToImmutableHashSet();
+							.ToImmutableHashSet<ILocalSymbol>(SymbolEqualityComparer.Default);
 					}
 				}
 				
@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				foreach (var variableDeclarator in variableDeclaration.Variables.Where(v => v.Initializer?.Value != null))
 				{
 					var variableSymbol = _semanticModel.GetDeclaredSymbol(variableDeclarator, _cancellationToken) as ILocalSymbol;
-					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, variableDeclarator.Initializer.Value);
+					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, variableDeclarator.Initializer!.Value);
 				}
 			}
 

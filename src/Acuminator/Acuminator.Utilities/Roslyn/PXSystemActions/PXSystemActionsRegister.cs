@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 		public PXSystemActionsRegister(PXContext pxContext)
 		{
 			_context	  = pxContext.CheckIfNull();
-			SystemActions = GetSystemActions(_context).ToImmutableHashSet();
+			SystemActions = GetSystemActions(_context).ToImmutableHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
 
 		/// <summary>
@@ -38,7 +38,8 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 					.Any(action => SystemActions.Contains(action) || SystemActions.Contains(action.OriginalDefinition));
 
 		private static HashSet<ITypeSymbol> GetSystemActions(PXContext pxContext) =>
-			[
+			new(SymbolEqualityComparer.Default)
+			{
 				pxContext.PXSystemActions.PXSave,
 				pxContext.PXSystemActions.PXCancel,
 				pxContext.PXSystemActions.PXInsert,
@@ -49,6 +50,6 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 				pxContext.PXSystemActions.PXNext,
 				pxContext.PXSystemActions.PXLast,
 				pxContext.PXSystemActions.PXChangeID
-			];
+			};
 	}
 }

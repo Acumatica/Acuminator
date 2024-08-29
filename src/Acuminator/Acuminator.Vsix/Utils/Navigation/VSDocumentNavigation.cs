@@ -14,16 +14,16 @@ using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
+using Microsoft.VisualStudio.Shell;
 
 using Document = Microsoft.CodeAnalysis.Document;
 using DTE = EnvDTE.DTE;
-using Shell = Microsoft.VisualStudio.Shell;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
-
-
+using Task = System.Threading.Tasks.Task;
 
 namespace Acuminator.Vsix.Utilities.Navigation
 {
@@ -49,7 +49,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			reference.ThrowOnNull();
 			var filePath = reference.SyntaxTree?.FilePath;
 
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			var workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 			TextSpan textSpanToNavigate = await GetTextSpanToNavigateFromSymbolAsync(symbol, reference, cToken);
 			return await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace.CheckIfNull().CurrentSolution, filePath,
@@ -75,7 +75,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 		}
 
 		public static async Task<(IWpfTextView? WpfTextView, CaretPosition CaretPosition)> OpenCodeFileAndNavigateByLineAndCharAsync(
-																									 this Shell.IAsyncServiceProvider serviceProvider,
+																									 this IAsyncServiceProvider serviceProvider,
 																									 Solution solution, string? filePath,
 																									 int lineNumber, int character)
 		{
@@ -125,7 +125,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 		}
 
 		public static async Task<(IWpfTextView? WpfTextView, CaretPosition CaretPosition)> OpenCodeFileAndNavigateToPositionAsync(
-																					this Shell.IAsyncServiceProvider serviceProvider,
+																					this IAsyncServiceProvider serviceProvider,
 																					Solution solution, string? filePath, 
 																					TextSpan? spanToNavigate = null,
 																					bool selectSpan = true)
@@ -176,12 +176,12 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			}
 		}
 
-		public static async Task<IWpfTextView?> OpenCodeWindowAsync(this Shell.IAsyncServiceProvider serviceProvider, Solution solution, string? filePath)
+		public static async Task<IWpfTextView?> OpenCodeWindowAsync(this IAsyncServiceProvider serviceProvider, Solution solution, string? filePath)
 		{
 			serviceProvider.ThrowOnNull();
 			solution.ThrowOnNull();
 
-			if (!Shell.ThreadHelper.CheckAccess() || !File.Exists(filePath))
+			if (!ThreadHelper.CheckAccess() || !File.Exists(filePath))
 				return null;
 
 			ImmutableArray<DocumentId> documentIDs = solution.GetDocumentIdsWithFilePath(filePath);
@@ -205,10 +205,10 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			}
 		}
 
-		public static async Task ExpandAllRegionsContainingSpanAsync(this Shell.IAsyncServiceProvider serviceProvider, SnapshotSpan selectedSpan,
+		public static async Task ExpandAllRegionsContainingSpanAsync(this IAsyncServiceProvider serviceProvider, SnapshotSpan selectedSpan,
 																	 IWpfTextView textView)
 		{
-			if (textView == null || serviceProvider == null || !Shell.ThreadHelper.CheckAccess())
+			if (textView == null || serviceProvider == null || !ThreadHelper.CheckAccess())
 				return;
 
 			IOutliningManager? outliningManager = await serviceProvider.GetOutliningManagerAsync(textView);
@@ -221,7 +221,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 		}
 
 		public static async Task<(EnvDTE.Window? Window, EnvDTE.TextDocument? TextDocument)> OpenCodeFileNotInSolutionWithDTEAsync(
-																									this Shell.IAsyncServiceProvider serviceProvider, 
+																									this IAsyncServiceProvider serviceProvider, 
 																									string? filePath)
 		{
 			serviceProvider.ThrowOnNull();
@@ -229,7 +229,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			if (!File.Exists(filePath) )
 				return default;
 
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			DTE? dte = await serviceProvider.GetServiceAsync<DTE>();
 
 			if (dte == null)
@@ -257,7 +257,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 		private static EnvDTE.TextDocument? GetTextDocumentFromWindow(this EnvDTE.Window window)
 		{
-			Shell.ThreadHelper.ThrowIfNotOnUIThread();
+			ThreadHelper.ThrowIfNotOnUIThread();
 			const string TextDocumentPropertyName = "TextDocument";
 
 			try

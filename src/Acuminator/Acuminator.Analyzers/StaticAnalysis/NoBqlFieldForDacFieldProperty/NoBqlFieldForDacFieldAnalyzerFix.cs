@@ -118,7 +118,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 				return document;
 
 			var newDacNode = dacNode.WithMembers(newDacMembers.Value);
-			var newRoot = root.ReplaceNode(dacNode, newDacNode);
+			var newRoot = root!.ReplaceNode(dacNode, newDacNode);
 
 			return document.WithSyntaxRoot(newRoot);
 		}
@@ -145,6 +145,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 			var newBqlFieldNode = CodeGeneration.GenerateBqlField(propertyWithoutBqlFieldNode, propertyType, bqlFieldName, 
 																  isFirstField: propertyMemberIndex == 0);
+			if (newBqlFieldNode == null)
+				return null;
+
 			var propertyWithoutRegions = RemoveRegionsFromPropertyTrivia(propertyWithoutBqlFieldNode);
 			var newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions)
 									.Insert(propertyMemberIndex, newBqlFieldNode);

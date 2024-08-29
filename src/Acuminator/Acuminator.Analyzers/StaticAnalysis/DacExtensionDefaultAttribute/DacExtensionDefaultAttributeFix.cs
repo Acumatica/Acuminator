@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			if (diagnostic == null)
 				return;
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			SyntaxNode? codeFixNode = root?.FindNode(context.Span);
 			AttributeSyntax? attributeNode = codeFixNode as AttributeSyntax;
 
@@ -72,7 +72,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		private async Task<Document> ReplaceAttributeToPXUnboundDefault(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			if (root?.FindNode(span) is not AttributeSyntax attributeNode || attributeNode.Parent is not AttributeListSyntax)
 				return document;
@@ -92,7 +92,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		private async Task<Document> AddToAttributePersistingCheckNothing(Document document, TextSpan span, bool isBoundField, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			if (root?.FindNode(span) is not AttributeSyntax attributeNode || attributeNode.Parent is not AttributeListSyntax attributeList)
 				return document;

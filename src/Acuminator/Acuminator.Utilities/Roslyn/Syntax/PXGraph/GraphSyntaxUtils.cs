@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 				                                                             .Symbol is ITypeSymbol typeSymbol
 			                                                             && typeSymbol.IsPXGraph(pxContext))
 			{
-				return typeSymbol.Equals(pxContext.PXGraph.Type)
+				return typeSymbol.Equals(pxContext.PXGraph.Type, SymbolEqualityComparer.Default)
 					? GraphInstantiationType.ConstructorOfBaseType
 					: GraphInstantiationType.ConstructorOfSpecificType;
 			}
@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 				var methodSymbol = (symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault()) as IMethodSymbol;
 				methodSymbol = methodSymbol?.OverriddenMethod?.OriginalDefinition ?? methodSymbol?.OriginalDefinition;
 
-				if (methodSymbol != null && pxContext.PXGraph.CreateInstance.Contains(methodSymbol))
+				if (methodSymbol != null && pxContext.PXGraph.CreateInstance.Contains<IMethodSymbol>(methodSymbol, SymbolEqualityComparer.Default))
 				{
 					return GraphInstantiationType.CreateInstance;
 				}

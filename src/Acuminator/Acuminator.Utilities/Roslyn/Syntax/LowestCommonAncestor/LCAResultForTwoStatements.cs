@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -26,9 +24,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		}
 
 		public override bool Equals(object obj) =>
-			obj is LCAResultForTwoStatements other
-				? Equals(other)
-				: false;
+			obj is LCAResultForTwoStatements other && Equals(other);
 
 		public bool Equals(LCAResultForTwoStatements other) =>
 			Equals(Ancestor, other.Ancestor) && Equals(ScopedX, other.ScopedX) && Equals(ScopedY, other.ScopedY);

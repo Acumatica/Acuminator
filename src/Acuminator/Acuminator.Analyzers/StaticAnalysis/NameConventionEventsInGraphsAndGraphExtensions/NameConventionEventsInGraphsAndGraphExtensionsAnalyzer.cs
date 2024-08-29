@@ -48,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			// Node is not null here because aggregated graph analyzers work only on graphs and graph extensions declared in the source code,
 			// and only events declared in the graph or graph extension are analyzed
 			var graphEventLocation = eventInfo.Node!.Identifier.GetLocation();
-			var properties = new Dictionary<string, string>
+			var properties = new Dictionary<string, string?>
 			{
 				{ NameConventionEventsInGraphsAndGraphExtensionsDiagnosticProperties.EventType, eventInfo.EventType.ToString() },
 				{ DiagnosticProperty.DacName, eventInfo.DacName }
@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGra
 			var eventAttributes	= eventInfo.Symbol.GetAttributes();
 
 			// PXOverridden events can't be converted either
-			if (!eventAttributes.IsDefaultOrEmpty && eventAttributes.Any(a => pxOverrideAttribute.Equals(a.AttributeClass)))
+			if (!eventAttributes.IsDefaultOrEmpty && eventAttributes.Any(a => pxOverrideAttribute.Equals(a.AttributeClass, SymbolEqualityComparer.Default)))
 				return false;
 
 			// check that there is a corresponding generic event args symbol

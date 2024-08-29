@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -22,10 +19,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public static EventInfo None() => new EventInfo(EventType.None, EventHandlerSignatureType.None);
 
-		public override bool Equals(object obj) =>
-			obj is EventInfo other
-				? Equals(other)
-				: false;
+		public override bool Equals(object obj) => obj is EventInfo other && Equals(other);
 
 		public bool Equals(EventInfo other) => Type == other.Type && SignatureType == other.SignatureType;
 

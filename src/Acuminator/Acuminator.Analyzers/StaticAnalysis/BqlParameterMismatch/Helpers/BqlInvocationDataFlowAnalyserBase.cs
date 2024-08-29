@@ -79,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			protected bool IsReacheableByControlFlow(StatementSyntax statement)
 			{
-				ControlFlowAnalysis? controlFlow = null;
+				ControlFlowAnalysis? controlFlow;
 
 				try
 				{

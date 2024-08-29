@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell;
+
 using Microsoft.CodeAnalysis;
 
 using Acuminator.Utilities;
@@ -14,7 +16,7 @@ using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
-
+using Task = System.Threading.Tasks.Task;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {

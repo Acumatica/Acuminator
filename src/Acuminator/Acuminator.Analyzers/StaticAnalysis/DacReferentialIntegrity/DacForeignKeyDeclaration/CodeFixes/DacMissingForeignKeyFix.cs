@@ -185,8 +185,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																	  .SelectMany(type => type.GetMembers(selectorAttributeProperty));
 
 				var selectorAttributeCandidateMemberTypes = 
-					from type in attribute.AttributeType.GetBaseTypesAndThis()
-														.TakeWhile(attrType => !pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attrType))
+					from type in attribute
+									.AttributeType
+									.GetBaseTypesAndThis()
+									.TakeWhile(attrType => !pxContext.AttributeTypes.PXEventSubscriberAttribute.Equals(attrType, SymbolEqualityComparer.Default))
 					from member in type.GetMembers(selectorAttributeProperty)
 					select member switch
 					{

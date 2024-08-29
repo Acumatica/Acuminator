@@ -14,7 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// Converter, which detects if the tree view item is last.
 	/// </summary>
 	[ValueConversion(sourceType: typeof(TreeViewItem), targetType: typeof(bool))]
-    class TreeViewLineConverter : IValueConverter
+    internal class TreeViewLineConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

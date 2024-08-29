@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 
 		private async Task<Document> ChangePropertyTypeToStringAsync(Document document, TextSpan diagnosticSpan, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode? root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var propertyNode = GetPropertyNodeWithDiagnostic(root, diagnosticSpan);
 
 			if (propertyNode == null)
@@ -55,11 +55,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			if (modifiedPropertyNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(propertyNode, modifiedPropertyNode);
+			var modifiedRoot = root!.ReplaceNode(propertyNode, modifiedPropertyNode);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
-		private PropertyDeclarationSyntax? GetPropertyNodeWithDiagnostic(SyntaxNode root, TextSpan diagnosticSpan)
+		private PropertyDeclarationSyntax? GetPropertyNodeWithDiagnostic(SyntaxNode? root, TextSpan diagnosticSpan)
 		{
 			SyntaxNode? node = root?.FindNode(diagnosticSpan);
 

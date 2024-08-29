@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				Location? location = constant.Locations.FirstOrDefault();
 				if (location != null)
 				{
-					var properties = ImmutableDictionary.CreateBuilder<string, string>();
+					var properties = ImmutableDictionary.CreateBuilder<string, string?>();
 					properties.Add(CorrespondingType, constantType);
 
 					context.ReportDiagnosticWithSuppressionCheck(

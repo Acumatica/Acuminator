@@ -72,13 +72,13 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				if (depthX > depthY)
 				{
 					prevX = currentX;
-					currentX = currentX.Parent;
+					currentX = currentX?.Parent;
 					depthX--;
 				}
 				else
 				{
 					prevY = currentY;
-					currentY = currentY.Parent;
+					currentY = currentY?.Parent;
 					depthY--;
 				}
 			}
@@ -87,8 +87,8 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			{
 				prevX = currentX;
 				prevY = currentY;
-				currentX = currentX.Parent;
-				currentY = currentY.Parent;
+				currentX = currentX?.Parent;
+				currentY = currentY?.Parent;
 			}
 
 			return new LCAResultForTwoNodes(currentX, prevX, prevY);

@@ -88,6 +88,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return Task.FromResult(document);
 
 			var primaryKeyNode = CreatePrimaryKeyNode(document, pxContext, dacSemanticModel, dacKeys);
+
+			if (primaryKeyNode == null)
+				return Task.FromResult(document);
+
 			var newDacNode = dacNode.WithMembers(
 										dacNode.Members.Insert(0, primaryKeyNode));
 
@@ -143,8 +147,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 												.Select(parameter => Argument(
 																			IdentifierName(parameter.Identifier)));
 			var findByInvocation =
-				generator.InvocationExpression(
-								IdentifierName(DelegateNames.PrimaryKeyFindByMethod), findByCallArguments) as InvocationExpressionSyntax;
+				(generator.InvocationExpression(
+								IdentifierName(DelegateNames.PrimaryKeyFindByMethod), findByCallArguments) as InvocationExpressionSyntax)!;
 
 			bool statementTooLongForOneLine = dacKeys.Count > MaxNumberOfKeysForOneLineStatement;
 
@@ -167,8 +171,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 														.WithTrailingTrivia(Whitespace(" "), EndOfLine(Environment.NewLine)));
 			}
 
-			return findMethodNode.WithExpressionBody(arrowExpression)
-								 .WithSemicolonToken(
+			return findMethodNode!.WithExpressionBody(arrowExpression)
+								  .WithSemicolonToken(
 										Token(SyntaxKind.SemicolonToken));
 		}
 

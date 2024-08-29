@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.Formatter
 			_span = span;
 		}
 
-		public override void Visit(SyntaxNode node)
+		public override void Visit(SyntaxNode? node)
 		{
 			if (node != null && node.Span.Start >= _span.Start && node.Span.End <= _span.End)
 			{

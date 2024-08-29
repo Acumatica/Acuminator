@@ -1,10 +1,9 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+
 using Acuminator.Utilities.Common;
 
 using Microsoft.CodeAnalysis;
@@ -43,7 +42,7 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 		/// The new code action with nested actions.
 		/// </returns>
 		public static CodeAction? CreateCodeActionWithNestedActions(string groupActionTitle, ImmutableArray<CodeAction> nestedCodeActions,
-																    bool isInlinable = false)
+																	bool isInlinable = false)
 		{
 			groupActionTitle.ThrowOnNullOrWhiteSpace();
 

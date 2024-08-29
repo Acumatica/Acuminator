@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 		private class Walker : NestedInvocationWalker
 		{
-			private SymbolAnalysisContext _context;
+			private readonly SymbolAnalysisContext _context;
 			private readonly EventType _eventType;
 			private bool IsTransactionOpened = false;
 

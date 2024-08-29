@@ -22,55 +22,55 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		private readonly Lazy<IReadOnlyDictionary<EventInfo, INamedTypeSymbol>> _eventHandlerSignatureTypeMap;
 		public IReadOnlyDictionary<EventInfo, INamedTypeSymbol> EventHandlerSignatureTypeMap => _eventHandlerSignatureTypeMap.Value;
 
-		public INamedTypeSymbol PXRowSelectingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowSelectingEventArgs);
-		public INamedTypeSymbol PXRowSelectedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowSelectedEventArgs);
-		public INamedTypeSymbol PXRowInsertingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowInsertingEventArgs);
-		public INamedTypeSymbol PXRowInsertedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowInsertedEventArgs);
-		public INamedTypeSymbol PXRowUpdatingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowUpdatingEventArgs);
-		public INamedTypeSymbol PXRowUpdatedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowUpdatedEventArgs);
-		public INamedTypeSymbol PXRowDeletingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowDeletingEventArgs);
-		public INamedTypeSymbol PXRowDeletedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowDeletedEventArgs);
-		public INamedTypeSymbol PXRowPersistingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowPersistingEventArgs);
-		public INamedTypeSymbol PXRowPersistedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowPersistedEventArgs);
+		public INamedTypeSymbol PXRowSelectingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowSelectingEventArgs)!;
+		public INamedTypeSymbol PXRowSelectedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowSelectedEventArgs)!;
+		public INamedTypeSymbol PXRowInsertingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowInsertingEventArgs)!;
+		public INamedTypeSymbol PXRowInsertedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowInsertedEventArgs)!;
+		public INamedTypeSymbol PXRowUpdatingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowUpdatingEventArgs)!;
+		public INamedTypeSymbol PXRowUpdatedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowUpdatedEventArgs)!;
+		public INamedTypeSymbol PXRowDeletingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowDeletingEventArgs)!;
+		public INamedTypeSymbol PXRowDeletedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowDeletedEventArgs)!;
+		public INamedTypeSymbol PXRowPersistingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowPersistingEventArgs)!;
+		public INamedTypeSymbol PXRowPersistedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXRowPersistedEventArgs)!;
 
-		public INamedTypeSymbol PXFieldSelectingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldSelectingEventArgs);
-		public INamedTypeSymbol PXFieldDefaultingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldDefaultingEventArgs);
-		public INamedTypeSymbol PXFieldVerifyingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldVerifyingEventArgs);
-		public INamedTypeSymbol PXFieldUpdatingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldUpdatingEventArgs);
-		public INamedTypeSymbol PXFieldUpdatedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldUpdatedEventArgs);
-		public INamedTypeSymbol PXCommandPreparingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXCommandPreparingEventArgs);
-		public INamedTypeSymbol PXExceptionHandlingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXExceptionHandlingEventArgs);
+		public INamedTypeSymbol PXFieldSelectingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldSelectingEventArgs)!;
+		public INamedTypeSymbol PXFieldDefaultingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldDefaultingEventArgs)!;
+		public INamedTypeSymbol PXFieldVerifyingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldVerifyingEventArgs)!;
+		public INamedTypeSymbol PXFieldUpdatingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldUpdatingEventArgs)!;
+		public INamedTypeSymbol PXFieldUpdatedEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXFieldUpdatedEventArgs)!;
+		public INamedTypeSymbol PXCommandPreparingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXCommandPreparingEventArgs)!;
+		public INamedTypeSymbol PXExceptionHandlingEventArgs => Compilation.GetTypeByMetadataName(EventArgsNames.PXExceptionHandlingEventArgs)!;
 
-		public INamedTypeSymbol CacheAttached => Compilation.GetTypeByMetadataName(EventsNames.CacheAttached);
-		public INamedTypeSymbol RowSelecting => Compilation.GetTypeByMetadataName(EventsNames.RowSelecting);
-		public INamedTypeSymbol RowSelected => Compilation.GetTypeByMetadataName(EventsNames.RowSelected);
-		public INamedTypeSymbol RowInserting => Compilation.GetTypeByMetadataName(EventsNames.RowInserting);
-		public INamedTypeSymbol RowInserted => Compilation.GetTypeByMetadataName(EventsNames.RowInserted);
-		public INamedTypeSymbol RowUpdating => Compilation.GetTypeByMetadataName(EventsNames.RowUpdating);
-		public INamedTypeSymbol RowUpdated => Compilation.GetTypeByMetadataName(EventsNames.RowUpdated);
-		public INamedTypeSymbol RowDeleting => Compilation.GetTypeByMetadataName(EventsNames.RowDeleting);
-		public INamedTypeSymbol RowDeleted => Compilation.GetTypeByMetadataName(EventsNames.RowDeleted);
-		public INamedTypeSymbol RowPersisting => Compilation.GetTypeByMetadataName(EventsNames.RowPersisting);
-		public INamedTypeSymbol RowPersisted => Compilation.GetTypeByMetadataName(EventsNames.RowPersisted);
+		public INamedTypeSymbol CacheAttached => Compilation.GetTypeByMetadataName(EventsNames.CacheAttached)!;
+		public INamedTypeSymbol RowSelecting => Compilation.GetTypeByMetadataName(EventsNames.RowSelecting)!;
+		public INamedTypeSymbol RowSelected => Compilation.GetTypeByMetadataName(EventsNames.RowSelected)!;
+		public INamedTypeSymbol RowInserting => Compilation.GetTypeByMetadataName(EventsNames.RowInserting)!;
+		public INamedTypeSymbol RowInserted => Compilation.GetTypeByMetadataName(EventsNames.RowInserted)!;
+		public INamedTypeSymbol RowUpdating => Compilation.GetTypeByMetadataName(EventsNames.RowUpdating)!;
+		public INamedTypeSymbol RowUpdated => Compilation.GetTypeByMetadataName(EventsNames.RowUpdated)!;
+		public INamedTypeSymbol RowDeleting => Compilation.GetTypeByMetadataName(EventsNames.RowDeleting)!;
+		public INamedTypeSymbol RowDeleted => Compilation.GetTypeByMetadataName(EventsNames.RowDeleted)!;
+		public INamedTypeSymbol RowPersisting => Compilation.GetTypeByMetadataName(EventsNames.RowPersisting)!;
+		public INamedTypeSymbol RowPersisted => Compilation.GetTypeByMetadataName(EventsNames.RowPersisted)!;
 
-		public INamedTypeSymbol FieldSelecting => Compilation.GetTypeByMetadataName(EventsNames.FieldSelecting);
-		public INamedTypeSymbol FieldDefaulting => Compilation.GetTypeByMetadataName(EventsNames.FieldDefaulting);
-		public INamedTypeSymbol FieldVerifying => Compilation.GetTypeByMetadataName(EventsNames.FieldVerifying);
-		public INamedTypeSymbol FieldUpdating => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdating);
-		public INamedTypeSymbol FieldUpdated => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdated);
-		public INamedTypeSymbol CommandPreparing => Compilation.GetTypeByMetadataName(EventsNames.CommandPreparing);
-		public INamedTypeSymbol ExceptionHandling => Compilation.GetTypeByMetadataName(EventsNames.ExceptionHandling1);
+		public INamedTypeSymbol FieldSelecting => Compilation.GetTypeByMetadataName(EventsNames.FieldSelecting)!;
+		public INamedTypeSymbol FieldDefaulting => Compilation.GetTypeByMetadataName(EventsNames.FieldDefaulting)!;
+		public INamedTypeSymbol FieldVerifying => Compilation.GetTypeByMetadataName(EventsNames.FieldVerifying)!;
+		public INamedTypeSymbol FieldUpdating => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdating)!;
+		public INamedTypeSymbol FieldUpdated => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdated)!;
+		public INamedTypeSymbol CommandPreparing => Compilation.GetTypeByMetadataName(EventsNames.CommandPreparing)!;
+		public INamedTypeSymbol ExceptionHandling => Compilation.GetTypeByMetadataName(EventsNames.ExceptionHandling1)!;
 
-		public INamedTypeSymbol FieldSelectingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldSelecting2);
-		public INamedTypeSymbol FieldDefaultingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldDefaulting2);
-		public INamedTypeSymbol FieldVerifyingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldVerifying2);
-		public INamedTypeSymbol FieldUpdatingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdating2);
-		public INamedTypeSymbol FieldUpdatedTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdated2);
-		public INamedTypeSymbol ExceptionHandlingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.ExceptionHandling2);
+		public INamedTypeSymbol FieldSelectingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldSelecting2)!;
+		public INamedTypeSymbol FieldDefaultingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldDefaulting2)!;
+		public INamedTypeSymbol FieldVerifyingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldVerifying2)!;
+		public INamedTypeSymbol FieldUpdatingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdating2)!;
+		public INamedTypeSymbol FieldUpdatedTypedRow => Compilation.GetTypeByMetadataName(EventsNames.FieldUpdated2)!;
+		public INamedTypeSymbol ExceptionHandlingTypedRow => Compilation.GetTypeByMetadataName(EventsNames.ExceptionHandling2)!;
 
 		private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
 		{
-			var map = new Dictionary<ITypeSymbol, EventType>()
+			var map = new Dictionary<ITypeSymbol, EventType>(SymbolEqualityComparer.Default)
 				{
 					{ eventSymbols.PXRowSelectingEventArgs, EventType.RowSelecting },
 					{ eventSymbols.PXRowSelectedEventArgs, EventType.RowSelected },

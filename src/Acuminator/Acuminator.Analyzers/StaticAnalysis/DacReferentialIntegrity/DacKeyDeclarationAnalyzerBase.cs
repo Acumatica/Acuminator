@@ -57,7 +57,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private Dictionary<INamedTypeSymbol, List<ITypeSymbol>> GetUsedDacFieldsByKey(DacSemanticModel dac, List<INamedTypeSymbol> keys) =>
 			keys.Select(key => (Key: key, KeyFields: GetOrderedDacFieldsUsedByKey(dac, key)))
 				.ToDictionary(keyWithFields => keyWithFields.Key, 
-							  keyWithFields => keyWithFields.KeyFields);
+							  keyWithFields => keyWithFields.KeyFields,
+							  SymbolEqualityComparer.Default as IEqualityComparer<INamedTypeSymbol>);
 
 		protected abstract List<ITypeSymbol> GetOrderedDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol key);
 
@@ -85,8 +86,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				if (usedDacFields.Count == 0)
 					continue;
 
-				var unboundDacFieldsInKey = usedDacFields.Where(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo dacProperty) &&
-																			dacProperty.DeclaredDbBoundness == DbBoundnessType.Unbound);
+				var unboundDacFieldsInKey = 
+					usedDacFields.Where(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo? dacProperty) &&
+													dacProperty.DeclaredDbBoundness == DbBoundnessType.Unbound);
 				ClassDeclarationSyntax? keyNode = null;
 
 				foreach (ITypeSymbol unboundDacFieldInKey in unboundDacFieldsInKey)
@@ -293,7 +295,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 
 			var additionalLocations = new[] { dacLocation };
-			var diagnosticProperties = new Dictionary<string, string>
+			var diagnosticProperties = new Dictionary<string, string?>
 			{
 				{ nameof(RefIntegrityDacKeyType),  dacKeyType.ToString() }
 			};

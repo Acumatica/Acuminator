@@ -59,7 +59,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 									where dacOrDacExtension.PropertiesByNames.ContainsKey(forbiddenFieldName)
 									select dacOrDacExtension.PropertiesByNames[forbiddenFieldName];
 
-			foreach (DacPropertyInfo property in invalidProperties.Where(p => dacOrDacExtension.Symbol.Equals(p.Symbol.ContainingSymbol)))
+			foreach (DacPropertyInfo property in invalidProperties.Where(p => dacOrDacExtension.Symbol.Equals(p.Symbol.ContainingSymbol, 
+																											  SymbolEqualityComparer.Default)))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -130,8 +131,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 		private void RegisterCompanyPrefixDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
 		{
-			var diagnosticProperties = ImmutableDictionary<string, string>.Empty
-																		  .Add(DiagnosticProperty.RegisterCodeFix, bool.FalseString);
+			var diagnosticProperties = ImmutableDictionary<string, string?>.Empty
+																		   .Add(DiagnosticProperty.RegisterCodeFix, bool.FalseString);
 			context.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(
 					Descriptors.PX1027_ForbiddenCompanyPrefixInDacFieldName, identifier.GetLocation(), diagnosticProperties),

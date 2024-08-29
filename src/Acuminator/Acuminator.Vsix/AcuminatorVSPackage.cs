@@ -264,7 +264,7 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
-			OleMenuCommandService? oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>();
+			OleMenuCommandService? oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>(throwOnFailure: false);
 
 			if (oleCommandService == null)
 			{
@@ -283,7 +283,7 @@ namespace Acuminator.Vsix
 		private async System.Threading.Tasks.Task<bool> IsSolutionLoadedAsync()
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
-			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>();
+			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>(throwOnFailure: false);
 
 			if (solutionService == null)
 				return false;

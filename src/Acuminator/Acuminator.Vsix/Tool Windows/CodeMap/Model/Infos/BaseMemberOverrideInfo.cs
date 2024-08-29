@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				
 				case IMethodSymbol methodSymbol:
 					bool isConfigureMethod = graphSemanticModel.ConfigureMethodOverrides
-															   .Any(configureMethodInfo => methodSymbol.Equals(configureMethodInfo.Symbol));
+															   .Any(configureMethodInfo => methodSymbol.Equals(configureMethodInfo.Symbol, SymbolEqualityComparer.Default));
 					if (isConfigureMethod)
 						return MemberOverrideKind.ConfigureMethodOverride;
 

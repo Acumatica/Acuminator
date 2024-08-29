@@ -132,7 +132,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (changedProperty.Parent is not ClassDeclarationSyntax changedDac || changedDac.Identifier.Text != dacCandidate.Node.Identifier.Text)
 				return false;
 
-			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out DacPropertyInfo dacPropertyInfoCandidate))
+			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out DacPropertyInfo? dacPropertyInfoCandidate))
 				return false;
 
 			return dacPropertyInfoCandidate.IsInSource && 

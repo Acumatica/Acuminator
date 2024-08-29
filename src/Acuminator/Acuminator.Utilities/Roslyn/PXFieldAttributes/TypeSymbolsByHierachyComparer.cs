@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </returns>
 		public int Compare(ITypeSymbol x, ITypeSymbol y)
 		{
-			if (x.Equals(y))
+			if (x.Equals(y, SymbolEqualityComparer.Default))
 				return 0;
 			else if (x.InheritsFrom(y))
 				return -1;

@@ -60,9 +60,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 									pxContext.AttributeTypes.PXStringListAttribute.Type };
 
 			var attributeTypes = property.GetAttributes()
-										 .Select(a => a.AttributeClass);
+										 .Select(a => a.AttributeClass!)
+										 .Where(attrType => attrType != null);
 			var listAttribute = attributeTypes.FirstOrDefault(attributeType =>
-													lists.Any(lAttribute => attributeType.InheritsFromOrEquals(lAttribute, true)));
+												lists.Any(lAttribute => attributeType.InheritsFromOrEquals(lAttribute, includeInterfaces: true)));
 
 			cancellationToken.ThrowIfCancellationRequested();
 

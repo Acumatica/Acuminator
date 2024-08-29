@@ -18,7 +18,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		private protected SymbolsSetForTypeBase(Compilation compilation, string typeName) : base(compilation)
 		{
-			Type = compilation.GetTypeByMetadataName(typeName);
+			Type = compilation.GetTypeByMetadataName(typeName)!;
 		}
 
 		private protected SymbolsSetForTypeBase(Compilation compilation, INamedTypeSymbol type) : base(compilation)

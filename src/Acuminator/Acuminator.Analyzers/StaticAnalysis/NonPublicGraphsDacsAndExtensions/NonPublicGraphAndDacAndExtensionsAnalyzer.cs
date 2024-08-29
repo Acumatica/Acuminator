@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 			var modifierSetsLocationsForTypeDeclarations = 
 				GetBadModifierSetsLocationsForTypeDeclarations(dacOrGraphOrExtensionModel.Symbol, context.CancellationToken);
-			ImmutableDictionary<string, string>? diagnosticProperties = null;
+			ImmutableDictionary<string, string?>? diagnosticProperties = null;
 
 			foreach (ModifierSetsLocations typeDeclarationModifierSetsLocations in modifierSetsLocationsForTypeDeclarations)
 			{
@@ -76,8 +76,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 
 				foreach (Location modifierSetLocation in typeDeclarationModifierSetsLocations)
 				{
-					diagnosticProperties ??= ImmutableDictionary<string, string>.Empty
-																				.Add(nameof(CheckedSymbolKind), checkedSymbolKind.ToString());
+					diagnosticProperties ??= ImmutableDictionary<string, string?>.Empty
+																				 .Add(nameof(CheckedSymbolKind), checkedSymbolKind.ToString());
 
 					var diagnostic = Diagnostic.Create(descriptor, modifierSetLocation, diagnosticProperties);
 					context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
@@ -225,7 +225,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 					var lastModifier  = modifiersSet[^1];
 					var span		  = TextSpan.FromBounds(firstModifier.SpanStart, lastModifier.Span.End);
 
-					return Location.Create(firstModifier.SyntaxTree, span);
+					return Location.Create(firstModifier.SyntaxTree!, span);
 				}
 			}
 		}

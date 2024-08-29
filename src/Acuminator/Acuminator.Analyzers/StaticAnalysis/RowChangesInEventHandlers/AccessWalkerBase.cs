@@ -28,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				Success = false;
 			}
 
-			public override void Visit(SyntaxNode node)
+			public override void Visit(SyntaxNode? node)
 			{
 				if (!Success)
 					base.Visit(node);

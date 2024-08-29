@@ -35,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 			if (primaryDAC == null)
 				return;
 
-			ImmutableDictionary<string, string>? diagnosticExtraData = null;
+			ImmutableDictionary<string, string?>? diagnosticExtraData = null;
 
 			foreach (ActionInfo action in declaredActions)
 			{
@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 					continue;
 
 				diagnosticExtraData = diagnosticExtraData ??
-					new Dictionary<string, string>
+					new Dictionary<string, string?>
 					{
 						{ DiagnosticProperty.DacName, primaryDAC.Name },
 						{ DiagnosticProperty.DacMetadataName, primaryDAC.GetCLRTypeNameFromType() }
@@ -64,11 +64,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryDac
 				return true;
 
 			ITypeSymbol pxActionDacType = actionTypeArgs[0];
-			return pxActionDacType.Equals(primaryDAC);
+			return pxActionDacType.Equals(primaryDAC, SymbolEqualityComparer.Default);
 		}
 
 		private static void RegisterDiagnosticForAction(ISymbol actionSymbol, string primaryDacName, 
-														ImmutableDictionary<string, string> diagnosticProperties,
+														ImmutableDictionary<string, string?> diagnosticProperties,
 														SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			var symbolSyntax = actionSymbol.GetSyntax(symbolContext.CancellationToken);

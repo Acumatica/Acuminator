@@ -36,8 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.DAC != null)
-																			  .ToLookup(view => view.DAC!);
+			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel)
+															.Where(view => view.DAC != null)
+															.ToLookup(view => view.DAC!,
+																			 SymbolEqualityComparer.Default as IEqualityComparer<ITypeSymbol>);
 			if (viewsGroupedByDAC.Count == 0)
 				return;
 
@@ -103,7 +105,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		{
 			foreach (DataViewInfo view in viewsToShowDiagnostic)
 			{
-				Location viewLocation = view.Symbol.Locations.FirstOrDefault();
+				Location? viewLocation = view.Symbol.Locations.FirstOrDefault();
 
 				if (viewLocation == null)
 					continue;

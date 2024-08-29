@@ -24,7 +24,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string LightIconSuffix = "Light";
 		private const string DarkIconSuffix = "Dark";
 
-		private ResourceDictionary _resourceDictionary = new()
+		private readonly ResourceDictionary _resourceDictionary = new()
 		{
 			Source = new Uri(BitmapsCollectionURI)
 		};

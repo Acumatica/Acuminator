@@ -129,8 +129,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Cancellation.ThrowIfCancellationRequested();
 			var graphSemanticModel = graphMemberCategory.GraphSemanticModel;
 			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes.OfType<TSymbolInfo>()
-										where graphSemanticModel.Symbol.Equals(graphMemberInfo.SymbolBase.ContainingType) ||
-											  Equals(graphSemanticModel.Symbol.OriginalDefinition, graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition)
+										where graphSemanticModel.Symbol.Equals(graphMemberInfo.SymbolBase.ContainingType, SymbolEqualityComparer.Default) ||
+											  SymbolEqualityComparer.Default.Equals(graphSemanticModel.Symbol.OriginalDefinition, 
+																					graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition)
 										select constructor(graphMemberInfo);
 
 			return graphMemberViewModels;
@@ -163,8 +164,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			Cancellation.ThrowIfCancellationRequested();
 			var dacGroupingNodesViewModels = from eventInfo in graphCategoryEvents
-											 where graphSemanticModel.Symbol.Equals(eventInfo.Symbol.ContainingType) ||
-												   Equals(eventInfo.Symbol.ContainingType.OriginalDefinition, graphSemanticModel.Symbol.OriginalDefinition)
+											 where graphSemanticModel.Symbol.Equals(eventInfo.Symbol.ContainingType, SymbolEqualityComparer.Default) ||
+												   SymbolEqualityComparer.Default.Equals(eventInfo.Symbol.ContainingType.OriginalDefinition, 
+																						 graphSemanticModel.Symbol.OriginalDefinition)
 											 group eventInfo by eventInfo.DacName into graphEventsForDAC
 											 select constructor(graphEventCategory, graphEventsForDAC.Key, graphEventsForDAC) into dacNodeVM
 											 where dacNodeVM != null
@@ -204,9 +206,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(ViewNodeViewModel viewNode)
 		{
 			var hasViewDelegate = viewNode.MemberCategory.GraphSemanticModel.ViewDelegatesByNames.TryGetValue(viewNode.MemberSymbol.Name,
-																											  out DataViewDelegateInfo viewDelegate);
+																											  out DataViewDelegateInfo? viewDelegate);
 			return hasViewDelegate
-				? new GraphMemberInfoNodeViewModel(viewNode, viewDelegate, GraphMemberInfoType.ViewDelegate).ToEnumerable()
+				? new GraphMemberInfoNodeViewModel(viewNode, viewDelegate!, GraphMemberInfoType.ViewDelegate).ToEnumerable()
 				: DefaultValue;
 		}
 
@@ -214,9 +216,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var hasActionHandler =
 				actionNode.MemberCategory.GraphSemanticModel.ActionHandlersByNames.TryGetValue(actionNode.MemberSymbol.Name,
-																							   out ActionHandlerInfo actionHandler);
+																							   out ActionHandlerInfo? actionHandler);
 			return hasActionHandler
-				? new GraphMemberInfoNodeViewModel(actionNode, actionHandler, GraphMemberInfoType.ActionHandler).ToEnumerable()
+				? new GraphMemberInfoNodeViewModel(actionNode, actionHandler!, GraphMemberInfoType.ActionHandler).ToEnumerable()
 				: DefaultValue;
 		}
 

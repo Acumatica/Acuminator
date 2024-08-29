@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
@@ -67,7 +67,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				}
 			}
 
-			private bool CheckThrowExpression(ExpressionSyntax expressionAfterThrowkeyword, SyntaxNode throwNodeToReport)
+			private bool CheckThrowExpression(ExpressionSyntax? expressionAfterThrowkeyword, SyntaxNode throwNodeToReport)
 			{
 				ThrowIfCancellationRequested();
 
@@ -94,15 +94,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				return isReported;
 			}
 
-			protected virtual bool IsThrowingOfThisExceptionInRowPersistedAllowed(ExpressionSyntax? expressionAfterThrowkeyword)
+			protected virtual bool IsThrowingOfThisExceptionInRowPersistedAllowed(
+																	[NotNullWhen(returnValue: true)] ExpressionSyntax? expressionAfterThrowkeyword)
 			{
 				if (expressionAfterThrowkeyword?.SyntaxTree == null)
-					return false;                                     // It's better to be conservative here and report thrown exception if we can't verify its type
+					return false;								 // It's better to be conservative here and report thrown exception if we can't verify its type
 
 				SemanticModel? semanticModel = GetSemanticModel(expressionAfterThrowkeyword.SyntaxTree);
 				ITypeSymbol? exceptiontype = semanticModel?.GetTypeInfo(expressionAfterThrowkeyword).Type;
 
-				bool isAllowed = exceptiontype != null &&             // It's better to be conservative here and report thrown exception if we can't verify its type
+				bool isAllowed = exceptiontype != null &&      // It's better to be conservative here and report thrown exception if we can't verify its type
 								 _exceptionTypesAllowedInRowPersisted.Any(allowedExceptionType => exceptiontype.InheritsFromOrEquals(allowedExceptionType));
 				return isAllowed;
 			}

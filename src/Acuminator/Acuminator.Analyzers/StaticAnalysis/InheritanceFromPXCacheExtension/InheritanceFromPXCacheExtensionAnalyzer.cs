@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			if (dac.Symbol.BaseType.Name == TypeNames.PXCacheExtension)
+			if (dac.Symbol.BaseType?.Name == TypeNames.PXCacheExtension)
 			{
 				if (!dac.Symbol.IsSealed)
 				{

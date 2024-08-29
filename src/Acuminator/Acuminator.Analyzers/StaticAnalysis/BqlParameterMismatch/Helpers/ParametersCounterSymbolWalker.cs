@@ -104,8 +104,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (type == null || _iViewConfig2018R2 == null)
 					return false;
 
-				return type.AllInterfaces.Any(interfaceType => _iViewConfig2018R2.Equals(interfaceType) || 
-															   _iViewConfig2018R2.Equals(interfaceType?.OriginalDefinition));
+				return type.AllInterfaces.Any(interfaceType => _iViewConfig2018R2.Equals(interfaceType, SymbolEqualityComparer.Default) || 
+															   _iViewConfig2018R2.Equals(interfaceType?.OriginalDefinition, SymbolEqualityComparer.Default));
 			}
 		}
 	}

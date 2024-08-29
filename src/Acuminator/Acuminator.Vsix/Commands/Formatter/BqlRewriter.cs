@@ -45,7 +45,7 @@ namespace Acuminator.Vsix.Formatter
 		{
 		}
 
-		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
+		public override SyntaxNode? VisitGenericName(GenericNameSyntax node)
 		{
 			if (node.TypeArgumentList.Arguments.Count <= 1)
 				return base.VisitGenericName(node);
@@ -66,32 +66,32 @@ namespace Acuminator.Vsix.Formatter
 			return base.VisitGenericName(node);
 		}
 
-		public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node)
+		public override SyntaxNode? VisitFieldDeclaration(FieldDeclarationSyntax node)
 		{
 			using (new WithDefaultTriviaFrom(this, node))
 			{
-				var newNode = (FieldDeclarationSyntax) base.VisitFieldDeclaration(node);
+				var newNode = base.VisitFieldDeclaration(node) as FieldDeclarationSyntax;
 
 				if (newNode != node)
 				{
 					// Using rewriter because there might be multiple declarators
 					var childRewriter = new BqlViewDeclarationRewriter(this, DefaultLeadingTrivia);
-					newNode = (FieldDeclarationSyntax) childRewriter.Visit(newNode);
+					newNode = childRewriter.Visit(newNode) as FieldDeclarationSyntax;
 				}
 
 				return newNode;
 			}
 		}
 
-		public override SyntaxNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+		public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
 			using (new WithDefaultTriviaFrom(this, node))
 			{
-				var newNode = (MemberAccessExpressionSyntax) base.VisitMemberAccessExpression(node);
+				var newNode = base.VisitMemberAccessExpression(node) as MemberAccessExpressionSyntax;
 
 				if (newNode != node)
 				{
-					newNode = newNode.WithOperatorToken(OnNewLineAndIndented(newNode.OperatorToken));
+					newNode = newNode?.WithOperatorToken(OnNewLineAndIndented(newNode.OperatorToken));
 				}
 
 				return newNode;

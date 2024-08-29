@@ -44,9 +44,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         {
 			Type.ThrowOnNull();
 
-			GenericTypeGraph = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1);
-			GenericTypeGraphDac = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2);
-			GenericTypeGraphDacField = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3);
+			GenericTypeGraph = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1)!;
+			GenericTypeGraphDac = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2)!;
+			GenericTypeGraphDacField = Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3)!;
 
 			CreateInstance = Type.GetMethods(DelegateNames.CreateInstance).ToImmutableArray();
 			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(Compilation);

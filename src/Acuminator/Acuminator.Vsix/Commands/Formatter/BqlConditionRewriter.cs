@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.Formatter
 		{
 		}
 
-		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
+		public override SyntaxNode? VisitGenericName(GenericNameSyntax node)
 		{
 			bool moveWhereToNextLine = _firstWhereInParenthesis || _externalMode;
 			_firstWhereInParenthesis = false;

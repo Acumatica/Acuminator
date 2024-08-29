@@ -22,7 +22,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private const string TargetElement = "target";
 		private const string SyntaxNodeElement = "syntaxNode";
 
-		private static HashSet<SyntaxKind> _targetKinds = 
+		private static readonly HashSet<SyntaxKind> _targetKinds = 
 		[
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.StructDeclaration,

@@ -29,7 +29,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (containingMethod.Body == null)
 				return false;
 
-			DataFlowAnalysis dataFlowAnalysis = semanticModel.AnalyzeDataFlow(containingMethod.Body);
+			DataFlowAnalysis? dataFlowAnalysis = semanticModel.AnalyzeDataFlow(containingMethod.Body);
 
 			if (dataFlowAnalysis == null || !dataFlowAnalysis.Succeeded)
 				return false;
@@ -126,7 +126,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (declarations.Length == 0)
 				return Task.FromResult<SyntaxNode?>(null);
 
-			return declarations[0].GetSyntaxAsync(cancellationToken);
+			return declarations[0].GetSyntaxAsync(cancellationToken)!;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,12 +169,12 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			switch (member)
 			{		
 				case FieldDeclarationSyntax fieldDeclaration:
-					VariableDeclaratorSyntax firstFieldDeclaration = fieldDeclaration.Declaration.Variables.FirstOrDefault();
+					VariableDeclaratorSyntax? firstFieldDeclaration = fieldDeclaration.Declaration.Variables.FirstOrDefault();
 					return firstFieldDeclaration != null 
 						? semanticModel.GetDeclaredSymbol(firstFieldDeclaration, cancellationToken)?.DeclaredAccessibility
 						: null;
 				case EventFieldDeclarationSyntax eventFieldDeclaration:
-					VariableDeclaratorSyntax firstEventDeclaration = eventFieldDeclaration.Declaration.Variables.FirstOrDefault();     //for field event declaration
+					VariableDeclaratorSyntax? firstEventDeclaration = eventFieldDeclaration.Declaration.Variables.FirstOrDefault();     //for field event declaration
 					return firstEventDeclaration != null 
 						? semanticModel.GetDeclaredSymbol(firstEventDeclaration, cancellationToken)?.DeclaredAccessibility
 						: null;

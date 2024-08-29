@@ -133,7 +133,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 																 CancellationToken cancellation) =>
 			bqlSelectGraphArgNodes.Select(graphArgSyntax => semanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, cancellation))
 								  .Where(graphArgSymbol => graphArgSymbol != null && (graphArgSymbol is not IPropertySymbol or IFieldSymbol))
-								  .ToHashSet()!;
+								  .ToHashSet(SymbolEqualityComparer.Default)!;
 
 		private Dictionary<ISymbol, List<SyntaxNode>> GetGraphSymbolsUsages(CSharpSyntaxNode body, List<ISymbol> existingGraphs, SemanticModel semanticModel,
 																			ImmutableArray<ExpressionSyntax> bqlSelectGraphArgNodesToSkip, 
@@ -142,13 +142,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			var nodesToVisit = body.DescendantNodesAndSelf()
 								   .Where(n => n is not ExpressionSyntax expressionNode || 
 											  !bqlSelectGraphArgNodesToSkip.Contains(expressionNode));
-			var graphSymbolsUsages = new Dictionary<ISymbol, List<SyntaxNode>>();
+			var graphSymbolsUsages = new Dictionary<ISymbol, List<SyntaxNode>>(SymbolEqualityComparer.Default);
 
 			foreach (var subNode in nodesToVisit)
 			{
 				var symbol = semanticModel.GetSymbolOrFirstCandidate(subNode, cancellation);
 
-				if (symbol != null && existingGraphs.Contains(symbol))
+				if (symbol != null && existingGraphs.Contains(symbol, SymbolEqualityComparer.Default))
 				{
 					if (graphSymbolsUsages.TryGetValue(symbol, out List<SyntaxNode> usageNodes))
 						usageNodes.Add(subNode);
@@ -197,10 +197,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// If there is only a single local variable available then there are no other graphs in the context to use other than this local variable.
 			// This is the case of static graph methods used by processing views where a graph instance is created and used inside the static method. 
 			// We allow such cases.
-			if (availableGraphsNotUsedBeforeBqlQuery.Count == 1 && localVar.Equals(availableGraphsNotUsedBeforeBqlQuery[0]))
+			if (availableGraphsNotUsedBeforeBqlQuery.Count == 1 && localVar.Equals(availableGraphsNotUsedBeforeBqlQuery[0], SymbolEqualityComparer.Default))
 				return;
 
-			var diagnosticProperties = CreateDiagnosticProperties(availableGraphsNotUsedBeforeBqlQuery.Where(graph => !localVar.Equals(graph)), pxContext);
+			var diagnosticProperties = CreateDiagnosticProperties(
+											availableGraphsNotUsedBeforeBqlQuery.Where(graph => !localVar.Equals(graph, SymbolEqualityComparer.Default)), 
+											pxContext);
 			context.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries_ReuseExistingGraphVariable, graphArgSyntax.GetLocation(), diagnosticProperties),
 				pxContext.CodeAnalysisSettings);
@@ -223,9 +225,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			return true;
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
+		private ImmutableDictionary<string, string?> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
 		{
-			var builder = ImmutableDictionary.CreateBuilder<string, string>();
+			var builder = ImmutableDictionary.CreateBuilder<string, string?>();
 			int i = 0;
 
 			foreach (var graph in availableGraphs)

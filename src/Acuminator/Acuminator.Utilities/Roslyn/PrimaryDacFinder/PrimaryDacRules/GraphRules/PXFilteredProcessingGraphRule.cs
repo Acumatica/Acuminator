@@ -42,9 +42,10 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 			{
 				dacFinder.CancellationToken.ThrowIfCancellationRequested();
 
-				var fProcessingView = view.Type.GetBaseTypesAndThis()
-											   .FirstOrDefault(t => _pxFilteredProcessingType.Equals(t) || 
-																	_pxFilteredProcessingType.Equals(t.OriginalDefinition));
+				var fProcessingView = 
+					view.Type.GetBaseTypesAndThis()
+							 .FirstOrDefault(t => _pxFilteredProcessingType.Equals(t, SymbolEqualityComparer.Default) || 
+												  _pxFilteredProcessingType.Equals(t.OriginalDefinition, SymbolEqualityComparer.Default));
 
 				if (fProcessingView is not INamedTypeSymbol filteredProcessingView)
 					continue;

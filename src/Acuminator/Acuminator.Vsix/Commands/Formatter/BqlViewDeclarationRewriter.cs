@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.Formatter
 {
-	class BqlViewDeclarationRewriter : BqlRewriterBase
+	internal class BqlViewDeclarationRewriter : BqlRewriterBase
 	{
 		public BqlViewDeclarationRewriter(BqlRewriterBase parent, SyntaxTriviaList defaultLeadingTrivia) 
 			: base(parent, defaultLeadingTrivia)

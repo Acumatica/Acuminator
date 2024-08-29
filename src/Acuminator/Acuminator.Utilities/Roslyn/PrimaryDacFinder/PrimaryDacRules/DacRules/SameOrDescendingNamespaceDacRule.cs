@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.DacRules
 				return false;
 
 			var graphNamespace = dacFinder.GraphSemanticModel.GraphSymbol.ContainingNamespace;
-			return dac.GetContainingNamespaces().Contains(graphNamespace);
+			return dac.GetContainingNamespaces().Contains(graphNamespace, SymbolEqualityComparer.Default);
 		}
 	}
 }

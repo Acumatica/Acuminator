@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				return null;
 
 			cancellationToken.ThrowIfCancellationRequested();
-			string? methodName = null;
+			string? methodName;
 
 			switch (longOperationSetupMethodInvocationNode?.Expression)
 			{
@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 					var longRunDelegate = semanticModel.GetSymbolInfo(methodAccessNode, cancellationToken).Symbol as IMethodSymbol;
 
 					if (longRunDelegate != null && longRunDelegate.IsStatic && longRunDelegate.DeclaredAccessibility == Accessibility.Public &&
-						pxContext.PXLongOperation.Equals(longRunDelegate.ContainingType))
+						pxContext.PXLongOperation.Equals(longRunDelegate.ContainingType, SymbolEqualityComparer.Default))
 					{
 						return LongOperationDelegateType.LongRunDelegate;
 					}

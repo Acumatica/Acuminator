@@ -27,7 +27,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		{
 			Type.ThrowOnNull();
 
-			GenericType = Compilation.GetTypeByMetadataName(TypeFullNames.PXCache1);
+			GenericType = Compilation.GetTypeByMetadataName(TypeFullNames.PXCache1)!;
 
 			Insert = Type.GetMethods(DelegateNames.Insert).ToImmutableArray();
 			Update = Type.GetMethods(DelegateNames.Update).ToImmutableArray();

@@ -27,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				"SetDefaultExt",
 			};
 
-			private SymbolAnalysisContext _context;
+			private readonly SymbolAnalysisContext _context;
 			private readonly SemanticModel _semanticModel;
 			private readonly PXContext _pxContext;
 			private readonly RowChangesAnalysisMode _analysisMode;
@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_semanticModel = semanticModel.CheckIfNull();
 				_pxContext = pxContext.CheckIfNull();
 				_analysisMode = analysisMode;
-				_rowVariables = rowVariables.ToImmutableHashSet();
+				_rowVariables = rowVariables.ToImmutableHashSet<ILocalSymbol>(SymbolEqualityComparer.Default);
 				_messageArgs = messageArgs;
 
 				_variableMemberAccessWalker = new VariableMemberAccessWalker(_rowVariables, semanticModel);

@@ -30,12 +30,12 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 			DisplayPreview = displayPreview;
 		}
 
-		protected override Task<Document?> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
-			Task.FromResult<Document?>(null);
+		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
+			Task.FromResult<Document>(null!);
 
-		protected override Task<IEnumerable<CodeActionOperation>?> ComputePreviewOperationsAsync(CancellationToken cancellationToken) =>
+		protected override Task<IEnumerable<CodeActionOperation>> ComputePreviewOperationsAsync(CancellationToken cancellationToken) =>
 			DisplayPreview
 				? base.ComputePreviewOperationsAsync(cancellationToken)
-				: Task.FromResult<IEnumerable<CodeActionOperation>?>(null);
+				: Task.FromResult<IEnumerable<CodeActionOperation>>([]);
 	}
 }

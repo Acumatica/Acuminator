@@ -103,9 +103,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			SyntaxNode newRoot;
 			if (mode == CodeFixModes.RemoveIdentityAttribute)
-				newRoot = root.RemoveNodes(nodesToDelete, SyntaxRemoveOptions.KeepExteriorTrivia);
+				newRoot = root.RemoveNodes(nodesToDelete, SyntaxRemoveOptions.KeepExteriorTrivia)!;
 			else
-				newRoot = root.RemoveNodes(nodesToDelete, SyntaxRemoveOptions.KeepNoTrivia);
+				newRoot = root.RemoveNodes(nodesToDelete, SyntaxRemoveOptions.KeepNoTrivia)!;
 
 			return document.WithSyntaxRoot(newRoot);
 		}
@@ -154,10 +154,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private IEnumerable<AttributeArgumentSyntax> GetIsKeyEQTrueArguments(AttributeSyntax attributeNode)
 		{
-			var arguments = attributeNode.ArgumentList.Arguments;
+			var arguments = attributeNode.ArgumentList?.Arguments ?? default;
 
 			if (arguments.Count == 0)
-				return Enumerable.Empty<AttributeArgumentSyntax>();
+				return [];
 
 			return arguments.Where(attributeArgument => QueryIfIsKeyAttributeArgument(attributeArgument) && 
 														CheckIfAttributeArgumentValueIsTrue(attributeArgument));

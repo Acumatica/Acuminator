@@ -59,7 +59,7 @@ namespace Acuminator.Vsix.Utilities
 			return GetVisualDescendantsImpl(uiElement, elementChildrenCount);
 
 			//-------------------------------------------Local function-----------------------------------
-			IEnumerable<FrameworkElement> GetVisualDescendantsImpl(FrameworkElement parent, int childrenCount)
+			static IEnumerable<FrameworkElement> GetVisualDescendantsImpl(FrameworkElement parent, int childrenCount)
 			{
 				for (int i = 0; i < childrenCount; i++)
 				{

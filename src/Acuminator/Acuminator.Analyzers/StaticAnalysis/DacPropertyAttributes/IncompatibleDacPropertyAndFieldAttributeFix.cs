@@ -102,7 +102,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			var fieldAttributeDataTypes = (from attrInfo in attributesMetadataProvider.GetDacFieldTypeAttributeInfos(attributeType)
 										   where attrInfo.IsFieldAttribute && attrInfo.DataType != null
 										   select attrInfo.DataType)
-										  .ToHashSet();
+										  .ToHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 
 			if (fieldAttributeDataTypes.Count != 1) 
 				return document;
@@ -116,9 +116,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				replacingTypeNode = generator.NullableTypeExpression(replacingTypeNode) as TypeSyntax;
 			}
 
+			if (replacingTypeNode == null)
+				return document;
+
 			cancellationToken.ThrowIfCancellationRequested();
 
-			replacingTypeNode = replacingTypeNode.WithTrailingTrivia(propertyNode.Type.GetTrailingTrivia());		
+			replacingTypeNode = replacingTypeNode.WithTrailingTrivia(propertyNode.Type.GetTrailingTrivia());
 			var propertyModified = propertyNode.WithType(replacingTypeNode);
 			var modifiedRoot = root.ReplaceNode(propertyNode, propertyModified);
 			return document.WithSyntaxRoot(modifiedRoot);

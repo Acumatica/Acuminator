@@ -122,7 +122,7 @@ namespace Acuminator.Tests.Verification
 				{
 					// Format and get the compiler diagnostics again so that the locations make sense in the output
 					var changedRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-					var formattedRoot = Formatter.Format(changedRoot, Formatter.Annotation, document.Project.Solution.Workspace);
+					var formattedRoot = Formatter.Format(changedRoot.CheckIfNull(), Formatter.Annotation, document.Project.Solution.Workspace);
 
 					document = document.WithSyntaxRoot(formattedRoot);
 					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
