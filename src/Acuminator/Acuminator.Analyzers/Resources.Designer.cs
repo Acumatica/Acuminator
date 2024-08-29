@@ -1465,7 +1465,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC field property &quot;{0}&quot; has Acumatica attributes on declared on it but does not have a corresponding BQL field. Such properties are not supported..
+        ///   Looks up a localized string similar to The DAC field property &quot;{0}&quot; has Acumatica attributes declared on it but does not have a corresponding BQL field. Such properties are not supported..
         /// </summary>
         public static string PX1065TitleFormat {
             get {
