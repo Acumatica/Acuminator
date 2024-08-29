@@ -601,10 +601,10 @@ public virtual int? SomeDacField{ get; set; }</value>
     <value>Add missing "{0}" BQL field to DAC</value>
   </data>
   <data name="PX1065TitleFormat" xml:space="preserve">
-    <value>The DAC field property "{0}" has Acumatica attributes on declared on it but does not have a corresponding BQL field. Such properties are not supported.</value>
+    <value>The DAC field property "{0}" has Acumatica attributes declared on it but does not have a corresponding BQL field. Such properties are not supported.</value>
   </data>
   <data name="PX1066FixFormat" xml:space="preserve">
-    <value>Change the BQL field name to "{0}" to match the DAC field property name</value>
+    <value>Change the name of the BQL field to "{0}" to match the DAC field property name.</value>
   </data>
   <data name="PX1066TitleFormat" xml:space="preserve">
     <value>A possible typo in the BQL field name. The DAC field property name for this BQL field: {0}.</value>
