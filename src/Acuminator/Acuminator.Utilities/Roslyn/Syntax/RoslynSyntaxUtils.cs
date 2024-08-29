@@ -332,5 +332,31 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 
 			return false;
 		}
+
+		public static List<SyntaxTrivia> GetRegionDirectiveLinesFromTrivia(this in SyntaxTriviaList trivias)
+		{
+			if (trivias.Count == 0)
+				return [];
+
+			var regionTrivias = new List<SyntaxTrivia>(2);
+			SyntaxTrivia? previousTrivia = null;
+
+			for (int i = 0; i < trivias.Count; i++)
+			{
+				var trivia = trivias[i];
+
+				if (trivia.Kind() is SyntaxKind.RegionDirectiveTrivia or SyntaxKind.EndRegionDirectiveTrivia)
+				{
+					if (previousTrivia.HasValue && previousTrivia.Value.IsKind(SyntaxKind.WhitespaceTrivia))
+						regionTrivias.Add(previousTrivia.Value);
+
+					regionTrivias.Add(trivia);
+				}
+
+				previousTrivia = trivia;
+			}
+
+			return regionTrivias;
+		}
 	}
 }

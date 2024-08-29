@@ -1,10 +1,10 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
@@ -15,25 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 {
 	public class LegacyBqlFieldAnalyzer : DacAggregatedAnalyzerBase
 	{
-		public const string CorrespondingPropertyType = "CorrespondingPropertyType";
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1060_LegacyBqlField);
-
-		public static readonly ImmutableDictionary<string, string> PropertyTypeToFieldType = new Dictionary<string, string>
-		{
-			["String"] = "String",
-			["Guid"] = "Guid",
-			["DateTime"] = "DateTime",
-			["Boolean"] = "Bool",
-			["Byte"] = "Byte",
-			["Int16"] = "Short",
-			["Int32"] = "Int",
-			["Int64"] = "Long",
-			["Single"] = "Float",
-			["Double"] = "Double",
-			["Decimal"] = "Decimal",
-			["Byte[]"] = "ByteArray",
-		}.ToImmutableDictionary();
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
 			pxContext.IsAcumatica2019R1_OrGreater && 
@@ -45,40 +27,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (dacField.Symbol.BaseType.SpecialType != SpecialType.System_Object || AlreadyStronglyTyped(dacField.Symbol, pxContext))
+				if (dacField.Symbol.BaseType.SpecialType != SpecialType.System_Object ||
+					dacField.Symbol.IsStronglyTypedBqlFieldOrBqlConstant(pxContext))
+				{
+					continue;
+				}
+
+				Location? location = dacField.Symbol.Locations.FirstOrDefault();
+
+				if (location == null || !dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
 					continue;
 
-				Location location = dacField.Symbol.Locations.FirstOrDefault();
+				string? propertyTypeName = property.EffectivePropertyType.GetSimplifiedName();
 
-				if (location != null && dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo property))
-				{
-					string? propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
+				if (propertyTypeName == null || !PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(propertyTypeName))
+					continue;
 
-					if (propertyTypeName == null || !PropertyTypeToFieldType.ContainsKey(propertyTypeName))
-						continue;
-
-					var args = ImmutableDictionary.CreateBuilder<string, string>();
-					args.Add(CorrespondingPropertyType, propertyTypeName);
-					context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacField.Name),
-						pxContext.CodeAnalysisSettings);
-				}
+				var args = ImmutableDictionary.CreateBuilder<string, string>();
+				args.Add(DiagnosticProperty.PropertyType, propertyTypeName);
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacField.Name),
+					pxContext.CodeAnalysisSettings);
 			}
 		}
-
-		internal static bool AlreadyStronglyTyped(INamedTypeSymbol dacFieldType, PXContext pxContext) =>
-			dacFieldType.AllInterfaces.Any(t =>
-				t.IsGenericType
-				&& t.OriginalDefinition.Name == pxContext.IImplementType.Name
-				&& t.TypeArguments.First().AllInterfaces.Any(z => z.Name == pxContext.BqlTypes.BqlDataType.Name));
-
-		private static string? GetPropertyTypeName(IPropertySymbol property, PXContext pxContext) =>
-			property.Type switch
-			{
-				IArrayTypeSymbol arrType                                        => arrType.ElementType.Name + "[]",
-				INamedTypeSymbol namedType when namedType.IsNullable(pxContext) => namedType.GetUnderlyingTypeFromNullable(pxContext)?.Name,
-				INamedTypeSymbol namedType                                      => namedType.Name,
-				_                                                               => null,
-			};
 	}
 }

@@ -152,7 +152,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 																								PXContext pxContext, CancellationToken cancellation)
 		{
 			IEnumerable<INamedTypeSymbol> dacBqlFields = dacOrDacExtension.GetTypeMembers()
-																		  .Where(type => type.IsDacField(pxContext)); 
+																		  .Where(type => type.IsDacBqlField(pxContext)); 
 			foreach (INamedTypeSymbol bqlField in dacBqlFields)
 			{
 				cancellation.ThrowIfCancellationRequested();

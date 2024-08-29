@@ -115,8 +115,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			}
 			else
 			{
-				string commentCodeActionFormat = nameof(Resources.SuppressDiagnosticWithCommentNonNestedCodeActionTitle).GetLocalized().ToString();
-				commentCodeActionName = string.Format(commentCodeActionFormat, diagnostic.Id);
+				commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentNonNestedCodeActionTitle)
+												.GetLocalized(diagnostic.Id).ToString();
 			}
 
 			return CodeAction.Create(commentCodeActionName,

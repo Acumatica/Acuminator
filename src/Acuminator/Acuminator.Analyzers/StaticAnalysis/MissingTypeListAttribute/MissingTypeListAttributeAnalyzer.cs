@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -21,30 +20,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			var typeAttributesSet = GetTypeAttributesSet(pxContext);
-
-			foreach (DacPropertyInfo property in dac.AllDeclaredProperties)
+			foreach (DacPropertyInfo property in dac.DeclaredDacFieldPropertiesWithAcumaticaAttributes)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				AnalyzeProperty(property, context, pxContext, typeAttributesSet);
+				AnalyzeProperty(property, context, pxContext);
 			}
 		}
 
-		private static void AnalyzeProperty(DacPropertyInfo property, SymbolAnalysisContext context, PXContext pxContext,
-											IEnumerable<INamedTypeSymbol> typeAttributesSet)
+		private static void AnalyzeProperty(DacPropertyInfo property, SymbolAnalysisContext context, PXContext pxContext)
 		{
-			var attributeTypes = property.Symbol.GetAttributes()
-												.Select(a => a.AttributeClass)
-												.ToList(capacity: 4);
-
-			bool hasListAttribute = attributeTypes.Any(type => type.ImplementsInterface(pxContext.IPXLocalizableList));
-
+			bool hasListAttribute = property.Attributes
+											.SelectMany(aInfo => aInfo.FlattenedAcumaticaAttributes)
+											.Any(flattenedAttribute => flattenedAttribute.Type.ImplementsInterface(pxContext.IPXLocalizableList));
 			if (!hasListAttribute)
 				return;
 
-			//TODO we need to use FieldTypeAttributesRegister to perform complete analysis with consideration for aggregate attributes 
-			bool hasTypeAttribute = attributeTypes.Any(propertyAttributeType => 
-										typeAttributesSet.Any(typeAttribute => propertyAttributeType.InheritsFromOrEquals(typeAttribute)));
+			bool hasTypeAttribute = property.Attributes
+											.Any(aInfo => aInfo.AggregatedAttributeMetadata
+															   .Any(attrMeta => attrMeta.IsFieldAttribute));
 			if (!hasTypeAttribute)
 			{
 				context.ReportDiagnosticWithSuppressionCheck(
@@ -52,22 +45,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 					pxContext.CodeAnalysisSettings);
 			}
 		}
-
-		private static IEnumerable<INamedTypeSymbol> GetTypeAttributesSet(PXContext pxContext) =>
-			new INamedTypeSymbol[]
-			{
-				pxContext.FieldAttributes.PXIntAttribute,
-				pxContext.FieldAttributes.PXShortAttribute,
-				pxContext.FieldAttributes.PXStringAttribute,
-				pxContext.FieldAttributes.PXByteAttribute,
-				pxContext.FieldAttributes.PXDBDecimalAttribute,
-				pxContext.FieldAttributes.PXDBDoubleAttribute,
-				pxContext.FieldAttributes.PXDBIntAttribute,
-				pxContext.FieldAttributes.PXDBShortAttribute,
-				pxContext.FieldAttributes.PXDBStringAttribute,
-				pxContext.FieldAttributes.PXDBByteAttribute,
-				pxContext.FieldAttributes.PXDecimalAttribute,
-				pxContext.FieldAttributes.PXDoubleAttribute
-			};
 	}
 }

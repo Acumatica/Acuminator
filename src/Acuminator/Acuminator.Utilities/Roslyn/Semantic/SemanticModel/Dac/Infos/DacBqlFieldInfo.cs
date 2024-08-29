@@ -4,26 +4,28 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
-using System.Collections.Generic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
 	public class DacBqlFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, IWriteableBaseItem<DacBqlFieldInfo>
 	{
+		protected DacBqlFieldInfo? _baseInfo;
+
 		/// <summary>
 		/// The overriden dac field if any
 		/// </summary>
-		public DacBqlFieldInfo? Base
-		{
-			get;
-			internal set;
-		}
+		public DacBqlFieldInfo? Base => _baseInfo;
 	
 		DacBqlFieldInfo? IWriteableBaseItem<DacBqlFieldInfo>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set 
+			{
+				_baseInfo = value;
+
+				if (value != null)
+					CombineWithBaseInfo(value);
+			}
 		}
 
 		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder) :
@@ -34,7 +36,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder, DacBqlFieldInfo baseInfo) :
 							 this(node, bqlField, declarationOrder)
 		{
-			Base = baseInfo.CheckIfNull();
+			_baseInfo = baseInfo.CheckIfNull();
+			CombineWithBaseInfo(baseInfo);
 		}
 
 		public static DacBqlFieldInfo Create(PXContext pxContext, ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder,
@@ -49,6 +52,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return baseInfo != null
 				? new DacBqlFieldInfo(node, bqlField, declarationOrder, baseInfo)
 				: new DacBqlFieldInfo(node, bqlField, declarationOrder);
+		}
+
+		void IWriteableBaseItem<DacBqlFieldInfo>.CombineWithBaseInfo(DacBqlFieldInfo baseInfo) => CombineWithBaseInfo(baseInfo);
+
+		private void CombineWithBaseInfo(DacBqlFieldInfo baseInfo)
+		{
 		}
 	}
 }

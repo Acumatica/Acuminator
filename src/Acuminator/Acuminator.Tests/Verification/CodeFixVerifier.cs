@@ -27,6 +27,8 @@ namespace Acuminator.Tests.Verification
 	/// </summary>
 	public abstract class CodeFixVerifier : DiagnosticVerifier
 	{
+		protected const int MaxAttemptsLimit = 100; 
+
 		/// <summary>
 		/// Returns the codefix being tested (C#) - to be implemented in non-abstract class
 		/// </summary>
@@ -79,21 +81,39 @@ namespace Acuminator.Tests.Verification
 			var document = CreateDocument(oldSource, language);
 			var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }, checkOnlyFirstDocument: true).ConfigureAwait(false);
 			var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false);
-			var attempts = analyzerDiagnostics.Length;
+			int? attempts = GetAttemptsCount(analyzerDiagnostics.Length);
+			int diagnosticToUseIndex = 0;
+			int counter = 0;
 
-			for (int i = 0; i < attempts; ++i)
+			while (attempts == null || attempts.Value > 0)
 			{
+				attempts = attempts - 1;
+				counter++;
+
+				if (counter > MaxAttemptsLimit)
+					throw new InvalidOperationException($"Exceeded maximum attempts limit of {MaxAttemptsLimit}.");
+
+				if (diagnosticToUseIndex > (analyzerDiagnostics.Length - 1))
+					break;
+
 				var actions = new List<CodeAction>();
-				var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+				var context = new CodeFixContext(document, analyzerDiagnostics[diagnosticToUseIndex], (a, d) => actions.Add(a), CancellationToken.None);
 				await codeFixProvider.RegisterCodeFixesAsync(context).ConfigureAwait(false);
 
 				if (!actions.Any())
 				{
-					break;
+					diagnosticToUseIndex++;		// increase diagnostic counter to try next found diagnostic
+					continue;
 				}
 
-				document = await ApplyCodeActionAsync(document, actions.ElementAt(codeFixIndex)).ConfigureAwait(false);		
-				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }, checkOnlyFirstDocument: true).ConfigureAwait(false);
+				if (codeFixIndex >= actions.Count)
+					throw new InvalidOperationException($"Code fix index value \"{codeFixIndex}\" is out of bounds of the {nameof(actions)} collection.");
+
+				document = await ApplyCodeActionAsync(document, actions[codeFixIndex]).ConfigureAwait(false);		
+				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, [document], checkOnlyFirstDocument: true).ConfigureAwait(false);
+
+				// Reset diagnostic index to use to try first diagnostic again
+				diagnosticToUseIndex = 0;
 
 				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
 
@@ -128,5 +148,14 @@ namespace Acuminator.Tests.Verification
 			var actual = await GetStringFromDocumentAsync(document).ConfigureAwait(false);
 			Assert.Equal(newSource, actual);
 		}
+
+		/// <summary>
+		/// Gets attempts count. If returns null then code fix is applied infinitely as long as there are analyzer diagnostics.
+		/// </summary>
+		/// <param name="initialDiagnosticCount">Number of initial analyzer diagnostics.</param>
+		/// <returns>
+		/// The attempts count.
+		/// </returns>
+		protected virtual int? GetAttemptsCount(int initialDiagnosticCount) => initialDiagnosticCount;
 	}
 }

@@ -47,13 +47,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 					if (identifierName.IsNullOrWhiteSpace()) continue;
 
+					string equivalenceKey = codeFixResourceName.GetLocalized().ToString();
 					string codeActionName = codeFixResourceName.GetLocalized(node.ToString(), identifierName.ToString()).ToString();
 					bool isGraphExtension = diagnostic.Properties.ContainsKey(
 						PXGraphCreationForBqlQueriesAnalyzer.IsGraphExtensionPropertyPrefix + i);
 
 					var codeAction = CodeAction.Create(codeActionName, 
 						ct => ReplaceIdentifier(context.Document, root!, node, identifierName, isGraphExtension, context.CancellationToken),
-						equivalenceKey: codeActionName);
+						equivalenceKey);
 					context.RegisterCodeFix(codeAction, diagnostic);
 				}
 			}

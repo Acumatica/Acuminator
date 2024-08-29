@@ -79,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (dacSemanticModel?.IsInSource != true)
 				return Task.FromResult(document);
 
-			List<DacPropertyInfo>? dacKeys = dacSemanticModel.DacFieldProperties
+			List<DacPropertyInfo>? dacKeys = dacSemanticModel.DacFieldPropertiesWithBqlFields
 															 .Where(property => property.IsKey)
 															 .OrderBy(property => property.DeclarationOrder)
 															 .ToList(capacity: 4);

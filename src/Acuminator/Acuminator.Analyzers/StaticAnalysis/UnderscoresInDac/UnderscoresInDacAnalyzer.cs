@@ -36,10 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 
 			var fieldsIdentifiers = dacOrDacExt.DeclaredBqlFields.Where(field => CheckDacMemberAccessibility(field.Symbol) && 
 																			  dacOrDacExt.PropertiesByNames.ContainsKey(field.Name))
-															  .SelectMany(field => field.Node.GetIdentifiers());
+																 .SelectMany(field => field.Node.GetIdentifiers());
 
 			var propertiesIdentifiers = dacOrDacExt.AllDeclaredProperties.Where(property => CheckDacMemberAccessibility(property.Symbol))
-																	  .SelectMany(property => property.Node.GetIdentifiers());
+																		 .SelectMany(property => property.Node.GetIdentifiers());
 
 			var identifiersToCheck = fieldsIdentifiers.Concat(propertiesIdentifiers);
 

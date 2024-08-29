@@ -354,6 +354,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1064_NoGetObjectDataOverrideInExceptionWithNewFields { get; } =
 			Rule("PX1064", nameof(Resources.PX1064Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1064);
 
+		public static DiagnosticDescriptor PX1065_NoBqlFieldForDacFieldProperty { get; } =
+			Rule("PX1065", nameof(Resources.PX1065TitleFormat).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1065);
+
 		public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1070);
 

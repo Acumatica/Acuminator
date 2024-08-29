@@ -105,7 +105,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					? firstParameter.TypeArguments[0]
 					: null;
 
-			return dacField != null && dacField.IsDacField()
+			return dacField != null && dacField.IsDacBqlField()
 					? dacField.Name.ToPascalCase()
 					: string.Empty;
 		}	

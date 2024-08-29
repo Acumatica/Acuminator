@@ -52,7 +52,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 		public static CacheAttachedAttributeInfo Create(AttributeData attribute, CacheAttachedAttributesMergeMethod mergeMethod, 
 														DbBoundnessCalculator dbBoundnessCalculator, int declarationOrder)
 		{
-			var dacFieldAttributeInfo = DacFieldAttributeInfo.Create(attribute, dbBoundnessCalculator, declarationOrder);
+			var dacFieldAttributeInfo = DacFieldAttributeInfo.CreateUnsafe(attribute, dbBoundnessCalculator, declarationOrder);
 			return new CacheAttachedAttributeInfo(dacFieldAttributeInfo, mergeMethod);
 		}
 	}

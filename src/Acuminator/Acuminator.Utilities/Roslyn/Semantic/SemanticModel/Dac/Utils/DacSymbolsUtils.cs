@@ -89,7 +89,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: false;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacField(this ITypeSymbol typeSymbol)
+		public static bool IsDacBqlField(this ITypeSymbol typeSymbol)
 		{
 			if (!typeSymbol.BaseValidation())
 				return false;
@@ -103,7 +103,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacField(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsDacBqlField(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
 			typeSymbol.ThrowOnNull();
 
@@ -116,6 +116,35 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 			else
 				return false;
+		}
+
+		public static bool IsStronglyTypedBqlFieldOrBqlConstant(this INamedTypeSymbol bqlFieldOrBqlConstantType, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull();
+
+			var allInterfaces = bqlFieldOrBqlConstantType.CheckIfNull().AllInterfaces;
+
+			if (allInterfaces.IsDefaultOrEmpty)
+				return false;
+
+			foreach (INamedTypeSymbol @interface in allInterfaces)
+			{
+				if (!@interface.IsGenericType || @interface.TypeArguments.IsDefaultOrEmpty)
+					continue;
+
+				if (!@interface.Equals(pxContext.IImplementType) &&
+					(@interface.OriginalDefinition == null || !@interface.OriginalDefinition.Equals(pxContext.IImplementType)))
+				{
+					continue;
+				}
+
+				var firstTypeArgument = @interface.TypeArguments[0];
+
+				if (firstTypeArgument.ImplementsInterface(pxContext.BqlTypes.IBqlDataType))
+					return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
