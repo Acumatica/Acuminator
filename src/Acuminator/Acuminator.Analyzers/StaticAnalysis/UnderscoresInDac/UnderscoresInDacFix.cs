@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -16,18 +15,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class UnderscoresInDacFix : CodeFixProvider
+	public class UnderscoresInDacFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1026_UnderscoresInDacDeclaration.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1026_UnderscoresInDacDeclaration.Id);
-
-			if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
+			if (!diagnostic.IsRegisteredForCodeFix())
 				return Task.CompletedTask;
 
 			string codeActionName = nameof(Resources.PX1026Fix).GetLocalized().ToString();
@@ -35,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 													  cToken => ChangeUnderscoredNamesAsync(context.Document, context.Span, cToken),
 													  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 

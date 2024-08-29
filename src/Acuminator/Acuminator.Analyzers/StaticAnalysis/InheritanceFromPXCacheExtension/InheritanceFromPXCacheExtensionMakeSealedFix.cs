@@ -12,18 +12,16 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class InheritanceFromPXCacheExtensionMakeSealedFix : CodeFixProvider
+	public class InheritanceFromPXCacheExtensionMakeSealedFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1011_InheritanceFromPXCacheExtension.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			var dacExtNode = root?.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
 			
 			if (dacExtNode != null)
@@ -34,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 												cancellation => MakeDacExtensionSealedAsync(document, root!, dacExtNode, cancellation),
 												equivalenceKey: title);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 		}
 

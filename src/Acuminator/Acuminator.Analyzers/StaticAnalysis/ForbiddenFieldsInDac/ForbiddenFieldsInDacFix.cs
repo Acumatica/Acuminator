@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -23,31 +22,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public partial class ForbiddenFieldsInDacFix : CodeFixProvider
+	public partial class ForbiddenFieldsInDacFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id,
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
+			if (!diagnostic.IsRegisteredForCodeFix())
+				return Task.CompletedTask;
+			
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var diagnostics = context.Diagnostics.Where(d => d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id &&
-															 d.IsRegisteredForCodeFix());
-			foreach (Diagnostic diagnostic in diagnostics)
-			{
-				context.CancellationToken.ThrowIfCancellationRequested();
-
-				string codeActionName = nameof(Resources.PX1027ForbiddenFieldsFix).GetLocalized().ToString();
-				CodeAction codeAction = CodeAction.Create(codeActionName,
-														  cToken => DeleteForbiddenFieldsAsync(context.Document, context.Span, cToken),
-														  equivalenceKey: codeActionName);
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
-			}
+			string codeActionName = nameof(Resources.PX1027ForbiddenFieldsFix).GetLocalized().ToString();
+			CodeAction codeAction = CodeAction.Create(codeActionName,
+													  cToken => DeleteForbiddenFieldsAsync(context.Document, context.Span, cToken),
+													  equivalenceKey: codeActionName);
+			context.RegisterCodeFix(codeAction, diagnostic);
 
 			return Task.CompletedTask;
 		}

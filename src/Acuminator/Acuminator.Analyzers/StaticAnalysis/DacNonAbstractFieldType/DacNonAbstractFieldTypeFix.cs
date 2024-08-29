@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -16,14 +15,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class DacNonAbstractFieldTypeFix : CodeFixProvider
+	public class DacNonAbstractFieldTypeFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1024_DacNonAbstractFieldType.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			return Task.Run(() =>
 			{
@@ -33,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 									  cToken => MarkDacFieldAsAbstractAsync(context.Document, context.Span, cToken),
 									  equivalenceKey: codeActionName);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}, context.CancellationToken);
 		}
 

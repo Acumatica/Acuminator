@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -20,7 +19,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class PXGraphCreateInstanceFix : CodeFixProvider
+	public class PXGraphCreateInstanceFix : PXCodeFixProvider
 	{
 		private class Rewriter : CSharpSyntaxRewriter
 		{
@@ -59,18 +58,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1001_PXGraphCreateInstance.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
-			if (!context.Diagnostics.Any(diagnostic => FixableDiagnosticIds.Contains(diagnostic.Id)))
-				return Task.CompletedTask;
+			context.CancellationToken.ThrowIfCancellationRequested();
 
 			string title = nameof(Resources.PX1001Fix).GetLocalized().ToString();
 			var codeAction = CodeAction.Create(title, cancellation => RewriteGraphConstructionAsync(context.Document, context.Span, cancellation),
 											   equivalenceKey: title);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 			return Task.CompletedTask;
 		}
 

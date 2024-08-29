@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				return;
 			}
 
-			var typeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
+			var typeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, context.CancellationToken);
 			if (typeSymbol == null || !typeSymbol.IsPXGraph(pxContext))
 			{
 				return;

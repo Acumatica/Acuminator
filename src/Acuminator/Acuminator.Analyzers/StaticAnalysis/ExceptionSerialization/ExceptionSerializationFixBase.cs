@@ -9,7 +9,6 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
@@ -18,21 +17,14 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 {
-	public abstract class ExceptionSerializationFixBase : CodeFixProvider
+	public abstract class ExceptionSerializationFixBase : PXCodeFixProvider
 	{
 		protected const string SerializationInfoParameterName = "info";
 		protected const string StreamingContextParameterName = "context";
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
-
-			if (diagnostic == null)
-				return Task.CompletedTask;
 
 			string addSerializationMemberTitle = GetCodeFixTitle(diagnostic);
 			var addSerializationMemberCodeAction =

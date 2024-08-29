@@ -4,10 +4,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
+using System;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
-	public class DacBqlFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, IWriteableBaseItem<DacBqlFieldInfo>
+	public class DacBqlFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, 
+								   IWriteableBaseItem<DacBqlFieldInfo>,
+								   IEquatable<DacBqlFieldInfo>
 	{
 		protected DacBqlFieldInfo? _baseInfo;
 
@@ -59,5 +62,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		private void CombineWithBaseInfo(DacBqlFieldInfo baseInfo)
 		{
 		}
+
+		public override bool Equals(object obj) => Equals(obj as DacBqlFieldInfo);
+
+		public bool Equals(DacBqlFieldInfo? other) => SymbolEqualityComparer.Default.Equals(Symbol, other?.Symbol);
+
+		public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(Symbol);
 	}
 }

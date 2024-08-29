@@ -21,47 +21,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class NoBqlFieldForDacFieldAnalyzerFix : CodeFixProvider
+	public class NoBqlFieldForDacFieldAnalyzerFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1065_NoBqlFieldForDacFieldProperty.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			context.CancellationToken.ThrowIfCancellationRequested();
-			var diagnostics = context.Diagnostics;
-
-			if (diagnostics.IsDefaultOrEmpty)
-				return Task.CompletedTask;
-			else if (diagnostics.Length == 1)
-			{
-				var diagnostic = diagnostics[0];
-
-				if (diagnostic.Id != Descriptors.PX1065_NoBqlFieldForDacFieldProperty.Id)
-					return Task.CompletedTask;
-
-				return RegisterCodeFixeForDiagnosticAsync(context, diagnostic);
-			}
-
-			List<Task> allTasks = new(capacity: diagnostics.Length);
-
-			foreach (Diagnostic diagnostic in context.Diagnostics)
-			{
-				context.CancellationToken.ThrowIfCancellationRequested();
-
-				if (diagnostic.Id != Descriptors.PX1065_NoBqlFieldForDacFieldProperty.Id)
-					continue;
-
-				var task = RegisterCodeFixeForDiagnosticAsync(context, diagnostic);
-				allTasks.Add(task);
-			}
-
-			return Task.WhenAll(allTasks);
-		}
-
-		private Task RegisterCodeFixeForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

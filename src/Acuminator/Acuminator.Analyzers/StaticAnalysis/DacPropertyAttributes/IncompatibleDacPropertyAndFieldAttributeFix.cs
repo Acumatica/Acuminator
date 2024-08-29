@@ -23,18 +23,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class IncompatibleDacPropertyAndFieldAttributeFix : CodeFixProvider
+	public class IncompatibleDacPropertyAndFieldAttributeFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.Id);
-
-			if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
+			if (!diagnostic.IsRegisteredForCodeFix())
 				return;
 
 			SyntaxNode? root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
@@ -45,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			
 			if (codeFixNode is AttributeSyntax attribute)
 			{
-				RegisterCodeFix(root!, attribute, context);
+				RegisterCodeFix(root!, attribute, context, diagnostic);
 			}
 			else
 			{
@@ -66,10 +62,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributeNode == null)
 				return;
 			
-			RegisterCodeFix(root, attributeNode, context);
+			RegisterCodeFix(root, attributeNode, context, diagnostic);
 		}
 
-		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context)
+		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context, Diagnostic diagnostic)
 		{
 			PropertyDeclarationSyntax? propertyNode = attributeNode.Parent<PropertyDeclarationSyntax>();
 			context.CancellationToken.ThrowIfCancellationRequested();
@@ -84,7 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 								  cToken => ChangePropertyTypeToAttributeType(context.Document, root, attributeNode, propertyNode, cToken),
 								  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);		
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private async Task<Document> ChangePropertyTypeToAttributeType(Document document, SyntaxNode root, AttributeSyntax attributeNode,

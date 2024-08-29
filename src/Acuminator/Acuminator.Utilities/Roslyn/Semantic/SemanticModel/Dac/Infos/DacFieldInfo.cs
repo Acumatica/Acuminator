@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
@@ -14,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 	/// <summary>
 	/// Information about a DAC field - a pair consisting of a DAC field property and a DAC BQL field declared in the same type.
 	/// </summary>
-	public class DacFieldInfo : IWriteableBaseItem<DacFieldInfo>
+	public class DacFieldInfo : IWriteableBaseItem<DacFieldInfo>, IEquatable<DacFieldInfo>
 	{
 		public string Name { get; }
 
@@ -46,13 +47,31 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// Flag indicating whether the DAC field has a DAC field property in the containing DAC or DAC extension, 
 		/// and their base and chained types.
 		/// </summary>
-		public bool HasFieldProperty { get; private set; }
+		[MemberNotNullWhen(returnValue: false, nameof(BqlFieldInfo))]
+		public bool HasFieldPropertyEffective { get; private set; }
+
+		/// <summary>
+		/// Flag indicating whether this particular DAC field has a DAC field property in the containing DAC or DAC extension
+		/// without considering its base type.
+		/// </summary>
+		[MemberNotNullWhen(returnValue: false, nameof(BqlFieldInfo))]
+		[MemberNotNullWhen(returnValue: true, nameof(PropertyInfo))]
+		public bool HasFieldPropertyDeclared { get; }
 
 		/// <summary>
 		/// Flag indicating whether the DAC field has a DAC BQL field in the containing DAC or DAC extension, 
 		/// and their base and chained types.
 		/// </summary>
-		public bool HasBqlField { get; private set; }
+		[MemberNotNullWhen(returnValue: false, nameof(PropertyInfo))]
+		public bool HasBqlFieldEffective { get; private set; }
+
+		/// <summary>
+		/// Flag indicating whether this particular DAC field has a DAC BQL field property in the containing DAC or DAC extension
+		/// without considering its base type.
+		/// </summary>
+		[MemberNotNullWhen(returnValue: true, nameof(BqlFieldInfo))]
+		[MemberNotNullWhen(returnValue: false, nameof(PropertyInfo))]
+		public bool HasBqlFieldDeclared { get; }
 
 		/// <value>
 		/// The type of the DAC field property.
@@ -100,31 +119,34 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Name 		 = PropertyInfo?.Name ?? BqlFieldInfo!.Name.ToPascalCase();
 			DacType 	 = PropertyInfo?.Symbol.ContainingType ?? BqlFieldInfo!.Symbol.ContainingType;
 
-			HasBqlField = dacBqlFieldInfo != null;
+			HasBqlFieldDeclared  = dacBqlFieldInfo != null;
+			HasBqlFieldEffective = HasBqlFieldDeclared;
 
 			if (dacPropertyInfo != null)
 			{
-				HasFieldProperty 	   = true;
-				IsKey 				   = dacPropertyInfo.IsKey;
-				IsIdentity 			   = dacPropertyInfo.IsIdentity;
-				IsAutoNumbering 	   = dacPropertyInfo.IsAutoNumbering;
-				FieldPropertyType 	   = dacPropertyInfo.PropertyType;
-				EffectivePropertyType  = dacPropertyInfo.EffectivePropertyType;
-				DeclaredDbBoundness    = dacPropertyInfo.DeclaredDbBoundness;
-				EffectiveDbBoundness   = dacPropertyInfo.EffectiveDbBoundness;
-				HasAcumaticaAttributes = dacPropertyInfo.HasAcumaticaAttributesEffective;
+				HasFieldPropertyEffective = true;
+				HasFieldPropertyDeclared  = true;
+				IsKey 					  = dacPropertyInfo.IsKey;
+				IsIdentity 				  = dacPropertyInfo.IsIdentity;
+				IsAutoNumbering 		  = dacPropertyInfo.IsAutoNumbering;
+				FieldPropertyType 		  = dacPropertyInfo.PropertyType;
+				EffectivePropertyType 	  = dacPropertyInfo.EffectivePropertyType;
+				DeclaredDbBoundness 	  = dacPropertyInfo.DeclaredDbBoundness;
+				EffectiveDbBoundness 	  = dacPropertyInfo.EffectiveDbBoundness;
+				HasAcumaticaAttributes 	  = dacPropertyInfo.HasAcumaticaAttributesEffective;
 			}
 			else
 			{
-				HasFieldProperty 	   = false;
-				IsKey 				   = false;
-				IsIdentity 			   = false;
-				IsAutoNumbering 	   = false;
-				FieldPropertyType 	   = null;
-				EffectivePropertyType  = null;
-				DeclaredDbBoundness    = DbBoundnessType.NotDefined;
-				EffectiveDbBoundness   = DbBoundnessType.NotDefined;
-				HasAcumaticaAttributes = false;
+				HasFieldPropertyEffective = false;
+				HasFieldPropertyDeclared  = false;
+				IsKey 					  = false;
+				IsIdentity 				  = false;
+				IsAutoNumbering 		  = false;
+				FieldPropertyType 		  = null;
+				EffectivePropertyType 	  = null;
+				DeclaredDbBoundness 	  = DbBoundnessType.NotDefined;
+				EffectiveDbBoundness 	  = DbBoundnessType.NotDefined;
+				HasAcumaticaAttributes 	  = false;
 			}
 		}
 
@@ -135,13 +157,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		private void CombineWithBaseInfo(DacFieldInfo baseInfo)
 		{
-			HasAcumaticaAttributes = HasAcumaticaAttributes || baseInfo.HasAcumaticaAttributes;
-			HasBqlField 		   = HasBqlField 			|| baseInfo.HasBqlField;
-			HasFieldProperty 	   = HasFieldProperty 		|| baseInfo.HasFieldProperty;
-			IsKey 				   = IsKey 					|| baseInfo.IsKey;
-			IsIdentity 			   = IsIdentity 			|| baseInfo.IsIdentity;
-			IsAutoNumbering 	   = IsAutoNumbering 		|| baseInfo.IsAutoNumbering;
-			HasAcumaticaAttributes = HasAcumaticaAttributes || baseInfo.HasAcumaticaAttributes;
+			HasAcumaticaAttributes 	  = HasAcumaticaAttributes 	  || baseInfo.HasAcumaticaAttributes;
+			HasBqlFieldEffective 	  = HasBqlFieldEffective 	  || baseInfo.HasBqlFieldEffective;
+			HasFieldPropertyEffective = HasFieldPropertyEffective || baseInfo.HasFieldPropertyEffective;
+			IsKey 					  = IsKey 					  || baseInfo.IsKey;
+			IsIdentity 				  = IsIdentity 				  || baseInfo.IsIdentity;
+			IsAutoNumbering 		  = IsAutoNumbering 		  || baseInfo.IsAutoNumbering;
+			HasAcumaticaAttributes 	  = HasAcumaticaAttributes 	  || baseInfo.HasAcumaticaAttributes;
 
 			FieldPropertyType	  ??= baseInfo.FieldPropertyType;
 			EffectivePropertyType ??= baseInfo.EffectivePropertyType;
@@ -150,5 +172,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public override string ToString() => Name;
+
+		public override bool Equals(object obj) => Equals(obj as DacFieldInfo);
+
+		public bool Equals(DacFieldInfo? other) =>
+			other != null &&
+			SymbolEqualityComparer.Default.Equals(PropertyInfo?.Symbol, other.PropertyInfo?.Symbol) &&
+			Equals(BqlFieldInfo, other.BqlFieldInfo);
+
+		public override int GetHashCode()
+		{
+			int hash = 17;
+
+			unchecked
+			{
+				hash = hash * 23 + SymbolEqualityComparer.Default.GetHashCode(PropertyInfo?.Symbol);
+				hash = hash * 23 + (BqlFieldInfo?.GetHashCode() ?? 0);
+			}
+			
+			return hash;
+		}
 	}
 }

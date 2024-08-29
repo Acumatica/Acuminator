@@ -19,14 +19,12 @@ using Microsoft.CodeAnalysis.Editing;
 namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class InheritanceFromPXCacheExtensionFix : CodeFixProvider
+	public class InheritanceFromPXCacheExtensionFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1009_InheritanceFromPXCacheExtension.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
 											 .ConfigureAwait(false);
@@ -40,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 													  cancellation => ChangeBaseTypeToPXCacheExtensionOverloadAsync(context.Document, root!, node, cancellation),
 													  equivalenceKey: title);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private static async Task<Document> ChangeBaseTypeToPXCacheExtensionOverloadAsync(Document document, SyntaxNode root, ClassDeclarationSyntax node,

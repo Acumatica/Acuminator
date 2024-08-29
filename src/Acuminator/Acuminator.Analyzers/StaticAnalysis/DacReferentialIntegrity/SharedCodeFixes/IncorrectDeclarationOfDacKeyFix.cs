@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -22,7 +21,7 @@ using static Acuminator.Utilities.Roslyn.Constants.TypeNames;
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class IncorrectDeclarationOfDacKeyFix : CodeFixProvider
+	public class IncorrectDeclarationOfDacKeyFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			new[]
@@ -35,15 +34,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			.Distinct()
             .ToImmutableArray();
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-            var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
-
-            if (diagnostic == null || diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null ||
+            if (diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null ||
 				!diagnostic.IsRegisteredForCodeFix() || !diagnostic.Properties.TryGetValue(nameof(RefIntegrityDacKeyType), out string? dacKeyTypeString) ||
                 dacKeyTypeString.IsNullOrWhiteSpace() || !Enum.TryParse(dacKeyTypeString, out RefIntegrityDacKeyType dacKeyType))
             {
@@ -75,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																							  shouldChangeLocation, cancellation),
 														   equivalenceKey: codeActionTitle);
 
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						context.RegisterCodeFix(codeAction, diagnostic);
 						return;
 					}
 				case RefIntegrityDacKeyType.UniqueKey:
@@ -91,7 +86,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																														 RefIntegrityDacKeyType.ForeignKey, cancellation),
 														   equivalenceKey: codeActionTitle);
 
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						context.RegisterCodeFix(codeAction, diagnostic);
 						return;
 					}
 			}
@@ -113,7 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																												 RefIntegrityDacKeyType.UniqueKey, cancellation),
 												   equivalenceKey: codeActionTitle);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 			else if (keyNode.Identifier.Text != ReferentialIntegrity.UniqueKeyClassName)
 			{
@@ -124,7 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																					  shouldChangeLocation: false, cancellation),
 												   equivalenceKey: codeActionTitle);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeAction, diagnostic);
 			}
 		}
 

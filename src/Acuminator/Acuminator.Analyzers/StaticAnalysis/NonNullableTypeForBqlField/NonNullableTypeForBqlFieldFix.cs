@@ -13,21 +13,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class NonNullableTypeForBqlFieldFix : CodeFixProvider
+	public class NonNullableTypeForBqlFieldFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1014_NonNullableTypeForBqlField.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
-
-			if (diagnostic == null)
-				return;
 
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
@@ -40,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 											   cancellation => MakePropertyTypeNullable(document, root, propertyNode, cancellation),
 											   equivalenceKey: title);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private static Task<Document> MakePropertyTypeNullable(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyNode,

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -18,32 +17,26 @@ using Microsoft.CodeAnalysis.Rename;
 namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class TypoInViewDelegateNameFix : CodeFixProvider
+	public class TypoInViewDelegateNameFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName.Id);
 
-		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			var methodNode = root?.FindNode(context.Span)?.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-			if (methodNode == null)
-				return;
-
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1005_TypoInViewDelegateName.Id);
-			if (diagnostic == null)
-				return;
 
 			if (!diagnostic.TryGetPropertyValue(TypoInViewDelegateNameAnalyzer.ViewFieldNameProperty, out string? fieldName) ||
 				fieldName.IsNullOrWhiteSpace() || fieldName.Length <= 1)
 			{
 				return;
 			}
+
+			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+
+			var methodNode = root?.FindNode(context.Span)?.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+			if (methodNode == null)
+				return;
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -52,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 			var codeAction = CodeAction.Create(title, 
 											   cToken => FixTypoInViewDelegateName(document, methodNode, fieldName, cToken), 
 											   equivalenceKey: title);
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private static async Task<Solution> FixTypoInViewDelegateName(Document document, MethodDeclarationSyntax methodNode, 
@@ -61,7 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 			cToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await document.GetSemanticModelAsync(cToken).ConfigureAwait(false);
-			var methodSymbol = semanticModel.GetDeclaredSymbol(methodNode);
+			var methodSymbol = semanticModel?.GetDeclaredSymbol(methodNode, cToken);
 
 			if (methodSymbol == null)
 				return document.Project.Solution;
