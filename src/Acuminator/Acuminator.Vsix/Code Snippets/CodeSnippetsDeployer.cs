@@ -21,13 +21,12 @@ namespace Acuminator.Vsix.CodeSnippets
 		private const string OldSnippetsVersionFileName = "SnippetsVersion.xml";
 
 		private readonly AcuminatorMyDocumentsStorage _myDocumentsStorage;
-
-		public string SnippetsFolder { get; }
+		private readonly string _snippetsFolder;
 
 		private CodeSnippetsDeployer(AcuminatorMyDocumentsStorage myDocumentsStorage, string snippetsFolder)
 		{
 			_myDocumentsStorage = myDocumentsStorage.CheckIfNull();
-			SnippetsFolder = snippetsFolder.CheckIfNullOrWhiteSpace();
+			_snippetsFolder = snippetsFolder.CheckIfNullOrWhiteSpace();
 		}
 
 		internal static CodeSnippetsDeployer? Create(AcuminatorMyDocumentsStorage? myDocumentsStorage)
@@ -54,7 +53,7 @@ namespace Acuminator.Vsix.CodeSnippets
 		/// </returns>
 		public bool DeployCodeSnippets()
 		{
-			if (Directory.Exists(SnippetsFolder))
+			if (Directory.Exists(_snippetsFolder))
 			{
 				TryDeleteOldSnippetsVersionFile();
 
@@ -67,7 +66,7 @@ namespace Acuminator.Vsix.CodeSnippets
 
 		private void TryDeleteOldSnippetsVersionFile()
 		{
-			string snippetsFilePath = Path.Combine(SnippetsFolder, OldSnippetsVersionFileName);
+			string snippetsFilePath = Path.Combine(_snippetsFolder, OldSnippetsVersionFileName);
 
 			try
 			{
@@ -82,7 +81,7 @@ namespace Acuminator.Vsix.CodeSnippets
 
 		private bool DeployCodeSnippetsImpl()
 		{
-			if (!StorageUtils.ReCreateDirectory(SnippetsFolder!))
+			if (!StorageUtils.ReCreateDirectory(_snippetsFolder!))
 				return false;
 
 			return DeployCodeSnippetsFromAssemblyResources();
@@ -146,7 +145,7 @@ namespace Acuminator.Vsix.CodeSnippets
 																  .Replace('_', ' ')
 																  .Replace('.', Path.DirectorySeparatorChar);
 			string relativeFilePath = Path.ChangeExtension(relativeFilePathWithoutExtension, Constants.CodeSnippets.FileExtension);
-			return Path.Combine(SnippetsFolder, relativeFilePath);
+			return Path.Combine(_snippetsFolder, relativeFilePath);
 		}
 	}
 }
