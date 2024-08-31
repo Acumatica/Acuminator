@@ -13,12 +13,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		private readonly bool _settingsProvidedExternally;
+		protected bool SettingsProvidedExternally { get; }
 
 		protected CodeAnalysisSettings? CodeAnalysisSettings 
 		{ 
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		protected PXDiagnosticAnalyzer(CodeAnalysisSettings? codeAnalysisSettings = null)
 		{
 			CodeAnalysisSettings = codeAnalysisSettings;
-			_settingsProvidedExternally = codeAnalysisSettings != null;
+			SettingsProvidedExternally = codeAnalysisSettings != null;
 		}
 
 		[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1025:Configure generated code analysis", 
@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			AcuminatorVsixPackageLoader.EnsurePackageLoaded();
 
-			if (!_settingsProvidedExternally)
+			if (!SettingsProvidedExternally)
 				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values after potential package load
 
 			if (!CodeAnalysisSettings!.StaticAnalysisEnabled)
