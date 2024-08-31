@@ -20,14 +20,16 @@ namespace Acuminator.Vsix.Settings
 		private readonly ISettingsEvents _settingsEvents;
 		private readonly MemoryMappedFile _memoryMappedFile;
 
-		public OutOfProcessSettingsUpdater(ISettingsEvents settingsEvents, CodeAnalysisSettings initialSettings)
+		public OutOfProcessSettingsUpdater(ISettingsEvents settingsEvents, CodeAnalysisSettings initialAnalysisSettings, 
+											BannedApiSettings initialBannedApiSettings)
 		{
-			initialSettings.ThrowOnNull();
+			initialAnalysisSettings.ThrowOnNull();
+			initialBannedApiSettings.ThrowOnNull();
 
 			_settingsEvents = settingsEvents.CheckIfNull();
 			_memoryMappedFile = CreateOrOpenMemoryMappedFile();
 
-			WriteSettingsToSharedMemory(initialSettings);
+			WriteSettingsToSharedMemory(initialAnalysisSettings, initialBannedApiSettings);
 
 			_settingsEvents.CodeAnalysisSettingChanged += SettingsEvents_CodeAnalysisSettingChanged;
 		}
@@ -43,24 +45,26 @@ namespace Acuminator.Vsix.Settings
 			}
 		}
 
-		private void SettingsEvents_CodeAnalysisSettingChanged(object sender, SettingChangedEventArgs e)
-		{
-			var currentSettings = GlobalSettings.AnalysisSettings;
-			WriteSettingsToSharedMemory(currentSettings);
-		}
-
 		private MemoryMappedFile CreateOrOpenMemoryMappedFile()
 		{
 			const int estimatedMemorySizeInBytes = sizeof(bool) * 5 + 20; //Size of 5 flags + some additional memory just in case
 			return MemoryMappedFile.CreateOrOpen(SharedVsSettings.AcuminatorSharedMemorySlotName, estimatedMemorySizeInBytes);
 		}
 
-		private void WriteSettingsToSharedMemory(CodeAnalysisSettings codeAnalysisSettings)
+		private void SettingsEvents_CodeAnalysisSettingChanged(object sender, SettingChangedEventArgs e)
+		{
+			var currentAnalysisSettings = GlobalSettings.AnalysisSettings;
+			var currentBannedApiSettings = GlobalSettings.BannedApiSettings;
+
+			WriteSettingsToSharedMemory(currentAnalysisSettings, currentBannedApiSettings);
+		}
+
+		private void WriteSettingsToSharedMemory(CodeAnalysisSettings codeAnalysisSettings, BannedApiSettings bannedApiSettings)
 		{
 			using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
 			using CodeAnalysisSettingsBinaryWriter writer = new CodeAnalysisSettingsBinaryWriter(stream);
-
-			writer.WriteCodeAnalysisSettings(codeAnalysisSettings);
+			
+			writer.WriteCodeAnalysisSettings(codeAnalysisSettings, bannedApiSettings);
 		}
 	}
 }
