@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Logger;
@@ -140,11 +141,15 @@ namespace Acuminator.Vsix.CodeSnippets
 		{
 			const string namespaceResourcePrefix = "Acuminator.Vsix.Code_Snippets.";
 
-			string relativeFilePathWithoutExtension = resourceName.Remove(resourceName.Length - Constants.CodeSnippets.FileExtension.Length)
-																  .Remove(0, namespaceResourcePrefix.Length)
-																  .Replace('_', ' ')
-																  .Replace('.', Path.DirectorySeparatorChar);
+			var sb = new StringBuilder(resourceName);
+			sb = sb.Remove(resourceName.Length - Constants.CodeSnippets.FileExtension.Length, Constants.CodeSnippets.FileExtension.Length)
+				   .Remove(startIndex: 0, length: namespaceResourcePrefix.Length)
+				   .Replace('_', ' ')
+				   .Replace('.', Path.DirectorySeparatorChar);
+
+			string relativeFilePathWithoutExtension = sb.ToString();
 			string relativeFilePath = Path.ChangeExtension(relativeFilePathWithoutExtension, Constants.CodeSnippets.FileExtension);
+
 			return Path.Combine(_snippetsFolder, relativeFilePath);
 		}
 	}
