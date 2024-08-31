@@ -132,7 +132,10 @@
   <data name="PX1004" xml:space="preserve">
     <value>ViewDeclarationOrderTwoCacheInstances</value>
   </data>
-  <data name="PX1005" xml:space="preserve">
+  <data name="PX1005ActionDelegate" xml:space="preserve">
+    <value>TypoInActionDelegateName</value>
+  </data>
+  <data name="PX1005ViewDelegate" xml:space="preserve">
     <value>TypoInViewDelegateName</value>
   </data>
   <data name="PX1006" xml:space="preserve">
@@ -326,6 +329,12 @@
   </data>
   <data name="PX1064" xml:space="preserve">
     <value>ExceptionWithNewFieldsAndNoGetObjectDataOverride</value>
+  </data>
+  <data name="PX1065" xml:space="preserve">
+    <value>NoBqlFieldForDacFieldProperty</value>
+  </data>
+  <data name="PX1066" xml:space="preserve">
+    <value>TypoInBqlFieldName</value>
   </data>
   <data name="PX1070" xml:space="preserve">
     <value>UiPresentationLogicInEventHandlers</value>

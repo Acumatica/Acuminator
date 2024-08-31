@@ -562,7 +562,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				: type.GetMembers();
 
 			return members.IsDefaultOrEmpty
-				? Array.Empty<TSymbol>()
+				? []
 				: members.OfType<TSymbol>();
 		}
 

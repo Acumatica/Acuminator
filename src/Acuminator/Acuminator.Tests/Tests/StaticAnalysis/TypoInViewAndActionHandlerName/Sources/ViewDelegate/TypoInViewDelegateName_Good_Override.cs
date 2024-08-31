@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PX.Data;
 
 namespace PX.Analyzers.Test.Sources
@@ -28,6 +24,18 @@ namespace PX.Analyzers.Test.Sources
 		}
 	}
 
+	// Acuminator disable once PX1016 ExtensionDoesNotDeclareIsActiveMethod extension should be constantly active
+	public class SomeGraphExt : PXGraphExtension<SomeBaseGraph>
+	{
+		public PXSelect<SomeDocument> SOAdjustments;
+
+		public IEnumerable adjustments()
+		{
+			yield break;
+		}
+	}
+
+	[PXHidden]
 	public class SomeDocument : IBqlTable
 	{
 	}

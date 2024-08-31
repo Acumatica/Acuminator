@@ -16,7 +16,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1002](diagnostics/PX1002.md) | The field must have a type attribute that corresponds to the list attribute. | Error | Available |
 | [PX1003](diagnostics/PX1003.md) | Consider using a specific implementation of `PXGraph`. | Warning (ISV Level 2: Production Quality) | Unavailable |
 | [PX1004](diagnostics/PX1004.md) | The order of view declarations will cause the creation of two cache instances. | Message | Unavailable |
-| [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate name. | Warning (ISV Level 3: Informational) | Available |
+| [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate or action delegate name. | Warning (ISV Level 3: Informational) | Available |
 | [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs | Message | Unavailable |
 | [PX1007](diagnostics/PX1007.md) | The DAC, DAC extension, or DAC property should have a description in the "summary" XML tag or "inheritdoc" XML tag | Error | Available |
 | [PX1008](diagnostics/PX1008.md) | The reference to the screen graph or an action adapter in the long operation and processing delegates cause synchronous execution of the delegate. | Error | Unavailable |
@@ -72,8 +72,8 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1062](diagnostics/PX1062.md) | You cannot declare static views, actions, mutable fields, and mutable properties in graphs or graph extensions  | Error | Available |
 | [PX1063](diagnostics/PX1063.md) | The declaration of the exception class does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP. | Error | Available |
 | [PX1064](diagnostics/PX1064.md) | The declaration of the exception class introduces new serializable fields but does not declare an override for the `GetObjectData` method. This will cause an incorrect serialization of the exception data and will lead to runtime errors in Acumatica ERP. | Error | Available |
-| [PX1065](diagnostics/PX1065.md) | The DAC field property does not have a corresponding DAC BQL field. | Error | Available |
-| [PX1066](diagnostics/PX1066.md) | There is probably a typo in the DAC BQL field name. | Warning (ISV Level 3: Informational) | Available |
+| [PX1065](diagnostics/PX1065.md) | The DAC field property does not have a corresponding BQL field. | Error | Available |
+| [PX1066](diagnostics/PX1066.md) | The name of the BQL field possibly contains mistake. | Warning (ISV Level 3: Informational) | Available |
 | [PX1070](diagnostics/PX1070.md) | The state of fields and actions can be configured only in `RowSelected` event handlers. | Error | Unavailable |
 | [PX1071](diagnostics/PX1071.md) | Actions cannot be executed within event handlers. | Error | Unavailable |
 | [PX1072](diagnostics/PX1072.md) | BQL queries must be executed within the context of an existing `PXGraph` instance. | Warning (ISV Level 1: Significant) | Available |
