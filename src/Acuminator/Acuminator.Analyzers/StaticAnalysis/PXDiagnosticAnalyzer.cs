@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,7 +8,6 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis.Diagnostics;
-
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -75,6 +72,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 																	  pxContext.CodeAnalysisSettings.StaticAnalysisEnabled &&
 																	  !pxContext.Compilation.IsUnitTestAssembly();
 
-		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
+		protected abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
 	}
 }

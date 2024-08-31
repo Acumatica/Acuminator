@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 		public StartRowResetForPagingAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(c => AnalyzeDelegate(c, pxContext), SymbolKind.Method);
 		}

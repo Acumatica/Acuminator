@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 		{
 		}
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionAndPXExceptionInfoConstructorInvocations(syntaxContext, pxContext),
 															 SyntaxKind.ObjectCreationExpression);
