@@ -81,7 +81,7 @@ namespace Acuminator.Vsix.CodeSnippets
 
 		private bool DeployCodeSnippetsImpl()
 		{
-			if (!StorageUtils.ReCreateDirectory(_snippetsFolder!))
+			if (!StorageUtils.ReCreateDirectory(_snippetsFolder))
 				return false;
 
 			return DeployCodeSnippetsFromAssemblyResources();
