@@ -22,11 +22,23 @@ namespace Acuminator.Vsix.Utilities.Storage
 
 		public VersionFile VersionFile { get; }
 
-		private AcuminatorMyDocumentsStorage(string myDocumentsFolder, string acuminatorFolder, VersionFile versionFile)
+		public Version PackageVersion => VersionFile.Version;
+
+		/// <summary>
+		/// Gets the version of Acuminator package that was stored in the storage.
+		/// </summary>
+		public Version? VersionStoredInStorage { get; }
+
+		public bool ShouldUpdateStorage => 
+			VersionStoredInStorage == null || PackageVersion > VersionStoredInStorage;
+
+		private AcuminatorMyDocumentsStorage(string myDocumentsFolder, string acuminatorFolder, VersionFile versionFile,
+											 Version? versionStoredInStorage)
 		{
-			MyDocumentsFolder = myDocumentsFolder;
-			AcuminatorFolder = acuminatorFolder;
-			VersionFile = versionFile;
+			MyDocumentsFolder 	   = myDocumentsFolder;
+			AcuminatorFolder 	   = acuminatorFolder;
+			VersionFile 		   = versionFile;
+			VersionStoredInStorage = versionStoredInStorage;
 		}
 
 		public static AcuminatorMyDocumentsStorage? TryInitialize(string packageCurrentVersion)
@@ -58,8 +70,12 @@ namespace Acuminator.Vsix.Utilities.Storage
 				return null;
 
 			var versionFile = new VersionFile(acuminatorFolder, packageCurrentVersion);
-			UpdateVersionFile(versionFile);
-			return new AcuminatorMyDocumentsStorage(myDocumentsFolder, acuminatorFolder, versionFile);
+			var versionStoredInStorage = versionFile.TryGetExistingVersion();
+
+			if (!UpdateVersionFile(versionFile, versionStoredInStorage))
+				return null;
+
+			return new AcuminatorMyDocumentsStorage(myDocumentsFolder, acuminatorFolder, versionFile, versionStoredInStorage);
 		}
 
 		private static string? GetMyDocumentsFolderPath()
@@ -103,11 +119,9 @@ namespace Acuminator.Vsix.Utilities.Storage
 			}
 		}
 
-		private static bool UpdateVersionFile(VersionFile versionFile)
+		private static bool UpdateVersionFile(VersionFile versionFile, Version? versionStoredInStorage)
 		{
-			var existingVersion = versionFile.TryGetExistingVersion();
-
-			if (existingVersion != null && versionFile.Version <= existingVersion)
+			if (versionStoredInStorage != null && versionFile.Version <= versionStoredInStorage)
 				return true;
 
 			return versionFile.WriteVersionFile();
