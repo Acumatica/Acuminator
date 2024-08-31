@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using Acuminator.Analyzers.Settings.OutOfProcess;
 using Acuminator.Analyzers.Utils;
@@ -32,7 +33,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			CodeAnalysisSettings = codeAnalysisSettings;
 			_settingsProvidedExternally = codeAnalysisSettings != null;
 		}
-		
+
+		[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1025:Configure generated code analysis", 
+						 Justification = $"Configured in the {nameof(ConfigureAnalysisContext)} method")]
+		[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1026:Enable concurrent execution", 
+						 Justification = $"Configured in the {nameof(ConfigureAnalysisContext)} method")]
 		public override void Initialize(AnalysisContext context)
 		{
 			AcuminatorVsixPackageLoader.EnsurePackageLoaded();
