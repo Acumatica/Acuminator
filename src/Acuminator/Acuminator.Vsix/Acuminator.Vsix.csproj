@@ -507,6 +507,7 @@
     <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
     <Compile Include="Utils\Storage\AcuminatorMyDocumentsStorage.cs" />
+    <Compile Include="Utils\Storage\StorageUtils.cs" />
     <Compile Include="Utils\Storage\VersionFile.cs" />
     <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />

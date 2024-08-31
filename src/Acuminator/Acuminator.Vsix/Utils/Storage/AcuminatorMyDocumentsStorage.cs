@@ -93,10 +93,7 @@ namespace Acuminator.Vsix.Utilities.Storage
 			try
 			{
 				acuminatorFolder = Path.Combine(myDocumentsFolder, AcuminatorVSPackage.PackageName);
-
-				if (!Directory.Exists(acuminatorFolder))
-					Directory.CreateDirectory(acuminatorFolder);
-
+				StorageUtils.CreateDirectory(acuminatorFolder);
 				return acuminatorFolder;
 			}
 			catch (Exception e)
@@ -114,39 +111,6 @@ namespace Acuminator.Vsix.Utilities.Storage
 				return true;
 
 			return versionFile.WriteVersionFile();
-		}
-
-		private static bool ReCreateDirectory(string directory)
-		{
-			try
-			{
-				if (Directory.Exists(directory))
-					Directory.Delete(directory, recursive: true);
-
-				Directory.CreateDirectory(directory);
-				return true;
-			}
-			catch (Exception e)
-			{
-				AcuminatorLogger.LogException(e);
-				return false;
-			}
-		}
-
-		private static bool CreateDirectory(string directory)
-		{
-			try
-			{
-				if (!Directory.Exists(directory))
-					Directory.CreateDirectory(directory);
-
-				return true;
-			}
-			catch (Exception e)
-			{
-				AcuminatorLogger.LogException(e);
-				return false;
-			}
 		}
 	}
 }
