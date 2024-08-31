@@ -284,7 +284,7 @@ namespace Acuminator.Vsix
 
 			FormatBqlCommand.Initialize(this, oleCommandService);
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
-			BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
+			//BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
 
 			OpenCodeMapWindowCommand.Initialize(this, oleCommandService);
 		}
@@ -330,7 +330,7 @@ namespace Acuminator.Vsix
 
 					_vsWorkspace = await this.GetVSWorkspaceAsync();
 					SubscribeOnWorkspaceEvents();
-					InitializeOutOfProcessSettingsSharing();
+					InitializeOutOfProcessSettingsSharing(GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
 				});
 			}
 		}
@@ -410,15 +410,16 @@ namespace Acuminator.Vsix
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
 			SharedVsSettings.VSVersion = VSVersion;
 
-			InitializeOutOfProcessSettingsSharing();
+			InitializeOutOfProcessSettingsSharing(codeAnalysisSettings, bannedApiSettings);
 		}
 
-		private void InitializeOutOfProcessSettingsSharing()
+		private void InitializeOutOfProcessSettingsSharing(CodeAnalysisSettings initialCodeAnalysisSettings,
+														   BannedApiSettings initialBannedApiSettings)
 		{
 			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace) || GeneralOptionsPage == null)
 				return;
 
-			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalSettings.AnalysisSettings);
+			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, initialCodeAnalysisSettings, initialBannedApiSettings);
 		}
 
 		private static void InitializeCodeSnippets(AcuminatorMyDocumentsStorage? myDocumentsStorage)
