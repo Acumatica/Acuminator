@@ -7,8 +7,10 @@
 			public const string BannedApiFile = "BannedApis.txt";
 			public const string WhiteListFile = "WhiteList.txt";
 
-			public const string BannedApiAssemblyResourceName = $"BannedApi.Data.{BannedApiFile}";
-			public const string WhiteListAssemblyResourceName = $"BannedApi.Data.{WhiteListFile}";
+			public const string BannedApiAssemblyResourceName = $"Acuminator.Utilities.BannedApi.Data.{BannedApiFile}";
+			public const string WhiteListAssemblyResourceName = $"Acuminator.Utilities.BannedApi.Data.{WhiteListFile}";
+
+			public const string FileExtension = ".txt";
 		}
 
 		public static class Format

@@ -22,7 +22,15 @@ namespace Acuminator.Vsix.Utilities
 		}
 
 		/// <summary>
-		/// A code snippets related constants.
+		/// Banned API related constants.
+		/// </summary>
+		public static class BannedApi
+		{
+			public const string BannnedApiFolder = "Acumatica Banned API";
+		}
+
+		/// <summary>
+		/// Code snippets related constants.
 		/// </summary>
 		public static class CodeSnippets
 		{

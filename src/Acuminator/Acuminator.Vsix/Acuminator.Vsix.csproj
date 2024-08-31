@@ -428,7 +428,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
-    <Compile Include="Code Snippets\CodeSnippetsInitializer.cs" />
+    <Compile Include="BannedApi\BannedApiDeployer.cs" />
     <Compile Include="Code Snippets\CodeSnippetsDeployer.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
