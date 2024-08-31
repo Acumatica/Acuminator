@@ -1,92 +1,91 @@
-﻿
-#nullable enable
+﻿#nullable enable
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
-using Microsoft.VisualStudio.Shell;
-
+using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Utilities.Storage;
 
 namespace Acuminator.Vsix.CodeSnippets
 {
-    /// <summary>
-    /// Code Snippets initializing logic
-    /// </summary>
-    public class CodeSnippetsInitializer
+	/// <summary>
+	/// Code Snippets initializing logic
+	/// </summary>
+	public sealed class CodeSnippetsInitializer
 	{
-		private readonly SnippetsVersionFile _snippetsVersionFile = new SnippetsVersionFile();
-		public string? SnippetsFolder { get; }
+		private const string OldSnippetsVersionFileName = "SnippetsVersion.xml";
 
-		public bool IsSnippetsFolderInitialized => SnippetsFolder != null;
+		private readonly AcuminatorMyDocumentsStorage _myDocumentsStorage;
 
-		public CodeSnippetsInitializer()
+		public string SnippetsFolder { get; }
+
+		private CodeSnippetsInitializer(AcuminatorMyDocumentsStorage myDocumentsStorage, string snippetsFolder)
 		{
-			string? myDocumentsFolder;
+			_myDocumentsStorage = myDocumentsStorage.CheckIfNull();
+			SnippetsFolder = snippetsFolder.CheckIfNullOrWhiteSpace();
+		}
 
+		internal static CodeSnippetsInitializer? Create(AcuminatorMyDocumentsStorage? myDocumentsStorage)
+		{
+			if (myDocumentsStorage == null)
+				return null;
 			try
 			{
-				myDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.Create);
+				string snippetsFolder = Path.Combine(myDocumentsStorage.AcuminatorFolder, Constants.CodeSnippets.CodeSnippetsFolder);
+				return new CodeSnippetsInitializer(myDocumentsStorage, snippetsFolder);
 			}
 			catch (Exception e)
 			{
 				AcuminatorLogger.LogException(e);
-				return;
-			}
-
-			if (myDocumentsFolder.IsNullOrWhiteSpace() || !Directory.Exists(myDocumentsFolder))
-			{
-				AcuminatorLogger.LogException(new Exception("User \"Documents\" folder was not found on the machine"));
-				return;
-			}
-
-			try
-			{
-				SnippetsFolder = Path.Combine(myDocumentsFolder, AcuminatorVSPackage.PackageName, Constants.CodeSnippets.CodeSnippetsFolder);
-			}
-			catch (Exception e)
-			{
-				AcuminatorLogger.LogException(e);
-				return;
+				return null;
 			}
 		}
 
 		/// <summary>
 		/// Initialize code snippets.
 		/// </summary>
-		/// <param name="packageVersion">The package version.</param>
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
-		public bool InitializeCodeSnippets(Version packageVersion)
+		public bool InitializeCodeSnippets()
 		{
-			packageVersion.ThrowOnNull();
-			
-			if (!IsSnippetsFolderInitialized)
-				return false;
+			if (Directory.Exists(SnippetsFolder))
+			{
+				TryDeleteOldSnippetsVersionFile();
 
-			Version? existingVersion = _snippetsVersionFile.TryGetExistingSnippetsVersion(SnippetsFolder);
+				if (_myDocumentsStorage.ShouldUpdateStorage)
+					return true;
+			}
 
-			if (existingVersion != null && packageVersion <= existingVersion)
-				return true;
-
-			return DeployCodeSnippets(packageVersion);
+			return DeployCodeSnippets();
 		}
 
-		private bool DeployCodeSnippets(Version version)
+		private void TryDeleteOldSnippetsVersionFile()
 		{
-			if (!ReCreateDirectory(SnippetsFolder!))
+			string snippetsFilePath = Path.Combine(SnippetsFolder, OldSnippetsVersionFileName);
+
+			try
+			{
+				if (File.Exists(snippetsFilePath))
+					File.Delete(snippetsFilePath);
+			}
+			catch (Exception e)
+			{
+				AcuminatorLogger.LogException(e);
+			}
+		}
+
+		private bool DeployCodeSnippets()
+		{
+			if (!StorageUtils.ReCreateDirectory(SnippetsFolder!))
 				return false;
 
-			if (!DeployCodeSnippetsFromAssemblyResources())
-				return false;
-
-			return _snippetsVersionFile.WriteVersionFile(SnippetsFolder!, version); 
+			return DeployCodeSnippetsFromAssemblyResources();
 		}
 
 		private bool DeployCodeSnippetsFromAssemblyResources()
@@ -114,7 +113,7 @@ namespace Acuminator.Vsix.CodeSnippets
 			string snippetFilePath = TransformAssemblyResourceNameToFilePath(snippetResourceName);
 			string snippetDirectory = Path.GetDirectoryName(snippetFilePath);
 
-			if (!CreateDirectory(snippetDirectory))
+			if (!StorageUtils.CreateDirectory(snippetDirectory))
 				return false;
 
 			try
@@ -135,43 +134,10 @@ namespace Acuminator.Vsix.CodeSnippets
 			{
 				AcuminatorLogger.LogException(e);
 				return false;
-			}	
-		}
-
-		private bool ReCreateDirectory(string directory)
-		{
-			try
-			{
-				if (Directory.Exists(directory))
-					Directory.Delete(directory, recursive: true);
-
-				Directory.CreateDirectory(directory);
-				return true;
-			}
-			catch (Exception e)
-			{
-				AcuminatorLogger.LogException(e);
-				return false;
 			}
 		}
 
-		private bool CreateDirectory(string directory)
-		{
-			try
-			{
-				if (!Directory.Exists(directory))
-					Directory.CreateDirectory(directory);
-
-				return true;
-			}
-			catch (Exception e)
-			{
-				AcuminatorLogger.LogException(e);
-				return false;
-			}
-		}
-
-		internal string TransformAssemblyResourceNameToFilePath(string resourceName)
+		private string TransformAssemblyResourceNameToFilePath(string resourceName)
 		{
 			const string namespaceResourcePrefix = "Acuminator.Vsix.Code_Snippets.";
 
