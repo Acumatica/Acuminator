@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
-using System.Collections.Generic;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -23,6 +22,52 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 			if (SharedVsSettings.IsInsideVsProcess)
 				return GlobalSettings.AnalysisSettings;
 
+			EnsureSharedMemoryIsOpened();
+
+			if (_memoryMappedFile == null)
+				return GlobalSettings.AnalysisSettings;
+
+			try
+			{
+				using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
+				using var reader = new CodeAnalysisSettingsBinaryReader(stream);
+
+				CodeAnalysisSettings codeAnalysisSettings = reader.ReadCodeAnalysisSettings();
+
+				return codeAnalysisSettings;
+			}
+			catch (Exception)
+			{
+				return GlobalSettings.AnalysisSettings;
+			}
+		}
+
+		public static (CodeAnalysisSettings AnalysisSettings, BannedApiSettings BannedApiSettings) GetCodeAnalysisAndBannedApiSettings()
+		{
+			if (SharedVsSettings.IsInsideVsProcess)
+				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
+
+			EnsureSharedMemoryIsOpened();
+
+			if (_memoryMappedFile == null)
+				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
+
+			try
+			{
+				using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
+				using var reader = new CodeAnalysisSettingsBinaryReader(stream);
+
+				var settings = reader.ReadAnalysisSettings();
+				return settings;
+			}
+			catch (Exception)
+			{
+				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
+			}
+		}
+
+		private static void EnsureSharedMemoryIsOpened()
+		{
 			if (!_isSharedMemoryOpened)
 			{
 				lock (_lock)
@@ -34,22 +79,6 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 					}
 				}
 			}
-			
-			if (_memoryMappedFile == null)
-				return GlobalSettings.AnalysisSettings;
-
-			try
-			{
-				using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
-				using var reader = new CodeAnalysisSettingsBinaryReader(stream);
-				CodeAnalysisSettings codeAnalysisSettings = reader.ReadCodeAnalysisSettings();
-
-				return codeAnalysisSettings;
-			}
-			catch (Exception)
-			{
-				return GlobalSettings.AnalysisSettings;
-			}		
 		}
 
 		private static MemoryMappedFile? OpenExistingMemoryMappedFile()

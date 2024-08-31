@@ -20,13 +20,21 @@ namespace Acuminator.Utilities.Settings.OutOfProcess
 			if (_isDisposed)
 				throw new ObjectDisposedException(objectName: nameof(CodeAnalysisSettingsBinaryReader));
 
-			var codeAnalysisSettings = ReadCodeAnalysisSettings();
+			var codeAnalysisSettings = ReadCodeAnalysisSettingsImpl();
 			var bannedApiSetings = ReadBannedApiSettings();
 
 			return (codeAnalysisSettings, bannedApiSetings);
 		}
 
-		private CodeAnalysisSettings ReadCodeAnalysisSettings()
+		public CodeAnalysisSettings ReadCodeAnalysisSettings()
+		{
+			if (_isDisposed)
+				throw new ObjectDisposedException(objectName: nameof(CodeAnalysisSettingsBinaryReader));
+
+			return ReadCodeAnalysisSettingsImpl();
+		}
+
+		private CodeAnalysisSettings ReadCodeAnalysisSettingsImpl()
 		{
 			bool recursiveAnalysisEnabled 			  = _reader.ReadBoolean();
 			bool isvSpecificAnalyzersEnabled 		  = _reader.ReadBoolean();
