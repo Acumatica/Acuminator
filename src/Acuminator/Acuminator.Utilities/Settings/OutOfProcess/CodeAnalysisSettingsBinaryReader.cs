@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Settings.OutOfProcess
 			_reader = new BinaryReader(stream);
 		}
 
-		public (CodeAnalysisSettings AnalysisSettings, BannedApiSettings BannedApiOptions) ReadAnalysisSettings()
+		public (CodeAnalysisSettings AnalysisSettings, BannedApiSettings BannedApiOptions) ReadAllAnalysisSettings()
 		{
 			if (_isDisposed)
 				throw new ObjectDisposedException(objectName: nameof(CodeAnalysisSettingsBinaryReader));

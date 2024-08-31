@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 				using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
 				using var reader = new CodeAnalysisSettingsBinaryReader(stream);
 
-				var settings = reader.ReadAnalysisSettings();
+				var settings = reader.ReadAllAnalysisSettings();
 				return settings;
 			}
 			catch (Exception)
