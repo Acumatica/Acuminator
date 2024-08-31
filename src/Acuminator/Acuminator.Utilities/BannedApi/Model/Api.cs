@@ -105,14 +105,14 @@ namespace Acuminator.Utilities.BannedApi.Model
 					combinedTypeName = AllContainingTypes.IsDefaultOrEmpty
 						? TypeName
 						: AllContainingTypes.AppendItem(TypeName)
-											.Join(ApiFormatConstants.Strings.NestedTypesSeparator);
+											.Join(ApiConstants.Format.Strings.NestedTypesSeparator);
 				}
 				else
-					combinedTypeName = AllContainingTypes.Join(ApiFormatConstants.Strings.NestedTypesSeparator);
+					combinedTypeName = AllContainingTypes.Join(ApiConstants.Format.Strings.NestedTypesSeparator);
 
 				if (!combinedTypeName.IsNullOrWhiteSpace())
 				{
-					sb.Append($"{ApiFormatConstants.Strings.NamespaceSeparator}{combinedTypeName}");
+					sb.Append($"{ApiConstants.Format.Strings.NamespaceSeparator}{combinedTypeName}");
 
 					if (Kind != ApiKind.Type && !MemberName.IsNullOrWhiteSpace())
 						sb.Append($".{MemberName}");
@@ -174,7 +174,7 @@ namespace Acuminator.Utilities.BannedApi.Model
 				FullTypeName = string.Empty;
 			else
 			{
-				string preparedCombinedTypeName = combinedTypeName.Replace(ApiFormatConstants.Chars.NestedTypesSeparator, '.');
+				string preparedCombinedTypeName = combinedTypeName.Replace(ApiConstants.Format.Chars.NestedTypesSeparator, '.');
 				FullTypeName = $"{Namespace}.{preparedCombinedTypeName}";
 			}
 		}
@@ -217,8 +217,8 @@ namespace Acuminator.Utilities.BannedApi.Model
 				return apiDataWithoutExtraInfo;
 
 			var sb = new StringBuilder(apiDataWithoutExtraInfo)
-							.Replace(ApiFormatConstants.Chars.NamespaceSeparator, '.')
-							.Replace(ApiFormatConstants.Chars.NestedTypesSeparator, '.');
+							.Replace(ApiConstants.Format.Chars.NamespaceSeparator, '.')
+							.Replace(ApiConstants.Format.Chars.NestedTypesSeparator, '.');
 			return sb.ToString();
 		}
 
@@ -227,7 +227,7 @@ namespace Acuminator.Utilities.BannedApi.Model
 			if (apiKind == ApiKind.Namespace)
 				return (apiDataWithoutExtraInfoAndPrefix, CombinedTypeName: string.Empty, MemberName: string.Empty);
 
-			int namespaceSeparatorIndex = apiDataWithoutExtraInfoAndPrefix.IndexOf(ApiFormatConstants.Chars.NamespaceSeparator);
+			int namespaceSeparatorIndex = apiDataWithoutExtraInfoAndPrefix.IndexOf(ApiConstants.Format.Chars.NamespaceSeparator);
 			string @namespace = namespaceSeparatorIndex > 0
 				? apiDataWithoutExtraInfoAndPrefix[..namespaceSeparatorIndex]
 				: string.Empty;
@@ -280,7 +280,7 @@ namespace Acuminator.Utilities.BannedApi.Model
 			if (combinedTypeName.Length == 0 || apiKind == ApiKind.Namespace)
 				return (TypeName: string.Empty, ContainingTypes: ImmutableArray<string>.Empty);
 
-			int typesSeparatorIndex = combinedTypeName.IndexOf(ApiFormatConstants.Chars.NestedTypesSeparator);
+			int typesSeparatorIndex = combinedTypeName.IndexOf(ApiConstants.Format.Chars.NestedTypesSeparator);
 
 			if (typesSeparatorIndex < 0)
 			{
@@ -290,7 +290,7 @@ namespace Acuminator.Utilities.BannedApi.Model
 					return (TypeName: combinedTypeName, ContainingTypes: ImmutableArray.Create(combinedTypeName));
 			}
 
-			string[] types 		= combinedTypeName.Split(new[] { ApiFormatConstants.Chars.NestedTypesSeparator }, StringSplitOptions.None);
+			string[] types 		= combinedTypeName.Split(new[] { ApiConstants.Format.Chars.NestedTypesSeparator }, StringSplitOptions.None);
 			string typeName 	= types[^1];
 			var containingTypes = apiKind == ApiKind.Type
 				? types.Take(types.Length - 1).ToImmutableArray()
@@ -305,8 +305,8 @@ namespace Acuminator.Utilities.BannedApi.Model
 					"https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/xmldoc/#id-strings" + 
 					$"{Environment.NewLine + Environment.NewLine}Acuminator extends this DocID string format.{Environment.NewLine}" + 
 					"The namespace part of the API name is separated from the rest of its name with" + 
-					$" \"{ApiFormatConstants.Strings.NamespaceSeparator}\",{Environment.NewLine}" +
-					$"and names of nested types are separated with \"{ApiFormatConstants.Strings.NestedTypesSeparator}\".{Environment.NewLine}" +
+					$" \"{ApiConstants.Format.Strings.NamespaceSeparator}\",{Environment.NewLine}" +
+					$"and names of nested types are separated with \"{ApiConstants.Format.Strings.NestedTypesSeparator}\".{Environment.NewLine}" +
 					$"Acuminator also adds two extra strings after the DocID string and separated by whitespaces:{Environment.NewLine}" +
 					$"- First, Mandatory banned API data - info for whom the API is banned: {nameof(ApiBanKind.General)} or {nameof(ApiBanKind.ISV)};{Environment.NewLine}" +
 					$"- Second, optional string description of why the banned API is forbidden.{Environment.NewLine}{Environment.NewLine}" +
