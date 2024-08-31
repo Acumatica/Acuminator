@@ -207,7 +207,7 @@ namespace Acuminator.Vsix
 												   currentStep: 3, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			InitializeCodeSnippets(MyDocumentsStorage);
+			DeployCodeSnippets(MyDocumentsStorage);
 			#endregion
 
 			#region Initialize Commands and SubscribeOnEvents	
@@ -422,17 +422,17 @@ namespace Acuminator.Vsix
 			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, initialCodeAnalysisSettings, initialBannedApiSettings);
 		}
 
-		private static void InitializeCodeSnippets(AcuminatorMyDocumentsStorage? myDocumentsStorage)
+		private static void DeployCodeSnippets(AcuminatorMyDocumentsStorage? myDocumentsStorage)
 		{
-			var codeSnippetsInitializer = CodeSnippetsInitializer.Create(myDocumentsStorage);
+			var codeSnippetsDeployer = CodeSnippetsDeployer.Create(myDocumentsStorage);
 
-			if (codeSnippetsInitializer == null)
+			if (codeSnippetsDeployer == null)
 			{
-				AcuminatorLogger.LogMessage("Failed to create Code Snippets Initializer", LogMode.Warning);
+				AcuminatorLogger.LogMessage("Failed to create Code Snippets Deployer", LogMode.Warning);
 				return;
 			}
 
-			if (!codeSnippetsInitializer.InitializeCodeSnippets())
+			if (!codeSnippetsDeployer.DeployCodeSnippets())
 			{
 				AcuminatorLogger.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
 			}

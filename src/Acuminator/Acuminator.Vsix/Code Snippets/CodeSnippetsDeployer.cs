@@ -14,9 +14,9 @@ using Acuminator.Vsix.Utilities.Storage;
 namespace Acuminator.Vsix.CodeSnippets
 {
 	/// <summary>
-	/// Code Snippets initializing logic
+	/// Code Snippets deployment logic
 	/// </summary>
-	public sealed class CodeSnippetsInitializer
+	public sealed class CodeSnippetsDeployer
 	{
 		private const string OldSnippetsVersionFileName = "SnippetsVersion.xml";
 
@@ -24,20 +24,20 @@ namespace Acuminator.Vsix.CodeSnippets
 
 		public string SnippetsFolder { get; }
 
-		private CodeSnippetsInitializer(AcuminatorMyDocumentsStorage myDocumentsStorage, string snippetsFolder)
+		private CodeSnippetsDeployer(AcuminatorMyDocumentsStorage myDocumentsStorage, string snippetsFolder)
 		{
 			_myDocumentsStorage = myDocumentsStorage.CheckIfNull();
 			SnippetsFolder = snippetsFolder.CheckIfNullOrWhiteSpace();
 		}
 
-		internal static CodeSnippetsInitializer? Create(AcuminatorMyDocumentsStorage? myDocumentsStorage)
+		internal static CodeSnippetsDeployer? Create(AcuminatorMyDocumentsStorage? myDocumentsStorage)
 		{
 			if (myDocumentsStorage == null)
 				return null;
 			try
 			{
 				string snippetsFolder = Path.Combine(myDocumentsStorage.AcuminatorFolder, Constants.CodeSnippets.CodeSnippetsFolder);
-				return new CodeSnippetsInitializer(myDocumentsStorage, snippetsFolder);
+				return new CodeSnippetsDeployer(myDocumentsStorage, snippetsFolder);
 			}
 			catch (Exception e)
 			{
@@ -47,12 +47,12 @@ namespace Acuminator.Vsix.CodeSnippets
 		}
 
 		/// <summary>
-		/// Initialize code snippets.
+		/// Deploy code snippets.
 		/// </summary>
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
-		public bool InitializeCodeSnippets()
+		public bool DeployCodeSnippets()
 		{
 			if (Directory.Exists(SnippetsFolder))
 			{
@@ -62,7 +62,7 @@ namespace Acuminator.Vsix.CodeSnippets
 					return true;
 			}
 
-			return DeployCodeSnippets();
+			return DeployCodeSnippetsImpl();
 		}
 
 		private void TryDeleteOldSnippetsVersionFile()
@@ -80,7 +80,7 @@ namespace Acuminator.Vsix.CodeSnippets
 			}
 		}
 
-		private bool DeployCodeSnippets()
+		private bool DeployCodeSnippetsImpl()
 		{
 			if (!StorageUtils.ReCreateDirectory(SnippetsFolder!))
 				return false;
