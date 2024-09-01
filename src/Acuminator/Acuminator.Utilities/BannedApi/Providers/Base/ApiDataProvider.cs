@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.BannedApi.Model;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.BannedApi.Providers
 {
@@ -35,8 +36,10 @@ namespace Acuminator.Utilities.BannedApi.Providers
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				Api api = ParseApiFromLine(rawDocID, lineNumber);
-				yield return api;
+				Api? api = ParseApiFromLine(rawDocID, lineNumber);
+
+				if (api != null)
+					yield return api;
 
 				lineNumber++;
 			}
@@ -50,8 +53,10 @@ namespace Acuminator.Utilities.BannedApi.Providers
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				Api api = ParseApiFromLine(rawDocID, lineNumber);
-				yield return api;
+				Api? api = ParseApiFromLine(rawDocID, lineNumber);
+
+				if (api != null)
+					yield return api;
 
 				lineNumber++;
 			}
@@ -66,15 +71,19 @@ namespace Acuminator.Utilities.BannedApi.Providers
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				Api api = ParseApiFromLine(rawDocID, lineNumber);
-				yield return api;
+				Api? api = ParseApiFromLine(rawDocID, lineNumber);
+				
+				if (api != null)
+					yield return api;
 
 				lineNumber++;
 			}
 		}
 
-		protected virtual Api ParseApiFromLine(string rawDocID, int lineNumber)
+		protected virtual Api? ParseApiFromLine(string rawDocID, int lineNumber)
 		{
+			if (rawDocID.IsNullOrWhiteSpace())
+				return null;
 			try
 			{
 				return new Api(rawDocID);
