@@ -18,7 +18,8 @@ namespace Acuminator.Utilities.BannedApi.Storage
     /// </summary>
     public partial class ApiStorageProvider
     {
-		private readonly SemaphoreSlim _initializationLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
+		private readonly object _initializationRegularLock = new object();
+		private readonly SemaphoreSlim _initializationSemaphoreLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
         private volatile IApiStorage? _instance;
 
 		private readonly string? _dataFileRelativePath;
@@ -30,29 +31,23 @@ namespace Acuminator.Utilities.BannedApi.Storage
 			_dataAssemblyResourceName = dataAssemblyResourceName.NullIfWhiteSpace();
 		}
 
-		public IApiStorage GetStorage(CancellationToken cancellation, IApiDataProvider? customBannedApiDataProvider = null)
+		public IApiStorage GetStorage(CancellationToken cancellation, IApiDataProvider? customApiDataProvider = null)
         {
 			cancellation.ThrowIfCancellationRequested();
 
 			if (_instance != null)
 				return _instance;
 
-			_initializationLock.Wait();
-
-			try
+			lock (_initializationRegularLock)
 			{
 				if (_instance == null)
-					_instance = GetStorageAsyncWithoutLocking(cancellation, customBannedApiDataProvider);
+					_instance = GetStorageWithoutLocking(cancellation, customApiDataProvider);
 
 				return _instance;
 			}
-			finally
-			{
-				_initializationLock.Release();
-			}
 		}
 
-		private IApiStorage GetStorageAsyncWithoutLocking(CancellationToken cancellation, IApiDataProvider? customBannedApiDataProvider)
+		private IApiStorage GetStorageWithoutLocking(CancellationToken cancellation, IApiDataProvider? customBannedApiDataProvider)
 		{
 			var bannedApiDataProvider = customBannedApiDataProvider ?? GetDefaultDataProvider();
 			var bannedApis = bannedApiDataProvider.GetApiData(cancellation);
@@ -71,7 +66,7 @@ namespace Acuminator.Utilities.BannedApi.Storage
             if (_instance != null)
                 return _instance;
 
-			await _initializationLock.WaitAsync(cancellation).ConfigureAwait(false);
+			await _initializationSemaphoreLock.WaitAsync(cancellation).ConfigureAwait(false);
 
 			try
 			{
@@ -82,7 +77,7 @@ namespace Acuminator.Utilities.BannedApi.Storage
 			}
 			finally
 			{
-				_initializationLock.Release();
+				_initializationSemaphoreLock.Release();
 			}		
 		}
 
