@@ -4,11 +4,12 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Settings;
+
+using Community.VisualStudio.Toolkit;
 
 using Microsoft.VisualStudio.Shell;
 
@@ -362,7 +363,8 @@ namespace Acuminator.Vsix
 			if (!File.Exists(filePath))
 			{
 				string errorMessage = string.Format(VSIXResource.Settings_InvalidFileErrorFormat, settingName);
-				MessageBox.Show(errorMessage, VSIXResource.Settings_InvalidFileErrorCaption, MessageBoxButton.OK, MessageBoxImage.Error);
+
+				VS.MessageBox.ShowWarning(VSIXResource.Settings_InvalidFileErrorCaption, errorMessage);
 				return false;
 			}
 
