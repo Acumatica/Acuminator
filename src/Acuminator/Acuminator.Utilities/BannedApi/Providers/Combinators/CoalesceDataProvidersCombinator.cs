@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,12 +18,12 @@ namespace Acuminator.Utilities.BannedApi.Providers
 		/// The providers to be combined. 
 		/// Providers are ordered in the order they are passed to the combinator provider.
 		/// </summary>
-		private readonly IEnumerable<IApiDataProvider> _providers;
+		private readonly IReadOnlyCollection<IApiDataProvider> _providers;
 
 		/// <inheritdoc/>
 		public bool IsDataAvailable => _providers.Any(p => p.IsDataAvailable);
 
-		public DataProvidersCoalesceCombinator(IEnumerable<IApiDataProvider> providers)
+		public DataProvidersCoalesceCombinator(IReadOnlyCollection<IApiDataProvider> providers)
         {
 			_providers = providers.CheckIfNull();
         }
@@ -72,5 +70,7 @@ namespace Acuminator.Utilities.BannedApi.Providers
 
 			return null;
 		}
+
+		public bool HasApiDataSourceChanged() => _providers.Any(p => p.HasApiDataSourceChanged());
 	}
 }

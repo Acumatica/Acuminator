@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +16,14 @@ namespace Acuminator.Utilities.BannedApi.Providers
 		/// True if the API data is available, false if not.
 		/// </value>
 		bool IsDataAvailable { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the API data source has changed and the data obtained from it by the provider may require refresh.
+		/// </summary>
+		/// <value>
+		/// True if the API data source has changed, false if not.
+		/// </value>
+		bool HasApiDataSourceChanged();
 
 		/// <summary>
 		/// Gets API data synchronously from the provider or <see langword="null"/> if the provider's API data is not available. <br/>

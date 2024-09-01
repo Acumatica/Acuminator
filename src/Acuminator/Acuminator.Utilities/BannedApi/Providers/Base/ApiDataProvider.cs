@@ -25,6 +25,9 @@ namespace Acuminator.Utilities.BannedApi.Providers
 		/// <inheritdoc/>
 		public abstract Task<IEnumerable<Api>?> GetApiDataAsync(CancellationToken cancellation);
 
+		/// <inheritdoc/>
+		public abstract bool HasApiDataSourceChanged();
+
 		protected IEnumerable<Api> ParseTextIntoApis(string text, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();

@@ -89,6 +89,8 @@ namespace Acuminator.Utilities.BannedApi.Providers
 			}
 		}
 
+		public override bool HasApiDataSourceChanged() => false;
+
 		protected override string GetParseErrorMessage(Exception originalException, int lineNumber)
 		{
 			var assemblyName = _assembly.GetName().Name;
