@@ -26,6 +26,7 @@ using Community.VisualStudio.Toolkit;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.RpcContracts;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Events;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -67,7 +68,6 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
-		private const int TotalLoadSteps = 6;
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
@@ -172,7 +172,8 @@ namespace Acuminator.Vsix
 		}
 #pragma warning restore CS8774
 
-		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, 
+																			 IProgress<ServiceProgressData> progress)
 		{
 			// When initialized asynchronously, the current thread may be a background thread at this point.
 			// Do any initialization that requires the UI thread after switching to the UI thread
@@ -181,48 +182,62 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
+			try
+			{
+				await VS.StatusBar.StartAnimationAsync(StatusAnimation.General);
+
+				await InitializeAcuminatorPackageAsync(cancellationToken, progress);
+			}
+			finally
+			{
+				await VS.StatusBar.EndAnimationAsync(StatusAnimation.General);
+				await VS.StatusBar.ClearAsync();
+			}
+		}
+
+		private async System.Threading.Tasks.Task InitializeAcuminatorPackageAsync(CancellationToken cancellationToken, 
+																				   IProgress<ServiceProgressData> progress)
+		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			#region Initialize Settings		
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
-													   currentStep: 1, TotalLoadSteps);
-			progress?.Report(progressData);
-			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
+			#region Initialize Banned API
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep: 1);
+			#endregion
 
+			#region Initialize Settings
+			cancellationToken.ThrowIfCancellationRequested();
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeAnalysisSettings, currentStep: 2);
+
+			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
+
 			await InitializeCodeAnalysisSettingsAsync();
 			#endregion
 
 			#region Initialize Logger
 			cancellationToken.ThrowIfCancellationRequested();
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
-												   currentStep: 2, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitLogger, currentStep: 3);
+
 			InitializeLogger();
 			#endregion
 
-			#region Initialize CodeSnippets		
+			#region Initialize CodeSnippets
 			cancellationToken.ThrowIfCancellationRequested();
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeSnippets,
-												   currentStep: 3, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeSnippets, currentStep: 4);
 
 			DeployCodeSnippets(MyDocumentsStorage);
 			#endregion
 
 			#region Initialize Commands and SubscribeOnEvents	
 			cancellationToken.ThrowIfCancellationRequested();
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
-												   currentStep: 4, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCommands, currentStep: 5);
+
 			await InitializeCommandsAsync();
 			SubscribeOnEvents();
 			#endregion
 
 			#region Suppression Manager Load
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitSuppressionManager,
-												   currentStep: 5, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitSuppressionManager, currentStep: 6);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			bool isSolutionOpen = await IsSolutionLoadedAsync();
@@ -233,9 +248,21 @@ namespace Acuminator.Vsix
 			}
 			#endregion
 
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
-												   currentStep: 6, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_Done, currentStep: 7);
+		}
+
+		private async System.Threading.Tasks.Task ReportProgressAsync(IProgress<ServiceProgressData>? progress, string progressText, 
+																	  int currentStep)
+		{
+			const int totalLoadSteps = 7;
+
+			if (progress != null)
+			{
+				var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, progressText, currentStep, totalLoadSteps);
+				progress.Report(progressData);
+			} 
+
+			await VS.StatusBar.ShowMessageAsync(progressText);
 		}
 
 		private void SubscribeOnEvents()
