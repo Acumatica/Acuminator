@@ -345,6 +345,25 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		public void SetDeployedBannedApiSettings(string? deployedBannedApisFile, string? deployedWhiteListFile)
+		{
+			if (!deployedBannedApisFile.IsNullOrWhiteSpace() && BannedApiFilePath.IsNullOrWhiteSpace() &&
+				File.Exists(deployedBannedApisFile))
+			{
+				_bannedApiFilePath = deployedBannedApisFile;
+				_codeAnalysisSettingsChanged = true;
+			}
+
+			if (!deployedWhiteListFile.IsNullOrWhiteSpace() && WhiteListApiFilePath.IsNullOrWhiteSpace())
+			{
+				_whiteListApiFilePath = deployedWhiteListFile;
+				_codeAnalysisSettingsChanged = true;
+			}
+
+			if (_codeAnalysisSettingsChanged)
+				SaveSettingsToStorage();
+		}
+
 		private void OnColoringSettingChanged(string setting)
 		{
 			ColoringSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
@@ -363,8 +382,8 @@ namespace Acuminator.Vsix
 			if (!File.Exists(filePath))
 			{
 				string errorMessage = string.Format(VSIXResource.Settings_InvalidFileErrorFormat, settingName);
-
 				VS.MessageBox.ShowWarning(VSIXResource.Settings_InvalidFileErrorCaption, errorMessage);
+
 				return false;
 			}
 

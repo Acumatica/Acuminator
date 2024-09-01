@@ -214,7 +214,7 @@ namespace Acuminator.Vsix
 
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
 
-			await InitializeCodeAnalysisSettingsAsync();
+			await InitializeCodeAnalysisSettingsAsync(deployedBannedApisFile, deployedWhiteListFile);
 			#endregion
 
 			#region Initialize Logger
@@ -441,20 +441,22 @@ namespace Acuminator.Vsix
 			return (deployedBannedApisFile, deployedWhiteListFile);
 		}
 
-		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
+		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync(string? deployedBannedApisFile, string? deployedWhiteListFile)
 		{
 			CodeAnalysisSettings codeAnalysisSettings;
 			BannedApiSettings bannedApiSettings;
 
 			if (GeneralOptionsPage != null)
 			{
+				GeneralOptionsPage.SetDeployedBannedApiSettings(deployedBannedApisFile, deployedWhiteListFile);
+
 				codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
-				bannedApiSettings = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
+				bannedApiSettings	 = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
 			}
 			else
 			{
 				codeAnalysisSettings = CodeAnalysisSettings.Default;
-				bannedApiSettings = BannedApiSettings.Default;
+				bannedApiSettings	 = BannedApiSettings.Default;
 			}
 
 			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings, bannedApiSettings);
