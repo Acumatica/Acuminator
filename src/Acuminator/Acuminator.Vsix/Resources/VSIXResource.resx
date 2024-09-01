@@ -297,6 +297,9 @@
   <data name="PXGraphFormatLabel" xml:space="preserve">
     <value>Acuminator - PXGraph</value>
   </data>
+  <data name="PackageLoad_DeployBannedApiFiles" xml:space="preserve">
+    <value>Deploying Acumatica Banned API files shipped with Acuminator</value>
+  </data>
   <data name="PackageLoad_Done" xml:space="preserve">
     <value>The Acuminator package loaded</value>
   </data>
@@ -304,7 +307,7 @@
     <value>Initializing Acuminator code analysis settings</value>
   </data>
   <data name="PackageLoad_InitCodeSnippets" xml:space="preserve">
-    <value>Initializing Acumatica Code Snippets shipped with Acuminator</value>
+    <value>Deploying Acumatica Code Snippets shipped with Acuminator</value>
   </data>
   <data name="PackageLoad_InitCommands" xml:space="preserve">
     <value>Initializing Acuminator commands</value>

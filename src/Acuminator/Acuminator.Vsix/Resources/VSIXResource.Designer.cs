@@ -583,6 +583,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deploying Acumatica Banned API files shipped with Acuminator.
+        /// </summary>
+        public static string PackageLoad_DeployBannedApiFiles {
+            get {
+                return ResourceManager.GetString("PackageLoad_DeployBannedApiFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Acuminator package loaded.
         /// </summary>
         public static string PackageLoad_Done {
@@ -601,7 +610,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initializing Acumatica Code Snippets shipped with Acuminator.
+        ///   Looks up a localized string similar to Deploying Acumatica Code Snippets shipped with Acuminator.
         /// </summary>
         public static string PackageLoad_InitCodeSnippets {
             get {
