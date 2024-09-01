@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.BannedApi.Providers;
@@ -26,8 +25,7 @@ namespace Acuminator.Utilities.BannedApi.Storage
 	/// </remarks>
 	public partial class ApiStorageProvider
 	{
-		private readonly object _initializationRegularLock = new object();
-		private readonly SemaphoreSlim _initializationSemaphoreLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
+		private readonly object _initializationLock = new object();
 
 		private volatile IApiStorage? _instance;
 		private readonly IApiDataProvider _apiDataProvider;
@@ -49,7 +47,7 @@ namespace Acuminator.Utilities.BannedApi.Storage
 			if (_instance != null && !_apiDataProvider.HasApiDataSourceChanged())
 				return _instance;
 
-			lock (_initializationRegularLock)
+			lock (_initializationLock)
 			{
 				if (_instance == null || _apiDataProvider.HasApiDataSourceChanged())
 				{
@@ -69,38 +67,6 @@ namespace Acuminator.Utilities.BannedApi.Storage
 			return apiData == null
 				? new DefaultApiStorage()
 				: new DefaultApiStorage(apiData);
-		}
-
-		public async Task<IApiStorage> GetStorageAsync(CancellationToken cancellation)
-		{
-			cancellation.ThrowIfCancellationRequested();
-
-			if (_instance != null && !_apiDataProvider.HasApiDataSourceChanged())
-				return _instance;
-
-			await _initializationSemaphoreLock.WaitAsync(cancellation).ConfigureAwait(false);
-
-			try
-			{
-				if (_instance == null || _apiDataProvider.HasApiDataSourceChanged())
-					_instance = await GetStorageAsyncWithoutLockingAsync(cancellation).ConfigureAwait(false);
-
-				return _instance;
-			}
-			finally
-			{
-				_initializationSemaphoreLock.Release();
-			}
-		}
-
-		private async Task<IApiStorage> GetStorageAsyncWithoutLockingAsync(CancellationToken cancellation)
-		{
-			var bannedApis = await _apiDataProvider.GetApiDataAsync(cancellation).ConfigureAwait(false);
-			cancellation.ThrowIfCancellationRequested();
-
-			return bannedApis == null
-				? new DefaultApiStorage()
-				: new DefaultApiStorage(bannedApis);
 		}
 
 		private static IApiDataProvider CreateApiDataProvider(string? dataFilePath, Assembly? assemblyWithResource, string? dataAssemblyResourceName)
