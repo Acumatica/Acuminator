@@ -49,17 +49,22 @@ namespace Acuminator.Vsix.BannedApi
 		/// Deploy banned API and White List files.
 		/// </summary>
 		/// <returns>
-		/// True if operation succeeds, false if it fails.
+		/// A pair of files - Banned API and White List file paths. Each file path is null if the file was not deployed.
 		/// </returns>
-		public (bool DeployedBannedApis, bool DeployedWhiteList) DeployBannedApiFiles()
+		public (string? DeployedBannedApisFile, string? DeployedWhiteListFile) DeployBannedApiFiles()
 		{
 			string bannedApiFile = Path.Combine(_bannedApiFolder, ApiConstants.Storage.BannedApiFile);
 			string whiteListFile = Path.Combine(_bannedApiFolder, ApiConstants.Storage.WhiteListFile);
 
 			if (!ShouldUpdateBannedApis(bannedApiFile, whiteListFile))
-				return (true, true);
+				return (null, null);
 
-			return DeployBannedApis();
+			var (deployedBannedApis, deployedWhiteList) = DeployBannedApis();
+
+			string? resultBannedApiFile = deployedBannedApis ? bannedApiFile : null;
+			string? resultWhiteListFile = deployedWhiteList ? whiteListFile : null;
+
+			return (resultBannedApiFile, resultWhiteListFile);
 		}
 
 		private bool ShouldUpdateBannedApis(string bannedApiFile, string whiteListFile) =>

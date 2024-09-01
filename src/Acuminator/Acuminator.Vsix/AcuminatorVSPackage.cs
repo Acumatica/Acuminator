@@ -9,8 +9,10 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Vsix.BannedApi;
 using Acuminator.Vsix.CodeSnippets;
 using Acuminator.Vsix.Coloriser;
 using Acuminator.Vsix.DiagnosticSuppression;
@@ -26,13 +28,11 @@ using Community.VisualStudio.Toolkit;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.RpcContracts;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Events;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Threading;
-
 
 namespace Acuminator.Vsix
 {
@@ -201,14 +201,17 @@ namespace Acuminator.Vsix
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			#region Initialize Banned API
+			cancellationToken.ThrowIfCancellationRequested();
 			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep: 1);
+
+			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
+			var (deployedBannedApisFile, deployedWhiteListFile) = DeployBannedApiFiles(MyDocumentsStorage);
 			#endregion
 
 			#region Initialize Settings
 			cancellationToken.ThrowIfCancellationRequested();
 			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeAnalysisSettings, currentStep: 2);
 
-			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
 
 			await InitializeCodeAnalysisSettingsAsync();
@@ -414,6 +417,28 @@ namespace Acuminator.Vsix
 										   buildActionSetterFabric: () => SharedVsSettings.VSVersion?.VS2022OrNewer == true
 																			? new VsixBuildActionSetterVS2022()
 																			: new VsixBuildActionSetterVS2019());
+		}
+
+		private static (string? DeployedBannedApisFile, string? DeployedWhiteListFile) DeployBannedApiFiles(
+																							AcuminatorMyDocumentsStorage? myDocumentsStorage)
+		{
+			var bannedApiDeployer = BannedApiDeployer.Create(myDocumentsStorage);
+
+			if (bannedApiDeployer == null)
+			{
+				AcuminatorLogger.LogMessage("Failed to create Banned API Deployer", LogMode.Warning);
+				return default;
+			}
+
+			var (deployedBannedApisFile, deployedWhiteListFile) = bannedApiDeployer.DeployBannedApiFiles();
+
+			if (deployedBannedApisFile.IsNullOrWhiteSpace())
+				AcuminatorLogger.LogMessage("Failed to initialize Banned API", LogMode.Warning);
+
+			if (deployedWhiteListFile.IsNullOrWhiteSpace())
+				AcuminatorLogger.LogMessage("Failed to initialize White List API", LogMode.Warning);
+
+			return (deployedBannedApisFile, deployedWhiteListFile);
 		}
 
 		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
