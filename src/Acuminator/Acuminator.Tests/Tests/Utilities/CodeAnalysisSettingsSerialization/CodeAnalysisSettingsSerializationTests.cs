@@ -39,20 +39,20 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 		}
 
 		[Theory]
-		[InlineData(true, true, true, true, true, null, null)]
-		[InlineData(false, false, false, false, false, "", "    ")]
-		[InlineData(false, true, false, false, true, @"C:\bannedApiPath.txt", @"C:\whiteListPath.txt")]
-		[InlineData(true, false, false, true, true, null, @"C:\whiteListPath.txt")]
-		[InlineData(true, false, false, true, true, @"C:\bannedApiPath.txt", null)]
+		[InlineData(true, true, true, true, true, false, null, null)]
+		[InlineData(false, false, false, false, false, true, "", "    ")]
+		[InlineData(false, true, false, false, true, true, @"C:\bannedApiPath.txt", @"C:\whiteListPath.txt")]
+		[InlineData(true, false, false, true, true, false, null, @"C:\whiteListPath.txt")]
+		[InlineData(true, false, false, true, true, true, @"C:\bannedApiPath.txt", null)]
 		public void CheckCodeAnalysisAndBannedApiSettingsSerialization(bool recursiveAnalysisEnabled, bool isvSpecificAnalyzersEnabled,
 																	   bool staticAnalysisEnabled, bool suppressionMechanismEnabled, 
-																	   bool px1007DocumentationDiagnosticEnabled,
+																	   bool px1007DocumentationDiagnosticEnabled, bool bannedApiAnalysisEnabled,
 																	   string? bannedApiFilePath, string? whiteListFilePath)
 		{
 			var expectedAnalysisSettings = new CodeAnalysisSettings(recursiveAnalysisEnabled, isvSpecificAnalyzersEnabled,
 																	staticAnalysisEnabled, suppressionMechanismEnabled,
 																	px1007DocumentationDiagnosticEnabled);
-			var expectedBannedApiSettings = new BannedApiSettings(bannedApiFilePath, whiteListFilePath);
+			var expectedBannedApiSettings = new BannedApiSettings(bannedApiAnalysisEnabled, bannedApiFilePath, whiteListFilePath);
 
 			using var stream = new MemoryStream(capacity: sizeof(bool) * 5 + 20);
 			using var writer = new CodeAnalysisSettingsBinaryWriter(stream);
