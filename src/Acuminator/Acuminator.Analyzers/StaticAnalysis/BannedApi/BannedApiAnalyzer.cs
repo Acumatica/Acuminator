@@ -94,7 +94,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 		var whiteListInfoRetriever = GetApiInfoRetriever(_customWhiteListInfoRetriever, _customWhiteListStorage, _customWhiteListDataProvider,
 														 BannedApiSettings?.WhiteListApiFilePath, compilationStartContext.CancellationToken);
 
-		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, banInfoRetriever, whiteListInfoRetriever),
+		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, pxContext, banInfoRetriever, whiteListInfoRetriever),
 														 SyntaxKind.CompilationUnit);
 	}
 
@@ -134,14 +134,14 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 					new HierarchicalApiBanInfoRetriever(storage));
 	}
 
-	private void AnalyzeSyntaxTree(in SyntaxNodeAnalysisContext syntaxContext, IApiInfoRetriever apiBanInfoRetriever,
-								   IApiInfoRetriever? whiteListInfoRetriever)
+	private void AnalyzeSyntaxTree(in SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
+								   IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? whiteListInfoRetriever)
 	{
 		syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 		if (syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax)
 		{
-			var apiNodesWalker = new ApiNodesWalker(syntaxContext, apiBanInfoRetriever, whiteListInfoRetriever, checkInterfaces: false);
+			var apiNodesWalker = new ApiNodesWalker(syntaxContext, pxContext, apiBanInfoRetriever, whiteListInfoRetriever, checkInterfaces: false);
 			apiNodesWalker.CheckSyntaxTree(compilationUnitSyntax);
 		}
 	}
