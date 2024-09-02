@@ -46,8 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 						 Justification = $"Configured in the {nameof(ConfigureAnalysisContext)} method")]
 		public override void Initialize(AnalysisContext context)
 		{
-			if (!SettingsProvidedExternally)
-				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values from the shared memory
+			ReadAcuminatorSettingsFromSharedMemory();
 
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
@@ -63,6 +62,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 					AnalyzeCompilation(compilationStartContext, pxContext);
 				}
 			});
+		}
+
+		[MemberNotNull(nameof(CodeAnalysisSettings))]
+		protected virtual void ReadAcuminatorSettingsFromSharedMemory()
+		{
+			if (!SettingsProvidedExternally)
+				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings();
 		}
 
 		protected virtual void ConfigureAnalysisContext(AnalysisContext analysisContext)
