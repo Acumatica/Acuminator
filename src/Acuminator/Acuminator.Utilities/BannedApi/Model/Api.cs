@@ -157,8 +157,12 @@ namespace Acuminator.Utilities.BannedApi.Model
 		public Api(string rawApiData)
 		{
 			RawApiData = rawApiData.CheckIfNullOrWhiteSpace().Trim();
-			var(apiDataWithoutExtraInfo, BanKind, BanReason) = ParseRawApiData(rawApiData);
-			Kind = apiDataWithoutExtraInfo.GetApiKind();
+
+			var (apiDataWithoutExtraInfo, banKind, banReason) = ParseRawApiData(rawApiData);
+
+			BanKind   = banKind;
+			BanReason = banReason;
+			Kind 	  = apiDataWithoutExtraInfo.GetApiKind();
 
 			if (Kind == ApiKind.Undefined || apiDataWithoutExtraInfo.Length < NameOffset)
 				throw InvalidInputStringFormatException(RawApiData);
