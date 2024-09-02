@@ -39,8 +39,18 @@ public partial class BannedApiAnalyzer
 		public List<ApiSearchResult>? GetTypeBannedApiInfos(ITypeSymbol typeSymbol, bool checkInterfaces)
 		{
 			_checkedTypes.Clear();
-			return GetBannedInfosFromTypeSymbolAndItsHierarchy(typeSymbol, alreadyCollectedInfos: null, checkInterfaces);
+
+			var typeSymbolToAnalize = GetUnderlyingTypeSymbolForAnalysis(typeSymbol);
+			return GetBannedInfosFromTypeSymbolAndItsHierarchy(typeSymbolToAnalize, alreadyCollectedInfos: null, checkInterfaces);
 		}
+
+		private ITypeSymbol GetUnderlyingTypeSymbolForAnalysis(ITypeSymbol typeSymbol) =>
+			typeSymbol switch
+			{
+				IPointerTypeSymbol pointerTypeSymbol => pointerTypeSymbol.PointedAtType,
+				IArrayTypeSymbol arrayTypeSymbol	 => arrayTypeSymbol.ElementType,
+				_ 									 => typeSymbol
+			};
 
 		private List<ApiSearchResult>? GetBannedInfosFromTypeSymbolAndItsHierarchy(ITypeSymbol typeSymbol, List<ApiSearchResult>? alreadyCollectedInfos,
 																				   bool checkInterfaces)
