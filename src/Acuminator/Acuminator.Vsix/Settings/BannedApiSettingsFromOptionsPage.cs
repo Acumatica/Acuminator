@@ -21,6 +21,8 @@ namespace Acuminator.Vsix.Settings
 			_optionsPage = optionsPage.CheckIfNull();
 		}
 
+		public override bool BannedApiAnalysisEnabled => _optionsPage.BannedApiAnalysisEnabled;
+
 		public override string? BannedApiFilePath => _optionsPage.BannedApiFilePath;
 
 		public override string? WhiteListApiFilePath => _optionsPage.WhiteListApiFilePath;

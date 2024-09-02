@@ -274,11 +274,29 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		private bool _bannedApiAnalysisEnabled = BannedApiSettings.DefaultBannedApiAnalysisEnabled;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiAnalysisEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiAnalysisEnabled_Description))]
+		public bool BannedApiAnalysisEnabled
+		{
+			get => _bannedApiAnalysisEnabled;
+			set 
+			{
+				if (_bannedApiAnalysisEnabled != value)
+				{
+					_bannedApiAnalysisEnabled = value;
+					_codeAnalysisSettingsChanged = true;
+				}
+			}
+		}
+
 		private string? _bannedApiFilePath;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
-		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_BannedApiFilePath_Title))]
-		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_BannedApiFilePath_Description))]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiFilePath_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiFilePath_Description))]
 		public string? BannedApiFilePath
 		{
 			get => _bannedApiFilePath;
@@ -293,15 +311,15 @@ namespace Acuminator.Vsix
 
 				_bannedApiFileSettingChanged = true;
 				_codeAnalysisSettingsChanged = true;
-				_bannedApiFileInvalid = !CheckFilePath(_bannedApiFilePath, VSIXResource.Setting_CodeAnalysis_BannedApiFilePath_Title);
+				_bannedApiFileInvalid = !CheckFilePath(_bannedApiFilePath, VSIXResource.Setting_BannedAPI_BannedApiFilePath_Title);
 			}
 		}
 
 		private string? _whiteListApiFilePath;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
-		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_WhiteListApiFilePath_Title))]
-		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_WhiteListApiFilePath_Description))]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Description))]
 		public string? WhiteListApiFilePath
 		{
 			get => _whiteListApiFilePath;
@@ -316,7 +334,7 @@ namespace Acuminator.Vsix
 
 				_whiteListApiFileSettingChanged = true;
 				_codeAnalysisSettingsChanged	= true;
-				_whiteListApiFileInvalid = !CheckFilePath(_whiteListApiFilePath, VSIXResource.Setting_CodeAnalysis_WhiteListApiFilePath_Title);
+				_whiteListApiFileInvalid = !CheckFilePath(_whiteListApiFilePath, VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Title);
 			}
 		}
 
@@ -344,6 +362,8 @@ namespace Acuminator.Vsix
 
 			_colorSettingsChanged 		 = false;
 			_codeAnalysisSettingsChanged = false;
+
+			_bannedApiAnalysisEnabled = BannedApiSettings.DefaultBannedApiAnalysisEnabled;
 
 			_bannedApiFilePath 			 = null;
 			_bannedApiFileSettingChanged = false;
