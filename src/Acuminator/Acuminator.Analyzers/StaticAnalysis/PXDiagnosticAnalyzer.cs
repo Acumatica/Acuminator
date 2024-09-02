@@ -48,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			ReadAcuminatorSettingsFromSharedMemory();
 
-			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
+			if (!ShouldRegisterAnalysisActions())
 				return;
 
 			ConfigureAnalysisContext(context);
@@ -70,6 +70,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (!SettingsProvidedExternally)
 				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings();
 		}
+
+		[MemberNotNullWhen(returnValue: true, nameof(CodeAnalysisSettings))]
+		protected virtual bool ShouldRegisterAnalysisActions() => CodeAnalysisSettings?.StaticAnalysisEnabled == true;
 
 		protected virtual void ConfigureAnalysisContext(AnalysisContext analysisContext)
 		{
