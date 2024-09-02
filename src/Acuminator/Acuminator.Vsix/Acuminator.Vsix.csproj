@@ -429,6 +429,7 @@
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
     <Compile Include="BannedApi\BannedApiDeployer.cs" />
+    <Compile Include="BannedApi\ApiFileSettingWatcher.cs" />
     <Compile Include="Code Snippets\CodeSnippetsDeployer.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
@@ -469,6 +470,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VSIXResource.resx</DependentUpon>
     </Compile>
+    <Compile Include="BannedApi\BannedApiSettingsObserver.cs" />
     <Compile Include="Settings\BannedApiSettingsFromOptionsPage.cs" />
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Settings\OutOfProcess\OutOfProcessSettingValueProvider.cs" />
