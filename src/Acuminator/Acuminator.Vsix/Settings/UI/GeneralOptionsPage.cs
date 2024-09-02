@@ -377,15 +377,43 @@ namespace Acuminator.Vsix
 				_bannedApiFileSettingChanged = true;
 			}
 
-			if (!deployedWhiteListFile.IsNullOrWhiteSpace() && WhiteListApiFilePath.IsNullOrWhiteSpace())
+			if (!deployedWhiteListFile.IsNullOrWhiteSpace() && WhiteListApiFilePath.IsNullOrWhiteSpace() &&
+				File.Exists(deployedWhiteListFile))
 			{
 				_whiteListApiFilePath = deployedWhiteListFile;
-				_codeAnalysisSettingsChanged = true;
+				_codeAnalysisSettingsChanged	= true;
 				_whiteListApiFileSettingChanged = true;
 			}
 
 			if (_codeAnalysisSettingsChanged)
 				SaveSettingsToStorage();
+		}
+
+		public void SetBannedApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
+			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _bannedApiFilePath, ref _bannedApiFileSettingChanged);
+
+		public void SetWhiteListFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
+			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _whiteListApiFilePath, ref _whiteListApiFileSettingChanged);
+
+
+		private void SetApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents, ref string? apiFileSettingField,
+											  ref bool apiSettingChangedFlag)
+		{
+			newFilePath = newFilePath.NullIfWhiteSpace()?.Trim();
+
+			if (!File.Exists(newFilePath))
+				newFilePath = null;
+
+			if (string.Equals(apiFileSettingField, newFilePath, StringComparison.Ordinal))
+				return;
+
+			apiFileSettingField = newFilePath;
+			_codeAnalysisSettingsChanged = true;
+
+			if (raiseBannedApiUpdateEvents)
+				apiSettingChangedFlag = true;
+
+			SaveSettingsToStorage();
 		}
 
 		private void OnColoringSettingChanged(string setting) =>
