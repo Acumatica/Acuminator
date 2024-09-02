@@ -21,6 +21,11 @@ namespace Acuminator.Vsix.Utilities
 			public const string FileExtension = ".cs";
 		}
 
+		public static class Settings
+		{
+			public const string All = "All";
+		}
+
 		/// <summary>
 		/// Banned API related constants.
 		/// </summary>

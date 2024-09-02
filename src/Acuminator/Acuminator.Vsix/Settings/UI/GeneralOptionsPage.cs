@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Settings;
+using Acuminator.Vsix.Utilities;
 
 using Community.VisualStudio.Toolkit;
 
@@ -20,7 +21,6 @@ namespace Acuminator.Vsix
 	{
 		public const string PageTitle = "General";
 
-		private const string AllSettings = "All";
 		private const string ColoringCategoryName = "BQL Coloring";
 		private const string OutliningCategoryName = "BQL Outlining";
 		private const string CodeAnalysisCategoryName = "Code Analysis";
@@ -312,8 +312,8 @@ namespace Acuminator.Vsix
 
 			base.ResetSettings();
 
-			OnColoringSettingChanged(AllSettings);
-			OnCodeAnalysisSettingChanged(AllSettings);
+			OnColoringSettingChanged(Constants.Settings.All);
+			OnCodeAnalysisSettingChanged(Constants.Settings.All);
 		}
 
 		public override void SaveSettingsToStorage()
@@ -335,13 +335,13 @@ namespace Acuminator.Vsix
 			if (_colorSettingsChanged)
 			{
 				_colorSettingsChanged = false;
-				OnColoringSettingChanged(AllSettings);
+				OnColoringSettingChanged(Constants.Settings.All);
 			}
 
 			if (_codeAnalysisSettingsChanged)
 			{
 				_codeAnalysisSettingsChanged = false;
-				OnCodeAnalysisSettingChanged(AllSettings);
+				OnCodeAnalysisSettingChanged(Constants.Settings.All);
 			}
 		}
 
