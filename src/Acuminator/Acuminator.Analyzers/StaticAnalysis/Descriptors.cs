@@ -453,10 +453,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1099_ForbiddenApiUsage_NoDetails { get; } =
 			Rule("PX1099", nameof(Resources.PX1099Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1099,
-				 messageFormat: nameof(Resources.PX1099TitleFormat));
+				 messageFormat: nameof(Resources.PX1099TitleFormat).GetLocalized());
 
 		public static DiagnosticDescriptor PX1099_ForbiddenApiUsage_WithDetails { get; } =
 			Rule("PX1099", nameof(Resources.PX1099Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1099,
-				 messageFormat: nameof(Resources.PX1099TitleFormatWithDetails));
+				 messageFormat: nameof(Resources.PX1099TitleFormatWithDetails).GetLocalized());
 	}
 }
