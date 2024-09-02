@@ -120,7 +120,7 @@ namespace Acuminator.Vsix.BannedApi
 				   .Replace('.', Path.DirectorySeparatorChar);
 
 			string relativeFilePathWithoutExtension = sb.ToString();
-			string relativeFilePath = Path.ChangeExtension(relativeFilePathWithoutExtension, Constants.CodeSnippets.FileExtension);
+			string relativeFilePath = Path.ChangeExtension(relativeFilePathWithoutExtension, ApiConstants.Storage.FileExtension);
 
 			return Path.Combine(_bannedApiFolder, relativeFilePath);
 		}
