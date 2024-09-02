@@ -288,7 +288,7 @@ public partial class BannedApiAnalyzer
 			var apiKindDescription = GetApiKindLocalizedDescription(banApiInfo.ClosestBannedApi.Kind);
 			Diagnostic diagnostic;
 
-			if (!banApiInfo.ApiFoundInDB.BanReason.IsNullOrWhiteSpace())
+			if (!banApiInfo.ClosestBannedApi.BanReason.IsNullOrWhiteSpace())
 			{
 				diagnostic = Diagnostic.Create(
 								Descriptors.PX1099_ForbiddenApiUsage_WithDetails, location, 
