@@ -78,7 +78,7 @@ namespace Acuminator.Utilities.BannedApi.Storage
 			if (dataFilePath == null && !hasAssemblyResource)
 				return new EmptyProvider(considerDataAvailable: false);
 
-			var fileDataProvider = dataFilePath != null
+			var fileDataProvider = dataFilePath != null && System.IO.File.Exists(dataFilePath)
 				? new FileDataProvider(dataFilePath)
 				: null;
 			var assemblyDataProvider = hasAssemblyResource
