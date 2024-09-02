@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +11,6 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Settings;
-using Acuminator.Vsix.Utilities;
 
 using Community.VisualStudio.Toolkit;
 
@@ -58,8 +58,9 @@ namespace Acuminator.Vsix
 		public event EventHandler<SettingChangedEventArgs>? CodeAnalysisSettingChanged;
 		public event EventHandler<SettingChangedEventArgs>? BannedApiSettingChanged;
 		
-		private bool _coloringEnabled = true;
+		private bool _coloringEnabled = Constants.Settings.Coloring.ColoringEnabledDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.ColoringEnabledDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
@@ -76,8 +77,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _pxActionColoringEnabled = true;
+		private bool _pxActionColoringEnabled = Constants.Settings.Coloring.PXActionColoringEnabledDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.PXActionColoringEnabledDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
@@ -94,8 +96,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _pxGraphColoringEnabled = true;
+		private bool _pxGraphColoringEnabled = Constants.Settings.Coloring.PXGraphColoringEnabledDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.PXGraphColoringEnabledDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
@@ -112,8 +115,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _colorOnlyInsideBQL;
+		private bool _colorOnlyInsideBQL = Constants.Settings.Coloring.ColorOnlyInsideBQLDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.ColorOnlyInsideBQLDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
@@ -130,8 +134,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _useRegexColoring;
+		private bool _useRegexColoring = Constants.Settings.Coloring.UseRegexColoringDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.UseRegexColoringDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
@@ -148,8 +153,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _useBqlOutlining = true;
+		private bool _useBqlOutlining = Constants.Settings.Outlining.UseBqlOutliningDefault;
 
+		[DefaultValue(Constants.Settings.Outlining.UseBqlOutliningDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
@@ -166,8 +172,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _useBqlDetailedOutlining = true;
+		private bool _useBqlDetailedOutlining = Constants.Settings.Outlining.UseBqlDetailedOutliningDefault;
 
+		[DefaultValue(Constants.Settings.Outlining.UseBqlDetailedOutliningDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Description))]
@@ -186,6 +193,7 @@ namespace Acuminator.Vsix
 
 		private bool _staticAnalysisEnabled = CodeAnalysisSettings.DefaultStaticAnalysisEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultStaticAnalysisEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_StaticAnalysisEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_StaticAnalysisEnabled_Description))]
@@ -204,6 +212,7 @@ namespace Acuminator.Vsix
 
 		private bool _suppressionMechanismEnabled = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultSuppressionMechanismEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_SuppressionMechanismEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_SuppressionMechanismEnabled_Description))]
@@ -222,6 +231,7 @@ namespace Acuminator.Vsix
 
 		private bool _recursiveAnalysisEnabled = CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description))]
@@ -240,6 +250,7 @@ namespace Acuminator.Vsix
 
 		private bool _isvSpecificAnalyzersEnabled = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description))]
@@ -258,6 +269,7 @@ namespace Acuminator.Vsix
 
 		private bool _px1007DocumentationDiagnosticEnabled = CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description))]
@@ -276,6 +288,7 @@ namespace Acuminator.Vsix
 
 		private bool _bannedApiAnalysisEnabled = BannedApiSettings.DefaultBannedApiAnalysisEnabled;
 
+		[DefaultValue(BannedApiSettings.DefaultBannedApiAnalysisEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiAnalysisEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiAnalysisEnabled_Description))]
@@ -343,13 +356,14 @@ namespace Acuminator.Vsix
 
 		public override void ResetSettings()
 		{
-			_coloringEnabled 		 = true;
-			_useRegexColoring 		 = false;
-			_useBqlOutlining 		 = true;
-			_useBqlDetailedOutlining = true;
-			_pxActionColoringEnabled = true;
-			_pxGraphColoringEnabled  = true;
-			_colorOnlyInsideBQL 	 = false;
+			_useBqlOutlining 		 = Constants.Settings.Outlining.UseBqlOutliningDefault;
+			_useBqlDetailedOutlining = Constants.Settings.Outlining.UseBqlDetailedOutliningDefault;
+
+			_coloringEnabled 		 = Constants.Settings.Coloring.ColoringEnabledDefault;
+			_useRegexColoring		 = Constants.Settings.Coloring.UseRegexColoringDefault;
+			_pxActionColoringEnabled = Constants.Settings.Coloring.PXActionColoringEnabledDefault;
+			_pxGraphColoringEnabled  = Constants.Settings.Coloring.PXGraphColoringEnabledDefault;
+			_colorOnlyInsideBQL 	 = Constants.Settings.Coloring.ColorOnlyInsideBQLDefault;
 
 			_staticAnalysisEnabled 				  = CodeAnalysisSettings.DefaultStaticAnalysisEnabled;
 			_suppressionMechanismEnabled 		  = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
