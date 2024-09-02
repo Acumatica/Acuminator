@@ -717,9 +717,9 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1099TitleFormat" xml:space="preserve">
     <value>The forbidden {0} "{1}" is used</value>
   </data>
-  <data name="PX1099TitleFormatWithDetails" xml:space="preserve">
+  <data name="PX1099TitleFormatWithReason" xml:space="preserve">
     <value>The forbidden {0} "{1}" is used.
-Details: "{2}".</value>
+Reason: {2}</value>
   </data>
   <data name="PX1099Title_EventFormatArg" xml:space="preserve">
     <value>event</value>

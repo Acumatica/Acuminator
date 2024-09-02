@@ -1898,11 +1898,11 @@ namespace Acuminator.Analyzers {
         
         /// <summary>
         ///   Looks up a localized string similar to The forbidden {0} &quot;{1}&quot; is used.
-        ///Details: &quot;{2}&quot;..
+        ///Reason: {2}.
         /// </summary>
-        public static string PX1099TitleFormatWithDetails {
+        public static string PX1099TitleFormatWithReason {
             get {
-                return ResourceManager.GetString("PX1099TitleFormatWithDetails", resourceCulture);
+                return ResourceManager.GetString("PX1099TitleFormatWithReason", resourceCulture);
             }
         }
         

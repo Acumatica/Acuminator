@@ -31,7 +31,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 		ImmutableArray.Create
 		(
 			Descriptors.PX1099_ForbiddenApiUsage_NoDetails,
-			Descriptors.PX1099_ForbiddenApiUsage_WithDetails
+			Descriptors.PX1099_ForbiddenApiUsage_WithReason
 		);
 
 	private readonly IApiStorage? _customBannedApiStorage;

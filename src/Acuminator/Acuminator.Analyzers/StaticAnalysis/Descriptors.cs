@@ -455,8 +455,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1099", nameof(Resources.PX1099Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1099,
 				 messageFormat: nameof(Resources.PX1099TitleFormat).GetLocalized());
 
-		public static DiagnosticDescriptor PX1099_ForbiddenApiUsage_WithDetails { get; } =
+		public static DiagnosticDescriptor PX1099_ForbiddenApiUsage_WithReason { get; } =
 			Rule("PX1099", nameof(Resources.PX1099Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1099,
-				 messageFormat: nameof(Resources.PX1099TitleFormatWithDetails).GetLocalized());
+				 messageFormat: nameof(Resources.PX1099TitleFormatWithReason).GetLocalized());
 	}
 }
