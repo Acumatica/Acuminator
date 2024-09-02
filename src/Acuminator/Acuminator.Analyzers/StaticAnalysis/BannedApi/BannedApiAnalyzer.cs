@@ -88,13 +88,13 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 
 		var banInfoRetriever = GetApiInfoRetriever(_customBanInfoRetriever, _customBannedApiStorage, _customBannedApiDataProvider,
 													BannedApiSettings?.BannedApiFilePath, globalApiDataRetriever: GlobalApiData.GetBannedApiData,
-													compilationStartContext.CancellationToken);
+													pxContext.CodeAnalysisSettings, compilationStartContext.CancellationToken);
 		if (banInfoRetriever == null)
 			return;
 
 		var whiteListInfoRetriever = GetApiInfoRetriever(_customWhiteListInfoRetriever, _customWhiteListStorage, _customWhiteListDataProvider,
 														 BannedApiSettings?.WhiteListApiFilePath, globalApiDataRetriever: GlobalApiData.GetWhiteListApiData,
-														 compilationStartContext.CancellationToken);
+														 pxContext.CodeAnalysisSettings, compilationStartContext.CancellationToken);
 
 		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, pxContext, banInfoRetriever, whiteListInfoRetriever),
 														 SyntaxKind.CompilationUnit);
@@ -102,39 +102,39 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 
 	private static IApiInfoRetriever? GetApiInfoRetriever(IApiInfoRetriever? customApiInfoRetriever, IApiStorage? customApiStorage,
 														  IApiDataProvider? customApiDataProvider, string? apiFilePath, 
-														  Func<string, CancellationToken, IApiStorage> globalApiDataRetriever, 
-														  CancellationToken cancellation)
+														  Func<string, CancellationToken, IApiStorage> globalApiDataRetriever,
+														  CodeAnalysisSettings codeAnalysisSettings, CancellationToken cancellation)
 	{
 		if (customApiInfoRetriever != null)
 			return customApiInfoRetriever;
 
 		if (customApiStorage != null)
-			return GetHierarchicalApiInfoRetrieverWithCache(customApiStorage);
+			return GetHierarchicalApiInfoRetrieverWithCache(customApiStorage, codeAnalysisSettings);
 
 		if (customApiDataProvider != null)
 		{
 			var customStorageProvider = new ApiStorageProvider(customApiDataProvider);
 			var storageFromCustomApiDataProvider = customStorageProvider.GetStorage(cancellation);
 
-			return GetHierarchicalApiInfoRetrieverWithCache(storageFromCustomApiDataProvider);
+			return GetHierarchicalApiInfoRetrieverWithCache(storageFromCustomApiDataProvider, codeAnalysisSettings);
 		}
 
 		if (!apiFilePath.IsNullOrWhiteSpace())
 		{
 			var apiDataStorageFromGlobalSettings = globalApiDataRetriever(apiFilePath, cancellation);
-			return GetHierarchicalApiInfoRetrieverWithCache(apiDataStorageFromGlobalSettings);
+			return GetHierarchicalApiInfoRetrieverWithCache(apiDataStorageFromGlobalSettings, codeAnalysisSettings);
 		}
 
 		return null;
 	}
 
-	protected static IApiInfoRetriever? GetHierarchicalApiInfoRetrieverWithCache(IApiStorage storage)
+	protected static IApiInfoRetriever? GetHierarchicalApiInfoRetrieverWithCache(IApiStorage storage, CodeAnalysisSettings codeAnalysisSettings)
 	{
 		if (storage.ApiKindsCount == 0)
 			return null;
 
 		return new ApiInfoRetrieverWithWeakCache(
-					new HierarchicalApiBanInfoRetriever(storage));
+					new HierarchicalApiBanInfoRetriever(storage, codeAnalysisSettings));
 	}
 
 	private void AnalyzeSyntaxTree(in SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
