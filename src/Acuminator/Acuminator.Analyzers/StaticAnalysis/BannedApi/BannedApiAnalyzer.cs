@@ -87,12 +87,14 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 		compilationStartContext.CancellationToken.ThrowIfCancellationRequested();
 
 		var banInfoRetriever = GetApiInfoRetriever(_customBanInfoRetriever, _customBannedApiStorage, _customBannedApiDataProvider,
-													BannedApiSettings?.BannedApiFilePath, compilationStartContext.CancellationToken);
+													BannedApiSettings?.BannedApiFilePath, globalApiDataRetriever: GlobalApiData.GetBannedApiData,
+													compilationStartContext.CancellationToken);
 		if (banInfoRetriever == null)
 			return;
 
 		var whiteListInfoRetriever = GetApiInfoRetriever(_customWhiteListInfoRetriever, _customWhiteListStorage, _customWhiteListDataProvider,
-														 BannedApiSettings?.WhiteListApiFilePath, compilationStartContext.CancellationToken);
+														 BannedApiSettings?.WhiteListApiFilePath, globalApiDataRetriever: GlobalApiData.GetWhiteListApiData,
+														 compilationStartContext.CancellationToken);
 
 		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, pxContext, banInfoRetriever, whiteListInfoRetriever),
 														 SyntaxKind.CompilationUnit);
@@ -100,6 +102,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 
 	private static IApiInfoRetriever? GetApiInfoRetriever(IApiInfoRetriever? customApiInfoRetriever, IApiStorage? customApiStorage,
 														  IApiDataProvider? customApiDataProvider, string? apiFilePath, 
+														  Func<string, CancellationToken, IApiStorage> globalApiDataRetriever, 
 														  CancellationToken cancellation)
 	{
 		if (customApiInfoRetriever != null)
@@ -118,8 +121,8 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 
 		if (!apiFilePath.IsNullOrWhiteSpace())
 		{
-			var bannedApiDataStorageFrom = GlobalApiData.GetBannedApiData(apiFilePath, cancellation);
-			return GetHierarchicalApiInfoRetrieverWithCache(bannedApiDataStorageFrom);
+			var apiDataStorageFromGlobalSettings = globalApiDataRetriever(apiFilePath, cancellation);
+			return GetHierarchicalApiInfoRetrieverWithCache(apiDataStorageFromGlobalSettings);
 		}
 
 		return null;

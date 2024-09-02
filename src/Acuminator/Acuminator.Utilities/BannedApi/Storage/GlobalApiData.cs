@@ -26,10 +26,10 @@ public sealed class GlobalApiData
 
 	private GlobalApiData() { }
 
-	public static IApiStorage GetBannedApiData(string? externalBannedApiFilePath, CancellationToken cancellation = default) =>
+	public static IApiStorage GetBannedApiData(string? externalBannedApiFilePath, CancellationToken cancellation) =>
 		_bannedApiStorage.GetApiData(externalBannedApiFilePath, ApiConstants.Storage.BannedApiAssemblyResourceName, cancellation);
 
-	public static IApiStorage GetWhiteListApiData(string? externalWhiteListApiFilePath, CancellationToken cancellation = default) =>
+	public static IApiStorage GetWhiteListApiData(string? externalWhiteListApiFilePath, CancellationToken cancellation) =>
 		_whiteListApiStorage.GetApiData(externalWhiteListApiFilePath, ApiConstants.Storage.WhiteListAssemblyResourceName, cancellation);
 
 	private IApiStorage GetApiData(string? externalApiFilePath, string assemblyResourceName, CancellationToken cancellation)
