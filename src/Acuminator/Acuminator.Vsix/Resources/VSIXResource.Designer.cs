@@ -673,6 +673,24 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable Acuminator PX1099 diagnostic which reports calls to API that should not be used with Acumatica Framework. .
+        /// </summary>
+        public static string Setting_BannedAPI_BannedApiAnalysisEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_BannedApiAnalysisEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable PX1099 diagnostic for banned API.
+        /// </summary>
+        public static string Setting_BannedAPI_BannedApiAnalysisEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_BannedApiAnalysisEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A path to the file with a list of banned APIs that will be reported by Acuminator..
         /// </summary>
         public static string Setting_BannedAPI_BannedApiFilePath_Description {
@@ -796,25 +814,6 @@ namespace Acuminator.Vsix {
         public static string Setting_CodeAnalysis_SuppressionMechanismEnabled_Title {
             get {
                 return ResourceManager.GetString("Setting_CodeAnalysis_SuppressionMechanismEnabled_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A path to the file with white listed APIs that will not be reported by Acuminator even if their containing namespaces or types are contained in the &quot;Banned API File&quot; as banned.
-        ///This option should be used together with the &quot;Banned API File&quot; setting..
-        /// </summary>
-        public static string Setting_CodeAnalysis_WhiteListApiFilePath_Description {
-            get {
-                return ResourceManager.GetString("Setting_CodeAnalysis_WhiteListApiFilePath_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to White List API File.
-        /// </summary>
-        public static string Setting_CodeAnalysis_WhiteListApiFilePath_Title {
-            get {
-                return ResourceManager.GetString("Setting_CodeAnalysis_WhiteListApiFilePath_Title", resourceCulture);
             }
         }
         

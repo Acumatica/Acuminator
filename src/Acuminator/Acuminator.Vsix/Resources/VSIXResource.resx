@@ -321,7 +321,13 @@
   <data name="PackageLoad_WaitMessage" xml:space="preserve">
     <value>Loading the Acuminator package</value>
   </data>
-  <data name="Setting_CodeAnalysis_BannedApiFilePath_Description" xml:space="preserve">
+  <data name="Setting_BannedAPI_BannedApiAnalysisEnabled_Description" xml:space="preserve">
+    <value>Enable Acuminator PX1099 diagnostic which reports calls to API that should not be used with Acumatica Framework. </value>
+  </data>
+  <data name="Setting_BannedAPI_BannedApiAnalysisEnabled_Title" xml:space="preserve">
+    <value>Enable PX1099 diagnostic for banned API</value>
+  </data>
+  <data name="Setting_BannedAPI_BannedApiFilePath_Description" xml:space="preserve">
     <value>A path to the file with a list of banned APIs that will be reported by Acuminator.</value>
   </data>
   <data name="Setting_BannedAPI_BannedApiFilePath_Title" xml:space="preserve">
@@ -363,13 +369,6 @@ This option should be used together with the "Banned API File" setting.</value>
   </data>
   <data name="Setting_CodeAnalysis_SuppressionMechanismEnabled_Title" xml:space="preserve">
     <value>Suppress selected diagnostics</value>
-  </data>
-  <data name="Setting_CodeAnalysis_WhiteListApiFilePath_Description" xml:space="preserve">
-    <value>A path to the file with white listed APIs that will not be reported by Acuminator even if their containing namespaces or types are contained in the "Banned API File" as banned.
-This option should be used together with the "Banned API File" setting.</value>
-  </data>
-  <data name="Setting_CodeAnalysis_WhiteListApiFilePath_Title" xml:space="preserve">
-    <value>White List API File</value>
   </data>
   <data name="Setting_ColorOnlyInsideBQL_Description" xml:space="preserve">
     <value>Colorize code only inside BQL commands (only for Roslyn coloring).</value>
