@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.BannedApi.Providers
 		public override bool HasApiDataSourceChanged()
 		{
 			DateTime? currentLastWriteTimeUtcs = GetLastWriteTimeUtcSafely();
-			return _lastFileWriteTimeUtcWhenApiWasRead == currentLastWriteTimeUtcs;
+			return _lastFileWriteTimeUtcWhenApiWasRead != currentLastWriteTimeUtcs;
 		}
 
 		/// <inheritdoc/>
