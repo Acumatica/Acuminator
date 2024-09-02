@@ -67,6 +67,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 		_customWhiteListInfoRetriever = customWhiteListInfoRetriever;
 	}
 
+	[MemberNotNull(nameof(BannedApiSettings))]
 	protected override void ReadAcuminatorSettingsFromSharedMemory()
 	{
 		if (!SettingsProvidedExternally || !BannedApiSettingsProvidedExternally)
@@ -81,6 +82,10 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 				BannedApiSettings = externalBannedApiSettings;
 		}
 	}
+
+	[MemberNotNullWhen(returnValue: true, nameof(BannedApiSettings))]
+	protected override bool ShouldRegisterAnalysisActions() => 
+		base.ShouldRegisterAnalysisActions() && BannedApiSettings?.BannedApiAnalysisEnabled == true;
 
 	protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 	{
