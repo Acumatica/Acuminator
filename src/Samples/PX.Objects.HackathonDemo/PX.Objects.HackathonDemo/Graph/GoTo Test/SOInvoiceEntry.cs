@@ -22,6 +22,7 @@ namespace PX.Objects.HackathonDemo.DerivedGraph
 	
         protected override void _(Events.RowInserting<APInvoice> e)
         {
+			var methods = this.GetType().GetMethods();
         }
 
 		#region Delegate
