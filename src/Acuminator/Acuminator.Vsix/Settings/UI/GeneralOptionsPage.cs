@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -57,7 +58,21 @@ namespace Acuminator.Vsix
 		public event EventHandler<SettingChangedEventArgs>? ColoringSettingChanged;
 		public event EventHandler<SettingChangedEventArgs>? CodeAnalysisSettingChanged;
 		public event EventHandler<SettingChangedEventArgs>? BannedApiSettingChanged;
-		
+
+		protected override IWin32Window Window
+		{
+			get 
+			{
+				var baseWindow = base.Window;
+
+				if (baseWindow is not PropertyGrid propertyGrid)
+					return baseWindow;
+
+				propertyGrid.PropertySort = PropertySort.Categorized;
+				return propertyGrid;
+			}
+		}
+
 		private bool _coloringEnabled = Constants.Settings.Coloring.ColoringEnabledDefault;
 
 		[DefaultValue(Constants.Settings.Coloring.ColoringEnabledDefault)]
