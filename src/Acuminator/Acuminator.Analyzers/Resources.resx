@@ -714,12 +714,30 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1099Title" xml:space="preserve">
     <value>The forbidden API is used</value>
   </data>
-	<data name="PX1099TitleFormat" xml:space="preserve">
+  <data name="PX1099TitleFormat" xml:space="preserve">
     <value>The forbidden {0} "{1}" is used</value>
   </data>
-	<data name="PX1099TitleFormatWithDetails" xml:space="preserve">
+  <data name="PX1099TitleFormatWithDetails" xml:space="preserve">
     <value>The forbidden {0} "{1}" is used.
 Details: "{2}".</value>
+  </data>
+  <data name="PX1099Title_EventFormatArg" xml:space="preserve">
+    <value>event</value>
+  </data>
+  <data name="PX1099Title_FieldFormatArg" xml:space="preserve">
+    <value>field</value>
+  </data>
+  <data name="PX1099Title_MethodFormatArg" xml:space="preserve">
+    <value>method</value>
+  </data>
+  <data name="PX1099Title_NamespaceFormatArg" xml:space="preserve">
+    <value>namespace</value>
+  </data>
+  <data name="PX1099Title_PropertyFormatArg" xml:space="preserve">
+    <value>property</value>
+  </data>
+  <data name="PX1099Title_TypeFormatArg" xml:space="preserve">
+    <value>type</value>
   </data>
   <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
     <value>Suppress the {0} diagnostic with Acuminator</value>

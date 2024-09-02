@@ -1834,6 +1834,60 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to event.
+        /// </summary>
+        public static string PX1099Title_EventFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_EventFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to field.
+        /// </summary>
+        public static string PX1099Title_FieldFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_FieldFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to method.
+        /// </summary>
+        public static string PX1099Title_MethodFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_MethodFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to namespace.
+        /// </summary>
+        public static string PX1099Title_NamespaceFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_NamespaceFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to property.
+        /// </summary>
+        public static string PX1099Title_PropertyFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_PropertyFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to type.
+        /// </summary>
+        public static string PX1099Title_TypeFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_TypeFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The forbidden {0} &quot;{1}&quot; is used.
         /// </summary>
         public static string PX1099TitleFormat {
