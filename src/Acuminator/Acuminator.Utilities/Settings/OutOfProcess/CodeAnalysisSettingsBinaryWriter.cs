@@ -40,6 +40,8 @@ namespace Acuminator.Utilities.Settings.OutOfProcess
 
 		private void WriteBannedApiSettings(BannedApiSettings bannedApiSettings)
 		{
+			_writer.Write(bannedApiSettings.BannedApiAnalysisEnabled);
+
 			string bannedApiFilePath = bannedApiSettings.BannedApiFilePath ?? string.Empty;
 			_writer.Write(bannedApiFilePath);
 

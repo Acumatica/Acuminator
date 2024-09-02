@@ -49,10 +49,11 @@ namespace Acuminator.Utilities.Settings.OutOfProcess
 
 		private BannedApiSettings ReadBannedApiSettings()
 		{
-			string bannedApiFilePath = _reader.ReadString();
-			string whiteListApiFilePath = _reader.ReadString();
+			bool isBannedApiAnalysisEnabled = _reader.ReadBoolean();
+			string bannedApiFilePath 		= _reader.ReadString();
+			string whiteListApiFilePath 	= _reader.ReadString();
 
-			return new BannedApiSettings(bannedApiFilePath, whiteListApiFilePath);
+			return new BannedApiSettings(isBannedApiAnalysisEnabled, bannedApiFilePath, whiteListApiFilePath);
 		}
 
 		public void Dispose()
