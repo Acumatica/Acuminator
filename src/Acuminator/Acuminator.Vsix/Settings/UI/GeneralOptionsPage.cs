@@ -1,24 +1,47 @@
 ﻿#nullable enable
 
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Utilities;
 
 using Community.VisualStudio.Toolkit;
 
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+
+using Constants = Acuminator.Vsix.Utilities.Constants;
 
 namespace Acuminator.Vsix
 {
 	[ComVisible(true)]
 	public class GeneralOptionsPage : DialogPage, ISettingsEvents
 	{
+		private const string InitializingFieldName = "_initializing";
+		private static readonly Func<DialogPage, object>? _getInitializingField;
+
+		static GeneralOptionsPage()
+		{
+			try
+			{
+				var initializingField = typeof(DialogPage).GetField(InitializingFieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+
+				if (initializingField != null)
+					_getInitializingField = initializingField.GetValue;
+			}
+			catch (Exception e)
+			{
+				AcuminatorLogger.LogException(e);
+			}
+		}
+
 		public const string PageTitle = "General";
 
 		private const string ColoringCategoryName = "BQL Coloring";
@@ -297,6 +320,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		public bool IsInitializing() => 
+			(_getInitializingField?.Invoke(this) as bool?) ?? false;
+
 		public override void ResetSettings()
 		{
 			_coloringEnabled 		 = true;
@@ -435,16 +461,16 @@ namespace Acuminator.Vsix
 		private void OnBannedApiSettingChanged(string setting) =>
 			BannedApiSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
 
-		private static bool CheckFilePath(string? filePath, string settingName)
+		private bool CheckFilePath(string? filePath, string settingName)
 		{
-			if (filePath.IsNullOrWhiteSpace())
+			if (filePath.IsNullOrWhiteSpace() || IsInitializing())
 				return true;
 
 			if (!File.Exists(filePath))
 			{
 				string errorMessage = string.Format(VSIXResource.Settings_InvalidFileErrorFormat, settingName);
-				VS.MessageBox.ShowWarning(VSIXResource.Settings_InvalidFileErrorCaption, errorMessage);
-
+				VS.MessageBox.Show(VSIXResource.Settings_InvalidFileErrorCaption, errorMessage, OLEMSGICON.OLEMSGICON_WARNING,
+									OLEMSGBUTTON.OLEMSGBUTTON_OK);
 				return false;
 			}
 
