@@ -29,6 +29,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			CodeAnalysisSettings = codeAnalysisSettings;
 			SettingsProvidedExternally = codeAnalysisSettings != null;
+
+			try
+			{
+				AcuminatorVsixPackageLoader.EnsurePackageLoaded();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 
 		[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1025:Configure generated code analysis", 
@@ -37,8 +45,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 						 Justification = $"Configured in the {nameof(ConfigureAnalysisContext)} method")]
 		public override void Initialize(AnalysisContext context)
 		{
-			AcuminatorVsixPackageLoader.EnsurePackageLoaded();
-
 			if (!SettingsProvidedExternally)
 				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values after potential package load
 
