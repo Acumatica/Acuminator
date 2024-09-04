@@ -12,7 +12,7 @@ using Acuminator.Utilities.Settings.OutOfProcess;
 
 namespace Acuminator.Vsix.Settings
 {
-	internal class OutOfProcessSettingsUpdater : IDisposable
+	public class OutOfProcessSettingsUpdater : IDisposable
 	{
 		private const int NotDisposed = 0, Disposed = 1;
 		private int _isDisposed = NotDisposed;
