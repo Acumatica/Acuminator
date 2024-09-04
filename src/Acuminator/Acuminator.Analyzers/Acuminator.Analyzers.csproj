@@ -83,4 +83,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="CALL $(ProjectDir)tools\afterBuildScript.cmd $(TargetDir) $(SolutionDir) $(AssemblyName)" />
+  </Target>
 </Project>
