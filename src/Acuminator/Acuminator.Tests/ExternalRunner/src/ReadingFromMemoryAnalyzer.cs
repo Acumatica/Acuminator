@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 
-using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.BannedApi;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+
+using Xunit;
 
 namespace ExternalRunner
 {
@@ -37,6 +38,8 @@ namespace ExternalRunner
 		{
 			base.ReadAcuminatorSettingsFromSharedMemory();
 
+			Assert.Equal(CodeAnalysisSettings, ExpectedCodeAnalysisSettings);
+			Assert.Equal(BannedApiSettings, ExpectedBannedApiSettings);
 		}
 
 		protected override bool ShouldRegisterAnalysisActions() => false;
