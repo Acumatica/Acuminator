@@ -34,6 +34,8 @@ namespace ExternalRunner
 			ExpectedBannedApiSettings = expectedBannedApiSettings.CheckIfNull();
 		}
 
+		protected override string? SharedMemorySlotName => SharedVsSettings.SharedMemoryNameForTests;
+
 		protected override void ReadAcuminatorSettingsFromSharedMemory()
 		{
 			base.ReadAcuminatorSettingsFromSharedMemory();

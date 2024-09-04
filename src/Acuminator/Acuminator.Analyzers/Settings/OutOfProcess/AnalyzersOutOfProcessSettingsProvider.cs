@@ -17,12 +17,12 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 
 		private static MemoryMappedFile? _memoryMappedFile;
 
-		public static CodeAnalysisSettings GetCodeAnalysisSettings()
+		public static CodeAnalysisSettings GetCodeAnalysisSettings(string? sharedMemoryName = null)
 		{
 			if (SharedVsSettings.IsInsideVsProcess)
 				return GlobalSettings.AnalysisSettings;
 
-			EnsureSharedMemoryIsOpened();
+			EnsureSharedMemoryIsOpened(sharedMemoryName);
 
 			if (_memoryMappedFile == null)
 				return GlobalSettings.AnalysisSettings;
@@ -42,12 +42,13 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 			}
 		}
 
-		public static (CodeAnalysisSettings AnalysisSettings, BannedApiSettings BannedApiSettings) GetCodeAnalysisAndBannedApiSettings()
+		public static (CodeAnalysisSettings AnalysisSettings, BannedApiSettings BannedApiSettings) GetCodeAnalysisAndBannedApiSettings(
+																										string? sharedMemoryName = null)
 		{
 			if (SharedVsSettings.IsInsideVsProcess)
 				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
 
-			EnsureSharedMemoryIsOpened();
+			EnsureSharedMemoryIsOpened(sharedMemoryName);
 
 			if (_memoryMappedFile == null)
 				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
@@ -66,7 +67,7 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 			}
 		}
 
-		private static void EnsureSharedMemoryIsOpened()
+		private static void EnsureSharedMemoryIsOpened(string? sharedMemoryName)
 		{
 			if (!_isSharedMemoryOpened)
 			{
@@ -74,18 +75,19 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 				{
 					if (!_isSharedMemoryOpened)
 					{
-						_memoryMappedFile = OpenExistingMemoryMappedFile();
+						_memoryMappedFile = OpenExistingMemoryMappedFile(sharedMemoryName);
 						_isSharedMemoryOpened = _memoryMappedFile != null;
 					}
 				}
 			}
 		}
 
-		private static MemoryMappedFile? OpenExistingMemoryMappedFile()
+		private static MemoryMappedFile? OpenExistingMemoryMappedFile(string? sharedMemoryName)
 		{
 			try
 			{
-				return MemoryMappedFile.OpenExisting(SharedVsSettings.AcuminatorSharedMemorySlotName);
+				string sharedMemorySlotName = sharedMemoryName.NullIfWhiteSpace()?.Trim() ?? SharedVsSettings.AcuminatorSharedMemorySlotName;
+				return MemoryMappedFile.OpenExisting(sharedMemorySlotName);
 			}
 			catch (FileNotFoundException)
 			{

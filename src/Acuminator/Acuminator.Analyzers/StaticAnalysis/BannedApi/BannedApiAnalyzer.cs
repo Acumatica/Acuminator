@@ -27,6 +27,8 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 
 	protected BannedApiSettings? BannedApiSettings { get; set; }
 
+	protected virtual string? SharedMemorySlotName => null;
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create
 		(
@@ -73,7 +75,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 		if (!SettingsProvidedExternally || !BannedApiSettingsProvidedExternally)
 		{
 			var (externalCodeAnalysisSettings, externalBannedApiSettings) =
-			   AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisAndBannedApiSettings();
+			   AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisAndBannedApiSettings(SharedMemorySlotName);
 
 			if (!SettingsProvidedExternally)
 				CodeAnalysisSettings = externalCodeAnalysisSettings;
