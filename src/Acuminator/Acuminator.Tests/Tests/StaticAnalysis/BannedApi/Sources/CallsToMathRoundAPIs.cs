@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Reflection;
 
-using PX.Objects.AP;
-
 namespace PX.Objects.HackathonDemo
 {
 	public class Service
