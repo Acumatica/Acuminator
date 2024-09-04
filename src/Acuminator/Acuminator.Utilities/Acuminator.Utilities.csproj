@@ -24,10 +24,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BannedApi\Data\BannedApis.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="BannedApi\Data\WhiteList.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="DiagnosticSuppression\IO\Validation\XmlSchema\SuppressionFileSchema.xsd" />
   </ItemGroup>
