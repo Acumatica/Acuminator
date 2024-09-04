@@ -109,7 +109,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 
 	private static IApiInfoRetriever? GetApiInfoRetriever(IApiInfoRetriever? customApiInfoRetriever, IApiStorage? customApiStorage,
 														  IApiDataProvider? customApiDataProvider, string? apiFilePath, 
-														  Func<string, CancellationToken, IApiStorage> globalApiDataRetriever,
+														  Func<string?, CancellationToken, IApiStorage> globalApiDataRetriever,
 														  CodeAnalysisSettings codeAnalysisSettings, CancellationToken cancellation)
 	{
 		if (customApiInfoRetriever != null)
@@ -126,13 +126,8 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 			return GetHierarchicalApiInfoRetrieverWithCache(storageFromCustomApiDataProvider, codeAnalysisSettings);
 		}
 
-		if (!apiFilePath.IsNullOrWhiteSpace())
-		{
-			var apiDataStorageFromGlobalSettings = globalApiDataRetriever(apiFilePath, cancellation);
-			return GetHierarchicalApiInfoRetrieverWithCache(apiDataStorageFromGlobalSettings, codeAnalysisSettings);
-		}
-
-		return null;
+		var apiDataStorageFromGlobalSettings = globalApiDataRetriever(apiFilePath, cancellation);
+		return GetHierarchicalApiInfoRetrieverWithCache(apiDataStorageFromGlobalSettings, codeAnalysisSettings);
 	}
 
 	protected static IApiInfoRetriever? GetHierarchicalApiInfoRetrieverWithCache(IApiStorage storage, CodeAnalysisSettings codeAnalysisSettings)
