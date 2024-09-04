@@ -23,7 +23,7 @@ namespace PX.Objects.HackathonDemo
 
 		public string PrintSystemInfo()
 		{
-			return $"OS: {Environment.OSVersion.VersionString},{Environment.NewLine}Processor count: {Environment.ProcessorCount}";
+			return $"OS: {Environment.OSVersion?.VersionString},{Environment.NewLine}Processor count: {Environment.ProcessorCount}";
 		}
 	}
 }

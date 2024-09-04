@@ -41,7 +41,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 					"Reflection usage is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(26, 40, Resources.PX1099Title_TypeFormatArg, "System.OperatingSystem",
 					"OperatingSystem usage is forbidden in Acumatica customizations."),
-				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(26, 40, Resources.PX1099Title_TypeFormatArg, "System.Environment",
+				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(26, 107, Resources.PX1099Title_TypeFormatArg, "System.Environment",
 					"Environment usage is forbidden in Acumatica customizations."));
 
 		[Theory]
