@@ -183,14 +183,35 @@ public partial class BannedApiAnalyzer
 		{
 			Cancellation.ThrowIfCancellationRequested();
 
-			if (SemanticModel.GetSymbolOrFirstCandidate(memberAccessExpression, Cancellation) is not ISymbol symbol)
+			if (SemanticModel.GetSymbolOrFirstCandidate(memberAccessExpression, Cancellation) is not ISymbol accessedMember)
 			{
 				base.VisitMemberAccessExpression(memberAccessExpression);
 				return;
 			}
 
 			Cancellation.ThrowIfCancellationRequested();
-			CheckSymbolForBannedInfo(symbol, memberAccessExpression.Name);
+			CheckSymbolForBannedInfo(accessedMember, memberAccessExpression.Name);
+
+			var containingSymbol = SemanticModel.GetSymbolOrFirstCandidate(memberAccessExpression, Cancellation);
+
+			if (containingSymbol == null || containingSymbol.Equals(accessedMember.ContainingType, SymbolEqualityComparer.Default))
+			{
+				base.VisitMemberAccessExpression(memberAccessExpression);
+				return;
+			}
+
+			Cancellation.ThrowIfCancellationRequested();
+
+			var typeOfContainingSymbol = SemanticModel.GetTypeInfo(memberAccessExpression.Expression, Cancellation).Type;
+
+			if (typeOfContainingSymbol != null)
+			{
+				CheckSymbolForBannedInfo(typeOfContainingSymbol, memberAccessExpression.Expression);
+				return;
+			}
+
+			Cancellation.ThrowIfCancellationRequested();
+			base.VisitMemberAccessExpression(memberAccessExpression);
 		}
 
 		public override void VisitIdentifierName(IdentifierNameSyntax identifierNode)
@@ -245,15 +266,15 @@ public partial class BannedApiAnalyzer
 			if (_apiBanInfoRetriever.GetInfoForApi(nonTypeSymbol) is ApiSearchResult bannedSymbolInfo)
 				return bannedSymbolInfo;
 
-			if (!nonTypeSymbol.IsOverride)
-				return null;
-
-			var overridesChain = nonTypeSymbol.GetOverridden();
-
-			foreach (var overridenSymbol in overridesChain)
+			if (nonTypeSymbol.IsOverride)
 			{
-				if (_apiBanInfoRetriever.GetInfoForApi(overridenSymbol) is ApiSearchResult bannedOverridenSymbolInfo)
-					return bannedOverridenSymbolInfo;
+				var overridesChain = nonTypeSymbol.GetOverridden();
+
+				foreach (var overridenSymbol in overridesChain)
+				{
+					if (_apiBanInfoRetriever.GetInfoForApi(overridenSymbol) is ApiSearchResult bannedOverridenSymbolInfo)
+						return bannedOverridenSymbolInfo;
+				}
 			}
 
 			return null;
