@@ -23,7 +23,7 @@ using Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
-using Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName;
+using Acuminator.Analyzers.StaticAnalysis.TypoInViewAndActionHandlerName;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Utilities;
@@ -65,7 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			new NonPublicGraphAndDacAndExtensionsAnalyzer(),
 			new InvalidPXActionSignatureAnalyzer(),
 			new StaticFieldOrPropertyInGraphAnalyzer(),
-			new TypoInViewDelegateNameAnalyzer(),
+			new TypoInViewAndActionHandlerNameAnalyzer(),
 			new PXOverrideMismatchAnalyzer())
 		{
 		}
