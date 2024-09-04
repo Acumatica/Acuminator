@@ -98,7 +98,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		}	
 
 		private static bool GraphContainsViewDeclaration(PXGraphEventSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
-			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
+			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition, 
+																 SymbolEqualityComparer.Default) ?? false;
 
 		private static void ReportDiagnostic(DiagnosticDescriptor descriptor, SymbolAnalysisContext symbolContext, PXContext pxContext,
 											 IEnumerable<DataViewInfo> viewsToShowDiagnostic, ITypeSymbol dac, ITypeSymbol baseDac)
