@@ -90,6 +90,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacFieldsWithCompanyPrefix.cs" />
     <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsIsv.cs" />
     <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiAnalysisDisabledTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsNonIsvWithExternalFiles.cs" />
     <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsNonIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToApisForbiddenToIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToMathRoundAPIs.cs" />
@@ -873,6 +874,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomBannedApis.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomWhiteList.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="FormatterTests.playlist" />
     <Content Include="ExternalDependency\Dll\ExternalDependency.dll" />
     <Content Include="Tests\DiagnosticSuppression\SuppressionFileIO\Examples\PX.Objects.acuminator" />
