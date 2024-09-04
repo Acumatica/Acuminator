@@ -25,7 +25,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 	[MemberNotNullWhen(returnValue: true, nameof(BannedApiSettings))]
 	private bool BannedApiSettingsProvidedExternally { get; }
 
-	private BannedApiSettings? BannedApiSettings { get; set; }
+	protected BannedApiSettings? BannedApiSettings { get; set; }
 
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create
