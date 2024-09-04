@@ -145,22 +145,22 @@
     <value>This order of view declarations will cause creation of two cache instances: {0} and {1}</value>
   </data>
   <data name="PX1005ActionDelegateFix" xml:space="preserve">
-    <value>Change the action delegate name to match the action name</value>
+    <value>Change the name of the action delegate to match the action name</value>
   </data>
   <data name="PX1005ActionDelegateMessageFormat" xml:space="preserve">
-    <value>A possible typo in the action delegate name. The action name for this delegate: {0}.</value>
+    <value>A possible typo in the name of the action delegate. The action name for this delegate: {0}.</value>
   </data>
   <data name="PX1005ActionDelegateTitle" xml:space="preserve">
-    <value>A possible typo in the action delegate name</value>
+    <value>A possible typo in the name of the action delegate</value>
   </data>
   <data name="PX1005ViewDelegateFix" xml:space="preserve">
-    <value>Change the view delegate name to match the view name</value>
+    <value>Change the name fo the view delegate to match the view name</value>
   </data>
   <data name="PX1005ViewDelegateMessageFormat" xml:space="preserve">
-    <value>A possible typo in the view delegate name. The view name for this delegate: {0}.</value>
+    <value>A possible typo in the name of the view delegate. The view name for this delegate: {0}.</value>
   </data>
   <data name="PX1005ViewDelegateTitle" xml:space="preserve">
-    <value>A possible typo in the view delegate name</value>
+    <value>A possible typo in the name of the view delegate</value>
   </data>
   <data name="PX1006Fix" xml:space="preserve">
     <value>Consider changing the declaration order</value>
