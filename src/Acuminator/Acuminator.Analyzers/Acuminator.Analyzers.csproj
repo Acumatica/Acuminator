@@ -85,10 +85,9 @@
   </ItemGroup>
 	<Target Name="CopyAcuminatorDlls" AfterTargets="PostBuildEvent">    
 		<ItemGroup>
-			<AcuminatorDlls Include="$(TargetDir)$(AssemblyName).dll;$(TargetDir)$(AssemblyName).pdb;$(TargetDir)Acuminator.Utilities.dll;$(TargetDir)Acuminator.Utilities.pdb"/>
+			<AcuminatorDlls Include="$(TargetDir)$(AssemblyName).dll;$(TargetDir)$(AssemblyName).pdb;$(TargetDir)Acuminator.Utilities.dll;$(TargetDir)Acuminator.Utilities.pdb" />
 		</ItemGroup>
 
-		<Copy SourceFiles="@(AcuminatorDlls)" SkipUnchangedFiles="True" 
-		      DestinationFolder="$(SolutionDir)Acuminator\Acuminator.Tests\ExternalRunner\src\Acuminator Libs\"/>
+		<Copy SourceFiles="@(AcuminatorDlls)" SkipUnchangedFiles="True" DestinationFolder="$(SolutionDir)Acuminator\Acuminator.Tests\ExternalRunner\src\Acuminator Libs\" />
 	</Target>
 </Project>
