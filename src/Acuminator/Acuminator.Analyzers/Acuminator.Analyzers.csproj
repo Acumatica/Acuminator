@@ -83,7 +83,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-	<Target Name="CopyFiles" AfterTargets="PostBuildEvent">    
+	<Target Name="CopyAcuminatorDlls" AfterTargets="PostBuildEvent">    
 		<ItemGroup>
 			<AcuminatorDlls Include="$(TargetDir)$(AssemblyName).dll;$(TargetDir)$(AssemblyName).pdb;$(TargetDir)Acuminator.Utilities.dll;$(TargetDir)Acuminator.Utilities.pdb"/>
 		</ItemGroup>
