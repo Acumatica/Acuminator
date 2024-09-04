@@ -637,6 +637,8 @@
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldInheritedFromPXObjects.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrder_CheckForVersionTests.cs" />
+    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\MockSettingsEvents.cs" />
+    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\SharedMemoryAccessTests.cs" />
     <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\CodeAnalysisSettingsSerializationTests.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacFields_OnlyBqlFields.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\RegularDac.cs" />
@@ -955,6 +957,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ExternalRunner\" />
     <Folder Include="Tests\Refactorings\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
