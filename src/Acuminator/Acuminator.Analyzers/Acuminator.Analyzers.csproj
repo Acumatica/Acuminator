@@ -83,7 +83,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="CALL $(ProjectDir)tools\afterBuildScript.cmd $(TargetDir) $(SolutionDir) $(AssemblyName)" />
-  </Target>
+	<Target Name="CopyFiles" AfterTargets="PostBuildEvent">    
+		<ItemGroup>
+			<AcuminatorDlls Include="$(TargetDir)$(AssemblyName).dll;$(TargetDir)$(AssemblyName).pdb;$(TargetDir)Acuminator.Utilities.dll;$(TargetDir)Acuminator.Utilities.pdb"/>
+		</ItemGroup>
+
+		<Copy SourceFiles="@(AcuminatorDlls)" SkipUnchangedFiles="True" 
+		      DestinationFolder="$(SolutionDir)Acuminator\Acuminator.Tests\ExternalRunner\src\Acuminator Libs\"/>
+	</Target>
 </Project>
