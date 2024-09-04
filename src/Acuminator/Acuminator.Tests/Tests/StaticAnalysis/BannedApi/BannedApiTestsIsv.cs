@@ -31,7 +31,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 		[EmbeddedFileData("CallsToApisForbiddenToIsv.cs")]
 		public virtual async Task Calls_To_API_ForbiddenForISV(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(13, 64, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
+				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(13, 22, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
+					"Reflection usage is forbidden in Acumatica customizations."),
+				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(13, 57, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
 					"Reflection usage is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(18, 10, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
 					"Reflection usage is forbidden in Acumatica customizations."),
