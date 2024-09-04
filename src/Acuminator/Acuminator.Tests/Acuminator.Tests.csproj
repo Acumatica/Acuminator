@@ -28,7 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <NoWarn>VSTHRD200</NoWarn>
+    <NoWarn>$(NoWarn);VSTHRD200</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -38,7 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <NoWarn>VSTHRD200</NoWarn>
+    <NoWarn>$(NoWarn);VSTHRD200</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
@@ -46,6 +46,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ExternalDependency">
@@ -85,6 +88,8 @@
     <Compile Include="Tests\Fixer\AngleBracesBqlRewriterTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\FbqlCalls.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacFieldsWithCompanyPrefix.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsIsv.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiAnalysisDisabledTests.cs" />
     <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsNonIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToApisForbiddenToIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToMathRoundAPIs.cs" />
@@ -961,4 +966,7 @@
     <Folder Include="Tests\Refactorings\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="BuildExternalExecutor" AfterTargets="PostBuildEvent">
+    <MSBuild Projects="$(ProjectDir)ExternalRunner\src\ExternalRunner.csproj" Properties="Configuration=Debug" />
+  </Target>
 </Project>
