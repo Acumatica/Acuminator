@@ -17,6 +17,8 @@ namespace ExternalRunner;
 
 internal class Program
 {
+	public const string EmptyStringPlaceHolder = "#";
+
 	public const string _code =
 		"""
 		using System;
@@ -81,9 +83,15 @@ internal class Program
 			? args[6]
 			: null;
 
+		if (bannedApiFilePath == EmptyStringPlaceHolder)
+			bannedApiFilePath = null;
+
 		string? whiteListFilePath = args.Length > 7
 			? args[7]
 			: null;
+
+		if (whiteListFilePath == EmptyStringPlaceHolder)
+			whiteListFilePath = null;
 
 		var analysisSettings = new CodeAnalysisSettings(recursiveAnalysisEnabled, isvSpecificAnalyzersEnabled, staticAnalysisEnabled, 
 														suppressionMechanismEnabled, px1007DocumentationDiagnosticEnabled);
