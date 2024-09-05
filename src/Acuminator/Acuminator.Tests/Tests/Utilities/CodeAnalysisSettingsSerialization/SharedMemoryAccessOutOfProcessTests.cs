@@ -50,8 +50,6 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 																		staticAnalysisEnabled, suppressionMechanismEnabled, 
 																		px1007DocumentationDiagnosticEnabled);
 			var expectedBannedApiSettings = new BannedApiSettings(bannedApiAnalysisEnabled, bannedApiFilePath, whiteListFilePath);
-
-			GlobalSettings.InitializeGlobalSettingsOnce(expectedCodeAnalysisSettings, expectedBannedApiSettings);
 			var mockSettingsEvents = new MockSettingsEvents();
 
 			using var outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(mockSettingsEvents, expectedCodeAnalysisSettings, 
