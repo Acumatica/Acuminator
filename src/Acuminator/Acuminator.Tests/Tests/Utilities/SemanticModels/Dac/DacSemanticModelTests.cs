@@ -54,6 +54,22 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			}
 		}
 
+		[Theory]
+		[EmbeddedFileData("DacWithBaseTypeNonDac.cs")]
+		public async Task Dac_DerivedFromNonDac_DacFieldsRecognition(string text)
+		{
+			var dacSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
+
+			TestDacFields(dacSemanticModel, requiredDacFields: ["OrderType", "OrderNbr", "CreatedByID", "CreatedByScreenID", "CreatedDateTime"], 
+						  fieldsCount: 5);
+
+			foreach (var dacField in dacSemanticModel.DacFields)
+			{
+				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.PropertyInfo.Should().NotBeNull();
+			}
+		}
+
 		protected override Task<DacSemanticModel> PrepareSemanticModelAsync(RoslynTestContext context, CancellationToken cancellation = default)
 		{
 			var dacOrDacExtDeclaration = context.Root.DescendantNodes()

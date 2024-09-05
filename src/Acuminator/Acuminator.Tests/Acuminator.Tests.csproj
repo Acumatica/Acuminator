@@ -653,6 +653,7 @@
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacFields_OnlyBqlFields.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\RegularDac.cs" />
     <EmbeddedResource Include="Tests\Utilities\CodeAnalysisSettingsSerialization\Sources\PlainGoodCode.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacWithBaseTypeNonDac.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\RoslynTestContext.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\SemanticModelTestsBase.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\Dac\DacSemanticModelTests.cs" />
