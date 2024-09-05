@@ -35,5 +35,19 @@ namespace Acuminator.Utilities
 				_cachedBannedApiSettings = bannedApiSettings;
 			}
 		}
+
+		/// <summary>
+		/// Initializes the global settings in a thread unsafe way. For tests only.
+		/// </summary>
+		/// <param name="codeAnalysisSettings">The instance.</param>
+		/// <param name="bannedApiSettings">The banned API settings.</param>
+		/// <remarks>
+		/// TODO make internal after removal of the assembly signing.
+		/// </remarks>
+		public static void InitializeGlobalSettingsThreadUnsafeForTestsOnly(CodeAnalysisSettings codeAnalysisSettings, BannedApiSettings bannedApiSettings)
+		{
+			_cachedCodeAnalysisSettings = codeAnalysisSettings.CheckIfNull();
+			_cachedBannedApiSettings = bannedApiSettings.CheckIfNull();
+		}
 	}
 }
