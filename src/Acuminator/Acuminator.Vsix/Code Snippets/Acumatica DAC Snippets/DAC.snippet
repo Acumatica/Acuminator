@@ -12,7 +12,7 @@
 Template of Acumatic Data Access Controller (DAC) class
 
 [PXCacheName(Messages.[DAC])]
-public class [DAC] : IBqlTable
+public class [DAC] : PXBqlTable, IBqlTable
 {
 
 }
@@ -34,7 +34,7 @@ public class [DAC] : IBqlTable
 			</Declarations>
 			<Code Language="CSharp" Kind="type decl">
 				<![CDATA[		[PXCacheName(Messages.$DAC$)]
-		public class $DAC$ : IBqlTable
+		public class $DAC$ : PXBqlTable, IBqlTable
 		{
 			$end$
 		}]]>
