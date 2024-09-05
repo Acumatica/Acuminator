@@ -875,6 +875,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ExternalRunner\App\ExternalRunner.exe" />
     <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomBannedApis.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
