@@ -3,7 +3,7 @@ N:System.Data.SqlClient ISV Namespace usage is forbidden in Acumatica customizat
 
 T:System-AppDomain ISV AppDomain usage is forbidden in Acumatica customizations.
 T:System.Diagnostics-ProcessStartInfo ISV ProcessStartInfo usage is forbidden in Acumatica customizations.
-T:System-Environment General Environment usage is forbidden in Acumatica customizations.
+T:System-Environment General
 T:System.IO-File ISV File usage is forbidden in Acumatica customizations.
 T:System-GC ISV Access to garbage collector is forbidden in Acumatica customizations.
 T:System-OperatingSystem General OperatingSystem usage is forbidden in Acumatica customizations.

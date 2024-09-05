@@ -60,10 +60,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 					"Reflection usage is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(20, 4, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
 					"Reflection usage is forbidden in Acumatica customizations."),
-				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(26, 30, Resources.PX1099Title_TypeFormatArg, "System.Environment",
-					"Environment usage is forbidden in Acumatica customizations."),
-				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(26, 107, Resources.PX1099Title_TypeFormatArg, "System.Environment",
-					"Environment usage is forbidden in Acumatica customizations."));
+				Descriptors.PX1099_ForbiddenApiUsage_WithoutReason.CreateFor(26, 30, Resources.PX1099Title_TypeFormatArg, "System.Environment"),
+				Descriptors.PX1099_ForbiddenApiUsage_WithoutReason.CreateFor(26, 107, Resources.PX1099Title_TypeFormatArg, "System.Environment"));
 
 		[Theory]
 		[EmbeddedFileData("CallsToMathRoundAPIs.cs")]
