@@ -344,7 +344,7 @@ public partial class BannedApiAnalyzer
 			else
 			{
 				diagnostic = Diagnostic.Create(
-								Descriptors.PX1099_ForbiddenApiUsage_NoDetails, location, 
+								Descriptors.PX1099_ForbiddenApiUsage_WithoutReason, location, 
 								apiKindDescription, banApiInfo.ClosestBannedApi.FullName);
 			}
 

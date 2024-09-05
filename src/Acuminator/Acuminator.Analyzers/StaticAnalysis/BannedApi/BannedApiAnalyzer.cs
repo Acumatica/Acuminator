@@ -32,7 +32,7 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create
 		(
-			Descriptors.PX1099_ForbiddenApiUsage_NoDetails,
+			Descriptors.PX1099_ForbiddenApiUsage_WithoutReason,
 			Descriptors.PX1099_ForbiddenApiUsage_WithReason
 		);
 
