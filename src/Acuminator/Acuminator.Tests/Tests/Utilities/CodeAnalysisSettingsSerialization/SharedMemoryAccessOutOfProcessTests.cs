@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 {
-	public class SharedMemoryAccessTests
+	public class SharedMemoryAccessOutOfProcessTests
 	{
 		private const string EmptyStringPlaceHolder = "#";
 		
