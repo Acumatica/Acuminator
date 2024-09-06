@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => DacModel.Symbol.Name;
+			get => DacModel.Name;
 			protected set { }
 		}
 
