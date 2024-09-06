@@ -31,8 +31,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!diagnostic.IsRegisteredForCodeFix() ||
-				!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacFieldName, out string? dacFieldame) ||
-				dacFieldame.IsNullOrWhiteSpace())
+				!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacFieldName, out string? dacFieldName) ||
+				dacFieldName.IsNullOrWhiteSpace())
 			{
 				return Task.CompletedTask;
 			}
@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			string bqlFieldName = dacFieldame.FirstCharToLower();
+			string bqlFieldName = dacFieldName.FirstCharToLower();
 
 			// equivalence key should not contain format arguments to allow mass code fixes
 			string equivalenceKey = nameof(Resources.PX1065FixFormat).GetLocalized().ToString();
