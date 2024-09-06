@@ -364,6 +364,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1066_TypoInBqlFieldName { get; } =
 			Rule("PX1066", nameof(Resources.PX1066TitleFormat).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1066);
 
+		public static DiagnosticDescriptor PX1067_MissingBqlFieldRedeclarationInDerivedDac { get; } =
+			Rule("PX1067", nameof(Resources.PX1067TitleFormat).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1067);
+
 		public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1070);
 

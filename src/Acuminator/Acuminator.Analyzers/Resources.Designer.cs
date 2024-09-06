@@ -142,7 +142,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the action delegate name to match the action name.
+        ///   Looks up a localized string similar to Change the name of the action delegate to match the action name.
         /// </summary>
         public static string PX1005ActionDelegateFix {
             get {
@@ -151,7 +151,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the action delegate name. The action name for this delegate: {0}..
+        ///   Looks up a localized string similar to A possible typo in the name of the action delegate. The action name for this delegate: {0}..
         /// </summary>
         public static string PX1005ActionDelegateMessageFormat {
             get {
@@ -160,7 +160,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the action delegate name.
+        ///   Looks up a localized string similar to A possible typo in the name of the action delegate.
         /// </summary>
         public static string PX1005ActionDelegateTitle {
             get {
@@ -169,7 +169,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the view delegate name to match the view name.
+        ///   Looks up a localized string similar to Change the name fo the view delegate to match the view name.
         /// </summary>
         public static string PX1005ViewDelegateFix {
             get {
@@ -178,7 +178,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}..
+        ///   Looks up a localized string similar to A possible typo in the name of the view delegate. The view name for this delegate: {0}..
         /// </summary>
         public static string PX1005ViewDelegateMessageFormat {
             get {
@@ -187,7 +187,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the view delegate name.
+        ///   Looks up a localized string similar to A possible typo in the name of the view delegate.
         /// </summary>
         public static string PX1005ViewDelegateTitle {
             get {
@@ -1515,6 +1515,24 @@ namespace Acuminator.Analyzers {
         public static string PX1066TitleFormat {
             get {
                 return ResourceManager.GetString("PX1066TitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redeclare &quot;{0}&quot; BQL field in DAC &quot;{1}&quot;.
+        /// </summary>
+        public static string PX1067FixFormat {
+            get {
+                return ResourceManager.GetString("PX1067FixFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL fields from base DACs should be redeclared in the derived DAC. DAC &quot;{0}&quot; does not contain a redeclaration of BQL field &quot;{1}&quot; declared in the base DAC &quot;{2}&quot;..
+        /// </summary>
+        public static string PX1067TitleFormat {
+            get {
+                return ResourceManager.GetString("PX1067TitleFormat", resourceCulture);
             }
         }
         

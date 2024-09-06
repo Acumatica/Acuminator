@@ -718,6 +718,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MissingBqlFieldRedeclarationInDerivedDac.
+        /// </summary>
+        public static string PX1067 {
+            get {
+                return ResourceManager.GetString("PX1067", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UiPresentationLogicInEventHandlers.
         /// </summary>
         public static string PX1070 {
