@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Simplification;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -41,6 +40,32 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 			return root.AddUsings(
 							UsingDirective(
 								ParseName(namespaceName)));
-		}		
+		}
+
+		/// <summary>
+		/// Create attribute list of the supplied type
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static AttributeListSyntax GetAttributeList(this INamedTypeSymbol type, AttributeArgumentListSyntax? argumentList = null)
+		{
+			type.ThrowOnNull();
+
+			var node = Attribute(
+						IdentifierName(
+							type.Name))
+						.WithAdditionalAnnotations(Simplifier.Annotation);
+
+			if (argumentList != null)
+			{
+				node = node.WithArgumentList(argumentList);
+			}
+
+			var list = AttributeList(
+						SingletonSeparatedList(
+							node));
+
+			return list;
+		}
 	}
 }
