@@ -7,6 +7,8 @@ using System.Linq;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
@@ -63,16 +65,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			if (location == null)
 				return;
 
+			string? bqlFieldTypeName = GetBqlFieldTypeName(notRedeclaredBqlField, dacFieldWithDeclaredBqlField.BqlFieldInfo!);
+
 			var properties = new Dictionary<string, string?>
-				{
-					{ DiagnosticProperty.DacName,	   dac.Name},
-					{ DiagnosticProperty.DacFieldName, dacFieldWithDeclaredBqlField.Name }
-				}
-				.ToImmutableDictionary();
+			{
+				{ DiagnosticProperty.DacName,	   dac.Name},
+				{ DiagnosticProperty.DacFieldName, dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name },
+				{ DiagnosticProperty.BqlFieldType, bqlFieldTypeName}
+			}
+			.ToImmutableDictionary();
 
 			string nameOfBaseDacDeclaringBqlField = dacFieldWithDeclaredBqlField.DacType.Name;
 			var diagnostic = Diagnostic.Create(Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac, location, properties,
-											   dac.Name, dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name, nameOfBaseDacDeclaringBqlField);
+											   dac.Name, dacFieldWithDeclaredBqlField.BqlFieldInfo.Name, nameOfBaseDacDeclaringBqlField);
 			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
 
@@ -90,6 +95,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 				// Node is not null because aggregated DAC analysis runs only on DACs from the source code
 				return dac.Node!.Identifier.GetLocation();
 			}
+		}
+
+		private string? GetBqlFieldTypeName(DacFieldInfo notRedeclaredBqlField, DacBqlFieldInfo declaredBqlFieldFromBaseDacs)
+		{
+			if (declaredBqlFieldFromBaseDacs.BqlFieldDataTypeEffective == null)
+				return GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
+
+			var propertyTypeName	   = new PropertyTypeName(declaredBqlFieldFromBaseDacs.BqlFieldDataTypeEffective.Name);
+			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName);
+			mappedBqlFieldType		 ??= GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
+
+			return mappedBqlFieldType;
+		}
+
+		private string? GetBqlFieldTypeNameFromPropertyType(DacFieldInfo notRedeclaredBqlField)
+		{
+			string? propertyTypeName = notRedeclaredBqlField.EffectivePropertyType?.GetSimplifiedName();
+
+			if (propertyTypeName == null)
+				return null;
+
+			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
+			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(strongPropertyTypeName);
+
+			return mappedBqlFieldType;
 		}
 	}
 }

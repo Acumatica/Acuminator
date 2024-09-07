@@ -36,5 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// The property used to pass the information about a property type, usually, a DAC property.
 		/// </summary>
 		public const string PropertyType = nameof(PropertyType);
+
+		/// <summary>
+		/// The property used to pass the information about a DAC BQL field type like BqlString.
+		/// </summary>
+		public const string BqlFieldType = nameof(BqlFieldType);
 	}
 }
