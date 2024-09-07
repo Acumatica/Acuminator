@@ -193,7 +193,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 				{
 					{ DiagnosticProperty.RegisterCodeFix, bool.TrueString },
 					{ DiagnosticProperty.DacFieldName,	  dacFieldWithoutBqlField.Name },
-					{ DiagnosticProperty.PropertyType,    propertyTypeName }
+					{ DiagnosticProperty.PropertyType,	  propertyTypeName }
 				}
 				.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
 			}

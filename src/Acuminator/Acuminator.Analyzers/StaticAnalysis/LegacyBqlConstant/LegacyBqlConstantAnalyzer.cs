@@ -5,6 +5,7 @@ using System.Linq;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -75,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 			if (constantUnderlyingType == null || constantUnderlyingType.Name.IsNullOrWhiteSpace())
 				return false;
 
-			if (PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(constantUnderlyingType.Name))
+			if (PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType((PropertyTypeName)constantUnderlyingType.Name))
 			{
 				constantType = constantUnderlyingType.Name;
 				return true;
