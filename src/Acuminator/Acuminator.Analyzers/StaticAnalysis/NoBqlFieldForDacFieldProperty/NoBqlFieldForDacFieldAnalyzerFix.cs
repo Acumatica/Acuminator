@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.Syntax;
 
@@ -77,7 +78,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (dacNode == null)
 				return document;
 
-			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, propertyType);
+			var strongPropertyTypeName = new PropertyTypeName(propertyType);
+			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, strongPropertyTypeName);
 
 			if (newDacMembers == null)
 				return document;
@@ -90,14 +92,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 		private SyntaxList<MemberDeclarationSyntax>? CreateMembersListWithBqlField(ClassDeclarationSyntax dacNode, 
 																				   PropertyDeclarationSyntax propertyWithoutBqlFieldNode,
-																				   string bqlFieldName, string propertyType)
+																				   string bqlFieldName, PropertyTypeName propertyType)
 		{
 			var members = dacNode.Members;
 
 			if (members.Count == 0)
 			{
-				var newSingleBqlFieldNode = CodeGeneration.GenerateBqlField(propertyWithoutBqlFieldNode, propertyType, 
-																			bqlFieldName, isFirstField: true);
+				var newSingleBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: true, 
+																					 propertyWithoutBqlFieldNode);
 				return newSingleBqlFieldNode != null
 					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
 					: null;
@@ -108,8 +110,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (propertyMemberIndex < 0)
 				propertyMemberIndex = 0;
 
-			var newBqlFieldNode = CodeGeneration.GenerateBqlField(propertyWithoutBqlFieldNode, propertyType, bqlFieldName, 
-																  isFirstField: propertyMemberIndex == 0);
+			var newBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: propertyMemberIndex == 0, 
+																		   propertyWithoutBqlFieldNode);
 			if (newBqlFieldNode == null)
 				return null;
 

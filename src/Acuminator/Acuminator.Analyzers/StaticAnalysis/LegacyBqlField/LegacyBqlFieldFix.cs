@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.CodeGeneration;
 
 using Microsoft.CodeAnalysis;
@@ -41,8 +42,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				return;
 			}
 
+			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
 			string bqlFieldName = bqlFieldNode.Identifier.Text;
-			SimpleBaseTypeSyntax? newBaseType = CodeGeneration.BaseTypeForBqlField(propertyTypeName, bqlFieldName);
+			SimpleBaseTypeSyntax? newBaseType = BqlFieldGeneration.BaseTypeForBqlField(strongPropertyTypeName, bqlFieldName);
 			if (newBaseType == null)
 				return;
 
