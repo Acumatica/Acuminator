@@ -11,7 +11,7 @@ public readonly record struct PropertyTypeName(string Value)
 
 	public override string ToString() => Value;
 
-	public static implicit operator string(PropertyTypeName value) => value;
+	public static implicit operator string(PropertyTypeName value) => value.Value;
 
 	public static explicit operator PropertyTypeName(string value) => new(value);
 }
