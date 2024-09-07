@@ -34,6 +34,9 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			foreach (var dacField in dacSemanticModel.DacFields)
 			{
 				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.BqlFieldInfo!.BqlFieldDataTypeDeclared.Should().BeNull();
+				dacField.BqlFieldInfo.BqlFieldDataTypeEffective.Should().BeNull();
+
 				dacField.PropertyInfo.Should().NotBeNull();
 			}
 		}
@@ -50,8 +53,14 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			foreach (var dacField in dacSemanticModel.DeclaredDacFields)
 			{
 				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.BqlFieldInfo!.BqlFieldDataTypeDeclared.Should().NotBeNull();
+				
 				dacField.PropertyInfo.Should().BeNull();
 			}
+
+			dacSemanticModel.BqlFieldsByNames["docType"].BqlFieldDataTypeDeclared!.Name.Should().Be("String");
+			dacSemanticModel.BqlFieldsByNames["refNbr"].BqlFieldDataTypeDeclared!.Name.Should().Be("String");
+			dacSemanticModel.BqlFieldsByNames["noteID"].BqlFieldDataTypeDeclared!.Name.Should().Be("Guid");
 		}
 
 		[Theory]
