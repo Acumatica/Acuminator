@@ -31,10 +31,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder) :
-							 base(node, bqlField, declarationOrder)
-		{
-		}
+		/// <summary>
+		/// The declared BQL field data type corresponding to the BQL field type. 
+		/// <see langword="null"/> if the BQL field is weakly typed and just implements <c>IBqlField</c> interface.
+		/// </summary>
+		/// <remarks>
+		/// For a BQL field type <c>BqlString</c> <see cref="BqlFieldDataTypeDeclared"/> will be <see cref="string"/>.<br/> 
+		/// For a BQL field type <c>BqlByteArray</c> <see cref="BqlFieldDataTypeDeclared"/> will be <c>byte[]</c>.
+		/// </remarks>
+		public ITypeSymbol? BqlFieldDataTypeDeclared { get; }
+
+		/// <summary>
+		/// The effective BQL field data type obtained via a combination of <see cref="BqlFieldDataTypeDeclared"/> from this and base BQL field infos.
+		/// </summary>
+		public ITypeSymbol? BqlFieldDataTypeEffective { get; private set; }
 
 		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder, DacBqlFieldInfo baseInfo) :
 							 this(node, bqlField, declarationOrder)
@@ -43,24 +53,34 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			CombineWithBaseInfo(baseInfo);
 		}
 
-		public static DacBqlFieldInfo Create(PXContext pxContext, ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder,
-											 DacBqlFieldInfo? baseInfo = null)
+		protected DacBqlFieldInfo(ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder) :
+							 base(node, bqlField, declarationOrder)
 		{
-			return CreateUnsafe(pxContext.CheckIfNull(), node, bqlField.CheckIfNull(), declarationOrder, baseInfo);
+			ITypeSymbol? bqlFieldDataType = bqlField.GetBqlFieldDataTypeFromBqlFieldSymbol();
+
+			BqlFieldDataTypeDeclared  = bqlFieldDataType;
+			BqlFieldDataTypeEffective = bqlFieldDataType;
 		}
 
-		internal static DacBqlFieldInfo CreateUnsafe(PXContext pxContext, ClassDeclarationSyntax? node, INamedTypeSymbol bqlField, int declarationOrder,
-													 DacBqlFieldInfo? baseInfo = null)
+		public static DacBqlFieldInfo Create(PXContext pxContext, ClassDeclarationSyntax? bqlFieldNode, INamedTypeSymbol bqlField,
+											  int declarationOrder, DacBqlFieldInfo? baseInfo = null)
+		{
+			return CreateUnsafe(pxContext.CheckIfNull(), bqlFieldNode, bqlField.CheckIfNull(), declarationOrder, baseInfo);
+		}
+
+		internal static DacBqlFieldInfo CreateUnsafe(PXContext pxContext, ClassDeclarationSyntax? bqlFieldNode, INamedTypeSymbol bqlField, 
+													 int declarationOrder, DacBqlFieldInfo? baseInfo = null)
 		{
 			return baseInfo != null
-				? new DacBqlFieldInfo(node, bqlField, declarationOrder, baseInfo)
-				: new DacBqlFieldInfo(node, bqlField, declarationOrder);
+				? new DacBqlFieldInfo(bqlFieldNode, bqlField, declarationOrder, baseInfo)
+				: new DacBqlFieldInfo(bqlFieldNode, bqlField, declarationOrder);
 		}
 
 		void IWriteableBaseItem<DacBqlFieldInfo>.CombineWithBaseInfo(DacBqlFieldInfo baseInfo) => CombineWithBaseInfo(baseInfo);
 
 		private void CombineWithBaseInfo(DacBqlFieldInfo baseInfo)
 		{
+			BqlFieldDataTypeEffective ??= baseInfo.BqlFieldDataTypeEffective;
 		}
 
 		public override bool Equals(object obj) => Equals(obj as DacBqlFieldInfo);
