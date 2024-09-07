@@ -34,7 +34,7 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 						QualifiedName(
 							IdentifierName("PX"),
 							IdentifierName("Data")),
-							IdentifierName(TypeNames.IBqlField)));
+							IdentifierName(TypeNames.BqlField.IBqlField)));
 			return iBqlFieldBaseType;
 		}
 

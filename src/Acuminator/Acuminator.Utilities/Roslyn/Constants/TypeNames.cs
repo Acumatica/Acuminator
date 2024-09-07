@@ -6,7 +6,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 	public static class TypeNames
 	{
 		/// <summary>
-		/// A DAC referential integrity related constants.
+		/// DAC referential integrity related constants.
 		/// </summary>
 		public static class ReferentialIntegrity
 		{
@@ -39,6 +39,15 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string Field = "Field";
 		}
 
+		/// <summary>
+		/// DAC BQL fields related constants.
+		/// </summary>
+		public static class BqlField
+		{
+			public const string IBqlField = "IBqlField";
+			public const string Field	  = "Field";
+		}
+
 		public const string PXView = "PXView";
 
 		public const string PXAdapter = "PXAdapter";
@@ -48,7 +57,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 
 		public const string BqlCommand = "BqlCommand";
 		public const string FbqlCommand = "FbqlCommand";
-		public const string IBqlField = "IBqlField";
+		
 		public const string IBqlParameter = "IBqlParameter";
 		public const string IBqlJoin = "IBqlJoin";
 		public const string IBqlOrderBy = "IBqlOrderBy";
@@ -104,26 +113,26 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
 			new Dictionary<string, PXCodeType>
 				{
-					[IBqlTable] = PXCodeType.Dac,
-					[IBqlField] = PXCodeType.DacField,
-					[PXCacheExtension] = PXCodeType.DacExtension,
-					[IBqlParameter] = PXCodeType.BqlParameter,
-					[Constant] = PXCodeType.BQLConstantEnding,
+					[IBqlTable] 		 = PXCodeType.Dac,
+					[BqlField.IBqlField] = PXCodeType.DacField,
+					[PXCacheExtension] 	 = PXCodeType.DacExtension,
+					[IBqlParameter] 	 = PXCodeType.BqlParameter,
+					[Constant] 			 = PXCodeType.BQLConstantEnding,
 
-					[PXSelectBaseType] = PXCodeType.BqlCommand,
-					[BqlCommand] = PXCodeType.BqlCommand,
-					[PXUpdate] = PXCodeType.BqlCommand,
-					[PXUpdateJoin] = PXCodeType.BqlCommand,
-					[PXUpdateGroupBy] = PXCodeType.BqlCommand,
+					[PXSelectBaseType] 	  = PXCodeType.BqlCommand,
+					[BqlCommand] 		  = PXCodeType.BqlCommand,
+					[PXUpdate] 			  = PXCodeType.BqlCommand,
+					[PXUpdateJoin] 		  = PXCodeType.BqlCommand,
+					[PXUpdateGroupBy] 	  = PXCodeType.BqlCommand,
 					[PXUpdateJoinGroupBy] = PXCodeType.BqlCommand,
 
 					[IBqlCreator] = PXCodeType.BqlOperator,
-					[IBqlJoin] = PXCodeType.BqlOperator,
-					[IBqlSet] = PXCodeType.BqlOperator,
+					[IBqlJoin] 	  = PXCodeType.BqlOperator,
+					[IBqlSet] 	  = PXCodeType.BqlOperator,
 
-					[FullJoin] = PXCodeType.BqlOperator,
+					[FullJoin] 	= PXCodeType.BqlOperator,
 					[RightJoin] = PXCodeType.BqlOperator,
-					[LeftJoin] = PXCodeType.BqlOperator,
+					[LeftJoin] 	= PXCodeType.BqlOperator,
 					[InnerJoin] = PXCodeType.BqlOperator,
 
 					[PXGraph] = PXCodeType.PXGraph
@@ -133,21 +142,21 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForGenericName { get; } =
 			new Dictionary<string, PXCodeType>
 				{
-					[PXSelectBaseType] = PXCodeType.BqlCommand,
-					[BqlCommand] = PXCodeType.BqlCommand,
-					[PXUpdate] = PXCodeType.BqlCommand,
-					[PXUpdateJoin] = PXCodeType.BqlCommand,
-					[PXUpdateGroupBy] = PXCodeType.BqlCommand,
+					[PXSelectBaseType] 	  = PXCodeType.BqlCommand,
+					[BqlCommand] 		  = PXCodeType.BqlCommand,
+					[PXUpdate] 			  = PXCodeType.BqlCommand,
+					[PXUpdateJoin] 		  = PXCodeType.BqlCommand,
+					[PXUpdateGroupBy] 	  = PXCodeType.BqlCommand,
 					[PXUpdateJoinGroupBy] = PXCodeType.BqlCommand,
 
 					[IBqlParameter] = PXCodeType.BqlParameter,
-					[IBqlCreator] = PXCodeType.BqlOperator,
-					[IBqlJoin] = PXCodeType.BqlOperator,
-					[IBqlSet] = PXCodeType.BqlOperator,
+					[IBqlCreator] 	= PXCodeType.BqlOperator,
+					[IBqlJoin] 		= PXCodeType.BqlOperator,
+					[IBqlSet] 		= PXCodeType.BqlOperator,
 
-					[FullJoin] = PXCodeType.BqlOperator,
+					[FullJoin] 	= PXCodeType.BqlOperator,
 					[RightJoin] = PXCodeType.BqlOperator,
-					[LeftJoin] = PXCodeType.BqlOperator,
+					[LeftJoin] 	= PXCodeType.BqlOperator,
 					[InnerJoin] = PXCodeType.BqlOperator,
 
 					[PXAction] = PXCodeType.PXAction,
