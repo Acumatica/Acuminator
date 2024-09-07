@@ -68,7 +68,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 				? bqlFieldType
 				: null;
 
-		public static string? GetPropertyTypeType(BqlFieldTypeName bqlFieldType) =>
+		public static string? GetPropertyType(BqlFieldTypeName bqlFieldType) =>
 			_bqlFieldTypeToPropertyType.TryGetValue(bqlFieldType, out var propertyType)
 				? propertyType
 				: null;
