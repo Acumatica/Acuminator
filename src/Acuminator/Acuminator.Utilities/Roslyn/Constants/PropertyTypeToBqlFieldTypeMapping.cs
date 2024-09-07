@@ -60,7 +60,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static bool ContainsPropertyType(PropertyTypeName propertyType) =>
 			_propertyTypeToBqlFieldType.ContainsKey(propertyType);
 
-		public static bool ContainsBqlFieldType(BqlTypeName bqlFieldType) =>
+		public static bool ContainsBqlFieldType(BqlFieldTypeName bqlFieldType) =>
 			_bqlFieldTypeToPropertyType.ContainsKey(bqlFieldType);
 
 		public static string? GetBqlFieldType(PropertyTypeName propertyType) =>
@@ -68,7 +68,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 				? bqlFieldType
 				: null;
 
-		public static string? GetPropertyTypeType(BqlTypeName bqlFieldType) =>
+		public static string? GetPropertyTypeType(BqlFieldTypeName bqlFieldType) =>
 			_bqlFieldTypeToPropertyType.TryGetValue(bqlFieldType, out var propertyType)
 				? propertyType
 				: null;
