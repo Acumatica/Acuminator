@@ -115,26 +115,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (newBqlFieldNode == null)
 				return null;
 
-			var propertyWithoutRegions = RemoveRegionsFromPropertyTrivia(propertyWithoutBqlFieldNode);
+			var propertyWithoutRegions = CodeGeneration.RemoveRegionsFromPropertyLeadingTrivia(propertyWithoutBqlFieldNode);
 			var newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions)
 									.Insert(propertyMemberIndex, newBqlFieldNode);
 			return newMembers;
-		}
-
-		private PropertyDeclarationSyntax RemoveRegionsFromPropertyTrivia(PropertyDeclarationSyntax property)
-		{
-			var leadingTrivia = property.GetLeadingTrivia();
-
-			if (leadingTrivia.Count == 0)
-				return property;
-
-			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
-
-			if (regionTrivias.Count == 0)
-				return property;
-
-			var newLeadingTrivia = leadingTrivia.Except(regionTrivias);
-			return property.WithLeadingTrivia(newLeadingTrivia);
 		}
 	}
 }

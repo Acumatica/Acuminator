@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -66,6 +68,33 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 							node));
 
 			return list;
+		}
+
+		/// <summary>
+		/// Removes the regions from the property leading trivia.
+		/// </summary>
+		/// <param name="property">The property.</param>
+		/// <returns>
+		/// Property with removed regions from leading trivia.
+		/// </returns>
+		[return: NotNullIfNotNull(nameof(property))]
+		public static PropertyDeclarationSyntax? RemoveRegionsFromPropertyLeadingTrivia(PropertyDeclarationSyntax? property)
+		{
+			if (property == null)
+				return property;
+
+			var leadingTrivia = property.GetLeadingTrivia();
+
+			if (leadingTrivia.Count == 0)
+				return property;
+
+			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
+
+			if (regionTrivias.Count == 0)
+				return property;
+
+			var newLeadingTrivia = leadingTrivia.Except(regionTrivias);
+			return property.WithLeadingTrivia(newLeadingTrivia);
 		}
 	}
 }
