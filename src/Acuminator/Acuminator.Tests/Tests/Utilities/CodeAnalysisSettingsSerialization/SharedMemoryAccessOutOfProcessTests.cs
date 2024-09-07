@@ -39,6 +39,7 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 		{
 			string externalExecutorPath = Path.GetFullPath(ExternalExecutorFilePath);
 
+			// Acuminator disable once PX1099 ForbiddenApiUsage [Justification]
 			File.Exists(externalExecutorPath).Should().BeTrue();
 
 			string externalExecutorDir = Path.GetDirectoryName(externalExecutorPath);
