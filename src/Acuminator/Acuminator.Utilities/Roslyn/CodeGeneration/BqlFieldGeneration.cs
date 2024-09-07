@@ -17,11 +17,11 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 	/// </summary>
 	public static class BqlFieldGeneration
 	{
-		public static ClassDeclarationSyntax? GenerateWeaklyTypedBqlField(string bqlFieldName, bool isFirstField,
+		public static ClassDeclarationSyntax? GenerateWeaklyTypedBqlField(string bqlFieldName, bool isFirstField, bool isRedeclaration,
 																		  PropertyDeclarationSyntax? fieldPropertyToCopyRegions)
 		{
 			var iBqlFieldBaseTypeNode = IBqlFieldBaseTypeForBqlField();
-			var bqlField = GenerateBqlField(fieldPropertyToCopyRegions, iBqlFieldBaseTypeNode, bqlFieldName, isFirstField);
+			var bqlField = GenerateBqlField(fieldPropertyToCopyRegions, iBqlFieldBaseTypeNode, bqlFieldName, isFirstField, isRedeclaration);
 
 			return bqlField;
 		}
@@ -39,22 +39,22 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 		}
 
 		public static ClassDeclarationSyntax? GenerateTypedBqlField(PropertyTypeName fieldPropertyTypeName, string bqlFieldName, bool isFirstField,
-																	PropertyDeclarationSyntax? fieldPropertyToCopyRegions)
+																	bool isRedeclaration, PropertyDeclarationSyntax? fieldPropertyToCopyRegions)
 		{
 			var bqlFieldBaseTypeNode = BaseTypeForBqlField(fieldPropertyTypeName, bqlFieldName);
 
 			if (bqlFieldBaseTypeNode == null)
 				return null;
 
-			var bqlField = GenerateBqlField(fieldPropertyToCopyRegions, bqlFieldBaseTypeNode, bqlFieldName, isFirstField);
+			var bqlField = GenerateBqlField(fieldPropertyToCopyRegions, bqlFieldBaseTypeNode, bqlFieldName, isFirstField, isRedeclaration);
 			return bqlField;
 		}
 
 		public static ClassDeclarationSyntax? GenerateTypedBqlField(BqlFieldTypeName bqlFieldTypeName, string bqlFieldName, bool isFirstField,
-																	PropertyDeclarationSyntax? fieldPropertyToCopyRegions)
+																	bool isRedeclaration, PropertyDeclarationSyntax? fieldPropertyToCopyRegions)
 		{
 			var bqlFieldBaseTypeNode = BaseTypeForBqlField(bqlFieldTypeName, bqlFieldName);
-			var bqlField = GenerateBqlField(fieldPropertyToCopyRegions, bqlFieldBaseTypeNode, bqlFieldName, isFirstField);
+			var bqlField = GenerateBqlField(fieldPropertyToCopyRegions, bqlFieldBaseTypeNode, bqlFieldName, isFirstField, isRedeclaration);
 
 			return bqlField;
 		}
@@ -106,14 +106,19 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 		}
 
 		private static ClassDeclarationSyntax GenerateBqlField(PropertyDeclarationSyntax? property, SimpleBaseTypeSyntax bqlFieldBaseType,
-															   string bqlFieldName, bool isFirstField)
+															   string bqlFieldName, bool isFirstField, bool isRedeclaration)
 		{
 			var baseTypesListNode = BaseList(
 										SingletonSeparatedList<BaseTypeSyntax>(bqlFieldBaseType));
+			SyntaxTokenList modifiers = isRedeclaration
+				? TokenList(
+					Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.NewKeyword), Token(SyntaxKind.AbstractKeyword))
+				: TokenList(
+					Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AbstractKeyword));
+
 			var bqlFieldNode = ClassDeclaration(
 									attributeLists: default,
-									TokenList(
-										Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AbstractKeyword)),
+									modifiers,
 									Identifier(bqlFieldName), typeParameterList: null, baseTypesListNode,
 									constraintClauses: default, members: default)
 								.WithOpenBraceToken(

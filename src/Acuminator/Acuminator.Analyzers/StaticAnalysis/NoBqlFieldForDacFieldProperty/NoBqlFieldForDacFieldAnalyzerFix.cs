@@ -99,7 +99,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (members.Count == 0)
 			{
 				var newSingleBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: true, 
-																					 propertyWithoutBqlFieldNode);
+																					 isRedeclaration: false, propertyWithoutBqlFieldNode);
 				return newSingleBqlFieldNode != null
 					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
 					: null;
@@ -110,8 +110,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (propertyMemberIndex < 0)
 				propertyMemberIndex = 0;
 
-			var newBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: propertyMemberIndex == 0, 
-																		   propertyWithoutBqlFieldNode);
+			var newBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: propertyMemberIndex == 0,
+																		   isRedeclaration: false, propertyWithoutBqlFieldNode);
 			if (newBqlFieldNode == null)
 				return null;
 
