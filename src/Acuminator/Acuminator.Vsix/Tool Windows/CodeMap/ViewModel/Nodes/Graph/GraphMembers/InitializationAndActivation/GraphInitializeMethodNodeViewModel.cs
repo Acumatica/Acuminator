@@ -44,7 +44,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (lastDotIndex < 0)
 				return methodSymbol.Name;
 
-			return methodSymbol.Name[(lastDotIndex + 1)..];
+			return methodSymbol.Name.Substring(lastDotIndex + 1);
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => 
