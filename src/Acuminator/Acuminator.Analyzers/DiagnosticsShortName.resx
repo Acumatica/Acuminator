@@ -339,6 +339,9 @@
   <data name="PX1067" xml:space="preserve">
     <value>MissingBqlFieldRedeclarationInDerivedDac</value>
   </data>
+  <data name="PX1068" xml:space="preserve">
+    <value>PropertyAndBqlFieldTypesMismatch</value>
+  </data>
   <data name="PX1070" xml:space="preserve">
     <value>UiPresentationLogicInEventHandlers</value>
   </data>
