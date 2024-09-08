@@ -26,7 +26,7 @@ namespace PX.Analyzers.Test.Sources
 
 		#region tstamp
 		public abstract class Tstamp : PX.Data.BQL.BqlByteArray.Field<Tstamp> { }
-		
+
 		[PXDBTimestamp(RecordComesFirst = true)]
 		public virtual byte[] tstamp { get; set; }
 		#endregion

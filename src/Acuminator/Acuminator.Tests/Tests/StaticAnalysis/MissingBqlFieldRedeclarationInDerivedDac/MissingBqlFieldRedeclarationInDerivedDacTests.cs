@@ -22,10 +22,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MissingBqlFieldRedeclarationInDe
 		[EmbeddedFileData("DacWithNotRedeclaredBqlFields.cs")]
 		public async Task Dac_WithoutRedeclaredBqlFields_FromBaseDac(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "Tstamp", "BaseDac"),
 				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "status", "BaseDac"),
 				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "Tstamp2", "BaseDac"),
 				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "Tstamp3", "BaseDac"),
-				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "Tstamp", "BaseDac"),
 				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(12, 24, "DerivedDac", "shipmentNbr", "BaseDac"));
 
 		[Theory]
