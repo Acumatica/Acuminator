@@ -68,7 +68,7 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 			if (bqlFieldTypeName == null)
 				return null;
 
-			var bqlFieldType = BaseTypeForBqlField(bqlFieldTypeName, bqlFieldName);
+			var bqlFieldType = BaseTypeForBqlFieldImpl(bqlFieldTypeName, bqlFieldName);
 			return bqlFieldType;
 		}
 
@@ -76,11 +76,11 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 		{
 			bqlFieldName.ThrowOnNullOrWhiteSpace();
 
-			var bqlFieldType = BaseTypeForBqlField(bqlFieldTypeName, bqlFieldName);
+			var bqlFieldType = BaseTypeForBqlFieldImpl(bqlFieldTypeName.Value, bqlFieldName);
 			return bqlFieldType;
 		}
 
-		private static SimpleBaseTypeSyntax BaseTypeForBqlField(string bqlFieldTypeName, string bqlFieldName)
+		private static SimpleBaseTypeSyntax BaseTypeForBqlFieldImpl(string bqlFieldTypeName, string bqlFieldName)
 		{
 			GenericNameSyntax fieldTypeNode =
 				GenericName(Identifier("Field"))

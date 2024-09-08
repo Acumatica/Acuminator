@@ -41,7 +41,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 				string? propertyTypeName = property.EffectivePropertyType.GetSimplifiedName();
 
-				if (propertyTypeName == null || !PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType((PropertyTypeName)propertyTypeName))
+				if (propertyTypeName == null)
+					continue;
+
+				var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
+
+				if (!PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(strongPropertyTypeName))
 					continue;
 
 				var args = ImmutableDictionary.CreateBuilder<string, string?>();

@@ -58,18 +58,18 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		};
 
 		public static bool ContainsPropertyType(PropertyTypeName propertyType) =>
-			_propertyTypeToBqlFieldType.ContainsKey(propertyType);
+			_propertyTypeToBqlFieldType.ContainsKey(propertyType.Value);
 
 		public static bool ContainsBqlFieldType(BqlFieldTypeName bqlFieldType) =>
-			_bqlFieldTypeToPropertyType.ContainsKey(bqlFieldType);
+			_bqlFieldTypeToPropertyType.ContainsKey(bqlFieldType.Value);
 
 		public static string? GetBqlFieldType(PropertyTypeName propertyType) =>
-			_propertyTypeToBqlFieldType.TryGetValue(propertyType, out var bqlFieldType)
+			_propertyTypeToBqlFieldType.TryGetValue(propertyType.Value, out var bqlFieldType)
 				? bqlFieldType
 				: null;
 
 		public static string? GetPropertyType(BqlFieldTypeName bqlFieldType) =>
-			_bqlFieldTypeToPropertyType.TryGetValue(bqlFieldType, out var propertyType)
+			_bqlFieldTypeToPropertyType.TryGetValue(bqlFieldType.Value, out var propertyType)
 				? propertyType
 				: null;
 	}
