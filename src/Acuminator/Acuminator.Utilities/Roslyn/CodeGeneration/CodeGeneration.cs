@@ -71,30 +71,30 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 		}
 
 		/// <summary>
-		/// Removes the regions from the property leading trivia.
+		/// Removes the regions from the type member node leading trivia.
 		/// </summary>
-		/// <param name="property">The property.</param>
+		/// <param name="member">The type member node.</param>
 		/// <returns>
-		/// Property with removed regions from leading trivia.
+		/// Type member node with removed regions from leading trivia.
 		/// </returns>
-		[return: NotNullIfNotNull(nameof(property))]
-		public static PropertyDeclarationSyntax? RemoveRegionsFromPropertyLeadingTrivia(PropertyDeclarationSyntax? property)
+		[return: NotNullIfNotNull(nameof(member))]
+		public static MemberDeclarationSyntax? RemoveRegionsFromLeadingTrivia(MemberDeclarationSyntax? member)
 		{
-			if (property == null)
-				return property;
+			if (member == null)
+				return member;
 
-			var leadingTrivia = property.GetLeadingTrivia();
+			var leadingTrivia = member.GetLeadingTrivia();
 
 			if (leadingTrivia.Count == 0)
-				return property;
+				return member;
 
 			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
 
 			if (regionTrivias.Count == 0)
-				return property;
+				return member;
 
 			var newLeadingTrivia = leadingTrivia.Except(regionTrivias);
-			return property.WithLeadingTrivia(newLeadingTrivia);
+			return member.WithLeadingTrivia(newLeadingTrivia);
 		}
 	}
 }

@@ -43,11 +43,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			if (!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldType, out string? bqlFieldTypeName))
 				return Task.CompletedTask;
 
-			bqlFieldTypeName = bqlFieldTypeName.NullIfWhiteSpace();
-
-			// equivalence key should not contain format arguments to allow mass code fixes
-			string equivalenceKey = nameof(Resources.PX1067FixFormat).GetLocalized().ToString();
+			bqlFieldTypeName	  = bqlFieldTypeName.NullIfWhiteSpace();
 			string codeActionName = nameof(Resources.PX1067FixFormat).GetLocalized(bqlFieldName, dacName).ToString();
+
+			// equivalence key should be different for each BQL field to display it in the provided list of code actions 
+			string equivalenceKey = codeActionName;
 			var codeAction = CodeAction.Create(codeActionName,
 											   cToken => RedeclareBqlFieldAsync(context.Document, bqlFieldName, bqlFieldTypeName,
 																				context.Span, cToken),
@@ -100,20 +100,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 
 			if (members.Count == 0)
 			{
-				var newSingleBqlFieldNode = CreateBqlFieldClassNode(propertyWithoutBqlFieldNode, bqlFieldName, isFirstField: true,
+				var newSingleBqlFieldNode = CreateBqlFieldClassNode(adjacentMember: null, bqlFieldName, isFirstField: true,
 																	bqlFieldTypeName);
 				return newSingleBqlFieldNode != null
 					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
 					: null;
 			}
 
-			int indexToInsertBqlField = GetIndexToInsertBqlFieldRedeclaration(dacNode, propertyWithoutBqlFieldNode, bqlFieldName);
+			var (indexToInsertBqlField, adjacentMember) = GetIndexToInsertBqlFieldRedeclaration(dacNode, propertyWithoutBqlFieldNode, bqlFieldName);
+			var newBqlFieldNode = CreateBqlFieldClassNode(adjacentMember, bqlFieldName, isFirstField: indexToInsertBqlField == 0, bqlFieldTypeName);
 
-			if (indexToInsertBqlField < 0)
-				indexToInsertBqlField = 0;
-
-			var newBqlFieldNode = CreateBqlFieldClassNode(propertyWithoutBqlFieldNode, bqlFieldName, isFirstField: indexToInsertBqlField == 0,
-														  bqlFieldTypeName);
 			if (newBqlFieldNode == null)
 				return null;
 
@@ -121,7 +117,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 
 			if (propertyWithoutBqlFieldNode != null)
 			{
-				var propertyWithoutRegions = CodeGeneration.RemoveRegionsFromPropertyLeadingTrivia(propertyWithoutBqlFieldNode);
+				var propertyWithoutRegions = CodeGeneration.RemoveRegionsFromLeadingTrivia(propertyWithoutBqlFieldNode);
 				newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions);
 			}
 			
@@ -129,42 +125,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			return newMembers;
 		}
 
-		private ClassDeclarationSyntax? CreateBqlFieldClassNode(PropertyDeclarationSyntax? propertyWithoutBqlFieldNode, string bqlFieldName,
+		private ClassDeclarationSyntax? CreateBqlFieldClassNode(MemberDeclarationSyntax? adjacentMember, string bqlFieldName,
 																bool isFirstField, BqlFieldTypeName? bqlFieldTypeName)
 		{
 			if (bqlFieldTypeName.HasValue)
 			{
 				var stronglyTypedBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(bqlFieldTypeName.Value, bqlFieldName, isFirstField,
-																						 isRedeclaration: true, propertyWithoutBqlFieldNode);
+																						 isRedeclaration: true, adjacentMember);
 				return stronglyTypedBqlFieldNode;
 			}
 			else
 			{
 				var weaklyTypedBqlFieldNode = BqlFieldGeneration.GenerateWeaklyTypedBqlField(bqlFieldName, isFirstField, isRedeclaration: true,
-																							 propertyWithoutBqlFieldNode);
+																							 adjacentMember);
 				return weaklyTypedBqlFieldNode;
 			}
 		}
 
-		private int GetIndexToInsertBqlFieldRedeclaration(ClassDeclarationSyntax dacNode, PropertyDeclarationSyntax? propertyWithoutBqlFieldNode,
-														  string bqlFieldName)
+		private (int Index, MemberDeclarationSyntax? AdjacentMember) GetIndexToInsertBqlFieldRedeclaration(ClassDeclarationSyntax dacNode, 
+																			PropertyDeclarationSyntax? propertyWithoutBqlFieldNode, string bqlFieldName)
 		{
 			var dacMembers = dacNode.Members;
 
 			if (dacMembers.Count == 0)
-				return 0;
+				return (0, null);
 
 			if (propertyWithoutBqlFieldNode != null)
 			{
 				int propertyMemberIndex = dacMembers.IndexOf(propertyWithoutBqlFieldNode);
 				return propertyMemberIndex < 0 
-					? 0 
-					: propertyMemberIndex;
+					? (0, dacMembers[0]) 
+					: (propertyMemberIndex, propertyWithoutBqlFieldNode);
 			}
 			else
 			{
 				// insert BQL field redeclaration at the end of the DAC
-				return dacMembers.Count;
+				return (dacMembers.Count, dacMembers[^1]);
 			}
 		}
 	}
