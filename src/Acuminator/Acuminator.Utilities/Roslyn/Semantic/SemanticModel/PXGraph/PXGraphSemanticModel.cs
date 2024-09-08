@@ -127,6 +127,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public bool ConfiguresWorkflow => ConfigureMethodOverride != null;
 
 		/// <summary>
+		/// Information about the graph's or the graph extension's Initialize method and its overrides. The method can be declared in base types.
+		/// </summary>
+		public InitializeMethodInfo? InitializeMethodInfo { get; }
+
+		/// <summary>
+		/// Information about the Initialize method declared in this type. <see langword="null"/> if the method is not declared in this type.
+		/// </summary>
+		public InitializeMethodInfo? DeclaredInitializeMethodInfo =>
+			InitializeMethodInfo != null && InitializeMethodInfo.Symbol.IsDeclaredInType(Symbol)
+				? InitializeMethodInfo
+				: null;
+
+		/// <summary>
 		/// An indicator of whether the graph extension has the PXProtectedAccess attribute.
 		/// </summary>
 		public bool HasPXProtectedAccess { get; }
@@ -173,8 +186,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			IsActiveMethodInfo 		   = GetIsActiveMethodInfo();
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
 			ConfigureMethodOverride	   = ConfigureMethodInfo.GetConfigureMethodInfo(Symbol, GraphType, PXContext, _cancellation);
-			PXOverrides 			   = GetDeclaredPXOverrideInfos();
-			HasPXProtectedAccess	   = IsPXProtectedAccessAttributeDeclared();
+			InitializeMethodInfo	   = InitializeMethodInfo.GetInitializeMethodInfo(Symbol, GraphType, PXContext, _cancellation);
+
+			PXOverrides = GetDeclaredPXOverrideInfos();
+			HasPXProtectedAccess = IsPXProtectedAccessAttributeDeclared();
 		}
 
 		protected void InitProcessingDelegatesInfo()
