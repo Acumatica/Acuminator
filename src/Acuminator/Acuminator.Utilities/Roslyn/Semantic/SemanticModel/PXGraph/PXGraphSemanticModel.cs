@@ -182,12 +182,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			InitProcessingDelegatesInfo();
 
+			ConfigureMethodOverride = ConfigureMethodInfo.GetConfigureMethodInfo(Symbol, GraphType, PXContext, _cancellation);
+			InitializeMethodInfo	= InitializeMethodInfo.GetInitializeMethodInfo(Symbol, GraphType, PXContext, _cancellation);
+
 			Initializers 			   = GetDeclaredInitializers().ToImmutableArray();
 			IsActiveMethodInfo 		   = GetIsActiveMethodInfo();
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
-			ConfigureMethodOverride	   = ConfigureMethodInfo.GetConfigureMethodInfo(Symbol, GraphType, PXContext, _cancellation);
-			InitializeMethodInfo	   = InitializeMethodInfo.GetInitializeMethodInfo(Symbol, GraphType, PXContext, _cancellation);
-
+			
 			PXOverrides = GetDeclaredPXOverrideInfos();
 			HasPXProtectedAccess = IsPXProtectedAccessAttributeDeclared();
 		}
@@ -292,12 +293,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 			else
 			{
-				(MethodDeclarationSyntax node, IMethodSymbol symbol) = Symbol.GetGraphExtensionInitialization(PXContext, _cancellation);
+				var declaredInitializeMethod = DeclaredInitializeMethodInfo;
 
-				if (node != null && symbol != null)
+				if (declaredInitializeMethod != null)
 				{
-					return new GraphInitializerInfo(GraphInitializerType.InitializeMethod, node, symbol, declarationOrder: 0)
-								.ToEnumerable();
+					var graphInitInfo = new GraphInitializerInfo(GraphInitializerType.InitializeMethod, declaredInitializeMethod.Node,
+																 declaredInitializeMethod.Symbol, declarationOrder: 0);
+					return [graphInitInfo];
 				}
 
 				return [];
