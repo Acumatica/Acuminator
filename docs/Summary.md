@@ -97,3 +97,4 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute. | Warning (ISV Level 3: Informational) | Available |
 | [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` or `PXDBScalar` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error | Unavailable |
 | [PX1096](diagnostics/PX1096.md) | The signature of a method with the `PXOverride` attribute must match the overridden method. | Error | Unavailable |
+| [PX1099](diagnostics/PX1099.md) | The API reported by the diagnostic should not be used with Acumatica Framework. | Warning | Unavailable |

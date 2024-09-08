@@ -367,8 +367,8 @@ namespace Acuminator.Tests.Verification
 		/// <returns>
 		/// An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location.
 		/// </returns>
-		private static Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, 
-																	DiagnosticAnalyzer analyzer, bool checkOnlyFirstDocument)
+		protected static Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, 
+																	  DiagnosticAnalyzer analyzer, bool checkOnlyFirstDocument)
 		{
 			return GetSortedDiagnosticsFromDocumentsAsync(analyzer, VerificationHelper.GetDocuments(sources, language), checkOnlyFirstDocument);
 		}

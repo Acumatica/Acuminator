@@ -117,32 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DacFormatLabel" xml:space="preserve">
-    <value>Acuminator - DAC Name</value>
-  </data>
-  <data name="DacExtensionFormatLabel" xml:space="preserve">
-    <value>Acuminator - DAC Extension Name</value>
-  </data>
-  <data name="DacFieldFormatLabel" xml:space="preserve">
-    <value>Acuminator - DAC Field Name</value>
-  </data>
-  <data name="BQLParameterFormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Parameters</value>
-  </data>
-  <data name="BQLOperatorFormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Operators</value>
-  </data>
   <data name="BQLConstantEndingFormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Constant (Ending)</value>
   </data>
   <data name="BQLConstantPrefixFormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Constant (Prefix)</value>
   </data>
-  <data name="PXActionFormatLabel" xml:space="preserve">
-    <value>Acuminator - PXAction</value>
+  <data name="BQLOperatorFormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Operators</value>
   </data>
-  <data name="PXGraphFormatLabel" xml:space="preserve">
-    <value>Acuminator - PXGraph</value>
+  <data name="BQLParameterFormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Parameters</value>
+  </data>
+  <data name="BraceLevel_10_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 10)</value>
+  </data>
+  <data name="BraceLevel_11_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 11)</value>
+  </data>
+  <data name="BraceLevel_12_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 12)</value>
+  </data>
+  <data name="BraceLevel_13_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 13)</value>
+  </data>
+  <data name="BraceLevel_14_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 14)</value>
   </data>
   <data name="BraceLevel_1_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Angle Brackets (Level 1)</value>
@@ -171,20 +171,11 @@
   <data name="BraceLevel_9_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Angle Brackets (Level 9)</value>
   </data>
-  <data name="BraceLevel_10_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 10)</value>
+  <data name="Category_BannedAPI" xml:space="preserve">
+    <value>Banned API</value>
   </data>
-  <data name="BraceLevel_11_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 11)</value>
-  </data>
-  <data name="BraceLevel_12_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 12)</value>
-  </data>
-  <data name="BraceLevel_13_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 13)</value>
-  </data>
-  <data name="BraceLevel_14_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 14)</value>
+  <data name="Category_CodeAnalysis" xml:space="preserve">
+    <value>Code Analysis</value>
   </data>
   <data name="Category_Coloring" xml:space="preserve">
     <value>BQL Coloring</value>
@@ -192,62 +183,180 @@
   <data name="Category_Outlining" xml:space="preserve">
     <value>BQL Outlining</value>
   </data>
-  <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
-    <value>Enable coloring</value>
+  <data name="CodeMap_ConstructorNodeName" xml:space="preserve">
+    <value>Constructor</value>
   </data>
-  <data name="Setting_ColoringEnabled_Description" xml:space="preserve">
-    <value>Colorize BQL syntax. If set to false, all Acuminator coloring is turned off.</value>
+  <data name="CodeMap_DbBoundnessIndicator_Bound" xml:space="preserve">
+    <value>Bound</value>
   </data>
-  <data name="Setting_PXActionColoringEnabled_Title" xml:space="preserve">
-    <value>Enable PXAction coloring</value>
+  <data name="CodeMap_DbBoundnessIndicator_Inconsistent" xml:space="preserve">
+    <value>Inconsistent</value>
   </data>
-  <data name="Setting_PXActionColoringEnabled_Description" xml:space="preserve">
-    <value>Colorize PXAction declarations (only for Roslyn coloring).</value>
+  <data name="CodeMap_DbBoundnessIndicator_PXDBCalced" xml:space="preserve">
+    <value>PXDBCalced</value>
   </data>
-  <data name="Setting_PXGraphColoringEnabled_Title" xml:space="preserve">
-    <value>Enable PXGraph coloring</value>
+  <data name="CodeMap_DbBoundnessIndicator_PXDBScalar" xml:space="preserve">
+    <value>PXDBScalar</value>
   </data>
-  <data name="Setting_PXGraphColoringEnabled_Description" xml:space="preserve">
-    <value>Colorize PXGraph declarations (only for Roslyn coloring).</value>
+  <data name="CodeMap_DbBoundnessIndicator_Unbound" xml:space="preserve">
+    <value>Unbound</value>
   </data>
-  <data name="Setting_ColorOnlyInsideBQL_Title" xml:space="preserve">
-    <value>Colorize code only inside BQL commands</value>
+  <data name="CodeMap_DbBoundnessIndicator_Unknown" xml:space="preserve">
+    <value>Unknown</value>
   </data>
-  <data name="Setting_ColorOnlyInsideBQL_Description" xml:space="preserve">
-    <value>Colorize code only inside BQL commands (only for Roslyn coloring).</value>
+  <data name="CodeMap_ExtraInfo_CustomViewLabel" xml:space="preserve">
+    <value>Custom</value>
   </data>
-  <data name="Setting_UseRegexColoring_Title" xml:space="preserve">
-    <value>Use RegEx colorizer</value>
+  <data name="CodeMap_ExtraInfo_CustomViewTooltip" xml:space="preserve">
+    <value>The view is a custom class derived from standard PXSelect-like classes</value>
   </data>
-  <data name="Setting_UseRegexColoring_Description" xml:space="preserve">
-    <value>Use the syntax colorizer based on regular expressions, which provides worse coloring but works faster. If set to false, Roslyn coloring is used.</value>
+  <data name="CodeMap_ExtraInfo_DacKeyIconTooltip" xml:space="preserve">
+    <value>Is part of a primary key</value>
   </data>
-  <data name="Setting_UseBqlOutlining_Title" xml:space="preserve">
-    <value>Use BQL outlining</value>
+  <data name="CodeMap_ExtraInfo_HasPXDBIdentityAttributeTooltip" xml:space="preserve">
+    <value>The PXDBIdentity attribute is specified for this field.</value>
   </data>
-  <data name="Setting_UseBqlOutlining_Description" xml:space="preserve">
-    <value>Collapse BQL commands (only for Roslyn coloring).</value>
+  <data name="CodeMap_ExtraInfo_IsDac" xml:space="preserve">
+    <value>DAC</value>
   </data>
-  <data name="Setting_UseBqlDetailedOutlining_Title" xml:space="preserve">
-    <value>Outline parts of BQL commands</value>
+  <data name="CodeMap_ExtraInfo_IsDacExtension" xml:space="preserve">
+    <value>DAC Extension</value>
   </data>
-  <data name="Setting_UseBqlDetailedOutlining_Description" xml:space="preserve">
-    <value>Collapse parts of BQL commands (only for Roslyn coloring). If set to false, BQL commands are collapsed only entirely.</value>
+  <data name="CodeMap_ExtraInfo_IsGraph" xml:space="preserve">
+    <value>Graph</value>
   </data>
-  <data name="Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description" xml:space="preserve">
-    <value>Analyse the whole invocation tree in a recursive manner.</value>
+  <data name="CodeMap_ExtraInfo_IsGraphExtension" xml:space="preserve">
+    <value>Graph Extension</value>
   </data>
-  <data name="Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title" xml:space="preserve">
-    <value>Enable recursive code analysis</value>
+  <data name="CodeMap_ExtraInfo_PXFilterViewIconTooltip" xml:space="preserve">
+    <value>This view is PXFilter or it is derived from it</value>
   </data>
-  <data name="Category_CodeAnalysis" xml:space="preserve">
-    <value>Code Analysis</value>
+  <data name="CodeMap_ExtraInfo_PXSelectReadOnlyViewLabel" xml:space="preserve">
+    <value>ReadOnly</value>
+  </data>
+  <data name="CodeMap_ExtraInfo_PXSelectReadOnlyViewTooltip" xml:space="preserve">
+    <value>The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache.</value>
+  </data>
+  <data name="CodeMap_ExtraInfo_PXSetupViewIconTooltip" xml:space="preserve">
+    <value>This view is PXSetup or derived from it</value>
+  </data>
+  <data name="CodeMap_ExtraInfo_ProcessingGraphIconTooltip" xml:space="preserve">
+    <value>This is a processing graph</value>
+  </data>
+  <data name="CodeMap_ExtraInfo_ProcessingViewIconTooltip" xml:space="preserve">
+    <value>This is a procesing view</value>
+  </data>
+  <data name="CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip" xml:space="preserve">
+    <value>This is a projection DAC</value>
+  </data>
+  <data name="CodeMap_ExtraInfo_PropertyHasAutoNumberingTooltip" xml:space="preserve">
+    <value>Autonumbering is enabled for this field.</value>
+  </data>
+  <data name="CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage" xml:space="preserve">
+    <value>Code Map failed to subscribe to Visual Studio events. Code Map will not synchronize correctly with the currently active file</value>
+  </data>
+  <data name="CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage" xml:space="preserve">
+    <value>Code Map failed to unsubscribe from Visual Studio events</value>
+  </data>
+  <data name="CodeMap_Icon_ProjectionAttributeTooltip" xml:space="preserve">
+    <value>This is a projection attribute</value>
+  </data>
+  <data name="CodeMap_Node_DacAttributes" xml:space="preserve">
+    <value>DAC Attributes</value>
+  </data>
+  <data name="CodeMap_Node_GraphAttributes" xml:space="preserve">
+    <value>Graph Attributes</value>
+  </data>
+  <data name="CodeMap_StaticConstructorNodeName" xml:space="preserve">
+    <value>Static Constructor</value>
+  </data>
+  <data name="CodeMap_WindowTitle" xml:space="preserve">
+    <value>Code Map</value>
+  </data>
+  <data name="CreateIssue_Message" xml:space="preserve">
+    <value>Please create an issue in Acuminator Github: https://github.com/Acumatica/Acuminator/issues</value>
+  </data>
+  <data name="DacExtensionFormatLabel" xml:space="preserve">
+    <value>Acuminator - DAC Extension Name</value>
+  </data>
+  <data name="DacFieldFormatLabel" xml:space="preserve">
+    <value>Acuminator - DAC Field Name</value>
+  </data>
+  <data name="DacFormatLabel" xml:space="preserve">
+    <value>Acuminator - DAC Name</value>
+  </data>
+  <data name="DiagnosticSuppression_MultipleDiagnosticFound" xml:space="preserve">
+    <value>There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time.</value>
+  </data>
+  <data name="DiagnosticSuppression_NoDiagnosticFound" xml:space="preserve">
+    <value>There are no Acuminator diagnostics in this code snippet.</value>
+  </data>
+  <data name="PXActionFormatLabel" xml:space="preserve">
+    <value>Acuminator - PXAction</value>
+  </data>
+  <data name="PXGraphFormatLabel" xml:space="preserve">
+    <value>Acuminator - PXGraph</value>
+  </data>
+  <data name="PackageLoad_DeployBannedApiFiles" xml:space="preserve">
+    <value>Deploying Acumatica Banned API files shipped with Acuminator</value>
+  </data>
+  <data name="PackageLoad_Done" xml:space="preserve">
+    <value>The Acuminator package loaded</value>
+  </data>
+  <data name="PackageLoad_InitCodeAnalysisSettings" xml:space="preserve">
+    <value>Initializing Acuminator code analysis settings</value>
+  </data>
+  <data name="PackageLoad_InitCodeSnippets" xml:space="preserve">
+    <value>Deploying Acumatica Code Snippets shipped with Acuminator</value>
+  </data>
+  <data name="PackageLoad_InitCommands" xml:space="preserve">
+    <value>Initializing Acuminator commands</value>
+  </data>
+  <data name="PackageLoad_InitLogger" xml:space="preserve">
+    <value>Initializing Acuminator logger</value>
+  </data>
+  <data name="PackageLoad_InitSuppressionManager" xml:space="preserve">
+    <value>Initializing Acuminator suppression manager</value>
+  </data>
+  <data name="PackageLoad_WaitMessage" xml:space="preserve">
+    <value>Loading the Acuminator package</value>
+  </data>
+  <data name="Setting_BannedAPI_BannedApiAnalysisEnabled_Description" xml:space="preserve">
+    <value>Enable Acuminator PX1099 diagnostic which reports calls to API that should not be used with Acumatica Framework. </value>
+  </data>
+  <data name="Setting_BannedAPI_BannedApiAnalysisEnabled_Title" xml:space="preserve">
+    <value>Enable PX1099 diagnostic for banned API</value>
+  </data>
+  <data name="Setting_BannedAPI_BannedApiFilePath_Description" xml:space="preserve">
+    <value>A path to the file with a list of banned APIs that will be reported by Acuminator.</value>
+  </data>
+  <data name="Setting_BannedAPI_BannedApiFilePath_Title" xml:space="preserve">
+    <value>Banned API File</value>
+  </data>
+  <data name="Setting_BannedAPI_WhiteListApiFilePath_Description" xml:space="preserve">
+    <value>A path to the file with white listed APIs that will not be reported by Acuminator even if their containing namespaces or types are contained in the "Banned API File" as banned.
+This option should be used together with the "Banned API File" setting.</value>
+  </data>
+  <data name="Setting_BannedAPI_WhiteListApiFilePath_Title" xml:space="preserve">
+    <value>White List API File</value>
   </data>
   <data name="Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description" xml:space="preserve">
     <value>Display the diagnostics that are necessary only for ISV Solution Certification. For non-ISV solutions, these diagnostics are informational.</value>
   </data>
   <data name="Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title" xml:space="preserve">
     <value>Enable additional diagnostics for ISV Solution Certification</value>
+  </data>
+  <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description" xml:space="preserve">
+    <value>Enable Acuminator PX1007 diagnostic which checks DACs, DAC extensions, and DAC field properties for the valid XML documentation comments.</value>
+  </data>
+  <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title" xml:space="preserve">
+    <value>Enable PX1007 diagnostic</value>
+  </data>
+  <data name="Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description" xml:space="preserve">
+    <value>Analyse the whole invocation tree in a recursive manner.</value>
+  </data>
+  <data name="Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title" xml:space="preserve">
+    <value>Enable recursive code analysis</value>
   </data>
   <data name="Setting_CodeAnalysis_StaticAnalysisEnabled_Description" xml:space="preserve">
     <value>Enable Acuminator static code analysis for Visual Studio solutions.</value>
@@ -261,130 +370,52 @@
   <data name="Setting_CodeAnalysis_SuppressionMechanismEnabled_Title" xml:space="preserve">
     <value>Suppress selected diagnostics</value>
   </data>
-  <data name="CodeMap_WindowTitle" xml:space="preserve">
-    <value>Code Map</value>
+  <data name="Setting_ColorOnlyInsideBQL_Description" xml:space="preserve">
+    <value>Colorize code only inside BQL commands (only for Roslyn coloring).</value>
   </data>
-  <data name="DiagnosticSuppression_NoDiagnosticFound" xml:space="preserve">
-    <value>There are no Acuminator diagnostics in this code snippet.</value>
+  <data name="Setting_ColorOnlyInsideBQL_Title" xml:space="preserve">
+    <value>Colorize code only inside BQL commands</value>
   </data>
-  <data name="DiagnosticSuppression_MultipleDiagnosticFound" xml:space="preserve">
-    <value>There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time.</value>
+  <data name="Setting_ColoringEnabled_Description" xml:space="preserve">
+    <value>Colorize BQL syntax. If set to false, all Acuminator coloring is turned off.</value>
   </data>
-  <data name="PackageLoad_Done" xml:space="preserve">
-    <value>The Acuminator package loaded</value>
+  <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
+    <value>Enable coloring</value>
   </data>
-  <data name="PackageLoad_InitCommands" xml:space="preserve">
-    <value>Initializing Acuminator commands</value>
+  <data name="Setting_PXActionColoringEnabled_Description" xml:space="preserve">
+    <value>Colorize PXAction declarations (only for Roslyn coloring).</value>
   </data>
-  <data name="PackageLoad_InitCodeAnalysisSettings" xml:space="preserve">
-    <value>Initializing Acuminator code analysis settings</value>
+  <data name="Setting_PXActionColoringEnabled_Title" xml:space="preserve">
+    <value>Enable PXAction coloring</value>
   </data>
-  <data name="PackageLoad_InitLogger" xml:space="preserve">
-    <value>Initializing Acuminator logger</value>
+  <data name="Setting_PXGraphColoringEnabled_Description" xml:space="preserve">
+    <value>Colorize PXGraph declarations (only for Roslyn coloring).</value>
   </data>
-  <data name="PackageLoad_InitSuppressionManager" xml:space="preserve">
-    <value>Initializing Acuminator suppression manager</value>
+  <data name="Setting_PXGraphColoringEnabled_Title" xml:space="preserve">
+    <value>Enable PXGraph coloring</value>
   </data>
-  <data name="PackageLoad_WaitMessage" xml:space="preserve">
-    <value>Loading the Acuminator package</value>
+  <data name="Setting_UseBqlDetailedOutlining_Description" xml:space="preserve">
+    <value>Collapse parts of BQL commands (only for Roslyn coloring). If set to false, BQL commands are collapsed only entirely.</value>
   </data>
-  <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description" xml:space="preserve">
-    <value>Enable Acuminator PX1007 diagnostic which checks DACs, DAC extensions, and DAC field properties for the valid XML documentation comments.</value>
+  <data name="Setting_UseBqlDetailedOutlining_Title" xml:space="preserve">
+    <value>Outline parts of BQL commands</value>
   </data>
-  <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title" xml:space="preserve">
-    <value>Enable PX1007 diagnostic</value>
+  <data name="Setting_UseBqlOutlining_Description" xml:space="preserve">
+    <value>Collapse BQL commands (only for Roslyn coloring).</value>
   </data>
-  <data name="CodeMap_ExtraInfo_HasPXDBIdentityAttributeTooltip" xml:space="preserve">
-    <value>The PXDBIdentity attribute is specified for this field.</value>
+  <data name="Setting_UseBqlOutlining_Title" xml:space="preserve">
+    <value>Use BQL outlining</value>
   </data>
-  <data name="CodeMap_ExtraInfo_PropertyHasAutoNumberingTooltip" xml:space="preserve">
-    <value>Autonumbering is enabled for this field.</value>
+  <data name="Setting_UseRegexColoring_Description" xml:space="preserve">
+    <value>Use the syntax colorizer based on regular expressions, which provides worse coloring but works faster. If set to false, Roslyn coloring is used.</value>
   </data>
-  <data name="CodeMap_ExtraInfo_DacKeyIconTooltip" xml:space="preserve">
-    <value>Is part of a primary key</value>
+  <data name="Setting_UseRegexColoring_Title" xml:space="preserve">
+    <value>Use RegEx colorizer</value>
   </data>
-  <data name="CodeMap_ExtraInfo_PXFilterViewIconTooltip" xml:space="preserve">
-    <value>This view is PXFilter or it is derived from it</value>
+  <data name="Settings_InvalidFileErrorCaption" xml:space="preserve">
+    <value>Invalid or not existing file</value>
   </data>
-  <data name="CodeMap_ExtraInfo_PXSetupViewIconTooltip" xml:space="preserve">
-    <value>This view is PXSetup or derived from it</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_ProcessingViewIconTooltip" xml:space="preserve">
-    <value>This is a procesing view</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_CustomViewLabel" xml:space="preserve">
-    <value>Custom</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_CustomViewTooltip" xml:space="preserve">
-    <value>The view is a custom class derived from standard PXSelect-like classes</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_PXSelectReadOnlyViewLabel" xml:space="preserve">
-    <value>ReadOnly</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_PXSelectReadOnlyViewTooltip" xml:space="preserve">
-    <value>The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache.</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_ProcessingGraphIconTooltip" xml:space="preserve">
-    <value>This is a processing graph</value>
-  </data>
-  <data name="CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage" xml:space="preserve">
-    <value>Code Map failed to subscribe to Visual Studio events. Code Map will not synchronize correctly with the currently active file</value>
-  </data>
-  <data name="CreateIssue_Message" xml:space="preserve">
-    <value>Please create an issue in Acuminator Github: https://github.com/Acumatica/Acuminator/issues</value>
-  </data>
-  <data name="CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage" xml:space="preserve">
-    <value>Code Map failed to unsubscribe from Visual Studio events</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_IsDacExtension" xml:space="preserve">
-    <value>DAC Extension</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_IsDac" xml:space="preserve">
-    <value>DAC</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_IsGraph" xml:space="preserve">
-    <value>Graph</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_IsGraphExtension" xml:space="preserve">
-    <value>Graph Extension</value>
-  </data>
-  <data name="CodeMap_ConstructorNodeName" xml:space="preserve">
-    <value>Constructor</value>
-  </data>
-  <data name="CodeMap_StaticConstructorNodeName" xml:space="preserve">
-    <value>Static Constructor</value>
-  </data>
-  <data name="PackageLoad_InitCodeSnippets" xml:space="preserve">
-    <value>Initializing Acumatica Code Snippets shipped with Acuminator</value>
-  </data>
-  <data name="CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip" xml:space="preserve">
-    <value>This is a projection DAC</value>
-  </data>
-  <data name="CodeMap_Node_DacAttributes" xml:space="preserve">
-    <value>DAC Attributes</value>
-  </data>
-  <data name="CodeMap_Node_GraphAttributes" xml:space="preserve">
-    <value>Graph Attributes</value>
-  </data>
-  <data name="CodeMap_Icon_ProjectionAttributeTooltip" xml:space="preserve">
-    <value>This is a projection attribute</value>
-  </data>
-  <data name="CodeMap_DbBoundnessIndicator_Unbound" xml:space="preserve">
-    <value>Unbound</value>
-  </data>
-  <data name="CodeMap_DbBoundnessIndicator_Bound" xml:space="preserve">
-    <value>Bound</value>
-  </data>
-  <data name="CodeMap_DbBoundnessIndicator_PXDBCalced" xml:space="preserve">
-    <value>PXDBCalced</value>
-  </data>
-  <data name="CodeMap_DbBoundnessIndicator_PXDBScalar" xml:space="preserve">
-    <value>PXDBScalar</value>
-  </data>
-  <data name="CodeMap_DbBoundnessIndicator_Unknown" xml:space="preserve">
-    <value>Unknown</value>
-  </data>
-  <data name="CodeMap_DbBoundnessIndicator_Inconsistent" xml:space="preserve">
-    <value>Inconsistent</value>
+  <data name="Settings_InvalidFileErrorFormat" xml:space="preserve">
+    <value>Invalid or not existing file is specified for the setting "{0}". </value>
   </data>
 </root>

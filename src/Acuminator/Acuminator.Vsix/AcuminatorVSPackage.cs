@@ -1,12 +1,31 @@
 ﻿#nullable enable
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
+using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Vsix.BannedApi;
+using Acuminator.Vsix.CodeSnippets;
+using Acuminator.Vsix.Coloriser;
+using Acuminator.Vsix.DiagnosticSuppression;
+using Acuminator.Vsix.Formatter;
+using Acuminator.Vsix.GoToDeclaration;
+using Acuminator.Vsix.Logger;
+using Acuminator.Vsix.Settings;
+using Acuminator.Vsix.ToolWindows.CodeMap;
+using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.Utilities.Storage;
+
+using Community.VisualStudio.Toolkit;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -14,24 +33,6 @@ using Microsoft.VisualStudio.Shell.Events;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Threading;
-
-using Community.VisualStudio.Toolkit;
-
-using System.ComponentModel.Design;
-
-using Acuminator.Vsix.Coloriser;
-using Acuminator.Vsix.CodeSnippets;
-using Acuminator.Vsix.GoToDeclaration;
-using Acuminator.Vsix.Settings;
-using Acuminator.Vsix.Logger;
-using Acuminator.Vsix.ToolWindows.CodeMap;
-using Acuminator.Vsix.DiagnosticSuppression;
-using Acuminator.Vsix.Formatter;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities;
-
 
 namespace Acuminator.Vsix
 {
@@ -67,7 +68,6 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
-		private const int TotalLoadSteps = 6;
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
@@ -110,9 +110,16 @@ namespace Acuminator.Vsix
 			private set;
 		} = null!;
 
+		internal AcuminatorMyDocumentsStorage? MyDocumentsStorage
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
 		/// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		public AcuminatorVSPackage()
 		{
 			// Inside this method you can place any initialization code that does not require
@@ -122,6 +129,7 @@ namespace Acuminator.Vsix
 
 			SetupSingleton(this);
 		}
+#pragma warning restore CS8618
 
 		/// <summary>
 		/// Force load package. 
@@ -164,7 +172,8 @@ namespace Acuminator.Vsix
 		}
 #pragma warning restore CS8774
 
-		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, 
+																			 IProgress<ServiceProgressData> progress)
 		{
 			// When initialized asynchronously, the current thread may be a background thread at this point.
 			// Do any initialization that requires the UI thread after switching to the UI thread
@@ -173,47 +182,65 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
+			try
+			{
+				await VS.StatusBar.StartAnimationAsync(StatusAnimation.General);
+
+				await InitializeAcuminatorPackageAsync(cancellationToken, progress);
+			}
+			finally
+			{
+				await VS.StatusBar.EndAnimationAsync(StatusAnimation.General);
+				await VS.StatusBar.ClearAsync();
+			}
+		}
+
+		private async System.Threading.Tasks.Task InitializeAcuminatorPackageAsync(CancellationToken cancellationToken, 
+																				   IProgress<ServiceProgressData> progress)
+		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			#region Initialize Settings		
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
-													   currentStep: 1, TotalLoadSteps);
-			progress?.Report(progressData);
+			#region Initialize Banned API
+			cancellationToken.ThrowIfCancellationRequested();
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep: 1);
+
+			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
+			var (deployedBannedApisFile, deployedWhiteListFile) = DeployBannedApiFiles(MyDocumentsStorage);
+			#endregion
+
+			#region Initialize Settings
+			cancellationToken.ThrowIfCancellationRequested();
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeAnalysisSettings, currentStep: 2);
 
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
-			await InitializeCodeAnalysisSettingsAsync();
+
+			await InitializeCodeAnalysisSettingsAsync(deployedBannedApisFile, deployedWhiteListFile);
 			#endregion
 
 			#region Initialize Logger
 			cancellationToken.ThrowIfCancellationRequested();
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
-												   currentStep: 2, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitLogger, currentStep: 3);
+
 			InitializeLogger();
 			#endregion
 
-			#region Initialize CodeSnippets		
+			#region Initialize CodeSnippets
 			cancellationToken.ThrowIfCancellationRequested();
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeSnippets,
-												   currentStep: 3, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeSnippets, currentStep: 4);
 
-			InitializeCodeSnippets();
+			DeployCodeSnippets(MyDocumentsStorage);
 			#endregion
 
 			#region Initialize Commands and SubscribeOnEvents	
 			cancellationToken.ThrowIfCancellationRequested();
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
-												   currentStep: 4, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCommands, currentStep: 5);
+
 			await InitializeCommandsAsync();
 			SubscribeOnEvents();
 			#endregion
 
 			#region Suppression Manager Load
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitSuppressionManager,
-												   currentStep: 5, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitSuppressionManager, currentStep: 6);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			bool isSolutionOpen = await IsSolutionLoadedAsync();
@@ -224,9 +251,21 @@ namespace Acuminator.Vsix
 			}
 			#endregion
 
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
-												   currentStep: 6, TotalLoadSteps);
-			progress?.Report(progressData);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_Done, currentStep: 7);
+		}
+
+		private async System.Threading.Tasks.Task ReportProgressAsync(IProgress<ServiceProgressData>? progress, string progressText, 
+																	  int currentStep)
+		{
+			const int totalLoadSteps = 7;
+
+			if (progress != null)
+			{
+				var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, progressText, currentStep, totalLoadSteps);
+				progress.Report(progressData);
+			} 
+
+			await VS.StatusBar.ShowMessageAsync(progressText);
 		}
 
 		private void SubscribeOnEvents()
@@ -275,7 +314,7 @@ namespace Acuminator.Vsix
 
 			FormatBqlCommand.Initialize(this, oleCommandService);
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
-			BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
+			//BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
 
 			OpenCodeMapWindowCommand.Initialize(this, oleCommandService);
 		}
@@ -321,7 +360,7 @@ namespace Acuminator.Vsix
 
 					_vsWorkspace = await this.GetVSWorkspaceAsync();
 					SubscribeOnWorkspaceEvents();
-					InitializeOutOfProcessSettingsSharing();
+					InitializeOutOfProcessSettingsSharing(GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
 				});
 			}
 		}
@@ -380,34 +419,74 @@ namespace Acuminator.Vsix
 																			: new VsixBuildActionSetterVS2019());
 		}
 
-		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
+		private static (string? DeployedBannedApisFile, string? DeployedWhiteListFile) DeployBannedApiFiles(
+																							AcuminatorMyDocumentsStorage? myDocumentsStorage)
 		{
-			var codeAnalysisSettings = GeneralOptionsPage != null 
-				? new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage)
-				: CodeAnalysisSettings.Default;
+			var bannedApiDeployer = BannedApiDeployer.Create(myDocumentsStorage);
 
-			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
+			if (bannedApiDeployer == null)
+			{
+				AcuminatorLogger.LogMessage("Failed to create Banned API Deployer", LogMode.Warning);
+				return default;
+			}
+
+			var (deployedBannedApisFile, deployedWhiteListFile) = bannedApiDeployer.DeployBannedApiFiles();
+
+			if (deployedBannedApisFile.IsNullOrWhiteSpace())
+				AcuminatorLogger.LogMessage("Failed to initialize Banned API", LogMode.Warning);
+
+			if (deployedWhiteListFile.IsNullOrWhiteSpace())
+				AcuminatorLogger.LogMessage("Failed to initialize White List API", LogMode.Warning);
+
+			return (deployedBannedApisFile, deployedWhiteListFile);
+		}
+
+		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync(string? deployedBannedApisFile, string? deployedWhiteListFile)
+		{
+			CodeAnalysisSettings codeAnalysisSettings;
+			BannedApiSettings bannedApiSettings;
+
+			if (GeneralOptionsPage != null)
+			{
+				GeneralOptionsPage.SetDeployedBannedApiSettings(deployedBannedApisFile, deployedWhiteListFile);
+
+				codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
+				bannedApiSettings	 = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
+			}
+			else
+			{
+				codeAnalysisSettings = CodeAnalysisSettings.Default;
+				bannedApiSettings	 = BannedApiSettings.Default;
+			}
+
+			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings, bannedApiSettings);
 
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
 			SharedVsSettings.VSVersion = VSVersion;
 
-			InitializeOutOfProcessSettingsSharing();
+			InitializeOutOfProcessSettingsSharing(codeAnalysisSettings, bannedApiSettings);
 		}
 
-		private void InitializeOutOfProcessSettingsSharing()
+		private void InitializeOutOfProcessSettingsSharing(CodeAnalysisSettings initialCodeAnalysisSettings,
+														   BannedApiSettings initialBannedApiSettings)
 		{
 			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace) || GeneralOptionsPage == null)
 				return;
 
-			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
+			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, initialCodeAnalysisSettings, initialBannedApiSettings);
 		}
 
-		private void InitializeCodeSnippets()
+		private static void DeployCodeSnippets(AcuminatorMyDocumentsStorage? myDocumentsStorage)
 		{
-			var packageVersion = new Version(PackageVersion);
-			var codeSnippetsInitializer = new CodeSnippetsInitializer();
+			var codeSnippetsDeployer = CodeSnippetsDeployer.Create(myDocumentsStorage);
 
-			if (!codeSnippetsInitializer.InitializeCodeSnippets(packageVersion))
+			if (codeSnippetsDeployer == null)
+			{
+				AcuminatorLogger.LogMessage("Failed to create Code Snippets Deployer", LogMode.Warning);
+				return;
+			}
+
+			if (!codeSnippetsDeployer.DeployCodeSnippets())
 			{
 				AcuminatorLogger.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
 			}
@@ -428,6 +507,10 @@ namespace Acuminator.Vsix
 		public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
 
 		public bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? false;
+
+		public string? BannedApiFilePath => GeneralOptionsPage?.BannedApiFilePath;
+
+		public string? WhiteListApiFilePath => GeneralOptionsPage?.WhiteListApiFilePath;
 		#endregion
 	}
 }

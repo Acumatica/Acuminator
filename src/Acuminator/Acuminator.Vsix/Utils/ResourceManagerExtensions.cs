@@ -2,9 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Resources;
+
+using Acuminator.Vsix.Logger;
 
 namespace Acuminator.Vsix.Utilities
 {
@@ -22,12 +23,14 @@ namespace Acuminator.Vsix.Utilities
 			when (e is MissingSatelliteAssemblyException || e is MissingManifestResourceException)
 			{
 				result = null;
-				Debug.Assert(false, $"String resource '{resourceKey}' is missing", e.Message);   //TODO Log warning here instead of Debug.Assert				
+				string errorMessage = $"String resource '{resourceKey}' is missing.{Environment.NewLine}{e}";
+				AcuminatorLogger.LogMessage(errorMessage, LogMode.Warning);
 			}
 			catch (Exception e)
 			{
 				result = null;
-				Debug.Assert(false, $"Error on acquiring resource by key '{resourceKey}'", e.Message);  //TODO Log warning here instead of Debug.Assert
+				string errorMessage = $"Error on acquiring resource by key '{resourceKey}'.{Environment.NewLine}{e}";
+				AcuminatorLogger.LogMessage(errorMessage, LogMode.Warning);
 			}
 
 			return result ?? resourceKey;

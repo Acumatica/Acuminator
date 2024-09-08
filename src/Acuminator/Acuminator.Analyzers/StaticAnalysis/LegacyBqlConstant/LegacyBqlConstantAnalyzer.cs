@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -31,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 		public LegacyBqlConstantAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(
 				c => Analyze(c, pxContext),

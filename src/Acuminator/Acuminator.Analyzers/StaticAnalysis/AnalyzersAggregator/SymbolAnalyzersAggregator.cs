@@ -28,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
             SupportedDiagnostics = ImmutableArray.CreateRange(innerAnalyzers.SelectMany(a => a.SupportedDiagnostics));
         }
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             compilationStartContext.RegisterSymbolAction(c => AnalyzeSymbolHandleAggregateException(c, pxContext), SymbolKind);
             // TODO: Enable this operation action after migration to Roslyn v2

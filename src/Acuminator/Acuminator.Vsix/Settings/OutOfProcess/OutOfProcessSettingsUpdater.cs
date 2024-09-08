@@ -1,11 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -13,22 +12,27 @@ using Acuminator.Utilities.Settings.OutOfProcess;
 
 namespace Acuminator.Vsix.Settings
 {
-	internal class OutOfProcessSettingsUpdater : IDisposable
+	public class OutOfProcessSettingsUpdater : IDisposable
 	{
 		private const int NotDisposed = 0, Disposed = 1;
 		private int _isDisposed = NotDisposed;
 		
+		private readonly string _sharedMemoryName;
+
 		private readonly ISettingsEvents _settingsEvents;
 		private readonly MemoryMappedFile _memoryMappedFile;
 
-		public OutOfProcessSettingsUpdater(ISettingsEvents settingsEvents, CodeAnalysisSettings initialSettings)
+		public OutOfProcessSettingsUpdater(ISettingsEvents settingsEvents, CodeAnalysisSettings initialAnalysisSettings, 
+										   BannedApiSettings initialBannedApiSettings, string? sharedMemoryName = null)
 		{
-			initialSettings.ThrowOnNull();
+			initialAnalysisSettings.ThrowOnNull();
+			initialBannedApiSettings.ThrowOnNull();
 
-			_settingsEvents = settingsEvents.CheckIfNull();
+			_sharedMemoryName = sharedMemoryName.NullIfWhiteSpace()?.Trim() ?? SharedVsSettings.AcuminatorSharedMemorySlotName;
+			_settingsEvents   = settingsEvents.CheckIfNull();
 			_memoryMappedFile = CreateOrOpenMemoryMappedFile();
 
-			WriteSettingsToSharedMemory(initialSettings);
+			WriteSettingsToSharedMemory(initialAnalysisSettings, initialBannedApiSettings);
 
 			_settingsEvents.CodeAnalysisSettingChanged += SettingsEvents_CodeAnalysisSettingChanged;
 		}
@@ -44,24 +48,26 @@ namespace Acuminator.Vsix.Settings
 			}
 		}
 
-		private void SettingsEvents_CodeAnalysisSettingChanged(object sender, SettingChangedEventArgs e)
-		{
-			var currentSettings = GlobalCodeAnalysisSettings.Instance;
-			WriteSettingsToSharedMemory(currentSettings);
-		}
-
 		private MemoryMappedFile CreateOrOpenMemoryMappedFile()
 		{
 			const int estimatedMemorySizeInBytes = sizeof(bool) * 5 + 20; //Size of 5 flags + some additional memory just in case
-			return MemoryMappedFile.CreateOrOpen(SharedVsSettings.AcuminatorSharedMemorySlotName, estimatedMemorySizeInBytes);
+			return MemoryMappedFile.CreateOrOpen(_sharedMemoryName, estimatedMemorySizeInBytes);
 		}
 
-		private void WriteSettingsToSharedMemory(CodeAnalysisSettings codeAnalysisSettings)
+		private void SettingsEvents_CodeAnalysisSettingChanged(object sender, SettingChangedEventArgs e)
+		{
+			var currentAnalysisSettings = GlobalSettings.AnalysisSettings;
+			var currentBannedApiSettings = GlobalSettings.BannedApiSettings;
+
+			WriteSettingsToSharedMemory(currentAnalysisSettings, currentBannedApiSettings);
+		}
+
+		private void WriteSettingsToSharedMemory(CodeAnalysisSettings codeAnalysisSettings, BannedApiSettings bannedApiSettings)
 		{
 			using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
 			using CodeAnalysisSettingsBinaryWriter writer = new CodeAnalysisSettingsBinaryWriter(stream);
-
-			writer.WriteCodeAnalysisSettings(codeAnalysisSettings);
+			
+			writer.WriteCodeAnalysisSettings(codeAnalysisSettings, bannedApiSettings);
 		}
 	}
 }

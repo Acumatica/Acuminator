@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
-using System.Collections.Generic;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -18,45 +17,77 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 
 		private static MemoryMappedFile? _memoryMappedFile;
 
-		public static CodeAnalysisSettings GetCodeAnalysisSettings()
+		public static CodeAnalysisSettings GetCodeAnalysisSettings(string? sharedMemoryName = null)
 		{
 			if (SharedVsSettings.IsInsideVsProcess)
-				return GlobalCodeAnalysisSettings.Instance;
+				return GlobalSettings.AnalysisSettings;
 
-			if (!_isSharedMemoryOpened)
-			{
-				lock (_lock)
-				{
-					if (!_isSharedMemoryOpened)
-					{
-						_memoryMappedFile = OpenExistingMemoryMappedFile();
-						_isSharedMemoryOpened = _memoryMappedFile != null;
-					}
-				}
-			}
-			
+			EnsureSharedMemoryIsOpened(sharedMemoryName);
+
 			if (_memoryMappedFile == null)
-				return GlobalCodeAnalysisSettings.Instance;
+				return GlobalSettings.AnalysisSettings;
 
 			try
 			{
 				using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
 				using var reader = new CodeAnalysisSettingsBinaryReader(stream);
+
 				CodeAnalysisSettings codeAnalysisSettings = reader.ReadCodeAnalysisSettings();
 
 				return codeAnalysisSettings;
 			}
 			catch (Exception)
 			{
-				return GlobalCodeAnalysisSettings.Instance;
-			}		
+				return GlobalSettings.AnalysisSettings;
+			}
 		}
 
-		private static MemoryMappedFile? OpenExistingMemoryMappedFile()
+		public static (CodeAnalysisSettings AnalysisSettings, BannedApiSettings BannedApiSettings) GetCodeAnalysisAndBannedApiSettings(
+																										string? sharedMemoryName = null)
+		{
+			if (SharedVsSettings.IsInsideVsProcess)
+				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
+
+			EnsureSharedMemoryIsOpened(sharedMemoryName);
+
+			if (_memoryMappedFile == null)
+				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
+
+			try
+			{
+				using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
+				using var reader = new CodeAnalysisSettingsBinaryReader(stream);
+
+				var settings = reader.ReadAllAnalysisSettings();
+				return settings;
+			}
+			catch (Exception)
+			{
+				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
+			}
+		}
+
+		private static void EnsureSharedMemoryIsOpened(string? sharedMemoryName)
+		{
+			if (!_isSharedMemoryOpened)
+			{
+				lock (_lock)
+				{
+					if (!_isSharedMemoryOpened)
+					{
+						_memoryMappedFile = OpenExistingMemoryMappedFile(sharedMemoryName);
+						_isSharedMemoryOpened = _memoryMappedFile != null;
+					}
+				}
+			}
+		}
+
+		private static MemoryMappedFile? OpenExistingMemoryMappedFile(string? sharedMemoryName)
 		{
 			try
 			{
-				return MemoryMappedFile.OpenExisting(SharedVsSettings.AcuminatorSharedMemorySlotName);
+				string sharedMemorySlotName = sharedMemoryName.NullIfWhiteSpace()?.Trim() ?? SharedVsSettings.AcuminatorSharedMemorySlotName;
+				return MemoryMappedFile.OpenExisting(sharedMemorySlotName);
 			}
 			catch (FileNotFoundException)
 			{

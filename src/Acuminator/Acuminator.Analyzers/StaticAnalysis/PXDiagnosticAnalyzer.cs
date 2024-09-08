@@ -1,7 +1,6 @@
-﻿
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using Acuminator.Analyzers.Settings.OutOfProcess;
 using Acuminator.Analyzers.Utils;
@@ -10,17 +9,17 @@ using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis.Diagnostics;
 
-
 namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		private readonly bool _settingsProvidedExternally;
+		[MemberNotNullWhen(returnValue: true, nameof(CodeAnalysisSettings))]
+		protected bool SettingsProvidedExternally { get; }
 
 		protected CodeAnalysisSettings? CodeAnalysisSettings 
 		{ 
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -30,25 +29,29 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		protected PXDiagnosticAnalyzer(CodeAnalysisSettings? codeAnalysisSettings = null)
 		{
 			CodeAnalysisSettings = codeAnalysisSettings;
-			_settingsProvidedExternally = codeAnalysisSettings != null;
+			SettingsProvidedExternally = codeAnalysisSettings != null;
+
+			try
+			{
+				AcuminatorVsixPackageLoader.EnsurePackageLoaded();
+			}
+			catch (Exception e)
+			{
+			}
 		}
-		
+
+		[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1025:Configure generated code analysis", 
+						 Justification = $"Configured in the {nameof(ConfigureAnalysisContext)} method")]
+		[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1026:Enable concurrent execution", 
+						 Justification = $"Configured in the {nameof(ConfigureAnalysisContext)} method")]
 		public override void Initialize(AnalysisContext context)
 		{
-			AcuminatorVsixPackageLoader.EnsurePackageLoaded();
+			ReadAcuminatorSettingsFromSharedMemory();
 
-			if (!_settingsProvidedExternally)
-				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values after potential package load
-
-			if (!CodeAnalysisSettings!.StaticAnalysisEnabled)
+			if (!ShouldRegisterAnalysisActions())
 				return;
 
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-			if (!System.Diagnostics.Debugger.IsAttached)	// Disable concurrent execution during debug
-			{
-				context.EnableConcurrentExecution();
-			}
+			ConfigureAnalysisContext(context);
 
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
@@ -61,10 +64,30 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			});
 		}
 
+		[MemberNotNull(nameof(CodeAnalysisSettings))]
+		protected virtual void ReadAcuminatorSettingsFromSharedMemory()
+		{
+			if (!SettingsProvidedExternally)
+				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings();
+		}
+
+		[MemberNotNullWhen(returnValue: true, nameof(CodeAnalysisSettings))]
+		protected virtual bool ShouldRegisterAnalysisActions() => CodeAnalysisSettings?.StaticAnalysisEnabled == true;
+
+		protected virtual void ConfigureAnalysisContext(AnalysisContext analysisContext)
+		{
+			analysisContext.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+
+			if (!System.Diagnostics.Debugger.IsAttached)    // Disable concurrent execution during debug
+			{
+				analysisContext.EnableConcurrentExecution();
+			}
+		}
+
 		protected virtual bool ShouldAnalyze(PXContext pxContext) =>  pxContext.IsPlatformReferenced && 
 																	  pxContext.CodeAnalysisSettings.StaticAnalysisEnabled &&
 																	  !pxContext.Compilation.IsUnitTestAssembly();
 
-		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
+		protected abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
 	}
 }

@@ -28,7 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <NoWarn>VSTHRD200</NoWarn>
+    <NoWarn>$(NoWarn);VSTHRD200</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -38,7 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <NoWarn>VSTHRD200</NoWarn>
+    <NoWarn>$(NoWarn);VSTHRD200</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
@@ -46,6 +46,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ExternalDependency">
@@ -80,11 +83,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\NotThreadSafeTestCollection.cs" />
     <Compile Include="Tests\DiagnosticSuppression\SuppressionFileTestService.cs" />
     <Compile Include="Tests\DiagnosticSuppression\SuppressionFileIO\SuppressionFileIOTests.cs" />
     <Compile Include="Tests\Fixer\AngleBracesBqlRewriterTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\FbqlCalls.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacFieldsWithCompanyPrefix.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsIsv.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiAnalysisDisabledTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsIsvWithExternalFiles.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsNonIsvWithExternalFiles.cs" />
+    <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsNonIsv.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToApisForbiddenToIsv.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToMathRoundAPIs.cs" />
     <Compile Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\NameConventionEventsInGraphsAndGraphExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached_Expected.cs" />
@@ -634,9 +645,14 @@
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldInheritedFromPXObjects.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrder_CheckForVersionTests.cs" />
+    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\MockSettingsEvents.cs" />
+    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\ReadingFromMemoryAnalyzer.cs" />
+    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\ReadingSettingsInProcessTests.cs" />
+    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\SharedMemoryAccessOutOfProcessTests.cs" />
     <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\CodeAnalysisSettingsSerializationTests.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacFields_OnlyBqlFields.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\RegularDac.cs" />
+    <EmbeddedResource Include="Tests\Utilities\CodeAnalysisSettingsSerialization\Sources\PlainGoodCode.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\RoslynTestContext.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\SemanticModelTestsBase.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\Dac\DacSemanticModelTests.cs" />
@@ -863,6 +879,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ExternalRunner\App\ExternalRunner.exe" />
+    <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomBannedApis.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomWhiteList.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="FormatterTests.playlist" />
     <Content Include="ExternalDependency\Dll\ExternalDependency.dll" />
     <Content Include="Tests\DiagnosticSuppression\SuppressionFileIO\Examples\PX.Objects.acuminator" />
@@ -955,4 +978,7 @@
     <Folder Include="Tests\Refactorings\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="BuildExternalExecutor" AfterTargets="PostBuildEvent">
+    <MSBuild Projects="$(ProjectDir)ExternalRunner\src\ExternalRunner.csproj" Properties="Configuration=Debug" />
+  </Target>
 </Project>

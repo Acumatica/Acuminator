@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 				Descriptors.PX1063_NoSerializationConstructorInException,
 				Descriptors.PX1064_NoGetObjectDataOverrideInExceptionWithNewFields);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(context => AnalyzeExceptionTypeForCorrectSerialization(context, pxContext), 
 														 SymbolKind.NamedType);

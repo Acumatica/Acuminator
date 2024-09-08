@@ -2,34 +2,80 @@
 
 using System;
 using System.ComponentModel;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Windows.Forms;
+
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Settings;
 
+using Community.VisualStudio.Toolkit;
+
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+
+using Constants = Acuminator.Vsix.Utilities.Constants;
 
 namespace Acuminator.Vsix
 {
 	[ComVisible(true)]
 	public class GeneralOptionsPage : DialogPage, ISettingsEvents
 	{
+		private const string InitializingFieldName = "_initializing";
+		private static readonly Func<DialogPage, object>? _getInitializingField;
+
+		static GeneralOptionsPage()
+		{
+			try
+			{
+				var initializingField = typeof(DialogPage).GetField(InitializingFieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+
+				if (initializingField != null)
+					_getInitializingField = initializingField.GetValue;
+			}
+			catch (Exception e)
+			{
+				AcuminatorLogger.LogException(e);
+			}
+		}
+
 		public const string PageTitle = "General";
 
-		private const string AllSettings = "All";
 		private const string ColoringCategoryName = "BQL Coloring";
 		private const string OutliningCategoryName = "BQL Outlining";
 		private const string CodeAnalysisCategoryName = "Code Analysis";
+		private const string BannedApiCategoryName = "Banned API";
 
 		private bool _colorSettingsChanged;
+		private bool _bannedApiFileInvalid, _whiteListApiFileInvalid;
 		private bool _codeAnalysisSettingsChanged;
+		private bool _bannedApiFileSettingChanged, _whiteListApiFileSettingChanged;
+
 		public event EventHandler<SettingChangedEventArgs>? ColoringSettingChanged;
 		public event EventHandler<SettingChangedEventArgs>? CodeAnalysisSettingChanged;
-		
-		private bool _coloringEnabled = true;
+		public event EventHandler<SettingChangedEventArgs>? BannedApiSettingChanged;
 
+		protected override IWin32Window Window
+		{
+			get 
+			{
+				var baseWindow = base.Window;
+
+				if (baseWindow is not PropertyGrid propertyGrid)
+					return baseWindow;
+
+				propertyGrid.PropertySort = PropertySort.Categorized;
+				return propertyGrid;
+			}
+		}
+
+		private bool _coloringEnabled = Constants.Settings.Coloring.ColoringEnabledDefault;
+
+		[DefaultValue(Constants.Settings.Coloring.ColoringEnabledDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
@@ -46,8 +92,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _pxActionColoringEnabled = true;
+		private bool _pxActionColoringEnabled = Constants.Settings.Coloring.PXActionColoringEnabledDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.PXActionColoringEnabledDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
@@ -64,8 +111,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _pxGraphColoringEnabled = true;
+		private bool _pxGraphColoringEnabled = Constants.Settings.Coloring.PXGraphColoringEnabledDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.PXGraphColoringEnabledDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
@@ -82,8 +130,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _colorOnlyInsideBQL;
+		private bool _colorOnlyInsideBQL = Constants.Settings.Coloring.ColorOnlyInsideBQLDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.ColorOnlyInsideBQLDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
@@ -100,8 +149,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _useRegexColoring;
+		private bool _useRegexColoring = Constants.Settings.Coloring.UseRegexColoringDefault;
 
+		[DefaultValue(Constants.Settings.Coloring.UseRegexColoringDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
@@ -118,8 +168,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _useBqlOutlining = true;
+		private bool _useBqlOutlining = Constants.Settings.Outlining.UseBqlOutliningDefault;
 
+		[DefaultValue(Constants.Settings.Outlining.UseBqlOutliningDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
@@ -136,8 +187,9 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _useBqlDetailedOutlining = true;
+		private bool _useBqlDetailedOutlining = Constants.Settings.Outlining.UseBqlDetailedOutliningDefault;
 
+		[DefaultValue(Constants.Settings.Outlining.UseBqlDetailedOutliningDefault)]
 		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Description))]
@@ -156,6 +208,7 @@ namespace Acuminator.Vsix
 
 		private bool _staticAnalysisEnabled = CodeAnalysisSettings.DefaultStaticAnalysisEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultStaticAnalysisEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_StaticAnalysisEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_StaticAnalysisEnabled_Description))]
@@ -174,6 +227,7 @@ namespace Acuminator.Vsix
 
 		private bool _suppressionMechanismEnabled = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultSuppressionMechanismEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_SuppressionMechanismEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_SuppressionMechanismEnabled_Description))]
@@ -192,6 +246,7 @@ namespace Acuminator.Vsix
 
 		private bool _recursiveAnalysisEnabled = CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description))]
@@ -210,6 +265,7 @@ namespace Acuminator.Vsix
 
 		private bool _isvSpecificAnalyzersEnabled = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description))]
@@ -228,6 +284,7 @@ namespace Acuminator.Vsix
 
 		private bool _px1007DocumentationDiagnosticEnabled = CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled;
 
+		[DefaultValue(CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled)]
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description))]
@@ -244,56 +301,229 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		private bool _bannedApiAnalysisEnabled = BannedApiSettings.DefaultBannedApiAnalysisEnabled;
+
+		[DefaultValue(BannedApiSettings.DefaultBannedApiAnalysisEnabled)]
+		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiAnalysisEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiAnalysisEnabled_Description))]
+		public bool BannedApiAnalysisEnabled
+		{
+			get => _bannedApiAnalysisEnabled;
+			set 
+			{
+				if (_bannedApiAnalysisEnabled != value)
+				{
+					_bannedApiAnalysisEnabled = value;
+					_codeAnalysisSettingsChanged = true;
+				}
+			}
+		}
+
+		private string? _bannedApiFilePath;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiFilePath_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_BannedApiFilePath_Description))]
+		public string? BannedApiFilePath
+		{
+			get => _bannedApiFilePath;
+			set 
+			{
+				string? newValue = value.NullIfWhiteSpace()?.Trim();
+				bool fileChanged = !string.Equals(_bannedApiFilePath, newValue, StringComparison.OrdinalIgnoreCase);
+				_bannedApiFilePath = newValue;
+
+				if (!fileChanged)
+					return;
+
+				_bannedApiFileSettingChanged = true;
+				_codeAnalysisSettingsChanged = true;
+				_bannedApiFileInvalid = !CheckFilePath(_bannedApiFilePath, VSIXResource.Setting_BannedAPI_BannedApiFilePath_Title);
+			}
+		}
+
+		private string? _whiteListApiFilePath;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Description))]
+		public string? WhiteListApiFilePath
+		{
+			get => _whiteListApiFilePath;
+			set 
+			{
+				string? newValue = value.NullIfWhiteSpace()?.Trim();
+				bool fileChanged = !string.Equals(_whiteListApiFilePath, newValue, StringComparison.OrdinalIgnoreCase);
+				_whiteListApiFilePath = newValue;
+
+				if (!fileChanged)
+					return;
+
+				_whiteListApiFileSettingChanged = true;
+				_codeAnalysisSettingsChanged	= true;
+				_whiteListApiFileInvalid = !CheckFilePath(_whiteListApiFilePath, VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Title);
+			}
+		}
+
+		public bool IsInitializing() => 
+			(_getInitializingField?.Invoke(this) as bool?) ?? false;
+
 		public override void ResetSettings()
 		{
-			_coloringEnabled = true;
-			_useRegexColoring = false;
-			_useBqlOutlining = true;
-			_useBqlDetailedOutlining = true;
-			_pxActionColoringEnabled = true;
-			_pxGraphColoringEnabled = true;
-			_colorOnlyInsideBQL = false;
+			_useBqlOutlining 		 = Constants.Settings.Outlining.UseBqlOutliningDefault;
+			_useBqlDetailedOutlining = Constants.Settings.Outlining.UseBqlDetailedOutliningDefault;
 
-			_staticAnalysisEnabled = CodeAnalysisSettings.DefaultStaticAnalysisEnabled;
-			_suppressionMechanismEnabled = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
-			_recursiveAnalysisEnabled = CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled;
-			_isvSpecificAnalyzersEnabled = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
+			_coloringEnabled 		 = Constants.Settings.Coloring.ColoringEnabledDefault;
+			_useRegexColoring		 = Constants.Settings.Coloring.UseRegexColoringDefault;
+			_pxActionColoringEnabled = Constants.Settings.Coloring.PXActionColoringEnabledDefault;
+			_pxGraphColoringEnabled  = Constants.Settings.Coloring.PXGraphColoringEnabledDefault;
+			_colorOnlyInsideBQL 	 = Constants.Settings.Coloring.ColorOnlyInsideBQLDefault;
+
+			_staticAnalysisEnabled 				  = CodeAnalysisSettings.DefaultStaticAnalysisEnabled;
+			_suppressionMechanismEnabled 		  = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
+			_recursiveAnalysisEnabled 			  = CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled;
+			_isvSpecificAnalyzersEnabled 		  = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
 			_px1007DocumentationDiagnosticEnabled = CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled;
-			
-			_colorSettingsChanged = false;
+
+			bool hadBannedFileSetting	 = !_bannedApiFilePath.IsNullOrWhiteSpace() && !_bannedApiFileInvalid;
+			bool hadWhiteListFileSetting = !_whiteListApiFilePath.IsNullOrWhiteSpace() && !_whiteListApiFileInvalid;
+
+			_colorSettingsChanged 		 = false;
 			_codeAnalysisSettingsChanged = false;
 
+			_bannedApiAnalysisEnabled = BannedApiSettings.DefaultBannedApiAnalysisEnabled;
+
+			_bannedApiFilePath 			 = null;
+			_bannedApiFileSettingChanged = false;
+			_bannedApiFileInvalid		 = false;
+
+			_whiteListApiFilePath 			= null;
+			_whiteListApiFileSettingChanged = false;
+			_whiteListApiFileInvalid 	 	= false;
+			
 			base.ResetSettings();
 
-			OnColoringSettingChanged(AllSettings);
-			OnCodeAnalysisSettingChanged(AllSettings);
+			OnColoringSettingChanged(Constants.Settings.All);
+			OnCodeAnalysisSettingChanged(Constants.Settings.All);
+			OnBannedApiSettingChanged(hadBannedFileSetting, hadWhiteListFileSetting);
 		}
 
 		public override void SaveSettingsToStorage()
 		{
+			if (_bannedApiFileInvalid)
+			{
+				_bannedApiFilePath 	  = null;
+				_bannedApiFileInvalid = false;
+			}
+
+			if (_whiteListApiFileInvalid)
+			{
+				_whiteListApiFilePath 	 = null;
+				_whiteListApiFileInvalid = false;
+			}
+
 			base.SaveSettingsToStorage();
 
 			if (_colorSettingsChanged)
 			{
 				_colorSettingsChanged = false;
-				OnColoringSettingChanged(AllSettings);
+				OnColoringSettingChanged(Constants.Settings.All);
 			}
 
 			if (_codeAnalysisSettingsChanged)
 			{
 				_codeAnalysisSettingsChanged = false;
-				OnCodeAnalysisSettingChanged(AllSettings);
+				OnCodeAnalysisSettingChanged(Constants.Settings.All);
 			}
+
+			OnBannedApiSettingChanged(_bannedApiFileSettingChanged, _whiteListApiFileSettingChanged);
+			_bannedApiFileSettingChanged	= false;
+			_whiteListApiFileSettingChanged = false;
 		}
 
-		private void OnColoringSettingChanged(string setting)
+		public void SetDeployedBannedApiSettings(string? deployedBannedApisFile, string? deployedWhiteListFile)
 		{
+			if (!deployedBannedApisFile.IsNullOrWhiteSpace() && BannedApiFilePath.IsNullOrWhiteSpace() &&
+				File.Exists(deployedBannedApisFile))
+			{
+				_bannedApiFilePath = deployedBannedApisFile;
+				_codeAnalysisSettingsChanged = true;
+				_bannedApiFileSettingChanged = true;
+			}
+
+			if (!deployedWhiteListFile.IsNullOrWhiteSpace() && WhiteListApiFilePath.IsNullOrWhiteSpace() &&
+				File.Exists(deployedWhiteListFile))
+			{
+				_whiteListApiFilePath = deployedWhiteListFile;
+				_codeAnalysisSettingsChanged	= true;
+				_whiteListApiFileSettingChanged = true;
+			}
+
+			if (_codeAnalysisSettingsChanged)
+				SaveSettingsToStorage();
+		}
+
+		public void SetBannedApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
+			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _bannedApiFilePath, ref _bannedApiFileSettingChanged);
+
+		public void SetWhiteListFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
+			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _whiteListApiFilePath, ref _whiteListApiFileSettingChanged);
+
+
+		private void SetApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents, ref string? apiFileSettingField,
+											  ref bool apiSettingChangedFlag)
+		{
+			newFilePath = newFilePath.NullIfWhiteSpace()?.Trim();
+
+			if (!File.Exists(newFilePath))
+				newFilePath = null;
+
+			if (string.Equals(apiFileSettingField, newFilePath, StringComparison.Ordinal))
+				return;
+
+			apiFileSettingField = newFilePath;
+			_codeAnalysisSettingsChanged = true;
+
+			if (raiseBannedApiUpdateEvents)
+				apiSettingChangedFlag = true;
+
+			SaveSettingsToStorage();
+		}
+
+		private void OnColoringSettingChanged(string setting) =>
 			ColoringSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
+
+		private void OnCodeAnalysisSettingChanged(string setting) =>
+			CodeAnalysisSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
+
+		private void OnBannedApiSettingChanged(bool bannedApiFileSettingChanged, bool whiteListApiFileSettingChanged)
+		{
+			if (bannedApiFileSettingChanged && whiteListApiFileSettingChanged)
+				OnBannedApiSettingChanged(Constants.Settings.All);
+			else if (bannedApiFileSettingChanged)
+				OnBannedApiSettingChanged(Constants.Settings.BannedApiFilePath);
+			else if (whiteListApiFileSettingChanged)
+				OnBannedApiSettingChanged(Constants.Settings.WhiteListApiFilePath);
 		}
 
-		private void OnCodeAnalysisSettingChanged(string setting)
+		private void OnBannedApiSettingChanged(string setting) =>
+			BannedApiSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
+
+		private bool CheckFilePath(string? filePath, string settingName)
 		{
-			CodeAnalysisSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
+			if (filePath.IsNullOrWhiteSpace() || IsInitializing())
+				return true;
+
+			if (!File.Exists(filePath))
+			{
+				string errorMessage = string.Format(VSIXResource.Settings_InvalidFileErrorFormat, settingName);
+				VS.MessageBox.Show(VSIXResource.Settings_InvalidFileErrorCaption, errorMessage, OLEMSGICON.OLEMSGICON_WARNING,
+									OLEMSGBUTTON.OLEMSGBUTTON_OK);
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

@@ -223,6 +223,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Banned API.
+        /// </summary>
+        public static string Category_BannedAPI {
+            get {
+                return ResourceManager.GetString("Category_BannedAPI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code Analysis.
         /// </summary>
         public static string Category_CodeAnalysis {
@@ -574,6 +583,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deploying Acumatica Banned API files shipped with Acuminator.
+        /// </summary>
+        public static string PackageLoad_DeployBannedApiFiles {
+            get {
+                return ResourceManager.GetString("PackageLoad_DeployBannedApiFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Acuminator package loaded.
         /// </summary>
         public static string PackageLoad_Done {
@@ -592,7 +610,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initializing Acumatica Code Snippets shipped with Acuminator.
+        ///   Looks up a localized string similar to Deploying Acumatica Code Snippets shipped with Acuminator.
         /// </summary>
         public static string PackageLoad_InitCodeSnippets {
             get {
@@ -651,6 +669,61 @@ namespace Acuminator.Vsix {
         public static string PXGraphFormatLabel {
             get {
                 return ResourceManager.GetString("PXGraphFormatLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable Acuminator PX1099 diagnostic which reports calls to API that should not be used with Acumatica Framework. .
+        /// </summary>
+        public static string Setting_BannedAPI_BannedApiAnalysisEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_BannedApiAnalysisEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable PX1099 diagnostic for banned API.
+        /// </summary>
+        public static string Setting_BannedAPI_BannedApiAnalysisEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_BannedApiAnalysisEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A path to the file with a list of banned APIs that will be reported by Acuminator..
+        /// </summary>
+        public static string Setting_BannedAPI_BannedApiFilePath_Description {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_BannedApiFilePath_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Banned API File.
+        /// </summary>
+        public static string Setting_BannedAPI_BannedApiFilePath_Title {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_BannedApiFilePath_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A path to the file with white listed APIs that will not be reported by Acuminator even if their containing namespaces or types are contained in the &quot;Banned API File&quot; as banned.
+        ///This option should be used together with the &quot;Banned API File&quot; setting..
+        /// </summary>
+        public static string Setting_BannedAPI_WhiteListApiFilePath_Description {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_WhiteListApiFilePath_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to White List API File.
+        /// </summary>
+        public static string Setting_BannedAPI_WhiteListApiFilePath_Title {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_WhiteListApiFilePath_Title", resourceCulture);
             }
         }
         
@@ -867,6 +940,24 @@ namespace Acuminator.Vsix {
         public static string Setting_UseRegexColoring_Title {
             get {
                 return ResourceManager.GetString("Setting_UseRegexColoring_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid or not existing file.
+        /// </summary>
+        public static string Settings_InvalidFileErrorCaption {
+            get {
+                return ResourceManager.GetString("Settings_InvalidFileErrorCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid or not existing file is specified for the setting &quot;{0}&quot;. .
+        /// </summary>
+        public static string Settings_InvalidFileErrorFormat {
+            get {
+                return ResourceManager.GetString("Settings_InvalidFileErrorFormat", resourceCulture);
             }
         }
     }

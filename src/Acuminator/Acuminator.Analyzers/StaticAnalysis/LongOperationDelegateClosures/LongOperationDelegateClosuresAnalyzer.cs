@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 		public LongOperationDelegateClosuresAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeLongOperationDelegates(c, pxContext), 
 															 SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.InterfaceDeclaration);

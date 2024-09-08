@@ -142,7 +142,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the action delegate name to match the action name.
+        ///   Looks up a localized string similar to Change the name of the action delegate to match the action name.
         /// </summary>
         public static string PX1005ActionDelegateFix {
             get {
@@ -151,7 +151,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the action delegate name. The action name for this delegate: {0}..
+        ///   Looks up a localized string similar to A possible typo in the name of the action delegate. The action name for this delegate: {0}..
         /// </summary>
         public static string PX1005ActionDelegateMessageFormat {
             get {
@@ -160,7 +160,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the action delegate name.
+        ///   Looks up a localized string similar to A possible typo in the name of the action delegate.
         /// </summary>
         public static string PX1005ActionDelegateTitle {
             get {
@@ -169,7 +169,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the view delegate name to match the view name.
+        ///   Looks up a localized string similar to Change the name fo the view delegate to match the view name.
         /// </summary>
         public static string PX1005ViewDelegateFix {
             get {
@@ -178,7 +178,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}..
+        ///   Looks up a localized string similar to A possible typo in the name of the view delegate. The view name for this delegate: {0}..
         /// </summary>
         public static string PX1005ViewDelegateMessageFormat {
             get {
@@ -187,7 +187,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A possible typo in the view delegate name.
+        ///   Looks up a localized string similar to A possible typo in the name of the view delegate.
         /// </summary>
         public static string PX1005ViewDelegateTitle {
             get {
@@ -1821,6 +1821,88 @@ namespace Acuminator.Analyzers {
         public static string PX1096Title {
             get {
                 return ResourceManager.GetString("PX1096Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The forbidden API is used.
+        /// </summary>
+        public static string PX1099Title {
+            get {
+                return ResourceManager.GetString("PX1099Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to event.
+        /// </summary>
+        public static string PX1099Title_EventFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_EventFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to field.
+        /// </summary>
+        public static string PX1099Title_FieldFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_FieldFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to method.
+        /// </summary>
+        public static string PX1099Title_MethodFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_MethodFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to namespace.
+        /// </summary>
+        public static string PX1099Title_NamespaceFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_NamespaceFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to property.
+        /// </summary>
+        public static string PX1099Title_PropertyFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_PropertyFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to type.
+        /// </summary>
+        public static string PX1099Title_TypeFormatArg {
+            get {
+                return ResourceManager.GetString("PX1099Title_TypeFormatArg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The forbidden {0} &quot;{1}&quot; is used.
+        /// </summary>
+        public static string PX1099TitleFormat {
+            get {
+                return ResourceManager.GetString("PX1099TitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The forbidden {0} &quot;{1}&quot; is used.
+        ///Reason: {2}.
+        /// </summary>
+        public static string PX1099TitleFormatWithReason {
+            get {
+                return ResourceManager.GetString("PX1099TitleFormatWithReason", resourceCulture);
             }
         }
         

@@ -4,13 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using System.Threading;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
 
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.Settings
@@ -37,14 +35,14 @@ namespace Acuminator.Vsix.Settings
 			// If OOP is false or its retrieval failed then we need to resort to the internal Roslyn helper RemoteHostOptions.IsUsingServiceHubOutOfProcess
 			if (workspace?.Services != null)
 			{
-				Type remoteHostOptionsType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-											  where assembly.GetName().Name == "Microsoft.CodeAnalysis.Remote.Workspaces"
-											  from type in assembly.GetTypes()
-											  where type.IsClass && type.IsAbstract && type.IsSealed && !type.IsPublic && type.Name == "RemoteHostOptions"
-											  select type)
-											.SingleOrDefault();
+				Type? remoteHostOptionsType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+											   where assembly.GetName().Name == "Microsoft.CodeAnalysis.Remote.Workspaces"
+											   from type in assembly.GetTypes()
+											   where type.IsClass && type.IsAbstract && type.IsSealed && !type.IsPublic && type.Name == "RemoteHostOptions"
+											   select type)
+											 .SingleOrDefault();
 				MethodInfo? isUsingServiceHubOutOfProcess = remoteHostOptionsType?.GetMethod("IsUsingServiceHubOutOfProcess",
-																							 BindingFlags.Static | BindingFlags.Public);
+																							BindingFlags.Static | BindingFlags.Public);
 
 				object? isOutOfProcessFromRoslynInternalsObj = isUsingServiceHubOutOfProcess?.Invoke(null, [workspace.Services]);
 
@@ -74,11 +72,8 @@ namespace Acuminator.Vsix.Settings
 			if (!propertyNames.Contains(OutOfProcessPropertyName))
 				return defaultOutOfProcessValue;
 
-			int? outOfProcessValue = settingsStore.GetInt32(settingsStoreOutOfProcessValuePath, OutOfProcessPropertyName) as int?;
-
-			return outOfProcessValue.HasValue
-				? outOfProcessValue == 1
-				: defaultOutOfProcessValue;
+			int outOfProcessValue = settingsStore.GetInt32(settingsStoreOutOfProcessValuePath, OutOfProcessPropertyName);
+			return outOfProcessValue == 1;
 		}
 	}
 }

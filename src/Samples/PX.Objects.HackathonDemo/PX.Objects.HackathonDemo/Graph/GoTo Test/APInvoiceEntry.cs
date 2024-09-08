@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Data.SqlClient;
+
 namespace PX.Objects.HackathonDemo
 {
 	public partial class APInvoiceEntry : PXGraph<APInvoiceEntry>
@@ -34,6 +36,8 @@ namespace PX.Objects.HackathonDemo
 
 		protected virtual void APInvoice_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
 		{
+			var x = System.Math.Round(0.5m); 
+			 
 			APInvoice doc = e.Row as APInvoice;
 			if (doc == null) return;
 

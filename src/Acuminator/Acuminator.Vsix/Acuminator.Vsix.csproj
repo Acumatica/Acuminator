@@ -428,8 +428,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
-    <Compile Include="Code Snippets\SnippetsVersionFile.cs" />
-    <Compile Include="Code Snippets\CodeSnippetsInitializer.cs" />
+    <Compile Include="BannedApi\BannedApiDeployer.cs" />
+    <Compile Include="BannedApi\ApiFileSettingWatcher.cs" />
+    <Compile Include="Code Snippets\CodeSnippetsDeployer.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
     <Compile Include="Coloriser\Constants\VSColors.cs" />
@@ -469,6 +470,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VSIXResource.resx</DependentUpon>
     </Compile>
+    <Compile Include="BannedApi\BannedApiSettingsObserver.cs" />
+    <Compile Include="Settings\BannedApiSettingsFromOptionsPage.cs" />
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Settings\OutOfProcess\OutOfProcessSettingValueProvider.cs" />
     <Compile Include="Settings\OutOfProcess\OutOfProcessSettingsUpdater.cs" />
@@ -506,6 +509,9 @@
     <Compile Include="Utils\Polyfills\NotNullIfNotNullAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
+    <Compile Include="Utils\Storage\AcuminatorMyDocumentsStorage.cs" />
+    <Compile Include="Utils\Storage\StorageUtils.cs" />
+    <Compile Include="Utils\Storage\VersionFile.cs" />
     <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />

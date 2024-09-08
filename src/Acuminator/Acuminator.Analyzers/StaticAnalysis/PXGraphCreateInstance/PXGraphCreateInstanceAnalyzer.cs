@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				Descriptors.PX1001_PXGraphCreateInstance,
 				Descriptors.PX1003_NonSpecificPXGraphCreateInstance);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeGraphCreation(context, pxContext), 
 															 SyntaxKind.CompilationUnit);

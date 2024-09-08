@@ -30,6 +30,10 @@ To build Acuminator, you need to perform the following preparatory steps:
     * Turn off assembly signing for all projects in the solution. 
       (To turn off assembly signing for a project, open the project properties and, in the **Signing** pane, clear the **Sign the assembly** check box.)
 4. Build _Acuminator.sln_.
+5. Make sure that the `<repo folder>\src\Acuminator\Acuminator.Tests\ExternalRunner\src\Acuminator Libs\` folder contains the `Acuminator.Analyzers` and `Acuminator.Utilities` assemblies. 
+   If the assembly files are not in the specified folder, copy them from the `bin` folder of the `Acuminator.Analyzers` and `Acuminator.Utilities` projects.
+6. Build the External Runner solution located in the `<repo folder>\src\Acuminator\Acuminator.Tests\ExternalRunner\src\ExternalRunner.sln` file. 
+   This step required for some of the unit tests to pass.
 
 ## Acuminator Version Policy
 

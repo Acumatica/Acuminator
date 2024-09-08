@@ -21,8 +21,38 @@ namespace Acuminator.Vsix.Utilities
 			public const string FileExtension = ".cs";
 		}
 
+		public static class Settings
+		{
+			public const string All = "All";
+			public const string BannedApiFilePath = nameof(GeneralOptionsPage.BannedApiFilePath);
+			public const string WhiteListApiFilePath = nameof(GeneralOptionsPage.WhiteListApiFilePath);
+
+			public static class Coloring
+			{
+				public const bool ColoringEnabledDefault 		 = true;
+				public const bool PXActionColoringEnabledDefault = true;
+				public const bool PXGraphColoringEnabledDefault  = true;
+				public const bool ColorOnlyInsideBQLDefault 	 = false;
+				public const bool UseRegexColoringDefault 		 = false;
+			}
+
+			public static class Outlining
+			{
+				public const bool UseBqlOutliningDefault 		 = true;
+				public const bool UseBqlDetailedOutliningDefault = true;
+			}
+		}
+
 		/// <summary>
-		/// A code snippets related constants.
+		/// Banned API related constants.
+		/// </summary>
+		public static class BannedApi
+		{
+			public const string BannnedApiFolder = "Acumatica Banned API";
+		}
+
+		/// <summary>
+		/// Code snippets related constants.
 		/// </summary>
 		public static class CodeSnippets
 		{

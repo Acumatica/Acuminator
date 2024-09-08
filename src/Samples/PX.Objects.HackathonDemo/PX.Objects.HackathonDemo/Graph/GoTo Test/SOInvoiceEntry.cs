@@ -1,6 +1,9 @@
 ﻿using PX.Data;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace PX.Objects.HackathonDemo.DerivedGraph
@@ -22,6 +25,16 @@ namespace PX.Objects.HackathonDemo.DerivedGraph
 	
         protected override void _(Events.RowInserting<APInvoice> e)
         {
+			var methods = this.GetType().GetMethods();
+
+			foreach (var method in methods)
+			{ 
+			}
+
+			if (Environment.Is64BitProcess)
+			{
+				Debug.WriteLine(Environment.NewLine);
+			}
         }
 
 		#region Delegate

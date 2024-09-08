@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		public CallsToInternalAPIAnalyzer(CodeAnalysisSettings? codeAnalysisSettings) : base(codeAnalysisSettings)
 		{ }
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		protected override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeCompilationUnit(context, pxContext), SyntaxKind.CompilationUnit);
 		}

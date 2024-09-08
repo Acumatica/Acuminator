@@ -941,5 +941,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1096", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UsageOfForbiddenApi.
+        /// </summary>
+        public static string PX1099 {
+            get {
+                return ResourceManager.GetString("PX1099", resourceCulture);
+            }
+        }
     }
 }
