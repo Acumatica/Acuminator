@@ -81,20 +81,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			BqlFieldTypeName? strongBqlFieldTypeName = !bqlFieldTypeName.IsNullOrWhiteSpace()
 				? new BqlFieldTypeName(bqlFieldTypeName)
 				: null;
-			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, strongBqlFieldTypeName);
+			var newDacMembersInfo = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, strongBqlFieldTypeName);
 
-			if (newDacMembers == null)
+			if (newDacMembersInfo == null)
 				return document;
 
-			var newDacNode = dacNode.WithMembers(newDacMembers.Value);
-			var newRoot = root!.ReplaceNode(dacNode, newDacNode);
+			var (newDacMembers, insertedAtEnd) = newDacMembersInfo.Value;
+
+			var newDacNode = AddMembersToDac(dacNode, newDacMembers, insertedAtEnd);
+			var newRoot    = root!.ReplaceNode(dacNode, newDacNode);
 
 			return document.WithSyntaxRoot(newRoot);
 		}
 
-		private SyntaxList<MemberDeclarationSyntax>? CreateMembersListWithBqlField(ClassDeclarationSyntax dacNode,
-																				   PropertyDeclarationSyntax? propertyWithoutBqlFieldNode,
-																				   string bqlFieldName, BqlFieldTypeName? bqlFieldTypeName)
+		private (SyntaxList<MemberDeclarationSyntax>, bool InsertedAtEnd)? CreateMembersListWithBqlField(
+																					ClassDeclarationSyntax dacNode,
+																					PropertyDeclarationSyntax? propertyWithoutBqlFieldNode,
+																					string bqlFieldName, BqlFieldTypeName? bqlFieldTypeName)
 		{
 			var members = dacNode.Members;
 
@@ -103,13 +106,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 				var newSingleBqlFieldNode = CreateBqlFieldClassNode(adjacentMember: null, bqlFieldName, isFirstField: true,
 																	bqlFieldTypeName);
 				return newSingleBqlFieldNode != null
-					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
+					? (SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode), true)
 					: null;
 			}
 
-			var (indexToInsertBqlField, adjacentMember) = GetIndexToInsertBqlFieldRedeclaration(dacNode, propertyWithoutBqlFieldNode, bqlFieldName);
-			var newBqlFieldNode = CreateBqlFieldClassNode(adjacentMember, bqlFieldName, isFirstField: indexToInsertBqlField == 0, bqlFieldTypeName);
-
+			int indexToInsertBqlField = GetIndexToInsertBqlFieldRedeclaration(dacNode, propertyWithoutBqlFieldNode, bqlFieldName);
+			bool insertedAtEnd  = indexToInsertBqlField == members.Count;
+			var newBqlFieldNode = CreateBqlFieldClassNode(propertyWithoutBqlFieldNode, bqlFieldName, 
+														  isFirstField: indexToInsertBqlField == 0, bqlFieldTypeName);
 			if (newBqlFieldNode == null)
 				return null;
 
@@ -117,12 +121,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 
 			if (propertyWithoutBqlFieldNode != null)
 			{
-				var propertyWithoutRegions = CodeGeneration.RemoveRegionsFromLeadingTrivia(propertyWithoutBqlFieldNode);
-				newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions);
+				var adjacentMemberWithoutRegions = CodeGeneration.RemoveRegionsFromLeadingTrivia(propertyWithoutBqlFieldNode);
+				newMembers = members.Replace(propertyWithoutBqlFieldNode, adjacentMemberWithoutRegions);
 			}
-			
-			newMembers = newMembers.Insert(indexToInsertBqlField, newBqlFieldNode);
-			return newMembers;
+
+			if (insertedAtEnd)
+			{
+				newBqlFieldNode = CodeGeneration.CopyRegionsFromTrivia(newBqlFieldNode, dacNode.CloseBraceToken.LeadingTrivia);
+				newMembers = newMembers.Add(newBqlFieldNode);
+			}
+			else
+				newMembers = newMembers.Insert(indexToInsertBqlField, newBqlFieldNode);
+
+			return (newMembers, insertedAtEnd);
 		}
 
 		private ClassDeclarationSyntax? CreateBqlFieldClassNode(MemberDeclarationSyntax? adjacentMember, string bqlFieldName,
@@ -142,26 +153,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			}
 		}
 
-		private (int Index, MemberDeclarationSyntax? AdjacentMember) GetIndexToInsertBqlFieldRedeclaration(ClassDeclarationSyntax dacNode, 
-																			PropertyDeclarationSyntax? propertyWithoutBqlFieldNode, string bqlFieldName)
+		private int GetIndexToInsertBqlFieldRedeclaration(ClassDeclarationSyntax dacNode, PropertyDeclarationSyntax? propertyWithoutBqlFieldNode, 
+														  string bqlFieldName)
 		{
 			var dacMembers = dacNode.Members;
 
 			if (dacMembers.Count == 0)
-				return (0, null);
+				return 0;
 
 			if (propertyWithoutBqlFieldNode != null)
 			{
 				int propertyMemberIndex = dacMembers.IndexOf(propertyWithoutBqlFieldNode);
 				return propertyMemberIndex < 0 
-					? (0, dacMembers[0]) 
-					: (propertyMemberIndex, propertyWithoutBqlFieldNode);
+					? 0 
+					: propertyMemberIndex;
 			}
 			else
 			{
 				// insert BQL field redeclaration at the end of the DAC
-				return (dacMembers.Count, dacMembers[^1]);
+				return dacMembers.Count;
 			}
+		}
+
+		private ClassDeclarationSyntax AddMembersToDac(ClassDeclarationSyntax dacNode, SyntaxList<MemberDeclarationSyntax> newDacMembers, 
+													   bool insertedAtEnd)
+		{
+			var newDacNode = dacNode.WithMembers(newDacMembers);
+
+			if (insertedAtEnd)
+			{
+				var newCloseBraketTrivia = CodeGeneration.RemoveRegionsFromTrivia(newDacNode.CloseBraceToken.LeadingTrivia);
+				newDacNode = newDacNode.WithCloseBraceToken(
+									newDacNode.CloseBraceToken.WithLeadingTrivia(newCloseBraketTrivia));
+			}
+
+			return newDacNode;
 		}
 	}
 }
