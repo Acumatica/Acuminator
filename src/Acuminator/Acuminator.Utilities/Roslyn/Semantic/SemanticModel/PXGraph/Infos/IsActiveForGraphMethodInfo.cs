@@ -6,6 +6,7 @@ using System.Threading;
 
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -48,12 +49,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																	method.Parameters.IsDefaultOrEmpty && 
 																	method.ReturnType.SpecialType == SpecialType.System_Boolean &&
 																	method.TypeParameters.Length == 1);
+			if (isActiveForGraphMethod == null)
+				return null;
 
-			SyntaxReference? isActiveForGraphMethodReference = isActiveForGraphMethod?.DeclaringSyntaxReferences.FirstOrDefault();
-
-			return isActiveForGraphMethodReference?.GetSyntax(cancellationToken) is MethodDeclarationSyntax isActiveForGraphMethodNode
-				? new IsActiveForGraphMethodInfo(isActiveForGraphMethodNode, isActiveForGraphMethod!, declarationOrder)
-				: null;
+			var isActiveForGraphMethodNode = isActiveForGraphMethod.GetSyntax(cancellationToken) as MethodDeclarationSyntax;
+			return new IsActiveForGraphMethodInfo(isActiveForGraphMethodNode, isActiveForGraphMethod!, declarationOrder);
 		}
 	}
 }
