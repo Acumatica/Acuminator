@@ -108,23 +108,36 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo { get; }
 
 		/// <summary>
-		/// Information about the Configure method that overrides the class hierarchy declared in the graph or the graph extension. 
+		/// Information about the graph's or the graph extension's Configure method override. The override can be declared in base types.
 		/// </summary>
-		/// <value>
-		/// Information about the overrides of the Configure method.
-		/// </value>
-		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides { get; }
+		public ConfigureMethodInfo? ConfigureMethodOverride { get; }
 
 		/// <summary>
-		/// Configure method overrides which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
+		/// Information about the Configure method override declared in this type. <see langword="null"/> if the method is not declared in this type.
 		/// </summary>
-		public IEnumerable<ConfigureMethodInfo> DeclaredConfigureMethodOverrides =>
-			ConfigureMethodOverrides.Where(method => method.Symbol.IsDeclaredInType(Symbol));
+		public ConfigureMethodInfo? DeclaredConfigureMethodOverride =>
+			ConfigureMethodOverride != null && ConfigureMethodOverride.Symbol.IsDeclaredInType(Symbol)
+				? ConfigureMethodOverride
+				: null;
 
 		/// <summary>
 		/// An indicator of whether the graph or the graph extension configures a workflow.
 		/// </summary>
-		public bool ConfiguresWorkflow => !ConfigureMethodOverrides.IsDefaultOrEmpty;
+		[MemberNotNullWhen(returnValue: true, nameof(ConfigureMethodOverride))]
+		public bool ConfiguresWorkflow => ConfigureMethodOverride != null;
+
+		/// <summary>
+		/// Information about the graph's or the graph extension's Initialize method and its overrides. The method can be declared in base types.
+		/// </summary>
+		public InitializeMethodInfo? InitializeMethodInfo { get; }
+
+		/// <summary>
+		/// Information about the Initialize method declared in this type. <see langword="null"/> if the method is not declared in this type.
+		/// </summary>
+		public InitializeMethodInfo? DeclaredInitializeMethodInfo =>
+			InitializeMethodInfo != null && InitializeMethodInfo.Symbol.IsDeclaredInType(Symbol)
+				? InitializeMethodInfo
+				: null;
 
 		/// <summary>
 		/// An indicator of whether the graph extension has the PXProtectedAccess attribute.
@@ -169,12 +182,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			InitProcessingDelegatesInfo();
 
+			ConfigureMethodOverride = ConfigureMethodInfo.GetConfigureMethodInfo(Symbol, GraphType, PXContext, _cancellation);
+			InitializeMethodInfo	= InitializeMethodInfo.GetInitializeMethodInfo(Symbol, GraphType, PXContext, _cancellation);
+
 			Initializers 			   = GetDeclaredInitializers().ToImmutableArray();
 			IsActiveMethodInfo 		   = GetIsActiveMethodInfo();
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
-			ConfigureMethodOverrides   = GetConfigureMethodOverrides();
-			PXOverrides 			   = GetDeclaredPXOverrideInfos();
-			HasPXProtectedAccess	   = IsPXProtectedAccessAttributeDeclared();
+			
+			PXOverrides = GetDeclaredPXOverrideInfos();
+			HasPXProtectedAccess = IsPXProtectedAccessAttributeDeclared();
 		}
 
 		protected void InitProcessingDelegatesInfo()
@@ -277,12 +293,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 			else
 			{
-				(MethodDeclarationSyntax node, IMethodSymbol symbol) = Symbol.GetGraphExtensionInitialization(PXContext, _cancellation);
+				var declaredInitializeMethod = DeclaredInitializeMethodInfo;
 
-				if (node != null && symbol != null)
+				if (declaredInitializeMethod != null)
 				{
-					return new GraphInitializerInfo(GraphInitializerType.InitializeMethod, node, symbol, declarationOrder: 0)
-								.ToEnumerable();
+					var graphInitInfo = new GraphInitializerInfo(GraphInitializerType.InitializeMethod, declaredInitializeMethod.Node,
+																 declaredInitializeMethod.Symbol, declarationOrder: 0);
+					return [graphInitInfo];
 				}
 
 				return [];
@@ -409,12 +426,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			GraphType == GraphType.PXGraphExtension
 				? IsActiveForGraphMethodInfo.GetIsActiveForGraphMethodInfo(Symbol, _cancellation)
 				: null;
-
-		protected ImmutableArray<ConfigureMethodInfo> GetConfigureMethodOverrides()
-		{
-			var configureOverrides = ConfigureMethodInfo.GetConfigureMethodInfos(Symbol, GraphType, PXContext, _cancellation);
-			return configureOverrides.ToImmutableArray();
-		}
 
 		protected ImmutableArray<PXOverrideInfo> GetDeclaredPXOverrideInfos()
 		{

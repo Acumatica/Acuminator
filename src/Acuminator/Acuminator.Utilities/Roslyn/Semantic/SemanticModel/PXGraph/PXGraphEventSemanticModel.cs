@@ -104,11 +104,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.IsActiveForGraphMethodInfo"/>
 		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo => BaseGraphModel.IsActiveForGraphMethodInfo;
 
-		/// <inheritdoc cref="PXGraphSemanticModel.ConfigureMethodOverrides"/>
-		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides => BaseGraphModel.ConfigureMethodOverrides;
+		/// <inheritdoc cref="PXGraphSemanticModel.ConfigureMethodOverride"/>
+		public ConfigureMethodInfo? ConfigureMethodOverride => BaseGraphModel.ConfigureMethodOverride;
 
-		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredConfigureMethodOverrides"/>
-		public IEnumerable<ConfigureMethodInfo> DeclaredConfigureMethodOverrides => BaseGraphModel.DeclaredConfigureMethodOverrides;
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredConfigureMethodOverride"/>
+		public ConfigureMethodInfo? DeclaredConfigureMethodOverride => BaseGraphModel.DeclaredConfigureMethodOverride;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.InitializeMethodInfo"/>
+		public InitializeMethodInfo? InitializeMethodInfo => BaseGraphModel.InitializeMethodInfo;
+
+		/// <inheritdoc cref="PXGraphSemanticModel.DeclaredInitializeMethodInfo"/>
+		public InitializeMethodInfo? DeclaredInitializeMethodInfo => BaseGraphModel.DeclaredInitializeMethodInfo;
 
 		/// <inheritdoc cref="PXGraphSemanticModel.PXOverrides"/>
 		public ImmutableArray<PXOverrideInfo> PXOverrides => BaseGraphModel.PXOverrides;

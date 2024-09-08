@@ -46,14 +46,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private Icon GetNodeIcon() => OverrideKind switch
 		{
-			MemberOverrideKind.NormalMethodOverride    => Icon.MethodOverrideGraph,
-			MemberOverrideKind.NormalPropertyOverride  => Icon.PropertyOverrideGraph,
-			MemberOverrideKind.NormalEventOverride     => Icon.EventOverrideGraph,
+			MemberOverrideKind.NormalMethodOverride		=> Icon.MethodOverrideGraph,
+			MemberOverrideKind.NormalPropertyOverride  	=> Icon.PropertyOverrideGraph,
+			MemberOverrideKind.NormalEventOverride		=> Icon.EventOverrideGraph,
 
-			MemberOverrideKind.PersistMethodOverride   => Icon.PersistMethodOverride,
-			MemberOverrideKind.ConfigureMethodOverride => Icon.ConfigureMethodGraph,
-
-			_ 										   => Icon.None
+			MemberOverrideKind.PersistMethodOverride	=> Icon.PersistMethodOverride,
+			MemberOverrideKind.ConfigureMethodOverride 	=> Icon.ConfigureMethodGraph,
+			MemberOverrideKind.InitializeMethodOverride => Icon.InitializeMethodGraph,
+			_ 											=> Icon.None
 		};
 
 		private string? GetNameForOverridenGraphEventHandler(IMethodSymbol graphEventHandler)

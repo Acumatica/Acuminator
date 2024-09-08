@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.Data.SqlClient;
+using PX.Data.DependencyInjection;
 
 namespace PX.Objects.HackathonDemo
 {
-	public partial class APInvoiceEntry : PXGraph<APInvoiceEntry>
+	public partial class APInvoiceEntry : PXGraph<APInvoiceEntry>, IGraphWithInitialization
 	{
 		public virtual string Module => "AP";
 
@@ -33,6 +34,10 @@ namespace PX.Objects.HackathonDemo
 
 		public PXAction<APInvoice> VoidInvoice;
 
+		public void Initialize()
+		{
+
+		}
 
 		protected virtual void APInvoice_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
 		{

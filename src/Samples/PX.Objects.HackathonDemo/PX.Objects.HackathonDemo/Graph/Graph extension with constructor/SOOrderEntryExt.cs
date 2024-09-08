@@ -9,6 +9,11 @@ namespace PX.Objects.HackathonDemo
 {
 	public class SOOrderBalanced : PXGraphExtension<SOOrderEntry>
 	{
+		public override void Initialize()
+		{
+			base.Initialize();
+		}
+
 		public SOOrderBalanced()
 		{
 			Base.Orders.AllowInsert = false;
