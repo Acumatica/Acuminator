@@ -11,44 +11,38 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
-    public static class DacSymbolsHierarchyUtils
+	public static class DacSymbolsHierarchyUtils
 	{
-        public static IEnumerable<ITypeSymbol> GetDacExtensionsWithDac(this ITypeSymbol dacExtension, PXContext pxContext)
-        {
-            dacExtension.ThrowOnNull();
-            pxContext.ThrowOnNull();
+		public static IEnumerable<ITypeSymbol> GetDacExtensionsWithDac(this ITypeSymbol dacExtension, PXContext pxContext)
+		{
+			dacExtension.ThrowOnNull();
+			pxContext.ThrowOnNull();
 
-            if (!dacExtension.IsDacExtension(pxContext))
-            {
-                return [];
-            }
+			if (!dacExtension.IsDacExtension(pxContext))
+			{
+				return [];
+			}
 
-            var extensionBaseType = dacExtension.BaseType!;
-            var typeArguments = extensionBaseType.TypeArguments;
-            var dacType = typeArguments.LastOrDefault();
+			var extensionBaseType = dacExtension.BaseType!;
+			var typeArguments = extensionBaseType.TypeArguments;
+			var dacType = typeArguments.LastOrDefault();
 
-            if (dacType == null || !dacType.IsDAC(pxContext))
-            {
-                return [];
-            }
+			if (dacType == null || !dacType.IsDAC(pxContext))
+			{
+				return [];
+			}
 
-            var types = new List<ITypeSymbol>(typeArguments.Length + 1) { dacExtension };
-            var typeArgumentsExceptDac = typeArguments.Take(typeArguments.Length - 1);
+			var types = new List<ITypeSymbol>(typeArguments.Length + 1) { dacExtension };
+			var typeArgumentsExceptDac = typeArguments.Take(typeArguments.Length - 1);
 
-            foreach (var ta in typeArgumentsExceptDac)
-            {
-                if (!ta.IsDacExtension(pxContext))
-                {
-                    return [];
-                }
+			foreach (var ta in typeArgumentsExceptDac)
+			{
+				if (!ta.IsDacExtension(pxContext))
+				{
+					return [];
+				}
 
-                types.Add(ta);
-            }
-
-            types.Add(dacType);
-
-            return types;
-        }
+				types.Add(ta);
 
 		/// <summary>
 		/// Gets the base types of a given <paramref name="dacType"/> that are DACs too and implement <c>IBqlTable</c>.
@@ -91,12 +85,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return includeDacType ? [dacType] : [];
 			}
 
-			var dacHierarchy = dacType.GetBaseTypes()
-									  .TakeWhile(type => type.IsDAC(pxContext));
-			if (includeDacType)
-				dacHierarchy = dacHierarchy.PrependItem(dacType);
+			types.Add(dacType);
 
-			return dacHierarchy;
+			return types;
 		}
 
 		/// <summary>
