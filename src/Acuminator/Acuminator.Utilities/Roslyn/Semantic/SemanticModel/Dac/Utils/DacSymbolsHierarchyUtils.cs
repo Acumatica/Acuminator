@@ -43,46 +43,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				}
 
 				types.Add(ta);
-
-		/// <summary>
-		/// Gets the base types of a given <paramref name="dacType"/> that are DACs too and implement <c>IBqlTable</c>.
-		/// </summary>
-		/// <param name="dacType">The DAC type to act on.</param>
-		/// <param name="pxContext">Acumatica context.</param>
-		/// <returns>
-		/// The base types of a given <paramref name="dacType"/> that are DACs too and implement <c>IBqlTable</c>.
-		/// </returns>
-		/// <remarks>
-		/// This helper MUST be called only on DAC types. The behavior on non DAC types is undefined.
-		/// </remarks>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<ITypeSymbol> GetDacBaseTypes(this ITypeSymbol dacType, PXContext pxContext) =>
-			GetDacBaseTypes(dacType, pxContext, includeDacType: false);
-
-		/// <summary>
-		/// Gets the DAC type <paramref name="dacType"/> with its base types that are DACs too and implement <c>IBqlTable</c>.
-		/// </summary>
-		/// <param name="dacType">The DAC type to act on.</param>
-		/// <param name="pxContext">Acumatica context.</param>
-		/// <returns>
-		/// A collection containing <paramref name="dacType"/> and its base types that are DACs too and implement <c>IBqlTable</c>.
-		/// </returns>
-		/// <remarks>
-		/// This helper MUST be called only on DAC types. The behavior on non DAC types is undefined.
-		/// </remarks>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<ITypeSymbol> GetDacWithBaseTypes(this ITypeSymbol dacType, PXContext pxContext) =>
-			GetDacBaseTypes(dacType, pxContext, includeDacType: true);
-
-		private static IEnumerable<ITypeSymbol> GetDacBaseTypes(ITypeSymbol dacType, PXContext pxContext, bool includeDacType)
-		{
-			dacType.ThrowOnNull();
-			var pxBqlTable = pxContext.CheckIfNull().PXBqlTable;
-
-			if (dacType.BaseType == null || dacType.BaseType.SpecialType == SpecialType.System_Object ||
-				(pxBqlTable != null && dacType.BaseType.Equals(pxBqlTable, SymbolEqualityComparer.Default)))
-			{
-				return includeDacType ? [dacType] : [];
 			}
 
 			types.Add(dacType);
@@ -166,7 +126,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 						 .TakeWhile(type => !type.IsDacExtensionBaseType());
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacExtensionBaseType(this ITypeSymbol type) => 
+		public static bool IsDacExtensionBaseType(this ITypeSymbol type) =>
 			type?.Name == TypeNames.PXCacheExtension;
 
 		/// <summary>
@@ -209,7 +169,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			if (includeDac)
 			{
-				extensions.AddRange(dacType.GetDacWithBaseTypes(pxContext).Reverse());
+				var baseDacTypes = dacType.GetDacWithBaseTypesThatMayStoreDacProperties(pxContext)
+										  .Reverse();
+				extensions.AddRange(baseDacTypes);
 			}
 
 			for (int i = dacIndex - 1; i >= 0; i--)
@@ -245,7 +207,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			if (includeDac)
 			{
-				extensions.AddRange(dacType.GetDacWithBaseTypes(pxContext));
+				var baseDacTypes = dacType.GetDacWithBaseTypesThatMayStoreDacProperties(pxContext);
+				extensions.AddRange(baseDacTypes);
 			}
 
 			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
