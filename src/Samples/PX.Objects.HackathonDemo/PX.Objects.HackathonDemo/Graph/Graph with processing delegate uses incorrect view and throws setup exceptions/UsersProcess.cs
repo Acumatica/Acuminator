@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 
 using PX.Data;
+using PX.Data.DependencyInjection;
 using PX.SM;
 
 namespace PX.Objects.HackathonDemo
 {
-    public class UsersProcess : PXGraph<UsersProcess, Users>
+    public class UsersProcess : PXGraph<UsersProcess, Users>, IGraphWithInitialization
     {
 		private static readonly Dictionary<string, string> _mappings;
 
@@ -38,7 +39,12 @@ namespace PX.Objects.HackathonDemo
             });
         }
 
-        [PXButton]
+		void IGraphWithInitialization.Initialize()
+		{
+
+		}
+
+		[PXButton]
         [PXUIField(DisplayName = "Sync Users")]
         public void syncUsers()
         {
@@ -59,5 +65,5 @@ namespace PX.Objects.HackathonDemo
                 throw new PXSetupNotEnteredException<Users>(null);
             }
         }
-    }
+	}
 }
