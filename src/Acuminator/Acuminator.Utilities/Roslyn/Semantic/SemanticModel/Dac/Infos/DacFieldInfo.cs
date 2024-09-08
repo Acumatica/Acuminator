@@ -85,6 +85,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ITypeSymbol? EffectivePropertyType { get; private set; }
 
 		/// <summary>
+		/// The declared BQL field data type of this DAC field.
+		/// </summary>
+		public ITypeSymbol? BqlFieldDataTypeDeclared { get; }
+
+		/// <summary>
+		/// The effective BQL field data type of this DAC field that is obtained through the combination of <see cref="BqlFieldDataTypeDeclared"/> 
+		/// from this and base infos.
+		/// </summary>
+		public ITypeSymbol? BqlFieldDataTypeEffective {  get; private set; }
+
+		/// <summary>
 		/// The DB boundness calculated from attributes declared on this DAC property.
 		/// </summary>
 		public DbBoundnessType DeclaredDbBoundness { get; }
@@ -119,7 +130,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			Name 		 = PropertyInfo?.Name ?? BqlFieldInfo!.Name.ToPascalCase();
 			DacType 	 = PropertyInfo?.Symbol.ContainingType ?? BqlFieldInfo!.Symbol.ContainingType;
 
-			HasBqlFieldDeclared  = dacBqlFieldInfo != null;
+			if (dacBqlFieldInfo != null)
+			{
+				HasBqlFieldDeclared = true;
+				BqlFieldDataTypeDeclared  = dacBqlFieldInfo.BqlFieldDataTypeDeclared;
+				BqlFieldDataTypeEffective = dacBqlFieldInfo.BqlFieldDataTypeEffective;
+			}
+			else
+			{
+				HasBqlFieldDeclared = false;
+				BqlFieldDataTypeDeclared  = null;
+				BqlFieldDataTypeEffective = null;
+			}
+
 			HasBqlFieldEffective = HasBqlFieldDeclared;
 
 			if (dacPropertyInfo != null)
@@ -167,6 +190,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			FieldPropertyType	  ??= baseInfo.FieldPropertyType;
 			EffectivePropertyType ??= baseInfo.EffectivePropertyType;
+
+			BqlFieldDataTypeEffective ??= baseInfo.BqlFieldDataTypeEffective;
 
 			EffectiveDbBoundness = DeclaredDbBoundness.Combine(baseInfo.EffectiveDbBoundness);
 		}
