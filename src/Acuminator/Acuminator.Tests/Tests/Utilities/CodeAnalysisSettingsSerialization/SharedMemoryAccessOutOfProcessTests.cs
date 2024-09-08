@@ -13,8 +13,6 @@ using Acuminator.Vsix.Settings;
 
 using FluentAssertions;
 
-using PX.Common;
-
 using Xunit;
 
 namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
@@ -39,7 +37,6 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 		{
 			string externalExecutorPath = Path.GetFullPath(ExternalExecutorFilePath);
 
-			// Acuminator disable once PX1099 ForbiddenApiUsage [Justification]
 			File.Exists(externalExecutorPath).Should().BeTrue();
 
 			string externalExecutorDir = Path.GetDirectoryName(externalExecutorPath);
@@ -84,8 +81,8 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 				suppressionMechanismEnabled.ToString(),
 				px1007DocumentationDiagnosticEnabled.ToString(),
 				bannedApiAnalysisEnabled.ToString(),
-				bannedApiFilePath.NullIfWhitespace()?.Trim() ?? EmptyStringPlaceHolder,
-				whiteListFilePath.NullIfWhitespace()?.Trim() ?? EmptyStringPlaceHolder
+				bannedApiFilePath.NullIfWhiteSpace()?.Trim() ?? EmptyStringPlaceHolder,
+				whiteListFilePath.NullIfWhiteSpace()?.Trim() ?? EmptyStringPlaceHolder
 			];
 
 			return commandLineArgsList.Join(" ");

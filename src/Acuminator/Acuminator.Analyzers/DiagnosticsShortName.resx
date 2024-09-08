@@ -415,6 +415,6 @@
     <value>PXOverrideSignatureMismatch</value>
   </data>
   <data name="PX1099" xml:space="preserve">
-    <value>ForbiddenApiUsage</value>
+    <value>UsageOfForbiddenApi</value>
   </data>
 </root>
