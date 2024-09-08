@@ -120,8 +120,8 @@ public class ConfigureMethodInfo : NodeSymbolItem<MethodDeclarationSyntax, IMeth
 
 	private static IEnumerable<IMethodSymbol> GetConfigureMethodCandidatesInType(ITypeSymbol graphOrExtType)
 	{
-		var allConfigureTypeMethodsInType = graphOrExtType.GetMethods(DelegateNames.Workflow.Configure);
-		var configureCandidates = from method in allConfigureTypeMethodsInType
+		var allConfigureMethodsInType = graphOrExtType.GetMethods(DelegateNames.Workflow.Configure);
+		var configureCandidates = from method in allConfigureMethodsInType
 								  where !method.IsStatic && method.ReturnsVoid && method.IsOverride &&
 										 method.DeclaredAccessibility == Accessibility.Public && method.Parameters.Length == 1 &&
 										 method.IsDeclaredInType(graphOrExtType)
