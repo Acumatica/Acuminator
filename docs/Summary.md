@@ -74,6 +74,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1064](diagnostics/PX1064.md) | The declaration of the exception class introduces new serializable fields but does not declare an override for the `GetObjectData` method. This will cause an incorrect serialization of the exception data and will lead to runtime errors in Acumatica ERP. | Error | Available |
 | [PX1065](diagnostics/PX1065.md) | The DAC field property does not have a corresponding BQL field. | Error | Available |
 | [PX1066](diagnostics/PX1066.md) | The name of the BQL field possibly contains mistake. | Warning (ISV Level 3: Informational) | Available |
+| [PX1067](diagnostics/PX1067.md) | DAC does not contain a redeclaration of a BQL field declared in the base DAC. | Warning (ISV Level 3: Informational) | Available |
 | [PX1070](diagnostics/PX1070.md) | The state of fields and actions can be configured only in `RowSelected` event handlers. | Error | Unavailable |
 | [PX1071](diagnostics/PX1071.md) | Actions cannot be executed within event handlers. | Error | Unavailable |
 | [PX1072](diagnostics/PX1072.md) | BQL queries must be executed within the context of an existing `PXGraph` instance. | Warning (ISV Level 1: Significant) | Available |
