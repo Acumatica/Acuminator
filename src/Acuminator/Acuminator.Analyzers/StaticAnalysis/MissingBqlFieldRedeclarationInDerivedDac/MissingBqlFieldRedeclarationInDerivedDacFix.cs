@@ -61,14 +61,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			SyntaxNode? nodeWithDiagnostic = root?.FindNode(span);
-			var propertyWithoutBqlFieldNode = (nodeWithDiagnostic as PropertyDeclarationSyntax) ??
-											   nodeWithDiagnostic?.Parent<PropertyDeclarationSyntax>();
-			if (propertyWithoutBqlFieldNode == null)
+
+			if (nodeWithDiagnostic == null)
 				return document;
 
+			var propertyWithoutBqlFieldNode = (nodeWithDiagnostic as PropertyDeclarationSyntax) ??
+											   nodeWithDiagnostic?.Parent<PropertyDeclarationSyntax>();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var dacNode = propertyWithoutBqlFieldNode.Parent<ClassDeclarationSyntax>();
+			var dacNode = propertyWithoutBqlFieldNode != null
+				? propertyWithoutBqlFieldNode.Parent<ClassDeclarationSyntax>()
+				: nodeWithDiagnostic as ClassDeclarationSyntax;
 
 			if (dacNode == null)
 				return document;
@@ -88,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 		}
 
 		private SyntaxList<MemberDeclarationSyntax>? CreateMembersListWithBqlField(ClassDeclarationSyntax dacNode,
-																				   PropertyDeclarationSyntax propertyWithoutBqlFieldNode,
+																				   PropertyDeclarationSyntax? propertyWithoutBqlFieldNode,
 																				   string bqlFieldName, BqlFieldTypeName? bqlFieldTypeName)
 		{
 			var members = dacNode.Members;
@@ -102,23 +105,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 					: null;
 			}
 
-			int propertyMemberIndex = dacNode.Members.IndexOf(propertyWithoutBqlFieldNode);
+			int indexToInsertBqlField = GetIndexToInsertBqlFieldRedeclaration(dacNode, propertyWithoutBqlFieldNode, bqlFieldName);
 
-			if (propertyMemberIndex < 0)
-				propertyMemberIndex = 0;
+			if (indexToInsertBqlField < 0)
+				indexToInsertBqlField = 0;
 
-			var newBqlFieldNode = CreateBqlFieldClassNode(propertyWithoutBqlFieldNode, bqlFieldName, isFirstField: propertyMemberIndex == 0,
+			var newBqlFieldNode = CreateBqlFieldClassNode(propertyWithoutBqlFieldNode, bqlFieldName, isFirstField: indexToInsertBqlField == 0,
 														  bqlFieldTypeName);
 			if (newBqlFieldNode == null)
 				return null;
 
-			var propertyWithoutRegions = CodeGeneration.RemoveRegionsFromPropertyLeadingTrivia(propertyWithoutBqlFieldNode);
-			var newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions)
-									.Insert(propertyMemberIndex, newBqlFieldNode);
+			var newMembers = members;
+
+			if (propertyWithoutBqlFieldNode != null)
+			{
+				var propertyWithoutRegions = CodeGeneration.RemoveRegionsFromPropertyLeadingTrivia(propertyWithoutBqlFieldNode);
+				newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions);
+			}
+			
+			newMembers = newMembers.Insert(indexToInsertBqlField, newBqlFieldNode);
 			return newMembers;
 		}
 
-		private ClassDeclarationSyntax? CreateBqlFieldClassNode(PropertyDeclarationSyntax propertyWithoutBqlFieldNode, string bqlFieldName,
+		private ClassDeclarationSyntax? CreateBqlFieldClassNode(PropertyDeclarationSyntax? propertyWithoutBqlFieldNode, string bqlFieldName,
 																bool isFirstField, BqlFieldTypeName? bqlFieldTypeName)
 		{
 			if (bqlFieldTypeName.HasValue)
@@ -132,6 +141,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 				var weaklyTypedBqlFieldNode = BqlFieldGeneration.GenerateWeaklyTypedBqlField(bqlFieldName, isFirstField, isRedeclaration: true,
 																							 propertyWithoutBqlFieldNode);
 				return weaklyTypedBqlFieldNode;
+			}
+		}
+
+		private int GetIndexToInsertBqlFieldRedeclaration(ClassDeclarationSyntax dacNode, PropertyDeclarationSyntax? propertyWithoutBqlFieldNode,
+														  string bqlFieldName)
+		{
+			var dacMembers = dacNode.Members;
+
+			if (dacMembers.Count == 0)
+				return 0;
+
+			if (propertyWithoutBqlFieldNode != null)
+			{
+				int propertyMemberIndex = dacMembers.IndexOf(propertyWithoutBqlFieldNode);
+				return propertyMemberIndex < 0 
+					? 0 
+					: propertyMemberIndex;
+			}
+			else
+			{
+				// insert BQL field redeclaration at the end of the DAC
+				return dacMembers.Count;
 			}
 		}
 	}
