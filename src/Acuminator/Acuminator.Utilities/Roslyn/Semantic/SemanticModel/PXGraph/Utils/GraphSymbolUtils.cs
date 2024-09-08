@@ -83,9 +83,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			method.ThrowOnNull();
 			pxContext.ThrowOnNull();
 
-			return method.ReturnType.Equals(pxContext.SystemTypes.IEnumerable) &&
+			return method.ReturnType.Equals(pxContext.SystemTypes.IEnumerable, SymbolEqualityComparer.Default) &&
 				   method.Parameters.All(p => p.RefKind != RefKind.Ref);
 		}
+
+		public static bool IsValidInitializeMethod(this IMethodSymbol method) =>
+			method.CheckIfNull().ReturnsVoid && !method.IsStatic && method.Parameters.IsDefaultOrEmpty;
 
 		/// <summary>
 		/// Get declared primary DAC from graph or graph extension.
