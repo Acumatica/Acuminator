@@ -943,7 +943,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ForbiddenApiUsage.
+        ///   Looks up a localized string similar to UsageOfForbiddenApi.
         /// </summary>
         public static string PX1099 {
             get {
