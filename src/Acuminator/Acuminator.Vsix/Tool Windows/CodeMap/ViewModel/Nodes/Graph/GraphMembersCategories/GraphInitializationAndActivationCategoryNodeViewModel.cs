@@ -31,6 +31,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (GraphSemanticModel.IsActiveForGraphMethodInfo != null)
 				yield return GraphSemanticModel.IsActiveForGraphMethodInfo;
 
+			if (GraphSemanticModel.DeclaredInitializeMethodInfo is InitializeMethodInfo initializeMethodInfo)
+				yield return initializeMethodInfo;
+
 			if (GraphSemanticModel.DeclaredConfigureMethodOverride is ConfigureMethodInfo configureMethodInfo)
 				yield return configureMethodInfo;
 
