@@ -31,6 +31,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				? dacOrDacExtension.GetDacWithBaseTypesThatMayStoreDacProperties(pxContext)
 				: dacOrDacExtension.GetDacExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeDac: true);
 
+			typeHierarchy = typeHierarchy.Reverse();
+
 			foreach (var type in typeHierarchy)
 			{
 				bool hasBqlFields = bqlFieldsByTypes.TryGetValue(type, out var declaredBqlFields);
