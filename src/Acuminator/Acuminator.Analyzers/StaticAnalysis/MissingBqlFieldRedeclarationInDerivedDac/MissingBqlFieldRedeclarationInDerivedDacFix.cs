@@ -183,6 +183,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			if (insertedAtEnd)
 			{
 				var newCloseBraketTrivia = CodeGeneration.RemoveRegionsFromTrivia(newDacNode.CloseBraceToken.LeadingTrivia);
+
+				if (newCloseBraketTrivia == null)
+					return newDacNode;
+
 				newDacNode = newDacNode.WithCloseBraceToken(
 									newDacNode.CloseBraceToken.WithLeadingTrivia(newCloseBraketTrivia));
 			}
