@@ -108,23 +108,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public IsActiveForGraphMethodInfo? IsActiveForGraphMethodInfo { get; }
 
 		/// <summary>
-		/// Information about the Configure method that overrides the class hierarchy declared in the graph or the graph extension. 
+		/// Information about the graph's or the graph extension's Configure method override. The override can be declared in base types.
 		/// </summary>
-		/// <value>
-		/// Information about the overrides of the Configure method.
-		/// </value>
-		public ImmutableArray<ConfigureMethodInfo> ConfigureMethodOverrides { get; }
+		public ConfigureMethodInfo? ConfigureMethodOverride { get; }
 
 		/// <summary>
-		/// Configure method overrides which are declared in the graph or the graph extension that is represented by this instance of the semantic model.
+		/// Information about the Configure method override declared in this type. <see langword="null"/> if the method is not declared in this type.
 		/// </summary>
-		public IEnumerable<ConfigureMethodInfo> DeclaredConfigureMethodOverrides =>
-			ConfigureMethodOverrides.Where(method => method.Symbol.IsDeclaredInType(Symbol));
+		public ConfigureMethodInfo? DeclaredConfigureMethodOverride =>
+			ConfigureMethodOverride != null && ConfigureMethodOverride.Symbol.IsDeclaredInType(Symbol)
+				? ConfigureMethodOverride
+				: null;
 
 		/// <summary>
 		/// An indicator of whether the graph or the graph extension configures a workflow.
 		/// </summary>
-		public bool ConfiguresWorkflow => !ConfigureMethodOverrides.IsDefaultOrEmpty;
+		[MemberNotNullWhen(returnValue: true, nameof(ConfigureMethodOverride))]
+		public bool ConfiguresWorkflow => ConfigureMethodOverride != null;
 
 		/// <summary>
 		/// An indicator of whether the graph extension has the PXProtectedAccess attribute.
@@ -172,7 +172,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			Initializers 			   = GetDeclaredInitializers().ToImmutableArray();
 			IsActiveMethodInfo 		   = GetIsActiveMethodInfo();
 			IsActiveForGraphMethodInfo = GetIsActiveForGraphMethodInfo();
-			ConfigureMethodOverrides   = GetConfigureMethodOverrides();
+			ConfigureMethodOverride	   = ConfigureMethodInfo.GetConfigureMethodInfo(Symbol, GraphType, PXContext, _cancellation);
 			PXOverrides 			   = GetDeclaredPXOverrideInfos();
 			HasPXProtectedAccess	   = IsPXProtectedAccessAttributeDeclared();
 		}
@@ -409,12 +409,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			GraphType == GraphType.PXGraphExtension
 				? IsActiveForGraphMethodInfo.GetIsActiveForGraphMethodInfo(Symbol, _cancellation)
 				: null;
-
-		protected ImmutableArray<ConfigureMethodInfo> GetConfigureMethodOverrides()
-		{
-			var configureOverrides = ConfigureMethodInfo.GetConfigureMethodInfos(Symbol, GraphType, PXContext, _cancellation);
-			return configureOverrides.ToImmutableArray();
-		}
 
 		protected ImmutableArray<PXOverrideInfo> GetDeclaredPXOverrideInfos()
 		{

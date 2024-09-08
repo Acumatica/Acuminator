@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (GraphSemanticModel.IsActiveForGraphMethodInfo != null)
 				yield return GraphSemanticModel.IsActiveForGraphMethodInfo;
 
-			foreach (ConfigureMethodInfo configureMethodInfo in GraphSemanticModel.DeclaredConfigureMethodOverrides)
+			if (GraphSemanticModel.DeclaredConfigureMethodOverride is ConfigureMethodInfo configureMethodInfo)
 				yield return configureMethodInfo;
 
 			foreach (StaticConstructorInfo staticConstructor in GraphSemanticModel.StaticConstructors)
