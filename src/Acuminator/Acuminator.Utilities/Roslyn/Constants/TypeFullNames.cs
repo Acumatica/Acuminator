@@ -149,6 +149,8 @@
 		public const string PXGraph2 = "PX.Data.PXGraph`2";
 		public const string PXGraph3 = "PX.Data.PXGraph`3";
 
+		public const string IGraphWithInitialization = "PX.Data.DependencyInjection.IGraphWithInitialization";
+
 		public const string PXIntListAttribute = "PX.Data.PXIntListAttribute";
 
 		public const string PXProcessingBase = "PX.Data.PXProcessingBase`1";
