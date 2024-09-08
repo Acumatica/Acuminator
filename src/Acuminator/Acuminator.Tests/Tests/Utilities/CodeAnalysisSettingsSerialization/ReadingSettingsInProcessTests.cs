@@ -60,9 +60,10 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 			string directory = Path.GetDirectoryName(testFilePath);
 			string sourceFile = Path.Combine(directory, "Sources", sourceFileName);
 
+			// Acuminator disable once PX1099 UsageOfForbiddenApi
 			File.Exists(sourceFile).Should().BeTrue($"Source file \"{sourceFile}\" should exist");
 
-			// Acuminator disable once PX1099 ForbiddenApiUsage
+			// Acuminator disable once PX1099 UsageOfForbiddenApi
 			var sourceCode = File.ReadAllText(sourceFile);
 			return sourceCode;
 		}

@@ -53,7 +53,7 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 			using var outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(mockSettingsEvents, expectedCodeAnalysisSettings, 
 																					expectedBannedApiSettings, SharedVsSettings.SharedMemoryNameForTests);
 
-			// Acuminator disable once PX1099 ForbiddenApiUsage
+			// Acuminator disable once PX1099 UsageOfForbiddenApi
 			var processStartInfo = new ProcessStartInfo(externalExecutorPath, commandLineArgs)
 			{
 				UseShellExecute  = false,
