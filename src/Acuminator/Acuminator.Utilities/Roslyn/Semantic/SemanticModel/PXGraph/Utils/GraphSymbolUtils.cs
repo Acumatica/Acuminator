@@ -8,6 +8,7 @@ using System.Threading;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -83,9 +84,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			method.ThrowOnNull();
 			pxContext.ThrowOnNull();
 
-			return method.ReturnType.Equals(pxContext.SystemTypes.IEnumerable) &&
+			return method.ReturnType.Equals(pxContext.SystemTypes.IEnumerable, SymbolEqualityComparer.Default) &&
 				   method.Parameters.All(p => p.RefKind != RefKind.Ref);
 		}
+
+		public static bool IsValidInitializeMethod(this IMethodSymbol method) =>
+			method.CheckIfNull().ReturnsVoid && !method.IsStatic && method.Parameters.IsDefaultOrEmpty;
 
 		/// <summary>
 		/// Get declared primary DAC from graph or graph extension.
@@ -125,31 +129,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
 			type.TypeArguments.Length >= 2 && type.Name == TypeNames.PXGraph;
-
-		internal static (MethodDeclarationSyntax Node, IMethodSymbol Symbol) GetGraphExtensionInitialization
-			(this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
-		{
-			typeSymbol.ThrowOnNull();
-
-			if (pxContext.PXGraphExtension.Initialize == null)
-				return default;
-
-			var initializeCandidates  = typeSymbol.GetMethods(DelegateNames.Initialize);
-			IMethodSymbol? initialize = (from method in initializeCandidates
-										 where method.IsOverride && method.IsDeclaredInType(typeSymbol) &&
-											  method.GetOverridden().Any(@override => @override.Equals(pxContext.PXGraphExtension.Initialize))
-										 select method)
-									   .FirstOrDefault();
-
-			SyntaxReference? reference = initialize?.DeclaringSyntaxReferences.FirstOrDefault();
-			if (reference == null)
-				return default;
-
-			if (reference.GetSyntax(cancellation) is not MethodDeclarationSyntax node)
-				return default;
-
-			return (node, initialize!);
-		}
 
 		/// <summary>
 		/// Check if <paramref name="eventType"/> is DAC field event.
@@ -208,7 +187,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var configureMethods = pxGraphOrPXGraphExtension!.GetMethods(DelegateNames.Workflow.Configure);
 			return configureMethods.FirstOrDefault(method => method.ReturnsVoid && method.IsVirtual && method.DeclaredAccessibility == Accessibility.Public &&
-															 method.Parameters.Length == 1 && pxScreenConfiguration.Equals(method.Parameters[0].Type));
+															 method.Parameters.Length == 1 && pxScreenConfiguration.Equals(method.Parameters[0].Type,
+																														   SymbolEqualityComparer.Default));
 		}
 	}
 }

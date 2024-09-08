@@ -656,6 +656,11 @@
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacFields_OnlyBqlFields.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\RegularDac.cs" />
     <EmbeddedResource Include="Tests\Utilities\CodeAnalysisSettingsSerialization\Sources\PlainGoodCode.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphWithIncorrectInitializeMethod.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphWithImplicitInitializeMethod.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphWithExplicitInitializeMethod.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphExtensionWithIncorrectInitializeMethod.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphExtensionWithInitializeMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacWithBaseTypeNonDac.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacExtensionWithBaseTypeNonDac.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacChainedExtensionWithBaseTypeNonDac.cs" />

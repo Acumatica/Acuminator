@@ -71,6 +71,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual void VisitNode(GraphConfigureMethodNodeViewModel configureMethodNode) =>
 			DefaultVisit(configureMethodNode);
 
+		public virtual void VisitNode(GraphInitializeMethodNodeViewModel initializedMethodNode) =>
+			DefaultVisit(initializedMethodNode);
+
 		public virtual void VisitNode(GraphInstanceConstructorNodeViewModel graphInstanceConstructorNode) =>
 			DefaultVisit(graphInstanceConstructorNode);
 

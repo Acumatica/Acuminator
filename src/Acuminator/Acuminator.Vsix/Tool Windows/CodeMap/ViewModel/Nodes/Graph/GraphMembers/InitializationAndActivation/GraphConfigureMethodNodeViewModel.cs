@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public override Icon NodeIcon => Icon.ConfigureMethodGraph;
 
-		public ConfigureMethodInfo ConfigureMethodInfo => (ConfigureMethodInfo)MemberInfo;
+		public ConfigureMethodInfo ConfigureMethod => (ConfigureMethodInfo)MemberInfo;
 
 		public GraphConfigureMethodNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
 												 ConfigureMethodInfo configureMethodInfo, bool isExpanded = false) :

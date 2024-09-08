@@ -97,6 +97,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				AttributesGroupNodeViewModel => false,
 
 				GraphConfigureMethodNodeViewModel	  => false,
+				GraphInitializeMethodNodeViewModel	  => false,
 				IsActiveGraphMethodNodeViewModelBase  => false,
 				GraphInstanceConstructorNodeViewModel => false,
 				GraphStaticConstructorNodeViewModel   => false,

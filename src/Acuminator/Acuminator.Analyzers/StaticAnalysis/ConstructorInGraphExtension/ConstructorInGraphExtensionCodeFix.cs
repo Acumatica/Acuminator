@@ -1,12 +1,13 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -58,11 +59,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 
 			var methodSymbol = semanticModel.GetDeclaredSymbol(constructorNode, cancellationToken);
 			var initializeSymbol = methodSymbol?.ContainingType
-												.GetMethods("Initialize")
-												.FirstOrDefault(m => m.IsOverride
-																	 && m.DeclaredAccessibility == Accessibility.Public
-																	 && m.ReturnsVoid
-																	 && m.Parameters.IsEmpty);
+												.GetMethods(DelegateNames.Initialize)
+												.FirstOrDefault(m => m.IsOverride && m.IsValidInitializeMethod() && 
+																	 m.DeclaredAccessibility == Accessibility.Public);
 			var initializeNode = await initializeSymbol.GetSyntaxAsync(cancellationToken).ConfigureAwait(false) as MethodDeclarationSyntax;
 
 			if (initializeNode != null)
@@ -93,7 +92,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 					var syntaxGenerator = SyntaxGenerator.GetGenerator(document);
 
 					var newInitializeNode = (MethodDeclarationSyntax) syntaxGenerator.MethodDeclaration(
-						"Initialize",
+						DelegateNames.Initialize,
 						accessibility: Accessibility.Public,
 						modifiers: DeclarationModifiers.Override,
 						statements: constructorStatements);

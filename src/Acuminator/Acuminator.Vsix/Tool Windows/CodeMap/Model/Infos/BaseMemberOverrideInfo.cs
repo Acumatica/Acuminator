@@ -19,7 +19,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		NormalPropertyOverride,
 		NormalEventOverride,
 		PersistMethodOverride,
-		ConfigureMethodOverride
+		ConfigureMethodOverride,
+		InitializeMethodOverride
 	}
 
 	/// <summary>
@@ -47,10 +48,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return MemberOverrideKind.NormalEventOverride;
 				
 				case IMethodSymbol methodSymbol:
-					bool isConfigureMethod = graphSemanticModel.ConfigureMethodOverrides
-															   .Any(configureMethodInfo => methodSymbol.Equals(configureMethodInfo.Symbol, SymbolEqualityComparer.Default));
+
+					bool isConfigureMethod = IsConfigureOverride(methodSymbol, graphSemanticModel);
 					if (isConfigureMethod)
 						return MemberOverrideKind.ConfigureMethodOverride;
+
+					bool isInitializeMethod = IsInitializeMethod(methodSymbol, graphSemanticModel);
+					if (isInitializeMethod)
+						return MemberOverrideKind.InitializeMethodOverride;
 
 					bool isPersistMethod = IsPersistOverride();
 					return isPersistMethod
@@ -60,6 +65,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				default:
 					return MemberOverrideKind.None;
 			}
+		}
+
+		private static bool IsConfigureOverride(IMethodSymbol methodSymbol, PXGraphSemanticModel graphSemanticModel)
+		{
+			if (graphSemanticModel.ConfigureMethodOverride == null)
+				return false;
+
+			return graphSemanticModel.ConfigureMethodOverride
+									 .ThisAndOverridenItems()
+									 .Any(configureMethodInfo => methodSymbol.Equals(configureMethodInfo.Symbol, SymbolEqualityComparer.Default));
+		}
+
+		private static bool IsInitializeMethod(IMethodSymbol methodSymbol, PXGraphSemanticModel graphSemanticModel)
+		{
+			if (graphSemanticModel.InitializeMethodInfo == null)
+				return false;
+
+			return graphSemanticModel.InitializeMethodInfo
+									 .ThisAndOverridenItems()
+									 .Any(initializeMethodInfo => methodSymbol.Equals(initializeMethodInfo.Symbol, SymbolEqualityComparer.Default));
 		}
 
 		private bool IsPersistOverride() =>
