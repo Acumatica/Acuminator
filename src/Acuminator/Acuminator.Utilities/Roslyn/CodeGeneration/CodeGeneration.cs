@@ -70,6 +70,23 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 			return list;
 		}
 
+		public static TNode CopyRegionsFromTrivia<TNode>(TNode nodeToCopyTrivia, in SyntaxTriviaList leadingTrivia)
+		where TNode : SyntaxNode
+		{
+			nodeToCopyTrivia.ThrowOnNull();
+
+			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
+
+			if (regionTrivias.Count == 0)
+				return nodeToCopyTrivia;
+
+			var regionsTrivia = TriviaList(regionTrivias);
+			var bqlFieldNodeLeadingTrivia = nodeToCopyTrivia.GetLeadingTrivia();
+			var newBqlFieldNodeTrivia = bqlFieldNodeLeadingTrivia.AddRange(regionsTrivia);
+
+			return nodeToCopyTrivia.WithLeadingTrivia(newBqlFieldNodeTrivia);
+		}
+
 		/// <summary>
 		/// Removes the regions from the type member node leading trivia.
 		/// </summary>
@@ -83,18 +100,26 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 			if (member == null)
 				return member;
 
-			var leadingTrivia = member.GetLeadingTrivia();
+			var leadingTrivia	 = member.GetLeadingTrivia();
+			var newLeadingTrivia = RemoveRegionsFromTrivia(leadingTrivia);
 
+			return newLeadingTrivia != null
+				? member.WithLeadingTrivia(newLeadingTrivia)
+				: member;
+		}
+
+		public static IEnumerable<SyntaxTrivia>? RemoveRegionsFromTrivia(in SyntaxTriviaList leadingTrivia)
+		{
 			if (leadingTrivia.Count == 0)
-				return member;
+				return null;
 
 			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
 
 			if (regionTrivias.Count == 0)
-				return member;
+				return null;
 
 			var newLeadingTrivia = leadingTrivia.Except(regionTrivias);
-			return member.WithLeadingTrivia(newLeadingTrivia);
+			return newLeadingTrivia;
 		}
 	}
 }

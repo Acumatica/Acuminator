@@ -133,29 +133,21 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 			bqlFieldNode = bqlFieldNode.WithCloseBraceToken(clostBracketToken);
 
 			if (adjacentMemberToCopyRegions != null)
-				bqlFieldNode = CopyRegionsFromProperty(bqlFieldNode, adjacentMemberToCopyRegions);
+				bqlFieldNode = CopyRegionsFromMember(bqlFieldNode, adjacentMemberToCopyRegions);
 
 			return bqlFieldNode;
 		}
 
-		private static ClassDeclarationSyntax CopyRegionsFromProperty(ClassDeclarationSyntax bqlFieldNode, 
-																	  MemberDeclarationSyntax adjacentMemberToCopyRegions)
+		private static ClassDeclarationSyntax CopyRegionsFromMember(ClassDeclarationSyntax bqlFieldNode, 
+																	MemberDeclarationSyntax adjacentMemberToCopyRegions)
 		{
 			var leadingTrivia = adjacentMemberToCopyRegions.GetLeadingTrivia();
 
 			if (leadingTrivia.Count == 0)
 				return bqlFieldNode;
 
-			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
-
-			if (regionTrivias.Count == 0)
-				return bqlFieldNode;
-
-			var regionsTrivia = TriviaList(regionTrivias);
-			var bqlFieldNodeLeadingTrivia = bqlFieldNode.GetLeadingTrivia();
-			var newBqlFieldNodeTrivia = bqlFieldNodeLeadingTrivia.AddRange(regionsTrivia);
-
-			return bqlFieldNode.WithLeadingTrivia(newBqlFieldNodeTrivia);
+			var bqlFieldNodeWithCopiedRegions = CodeGeneration.CopyRegionsFromTrivia(bqlFieldNode, leadingTrivia);
+			return bqlFieldNodeWithCopiedRegions;
 		}
 	}
 }
