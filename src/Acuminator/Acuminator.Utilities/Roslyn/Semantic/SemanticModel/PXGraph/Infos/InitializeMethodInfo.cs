@@ -128,17 +128,41 @@ public class InitializeMethodInfo : NodeSymbolItem<MethodDeclarationSyntax, IMet
 
 	private static IEnumerable<IMethodSymbol> GetInitializeMethodCandidatesInType(ITypeSymbol graphOrExtType, GraphType graphType)
 	{
-		var initializeCandidates = graphOrExtType.GetMethods(DelegateNames.Initialize)
-												 .Where(method => method.IsValidInitializeMethod() && method.IsDeclaredInType(graphOrExtType));
-		if (graphType == GraphType.PXGraphExtension)
-			initializeCandidates = initializeCandidates.Where(method => method.IsOverride && method.DeclaredAccessibility == Accessibility.Public);
+		if (graphType == GraphType.PXGraph)
+		{
+			return from method in graphOrExtType.GetMethods()
+				   where method.IsValidInitializeMethod() && method.IsDeclaredInType(graphOrExtType) &&
+						(IsImplicitInitializeMethodImplementation(method) || IsExplicitInitializeMethodImplementation(method))
+				   select method;
+		}
 		else
 		{
-			initializeCandidates = initializeCandidates.Where(method => method.DeclaredAccessibility == Accessibility.Public ||
-																		method.MethodKind == MethodKind.ExplicitInterfaceImplementation);
+			return from method in graphOrExtType.GetMethods(DelegateNames.Initialize)
+				   where method.IsValidInitializeMethod() && method.IsDeclaredInType(graphOrExtType) &&
+						 method.IsOverride && method.DeclaredAccessibility == Accessibility.Public
+				   select method;
 		}
 
-		return initializeCandidates;
+		//-------------------------------------------Local Functions-----------------------------------------------------
+		static bool IsImplicitInitializeMethodImplementation(IMethodSymbol method) =>
+			method.MethodKind == MethodKind.Ordinary && method.Name == DelegateNames.Initialize &&
+			method.DeclaredAccessibility == Accessibility.Public;
+		//--------------------------------------------------------------------------------------------------------------
+		static bool IsExplicitInitializeMethodImplementation(IMethodSymbol method) =>
+			method.MethodKind == MethodKind.ExplicitInterfaceImplementation && LastSegmentIsInitialize(method.Name);
+		//--------------------------------------------------------------------------------------------------------------
+		static bool LastSegmentIsInitialize(string methodName)
+		{
+			int lastDotIndex = methodName.LastIndexOf('.');
+
+			if (lastDotIndex < 0)
+				return methodName == DelegateNames.Initialize;
+
+			var methodNameSpan = methodName.AsSpan();
+			var lastSegment = methodNameSpan[(lastDotIndex + 1)..];
+
+			return lastSegment.Equals(DelegateNames.Initialize.AsSpan(), StringComparison.Ordinal);
+		}
 	}
 
 	private static InitializeMethodInfo? TryGetInitializeMethodInfo(List<IMethodSymbol> initializeCandidatesInType, IMethodSymbol originalInitializeMethod,
