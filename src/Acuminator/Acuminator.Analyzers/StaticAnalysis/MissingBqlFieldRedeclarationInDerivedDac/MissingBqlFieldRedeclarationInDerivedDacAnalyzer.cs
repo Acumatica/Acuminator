@@ -102,8 +102,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			if (declaredBqlFieldFromBaseDacs.BqlFieldDataTypeEffective == null)
 				return GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
 
-			var propertyTypeName	   = new PropertyTypeName(declaredBqlFieldFromBaseDacs.BqlFieldDataTypeEffective.Name);
-			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName);
+			string propertyTypeName	   = declaredBqlFieldFromBaseDacs.BqlFieldDataTypeEffective.GetSimplifiedName();
+
+			if (propertyTypeName.IsNullOrWhiteSpace())
+				return GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
+
+			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
+			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(strongPropertyTypeName);
 			mappedBqlFieldType		 ??= GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
 
 			return mappedBqlFieldType;
