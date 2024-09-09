@@ -76,13 +76,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <value>
 		/// The type of the DAC field property.
 		/// </value>
-		public ITypeSymbol? FieldPropertyType { get; private set; }
+		public ITypeSymbol? PropertyType { get; private set; }
 
 		/// <value>
-		/// The effective type of the property. For reference types and non nullable value types it is the same as <see cref="PropertyType"/>. 
+		/// The non nullable type of the property. For reference types and non nullable value types it is the same as <see cref="PropertyType"/>. 
 		/// For nulable value types it is the underlying type extracted from nullable. It is <c>T</c> for <see cref="Nullable{T}"/>.
 		/// </value>
-		public ITypeSymbol? EffectivePropertyType { get; private set; }
+		public ITypeSymbol? PropertyTypeUnwrappedNullable { get; private set; }
 
 		/// <summary>
 		/// The declared BQL field data type of this DAC field.
@@ -152,11 +152,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				IsKey 					  = dacPropertyInfo.IsKey;
 				IsIdentity 				  = dacPropertyInfo.IsIdentity;
 				IsAutoNumbering 		  = dacPropertyInfo.IsAutoNumbering;
-				FieldPropertyType 		  = dacPropertyInfo.PropertyType;
-				EffectivePropertyType 	  = dacPropertyInfo.EffectivePropertyType;
 				DeclaredDbBoundness 	  = dacPropertyInfo.DeclaredDbBoundness;
 				EffectiveDbBoundness 	  = dacPropertyInfo.EffectiveDbBoundness;
 				HasAcumaticaAttributes 	  = dacPropertyInfo.HasAcumaticaAttributesEffective;
+
+				PropertyType 				  = dacPropertyInfo.PropertyType;
+				PropertyTypeUnwrappedNullable = dacPropertyInfo.PropertyTypeUnwrappedNullable;
 			}
 			else
 			{
@@ -165,11 +166,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				IsKey 					  = false;
 				IsIdentity 				  = false;
 				IsAutoNumbering 		  = false;
-				FieldPropertyType 		  = null;
-				EffectivePropertyType 	  = null;
 				DeclaredDbBoundness 	  = DbBoundnessType.NotDefined;
 				EffectiveDbBoundness 	  = DbBoundnessType.NotDefined;
 				HasAcumaticaAttributes 	  = false;
+
+				PropertyType 				  = null;
+				PropertyTypeUnwrappedNullable = null;
 			}
 		}
 
@@ -188,8 +190,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			IsAutoNumbering 		  = IsAutoNumbering 		  || baseInfo.IsAutoNumbering;
 			HasAcumaticaAttributes 	  = HasAcumaticaAttributes 	  || baseInfo.HasAcumaticaAttributes;
 
-			FieldPropertyType	  ??= baseInfo.FieldPropertyType;
-			EffectivePropertyType ??= baseInfo.EffectivePropertyType;
+			PropertyType				  ??= baseInfo.PropertyType;
+			PropertyTypeUnwrappedNullable ??= baseInfo.PropertyTypeUnwrappedNullable;
 
 			BqlFieldDataTypeEffective ??= baseInfo.BqlFieldDataTypeEffective;
 

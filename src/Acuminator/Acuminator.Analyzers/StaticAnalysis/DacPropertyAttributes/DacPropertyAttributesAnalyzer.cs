@@ -266,7 +266,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				return;
 			}
 
-			if (!dataTypeFromAttribute.Equals(property.EffectivePropertyType, SymbolEqualityComparer.Default))
+			if (!dataTypeFromAttribute.Equals(property.PropertyTypeUnwrappedNullable, SymbolEqualityComparer.Default))
 			{
 				ReportIncompatibleTypesDiagnostics(property, dataTypeAttribute, symbolContext, pxContext, registerCodeFix: true);
 			}

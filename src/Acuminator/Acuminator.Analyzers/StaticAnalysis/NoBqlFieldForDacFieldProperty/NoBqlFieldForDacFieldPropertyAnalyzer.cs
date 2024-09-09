@@ -185,7 +185,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 				return;
 
 			var properties = ImmutableDictionary<string, string?>.Empty;
-			string? propertyTypeName = dacFieldWithoutBqlField.EffectivePropertyType?.GetSimplifiedName();
+			string? propertyTypeName = dacFieldWithoutBqlField.PropertyTypeUnwrappedNullable?.GetSimplifiedName();
 
 			if (registerCodeFix && propertyTypeName != null)
 			{

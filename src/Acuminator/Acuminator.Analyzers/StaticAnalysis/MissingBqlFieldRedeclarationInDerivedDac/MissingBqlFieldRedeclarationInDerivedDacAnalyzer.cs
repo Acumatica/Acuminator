@@ -116,7 +116,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 
 		private string? GetBqlFieldTypeNameFromPropertyType(DacFieldInfo notRedeclaredBqlField)
 		{
-			string? propertyTypeName = notRedeclaredBqlField.EffectivePropertyType?.GetSimplifiedName();
+			string? propertyTypeName = notRedeclaredBqlField.PropertyTypeUnwrappedNullable?.GetSimplifiedName();
 
 			if (propertyTypeName == null)
 				return null;
