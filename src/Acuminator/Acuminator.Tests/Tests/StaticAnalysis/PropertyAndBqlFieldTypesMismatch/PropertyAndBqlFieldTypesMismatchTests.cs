@@ -25,6 +25,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PropertyAndBqlFieldTypesMismatchFix();
 
+		#region BQL field first
 		[Theory]
 		[EmbeddedFileData("DacWithInconsistentTypes_BqlFieldFirst.cs")]
 		public async Task Dac_WithMismatchingTypes_BqlFieldFirst(string actual) =>
@@ -43,5 +44,29 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 		[EmbeddedFileData("DacWithInconsistentTypes_BqlFieldFirst_Expected.cs")]
 		public async Task Dac_WithFixedBqlFieldTypes_AfterFix_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
+
+		#region Property first
+		[Theory]
+		[EmbeddedFileData("DacWithInconsistentTypes_PropertyFirst.cs")]
+		public async Task Dac_WithMismatchingTypes_PropertyFirst(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(13, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(15, 46),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(20, 18),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(22, 34),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(27, 18),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(29, 46));
+
+		[Theory]
+		[EmbeddedFileData("DacWithInconsistentTypes_PropertyFirst.cs", "DacWithInconsistentTypes_PropertyFirst_Expected.cs")]
+		public async Task Dac_WithMismatchingTypes_FixPropertyType_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithInconsistentTypes_PropertyFirst_Expected.cs")]
+		public async Task Dac_WithFixedPropertyTypes_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
 	}
 }
