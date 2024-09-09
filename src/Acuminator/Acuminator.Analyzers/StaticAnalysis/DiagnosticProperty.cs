@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace Acuminator.Analyzers.StaticAnalysis
 {
 	/// <summary>
@@ -33,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public const string IsBoundField = nameof(IsBoundField);
 
 		/// <summary>
-		/// The property used to pass the information about a property type, usually, a DAC property.
+		/// The property used to pass the information about a property data type like <see cref="String"/>. Usually, it is used for a DAC property.
 		/// </summary>
 		public const string PropertyType = nameof(PropertyType);
 
@@ -41,6 +42,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// The property used to pass the information about a DAC BQL field type like BqlString.
 		/// </summary>
 		public const string BqlFieldType = nameof(BqlFieldType);
+
+		/// <summary>
+		/// The property used to pass the information about a DAC BQL field data type like <see cref="String"/>.
+		/// </summary>
+		public const string BqlFieldDataType = nameof(BqlFieldDataType);
 
 		/// <summary>
 		/// The property used to pass the information that the diagnostic is reported on the property. 
