@@ -132,9 +132,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 
 			if (isArrayType)
 			{
-				var elementTypeName = dataTypeName[..indexOfOpeningSquareBracket];
-				var elementTypeNode = IdentifierName(elementTypeName);
+				var elementTypeName	   = dataTypeName[..indexOfOpeningSquareBracket].Trim();
+				var predefinedTypeKind = GetPredefinedTypeKind(elementTypeName);
 
+				TypeSyntax elementTypeNode = predefinedTypeKind.HasValue
+					? PredefinedType(
+						Token(predefinedTypeKind.Value))
+					: IdentifierName(elementTypeName); 
+				
 				var arrayRankSpecifier = ArrayRankSpecifier(
 											SingletonSeparatedList<ExpressionSyntax>(
 												OmittedArraySizeExpression()));
@@ -142,11 +147,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 										  SingletonList(arrayRankSpecifier));
 				return arrayType;
 			}
-			
-			var dataTypeNode = IdentifierName(dataTypeName);
-			return isPropertyTypeNullable
-				? NullableType(dataTypeNode)
-				: dataTypeNode;
+			else
+			{
+				var predefinedTypeKind  = GetPredefinedTypeKind(dataTypeName);
+				TypeSyntax dataTypeNode = predefinedTypeKind.HasValue
+					? PredefinedType(
+						Token(predefinedTypeKind.Value))
+					: IdentifierName(dataTypeName);
+
+				return isPropertyTypeNullable
+					? NullableType(dataTypeNode)
+					: dataTypeNode;
+			}	
+		}
+
+		private SyntaxKind? GetPredefinedTypeKind(string dataTypeName)
+		{
+			SyntaxKind keywordKind = SyntaxFacts.GetKeywordKind(dataTypeName);
+			return SyntaxFacts.IsPredefinedType(keywordKind)
+				? keywordKind
+				: null;
 		}
 
 		private Task<Document> ChangeBqlFieldTypeToPropertyTypeAsync(Document document, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
