@@ -107,8 +107,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			if (propertyTypeName.IsNullOrWhiteSpace())
 				return GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
 
-			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
-			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(strongPropertyTypeName);
+			var propertyDataTypeName = new DataTypeName(propertyTypeName);
+			string? mappedBqlFieldType = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyDataTypeName);
 			mappedBqlFieldType		 ??= GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
 
 			return mappedBqlFieldType;
@@ -121,8 +121,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			if (propertyTypeName == null)
 				return null;
 
-			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
-			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(strongPropertyTypeName);
+			var propertyDataTypeName = new DataTypeName(propertyTypeName);
+			string? mappedBqlFieldType = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyDataTypeName);
 
 			return mappedBqlFieldType;
 		}

@@ -42,9 +42,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				return;
 			}
 
-			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
+			var propertyDataTypeName = new DataTypeName(propertyTypeName);
 			string bqlFieldName = bqlFieldNode.Identifier.Text;
-			SimpleBaseTypeSyntax? newBaseType = BqlFieldGeneration.BaseTypeForBqlField(strongPropertyTypeName, bqlFieldName);
+			SimpleBaseTypeSyntax? newBaseType = BqlFieldGeneration.BaseTypeForBqlField(propertyDataTypeName, bqlFieldName);
 			if (newBaseType == null)
 				return;
 
