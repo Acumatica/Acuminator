@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 	{
 		public string Name { get; }
 
-		public ITypeSymbol? DacType { get; }
+		public ITypeSymbol DacType { get; }
 
 		public DacPropertyInfo? PropertyInfo { get; }
 

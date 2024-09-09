@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -67,6 +68,34 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			return members.OfType<INamedTypeSymbol>()
 						  .FirstOrDefault(bqlField => caseInsensitiveName.Equals(bqlField.Name, StringComparison.OrdinalIgnoreCase));
+		}
+
+		/// <summary>
+		/// Gets the DAC BQL field data type from BQL field symbol.
+		/// </summary>
+		/// <param name="bqlField">The BQL field symbol.</param>
+		/// <returns>
+		/// The BQL field data type (like <see cref="string"/>) from BQL field symbol.
+		/// </returns>
+		public static ITypeSymbol? GetBqlFieldDataTypeFromBqlFieldSymbol(this ITypeSymbol bqlField)
+		{
+			bqlField.ThrowOnNull();
+
+			if (bqlField.BaseType == null || bqlField.BaseType.Name != TypeNames.BqlField.Field)
+				return null;
+
+			var bqlFieldBqlDataType = bqlField.BaseType.ContainingType;		// this symbol represents types like BqlString, BqlInt, etc.
+
+			if (bqlFieldBqlDataType?.Name != TypeNames.BqlField.BqlType || !bqlFieldBqlDataType.IsGenericType)
+				return null;
+
+			var bqlFieldTypeGenericTypeArgs = bqlFieldBqlDataType.TypeArguments;
+
+			if (bqlFieldTypeGenericTypeArgs.Length != 2)
+				return null;
+
+			var bqlFieldDataType = bqlFieldTypeGenericTypeArgs[1];
+			return bqlFieldDataType;
 		}
 
 		/// <summary>

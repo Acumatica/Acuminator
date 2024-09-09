@@ -31,6 +31,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public GraphOrGraphExtInfoBase GraphOrGraphExtInfo { get; }
 
+		public string Name => GraphOrGraphExtInfo.Name;
+
 		[MemberNotNullWhen(returnValue: false, nameof(Node))]
 		public bool IsInMetadata => GraphOrGraphExtInfo.IsInMetadata;
 

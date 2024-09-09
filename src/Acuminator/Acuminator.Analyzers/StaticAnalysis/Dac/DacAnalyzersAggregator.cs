@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
@@ -15,6 +14,7 @@ using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
 using Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension;
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
+using Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDerived;
 using Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute;
 using Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
@@ -48,7 +48,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new ForbiddenFieldsInDacAnalyzer(),
 			new DacUiAttributesAnalyzer(),
 			new InheritanceFromPXCacheExtensionAnalyzer(),
-			new NoBqlFieldForDacFieldProperty.NoBqlFieldForDacFieldPropertyAnalyzer(),
+			new NoBqlFieldForDacFieldPropertyAnalyzer(),
+			new MissingBqlFieldRedeclarationInDerivedDacAnalyzer(),
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
 			new KeyFieldDeclarationAnalyzer(),

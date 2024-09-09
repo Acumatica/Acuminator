@@ -1519,6 +1519,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Redeclare &quot;{0}&quot; BQL field in DAC &quot;{1}&quot;.
+        /// </summary>
+        public static string PX1067FixFormat {
+            get {
+                return ResourceManager.GetString("PX1067FixFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL fields from base DACs should be redeclared in the derived DAC. DAC &quot;{0}&quot; does not contain a redeclaration of BQL field &quot;{1}&quot; declared in the base DAC &quot;{2}&quot;..
+        /// </summary>
+        public static string PX1067TitleFormat {
+            get {
+                return ResourceManager.GetString("PX1067TitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {

@@ -50,6 +50,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <inheritdoc cref="PXGraphSemanticModel.GraphOrGraphExtInfo"/>
 		public GraphOrGraphExtInfoBase GraphOrGraphExtInfo => BaseGraphModel.GraphOrGraphExtInfo;
 
+		public string Name => BaseGraphModel.Name;
+
 		[MemberNotNullWhen(returnValue: false, nameof(Node))]
 		public bool IsInMetadata => GraphOrGraphExtInfo.IsInMetadata;
 

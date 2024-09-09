@@ -93,11 +93,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			if (!typeSymbol.BaseValidation())
 				return false;
-			else if (typeSymbol.ImplementsInterface(TypeNames.IBqlField))       //Should work for named types and type parameters in most cases
+			else if (typeSymbol.ImplementsInterface(TypeNames.BqlField.IBqlField))       //Should work for named types and type parameters in most cases
 				return true;
 			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
 				return typeParameterSymbol.GetAllConstraintTypes()
-										  .Any(constraint => constraint.ImplementsInterface(TypeNames.IBqlField));
+										  .Any(constraint => constraint.ImplementsInterface(TypeNames.BqlField.IBqlField));
 			else
 				return false;
 		}

@@ -4,6 +4,7 @@ using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -40,7 +41,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 				string? propertyTypeName = property.EffectivePropertyType.GetSimplifiedName();
 
-				if (propertyTypeName == null || !PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(propertyTypeName))
+				if (propertyTypeName == null)
+					continue;
+
+				var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
+
+				if (!PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(strongPropertyTypeName))
 					continue;
 
 				var args = ImmutableDictionary.CreateBuilder<string, string?>();

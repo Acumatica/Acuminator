@@ -96,6 +96,9 @@
     <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsNonIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToApisForbiddenToIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToMathRoundAPIs.cs" />
+    <Compile Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\MissingBqlFieldRedeclarationInDerivedDacTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields.cs" />
     <Compile Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\NameConventionEventsInGraphsAndGraphExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached_Expected.cs" />
@@ -658,6 +661,9 @@
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphWithExplicitInitializeMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphExtensionWithIncorrectInitializeMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Graph\Sources\InitializeMethod\GraphExtensionWithInitializeMethod.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacWithBaseTypeNonDac.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacExtensionWithBaseTypeNonDac.cs" />
+    <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacChainedExtensionWithBaseTypeNonDac.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\RoslynTestContext.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\SemanticModelTestsBase.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\Dac\DacSemanticModelTests.cs" />

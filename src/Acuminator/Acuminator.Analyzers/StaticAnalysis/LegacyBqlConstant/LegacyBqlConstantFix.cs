@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Constants;
 
 using Microsoft.CodeAnalysis;
@@ -38,7 +39,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 			}
 
 			context.CancellationToken.ThrowIfCancellationRequested();
-			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(propertyTypeName, constantNode.Identifier.Text);
+
+			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
+			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(strongPropertyTypeName, constantNode.Identifier.Text);
 
 			if (newBaseType != null)
 			{
@@ -51,7 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 			}
 		}
 
-		private SimpleBaseTypeSyntax? CreateBaseType(string propertyTypeName, string constantName)
+		private SimpleBaseTypeSyntax? CreateBaseType(PropertyTypeName propertyTypeName, string constantName)
 		{
 			string? bqlTypeName = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName).NullIfWhiteSpace();
 

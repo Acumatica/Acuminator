@@ -336,6 +336,9 @@
   <data name="PX1066" xml:space="preserve">
     <value>TypoInBqlFieldName</value>
   </data>
+  <data name="PX1067" xml:space="preserve">
+    <value>MissingBqlFieldRedeclarationInDerivedDac</value>
+  </data>
   <data name="PX1070" xml:space="preserve">
     <value>UiPresentationLogicInEventHandlers</value>
   </data>

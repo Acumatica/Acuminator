@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => GraphSemanticModel.Symbol.Name;
+			get => GraphSemanticModel.Name;
 			protected set { }
 		}
 

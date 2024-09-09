@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Simplification;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -43,88 +44,82 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 								ParseName(namespaceName)));
 		}
 
-		public static ClassDeclarationSyntax? GenerateBqlField(PropertyDeclarationSyntax? property, string propertyTypeName, string bqlFieldName,
-															   bool isFirstField)
+		/// <summary>
+		/// Create attribute list of the supplied type
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static AttributeListSyntax GetAttributeList(this INamedTypeSymbol type, AttributeArgumentListSyntax? argumentList = null)
 		{
-			var bqlFieldBaseTypeNode = BaseTypeForBqlField(propertyTypeName, bqlFieldName);
+			type.ThrowOnNull();
 
-			if (bqlFieldBaseTypeNode == null)
-				return null;
+			var node = Attribute(
+						IdentifierName(
+							type.Name))
+						.WithAdditionalAnnotations(Simplifier.Annotation);
 
-			var baseTypesListNode = BaseList(
-										SingletonSeparatedList<BaseTypeSyntax>(bqlFieldBaseTypeNode));
-			var bqlFieldNode = ClassDeclaration(
-									attributeLists: default,
-									TokenList(
-										Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AbstractKeyword)),
-									Identifier(bqlFieldName), typeParameterList: null, baseTypesListNode,
-									constraintClauses: default, members: default)
-								.WithOpenBraceToken(
-									Token(leading: TriviaList(), SyntaxKind.OpenBraceToken, TriviaList()));
+			if (argumentList != null)
+			{
+				node = node.WithArgumentList(argumentList);
+			}
 
-			var clostBracketToken = isFirstField
-				? Token(leading: TriviaList(Space), SyntaxKind.CloseBraceToken, 
-						TriviaList(CarriageReturn, LineFeed, CarriageReturn, LineFeed))
-				: Token(leading: TriviaList(Space), SyntaxKind.CloseBraceToken, TriviaList(CarriageReturn, LineFeed));
+			var list = AttributeList(
+						SingletonSeparatedList(
+							node));
 
-			bqlFieldNode = bqlFieldNode.WithCloseBraceToken(clostBracketToken);
-
-			if (property != null)
-				bqlFieldNode = CopyRegionsFromProperty(bqlFieldNode, property);
-
-			return bqlFieldNode;
+			return list;
 		}
 
-		public static SimpleBaseTypeSyntax? BaseTypeForBqlField(string propertyTypeName, string bqlFieldName)
+		public static TNode CopyRegionsFromTrivia<TNode>(TNode nodeToCopyTrivia, in SyntaxTriviaList leadingTrivia)
+		where TNode : SyntaxNode
 		{
-			if (propertyTypeName.IsNullOrWhiteSpace() || bqlFieldName.IsNullOrWhiteSpace())
-				return null;
-
-			var bqlTypeName = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName).NullIfWhiteSpace();
-
-			if (bqlTypeName == null)
-				return null;
-
-			GenericNameSyntax fieldTypeNode =
-				GenericName(Identifier("Field"))
-					.WithTypeArgumentList(
-						TypeArgumentList(
-							SingletonSeparatedList<TypeSyntax>(IdentifierName(bqlFieldName)))
-						.WithGreaterThanToken(
-							Token(leading: TriviaList(), SyntaxKind.GreaterThanToken, TriviaList(Space))));
-
-			var newBaseType =
-				SimpleBaseType(
-					QualifiedName(
-						QualifiedName(
-							QualifiedName(
-								QualifiedName(
-									IdentifierName("PX"),
-									IdentifierName("Data")),
-									IdentifierName("BQL")),
-									IdentifierName(bqlTypeName)),
-						fieldTypeNode));
-
-			return newBaseType;
-		}
-
-		private static ClassDeclarationSyntax CopyRegionsFromProperty(ClassDeclarationSyntax bqlFieldNode, PropertyDeclarationSyntax property)
-		{
-			var leadingTrivia = property.GetLeadingTrivia();
-
-			if (leadingTrivia.Count == 0)
-				return bqlFieldNode;
+			nodeToCopyTrivia.ThrowOnNull();
 
 			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
 
 			if (regionTrivias.Count == 0)
-				return bqlFieldNode;
+				return nodeToCopyTrivia;
 
 			var regionsTrivia = TriviaList(regionTrivias);
-			var bqlFieldNodeLeadingTrivia = bqlFieldNode.GetLeadingTrivia();
+			var bqlFieldNodeLeadingTrivia = nodeToCopyTrivia.GetLeadingTrivia();
 			var newBqlFieldNodeTrivia = bqlFieldNodeLeadingTrivia.AddRange(regionsTrivia);
 
-			return bqlFieldNode.WithLeadingTrivia(newBqlFieldNodeTrivia);
+			return nodeToCopyTrivia.WithLeadingTrivia(newBqlFieldNodeTrivia);
+		}
+
+		/// <summary>
+		/// Removes the regions from the type member node leading trivia.
+		/// </summary>
+		/// <param name="member">The type member node.</param>
+		/// <returns>
+		/// Type member node with removed regions from leading trivia.
+		/// </returns>
+		[return: NotNullIfNotNull(nameof(member))]
+		public static MemberDeclarationSyntax? RemoveRegionsFromLeadingTrivia(MemberDeclarationSyntax? member)
+		{
+			if (member == null)
+				return member;
+
+			var leadingTrivia	 = member.GetLeadingTrivia();
+			var newLeadingTrivia = RemoveRegionsFromTrivia(leadingTrivia);
+
+			return newLeadingTrivia != null
+				? member.WithLeadingTrivia(newLeadingTrivia)
+				: member;
+		}
+
+		public static IEnumerable<SyntaxTrivia>? RemoveRegionsFromTrivia(in SyntaxTriviaList leadingTrivia)
+		{
+			if (leadingTrivia.Count == 0)
+				return null;
+
+			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
+
+			if (regionTrivias.Count == 0)
+				return null;
+
+			var newLeadingTrivia = leadingTrivia.Except(regionTrivias);
+			return newLeadingTrivia;
 		}
 	}
 }

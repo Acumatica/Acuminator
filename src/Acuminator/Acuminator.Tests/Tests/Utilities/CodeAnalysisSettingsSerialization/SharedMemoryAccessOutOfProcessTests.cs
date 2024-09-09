@@ -37,7 +37,6 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 		{
 			string externalExecutorPath = Path.GetFullPath(ExternalExecutorFilePath);
 
-			// Acuminator disable once PX1099 ForbiddenApiUsage
 			File.Exists(externalExecutorPath).Should().BeTrue();
 
 			string externalExecutorDir = Path.GetDirectoryName(externalExecutorPath);
@@ -54,7 +53,7 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 			using var outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(mockSettingsEvents, expectedCodeAnalysisSettings, 
 																					expectedBannedApiSettings, SharedVsSettings.SharedMemoryNameForTests);
 
-			// Acuminator disable once PX1099 ForbiddenApiUsage
+			// Acuminator disable once PX1099 UsageOfForbiddenApi
 			var processStartInfo = new ProcessStartInfo(externalExecutorPath, commandLineArgs)
 			{
 				UseShellExecute  = false,

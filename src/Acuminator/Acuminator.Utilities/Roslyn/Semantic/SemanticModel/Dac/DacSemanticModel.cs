@@ -28,6 +28,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public DacOrDacExtInfoBase DacOrDacExtInfo { get; }
 
+		public string Name => DacOrDacExtInfo.Name;
+
 		[MemberNotNullWhen(returnValue: false, nameof(Node))]
 		public bool IsInMetadata => DacOrDacExtInfo.IsInMetadata;
 

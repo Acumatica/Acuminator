@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.CodeGeneration;
 using Acuminator.Utilities.Roslyn.Syntax;
 
@@ -31,8 +32,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!diagnostic.IsRegisteredForCodeFix() ||
-				!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacFieldName, out string? dacFieldame) ||
-				dacFieldame.IsNullOrWhiteSpace())
+				!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacFieldName, out string? dacFieldName) ||
+				dacFieldName.IsNullOrWhiteSpace())
 			{
 				return Task.CompletedTask;
 			}
@@ -45,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			string bqlFieldName = dacFieldame.FirstCharToLower();
+			string bqlFieldName = dacFieldName.FirstCharToLower();
 
 			// equivalence key should not contain format arguments to allow mass code fixes
 			string equivalenceKey = nameof(Resources.PX1065FixFormat).GetLocalized().ToString();
@@ -77,7 +78,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (dacNode == null)
 				return document;
 
-			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, propertyType);
+			var strongPropertyTypeName = new PropertyTypeName(propertyType);
+			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, strongPropertyTypeName);
 
 			if (newDacMembers == null)
 				return document;
@@ -90,14 +92,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 		private SyntaxList<MemberDeclarationSyntax>? CreateMembersListWithBqlField(ClassDeclarationSyntax dacNode, 
 																				   PropertyDeclarationSyntax propertyWithoutBqlFieldNode,
-																				   string bqlFieldName, string propertyType)
+																				   string bqlFieldName, PropertyTypeName propertyType)
 		{
 			var members = dacNode.Members;
 
 			if (members.Count == 0)
 			{
-				var newSingleBqlFieldNode = CodeGeneration.GenerateBqlField(propertyWithoutBqlFieldNode, propertyType, 
-																			bqlFieldName, isFirstField: true);
+				var newSingleBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: true, 
+																					 isRedeclaration: false, propertyWithoutBqlFieldNode);
 				return newSingleBqlFieldNode != null
 					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
 					: null;
@@ -108,31 +110,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (propertyMemberIndex < 0)
 				propertyMemberIndex = 0;
 
-			var newBqlFieldNode = CodeGeneration.GenerateBqlField(propertyWithoutBqlFieldNode, propertyType, bqlFieldName, 
-																  isFirstField: propertyMemberIndex == 0);
+			var newBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: propertyMemberIndex == 0,
+																		   isRedeclaration: false, propertyWithoutBqlFieldNode);
 			if (newBqlFieldNode == null)
 				return null;
 
-			var propertyWithoutRegions = RemoveRegionsFromPropertyTrivia(propertyWithoutBqlFieldNode);
+			var propertyWithoutRegions = CodeGeneration.RemoveRegionsFromLeadingTrivia(propertyWithoutBqlFieldNode);
 			var newMembers = members.Replace(propertyWithoutBqlFieldNode, propertyWithoutRegions)
 									.Insert(propertyMemberIndex, newBqlFieldNode);
 			return newMembers;
-		}
-
-		private PropertyDeclarationSyntax RemoveRegionsFromPropertyTrivia(PropertyDeclarationSyntax property)
-		{
-			var leadingTrivia = property.GetLeadingTrivia();
-
-			if (leadingTrivia.Count == 0)
-				return property;
-
-			var regionTrivias = leadingTrivia.GetRegionDirectiveLinesFromTrivia();
-
-			if (regionTrivias.Count == 0)
-				return property;
-
-			var newLeadingTrivia = leadingTrivia.Except(regionTrivias);
-			return property.WithLeadingTrivia(newLeadingTrivia);
 		}
 	}
 }

@@ -28,12 +28,17 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 		{
 			var dacSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
 
+			dacSemanticModel.DacType.Should().Be(DacType.Dac);
+
 			// Check that fields from base types from PX.Objects were collected
 			TestDacFields(dacSemanticModel, ["OrderType", "OrderNbr", "Status", "Tstamp"], fieldsCount: 4);
 
 			foreach (var dacField in dacSemanticModel.DacFields)
 			{
 				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.BqlFieldInfo!.BqlFieldDataTypeDeclared.Should().BeNull();
+				dacField.BqlFieldInfo.BqlFieldDataTypeEffective.Should().BeNull();
+
 				dacField.PropertyInfo.Should().NotBeNull();
 			}
 		}
@@ -44,14 +49,82 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 		{
 			var dacSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
 
+			dacSemanticModel.DacType.Should().Be(DacType.Dac);
+
 			// Check that fields from base types from PX.Objects were collected
 			TestDacFields(dacSemanticModel, ["docType", "refNbr", "noteID"], minFieldsCount: 4);
 
 			foreach (var dacField in dacSemanticModel.DeclaredDacFields)
 			{
 				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.BqlFieldInfo!.BqlFieldDataTypeDeclared.Should().NotBeNull();
+				
 				dacField.PropertyInfo.Should().BeNull();
 			}
+
+			dacSemanticModel.BqlFieldsByNames["docType"].BqlFieldDataTypeDeclared!.Name.Should().Be("String");
+			dacSemanticModel.BqlFieldsByNames["refNbr"].BqlFieldDataTypeDeclared!.Name.Should().Be("String");
+			dacSemanticModel.BqlFieldsByNames["noteID"].BqlFieldDataTypeDeclared!.Name.Should().Be("Guid");
+		}
+
+		[Theory]
+		[EmbeddedFileData("DacWithBaseTypeNonDac.cs")]
+		public async Task Dac_DerivedFromNonDac_DacFieldsRecognition(string text)
+		{
+			var dacSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
+
+			dacSemanticModel.DacType.Should().Be(DacType.Dac);
+
+			TestDacFields(dacSemanticModel, requiredDacFields: ["OrderType", "OrderNbr", "CreatedByID", "CreatedByScreenID", "CreatedDateTime"], 
+						  fieldsCount: 5);
+
+			foreach (var dacField in dacSemanticModel.DacFields)
+			{
+				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.PropertyInfo.Should().NotBeNull();
+			}
+		}
+
+		[Theory]
+		[EmbeddedFileData("DacExtensionWithBaseTypeNonDac.cs")]
+		public async Task DacExtension_BaseDac_DerivedFromNonDac_DacFieldsRecognition(string text)
+		{
+			var dacSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
+
+			dacSemanticModel.DacType.Should().Be(DacType.DacExtension);
+
+			TestDacFields(dacSemanticModel,
+						  requiredDacFields: ["Descr", "OrderType", "OrderNbr", "CreatedByID", "CreatedByScreenID", "CreatedDateTime"],
+						  fieldsCount: 6);
+
+			foreach (var dacField in dacSemanticModel.DacFields)
+			{
+				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.PropertyInfo.Should().NotBeNull();
+			}
+
+			dacSemanticModel.DacFieldsByNames["CreatedByID"].Base.Should().NotBeNull();
+		}
+
+		[Theory]
+		[EmbeddedFileData("DacChainedExtensionWithBaseTypeNonDac.cs")]
+		public async Task ChainedDacExtension_BaseDac_DerivedFromNonDac_DacFieldsRecognition(string text)
+		{
+			var dacSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
+
+			dacSemanticModel.DacType.Should().Be(DacType.DacExtension);
+
+			TestDacFields(dacSemanticModel,
+						  requiredDacFields: ["TaxAmt", "Descr", "OrderType", "OrderNbr", "CreatedByID", "CreatedByScreenID", "CreatedDateTime"],
+						  fieldsCount: 7);
+
+			foreach (var dacField in dacSemanticModel.DacFields)
+			{
+				dacField.BqlFieldInfo.Should().NotBeNull();
+				dacField.PropertyInfo.Should().NotBeNull();
+			}
+
+			dacSemanticModel.DacFieldsByNames["CreatedByID"].Base.Should().NotBeNull();
 		}
 
 		protected override Task<DacSemanticModel> PrepareSemanticModelAsync(RoslynTestContext context, CancellationToken cancellation = default)

@@ -13,74 +13,64 @@ namespace Acuminator.Utilities.Roslyn.Constants
 	{
 		private static readonly Dictionary<string, string> _propertyTypeToBqlFieldType = new(StringComparer.OrdinalIgnoreCase)
 		{
-			{ "String", "BqlString" },
-			{ "Guid", "BqlGuid" },
-			{ "DateTime", "BqlDateTime" },
+			{ nameof(String)  , "BqlString"   },
+			{ nameof(Guid)	  , "BqlGuid"	  },
+			{ nameof(DateTime), "BqlDateTime" },
 
-			{ "Bool", "BqlBool" },
-			{ "Boolean", "BqlBool" },
+			{ "Bool"		 , "BqlBool" },
+			{ nameof(Boolean), "BqlBool" },
 
-			{ "Byte", "BqlByte" },
+			{ nameof(Byte), "BqlByte" },
 
-			{ "Short", "BqlShort" },
-			{ "Int16", "BqlShort" },
+			{ "Short"	   , "BqlShort" },
+			{ nameof(Int16), "BqlShort" },
 
-			{ "Int", "BqlInt" },
-			{ "Int32", "BqlInt" },
+			{ "Int"		   , "BqlInt" },
+			{ nameof(Int32), "BqlInt" },
 
-			{ "Long", "BqlLong" },
-			{ "Int64", "BqlLong" },
+			{ "Long"	   , "BqlLong" },
+			{ nameof(Int64), "BqlLong" },
 
-			{ "Float", "BqlFloat" },
-			{ "Single", "BqlFloat" },
+			{ "Float"		, "BqlFloat" },
+			{ nameof(Single), "BqlFloat" },
 
-			{ "Double", "BqlDouble" },
-			{ "Decimal", "BqlDecimal" },
+			{ nameof(Double) , "BqlDouble" },
+			{ nameof(Decimal), "BqlDecimal" },
 
-			{ "Byte[]", "BqlByteArray" },
-			{ "ByteArray", "BqlByteArray" }
+			{ $"{nameof(Byte)}[]", "BqlByteArray" },
+			{ "ByteArray"		 , "BqlByteArray" }
 		};
 
 		private static readonly Dictionary<string, string> _bqlFieldTypeToPropertyType = new(StringComparer.OrdinalIgnoreCase)
 		{
-			{ "BqlString"	 , "String" },
-			{ "BqlGuid"		 , "Guid" },
-			{ "BqlDateTime"	 , "DateTime" },
-			{ "BqlBool"		 , "Boolean" },
-			{ "BqlByte" 	 , "Byte" },
-			{ "BqlShort"	 , "Int16" },
-			{ "BqlInt"		 , "Int32" },
-			{ "BqlLong"		 , "Int64" },
-			{ "BqlFloat"	 , "Single" },
-			{ "BqlDouble" 	 , "Double" },
-			{ "BqlDecimal" 	 , "Decimal" },
-			{ "BqlByteArray" , "Byte[]" },
+			{ "BqlString"	 , nameof(String) 	   },
+			{ "BqlGuid"		 , nameof(Guid) 	   },
+			{ "BqlDateTime"	 , nameof(DateTime)	   },
+			{ "BqlBool"		 , nameof(Boolean) 	   },
+			{ "BqlByte" 	 , nameof(Byte) 	   },
+			{ "BqlShort"	 , nameof(Int16)	   },
+			{ "BqlInt"		 , nameof(Int32) 	   },
+			{ "BqlLong"		 , nameof(Int64) 	   },
+			{ "BqlFloat"	 , nameof(Single) 	   },
+			{ "BqlDouble" 	 , nameof(Double)	   },
+			{ "BqlDecimal" 	 , nameof(Decimal) 	   },
+			{ "BqlByteArray" , $"{nameof(Byte)}[]" },
 		};
 
-		public static bool ContainsPropertyType(string propertyType) =>
-			_propertyTypeToBqlFieldType.ContainsKey(propertyType);
+		public static bool ContainsPropertyType(PropertyTypeName propertyType) =>
+			_propertyTypeToBqlFieldType.ContainsKey(propertyType.Value);
 
-		public static bool ContainsBqlFieldType(string bqlFieldType) =>
-			_bqlFieldTypeToPropertyType.ContainsKey(bqlFieldType);
+		public static bool ContainsBqlFieldType(BqlFieldTypeName bqlFieldType) =>
+			_bqlFieldTypeToPropertyType.ContainsKey(bqlFieldType.Value);
 
-		public static string? GetBqlFieldType(string? propertyType)
-		{
-			if (propertyType.IsNullOrWhiteSpace())
-				return null;
-
-			return _propertyTypeToBqlFieldType.TryGetValue(propertyType, out var bqlFieldType)
-				? bqlFieldType 
+		public static string? GetBqlFieldType(PropertyTypeName propertyType) =>
+			_propertyTypeToBqlFieldType.TryGetValue(propertyType.Value, out var bqlFieldType)
+				? bqlFieldType
 				: null;
-		}
 
-		public static string? GetPropertyTypeType(string? bqlFieldType)
-		{
-			if (bqlFieldType.IsNullOrWhiteSpace())
-				return null;
-
-			return _bqlFieldTypeToPropertyType.TryGetValue(bqlFieldType, out var propertyType)
+		public static string? GetPropertyType(BqlFieldTypeName bqlFieldType) =>
+			_bqlFieldTypeToPropertyType.TryGetValue(bqlFieldType.Value, out var propertyType)
 				? propertyType
 				: null;
-		}
 	}
 }
