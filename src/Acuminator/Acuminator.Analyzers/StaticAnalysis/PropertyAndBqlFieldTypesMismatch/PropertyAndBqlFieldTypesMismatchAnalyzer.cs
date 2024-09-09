@@ -63,13 +63,13 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 		if (propertyTypeLocation == null || bqlTypeLocation == null)
 			return;
 
-		string propertyTypeName  = declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable!.GetSimplifiedName();
-		string? bqlFieldTypeName = GetBqlFieldTypeName(declaredDacFieldWithMismatchingTypes);
+		string propertyTypeName		 = declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable!.GetSimplifiedName();
+		string? bqlFieldDataTypeName = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.GetSimplifiedName();
 
 		var sharedProperties = new Dictionary<string, string?>
 		{
-			{ DiagnosticProperty.PropertyType, propertyTypeName },
-			{ DiagnosticProperty.BqlFieldType, bqlFieldTypeName },
+			{ DiagnosticProperty.PropertyType,	   propertyTypeName },
+			{ DiagnosticProperty.BqlFieldDataType, bqlFieldDataTypeName },
 		}
 		.ToImmutableDictionary();
 
@@ -80,14 +80,11 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 	private void ReportDiagnostic(bool isProperty, SymbolAnalysisContext symbolContext, PXContext pxContext, Location propertyTypeLocation,
 								  Location bqlTypeLocation, ImmutableDictionary<string, string?> sharedProperties)
 	{
-		var diagnosticProperties = sharedProperties.Add(DiagnosticProperty.IsProperty, isProperty.ToString());
-
-		(Location locationToReport, Location[] extraLocations) = isProperty
-			? (propertyTypeLocation, new[] { bqlTypeLocation })
-			: (bqlTypeLocation,		 new[] { propertyTypeLocation });
+		var diagnosticProperties  = sharedProperties.Add(DiagnosticProperty.IsProperty, isProperty.ToString());
+		Location locationToReport = isProperty ? propertyTypeLocation : bqlTypeLocation;
 
 		var diagnostic = Diagnostic.Create(
-							Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch, locationToReport, extraLocations, diagnosticProperties);
+							Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch, locationToReport, diagnosticProperties);
 		symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 	}
 
@@ -123,15 +120,5 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 
 		return bqlTypeNameSegments.Right.GetLocation() ?? bqlTypeNameNodeWithMultipleSegments.GetLocation() ??
 			   baseTypeNode.Type.GetLocation() ?? bqlFieldNode.Identifier.GetLocation() ?? bqlFieldNode.GetLocation();
-	}
-
-	private string? GetBqlFieldTypeName(DacFieldInfo declaredDacFieldWithMismatchingTypes)
-	{
-		string bqlFieldDataTypeName = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.GetSimplifiedName();
-
-		var dataTypeStrongName	   = new DataTypeName(bqlFieldDataTypeName);
-		string? mappedBqlFieldType = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(dataTypeStrongName);
-
-		return mappedBqlFieldType;
 	}
 }
