@@ -58,7 +58,7 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 		Location? propertyTypeLocation = GetPropertyTypeLocation(declaredDacFieldWithMismatchingTypes);
 		Location? bqlTypeLocation	   = GetBqlTypeLocation(declaredDacFieldWithMismatchingTypes);
 
-		if (propertyTypeLocation == null || bqlTypeLocation == null)
+		if (propertyTypeLocation == null && bqlTypeLocation == null)
 			return;
 
 		string propertyTypeName		 = declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable!.GetSimplifiedName();
@@ -73,8 +73,11 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 		}
 		.ToImmutableDictionary();
 
-		ReportDiagnostic(isProperty: true, symbolContext, pxContext, propertyTypeLocation, bqlTypeLocation, sharedProperties);
-		ReportDiagnostic(isProperty: false, symbolContext, pxContext, propertyTypeLocation, bqlTypeLocation, sharedProperties);
+		if (propertyTypeLocation != null)
+			ReportDiagnostic(isProperty: true, symbolContext, pxContext, propertyTypeLocation, sharedProperties);
+
+		if (bqlTypeLocation != null)
+			ReportDiagnostic(isProperty: false, symbolContext, pxContext, bqlTypeLocation, sharedProperties);
 	}
 
 	private string? GetBqlFieldName(DacFieldInfo declaredDacFieldWithMismatchingTypes)
@@ -87,12 +90,10 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 												  ?.BqlFieldInfo?.Name;
 	}
 
-	private void ReportDiagnostic(bool isProperty, SymbolAnalysisContext symbolContext, PXContext pxContext, Location propertyTypeLocation,
-								  Location bqlTypeLocation, ImmutableDictionary<string, string?> sharedProperties)
+	private void ReportDiagnostic(bool isProperty, SymbolAnalysisContext symbolContext, PXContext pxContext, Location locationToReport, 
+								 ImmutableDictionary<string, string?> sharedProperties)
 	{
 		var diagnosticProperties  = sharedProperties.Add(DiagnosticProperty.IsProperty, isProperty.ToString());
-		Location locationToReport = isProperty ? propertyTypeLocation : bqlTypeLocation;
-
 		var diagnostic = Diagnostic.Create(
 							Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch, locationToReport, diagnosticProperties);
 		symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
