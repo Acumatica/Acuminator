@@ -27,6 +27,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
+
+			if (!diagnostic.TryGetPropertyValue(DiagnosticProperty.PropertyType, out string? propertyTypeName) ||
+				propertyTypeName.IsNullOrWhiteSpace())
+			{
+				return;
+			}
+
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
 											 .ConfigureAwait(false);
 
@@ -35,12 +42,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				return;
 
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			if (!diagnostic.TryGetPropertyValue(DiagnosticProperty.PropertyType, out string? propertyTypeName) || 
-				propertyTypeName.IsNullOrWhiteSpace())
-			{
-				return;
-			}
 
 			var propertyDataTypeName = new DataTypeName(propertyTypeName);
 			string bqlFieldName = bqlFieldNode.Identifier.Text;
