@@ -135,7 +135,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 				var elementTypeName = dataTypeName[..indexOfOpeningSquareBracket];
 				var elementTypeNode = IdentifierName(elementTypeName);
 
-				return ArrayType(elementTypeNode);
+				var arrayRankSpecifier = ArrayRankSpecifier(
+											SingletonSeparatedList<ExpressionSyntax>(
+												OmittedArraySizeExpression()));
+				var arrayType = ArrayType(elementTypeNode,
+										  SingletonList(arrayRankSpecifier));
+				return arrayType;
 			}
 			
 			var dataTypeNode = IdentifierName(dataTypeName);
