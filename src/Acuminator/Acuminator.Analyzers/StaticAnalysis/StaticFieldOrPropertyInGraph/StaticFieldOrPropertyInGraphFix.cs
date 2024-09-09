@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 				string makeReadOnlyCodeActionEquivalenceKey = nameof(Resources.PX1062FixMakeReadOnlyFormat).GetLocalized().ToString();
 				string makeReadOnlyCodeActionName = nameof(Resources.PX1062FixMakeReadOnlyFormat).GetLocalized(codeFixFormatArg).ToString();
 
-				bool isProperty = diagnostic.IsFlagSet(StaticFieldOrPropertyInGraphDiagnosticProperties.IsProperty);
+				bool isProperty = diagnostic.IsFlagSet(DiagnosticProperty.IsProperty);
 				Func<CancellationToken, Task<Document>> createChangedDocumentFunc = 
 					isProperty
 						? cToken => MakePropertyReadOnlyAsync(context.Document, context.Span, cToken)

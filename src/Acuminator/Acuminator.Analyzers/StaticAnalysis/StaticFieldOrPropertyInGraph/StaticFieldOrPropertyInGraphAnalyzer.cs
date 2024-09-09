@@ -119,7 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 				properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction, bool.TrueString);
 
 			if (isProperty)
-				properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsProperty, bool.TrueString);
+				properties.Add(DiagnosticProperty.IsProperty, bool.TrueString);
 
 			return properties.ToImmutable();
 		}
