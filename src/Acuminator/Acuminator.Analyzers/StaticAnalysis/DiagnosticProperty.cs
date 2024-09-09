@@ -24,6 +24,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public const string DacFieldName = nameof(DacFieldName);
 
 		/// <summary>
+		/// The property used to pass the name of the BQL field with the diagnostic.
+		/// </summary>
+		public const string BqlFieldName = nameof(BqlFieldName);
+
+		/// <summary>
 		/// The property used to pass the DAC metadata with the diagnostic.
 		/// </summary>
 		public const string DacMetadataName = nameof(DacMetadataName);

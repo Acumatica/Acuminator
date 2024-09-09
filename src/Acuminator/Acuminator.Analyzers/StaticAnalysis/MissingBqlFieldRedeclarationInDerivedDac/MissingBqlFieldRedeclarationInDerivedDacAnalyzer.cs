@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			var properties = new Dictionary<string, string?>
 			{
 				{ DiagnosticProperty.DacName,	   dac.Name},
-				{ DiagnosticProperty.DacFieldName, dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name },
+				{ DiagnosticProperty.BqlFieldName, dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name },
 				{ DiagnosticProperty.BqlFieldType, bqlFieldTypeName}
 			}
 			.ToImmutableDictionary();
