@@ -74,7 +74,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 															.FirstOrDefault(modifier => modifier.IsKind(SyntaxKind.StaticKeyword));
 
 			if (staticModifier != null && staticModifier != default(SyntaxToken))
-				return staticModifier.Value.GetLocation();
+				return staticModifier.Value.GetLocation().NullIfLocationKindIsNone();
 
 			return !staticFieldOrProperty.Locations.IsDefaultOrEmpty
 				? staticFieldOrProperty.Locations[0]

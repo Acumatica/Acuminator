@@ -162,7 +162,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			// Node not null here because aggregated DAC analysers by default run only on DACs in source 
 			// and these properties are declared in the DAC type itself
 			if (hasUnboundTypeAttribute || (!hasPXDBCalcedAttribute && !hasPXDBScalarAttribute) ||
-				property.Node!.Identifier.GetLocation() is not Location location)
+				property.Node!.Identifier.GetLocation().NullIfLocationKindIsNone() is not Location location)
 			{
 				return;
 			}

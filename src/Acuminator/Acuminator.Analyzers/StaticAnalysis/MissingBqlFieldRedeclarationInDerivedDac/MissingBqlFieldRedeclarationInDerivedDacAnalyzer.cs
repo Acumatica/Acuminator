@@ -85,15 +85,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 		{
 			if (isDacFieldDeclaredInDac && notRedeclaredBqlField.PropertyInfo?.IsInSource == true)
 			{
-				var location = notRedeclaredBqlField.PropertyInfo.Node.Identifier.GetLocation() ??
+				var location = notRedeclaredBqlField.PropertyInfo.Node.Identifier.GetLocation().NullIfLocationKindIsNone() ??
 							   notRedeclaredBqlField.PropertyInfo.Node.GetLocation() ??
-							   dac.Node!.Identifier.GetLocation();							// Node is not null because aggregated DAC analysis runs only on DACs from the source code
+							   dac.Node!.Identifier.GetLocation().NullIfLocationKindIsNone();	// Node is not null because aggregated DAC analysis runs only on DACs from the source code
 				return location;
 			}
 			else
 			{
 				// Node is not null because aggregated DAC analysis runs only on DACs from the source code
-				return dac.Node!.Identifier.GetLocation();
+				return dac.Node!.Identifier.GetLocation().NullIfLocationKindIsNone();
 			}
 		}
 

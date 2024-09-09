@@ -105,7 +105,9 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 			return null;
 
 		var propertyNode = declaredDacFieldWithMismatchingTypes.PropertyInfo.Node;
-		return propertyNode.Type?.GetLocation() ?? propertyNode.Identifier.GetLocation() ?? propertyNode.GetLocation();
+		return propertyNode.Type?.GetLocation() ?? 
+			   propertyNode.Identifier.GetLocation().NullIfLocationKindIsNone() ?? 
+			   propertyNode.GetLocation();
 	}
 
 	private Location? GetBqlTypeLocation(DacFieldInfo declaredDacFieldWithMismatchingTypes)
@@ -116,20 +118,16 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 		var bqlFieldNode = declaredDacFieldWithMismatchingTypes.BqlFieldInfo.Node;
 
 		if (bqlFieldNode.BaseList?.Types.Count is null or 0)
-			return bqlFieldNode.Identifier.GetLocation() ?? bqlFieldNode.GetLocation();
-
+			return bqlFieldNode.Identifier.GetLocation().NullIfLocationKindIsNone() ?? bqlFieldNode.GetLocation();
+		
 		var baseTypeNode = bqlFieldNode.BaseList.Types[0];
 
 		if (baseTypeNode.Type is not QualifiedNameSyntax bqlTypeNameNodeWithMultipleSegments)
-			return baseTypeNode.Type.GetLocation() ?? bqlFieldNode.Identifier.GetLocation() ?? bqlFieldNode.GetLocation();
+			return baseTypeNode.Type.GetLocation();
 
 		if (bqlTypeNameNodeWithMultipleSegments.Left is not QualifiedNameSyntax bqlTypeNameSegments)
-		{
-			return bqlTypeNameNodeWithMultipleSegments.GetLocation() ?? baseTypeNode.Type.GetLocation() ??
-				   bqlFieldNode.Identifier.GetLocation() ?? bqlFieldNode.GetLocation();
-		}
-
-		return bqlTypeNameSegments.Right.GetLocation() ?? bqlTypeNameNodeWithMultipleSegments.GetLocation() ??
-			   baseTypeNode.Type.GetLocation() ?? bqlFieldNode.Identifier.GetLocation() ?? bqlFieldNode.GetLocation();
+			return bqlTypeNameNodeWithMultipleSegments.Left.GetLocation();
+		else
+			return bqlTypeNameSegments.Right.GetLocation();
 	}
 }
