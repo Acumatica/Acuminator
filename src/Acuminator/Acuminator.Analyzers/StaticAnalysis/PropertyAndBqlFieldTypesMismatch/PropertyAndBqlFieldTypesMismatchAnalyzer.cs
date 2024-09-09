@@ -61,20 +61,17 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 		if (propertyTypeLocation == null && bqlTypeLocation == null)
 			return;
 
-		bool isPropertyTypeNullable = declaredDacFieldWithMismatchingTypes.PropertyType != null &&
-									  !SymbolEqualityComparer.Default.Equals(declaredDacFieldWithMismatchingTypes.PropertyType, 
-																			 declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable);
-
-		string propertyTypeName		 = declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable!.GetSimplifiedName();
-		string? bqlFieldDataTypeName = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.GetSimplifiedName();
-		string? bqlFieldName		 = GetBqlFieldName(declaredDacFieldWithMismatchingTypes);
+		bool makePropertyTypeNullable = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.IsValueType;
+		string propertyTypeName		  = declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable!.GetSimplifiedName();
+		string? bqlFieldDataTypeName  = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.GetSimplifiedName();
+		string? bqlFieldName		  = GetBqlFieldName(declaredDacFieldWithMismatchingTypes);
 
 		var sharedProperties = new Dictionary<string, string?>
 		{
-			{ DiagnosticProperty.PropertyType				 , propertyTypeName },
-			{ DiagnosticProperty.BqlFieldDataType			 , bqlFieldDataTypeName },
-			{ DiagnosticProperty.BqlFieldName				 , bqlFieldName },
-			{ PX1068DiagnosticProperty.PropertyTypeIsNullable, isPropertyTypeNullable.ToString() }
+			{ DiagnosticProperty.PropertyType					, propertyTypeName },
+			{ DiagnosticProperty.BqlFieldDataType				, bqlFieldDataTypeName },
+			{ DiagnosticProperty.BqlFieldName					, bqlFieldName },
+			{ PX1068DiagnosticProperty.MakePropertyTypeNullable , makePropertyTypeNullable.ToString() }
 		}
 		.ToImmutableDictionary();
 

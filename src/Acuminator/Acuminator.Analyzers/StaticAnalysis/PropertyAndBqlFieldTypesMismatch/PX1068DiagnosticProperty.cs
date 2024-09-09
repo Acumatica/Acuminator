@@ -2,5 +2,5 @@
 
 public class PX1068DiagnosticProperty
 {
-	public const string PropertyTypeIsNullable = nameof(PropertyTypeIsNullable);
+	public const string MakePropertyTypeNullable = nameof(MakePropertyTypeNullable);
 }
