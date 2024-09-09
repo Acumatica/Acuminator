@@ -34,7 +34,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 
 			if (!diagnostic.TryGetPropertyValue(DiagnosticProperty.PropertyType, out string? propertyDataTypeName) ||
 				!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldDataType, out string? bqlFieldDataTypeName) ||
-				!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldName, out string? bqlFieldName))
+				!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldName, out string? bqlFieldName) ||
+				!diagnostic.TryGetPropertyValue(PX1068DiagnosticProperty.PropertyTypeIsNullable, out string? isPropertyTypeNullableStr) ||
+				!bool.TryParse(isPropertyTypeNullableStr, out bool isPropertyTypeNullable))
 			{
 				return;
 			}
@@ -52,13 +54,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 				return;
 
 			if (isOnPropertyNode)
-				RegisterFixPropertyTypeAction(context, diagnostic, root!, nodeWithDiagnostic, bqlFieldDataTypeName);
+				RegisterFixPropertyTypeAction(context, diagnostic, root!, nodeWithDiagnostic, bqlFieldDataTypeName, isPropertyTypeNullable);
 			else
 				RegisterFixBqlFieldTypeAction(context, diagnostic, root!, nodeWithDiagnostic, propertyDataTypeName, bqlFieldName);
 		}
 
 		private void RegisterFixPropertyTypeAction(CodeFixContext context, Diagnostic diagnostic, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
-												   string? bqlFieldDataTypeName)
+												   string? bqlFieldDataTypeName, bool isPropertyTypeNullable)
 		{
 			var propertyNode = nodeWithDiagnostic.ParentOrSelf<PropertyDeclarationSyntax>();
 
@@ -69,8 +71,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			Document document 	  = context.Document;
 
 			var codeAction = CodeAction.Create(codeActionName,
-											   cToken => ChangePropertyTypeToBqlFieldTypeAsync(document, root, propertyNode, 
-																								bqlFieldDataTypeName, cToken),
+											   cToken => ChangePropertyTypeToBqlFieldTypeAsync(document, root, propertyNode, bqlFieldDataTypeName, 
+																							   isPropertyTypeNullable, cToken),
 											   equivalenceKey: codeActionName);
 			context.RegisterCodeFix(codeAction, diagnostic);
 		}
@@ -108,11 +110,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 		}
 
 		private Task<Document> ChangePropertyTypeToBqlFieldTypeAsync(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyNode,
-																	 string newPropertyDataTypeName, CancellationToken cancellation)
+																	 string newPropertyDataTypeName, bool isPropertyTypeNullable,
+																	 CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var newPropertyType = CreateDataTypeNode(newPropertyDataTypeName);
+			var newPropertyType = CreateDataTypeNode(newPropertyDataTypeName, isPropertyTypeNullable);
 			var newPropertyNode = propertyNode.WithType(newPropertyType);
 			var newRoot			= root.ReplaceNode(propertyNode, newPropertyNode);
 
@@ -122,18 +125,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			return Task.FromResult(newDocument);
 		}
 
-		private TypeSyntax CreateDataTypeNode(string dataTypeName)
+		private TypeSyntax CreateDataTypeNode(string dataTypeName, bool isPropertyTypeNullable)
 		{			
 			int indexOfOpeningSquareBracket = dataTypeName.LastIndexOf('[');
 			bool isArrayType = indexOfOpeningSquareBracket >= 0;
 
-			if (!isArrayType)
-				return IdentifierName(dataTypeName);
+			if (isArrayType)
+			{
+				var elementTypeName = dataTypeName[..indexOfOpeningSquareBracket];
+				var elementTypeNode = IdentifierName(elementTypeName);
 
-			var elementTypeName = dataTypeName[..indexOfOpeningSquareBracket];
-			var elementTypeNode = IdentifierName(elementTypeName);
-
-			return ArrayType(elementTypeNode);
+				return ArrayType(elementTypeNode);
+			}
+			
+			var dataTypeNode = IdentifierName(dataTypeName);
+			return isPropertyTypeNullable
+				? NullableType(dataTypeNode)
+				: dataTypeNode;
 		}
 
 		private Task<Document> ChangeBqlFieldTypeToPropertyTypeAsync(Document document, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
