@@ -37,7 +37,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 
 		[Theory]
 		[EmbeddedFileData("DacWithInconsistentTypes_BqlFieldFirst.cs", "DacWithInconsistentTypes_BqlFieldFirst_Expected.cs")]
-		public async Task Dac_WithMismatchingTypes_FixBqlFieldType_CodeFix(string actual, string expected) =>
+		public async Task Dac_WithMismatchingTypes_FixBqlFieldType(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
@@ -60,7 +60,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 
 		[Theory]
 		[EmbeddedFileData("DacWithInconsistentTypes_PropertyFirst.cs", "DacWithInconsistentTypes_PropertyFirst_Expected.cs")]
-		public async Task Dac_WithMismatchingTypes_FixPropertyType_CodeFix(string actual, string expected) =>
+		public async Task Dac_WithMismatchingTypes_FixPropertyType(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
@@ -89,6 +89,29 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithInconsistentTypes_Expected.cs")]
 		public async Task DacExtension_WithFixedTypes_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
+
+		#region Derived DAC
+		[Theory]
+		[EmbeddedFileData("DerivedDacWithInconsistentTypes.cs")]
+		public async Task DerivedDac_WithMismatchingTypes(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(13, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(15, 44),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(19, 37),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(22, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(26, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(28, 34));
+
+		[Theory]
+		[EmbeddedFileData("DerivedDacWithInconsistentTypes.cs", "DerivedDacWithInconsistentTypes_Expected.cs")]
+		public async Task DerivedDac_WithMismatchingTypes_FixTypes(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DerivedDacWithInconsistentTypes_Expected.cs")]
+		public async Task DerivedDac_WithFixedTypes_AfterFix_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
 		#endregion
 	}

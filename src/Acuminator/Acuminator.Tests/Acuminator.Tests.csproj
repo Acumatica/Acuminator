@@ -364,6 +364,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PropertyAndBqlFieldTypesMismatch\Sources\DacWithInconsistentTypes_PropertyFirst.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PropertyAndBqlFieldTypesMismatch\Sources\DacExtensionWithInconsistentTypes_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PropertyAndBqlFieldTypesMismatch\Sources\DacExtensionWithInconsistentTypes.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PropertyAndBqlFieldTypesMismatch\Sources\DerivedDacWithInconsistentTypes_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PropertyAndBqlFieldTypesMismatch\Sources\DerivedDacWithInconsistentTypes.cs" />
     <Compile Include="Tests\StaticAnalysis\PXOverrideMismatch\PXOverrideMismatchTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsExactlyMatch.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXOverrideMismatch\Sources\ArgumentsDoNotMatch.cs" />
