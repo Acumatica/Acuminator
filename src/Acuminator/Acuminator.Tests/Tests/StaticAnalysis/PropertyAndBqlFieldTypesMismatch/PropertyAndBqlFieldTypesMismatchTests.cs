@@ -68,5 +68,28 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 		public async Task Dac_WithFixedPropertyTypes_AfterFix_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
 		#endregion
+
+		#region DAC Extension
+		[Theory]
+		[EmbeddedFileData("DacExtensionWithInconsistentTypes.cs")]
+		public async Task DacExtension_WithMismatchingTypes(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(13, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(15, 44),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(19, 37),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(22, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(26, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(28, 34));
+
+		[Theory]
+		[EmbeddedFileData("DacExtensionWithInconsistentTypes.cs", "DacExtensionWithInconsistentTypes_Expected.cs")]
+		public async Task DacExtension_WithMismatchingTypes_FixTypes(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacExtensionWithInconsistentTypes_Expected.cs")]
+		public async Task DacExtension_WithFixedTypes_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
 	}
 }
