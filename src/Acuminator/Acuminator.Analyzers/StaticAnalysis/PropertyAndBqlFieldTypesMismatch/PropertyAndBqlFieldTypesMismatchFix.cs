@@ -15,8 +15,8 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -33,13 +33,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!diagnostic.TryGetPropertyValue(DiagnosticProperty.PropertyType, out string? propertyDataTypeName) ||
-				!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldDataType, out string? bqlFieldDataTypeName))
+				!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldDataType, out string? bqlFieldDataTypeName) ||
+				!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldName, out string? bqlFieldName))
 			{
 				return;
 			}
 
 			bqlFieldDataTypeName = bqlFieldDataTypeName.NullIfWhiteSpace();
 			propertyDataTypeName = propertyDataTypeName.NullIfWhiteSpace();
+			bqlFieldName		 = bqlFieldName.NullIfWhiteSpace();
 
 			bool isOnPropertyNode = diagnostic.IsFlagSet(DiagnosticProperty.IsProperty);
 
@@ -52,7 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			if (isOnPropertyNode)
 				RegisterFixPropertyTypeAction(context, diagnostic, root!, nodeWithDiagnostic, bqlFieldDataTypeName);
 			else
-				RegisterFixBqlFieldTypeAction(context, diagnostic, root!, nodeWithDiagnostic, propertyDataTypeName);
+				RegisterFixBqlFieldTypeAction(context, diagnostic, root!, nodeWithDiagnostic, propertyDataTypeName, bqlFieldName);
 		}
 
 		private void RegisterFixPropertyTypeAction(CodeFixContext context, Diagnostic diagnostic, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
@@ -67,14 +69,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			Document document 	  = context.Document;
 
 			var codeAction = CodeAction.Create(codeActionName,
-											   cToken => ChangePropertyTypeToBqlFieldType(document, root, propertyNode, bqlFieldDataTypeName, cToken),
+											   cToken => ChangePropertyTypeToBqlFieldTypeAsync(document, root, propertyNode, 
+																								bqlFieldDataTypeName, cToken),
 											   equivalenceKey: codeActionName);
 			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private void RegisterFixBqlFieldTypeAction(CodeFixContext context, Diagnostic diagnostic, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
-												   string? propertyDataTypeName)
+												   string? propertyDataTypeName, string? bqlFieldName)
 		{
+			if (bqlFieldName == null)
+				return;
+
 			string? bqlFieldTypeName = GetBqlFieldTypeFromPropertyDataType(propertyDataTypeName);
 			
 			if (bqlFieldTypeName == null)
@@ -84,7 +90,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			Document document	  = context.Document;
 
 			var codeAction = CodeAction.Create(codeActionName,
-											   cToken => ChangeBqlFieldTypeToPropertyType(document, root, nodeWithDiagnostic, bqlFieldTypeName, cToken),
+											   cToken => ChangeBqlFieldTypeToPropertyTypeAsync(document, root, nodeWithDiagnostic, 
+																								bqlFieldTypeName, bqlFieldName, cToken),
 											   equivalenceKey: codeActionName);
 			context.RegisterCodeFix(codeAction, diagnostic);
 		}
@@ -100,22 +107,116 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			return mappedBqlFieldType;
 		}
 
-		private async Task<Document> ChangePropertyTypeToBqlFieldType(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyNode,
-																	  string bqlFieldDataTypeName, CancellationToken cancellationToken)
+		private Task<Document> ChangePropertyTypeToBqlFieldTypeAsync(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyNode,
+																	 string newPropertyDataTypeName, CancellationToken cancellation)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
+			cancellation.ThrowIfCancellationRequested();
 
-		
-		
+			var newPropertyType = CreateDataTypeNode(newPropertyDataTypeName);
+			var newPropertyNode = propertyNode.WithType(newPropertyType);
+			var newRoot			= root.ReplaceNode(propertyNode, newPropertyNode);
+
+			cancellation.ThrowIfCancellationRequested();
+
+			var newDocument = document.WithSyntaxRoot(newRoot);
+			return Task.FromResult(newDocument);
 		}
 
-		private async Task<Document> ChangeBqlFieldTypeToPropertyType(Document document, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
-																	  string bqlFieldTypeName, CancellationToken cancellationToken)
+		private TypeSyntax CreateDataTypeNode(string dataTypeName)
+		{			
+			int indexOfOpeningSquareBracket = dataTypeName.LastIndexOf('[');
+			bool isArrayType = indexOfOpeningSquareBracket >= 0;
+
+			if (!isArrayType)
+				return IdentifierName(dataTypeName);
+
+			var elementTypeName = dataTypeName[..indexOfOpeningSquareBracket];
+			var elementTypeNode = IdentifierName(elementTypeName);
+
+			return ArrayType(elementTypeNode);
+		}
+
+		private Task<Document> ChangeBqlFieldTypeToPropertyTypeAsync(Document document, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
+																	  string newBqlFieldTypeName, string bqlFieldName,
+																	  CancellationToken cancellation)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
+			cancellation.ThrowIfCancellationRequested();
 
 			bool isInBaseList = nodeWithDiagnostic.ParentOrSelf<BaseListSyntax>() != null;
 
+			if (isInBaseList)
+			{
+				return ChangePartOfBqlFieldTypeAsync(document, root, nodeWithDiagnostic, newBqlFieldTypeName, bqlFieldName, 
+													 cancellation);
+			}
+			else
+			{
+				return ChangeEntireBqlFieldTypeAsync(document, root, nodeWithDiagnostic, newBqlFieldTypeName, bqlFieldName,
+													 cancellation);
+			}
+		}
+
+		private Task<Document> ChangePartOfBqlFieldTypeAsync(Document document, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
+															 string newBqlFieldTypeName, string bqlFieldName,
+															 CancellationToken cancellation)
+		{
+			if (nodeWithDiagnostic is not IdentifierNameSyntax bqlFieldTypeNode || !IsBqlFieldTypeNode(bqlFieldTypeNode))
+			{
+				return ChangeEntireBqlFieldTypeAsync(document, root, nodeWithDiagnostic, newBqlFieldTypeName,
+													 bqlFieldName, cancellation);
+			}
+
+			cancellation.ThrowIfCancellationRequested();
+
+			var newBqlFieldTypeNode = IdentifierName(newBqlFieldTypeName);
+			var newRoot				= root.ReplaceNode(bqlFieldTypeNode, newBqlFieldTypeNode);
+			var newDocument			= document.WithSyntaxRoot(newRoot);
+
+			return Task.FromResult(newDocument);
+		}
+
+		private bool IsBqlFieldTypeNode(IdentifierNameSyntax bqlFieldTypeNode)
+		{
+			string nodeText = bqlFieldTypeNode.Identifier.Text;
+
+			if (nodeText.IsNullOrWhiteSpace())
+				return false;
+
+			var strongBqlFieldTypeName = new BqlFieldTypeName(nodeText);
+			return DataTypeToBqlFieldTypeMapping.ContainsBqlFieldType(strongBqlFieldTypeName);
+		}
+
+		private Task<Document> ChangeEntireBqlFieldTypeAsync(Document document, SyntaxNode root, SyntaxNode nodeWithDiagnostic,
+															 string newBqlFieldTypeName, string bqlFieldName, CancellationToken cancellation)
+		{
+			var bqlFieldNode = nodeWithDiagnostic.ParentOrSelf<ClassDeclarationSyntax>();
+
+			if (bqlFieldNode == null || !IsBqlFieldDeclaration(bqlFieldNode))
+				return Task.FromResult(document);
+
+			var strongBqlFieldTypeName = new BqlFieldTypeName(newBqlFieldTypeName);
+			var newBqlFieldBaseType	   = BqlFieldGeneration.BaseTypeForBqlField(strongBqlFieldTypeName, bqlFieldName);
+
+			cancellation.ThrowIfCancellationRequested();
+
+			var newBqlFieldNode =
+				bqlFieldNode.WithBaseList(
+								BaseList(
+									SingletonSeparatedList<BaseTypeSyntax>(newBqlFieldBaseType)));
+
+			var newRoot		= root.ReplaceNode(bqlFieldNode, newBqlFieldNode);
+			var newDocument = document.WithSyntaxRoot(newRoot);
+
+			return Task.FromResult(newDocument);
+		}
+
+		private bool IsBqlFieldDeclaration(ClassDeclarationSyntax bqlFieldNode)
+		{
+			bool isPublic 	 = bqlFieldNode.Modifiers.Any(SyntaxKind.PublicKeyword);
+			bool isAbstract  = bqlFieldNode.Modifiers.Any(SyntaxKind.AbstractKeyword);
+			bool hasBaseType = bqlFieldNode.BaseList != null;
+
+			return isPublic && isAbstract && hasBaseType;
 		}
 	}
 }

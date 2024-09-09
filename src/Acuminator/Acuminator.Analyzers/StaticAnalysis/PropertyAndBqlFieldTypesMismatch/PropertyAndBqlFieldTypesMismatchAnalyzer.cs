@@ -6,8 +6,6 @@ using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
@@ -65,16 +63,28 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 
 		string propertyTypeName		 = declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable!.GetSimplifiedName();
 		string? bqlFieldDataTypeName = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.GetSimplifiedName();
+		string? bqlFieldName		 = GetBqlFieldName(declaredDacFieldWithMismatchingTypes);
 
 		var sharedProperties = new Dictionary<string, string?>
 		{
 			{ DiagnosticProperty.PropertyType,	   propertyTypeName },
 			{ DiagnosticProperty.BqlFieldDataType, bqlFieldDataTypeName },
+			{ DiagnosticProperty.BqlFieldName,	   bqlFieldName }
 		}
 		.ToImmutableDictionary();
 
 		ReportDiagnostic(isProperty: true, symbolContext, pxContext, propertyTypeLocation, bqlTypeLocation, sharedProperties);
 		ReportDiagnostic(isProperty: false, symbolContext, pxContext, propertyTypeLocation, bqlTypeLocation, sharedProperties);
+	}
+
+	private string? GetBqlFieldName(DacFieldInfo declaredDacFieldWithMismatchingTypes)
+	{
+		if (declaredDacFieldWithMismatchingTypes.BqlFieldInfo != null)
+			return declaredDacFieldWithMismatchingTypes.BqlFieldInfo.Name;
+
+		return declaredDacFieldWithMismatchingTypes.ThisAndOverridenItems()
+												   .FirstOrDefault(dacFieldInfo => dacFieldInfo.BqlFieldInfo != null)
+												  ?.BqlFieldInfo?.Name;
 	}
 
 	private void ReportDiagnostic(bool isProperty, SymbolAnalysisContext symbolContext, PXContext pxContext, Location propertyTypeLocation,
