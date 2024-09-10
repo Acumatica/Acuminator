@@ -5,7 +5,7 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn;
 
-public readonly record struct PropertyTypeName(string Value)
+public readonly record struct DataTypeName(string Value)
 {
 	public string Value { get; } = Value.CheckIfNullOrWhiteSpace();
 

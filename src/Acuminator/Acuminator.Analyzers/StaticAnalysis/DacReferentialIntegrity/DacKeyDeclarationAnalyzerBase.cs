@@ -110,7 +110,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private bool ReportKeyWithUnboundDacField(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol key, ClassDeclarationSyntax keyNode,
 												  ITypeSymbol unboundDacFieldInKey)
 		{
-			var location = GetUnboundDacFieldLocation(keyNode, unboundDacFieldInKey) ?? keyNode.Identifier.GetLocation() ?? keyNode.GetLocation();
+			var location = GetUnboundDacFieldLocation(keyNode, unboundDacFieldInKey) ?? 
+						   keyNode.Identifier.GetLocation().NullIfLocationKindIsNone() ?? 
+						   keyNode.GetLocation();
 
 			if (location == null)
 				return false;
@@ -182,7 +184,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				allFieldsUnique = false;
 				var locations = duplicateKeys.Select(declaration => declaration.GetSyntax(symbolContext.CancellationToken))
 											 .OfType<ClassDeclarationSyntax>()
-											 .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
+											 .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation().NullIfLocationKindIsNone() ??
 																			keyClassDeclaration.GetLocation())
 											 .Where(location => location != null)
 											 .ToList(capacity: duplicateKeys.Count);
@@ -287,7 +289,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																 INamedTypeSymbol keyDeclaration, RefIntegrityDacKeyType dacKeyType)
 		{
 			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
-			Location? location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();
+			Location? location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation().NullIfLocationKindIsNone() ?? 
+								  keyDeclarationNode?.GetLocation();
 			Location? dacLocation = dac.Node?.GetLocation();
 			DiagnosticDescriptor? px1036Descriptor = GetWrongKeyNameDiagnosticDescriptor(dacKeyType);
 
@@ -322,7 +325,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		protected IEnumerable<Location> GetKeysLocations(IEnumerable<INamedTypeSymbol> keys, CancellationToken cancellationToken) =>
 			keys.Select(key => key.GetSyntax(cancellationToken))
 				.OfType<ClassDeclarationSyntax>()
-				.Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ?? keyClassDeclaration.GetLocation())
+				.Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation().NullIfLocationKindIsNone() ?? keyClassDeclaration.GetLocation())
 				.Where(location => location != null)
 				.OrderBy(location => location.SourceSpan.Start);
 	}

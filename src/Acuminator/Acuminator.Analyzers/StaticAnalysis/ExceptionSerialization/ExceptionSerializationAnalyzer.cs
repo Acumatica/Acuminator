@@ -171,7 +171,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ExceptionSerialization
 
 		private static Location? GetDiagnosticLocation(INamedTypeSymbol exceptionType, CancellationToken cancellation) =>
 			exceptionType.GetSyntax(cancellation) is ClassDeclarationSyntax exceptionDeclaration
-				? exceptionDeclaration.Identifier.GetLocation()
+				? exceptionDeclaration.Identifier.GetLocation().NullIfLocationKindIsNone()
 				: null;
 	}
 }

@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 			// ShouldAnalyze already filtered everything and left only DAC extensions without IsActive
 			// We just need to report them
-			Location? location = dacExtension.Node?.Identifier.GetLocation();
+			Location? location = dacExtension.Node?.Identifier.GetLocation().NullIfLocationKindIsNone();
 
 			if (location == null)
 				return;
@@ -81,7 +81,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
 
 			// ShouldAnalyze already filtered everything and left only graph extensions without IsActive
 			// We just need to report them
-			Location? location = graphExtension.Node?.Identifier.GetLocation() ?? graphExtension.Node?.GetLocation();
+			Location? location = graphExtension.Node?.Identifier.GetLocation().NullIfLocationKindIsNone() ?? graphExtension.Node?.GetLocation();
 
 			if (location == null)
 				return;

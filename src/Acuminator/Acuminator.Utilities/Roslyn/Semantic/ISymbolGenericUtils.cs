@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
@@ -187,5 +188,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsInSourceCode(this ISymbol symbol) =>
 			!symbol.DeclaringSyntaxReferences.IsDefaultOrEmpty;
+
+		/// <summary>
+		/// A <see cref="Location"/> extension method that returns <see langword="null"/> if location's <see cref="Location.Kind"/> is <see cref="LocationKind.None"/>.
+		/// </summary>
+		/// <param name="location">The location to act on.</param>
+		/// <returns>
+		/// The location or <see langword="null"/> if location's kind is <see cref="LocationKind.None"/>.
+		/// </returns>
+		/// <remarks>
+		/// This method is a safety wrapper for locations that are obtained from <see cref="SyntaxToken.GetLocation"/> tokens.<br/>
+		/// Syntax tokens may return a special null-object location with <see cref="LocationKind.None"/> kind.<br/>
+		/// Such "null-object" location will prevent the usage of any fallback location that could have been obtained from coalesce chainings if the location was null.<br/>
+		/// This helper allows to use coalsesce chaining with fallback locations in a safe manner.<br/><br/>
+		/// Note, that locations obtained from <see cref="CSharpSyntaxNode.GetLocation"/> do not need to be checked this way.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Location? NullIfLocationKindIsNone(this Location? location) =>
+			location?.Kind == LocationKind.None
+				? null
+				: location;
 	}
 }

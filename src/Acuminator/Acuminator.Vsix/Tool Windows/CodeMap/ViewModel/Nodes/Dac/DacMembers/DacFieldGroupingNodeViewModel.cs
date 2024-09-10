@@ -66,9 +66,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
-			if (FieldInfo.EffectivePropertyType != null)
+			if (FieldInfo.PropertyTypeUnwrappedNullable != null)
 			{
-				yield return new TextViewModel(this, FieldInfo.EffectivePropertyType.GetSimplifiedName(),
+				yield return new TextViewModel(this, FieldInfo.PropertyTypeUnwrappedNullable.GetSimplifiedName(),
 												darkThemeForeground: Color.FromRgb(86, 156, 214),
 												lightThemeForeground: Color.FromRgb(0, 0, 255));
 			}

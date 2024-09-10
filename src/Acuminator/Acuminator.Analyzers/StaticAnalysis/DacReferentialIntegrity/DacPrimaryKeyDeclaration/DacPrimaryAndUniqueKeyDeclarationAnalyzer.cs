@@ -140,7 +140,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private void ReportNoPrimaryKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
-			var location = dac.Node?.Identifier.GetLocation() ?? dac.Node?.GetLocation();
+			var location = dac.Node?.Identifier.GetLocation().NullIfLocationKindIsNone() ?? dac.Node?.GetLocation();
 
 			if (location != null)
 			{

@@ -40,8 +40,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
-			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(strongPropertyTypeName, constantNode.Identifier.Text);
+			var propertyDataTypeName = new DataTypeName(propertyTypeName);
+			SimpleBaseTypeSyntax? newBaseType = CreateBaseType(propertyDataTypeName, constantNode.Identifier.Text);
 
 			if (newBaseType != null)
 			{
@@ -54,9 +54,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 			}
 		}
 
-		private SimpleBaseTypeSyntax? CreateBaseType(PropertyTypeName propertyTypeName, string constantName)
+		private SimpleBaseTypeSyntax? CreateBaseType(DataTypeName propertyDataTypeName, string constantName)
 		{
-			string? bqlTypeName = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyTypeName).NullIfWhiteSpace();
+			string? bqlTypeName = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyDataTypeName).NullIfWhiteSpace();
 
 			if (bqlTypeName == null)
 				return null;

@@ -174,7 +174,7 @@ public partial class BannedApiAnalyzer
 			{
 				var typeName = genericNameNode.Identifier.ValueText;
 				return !typeName.IsNullOrWhiteSpace()
-					? (genericNameNode.Identifier.GetLocation() ?? genericNameNode.GetLocation())
+					? (genericNameNode.Identifier.GetLocation().NullIfLocationKindIsNone() ?? genericNameNode.GetLocation())
 					: genericNameNode.GetLocation();
 			}
 		}

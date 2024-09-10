@@ -727,6 +727,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PropertyAndBqlFieldTypesMismatch.
+        /// </summary>
+        public static string PX1068 {
+            get {
+                return ResourceManager.GetString("PX1068", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UiPresentationLogicInEventHandlers.
         /// </summary>
         public static string PX1070 {

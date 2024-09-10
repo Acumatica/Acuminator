@@ -76,9 +76,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 			if (constantUnderlyingType == null || constantUnderlyingType.Name.IsNullOrWhiteSpace())
 				return false;
 
-			var constantDataTypeName = new PropertyTypeName(constantUnderlyingType.Name);
+			var constantDataTypeName = new DataTypeName(constantUnderlyingType.Name);
 
-			if (PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(constantDataTypeName))
+			if (DataTypeToBqlFieldTypeMapping.ContainsDataType(constantDataTypeName))
 			{
 				constantType = constantUnderlyingType.Name;
 				return true;
