@@ -7,22 +7,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Community.VisualStudio.Toolkit;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Shell.Interop;
+using Community.VisualStudio.Toolkit;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Threading;
 
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.Common;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -101,6 +102,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public FilterViewModel FilterVM { get; }
+
 		public CancellationToken? CancellationToken => _cancellationTokenSource?.Token;
 
 		private bool _isCalculating;
@@ -161,6 +164,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
+			FilterVM = new FilterViewModel();
+			FilterVM.FilterChanged += FilterVM_FilterChanged;
 
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
@@ -424,10 +429,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel? node)
 		{
-			if (node != null)
-			{
-				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
-			}
+			node?.ExpandOrCollapseAll(expand: !node.IsExpanded);
 		}
 
 		protected override void OnVsColorThemeChanged(ThemeChangedEventArgs e)
@@ -439,6 +441,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (var node in Tree.AllItems)
 				node.OnVsColorThemeChanged(e);
+		}
+
+		private void FilterVM_FilterChanged(object sender, FilterEventArgs e)
+		{
+			
 		}
 	}
 }

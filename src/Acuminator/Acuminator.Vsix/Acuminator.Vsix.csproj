@@ -487,6 +487,7 @@
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterEventArgs.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Base\AttributesGroupNodeViewModelGeneric.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Graph\GraphAttributesGroupNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\LeafNodes\Base\AttributeNodeViewModelGeneric.cs" />
@@ -509,6 +510,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\GraphBaseMembeOverrideNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveForGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterViewModel.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
     <Compile Include="Utils\Polyfills\NotNullIfNotNullAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />
