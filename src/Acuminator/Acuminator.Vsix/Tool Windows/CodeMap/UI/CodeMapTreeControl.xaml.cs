@@ -1,14 +1,13 @@
-﻿using Acuminator.Vsix.ToolWindows.CodeMap;
-using Microsoft.VisualStudio.Shell;
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using Acuminator.Vsix.Utilities;
-using System.Windows.Controls.Primitives;
+
+using Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -29,7 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			e.Handled = true;
 
-			if (!(sender is FrameworkElement treeNodeContainer) || !(treeNodeContainer.DataContext is TreeNodeViewModel treeNodeVM))
+			if (sender is not FrameworkElement treeNodeContainer || treeNodeContainer.DataContext is not TreeNodeViewModel treeNodeVM)
 				return;
 
 			treeNodeVM.NavigateToItemAsync()
@@ -38,7 +37,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void TreeNode_MouseEnterOrLeave(object sender, MouseEventArgs e)
 		{
-			if (!(sender is FrameworkElement frameworkElement) || !(frameworkElement.DataContext is TreeNodeViewModel treeNode))
+			if (sender is not FrameworkElement frameworkElement || frameworkElement.DataContext is not TreeNodeViewModel treeNode)
 				return;
 			
 			treeNode.IsMouseOver = frameworkElement.IsMouseOver;
@@ -48,7 +47,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private void TreeViewItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			if (e.Handled || e.ChangedButton != MouseButton.Right || e.ClickCount > 1 ||
-				!(sender is FrameworkElement treeNodeContainer) || !(treeNodeContainer.DataContext is TreeNodeViewModel treeNodeViewModel))
+				sender is not FrameworkElement treeNodeContainer || treeNodeContainer.DataContext is not TreeNodeViewModel treeNodeViewModel)
 			{
 				return;
 			}
