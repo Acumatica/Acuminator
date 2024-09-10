@@ -10,7 +10,7 @@
              xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="150" d:DesignWidth="200"
-			 d:DataContext="{d:DesignInstance Type={x:Type codeMap:TreeViewModel}, IsDesignTimeCreatable=True}">
+			 d:DataContext="{d:DesignInstance Type={x:Type codeMap:TreeViewModel}, IsDesignTimeCreatable=False}">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
