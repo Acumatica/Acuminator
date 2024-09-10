@@ -79,5 +79,11 @@ namespace Acuminator.Vsix.Utilities
 			public const string GenericRowEventsSubFolder = "Row Events";
 			public const string GenericUnspecifiedRowEventsSubFolder = "Unspecified Event";
 		}
+
+		public static class Images
+		{
+			public static readonly Guid CodeMapIconGuid = new Guid("6C8C4200-07AF-4D31-89D4-8AD464805E08");
+			public const int CodeMapIconID = 1;
+		}
 	}
 }

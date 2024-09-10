@@ -238,6 +238,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Classic" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -277,10 +278,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="AcuminatorIcons.imagemanifest">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Resource Include="Resources\Clear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\codemap.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\Search.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Refresh.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -490,6 +502,8 @@
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tool Windows\CodeMap\UI\SearchTextBox.cs" />
+    <Compile Include="Tool Windows\CodeMap\UI\SearchTextBoxMode.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterEventArgs.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Base\AttributesGroupNodeViewModelGeneric.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Graph\GraphAttributesGroupNodeViewModel.cs" />
