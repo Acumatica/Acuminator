@@ -1519,7 +1519,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Redeclare &quot;{0}&quot; BQL field in DAC &quot;{1}&quot;.
+        ///   Looks up a localized string similar to Redeclare the &quot;{0}&quot; BQL field in the &quot;{1}&quot; DAC.
         /// </summary>
         public static string PX1067FixFormat {
             get {
@@ -1528,7 +1528,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BQL fields from base DACs should be redeclared in the derived DAC. DAC &quot;{0}&quot; does not contain a redeclaration of BQL field &quot;{1}&quot; declared in the base DAC &quot;{2}&quot;..
+        ///   Looks up a localized string similar to BQL fields from a base DAC should be redeclared in the derived DAC. The &quot;{0}&quot; DAC does not contain a redeclaration of the &quot;{1}&quot; BQL field declared in the &quot;{2}&quot; base DAC..
         /// </summary>
         public static string PX1067TitleFormat {
             get {

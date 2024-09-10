@@ -610,10 +610,10 @@ public virtual int? SomeDacField{ get; set; }</value>
     <value>A possible typo in the BQL field name. The DAC field property name for this BQL field: {0}.</value>
   </data>
   <data name="PX1067FixFormat" xml:space="preserve">
-    <value>Redeclare "{0}" BQL field in DAC "{1}"</value>
+    <value>Redeclare the "{0}" BQL field in the "{1}" DAC</value>
   </data>
   <data name="PX1067TitleFormat" xml:space="preserve">
-    <value>BQL fields from base DACs should be redeclared in the derived DAC. DAC "{0}" does not contain a redeclaration of BQL field "{1}" declared in the base DAC "{2}".</value>
+    <value>BQL fields from a base DAC should be redeclared in the derived DAC. The "{0}" DAC does not contain a redeclaration of the "{1}" BQL field declared in the "{2}" base DAC.</value>
   </data>
   <data name="PX1068FixBqlType" xml:space="preserve">
     <value>Change the BQL type so that it corresponds to the property type</value>
