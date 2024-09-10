@@ -50,7 +50,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
         <!--<WrapPanel Orientation="Horizontal" Grid.Row="0">
@@ -59,8 +60,10 @@
                 
             </ComboBox>
         </WrapPanel>-->
+		<codeMap:CodeMapSearchBox Grid.Row="0" Margin="0,2"
+								  DataContext="{Binding Path=FilterVM, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-		<Grid Grid.Row="0" Margin="5,2">
+		<Grid Grid.Row="1" Margin="5,2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="*"/>
@@ -82,7 +85,7 @@
 											  Converter={StaticResource boolToVisibilityConverter}}"/>
 		</Grid>
 
-		<codeMap:CodeMapTreeControl Grid.Row="1" Margin="0,2"
+		<codeMap:CodeMapTreeControl Grid.Row="2" Margin="0,2"
 									DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 	</Grid>
 </UserControl>
