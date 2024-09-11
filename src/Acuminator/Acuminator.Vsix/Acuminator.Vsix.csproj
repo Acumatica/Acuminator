@@ -529,6 +529,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterViewModel.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
+    <Compile Include="Tool Windows\Converters\StringIsNonEmptyToBoolConverter.cs" />
     <Compile Include="Utils\Polyfills\NotNullIfNotNullAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
