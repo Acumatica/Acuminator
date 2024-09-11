@@ -1519,7 +1519,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Redeclare &quot;{0}&quot; BQL field in DAC &quot;{1}&quot;.
+        ///   Looks up a localized string similar to Redeclare the &quot;{0}&quot; BQL field in the &quot;{1}&quot; DAC.
         /// </summary>
         public static string PX1067FixFormat {
             get {
@@ -1528,7 +1528,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BQL fields from base DACs should be redeclared in the derived DAC. DAC &quot;{0}&quot; does not contain a redeclaration of BQL field &quot;{1}&quot; declared in the base DAC &quot;{2}&quot;..
+        ///   Looks up a localized string similar to BQL fields from a base DAC should be redeclared in the derived DAC. The &quot;{0}&quot; DAC does not contain a redeclaration of the &quot;{1}&quot; BQL field declared in the &quot;{2}&quot; base DAC..
         /// </summary>
         public static string PX1067TitleFormat {
             get {
@@ -1632,6 +1632,60 @@ namespace Acuminator.Analyzers {
         public static string PX1076Title {
             get {
                 return ResourceManager.GetString("PX1076Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the modifier to protected.
+        /// </summary>
+        public static string PX1077Fix {
+            get {
+                return ResourceManager.GetString("PX1077Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should not be private.
+        /// </summary>
+        public static string PX1077Title {
+            get {
+                return ResourceManager.GetString("PX1077Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the modifier to protected virtual.
+        /// </summary>
+        public static string PX1078Fix {
+            get {
+                return ResourceManager.GetString("PX1078Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the sealed modifier.
+        /// </summary>
+        public static string PX1078Fix_RemoveSealed {
+            get {
+                return ResourceManager.GetString("PX1078Fix_RemoveSealed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should be protected and virtual.
+        /// </summary>
+        public static string PX1078Title {
+            get {
+                return ResourceManager.GetString("PX1078Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should not be sealed.
+        /// </summary>
+        public static string PX1078Title_Sealed {
+            get {
+                return ResourceManager.GetString("PX1078Title_Sealed", resourceCulture);
             }
         }
         

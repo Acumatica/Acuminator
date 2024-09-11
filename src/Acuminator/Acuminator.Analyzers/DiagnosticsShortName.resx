@@ -360,6 +360,12 @@
   <data name="PX1076" xml:space="preserve">
     <value>CallToInternalApi</value>
   </data>
+  <data name="PX1077" xml:space="preserve">
+    <value>EventHandlersShouldNotBePrivate</value>
+  </data>
+  <data name="PX1078" xml:space="preserve">
+    <value>EventHandlersShouldBeProtectedVirtual</value>
+  </data>
   <data name="PX1080" xml:space="preserve">
     <value>LongRunOperationInDataViewDelegate</value>
   </data>

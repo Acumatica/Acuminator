@@ -648,6 +648,24 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1076Title" xml:space="preserve">
     <value>This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use</value>
   </data>
+  <data name="PX1077Fix" xml:space="preserve">
+    <value>Change the modifier to protected</value>
+  </data>
+  <data name="PX1077Title" xml:space="preserve">
+    <value>Event handlers should not be private</value>
+  </data>
+  <data name="PX1078Fix" xml:space="preserve">
+    <value>Change the modifier to protected virtual</value>
+  </data>
+  <data name="PX1078Fix_RemoveSealed" xml:space="preserve">
+    <value>Remove the sealed modifier</value>
+  </data>
+  <data name="PX1078Title" xml:space="preserve">
+    <value>Event handlers should be protected and virtual</value>
+  </data>
+  <data name="PX1078Title_Sealed" xml:space="preserve">
+    <value>Event handlers should not be sealed</value>
+  </data>
   <data name="PX1080Title" xml:space="preserve">
     <value>Data view delegates should not start long-running operations</value>
   </data>
