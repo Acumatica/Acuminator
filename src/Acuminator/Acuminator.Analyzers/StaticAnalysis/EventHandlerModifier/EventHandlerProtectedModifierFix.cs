@@ -8,6 +8,8 @@ using System.Threading;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 {
@@ -33,11 +35,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 			var semanticModel = await context.Document.GetSemanticModelAsync();
 			var methodSymbol = semanticModel.GetDeclaredSymbol(node);
 
+			if (methodSymbol == null)
+			{
+				return;
+			}
+
+			IMethodSymbol methodSymbolNotNull = methodSymbol;
+
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (methodSymbol?.IsOverride == true)
+			if (methodSymbolNotNull.IsOverride == true)
 			{
-				if (methodSymbol?.IsSealed == true)
+				if (methodSymbolNotNull.IsSealed == true)
 				{
 					var removeSealedTitle = nameof(Resources.PX1078Fix_RemoveSealed).GetLocalized().ToString();
 					var codeFixAction = new RemoveSealedAction(removeSealedTitle, context.Document, node);
@@ -45,12 +54,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 					context.RegisterCodeFix(codeFixAction, diagnostic);
 				}
 			}
-			else
+			else if (methodSymbolNotNull.MethodKind == MethodKind.ExplicitInterfaceImplementation)
 			{
-				var makeProtectedTitle = nameof(Resources.PX1078Fix).GetLocalized().ToString();
-				var codeFixAction = new MakeProtectedVirtualAction(makeProtectedTitle, context.Document, node);
+				var removeExplicitInterface = nameof(Resources.PX1078Fix_RemoveExplicitInterface).GetLocalized().ToString();
+				var codeFixAction = new RemoveExplicitInterfaceAction(removeExplicitInterface, context.Document, node);
 
 				context.RegisterCodeFix(codeFixAction, diagnostic);
+			}
+			else
+			{
+				if (!methodSymbolNotNull.ContainingType.AllInterfaces.SelectMany(i => i.GetMethods(methodSymbol.Name)).Any(m => EventHandlerModifierAnalyzer.SignaturesMatch(m, methodSymbol)))
+				{
+					var makeProtectedTitle = nameof(Resources.PX1078Fix).GetLocalized().ToString();
+					var codeFixAction = new MakeProtectedVirtualAction(makeProtectedTitle, context.Document, node);
+
+					context.RegisterCodeFix(codeFixAction, diagnostic);
+				}
 			}
 		}
 	}
@@ -124,6 +143,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 			var newRoot = oldRoot!.ReplaceNode(_method, localDeclaration);
 
 			return _document.WithSyntaxRoot(newRoot);
+		}
+	}
+
+	internal class RemoveExplicitInterfaceAction : CodeAction
+	{
+		private readonly string _title;
+		private readonly Document _document;
+		private readonly MethodDeclarationSyntax _method;
+
+		public override string Title => _title;
+		public override string EquivalenceKey => _title;
+
+		public RemoveExplicitInterfaceAction(string title, Document document, MethodDeclarationSyntax method)
+		{
+			_title = title;
+			_document = document;
+			_method = method;
+		}
+
+		protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
+		{
+			var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+
+			if (_method.ExplicitInterfaceSpecifier != null)
+			{
+				var localDeclaration = _method.RemoveNode(_method.ExplicitInterfaceSpecifier!, SyntaxRemoveOptions.KeepNoTrivia);
+
+				if (localDeclaration != null)
+				{
+					var newRoot = oldRoot!.ReplaceNode(_method, localDeclaration!);
+
+					return _document.WithSyntaxRoot(newRoot);
+				}
+			}
+
+			return _document;
 		}
 	}
 }

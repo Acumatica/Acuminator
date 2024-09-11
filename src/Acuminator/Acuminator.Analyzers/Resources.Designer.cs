@@ -1537,7 +1537,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the BQL type so that it corresponds to the property type.
+        ///   Looks up a localized string similar to Change the type of the BQL field so that it corresponds to the property type.
         /// </summary>
         public static string PX1068FixBqlType {
             get {
@@ -1546,7 +1546,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the property type so that it corresponds to the BQL type.
+        ///   Looks up a localized string similar to Change the property type so that it corresponds to the type of the BQL field.
         /// </summary>
         public static string PX1068FixPropertyType {
             get {
@@ -1690,6 +1690,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove the explicit interface signature.
+        /// </summary>
+        public static string PX1078Fix_RemoveExplicitInterface {
+            get {
+                return ResourceManager.GetString("PX1078Fix_RemoveExplicitInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove the sealed modifier.
         /// </summary>
         public static string PX1078Fix_RemoveSealed {
@@ -1704,6 +1713,15 @@ namespace Acuminator.Analyzers {
         public static string PX1078Title {
             get {
                 return ResourceManager.GetString("PX1078Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should not be explicit interface implementations.
+        /// </summary>
+        public static string PX1078Title_ExplicitInterfaceImplementation {
+            get {
+                return ResourceManager.GetString("PX1078Title_ExplicitInterfaceImplementation", resourceCulture);
             }
         }
         

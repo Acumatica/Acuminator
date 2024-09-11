@@ -30,10 +30,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 				return;
 			}
 
-			var makeProtectedTitle = nameof(Resources.PX1077Fix).GetLocalized().ToString();
-			var codeFixAction = new MakeProtectedAction(makeProtectedTitle, context.Document, node);
+			var semanticModel = await context.Document.GetSemanticModelAsync();
+			var methodSymbol = semanticModel.GetDeclaredSymbol(node);
 
-			context.RegisterCodeFix(codeFixAction, diagnostic);
+			if (methodSymbol?.MethodKind == MethodKind.ExplicitInterfaceImplementation)
+			{
+				var removeExplicitInterface = nameof(Resources.PX1078Fix_RemoveExplicitInterface).GetLocalized().ToString();
+				var codeFixAction = new RemoveExplicitInterfaceAction(removeExplicitInterface, context.Document, node);
+
+				context.RegisterCodeFix(codeFixAction, diagnostic);
+			}
+			else
+			{
+				var makeProtectedTitle = nameof(Resources.PX1077Fix).GetLocalized().ToString();
+				var codeFixAction = new MakeProtectedAction(makeProtectedTitle, context.Document, node);
+
+				context.RegisterCodeFix(codeFixAction, diagnostic);
+			}
 		}
 	}
 

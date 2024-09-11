@@ -35,5 +35,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 				Descriptors.PX1078_EventHandlersShouldNotBeSealed.CreateFor(41, 34)
 			);
 		}
+
+		[Theory]
+		[EmbeddedFileData("ContainerWithInterface.cs")]
+		public void ContainerWithInterface(string source)
+		{
+			// The test should return exactly two errors.
+
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(13, 26),
+				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(13, 26)
+			);
+		}
 	}
 }

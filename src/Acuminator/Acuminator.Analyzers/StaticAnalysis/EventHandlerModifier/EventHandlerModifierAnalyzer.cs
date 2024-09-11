@@ -40,18 +40,53 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldNotBeSealed, handler.Symbol.Locations.First()));
 					}
 				}
+				else if (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
+				{
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations, handler.Symbol.Locations.First()));
+				}
 				else
 				{
-					// The method should
-					// - be protected
-					// - be virtual (override is not possible at this point, the method is not an override)
-					// - not be sealed
-					if (!handler.Symbol.IsVirtual || handler.Symbol.IsSealed || handler.Symbol.DeclaredAccessibility != Accessibility.Protected)
+					if (!handler.Symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMethods(handler.Symbol.Name)).Any(m => SignaturesMatch(m, handler.Symbol)))
 					{
-						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual, handler.Symbol.Locations.First()));
+						// The method should
+						// - be protected
+						// - be virtual (override is not possible at this point, the method is not an override)
+						// - not be sealed
+						if (!handler.Symbol.IsVirtual || handler.Symbol.IsSealed || handler.Symbol.DeclaredAccessibility != Accessibility.Protected)
+						{
+							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual, handler.Symbol.Locations.First()));
+						}
 					}
 				}
 			}
+		}
+
+		internal static bool SignaturesMatch(IMethodSymbol method, IMethodSymbol other)
+		{
+			if (method.Name != other.Name)
+			{
+				return false;
+			}
+
+			if (method.Parameters.Length != other.Parameters.Length)
+			{
+				return false;
+			}
+
+			if (!method.ReturnType.Equals(other.ReturnType, SymbolEqualityComparer.Default))
+			{
+				return false;
+			}
+
+			for (int i = 0; i < method.Parameters.Length; i++)
+			{
+				if (!method.Parameters[i].Type.Equals(other.Parameters[i].Type, SymbolEqualityComparer.Default))
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }
