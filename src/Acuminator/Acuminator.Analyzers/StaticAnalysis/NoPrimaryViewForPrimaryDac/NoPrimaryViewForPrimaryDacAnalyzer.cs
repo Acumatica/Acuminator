@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			SemanticModel? semanticModel = context.Compilation.GetSemanticModel(graph.Node!.SyntaxTree);
 
 			if (semanticModel == null)
-				return graph.Node.Identifier.GetLocation();
+				return graph.Node.Identifier.GetLocation().NullIfLocationKindIsNone();
 
 			var baseClassesTypeNodes = graph.Node.BaseList!.Types.Select(baseTypeNode => baseTypeNode.Type)
 																 .OfType<GenericNameSyntax>();
@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 					return location;
 			}
 
-			return graph.Node.Identifier.GetLocation();
+			return graph.Node.Identifier.GetLocation().NullIfLocationKindIsNone();
 		}
 
 		private static Location? GetLocationFromBaseClassTypeNode(GenericNameSyntax baseClassTypeNode, INamedTypeSymbol? baseClassTypeSymbol,

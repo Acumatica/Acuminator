@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			var properties = new Dictionary<string, string?>
 			{
 				{ DiagnosticProperty.DacName,	   dac.Name},
-				{ DiagnosticProperty.DacFieldName, dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name },
+				{ DiagnosticProperty.BqlFieldName, dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name },
 				{ DiagnosticProperty.BqlFieldType, bqlFieldTypeName}
 			}
 			.ToImmutableDictionary();
@@ -85,15 +85,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 		{
 			if (isDacFieldDeclaredInDac && notRedeclaredBqlField.PropertyInfo?.IsInSource == true)
 			{
-				var location = notRedeclaredBqlField.PropertyInfo.Node.Identifier.GetLocation() ??
+				var location = notRedeclaredBqlField.PropertyInfo.Node.Identifier.GetLocation().NullIfLocationKindIsNone() ??
 							   notRedeclaredBqlField.PropertyInfo.Node.GetLocation() ??
-							   dac.Node!.Identifier.GetLocation();							// Node is not null because aggregated DAC analysis runs only on DACs from the source code
+							   dac.Node!.Identifier.GetLocation().NullIfLocationKindIsNone();	// Node is not null because aggregated DAC analysis runs only on DACs from the source code
 				return location;
 			}
 			else
 			{
 				// Node is not null because aggregated DAC analysis runs only on DACs from the source code
-				return dac.Node!.Identifier.GetLocation();
+				return dac.Node!.Identifier.GetLocation().NullIfLocationKindIsNone();
 			}
 		}
 
@@ -107,8 +107,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			if (propertyTypeName.IsNullOrWhiteSpace())
 				return GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
 
-			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
-			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(strongPropertyTypeName);
+			var propertyDataTypeName = new DataTypeName(propertyTypeName);
+			string? mappedBqlFieldType = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyDataTypeName);
 			mappedBqlFieldType		 ??= GetBqlFieldTypeNameFromPropertyType(notRedeclaredBqlField);
 
 			return mappedBqlFieldType;
@@ -116,13 +116,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 
 		private string? GetBqlFieldTypeNameFromPropertyType(DacFieldInfo notRedeclaredBqlField)
 		{
-			string? propertyTypeName = notRedeclaredBqlField.EffectivePropertyType?.GetSimplifiedName();
+			string? propertyTypeName = notRedeclaredBqlField.PropertyTypeUnwrappedNullable?.GetSimplifiedName();
 
 			if (propertyTypeName == null)
 				return null;
 
-			var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
-			string? mappedBqlFieldType = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(strongPropertyTypeName);
+			var propertyDataTypeName = new DataTypeName(propertyTypeName);
+			string? mappedBqlFieldType = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyDataTypeName);
 
 			return mappedBqlFieldType;
 		}

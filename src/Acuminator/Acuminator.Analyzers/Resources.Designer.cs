@@ -1537,6 +1537,33 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change the BQL type so that it corresponds to the property type.
+        /// </summary>
+        public static string PX1068FixBqlType {
+            get {
+                return ResourceManager.GetString("PX1068FixBqlType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the property type so that it corresponds to the BQL type.
+        /// </summary>
+        public static string PX1068FixPropertyType {
+            get {
+                return ResourceManager.GetString("PX1068FixPropertyType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of the DAC field property does not correspond to the type of the BQL field.
+        /// </summary>
+        public static string PX1068Title {
+            get {
+                return ResourceManager.GetString("PX1068Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {

@@ -74,7 +74,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 															.FirstOrDefault(modifier => modifier.IsKind(SyntaxKind.StaticKeyword));
 
 			if (staticModifier != null && staticModifier != default(SyntaxToken))
-				return staticModifier.Value.GetLocation();
+				return staticModifier.Value.GetLocation().NullIfLocationKindIsNone();
 
 			return !staticFieldOrProperty.Locations.IsDefaultOrEmpty
 				? staticFieldOrProperty.Locations[0]
@@ -119,7 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StaticFieldOrPropertyInGraph
 				properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsViewOrAction, bool.TrueString);
 
 			if (isProperty)
-				properties.Add(StaticFieldOrPropertyInGraphDiagnosticProperties.IsProperty, bool.TrueString);
+				properties.Add(DiagnosticProperty.IsProperty, bool.TrueString);
 
 			return properties.ToImmutable();
 		}

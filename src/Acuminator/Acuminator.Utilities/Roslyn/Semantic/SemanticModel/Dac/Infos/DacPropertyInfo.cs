@@ -66,7 +66,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// The effective type of the property. For reference types and non nullable value types it is the same as <see cref="PropertyType"/>. 
 		/// For nulable value types it is the underlying type extracted from nullable. It is <c>T</c> for <see cref="Nullable{T}"/>.
 		/// </value>
-		public ITypeSymbol EffectivePropertyType { get; }
+		public ITypeSymbol PropertyTypeUnwrappedNullable { get; }
 
 		/// <summary>
 		/// The DB boundness calculated from attributes declared on this DAC property.
@@ -88,16 +88,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public bool IsAutoNumbering { get; }
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol propertyTypeUnwrappedNullable,
 								  int declarationOrder, bool hasBqlField, IEnumerable<DacFieldAttributeInfo> attributeInfos, 
 								  DacPropertyInfo baseInfo) :
-							 this(node, symbol, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos)
+							 this(node, symbol, propertyTypeUnwrappedNullable, declarationOrder, hasBqlField, attributeInfos)
 		{
 			_baseInfo = baseInfo.CheckIfNull();
 			CombineWithBaseInfo(baseInfo);
 		}
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+		protected DacPropertyInfo(PropertyDeclarationSyntax? node, IPropertySymbol symbol, ITypeSymbol propertyTypeUnwrappedNullable,
 								  int declarationOrder, bool hasBqlField, IEnumerable<DacFieldAttributeInfo> attributeInfos) :
 							 base(node, symbol, declarationOrder)
 		{
@@ -121,10 +121,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				hasAcumaticaAttributes = hasAcumaticaAttributes || attributeInfo.IsAcumaticaAttribute;
 			}
 	
-			EffectivePropertyType = effectivePropertyType;
-			IsIdentity 			  = isIdentity;
-			IsKey 				  = isPrimaryKey;
-			IsAutoNumbering 	  = isAutoNumbering;
+			PropertyTypeUnwrappedNullable = propertyTypeUnwrappedNullable;
+			IsIdentity 			  		  = isIdentity;
+			IsKey 				  		  = isPrimaryKey;
+			IsAutoNumbering 	  		  = isAutoNumbering;
 
 			HasAcumaticaAttributesDeclared  = hasAcumaticaAttributes;
 			HasAcumaticaAttributesEffective = hasAcumaticaAttributes;
@@ -144,11 +144,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			bool hasBqlField = dacFields.ContainsKey(property.Name);
 			var attributeInfos = GetAttributeInfos(property, dbBoundnessCalculator);
-			var effectivePropertyType = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;
+			var propertyTypeUnwrappedNullable = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;
 
 			return baseInfo != null
-				? new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos, baseInfo)
-				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, hasBqlField, attributeInfos);
+				? new DacPropertyInfo(node, property, propertyTypeUnwrappedNullable, declarationOrder, hasBqlField, attributeInfos, baseInfo)
+				: new DacPropertyInfo(node, property, propertyTypeUnwrappedNullable, declarationOrder, hasBqlField, attributeInfos);
 		}
 
 		private static IEnumerable<DacFieldAttributeInfo> GetAttributeInfos(IPropertySymbol property, DbBoundnessCalculator dbBoundnessCalculator)

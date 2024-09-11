@@ -20,6 +20,7 @@ using Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions;
+using Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
@@ -50,6 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new InheritanceFromPXCacheExtensionAnalyzer(),
 			new NoBqlFieldForDacFieldPropertyAnalyzer(),
 			new MissingBqlFieldRedeclarationInDerivedDacAnalyzer(),
+			new PropertyAndBqlFieldTypesMismatchAnalyzer(),
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
 			new KeyFieldDeclarationAnalyzer(),

@@ -211,13 +211,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions
 						if (!classIdentifierLocationWasAdded)
 						{
 							classIdentifierLocationWasAdded = true;
-							return classNode.Identifier.GetLocation();
+							return classNode.Identifier.GetLocation().NullIfLocationKindIsNone();
 						}
 
 						return null;
 					}
 					else
-						return modifier.GetLocation();
+						return modifier.GetLocation().NullIfLocationKindIsNone();
 				}
 				else
 				{
