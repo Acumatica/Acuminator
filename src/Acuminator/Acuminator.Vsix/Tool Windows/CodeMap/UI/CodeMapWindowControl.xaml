@@ -44,6 +44,7 @@
 						
 						<Setter Property="Background" Value="Transparent"/>
 						<Setter Property="BorderBrush" Value="Transparent"/>
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextActiveKey}}"/>
 
 						<Style.Triggers>
 							<MultiTrigger>
@@ -64,9 +65,9 @@
 									<Condition Property="IsEnabled" Value="True"/>
 								</MultiTrigger.Conditions>
 
-								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonHoverBrushKey}}"/>
-								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonHoverTextBrushKey}}"/>
-								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderHoverBrushKey}}"/>
+								<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarMouseOverBackgroundGradientKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextHoverKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarBorderKey}}"/>
 							</MultiTrigger>
 
 							<MultiTrigger>
@@ -75,9 +76,9 @@
 									<Condition Property="IsEnabled" Value="True"/>
 								</MultiTrigger.Conditions>
 
-								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonPressedBrushKey}}"/>
-								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonPressedTextBrushKey}}"/>
-								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderPressedBrushKey}}"/>
+								<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarMouseDownBackgroundGradientKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextHoverKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarMouseDownBorderKey}}"/>
 							</MultiTrigger>
 
 							<Trigger Property="IsEnabled" Value="False">
