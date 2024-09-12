@@ -113,8 +113,7 @@
 				</TextBox.Style>
 			</TextBox>
 
-			<TextBlock x:Name="WatermarkTextBlock" IsHitTestVisible="False" Text="Search..." Focusable="False" Margin="5,0,0,0"
-					   Foreground="{Binding ElementName=SearchTextBox, Path=Foreground, UpdateSourceTrigger=PropertyChanged}" Background="Transparent">
+			<TextBlock x:Name="WatermarkTextBlock" IsHitTestVisible="False" Text="Search..." Focusable="False" Margin="5,0,0,0" Background="Transparent">
 				<TextBlock.Style>
 					<Style TargetType="{x:Type TextBlock}">
 						<Setter Property="Visibility" Value="Collapsed"/>
