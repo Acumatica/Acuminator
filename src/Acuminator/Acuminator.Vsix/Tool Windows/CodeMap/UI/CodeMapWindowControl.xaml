@@ -49,7 +49,6 @@
     </UserControl.Style>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -60,10 +59,9 @@
                 
             </ComboBox>
         </WrapPanel>-->
-		<codeMap:CodeMapSearchBox Grid.Row="0" Margin="0,2"
-								  DataContext="{Binding Path=FilterVM, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		
 
-		<Grid Grid.Row="1" Margin="5,2">
+		<Grid Grid.Row="0" Margin="5,2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="*"/>
@@ -79,6 +77,30 @@
 				</Button>
 			</WrapPanel>
 
+			<codeMap:CodeMapSearchBoxControl Grid.Column="1" Margin="5,0,0,0" MaxHeight="20"  MinHeight="20" 
+											 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+											 DataContext="{Binding Path=FilterVM, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+											 IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, 
+																 Path=DataContext.IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
+																 Converter={StaticResource boolInverter}}">
+				<codeMap:CodeMapSearchBoxControl.Style>
+					<Style TargetType="codeMap:CodeMapSearchBoxControl">
+						<Setter Property="Visibility" Value="Visible"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.IsCalculating, 
+														   Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+								<Setter Property="Visibility" Value="Collapsed"/>
+							</DataTrigger>
+							<DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.Tree, 
+														   Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
+								<Setter Property="Visibility" Value="Collapsed"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</codeMap:CodeMapSearchBoxControl.Style>
+			</codeMap:CodeMapSearchBoxControl>
+			
 			<ProgressBar Grid.Column="1" IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
 						 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,0,0,0"
 						 Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
