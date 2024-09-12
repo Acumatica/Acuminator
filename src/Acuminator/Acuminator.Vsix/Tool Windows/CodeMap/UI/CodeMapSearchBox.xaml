@@ -21,12 +21,6 @@
 					<converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
 					<converters:StringIsNonEmptyToBoolConverter x:Key="stringIsNonEmptyConverter"/>
 					<!--#endregion-->
-					
-					<!--#region Images-->
-
-					<BitmapImage x:Key="ClearImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
-								 UriSource="pack://application:,,,/Acuminator;component/Resources/Clear.png"/>
-					<!--#endregion-->
 
 					<!--#region Border Contaner Style-->
 					<Style x:Key="SearchBoxContainerStyle" TargetType="Border">
@@ -203,22 +197,22 @@
 
 							<MultiDataTrigger>
 								<MultiDataTrigger.Conditions>
-									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay}" Value="True"/>
-									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
-									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
-								</MultiDataTrigger.Conditions>
-
-								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedSearchGlyphBrushKey}}"/>
-							</MultiDataTrigger>
-
-							<MultiDataTrigger>
-								<MultiDataTrigger.Conditions>
 									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="True"/>
 									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
 									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
 								</MultiDataTrigger.Conditions>
 
 								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverSearchGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedSearchGlyphBrushKey}}"/>
 							</MultiDataTrigger>
 
 							<MultiTrigger>
@@ -229,6 +223,58 @@
 
 								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonMouseOverGlyphBrushKey}}"/>
 							</MultiTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonDisabledGlyphBrushKey}}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<!--#endregion-->
+
+					<!--#region ClearGlyph Icon-->
+					<Style x:Key="ClearGlyphIconStyle" TargetType="Path">
+						<Setter Property="Visibility" Value="Visible"/>
+						<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ClearGlyphBrushKey}}"/>
+
+						<Style.Triggers>
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverClearGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedClearGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonMouseOverGlyphBrushKey}}"/>
+							</MultiTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, 
+																 Path=IsPressed, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonMouseDownGlyphBrushKey}}"/>
+							</MultiDataTrigger>
 
 							<Trigger Property="IsEnabled" Value="False">
 								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonDisabledGlyphBrushKey}}"/>
@@ -258,23 +304,12 @@
 					   VerticalAlignment="Center" Style="{StaticResource WatermarkStyle}"/>
 
 			<Button x:Name="ClearButton" Grid.Column="1" Focusable="False" Padding="0" BorderThickness="0" Background="Transparent"
-					Command="{Binding Path=ClearCommand}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
-					MaxWidth="16" MinWidth="16" MaxHeight="16" MinHeight="16" ToolTip="Clear filter" Style="{StaticResource ClearButtonStyle}">
-				
-				<Image x:Name="ClearGlyphIcon" Source="{StaticResource ClearImage}" VerticalAlignment="Center" HorizontalAlignment="Center"
-					   MinWidth="12" MaxWidth="12" MinHeight="12" MaxHeight="12" Margin="3,1" SnapsToDevicePixels="True">
-					<Image.Style>
-						<Style TargetType="{x:Type Image}">
-							<Setter Property="Source" Value="{StaticResource SearchImage}"/>
+					Command="{Binding Path=ClearCommand}" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="18" MaxWidth="18" 
+					MinHeight="21" MaxHeight="21" ToolTip="Clear filter" Style="{StaticResource ClearButtonStyle}">
 
-							<Style.Triggers>
-								<Trigger Property="IsEnabled" Value="False">
-									<Setter Property="Opacity" Value="0.3"/>
-								</Trigger>
-							</Style.Triggers>
-						</Style>
-					</Image.Style>
-				</Image>
+				<Path x:Name="ClearGlyphIcon" SnapsToDevicePixels="True" VerticalAlignment="Center" HorizontalAlignment="Center"
+					  StrokeThickness="1" Style="{StaticResource ClearGlyphIconStyle}" MinHeight="8" MaxHeight="8" MinWidth="8" MaxWidth="8" 
+					  Data="F1M0,1L1,0 4,3 7,0 8,1 5,4 8,7 7,8 4,5 1,8 0,7 3,4 0,1z"/>
 			</Button>
 
 			<Path x:Name="SearchGlyphIcon" Grid.Column="1" Margin="3,1" Focusable="False" SnapsToDevicePixels="True"
