@@ -34,6 +34,60 @@
 
                     <!-- Button Style-->
 					<Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
+
+					<Style x:Key="RefreshButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Static vsshell:VsResourceKeys.ButtonStyleKey}}">
+						<Style.Resources>
+							<Style TargetType="Border">
+								<Setter Property="CornerRadius" Value="0" />
+							</Style>
+						</Style.Resources>
+						
+						<Setter Property="Background" Value="Transparent"/>
+						<Setter Property="BorderBrush" Value="Transparent"/>
+
+						<Style.Triggers>
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="False"/>
+									<Condition Property="IsFocused" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonFocusedBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonFocusedTextBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderFocusedBrushKey}}"/>
+							</MultiTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonHoverBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonHoverTextBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderHoverBrushKey}}"/>
+							</MultiTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsPressed" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonPressedBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonPressedTextBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderPressedBrushKey}}"/>
+							</MultiTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonDisabledBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonDisabledTextBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderDisabledBrushKey}}"/>
+								<Setter Property="Opacity" Value="0.3"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
 				</ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -70,9 +124,10 @@
 			<WrapPanel Grid.Column="0" Orientation="Horizontal"
 					   Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
 											Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=!}">
-				<Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1" Command="{Binding Path=RefreshCodeMapCommand}"
-						 MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
-						 IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
+				<Button Name="RefreshButton" VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1" Command="{Binding Path=RefreshCodeMapCommand}"
+						MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20" Style="{StaticResource RefreshButtonStyle}"
+						IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
+					
 					<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
 				</Button>
 			</WrapPanel>
