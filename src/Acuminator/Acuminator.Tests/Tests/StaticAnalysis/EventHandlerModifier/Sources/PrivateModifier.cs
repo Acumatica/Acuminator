@@ -10,7 +10,7 @@ namespace Acuminator.Tests.Sources
 			return;
 		}
 
-		protected virtual void _(Events.FieldUpdated<PX.Objects.AR.ARInvoice.docType> e)
+		public virtual void _(Events.FieldUpdated<PX.Objects.AR.ARInvoice.docType> e)
 		{
 			return;
 		}
@@ -33,12 +33,12 @@ namespace Acuminator.Tests.Sources
 			return;
 		}
 
-		private protected void _(Events.CacheAttached<PX.Objects.CA.CABatch.batchSeqNbr> e) // not supported
+		private protected void _(Events.CacheAttached<PX.Objects.CA.CABatch.batchSeqNbr> e)
 		{
 			return;
 		}
 
-		protected sealed override void _(Events.FieldUpdated<PX.Objects.AR.ARInvoice.docType> e)
+		public sealed override void _(Events.FieldUpdated<PX.Objects.AR.ARInvoice.docType> e)
 		{
 			return;
 		}

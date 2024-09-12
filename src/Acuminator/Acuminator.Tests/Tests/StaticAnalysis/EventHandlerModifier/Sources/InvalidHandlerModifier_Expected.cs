@@ -30,7 +30,7 @@ namespace Acuminator.Tests.Sources
 			return;
 		}
 
-		protected override void HandleCacheAttachedBatchSeqNbr(Events.CacheAttached<PX.Objects.CA.CABatch.batchSeqNbr> e)
+		protected sealed override void HandleCacheAttachedBatchSeqNbr(Events.CacheAttached<PX.Objects.CA.CABatch.batchSeqNbr> e)
 		{
 			return;
 		}

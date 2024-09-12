@@ -406,20 +406,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1076_CallToPXInternalUseOnlyAPI_OnlyISV { get; } =
 			Rule("PX1076", nameof(Resources.PX1076Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1076);
 
-		public static DiagnosticDescriptor PX1077_EventHandlersShouldNotBePrivate { get; } =
-			Rule("PX1077", nameof(Resources.PX1077Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1077);
+		public static DiagnosticDescriptor PX1077_EventHandlersShouldBeProtectedVirtual { get; } =
+			Rule("PX1077", nameof(Resources.PX1077Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1077);
 
-		public static DiagnosticDescriptor PX1078_EventHandlersShouldBeProtectedVirtual { get; } =
-			Rule("PX1078", nameof(Resources.PX1078Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1078);
-
-		public static DiagnosticDescriptor PX1078_EventHandlersShouldNotBeSealed { get; } =
-			Rule("PX1078", nameof(Resources.PX1078Title_Sealed).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1078);
-
-		public static DiagnosticDescriptor PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations { get; } =
-			Rule("PX1078", nameof(Resources.PX1078Title_ExplicitInterfaceImplementation).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1078);
-
-		public static DiagnosticDescriptor PX1078_EventHandlersInSealedClassesShouldNotBePrivate { get; } =
-			Rule("PX1078", nameof(Resources.PX1078Title_SealedClass).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1078);
+		public static DiagnosticDescriptor PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations { get; } =
+			Rule("PX1077", nameof(Resources.PX1077Title_ExplicitInterfaceImplementation).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1077);
 
 		public static DiagnosticDescriptor PX1080_DataViewDelegateLongOperationStart { get; } =
 			Rule("PX1080", nameof(Resources.PX1080Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1080);

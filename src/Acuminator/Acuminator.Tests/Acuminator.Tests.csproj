@@ -96,7 +96,6 @@
     <Compile Include="Tests\StaticAnalysis\BannedApi\BannedApiTestsNonIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToApisForbiddenToIsv.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BannedApi\Sources\CallsToMathRoundAPIs.cs" />
-    <Compile Include="Tests\StaticAnalysis\EventHandlerModifier\EventHandlerModifierPrivateFixerTests.cs" />
     <Compile Include="Tests\StaticAnalysis\EventHandlerModifier\EventHandlerModifierFixerTests.cs" />
     <Compile Include="Tests\StaticAnalysis\EventHandlerModifier\EventHandlerModifierTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\PrivateModifier.cs" />

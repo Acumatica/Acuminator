@@ -799,20 +799,11 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EventHandlersShouldNotBePrivate.
+        ///   Looks up a localized string similar to EventHandlersShouldBeProtectedVirtual.
         /// </summary>
         public static string PX1077 {
             get {
                 return ResourceManager.GetString("PX1077", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to EventHandlersShouldBeProtectedVirtual.
-        /// </summary>
-        public static string PX1078 {
-            get {
-                return ResourceManager.GetString("PX1078", resourceCulture);
             }
         }
         

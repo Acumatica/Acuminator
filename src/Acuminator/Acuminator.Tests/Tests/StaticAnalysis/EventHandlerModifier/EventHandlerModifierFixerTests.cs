@@ -45,5 +45,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		{
 			VerifyCSharpFix(actual, expected);
 		}
+
+		[Theory]
+		[EmbeddedFileData("PrivateModifier.cs",
+						  "PrivateModifier_Expected.cs")]
+		public void Test_Private_Modifiers_In_Event_Handlers(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
+
+		[Theory]
+		[EmbeddedFileData("PrivateModifierComments.cs",
+						  "PrivateModifierComments_Expected.cs")]
+		public void Test_Modifiers_With_Comments(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
 	}
 }

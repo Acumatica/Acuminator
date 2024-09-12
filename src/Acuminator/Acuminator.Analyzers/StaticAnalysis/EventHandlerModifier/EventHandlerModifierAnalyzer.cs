@@ -5,6 +5,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 {
@@ -12,11 +13,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(
-				Descriptors.PX1077_EventHandlersShouldNotBePrivate,
-				Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual,
-				Descriptors.PX1078_EventHandlersShouldNotBeSealed,
-				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations,
-				Descriptors.PX1078_EventHandlersInSealedClassesShouldNotBePrivate);
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual,
+				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
@@ -26,44 +24,116 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (handler.Symbol.DeclaredAccessibility == Accessibility.Private)
+				var location = handler.Symbol.Locations.FirstOrDefault();
+
+				if (location == null)
 				{
-					// For private modifiers, there is no need to check if the method is overriden. It's a %100 violation.
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBePrivate, handler.Symbol.Locations.First()));
+					continue;
 				}
 
 				if (handler.Symbol.IsOverride)
 				{
-					// If the method is overriden, the only action can be to remove the sealed keyword.
-					// In general, the OOP related issues will be handled anyway by the compiler. We don't need to get involved.
+					continue;
+				}
 
-					if (handler.Symbol.IsSealed)
+				var properties = new Dictionary<string, string?>
+				{
+					{ "IsOverride",							handler.Symbol.IsOverride.ToString()},
+					{ "IsExplicitInterfaceImplementation", (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation).ToString()},
+					{ "ImplementsInterface",				HelperMethods.ImplementsInterface(handler.Symbol, pxContext).ToString()},
+					{ "IsContainingTypeSealed",				handler.Symbol.ContainingType.IsSealed.ToString()}
+				}
+				.ToImmutableDictionary();
+
+				if (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
+				{
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location, properties));
+				}
+				else if (!HelperMethods.ImplementsInterface(handler.Symbol, pxContext))
+				{
+					var targetAccessibility = handler.Symbol.ContainingType.IsSealed ? Accessibility.Public : Accessibility.Protected;
+
+					if (!(handler.Symbol.IsVirtual || handler.Symbol.ContainingType.IsSealed) || handler.Symbol.DeclaredAccessibility != targetAccessibility)
 					{
-						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldNotBeSealed, handler.Symbol.Locations.First()));
+						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties));
 					}
 				}
-				else if (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
+			}
+		}
+
+		private static class HelperMethods
+		{
+			internal static bool ImplementsInterface(IMethodSymbol method, PXContext pxContext)
+			{
+				return method
+					.ContainingType
+					.AllInterfaces
+					.SelectMany(i => i.GetMethods(method.Name))
+					.Any(m =>
+						IsEventHandlerInfosMatch(method, m, pxContext) &&
+						IsImplicitInterfaceImplementation(method, m)
+					);
+			}
+
+			private static bool IsEventHandlerInfosMatch(IMethodSymbol method, IMethodSymbol other, PXContext pxContext)
+			{
+				return method.GetEventHandlerInfo(pxContext).Equals(other.GetEventHandlerInfo(pxContext));
+			}
+
+			private static bool IsImplicitInterfaceImplementation(IMethodSymbol method, IMethodSymbol interfaceMethod)
+			{
+				if (method.Name != interfaceMethod.Name)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations, handler.Symbol.Locations.First()));
+					return false;
 				}
-				else if (handler.Symbol.ContainingType.IsSealed && handler.Symbol.DeclaredAccessibility == Accessibility.Private)
+
+				if (method.Parameters.Length != interfaceMethod.Parameters.Length)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersInSealedClassesShouldNotBePrivate, handler.Symbol.Locations.First()));
+					return false;
 				}
-				else
+
+				if (!method.ReturnType.Equals(interfaceMethod.ReturnType, SymbolEqualityComparer.Default))
 				{
-					if (!handler.Symbol.ImplementsInterface())
+					return false;
+				}
+
+				if (method.Arity != interfaceMethod.Arity)
+				{
+					return false;
+				}
+
+				if (method.IsGenericMethod != interfaceMethod.IsGenericMethod)
+				{
+					return false;
+				}
+
+				if (method.IsGenericMethod)
+				{
+					if (method.TypeArguments.Length != interfaceMethod.TypeArguments.Length)
 					{
-						// The method should
-						// - be protected
-						// - be virtual (override is not possible at this point, the method is not an override)
-						// - not be sealed
-						if (!handler.Symbol.IsVirtual || handler.Symbol.IsSealed || handler.Symbol.DeclaredAccessibility != Accessibility.Protected)
+						return false;
+					}
+
+					for (int i = 0; i < method.TypeArguments.Length; i++)
+					{
+						if (!method.TypeArguments[i].Equals(interfaceMethod.TypeArguments[i], SymbolEqualityComparer.Default))
 						{
-							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual, handler.Symbol.Locations.First()));
+							return false;
 						}
 					}
 				}
+
+				for (int i = 0; i < method.Parameters.Length; i++)
+				{
+					if (!method.Parameters[i].Type.Equals(interfaceMethod.Parameters[i].Type, SymbolEqualityComparer.Default))
+					{
+						return false;
+					}
+				}
+
+				var implicitImplementation = method.ContainingType.FindImplementationForInterfaceMember(interfaceMethod);
+
+				return implicitImplementation?.Equals(method, SymbolEqualityComparer.Default) ?? false;
 			}
 		}
 	}

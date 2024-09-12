@@ -22,17 +22,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		[EmbeddedFileData("PrivateModifier.cs")]
 		public void PrivateModifierNotAllowed(string source)
 		{
-			// The test should return exactly two errors.
-
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(8, 16),
-				Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual.CreateFor(8, 16),
-				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(21, 16),
-				Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual.CreateFor(21, 16),
-				Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual.CreateFor(26, 18),
-				Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual.CreateFor(31, 27),
-				Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual.CreateFor(36, 26),
-				Descriptors.PX1078_EventHandlersShouldNotBeSealed.CreateFor(41, 34)
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(8, 16),
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(13, 23),
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(21, 16),
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(26, 18),
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(31, 27),
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(36, 26)
 			);
 		}
 
@@ -40,13 +36,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		[EmbeddedFileData("ContainerWithInterface.cs")]
 		public void ContainerWithInterface(string source)
 		{
-			// The test should return exactly four errors.
+			// The test should return exactly two errors.
 
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(13, 26),
-				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(13, 26),
-				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(19, 26),
-				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(19, 26)
+				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(13, 26),
+				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(19, 26)
 			);
 		}
 
@@ -55,8 +49,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		public void SealedContainer(string source)
 		{
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(8, 16),
-				Descriptors.PX1078_EventHandlersInSealedClassesShouldNotBePrivate.CreateFor(8, 16)
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(8, 16)
 			);
 		}
 	}

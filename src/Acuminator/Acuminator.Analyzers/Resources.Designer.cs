@@ -1663,7 +1663,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the modifier to {0}.
+        ///   Looks up a localized string similar to Change the accessibility modifier to {0}.
         /// </summary>
         public static string PX1077Fix {
             get {
@@ -1672,7 +1672,16 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Event handlers should not be private.
+        ///   Looks up a localized string similar to Remove the explicit interface signature.
+        /// </summary>
+        public static string PX1077Fix_RemoveExplicitInterface {
+            get {
+                return ResourceManager.GetString("PX1077Fix_RemoveExplicitInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should be protected and virtual.
         /// </summary>
         public static string PX1077Title {
             get {
@@ -1681,65 +1690,11 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the modifier to protected virtual.
-        /// </summary>
-        public static string PX1078Fix {
-            get {
-                return ResourceManager.GetString("PX1078Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove the explicit interface signature.
-        /// </summary>
-        public static string PX1078Fix_RemoveExplicitInterface {
-            get {
-                return ResourceManager.GetString("PX1078Fix_RemoveExplicitInterface", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove the sealed modifier.
-        /// </summary>
-        public static string PX1078Fix_RemoveSealed {
-            get {
-                return ResourceManager.GetString("PX1078Fix_RemoveSealed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event handlers should be protected and virtual.
-        /// </summary>
-        public static string PX1078Title {
-            get {
-                return ResourceManager.GetString("PX1078Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Event handlers should not be explicit interface implementations.
         /// </summary>
-        public static string PX1078Title_ExplicitInterfaceImplementation {
+        public static string PX1077Title_ExplicitInterfaceImplementation {
             get {
-                return ResourceManager.GetString("PX1078Title_ExplicitInterfaceImplementation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event handlers should not be sealed.
-        /// </summary>
-        public static string PX1078Title_Sealed {
-            get {
-                return ResourceManager.GetString("PX1078Title_Sealed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event handlers in sealed classes should not be private.
-        /// </summary>
-        public static string PX1078Title_SealedClass {
-            get {
-                return ResourceManager.GetString("PX1078Title_SealedClass", resourceCulture);
+                return ResourceManager.GetString("PX1077Title_ExplicitInterfaceImplementation", resourceCulture);
             }
         }
         
