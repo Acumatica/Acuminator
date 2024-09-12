@@ -77,7 +77,7 @@
 				</Button>
 			</WrapPanel>
 
-			<codeMap:CodeMapSearchBoxControl Grid.Column="1" Margin="5,0,0,0" MaxHeight="18"  MinHeight="18" 
+			<codeMap:CodeMapSearchBoxControl Grid.Column="1" Margin="5,0,0,0" MaxHeight="21" MinHeight="21" 
 											 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 											 DataContext="{Binding Path=FilterVM, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 											 IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, 
