@@ -1663,7 +1663,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the modifier to protected.
+        ///   Looks up a localized string similar to Change the modifier to {0}.
         /// </summary>
         public static string PX1077Fix {
             get {
@@ -1731,6 +1731,15 @@ namespace Acuminator.Analyzers {
         public static string PX1078Title_Sealed {
             get {
                 return ResourceManager.GetString("PX1078Title_Sealed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers in sealed classes should not be private.
+        /// </summary>
+        public static string PX1078Title_SealedClass {
+            get {
+                return ResourceManager.GetString("PX1078Title_SealedClass", resourceCulture);
             }
         }
         

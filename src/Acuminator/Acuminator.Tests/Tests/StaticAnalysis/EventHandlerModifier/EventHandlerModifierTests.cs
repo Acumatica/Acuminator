@@ -40,11 +40,23 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		[EmbeddedFileData("ContainerWithInterface.cs")]
 		public void ContainerWithInterface(string source)
 		{
-			// The test should return exactly two errors.
+			// The test should return exactly four errors.
 
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(13, 26),
-				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(13, 26)
+				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(13, 26),
+				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(19, 26),
+				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(19, 26)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("SealedContainer.cs")]
+		public void SealedContainer(string source)
+		{
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(8, 16),
+				Descriptors.PX1078_EventHandlersInSealedClassesShouldNotBePrivate.CreateFor(8, 16)
 			);
 		}
 	}

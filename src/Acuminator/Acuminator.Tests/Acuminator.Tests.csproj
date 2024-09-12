@@ -105,6 +105,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\PrivateModifier_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\ContainerWithInterface.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\ContainerWithInterface_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\PrivateModifierComments.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\PrivateModifierComments_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\SealedContainer.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\EventHandlerModifier\Sources\SealedContainer_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\MissingBqlFieldRedeclarationInDerivedDacTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields.cs" />

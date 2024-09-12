@@ -418,6 +418,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations { get; } =
 			Rule("PX1078", nameof(Resources.PX1078Title_ExplicitInterfaceImplementation).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1078);
 
+		public static DiagnosticDescriptor PX1078_EventHandlersInSealedClassesShouldNotBePrivate { get; } =
+			Rule("PX1078", nameof(Resources.PX1078Title_SealedClass).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1078);
+
 		public static DiagnosticDescriptor PX1080_DataViewDelegateLongOperationStart { get; } =
 			Rule("PX1080", nameof(Resources.PX1080Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1080);
 

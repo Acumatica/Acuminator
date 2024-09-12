@@ -14,6 +14,12 @@ namespace Acuminator.Tests.Sources
 		{
 			return;
 		}
+
+		// comments
+		public void IExtension.HandleCacheAttachedRefNbr(Events.CacheAttached<PX.Objects.AR.ARInvoice.refNbr> e)
+		{
+			return;
+		}
 	}
 
 	public interface IExtension
@@ -21,6 +27,8 @@ namespace Acuminator.Tests.Sources
 		void HandleCacheAttachedDiscDate(Events.CacheAttached<PX.Objects.AR.ARInvoice.discDate> e);
 
 		void HandleCacheAttachedBatchSeqNbr(Events.CacheAttached<PX.Objects.CA.CABatch.batchSeqNbr> e);
+
+		void HandleCacheAttachedRefNbr(Events.CacheAttached<PX.Objects.AR.ARInvoice.refNbr> e);
 	}
 
 	public class MyGraph : PXGraph<MyGraph>

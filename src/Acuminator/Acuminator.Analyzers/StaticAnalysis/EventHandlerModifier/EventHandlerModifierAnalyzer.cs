@@ -5,6 +5,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier.Helpers;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 {
@@ -14,7 +15,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 			ImmutableArray.Create(
 				Descriptors.PX1077_EventHandlersShouldNotBePrivate,
 				Descriptors.PX1078_EventHandlersShouldBeProtectedVirtual,
-				Descriptors.PX1078_EventHandlersShouldNotBeSealed);
+				Descriptors.PX1078_EventHandlersShouldNotBeSealed,
+				Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations,
+				Descriptors.PX1078_EventHandlersInSealedClassesShouldNotBePrivate);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
 		{
@@ -44,9 +47,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersShouldNotBeExplicitInterfaceImplementations, handler.Symbol.Locations.First()));
 				}
+				else if (handler.Symbol.ContainingType.IsSealed && handler.Symbol.DeclaredAccessibility == Accessibility.Private)
+				{
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1078_EventHandlersInSealedClassesShouldNotBePrivate, handler.Symbol.Locations.First()));
+				}
 				else
 				{
-					if (!handler.Symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMethods(handler.Symbol.Name)).Any(m => SignaturesMatch(m, handler.Symbol)))
+					if (!AnalyzerHelper.ImplementsInterface(handler.Symbol))
 					{
 						// The method should
 						// - be protected
@@ -59,34 +66,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 					}
 				}
 			}
-		}
-
-		internal static bool SignaturesMatch(IMethodSymbol method, IMethodSymbol other)
-		{
-			if (method.Name != other.Name)
-			{
-				return false;
-			}
-
-			if (method.Parameters.Length != other.Parameters.Length)
-			{
-				return false;
-			}
-
-			if (!method.ReturnType.Equals(other.ReturnType, SymbolEqualityComparer.Default))
-			{
-				return false;
-			}
-
-			for (int i = 0; i < method.Parameters.Length; i++)
-			{
-				if (!method.Parameters[i].Type.Equals(other.Parameters[i].Type, SymbolEqualityComparer.Default))
-				{
-					return false;
-				}
-			}
-
-			return true;
 		}
 	}
 }
