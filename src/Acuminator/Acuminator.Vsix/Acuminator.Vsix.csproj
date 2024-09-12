@@ -502,8 +502,6 @@
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tool Windows\CodeMap\UI\SearchTextBox.cs" />
-    <Compile Include="Tool Windows\CodeMap\UI\SearchTextBoxMode.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterEventArgs.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Base\AttributesGroupNodeViewModelGeneric.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Graph\GraphAttributesGroupNodeViewModel.cs" />
@@ -696,7 +694,7 @@
   <ItemGroup>
     <Page Include="Tool Windows\CodeMap\UI\CodeMapSearchBox.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml">
       <SubType>Designer</SubType>

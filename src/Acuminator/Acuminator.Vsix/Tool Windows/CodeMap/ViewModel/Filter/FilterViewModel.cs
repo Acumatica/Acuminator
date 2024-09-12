@@ -38,20 +38,16 @@ public class FilterViewModel : ViewModelBase
 
 	public bool HasFilterText => !_filterText.IsNullOrEmpty();
 
-	public Command FilterCommand { get; }
+
+	public Command ClearCommand { get; }
 
 	public FilterViewModel()
 	{
-		FilterCommand = new Command(p => FilterCodeMap());
+		ClearCommand  = new Command(p => ClearSearch());
 	}
 
 	public void ClearSearch()
 	{
 		FilterText = null;
-	}
-
-	private void FilterCodeMap()
-	{
-
 	}
 }

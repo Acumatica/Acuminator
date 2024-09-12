@@ -18,6 +18,8 @@ using System.Windows.Shapes;
 
 using Acuminator.Utilities.Common;
 
+using static System.Net.Mime.MediaTypeNames;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap;
 
 /// <summary>
@@ -54,6 +56,18 @@ public partial class CodeMapSearchBoxControl : UserControl
 		if (sender is TextBox searchTextBox)
 		{
 			HasText = searchTextBox.Text.IsNullOrEmpty();
+		}
+	}
+
+	private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
+	{
+		if (sender is not TextBox searchTextBox)
+			return;
+
+		if (e.Key == Key.Escape)
+		{
+			searchTextBox.Text = string.Empty;
+			e.Handled = true;
 		}
 	}
 }
