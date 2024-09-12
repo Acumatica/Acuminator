@@ -203,7 +203,7 @@
 			</Grid.ColumnDefinitions>
 
 			<TextBox Name="SearchTextBox" x:FieldModifier="private" Grid.Column="0" BorderThickness="0" Padding="2,0"
-					 TextChanged="SearchTextBox_TextChanged" PreviewKeyDown="SearchTextBox_KeyDown" Background="Transparent"
+					 TextChanged="SearchTextBox_TextChanged" Background="Transparent" VerticalAlignment="Center"
 					 Text="{Binding Path=FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=100}"
 					 CaretBrush="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 					 ToolTip="Type words to filter Code Map" Style="{StaticResource SearchBoxStyle}"/>

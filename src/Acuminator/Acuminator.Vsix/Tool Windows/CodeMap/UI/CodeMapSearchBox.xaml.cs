@@ -58,16 +58,4 @@ public partial class CodeMapSearchBoxControl : UserControl
 			HasText = searchTextBox.Text.IsNullOrEmpty();
 		}
 	}
-
-	private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
-	{
-		if (sender is not TextBox searchTextBox)
-			return;
-
-		if (e.Key == Key.Escape)
-		{
-			searchTextBox.Text = string.Empty;
-			e.Handled = true;
-		}
-	}
 }
