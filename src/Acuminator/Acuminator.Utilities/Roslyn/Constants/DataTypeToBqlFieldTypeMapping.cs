@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Acuminator.Utilities.Common;
-
 namespace Acuminator.Utilities.Roslyn.Constants
 {
 	/// <summary>
-	/// A property type to BQL field type mapping table. 
-	/// Contains mapping between DAC field property type and BQL field type.
+	/// A mapping between data types (such as C# property type) to BQL field type (such as BqlString).
 	/// </summary>
-	public static class PropertyTypeToBqlFieldTypeMapping
+	public static class DataTypeToBqlFieldTypeMapping
 	{
-		private static readonly Dictionary<string, string> _propertyTypeToBqlFieldType = new(StringComparer.OrdinalIgnoreCase)
+		private static readonly Dictionary<string, string> _dataTypeToBqlFieldType = new(StringComparer.OrdinalIgnoreCase)
 		{
 			{ nameof(String)  , "BqlString"   },
 			{ nameof(Guid)	  , "BqlGuid"	  },
@@ -41,7 +38,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			{ "ByteArray"		 , "BqlByteArray" }
 		};
 
-		private static readonly Dictionary<string, string> _bqlFieldTypeToPropertyType = new(StringComparer.OrdinalIgnoreCase)
+		private static readonly Dictionary<string, string> _bqlFieldTypeToDataType = new(StringComparer.OrdinalIgnoreCase)
 		{
 			{ "BqlString"	 , nameof(String) 	   },
 			{ "BqlGuid"		 , nameof(Guid) 	   },
@@ -57,20 +54,20 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			{ "BqlByteArray" , $"{nameof(Byte)}[]" },
 		};
 
-		public static bool ContainsPropertyType(PropertyTypeName propertyType) =>
-			_propertyTypeToBqlFieldType.ContainsKey(propertyType.Value);
+		public static bool ContainsDataType(DataTypeName dataType) =>
+			_dataTypeToBqlFieldType.ContainsKey(dataType.Value);
 
 		public static bool ContainsBqlFieldType(BqlFieldTypeName bqlFieldType) =>
-			_bqlFieldTypeToPropertyType.ContainsKey(bqlFieldType.Value);
+			_bqlFieldTypeToDataType.ContainsKey(bqlFieldType.Value);
 
-		public static string? GetBqlFieldType(PropertyTypeName propertyType) =>
-			_propertyTypeToBqlFieldType.TryGetValue(propertyType.Value, out var bqlFieldType)
+		public static string? GetBqlFieldType(DataTypeName dataType) =>
+			_dataTypeToBqlFieldType.TryGetValue(dataType.Value, out var bqlFieldType)
 				? bqlFieldType
 				: null;
 
-		public static string? GetPropertyType(BqlFieldTypeName bqlFieldType) =>
-			_bqlFieldTypeToPropertyType.TryGetValue(bqlFieldType.Value, out var propertyType)
-				? propertyType
+		public static string? GetDataType(BqlFieldTypeName bqlFieldType) =>
+			_bqlFieldTypeToDataType.TryGetValue(bqlFieldType.Value, out var dataType)
+				? dataType
 				: null;
 	}
 }

@@ -41,6 +41,8 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 
 				dacField.PropertyInfo.Should().NotBeNull();
 			}
+
+			TestDacFieldAndBqlFieldInfosTypeConsistency(dacSemanticModel.DacFields);
 		}
 
 		[Theory]
@@ -58,9 +60,11 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			{
 				dacField.BqlFieldInfo.Should().NotBeNull();
 				dacField.BqlFieldInfo!.BqlFieldDataTypeDeclared.Should().NotBeNull();
-				
+
 				dacField.PropertyInfo.Should().BeNull();
 			}
+
+			TestDacFieldAndBqlFieldInfosTypeConsistency(dacSemanticModel.DeclaredDacFields);
 
 			dacSemanticModel.BqlFieldsByNames["docType"].BqlFieldDataTypeDeclared!.Name.Should().Be("String");
 			dacSemanticModel.BqlFieldsByNames["refNbr"].BqlFieldDataTypeDeclared!.Name.Should().Be("String");
@@ -83,6 +87,8 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 				dacField.BqlFieldInfo.Should().NotBeNull();
 				dacField.PropertyInfo.Should().NotBeNull();
 			}
+
+			TestDacFieldAndBqlFieldInfosTypeConsistency(dacSemanticModel.DacFields);
 		}
 
 		[Theory]
@@ -103,6 +109,8 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 				dacField.PropertyInfo.Should().NotBeNull();
 			}
 
+			TestDacFieldAndBqlFieldInfosTypeConsistency(dacSemanticModel.DacFields);
+
 			dacSemanticModel.DacFieldsByNames["CreatedByID"].Base.Should().NotBeNull();
 		}
 
@@ -121,8 +129,10 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			foreach (var dacField in dacSemanticModel.DacFields)
 			{
 				dacField.BqlFieldInfo.Should().NotBeNull();
-				dacField.PropertyInfo.Should().NotBeNull();
+				dacField.PropertyInfo.Should().NotBeNull();	
 			}
+
+			TestDacFieldAndBqlFieldInfosTypeConsistency(dacSemanticModel.DacFields);
 
 			dacSemanticModel.DacFieldsByNames["CreatedByID"].Base.Should().NotBeNull();
 		}
@@ -159,6 +169,17 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			{
 				foreach (var requiredDacField in requiredDacFields)
 					dacModel.DacFieldsByNames.Should().ContainKey(requiredDacField);
+			}
+		}
+
+		private void TestDacFieldAndBqlFieldInfosTypeConsistency(IEnumerable<DacFieldInfo> dacFields)
+		{
+			foreach (var dacField in dacFields)
+			{
+				SymbolEqualityComparer.Default.Equals(dacField.BqlFieldDataTypeDeclared, dacField.BqlFieldInfo?.BqlFieldDataTypeDeclared)
+											  .Should().BeTrue();
+				SymbolEqualityComparer.Default.Equals(dacField.BqlFieldDataTypeEffective, dacField.BqlFieldInfo?.BqlFieldDataTypeEffective)
+											  .Should().BeTrue();
 			}
 		}
 	}

@@ -39,14 +39,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				if (location == null || !dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo? property))
 					continue;
 
-				string? propertyTypeName = property.EffectivePropertyType.GetSimplifiedName();
+				string propertyTypeName  = property.PropertyTypeUnwrappedNullable.GetSimplifiedName();
+				var propertyDataTypeName = new DataTypeName(propertyTypeName);
 
-				if (propertyTypeName == null)
-					continue;
-
-				var strongPropertyTypeName = new PropertyTypeName(propertyTypeName);
-
-				if (!PropertyTypeToBqlFieldTypeMapping.ContainsPropertyType(strongPropertyTypeName))
+				if (!DataTypeToBqlFieldTypeMapping.ContainsDataType(propertyDataTypeName))
 					continue;
 
 				var args = ImmutableDictionary.CreateBuilder<string, string?>();

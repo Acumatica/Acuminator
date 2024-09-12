@@ -78,8 +78,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (dacNode == null)
 				return document;
 
-			var strongPropertyTypeName = new PropertyTypeName(propertyType);
-			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, strongPropertyTypeName);
+			var dataTypeName = new DataTypeName(propertyType);
+			var newDacMembers = CreateMembersListWithBqlField(dacNode, propertyWithoutBqlFieldNode, bqlFieldName, dataTypeName);
 
 			if (newDacMembers == null)
 				return document;
@@ -92,13 +92,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 
 		private SyntaxList<MemberDeclarationSyntax>? CreateMembersListWithBqlField(ClassDeclarationSyntax dacNode, 
 																				   PropertyDeclarationSyntax propertyWithoutBqlFieldNode,
-																				   string bqlFieldName, PropertyTypeName propertyType)
+																				   string bqlFieldName, DataTypeName propertyDataType)
 		{
 			var members = dacNode.Members;
 
 			if (members.Count == 0)
 			{
-				var newSingleBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: true, 
+				var newSingleBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyDataType, bqlFieldName, isFirstField: true, 
 																					 isRedeclaration: false, propertyWithoutBqlFieldNode);
 				return newSingleBqlFieldNode != null
 					? SingletonList<MemberDeclarationSyntax>(newSingleBqlFieldNode)
@@ -110,7 +110,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			if (propertyMemberIndex < 0)
 				propertyMemberIndex = 0;
 
-			var newBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyType, bqlFieldName, isFirstField: propertyMemberIndex == 0,
+			var newBqlFieldNode = BqlFieldGeneration.GenerateTypedBqlField(propertyDataType, bqlFieldName, isFirstField: propertyMemberIndex == 0,
 																		   isRedeclaration: false, propertyWithoutBqlFieldNode);
 			if (newBqlFieldNode == null)
 				return null;

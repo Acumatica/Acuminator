@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacName, out string? dacName) ||
-				!diagnostic.TryGetPropertyValue(DiagnosticProperty.DacFieldName, out string? bqlFieldName) ||
+				!diagnostic.TryGetPropertyValue(DiagnosticProperty.BqlFieldName, out string? bqlFieldName) ||
 				dacName.IsNullOrWhiteSpace() || bqlFieldName.IsNullOrWhiteSpace())
 			{
 				return Task.CompletedTask;

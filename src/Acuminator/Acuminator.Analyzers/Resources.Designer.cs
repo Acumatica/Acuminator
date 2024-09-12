@@ -1519,7 +1519,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Redeclare &quot;{0}&quot; BQL field in DAC &quot;{1}&quot;.
+        ///   Looks up a localized string similar to Redeclare the &quot;{0}&quot; BQL field in the &quot;{1}&quot; DAC.
         /// </summary>
         public static string PX1067FixFormat {
             get {
@@ -1528,11 +1528,38 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BQL fields from base DACs should be redeclared in the derived DAC. DAC &quot;{0}&quot; does not contain a redeclaration of BQL field &quot;{1}&quot; declared in the base DAC &quot;{2}&quot;..
+        ///   Looks up a localized string similar to BQL fields from a base DAC should be redeclared in the derived DAC. The &quot;{0}&quot; DAC does not contain a redeclaration of the &quot;{1}&quot; BQL field declared in the &quot;{2}&quot; base DAC..
         /// </summary>
         public static string PX1067TitleFormat {
             get {
                 return ResourceManager.GetString("PX1067TitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the BQL type so that it corresponds to the property type.
+        /// </summary>
+        public static string PX1068FixBqlType {
+            get {
+                return ResourceManager.GetString("PX1068FixBqlType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the property type so that it corresponds to the BQL type.
+        /// </summary>
+        public static string PX1068FixPropertyType {
+            get {
+                return ResourceManager.GetString("PX1068FixPropertyType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of the DAC field property does not correspond to the type of the BQL field.
+        /// </summary>
+        public static string PX1068Title {
+            get {
+                return ResourceManager.GetString("PX1068Title", resourceCulture);
             }
         }
         

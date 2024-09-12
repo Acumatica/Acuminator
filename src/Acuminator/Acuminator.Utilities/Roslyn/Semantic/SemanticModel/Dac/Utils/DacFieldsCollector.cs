@@ -28,10 +28,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			var propertiesByTypes = RegroupInfosByType<DacPropertyInfo, IPropertySymbol>(propertiesByNames.Values);
 
 			var typeHierarchy = dacType == DacType.Dac
-				? dacOrDacExtension.GetDacWithBaseTypesThatMayStoreDacProperties(pxContext)
+				? dacOrDacExtension.GetDacWithBaseTypesThatMayStoreDacProperties(pxContext).Reverse()
 				: dacOrDacExtension.GetDacExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, includeDac: true);
-
-			typeHierarchy = typeHierarchy.Reverse();
 
 			foreach (var type in typeHierarchy)
 			{

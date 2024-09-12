@@ -38,10 +38,10 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 			return iBqlFieldBaseType;
 		}
 
-		public static ClassDeclarationSyntax? GenerateTypedBqlField(PropertyTypeName fieldPropertyTypeName, string bqlFieldName, bool isFirstField,
+		public static ClassDeclarationSyntax? GenerateTypedBqlField(DataTypeName dataTypeName, string bqlFieldName, bool isFirstField,
 																	bool isRedeclaration, MemberDeclarationSyntax? adjacentMemberToCopyRegions)
 		{
-			var bqlFieldBaseTypeNode = BaseTypeForBqlField(fieldPropertyTypeName, bqlFieldName);
+			var bqlFieldBaseTypeNode = BaseTypeForBqlField(dataTypeName, bqlFieldName);
 
 			if (bqlFieldBaseTypeNode == null)
 				return null;
@@ -59,11 +59,11 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 			return bqlField;
 		}
 
-		public static SimpleBaseTypeSyntax? BaseTypeForBqlField(PropertyTypeName fieldPropertyTypeName, string bqlFieldName)
+		public static SimpleBaseTypeSyntax? BaseTypeForBqlField(DataTypeName dataTypeName, string bqlFieldName)
 		{
 			bqlFieldName.ThrowOnNullOrWhiteSpace();
 
-			var bqlFieldTypeName = PropertyTypeToBqlFieldTypeMapping.GetBqlFieldType(fieldPropertyTypeName).NullIfWhiteSpace();
+			var bqlFieldTypeName = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(dataTypeName).NullIfWhiteSpace();
 
 			if (bqlFieldTypeName == null)
 				return null;

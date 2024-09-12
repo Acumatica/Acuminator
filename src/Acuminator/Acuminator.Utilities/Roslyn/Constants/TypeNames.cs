@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Constants
 {
@@ -47,6 +50,57 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string IBqlField = "IBqlField";
 			public const string Field	  = "Field";
 			public const string BqlType   = "BqlType";
+		}
+
+		/// <summary>
+		/// C# predefined types.
+		/// </summary>
+		public static class CSharpPredefinedTypes
+		{
+			public const string Object 	= "object";
+			public const string Dynamic = "dynamic";
+			public const string Void 	= "void";
+			public const string Boolean = "bool";
+			public const string Char 	= "char";
+			public const string SByte 	= "sbyte";
+			public const string Byte 	= "byte";
+			public const string Int16 	= "short";
+			public const string UInt16 	= "ushort" ;
+			public const string Int32 	= "int";
+			public const string UInt32 	= "uint";
+			public const string Int64 	= "long";
+			public const string UInt64 	= "ulong";
+			public const string Decimal = "decimal";
+			public const string Single 	= "float";
+			public const string Double 	= "double";
+			public const string String 	= "string";
+			public const string NInt 	= "nint";
+			public const string NUInt 	= "nuint";
+
+			public static ReadOnlyHashSet<string> All { get; } = 
+				new ReadOnlyHashSet<string>
+				([
+					Object,
+					Dynamic,
+					Void,
+					Boolean,
+					Char,
+					SByte,
+					Byte,
+					Int16,
+					UInt16,
+					Int32,
+					UInt32,
+					Int64,
+					UInt64,
+					Decimal,
+					Single,
+					Double,
+					String,
+					NInt,
+					NUInt
+				],
+				StringComparer.OrdinalIgnoreCase);
 		}
 
 		public const string PXView = "PXView";
