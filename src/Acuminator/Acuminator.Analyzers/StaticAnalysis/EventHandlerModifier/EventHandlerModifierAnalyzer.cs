@@ -5,7 +5,6 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier.Helpers;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 {
@@ -53,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 				}
 				else
 				{
-					if (!AnalyzerHelper.ImplementsInterface(handler.Symbol))
+					if (!handler.Symbol.ImplementsInterface())
 					{
 						// The method should
 						// - be protected

@@ -227,5 +227,68 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return method.IsVirtual || method.IsOverride || method.IsAbstract;
 		}
 
+		/// <summary>
+		/// Check if <paramref name="method"/> is an implementation of an interface method.
+		/// </summary>
+		/// <param name="method">The method to act on.</param>
+		/// <returns>True if <paramref name="method"/> is an implementation of an interface method.</returns>
+		public static bool ImplementsInterface(this IMethodSymbol method)
+		{
+			return method.ContainingType.AllInterfaces.SelectMany(i => i.GetMethods(method.Name)).Any(m => SignaturesMatch(m, method));
+		}
+
+		private static bool SignaturesMatch(this IMethodSymbol method, IMethodSymbol other)
+		{
+			if (method.Name != other.Name)
+			{
+				return false;
+			}
+
+			if (method.Parameters.Length != other.Parameters.Length)
+			{
+				return false;
+			}
+
+			if (!method.ReturnType.Equals(other.ReturnType, SymbolEqualityComparer.Default))
+			{
+				return false;
+			}
+
+			if (method.Arity != other.Arity)
+			{
+				return false;
+			}
+
+			if (method.IsGenericMethod != other.IsGenericMethod)
+			{
+				return false;
+			}
+
+			if (method.IsGenericMethod)
+			{
+				if (method.TypeArguments.Length != other.TypeArguments.Length)
+				{
+					return false;
+				}
+
+				for (int i = 0; i < method.TypeArguments.Length; i++)
+				{
+					if (!method.TypeArguments[i].Equals(other.TypeArguments[i], SymbolEqualityComparer.Default))
+					{
+						return false;
+					}
+				}
+			}
+
+			for (int i = 0; i < method.Parameters.Length; i++)
+			{
+				if (!method.Parameters[i].Type.Equals(other.Parameters[i].Type, SymbolEqualityComparer.Default))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 }

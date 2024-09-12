@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier.CodeActions;
-using Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier.Helpers;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 {
@@ -64,7 +64,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 			}
 			else
 			{
-				if (!AnalyzerHelper.ImplementsInterface(methodSymbol))
+				if (!methodSymbolNotNull.ImplementsInterface())
 				{
 					var accessibilityModifier = methodSymbolNotNull.ContainingType.IsSealed
 						? SyntaxKind.PublicKeyword
