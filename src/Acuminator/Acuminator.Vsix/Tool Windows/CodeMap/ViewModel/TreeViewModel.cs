@@ -83,29 +83,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			RootItems.Reset(roots);
 
-			var flattenedTree = RootItems.SelectMany(root => GetNodeWithDescendants(root));
+			var flattenedTree = RootItems.SelectMany(root => root.AllDescendantsAndSelf());
 			AllItems.Reset(flattenedTree);
 		}
 
 		public void RefreshFlattenedNodesList()
 		{
-			var flattenedTree = RootItems.SelectMany(root => GetNodeWithDescendants(root));
+			var flattenedTree = RootItems.SelectMany(root => root.AllDescendantsAndSelf());
 			AllItems.Reset(flattenedTree);
-		}
-
-		private IEnumerable<TreeNodeViewModel> GetNodeWithDescendants(TreeNodeViewModel node)
-		{
-			yield return node;
-
-			if (node.Children.Count == 0)
-				yield break;
-
-			var descendants = node.Children.SelectMany(child => GetNodeWithDescendants(child));
-
-			foreach (var descendant in descendants)
-			{
-				yield return descendant;
-			}
 		}
 	}
 }

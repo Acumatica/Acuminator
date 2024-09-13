@@ -174,60 +174,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			AllChildren.ForEach(childNode => childNode!.ExpandOrCollapseAll(expand));
 		}
 
-		public IEnumerable<TreeNodeViewModel> AllDescendants()
-		{
-			if (AllChildren.Count == 0)
-				yield break;
-
-			foreach (TreeNodeViewModel child in AllChildren)
-			{
-				yield return child;
-				var descendants = child.AllDescendants();
-
-				foreach (var descendant in descendants)
-				{
-					yield return descendant;
-				}
-			}
-		}
-
-		public IEnumerable<TreeNodeViewModel> DisplayedDescendants()
-		{
-			if (DisplayedChildren.Count == 0)
-				yield break;
-
-			foreach (TreeNodeViewModel child in DisplayedChildren)
-			{
-				yield return child;
-				var descendants = child.DisplayedDescendants();
-
-				foreach (var descendant in descendants)
-				{
-					yield return descendant;
-				}
-			}
-		}
-
-		public IEnumerable<TreeNodeViewModel> AncestorsOrSelf() => IsRoot
-			? [this]
-			: Ancestors(includeSelf: true);
-
-		public IEnumerable<TreeNodeViewModel> Ancestors() => IsRoot
-			? []
-			: Ancestors(includeSelf: false);
-
-		private IEnumerable<TreeNodeViewModel> Ancestors(bool includeSelf)
-		{
-			TreeNodeViewModel? current = includeSelf ? this : Parent;
-
-			while (current != null)
-			{
-				yield return current;
-				current = current.Parent;
-			}
-		}
-
-		public virtual void OnVsColorThemeChanged(ThemeChangedEventArgs e) 
+		public virtual void OnVsColorThemeChanged(ThemeChangedEventArgs e)
 		{
 			if (IconDependsOnCurrentTheme)
 				NotifyPropertyChanged(nameof(NodeIcon));
@@ -249,11 +196,83 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void AllChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var visibleChildren = e.Action != NotifyCollectionChangedAction.Move 
+			var visibleChildren = e.Action != NotifyCollectionChangedAction.Move
 				? AllChildren.Where(child => child.IsVisible)
 				: AllChildren;
 
 			_mutableDisplayedChildren.Reset(visibleChildren);
 		}
+
+		#region Tree Traversal Methods
+		public IReadOnlyCollection<TreeNodeViewModel> AllDescendantsAndSelf() =>
+			AllChildren.Count > 0
+				? Descendants(includeSelf: true, collectOnlyDisplayedNodes: false)
+				: [this];
+
+		public IReadOnlyCollection<TreeNodeViewModel> AllDescendants() =>
+			AllChildren.Count > 0
+				? Descendants(includeSelf: false, collectOnlyDisplayedNodes: false)
+				: [];
+
+		public IEnumerable<TreeNodeViewModel> DisplayedDescendantsAndSelf() =>
+			DisplayedChildren.Count > 0
+				? Descendants(includeSelf: true, collectOnlyDisplayedNodes: true)
+				: [this];
+
+		public IEnumerable<TreeNodeViewModel> DisplayedDescendants() =>
+			DisplayedChildren.Count > 0
+				? Descendants(includeSelf: false, collectOnlyDisplayedNodes: true)
+				: [];
+
+		private IReadOnlyCollection<TreeNodeViewModel> Descendants(bool includeSelf, bool collectOnlyDisplayedNodes)
+		{
+			// BFS traversal
+			IReadOnlyCollection<TreeNodeViewModel> childrenToTraverse = collectOnlyDisplayedNodes
+				? DisplayedChildren
+				: AllChildren;
+			
+			var nodesQueue = new List<TreeNodeViewModel>(capacity: childrenToTraverse.Count * 2);
+			int currentQueueHeadPosition = 0;
+
+			if (includeSelf)
+				nodesQueue.Add(this);
+			else if (childrenToTraverse.Count > 0)
+				nodesQueue.AddRange(childrenToTraverse);
+
+			while (currentQueueHeadPosition < nodesQueue.Count)
+			{
+				var currentNode = nodesQueue[currentQueueHeadPosition];
+				currentQueueHeadPosition++;
+
+				IReadOnlyCollection<TreeNodeViewModel> currentNodeChildrenToTraverse = collectOnlyDisplayedNodes
+					? currentNode.DisplayedChildren
+					: currentNode.AllChildren;
+
+				if (currentNodeChildrenToTraverse.Count > 0)
+					nodesQueue.AddRange(currentNodeChildrenToTraverse);
+			}
+
+			return nodesQueue;
+		}
+
+		public IEnumerable<TreeNodeViewModel> AncestorsAndSelf() => IsRoot
+			? [this]
+			: Ancestors(includeSelf: true);
+
+		public IEnumerable<TreeNodeViewModel> Ancestors() => IsRoot
+			? []
+			: Ancestors(includeSelf: false);
+
+		private IEnumerable<TreeNodeViewModel> Ancestors(bool includeSelf)
+		{
+			TreeNodeViewModel? current = includeSelf ? this : Parent;
+
+			while (current != null)
+			{
+				yield return current;
+				current = current.Parent;
+			}
+		}
+		#endregion
 	}
 }
