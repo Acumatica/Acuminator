@@ -33,7 +33,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex { get; set; }
 
-		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		public ImmutableArray<GraphFieldEventInfo> FieldEvents { get; }
 

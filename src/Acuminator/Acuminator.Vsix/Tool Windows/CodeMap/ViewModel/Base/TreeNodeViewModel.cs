@@ -80,7 +80,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		[MemberNotNullWhen(returnValue: false, nameof(Parent))]
 		public bool IsRoot => Parent == null;
 
-		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
+		public ExtendedObservableCollection<TreeNodeViewModel> DisplayedChildren { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
 

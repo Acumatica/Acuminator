@@ -33,7 +33,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										     base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
-			Children.CollectionChanged += Children_CollectionChanged;
+			DisplayedChildren.CollectionChanged += Children_CollectionChanged;
 		}
 
 		private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -41,9 +41,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Remove || 
 				e.Action == NotifyCollectionChangedAction.Reset)
 			{
-				int eventsCount = Children.OfType<DacGroupingNodeBaseViewModel>().Sum(dacVM => dacVM.EventsCount);
+				int eventsCount = DisplayedChildren.OfType<DacGroupingNodeBaseViewModel>().Sum(dacVM => dacVM.EventsCount);
 
-				if (Children.Count <= 0)
+				if (DisplayedChildren.Count <= 0)
 					return;
 
 				Name = $"{CategoryDescription}({eventsCount})";

@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set => CurrentNavigationIndex = value;
 		}
 
-		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		protected DacGroupingNodeBaseViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName, bool isExpanded) :
 												base(graphEventsCategoryVM?.Tree!, graphEventsCategoryVM, isExpanded)
@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphEventsCategoryVM = graphEventsCategoryVM!;
 			DacName = dacName;
 
-			Children.CollectionChanged += DacChildrenChanged;
+			DisplayedChildren.CollectionChanged += DacChildrenChanged;
 		}
 
 		protected virtual void DacChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -67,8 +67,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			EventsCount = GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
-				? Children.Sum(dacFieldVM => dacFieldVM.Children.Count)
-				: Children.Count; ;
+				? DisplayedChildren.Sum(dacFieldVM => dacFieldVM.DisplayedChildren.Count)
+				: DisplayedChildren.Count; ;
 		}
 
 		public async override Task NavigateToItemAsync()
@@ -109,10 +109,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected TreeNodeViewModel? GetChildToNavigateToFromFieldEvents()
 		{
-			if (AllowNavigation != true || Children.Count == 0)
+			if (AllowNavigation != true || DisplayedChildren.Count == 0)
 				return null;
 
-			List<TreeNodeViewModel> dacFieldEvents = Children.SelectMany(dacFieldEvent => dacFieldEvent.Children).ToList();
+			List<TreeNodeViewModel> dacFieldEvents = DisplayedChildren.SelectMany(dacFieldEvent => dacFieldEvent.DisplayedChildren).ToList();
 
 			if (dacFieldEvents.Count == 0)
 				return null;

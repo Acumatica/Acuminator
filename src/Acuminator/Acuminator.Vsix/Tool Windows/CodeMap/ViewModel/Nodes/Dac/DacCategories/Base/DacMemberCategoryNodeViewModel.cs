@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => $"{CategoryDescription}({Children.Count})";
+			get => $"{CategoryDescription}({DisplayedChildren.Count})";
 			protected set { }
 		}
 
@@ -39,7 +39,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, DacMemberCategory dacCategoryType, bool isExpanded) : 
 										    base(dacViewModel?.Tree!, dacViewModel, isExpanded)

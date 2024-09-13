@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => $"{CategoryDescription}({Children.Count})";
+			get => $"{CategoryDescription}({DisplayedChildren.Count})";
 			protected set { }
 		}
 
@@ -42,7 +42,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) : 
 										      base(graphViewModel?.Tree!, graphViewModel, isExpanded)
