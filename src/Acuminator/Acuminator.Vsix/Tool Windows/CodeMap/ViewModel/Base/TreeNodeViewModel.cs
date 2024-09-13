@@ -2,12 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 using Microsoft.VisualStudio.PlatformUI;
 
@@ -72,8 +73,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public abstract TreeNodeFilterBehavior FilterBehavior { get; }
+
 		public TreeNodeViewModel? Parent { get; }
 
+		[MemberNotNullWhen(returnValue: false, nameof(Parent))]
 		public bool IsRoot => Parent == null;
 
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
@@ -91,6 +95,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					NotifyPropertyChanged();
 
 					Descendants().ForEach(node => node!.NotifyPropertyChanged(nameof(AreDetailsVisible)));
+				}
+			}
+		}
+
+		protected bool _isVisible;
+
+		public bool IsVisible
+		{
+			get => _isVisible;
+			set 
+			{
+				if (_isVisible != value)
+				{
+					_isVisible = value;
+					NotifyPropertyChanged();
 				}
 			}
 		}
@@ -168,6 +187,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public IEnumerable<TreeNodeViewModel> AncestorsOrSelf() => IsRoot
+			? [this]
+			: Ancestors(includeSelf: true);
+
+		public IEnumerable<TreeNodeViewModel> Ancestors() => IsRoot
+			? []
+			: Ancestors(includeSelf: false);
+
+		private IEnumerable<TreeNodeViewModel> Ancestors(bool includeSelf)
+		{
+			TreeNodeViewModel? current = includeSelf ? this : Parent;
+
+			while (current != null)
+			{
+				yield return current;
+				current = current.Parent;
+			}
+		}
+
 		public virtual void OnVsColorThemeChanged(ThemeChangedEventArgs e) 
 		{
 			if (IconDependsOnCurrentTheme)
@@ -179,17 +217,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (IsRoot)
 				return true;
 
-			TreeNodeViewModel? curAncestor = Parent;
-
-			while (curAncestor != null)
-			{
-				if (!curAncestor.IsExpanded)
-					return false;
-
-				curAncestor = curAncestor.Parent;
-			}
-
-			return true;
+			return Ancestors().All(ancestor => ancestor.IsExpanded);
 		}
 	}
 }
