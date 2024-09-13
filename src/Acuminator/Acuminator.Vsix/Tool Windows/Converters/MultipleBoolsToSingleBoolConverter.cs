@@ -25,13 +25,13 @@ public enum MultipleBoolsAggregationMode
 /// Converter which converts multiple <see cref="bool"/> values to a single bool.
 /// Converter parameter that specifies the conversion type is mandatory.
 /// </summary>
-[ValueConversion(typeof(bool), typeof(bool), ParameterType = typeof(string))]
 public class MultipleBoolsToSingleBoolConverter : IMultiValueConverter
 {
 	public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
 	{
 		parameter.ThrowOnNull();
-		var valuesCastedToBool = values.Cast<bool>();
+
+		var valuesCastedToBool = values.OfType<bool>();
 
 		if (GetAggregationModeFromConverterParameter(parameter) is not MultipleBoolsAggregationMode aggregationMode)
 		{
