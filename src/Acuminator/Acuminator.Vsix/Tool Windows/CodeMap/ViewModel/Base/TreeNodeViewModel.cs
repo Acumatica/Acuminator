@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 using Microsoft.VisualStudio.PlatformUI;
+using System.Collections.ObjectModel;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -80,7 +82,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		[MemberNotNullWhen(returnValue: false, nameof(Parent))]
 		public bool IsRoot => Parent == null;
 
-		public ExtendedObservableCollection<TreeNodeViewModel> DisplayedChildren { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
+		public ExtendedObservableCollection<TreeNodeViewModel> AllChildren { get; } = new();
+
+		private readonly ExtendedObservableCollection<TreeNodeViewModel> _mutableDisplayedChildren = new();
+
+		public ReadOnlyObservableCollection<TreeNodeViewModel> DisplayedChildren { get; }
 
 		private bool _isExpanded;
 
@@ -94,7 +100,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					_isExpanded = value;
 					NotifyPropertyChanged();
 
-					Descendants().ForEach(node => node!.NotifyPropertyChanged(nameof(AreDetailsVisible)));
+					DisplayedDescendants().ForEach(node => node!.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -154,6 +160,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tree = tree.CheckIfNull();
 			Parent = parent;
 			_isExpanded = isExpanded;
+
+			AllChildren.CollectionChanged += AllChildren_CollectionChanged;
+			DisplayedChildren = new ReadOnlyObservableCollection<TreeNodeViewModel>(_mutableDisplayedChildren);
 		}
 
 		public virtual Task NavigateToItemAsync() => Task.CompletedTask;
@@ -167,18 +176,35 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual void ExpandOrCollapseAll(bool expand)
 		{
 			IsExpanded = expand;
-			Children.ForEach(childNode => childNode!.ExpandOrCollapseAll(expand));
+			AllChildren.ForEach(childNode => childNode!.ExpandOrCollapseAll(expand));
 		}
 
-		public IEnumerable<TreeNodeViewModel> Descendants()
+		public IEnumerable<TreeNodeViewModel> AllDescendants()
 		{
-			if (Children.Count == 0)
+			if (AllChildren.Count == 0)
 				yield break;
 
-			foreach (TreeNodeViewModel child in Children)
+			foreach (TreeNodeViewModel child in AllChildren)
 			{
 				yield return child;
-				var descendants = child.Descendants();
+				var descendants = child.AllDescendants();
+
+				foreach (var descendant in descendants)
+				{
+					yield return descendant;
+				}
+			}
+		}
+
+		public IEnumerable<TreeNodeViewModel> DisplayedDescendants()
+		{
+			if (DisplayedChildren.Count == 0)
+				yield break;
+
+			foreach (TreeNodeViewModel child in DisplayedChildren)
+			{
+				yield return child;
+				var descendants = child.DisplayedDescendants();
 
 				foreach (var descendant in descendants)
 				{
@@ -218,6 +244,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return true;
 
 			return Ancestors().All(ancestor => ancestor.IsExpanded);
+		}
+
+		protected void SubscribeOnDisplayedChildrenCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
+		{
+			if (collectionChangedEventHandler != null)
+				_mutableDisplayedChildren.CollectionChanged += collectionChangedEventHandler;
+		}
+
+		private void AllChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var visibleChildren = e.Action != NotifyCollectionChangedAction.Move 
+				? AllChildren.Where(child => child.IsVisible)
+				: AllChildren;
+
+			_mutableDisplayedChildren.Reset(visibleChildren);
 		}
 	}
 }
