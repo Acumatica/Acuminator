@@ -56,19 +56,29 @@ namespace Acuminator.Utilities.Common
 			return enumerator.MoveNext() && !enumerator.MoveNext();
 		}
 
-		public static bool All(this IEnumerable<bool> source)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AllTrue(this IEnumerable<bool> source) => !AnyFalse(source);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AllFalse(this IEnumerable<bool> source) => !AnyTrue(source);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AnyTrue(this IEnumerable<bool> source) => Any(source, valueToFind: true);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AnyFalse(this IEnumerable<bool> source) => Any(source, valueToFind: false);
+
+		private static bool Any(IEnumerable<bool> source, bool valueToFind)
 		{
 			source.ThrowOnNull();
 
 			foreach (bool b in source)
 			{
-				if (!b)
-				{
-					return false;
-				}
+				if (b == valueToFind)
+					return true;
 			}
 
-			return true;
+			return false;
 		}
 
 		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
