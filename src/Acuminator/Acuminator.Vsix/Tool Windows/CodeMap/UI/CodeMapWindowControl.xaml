@@ -24,7 +24,8 @@
                     <!--Converters-->                  
                     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
 					<converters:BoolInversionConverter x:Key="boolInverter"/>
-					
+					<converters:MultipleBoolsToSingleBoolConverter x:Key="multipleBoolsToSingleBoolConverter"/>
+
 					<!-- Bitmap Images -->
                     <BitmapImage x:Key="RefreshImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                                  UriSource="pack://application:,,,/Acuminator;component/Resources/Refresh.ico"/>
@@ -126,10 +127,16 @@
 					   Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
 											Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=!}">
 				<Button Name="RefreshButton" VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1" Command="{Binding Path=RefreshCodeMapCommand}"
-						MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20" Style="{StaticResource RefreshButtonStyle}"
-						IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
+						MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20" Style="{StaticResource RefreshButtonStyle}">
 					
 					<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
+					<Button.IsEnabled>
+						<MultiBinding Mode="OneWay" Converter="{StaticResource multipleBoolsToSingleBoolConverter}" 
+									  ConverterParameter="{x:Static converters:MultipleBoolsAggregationMode.AllFalse}">
+							<Binding Path="IsCalculating" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+							<Binding Path="FilterVM.IsFiltering" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+						</MultiBinding>
+					</Button.IsEnabled>
 				</Button>
 			</WrapPanel>
 
@@ -164,6 +171,8 @@
 		</Grid>
 
 		<codeMap:CodeMapTreeControl Grid.Row="2" Margin="0,2"
-									DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+									DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+									IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.FilterVM.IsFiltering, 
+														Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}"/>
 	</Grid>
 </UserControl>
