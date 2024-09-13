@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
@@ -31,13 +30,28 @@ public class FilterViewModel : ViewModelBase
 
 				NotifyPropertyChanged();
 				NotifyPropertyChanged(nameof(HasFilterText));
-				FilterChanged?.Invoke(this, new FilterEventArgs(_filterText, oldValue));
+
+				RaiseFilterChanged(new FilterEventArgs(_filterText, oldValue));
+			}
+		}
+	}
+
+	private bool _isFiltering;
+
+	public bool IsFiltering
+	{
+		get => _isFiltering;
+		set 
+		{
+			if (_isFiltering != value)
+			{
+				_isFiltering = value;
+				NotifyPropertyChanged();
 			}
 		}
 	}
 
 	public bool HasFilterText => !_filterText.IsNullOrEmpty();
-
 
 	public Command ClearCommand { get; }
 
@@ -49,5 +63,20 @@ public class FilterViewModel : ViewModelBase
 	public void ClearSearch()
 	{
 		FilterText = null;
+	}
+
+	private void RaiseFilterChanged(FilterEventArgs filterEventArgs)
+	{
+		bool oldIsFiltering = IsFiltering;
+
+		try
+		{
+			IsFiltering = true;
+			FilterChanged?.Invoke(this, filterEventArgs);
+		}
+		finally
+		{
+			IsFiltering = oldIsFiltering;
+		}
 	}
 }
