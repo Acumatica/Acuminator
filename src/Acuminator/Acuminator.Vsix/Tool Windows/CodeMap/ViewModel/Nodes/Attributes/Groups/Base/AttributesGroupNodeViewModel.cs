@@ -13,8 +13,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class AttributesGroupNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation, IElementWithTooltip
 	{
-		public override bool DisplayNodeWithoutChildren => false;
-
 		public override Icon NodeIcon => Icon.AttributesGroup;
 
 		public abstract AttributePlacement Placement { get; }

@@ -29,8 +29,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			? Icon.Dac
 			: Icon.DacExtension;
 
-		public override bool DisplayNodeWithoutChildren => true;
-
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : 

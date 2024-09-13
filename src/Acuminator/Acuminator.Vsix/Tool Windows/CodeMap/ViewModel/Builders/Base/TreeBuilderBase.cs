@@ -62,7 +62,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			try
 			{
 				ExpandCreatedNodes = expandRoots;
-				roots = CreateRoots(codeMapTree).Where(root => root != null).ToList();
+				roots = CreateRoots(codeMapTree, filterOptions).Where(root => root != null).ToList();
 			}
 			finally
 			{
@@ -88,7 +88,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				ExpandCreatedNodes = false;
 			}
 
-			var rootsToAdd = roots.Where(root => root.Children.Count > 0 || root.DisplayNodeWithoutChildren);
+			var rootsToAdd = roots.Where(root => root.DisplayedChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(root));
 
 			codeMapTree.FillCodeMapTree(rootsToAdd);
 			return codeMapTree;
@@ -127,9 +127,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					BuildSubTree(child);
 			}
 
-			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
+			var childrenToAdd = children.Where(c => c != null && (c.DisplayedChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(c)));
 
-			subtreeRoot.Children.Reset(childrenToAdd);
+			subtreeRoot.AllChildren.Reset(childrenToAdd);
 		}
+
+		protected virtual bool ShouldAddNodeWithoutChildrenToTree(TreeNodeViewModel node) => node switch
+		{
+			AttributesGroupNodeViewModel 	 => false,
+			AttributeNodeViewModel 			 => true,
+			GraphMemberCategoryNodeViewModel => false,
+			DacMemberCategoryNodeViewModel 	 => false,
+			DacMemberNodeViewModel 			 => true,
+			GraphMemberNodeViewModel 		 => true,
+			GraphMemberInfoNodeViewModel 	 => true,
+			DacGroupingNodeBaseViewModel 	 => false,
+			DacFieldGroupingNodeViewModel 	 => false,
+			GraphNodeViewModel 				 => true,
+			DacNodeViewModel 				 => true,
+			_ 								 => throw new NotImplementedException($"Nodes of type \"{node.GetType().Name}\" are not supported")
+		};
 	}
 }

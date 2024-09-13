@@ -34,8 +34,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			? Icon.Graph
 			: Icon.GraphExtension;
 
-		public override bool DisplayNodeWithoutChildren => true;
-
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 

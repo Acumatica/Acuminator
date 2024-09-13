@@ -23,11 +23,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public abstract string Name { get; protected set; }
 
 		/// <summary>
-		/// True to display node without children in a tree, false if not.
-		/// </summary>
-		public abstract bool DisplayNodeWithoutChildren { get; }
-
-		/// <summary>
 		/// The main icon for a node.
 		/// </summary>
 		public abstract Icon NodeIcon { get; }

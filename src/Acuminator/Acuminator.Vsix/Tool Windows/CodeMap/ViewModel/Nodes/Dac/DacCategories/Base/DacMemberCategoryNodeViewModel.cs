@@ -15,8 +15,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DacSemanticModel DacModel => DacViewModel.DacModel;
 
-		public override bool DisplayNodeWithoutChildren => false;
-
 		public DacMemberCategory CategoryType { get; }
 
 		protected string CategoryDescription { get; }

@@ -34,8 +34,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public override bool DisplayNodeWithoutChildren => true;
-
 		public override Icon NodeIcon => Icon.Attribute;
 
 		public override bool IconDependsOnCurrentTheme => true;

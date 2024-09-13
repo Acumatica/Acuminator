@@ -31,8 +31,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override bool DisplayNodeWithoutChildren => true;
-
 		public DacMemberNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
 									  SymbolItem memberInfo, bool isExpanded = false) :
 								 base(dacMemberCategoryVM?.Tree!, parent, isExpanded)

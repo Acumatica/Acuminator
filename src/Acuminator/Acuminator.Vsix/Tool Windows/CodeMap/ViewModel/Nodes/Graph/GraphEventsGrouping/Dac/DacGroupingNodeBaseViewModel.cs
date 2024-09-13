@@ -30,8 +30,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Icon NodeIcon => Icon.GroupingDac;
 
-		public override bool DisplayNodeWithoutChildren => false;
-
 		protected virtual bool AllowNavigation => true;
 
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;

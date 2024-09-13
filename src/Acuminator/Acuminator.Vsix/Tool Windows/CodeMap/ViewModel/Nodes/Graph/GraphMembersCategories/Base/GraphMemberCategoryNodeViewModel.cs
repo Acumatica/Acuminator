@@ -18,8 +18,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphSemanticModelForCodeMap CodeMapGraphModel => GraphViewModel.CodeMapGraphModel;
 
-		public override bool DisplayNodeWithoutChildren => false;
-
 		public GraphMemberType CategoryType { get; }
 
 		protected string CategoryDescription { get; }
