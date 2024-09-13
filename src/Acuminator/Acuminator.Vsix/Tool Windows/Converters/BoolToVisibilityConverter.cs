@@ -9,7 +9,7 @@ using System.Windows;
 namespace Acuminator.Vsix.ToolWindows.Converters;
 
 /// <summary>
-/// Converter which converts <see cref="bool"/> bool values to the <see cref="Visibility"/> values.
+/// Converter which converts <see cref="bool"/> values to the <see cref="Visibility"/> values.
 /// If converter parameter's value is "!" then the value is inverted.
 /// </summary>
 [ValueConversion(typeof(bool), typeof(Visibility), ParameterType = typeof(string))]
