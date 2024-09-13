@@ -69,7 +69,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			var dacAttributesGroupNode = Children.OfType<DacAttributesGroupNodeViewModel>().FirstOrDefault();
+			var dacAttributesGroupNode = AllChildren.OfType<DacAttributesGroupNodeViewModel>().FirstOrDefault();
 			return dacAttributesGroupNode is IElementWithTooltip elementWithTooltip
 				? elementWithTooltip.CalculateTooltip()
 				: null;

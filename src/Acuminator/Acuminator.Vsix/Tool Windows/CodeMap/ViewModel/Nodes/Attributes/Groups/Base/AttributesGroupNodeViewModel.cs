@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => $"{AttributesGroupDescription}({Children.Count})";
+			get => $"{AttributesGroupDescription}({DisplayedChildren.Count})";
 			protected set { }
 		}
 
@@ -37,7 +37,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		protected AttributesGroupNodeViewModel(TreeNodeViewModel parent, bool isExpanded = false) :
 										  base(parent?.Tree!, parent, isExpanded)
@@ -65,8 +65,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			var attributeStrings = Children.OfType<AttributeNodeViewModel>()
-										   .Select(attribute => attribute.CalculateTooltip().Tooltip);
+			var attributeStrings = AllChildren.OfType<AttributeNodeViewModel>()
+											  .Select(attribute => attribute.CalculateTooltip().Tooltip);
 			string aggregatedTooltip = attributeStrings.Join(Environment.NewLine);
 			return aggregatedTooltip.IsNullOrWhiteSpace()
 				? null

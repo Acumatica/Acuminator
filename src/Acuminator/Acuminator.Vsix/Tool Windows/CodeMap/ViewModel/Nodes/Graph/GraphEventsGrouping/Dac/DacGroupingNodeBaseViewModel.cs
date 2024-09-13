@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphEventsCategoryVM = graphEventsCategoryVM!;
 			DacName = dacName;
 
-			DisplayedChildren.CollectionChanged += DacChildrenChanged;
+			SubscribeOnDisplayedChildrenCollectionChanged(DacChildrenChanged);
 		}
 
 		protected virtual void DacChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)

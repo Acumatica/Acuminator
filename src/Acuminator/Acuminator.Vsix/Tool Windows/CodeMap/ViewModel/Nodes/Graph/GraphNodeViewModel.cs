@@ -86,7 +86,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			var graphAttributesGroupNode = Children.OfType<GraphAttributesGroupNodeViewModel>().FirstOrDefault();
+			var graphAttributesGroupNode = AllChildren.OfType<GraphAttributesGroupNodeViewModel>().FirstOrDefault();
 			return graphAttributesGroupNode is IElementWithTooltip elementWithTooltip
 				? elementWithTooltip.CalculateTooltip()
 				: null;

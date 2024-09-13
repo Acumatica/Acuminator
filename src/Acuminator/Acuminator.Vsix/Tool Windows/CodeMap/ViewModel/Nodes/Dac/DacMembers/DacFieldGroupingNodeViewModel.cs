@@ -45,7 +45,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		
 		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex { get; set; }
 
-		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		public override bool DisplayNodeWithoutChildren => false;
 
@@ -117,7 +117,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			var propertyNode = Children.OfType<DacFieldPropertyNodeViewModel>().FirstOrDefault();
+			var propertyNode = AllChildren.OfType<DacFieldPropertyNodeViewModel>().FirstOrDefault();
 			return propertyNode is IElementWithTooltip elementWithTooltip
 				? elementWithTooltip.CalculateTooltip()
 				: null;
