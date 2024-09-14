@@ -576,11 +576,22 @@
 									</Image.Style>
 								</Image>
 
-								<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
-											Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-											Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource elementToTooltipConverter}}">
-									<TextBlock.Style>
-										<Style TargetType="TextBlock">
+								<TextBox VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0" IsInactiveSelectionHighlightEnabled="True"
+										 Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Initialized="NameTextBox_Initialized"
+										 Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource elementToTooltipConverter}}"
+										 IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent" TextWrapping="Wrap"
+										 IsReadOnlyCaretVisible="False" CaretBrush="Transparent" Cursor="Arrow" >
+									<TextBox.Style>
+										<Style TargetType="TextBox">
+											<Setter Property="SelectionBrush" Value="{DynamicResource {x:Static platformUI:TreeViewColors.HighlightedSpanBrushKey}}"/>
+											<Setter Property="SelectionTextBrush" Value="{DynamicResource {x:Static platformUI:TreeViewColors.HighlightedSpanTextBrushKey}}"/>
+											<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+
+											<!-- The Padding -2,0,0,0 is required because the TextBox seems to have an inherent "Padding" of about 2 pixels.
+												 Without the Padding property, the text seems to be 2 pixels to the left compared to a TextBlock 
+												 Part of the style is taken from this SO answer: https://stackoverflow.com/a/9231349/2893207 -->
+											<Setter Property="Padding" Value="-2,0,0,0"/>
+											
 											<Setter Property="ToolTip" >
 												<Setter.Value>
 													<ToolTip DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.DataContext,
@@ -610,10 +621,14 @@
 												<Trigger Property="Tag" Value="{x:Null}">
 													<Setter Property="ToolTip" Value="{x:Null}"/>
 												</Trigger>
+
+												<DataTrigger Binding="{Binding Path=IsSelected, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+													<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
+												</DataTrigger>
 											</Style.Triggers>
 										</Style>
-									</TextBlock.Style>
-								</TextBlock>
+									</TextBox.Style>
+								</TextBox>
 							</StackPanel>
 						</HierarchicalDataTemplate>
 					</TreeView.ItemTemplate>
@@ -670,7 +685,7 @@
 									</DataTemplate>
 
 									<DataTemplate DataType="{x:Type codeMap:TextViewModel}">
-										<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,5,0"										  
+										<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,5,0"
 												   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 												   ToolTip="{Binding Path=Tooltip, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 											<TextBlock.Style>
