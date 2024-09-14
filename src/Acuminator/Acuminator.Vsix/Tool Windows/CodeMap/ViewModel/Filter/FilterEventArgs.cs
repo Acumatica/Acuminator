@@ -16,7 +16,7 @@ public class FilterEventArgs : EventArgs
 
 	public FilterEventArgs(FilterOptions filterOptions, string? oldFilterText)
 	{
-		FilterOptions = FilterOptions.CheckIfNull();
+		FilterOptions = filterOptions.CheckIfNull();
 		OldFilterText = oldFilterText;
 	}
 }
