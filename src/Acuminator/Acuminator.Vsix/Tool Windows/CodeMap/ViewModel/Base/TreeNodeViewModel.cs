@@ -153,11 +153,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual bool AreDetailsVisible => ShouldShowDetails();
 
-		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel? parent, bool isVisible, bool isExpanded)
+		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel? parent, bool isExpanded)
 		{
 			Tree 		= tree.CheckIfNull();
 			Parent 		= parent;
-			_isVisible  = isVisible;
 			_isExpanded = isExpanded;
 
 			AllChildren.CollectionChanged += AllChildren_CollectionChanged;

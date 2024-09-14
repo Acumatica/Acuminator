@@ -48,8 +48,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		public DacFieldGroupingNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent,
-											 DacFieldInfo fieldInfo, bool isVisible, bool isExpanded) :
-										base(dacMemberCategoryVM?.Tree!, parent, isVisible, isExpanded)
+											 DacFieldInfo fieldInfo, bool isExpanded) :
+										base(dacMemberCategoryVM?.Tree!, parent, isExpanded)
 		{
 			MemberCategory = dacMemberCategoryVM!;
 			FieldInfo = fieldInfo.CheckIfNull();

@@ -33,8 +33,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, TreeNodeViewModel parent, SymbolItem memberInfo, 
-										bool isVisible, bool isExpanded) :
-								   base(graphMemberCategoryVM?.Tree!, parent, isVisible, isExpanded)
+										bool isExpanded) :
+								   base(graphMemberCategoryVM?.Tree!, parent, isExpanded)
 		{
 			MemberInfo = memberInfo.CheckIfNull();
 			MemberCategory = graphMemberCategoryVM!;

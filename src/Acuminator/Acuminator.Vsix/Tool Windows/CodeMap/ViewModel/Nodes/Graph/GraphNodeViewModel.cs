@@ -36,8 +36,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
-		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isVisible, bool isExpanded) : 
-							 base(tree, parent: null, isVisible, isExpanded)
+		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
+							 base(tree, parent: null, isExpanded)
 		{
 			CodeMapGraphModel = codeMapGraphModel;
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetGraphExtraInfos());

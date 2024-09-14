@@ -31,8 +31,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
-		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isVisible, bool isExpanded) : 
-						   base(tree, parent: null, isVisible, isExpanded)
+		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : 
+						   base(tree, parent: null, isExpanded)
 		{
 			DacModel = dacModel.CheckIfNull();
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos());
