@@ -250,12 +250,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			IsCalculating = false;
+			FilterVM.IsFiltering = false;
 			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
 		private async Task RefreshCodeMapAsync(IWpfTextView? activeWpfTextView = null, Document? activeDocument = null)
 		{
-			if (IsCalculating)
+			if (IsCalculating || FilterVM.IsFiltering)
 				return;
 
 			if (!ThreadHelper.CheckAccess())
@@ -406,7 +407,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (!isSuccess || cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
 						return;
 
-					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
+					FilterOptions filterOptions = FilterVM.CreateFilterOptionsFromCurrentFilter();
+					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, filterOptions, expandRoots: true, expandChildren: false, cancellationToken);
 
 					if (newTreeVM == null)
 						return;
@@ -446,7 +448,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void FilterVM_FilterChanged(object sender, FilterEventArgs e)
 		{
-			
+			Tree?.RefreshNodesVisibleInFilter(e.FilterOptions);
 		}
 	}
 }
