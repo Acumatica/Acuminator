@@ -609,7 +609,7 @@
 					</TreeView.ItemTemplate>
 				</TreeView>
 				<ListBox x:FieldModifier="private" Name="detailsListBox" Grid.Column="1" Style="{StaticResource codeMapListBoxStyle}" 
-					     ItemsSource="{Binding Path=AllItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+						 ItemsSource="{Binding Path=AllDisplayedItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 						 SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						 Template="{StaticResource ListBoxWithoutInnerScrollViewerControlTemplate}"
 						 Visibility="{Binding Path=IsExtraInfoVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,

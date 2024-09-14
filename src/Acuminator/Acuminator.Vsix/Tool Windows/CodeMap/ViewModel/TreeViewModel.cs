@@ -23,6 +23,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public ExtendedObservableCollection<TreeNodeViewModel> AllItems { get; } = new();
 
+		private readonly ExtendedObservableCollection<TreeNodeViewModel> _mutableAllDisplayedItems = new();
+
+		public ReadOnlyObservableCollection<TreeNodeViewModel> AllDisplayedItems { get; }
+
 		private TreeNodeViewModel? _selectedItem;
 
 		public TreeNodeViewModel? SelectedItem
@@ -74,6 +78,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			AllRootItems.CollectionChanged += AllRootItems_CollectionChanged;
 			DisplayedRootItems = new ReadOnlyObservableCollection<TreeNodeViewModel>(_mutableDisplayedRoots);
+
+			AllItems.CollectionChanged += AllItems_CollectionChanged;
+			AllDisplayedItems = new ReadOnlyObservableCollection<TreeNodeViewModel>(_mutableAllDisplayedItems);
 		}
 
 		public void Clear()
@@ -108,13 +115,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_mutableDisplayedRoots.CollectionChanged += collectionChangedEventHandler;
 		}
 
+		public void SubscribeOnAllDisplayedItemsCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
+		{
+			if (collectionChangedEventHandler != null)
+				_mutableAllDisplayedItems.CollectionChanged += collectionChangedEventHandler;
+		}
+
 		private void AllRootItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var visibleChildren = e.Action != NotifyCollectionChangedAction.Move
+			var visibleRoots = e.Action != NotifyCollectionChangedAction.Move
 				? AllRootItems.Where(child => child.IsVisible)
 				: AllRootItems;
 
-			_mutableDisplayedRoots.Reset(visibleChildren);
+			_mutableDisplayedRoots.Reset(visibleRoots);
+		}
+
+		private void AllItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var visibleNodes = e.Action != NotifyCollectionChangedAction.Move
+				? AllItems.Where(child => child.IsVisible)
+				: AllItems;
+
+			_mutableAllDisplayedItems.Reset(visibleNodes);
 		}
 	}
 }

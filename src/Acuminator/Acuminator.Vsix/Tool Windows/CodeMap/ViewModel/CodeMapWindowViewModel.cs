@@ -436,6 +436,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			base.OnVsColorThemeChanged(e);
 
+			// VS theme is refreshed for all nodes, not only for visible ones
 			if (Tree?.AllItems.Count is null or 0)
 				return;
 
