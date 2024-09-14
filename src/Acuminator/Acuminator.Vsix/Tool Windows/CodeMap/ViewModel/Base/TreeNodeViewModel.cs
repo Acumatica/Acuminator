@@ -197,8 +197,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public bool NameMatchesPattern(string? pattern) =>
-			pattern.IsNullOrEmpty() || Name.Contains(pattern, StringComparison.OrdinalIgnoreCase);
+		public virtual bool NameMatchesPattern(string? pattern) => MatchPattern(Name, pattern);
+
+		protected static bool MatchPattern(string stringToMatch, string? pattern) =>
+			pattern.IsNullOrEmpty() || stringToMatch.Contains(pattern, StringComparison.OrdinalIgnoreCase);
 
 		public abstract TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input);
 
