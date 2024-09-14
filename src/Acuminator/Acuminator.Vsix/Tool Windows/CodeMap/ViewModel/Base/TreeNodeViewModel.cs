@@ -95,22 +95,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					_isExpanded = value;
 					NotifyPropertyChanged();
 
-					DisplayedDescendants().ForEach(node => node!.NotifyPropertyChanged(nameof(AreDetailsVisible)));
+					DisplayedDescendants().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
 
 		protected bool _isVisible;
 
+		/// <summary>
+		/// Is node visible. This is internal property that works only for the node itself and doesn't affect its children or parents.
+		/// </summary>
 		public bool IsVisible
 		{
 			get => _isVisible;
-			set 
+			protected set 
 			{
 				if (_isVisible != value)
 				{
 					_isVisible = value;
 					NotifyPropertyChanged();
+					DisplayedDescendants().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -150,10 +154,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual bool AreDetailsVisible => ShouldShowDetails();
 
-		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel? parent, bool isExpanded = true)
+		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel? parent, bool isVisible, bool isExpanded)
 		{
-			Tree = tree.CheckIfNull();
-			Parent = parent;
+			Tree 		= tree.CheckIfNull();
+			Parent 		= parent;
+			_isVisible  = isVisible;
 			_isExpanded = isExpanded;
 
 			AllChildren.CollectionChanged += AllChildren_CollectionChanged;
