@@ -524,6 +524,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterViewModel.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
     <Compile Include="Tool Windows\Converters\MultipleBoolsToSingleBoolConverter.cs" />
+    <Compile Include="Tool Windows\Converters\CollectionIsNonEmptyToBoolConverter.cs" />
     <Compile Include="Tool Windows\Converters\StringIsNonEmptyToBoolConverter.cs" />
     <Compile Include="Utils\Polyfills\NotNullIfNotNullAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />

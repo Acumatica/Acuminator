@@ -25,6 +25,7 @@
 					<codeMap:ElementWithTooltipToTooltipConverter x:Key="elementToTooltipConverter"/>
 					<codeMap:TreeIconTooltipConverter x:Key="iconTooltipConverter"/>
 					<codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
+					<codeMap:CollectionIsNonEmptyToBoolConverter x:Key="collectionIsNonEmptyConverter"/>
 
 					<!-- Bitmap Images -->
 					<BitmapImage x:Key="ExpandAllImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
@@ -290,7 +291,8 @@
 						<Setter Property="ContextMenu" Value="{StaticResource codeMapContextMenu}"/>
 
 						<Style.Triggers>
-							<DataTrigger Binding="{Binding Path=DisplayedChildren.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="0">
+							<DataTrigger Binding="{Binding Path=DisplayedChildren, UpdateSourceTrigger=PropertyChanged, Mode=OneWay,
+														   Converter={StaticResource collectionIsNonEmptyConverter}}" Value="False">
 								<Setter Property="ContextMenu" Value="{x:Null}"/>
 							</DataTrigger>
 						</Style.Triggers>
