@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
@@ -17,6 +18,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class GraphMemberInfoNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public GraphMemberNodeViewModel GraphMember { get; }
 
 		public SymbolItem GraphMemberInfoData { get; }

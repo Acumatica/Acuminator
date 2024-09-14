@@ -8,6 +8,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class FieldEventNodeViewModel : GraphMemberNodeViewModel
 	{
+		private readonly string _dacNameWithFieldNameWithEventTypeForSearch;
+
 		public override Icon NodeIcon => Icon.FieldEvent;
 
 		public DacFieldGroupingNodeBaseViewModel DacFieldVM { get; }
@@ -23,7 +25,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			DacFieldVM = dacFieldVM!;
 			Name = eventInfo.EventType.ToString();
+			_dacNameWithFieldNameWithEventTypeForSearch = $"{DacFieldVM.DacVM.Name}#{DacFieldVM.DacFieldName}#{Name}";
 		}
+
+		public override bool NameMatchesPattern(string? pattern) => MatchPattern(_dacNameWithFieldNameWithEventTypeForSearch, pattern);
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 

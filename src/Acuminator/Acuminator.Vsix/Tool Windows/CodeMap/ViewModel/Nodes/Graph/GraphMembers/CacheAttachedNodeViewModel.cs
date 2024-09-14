@@ -12,6 +12,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel, IElementWithTooltip
 	{
+		private readonly string _dacNameWithFieldNameWithEventTypeForSearch;
+
 		public override Icon NodeIcon => Icon.CacheAttached;
 
 		public DacGroupingNodeBaseViewModel DacVM { get; }
@@ -27,7 +29,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			DacVM = dacVM!;
 			Name = eventInfo.DacFieldName;
+			_dacNameWithFieldNameWithEventTypeForSearch = $"{DacVM}#{Name}#{eventInfo.EventType.ToString()}";
 		}
+
+		public override bool NameMatchesPattern(string? pattern) => MatchPattern(_dacNameWithFieldNameWithEventTypeForSearch, pattern);
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{

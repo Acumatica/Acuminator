@@ -8,6 +8,7 @@ using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
@@ -19,6 +20,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class GraphNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		private int _currentNavigationIndex;
+
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
 
 		public GraphSemanticModelForCodeMap CodeMapGraphModel { get; }
 

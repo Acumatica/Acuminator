@@ -6,11 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class DacMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
+
 		public DacNodeViewModel DacViewModel { get; }
 
 		public DacSemanticModel DacModel => DacViewModel.DacModel;

@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class DacFieldGroupingNodeBaseViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
+		private readonly string _dacAndDacFieldNameForSearch;
+
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM => DacVM.GraphEventsCategoryVM;
 
 		public DacGroupingNodeBaseViewModel DacVM { get; }
@@ -26,8 +31,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override Icon NodeIcon => Icon.GroupingDacField;
-
-		public override bool DisplayNodeWithoutChildren => false;
 
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => true;
 
@@ -43,8 +46,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			DacVM = dacVM!;
 			DacFieldName = dacFieldName.CheckIfNullOrWhiteSpace();
+			_dacAndDacFieldNameForSearch = $"{DacVM.DacName}#{dacFieldName}";
 			FieldEvents = dacFieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}
+
+		public override bool NameMatchesPattern(string? pattern) => MatchPattern(_dacAndDacFieldNameForSearch, pattern);
 
 		public async override Task NavigateToItemAsync()
 		{

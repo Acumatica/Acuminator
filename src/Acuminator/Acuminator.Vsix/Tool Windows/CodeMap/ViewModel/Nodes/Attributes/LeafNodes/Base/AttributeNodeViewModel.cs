@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
@@ -21,6 +22,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public abstract class AttributeNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		protected const string AttributeSuffix = nameof(System.Attribute);
+
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
 
 		public bool IsInSource => AttributeInfo.IsInSource;
 

@@ -7,11 +7,14 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class DacGroupingNodeBaseViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM { get; }
 
 		public string DacName { get; }
@@ -59,6 +62,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			SubscribeOnDisplayedChildrenCollectionChanged(DacChildrenChanged);
 		}
 
+		public override bool NameMatchesPattern(string? pattern) => MatchPattern(DacName, pattern);
+
 		protected virtual void DacChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Move)
@@ -66,7 +71,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			EventsCount = GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
 				? DisplayedChildren.Sum(dacFieldVM => dacFieldVM.DisplayedChildren.Count)
-				: DisplayedChildren.Count; ;
+				: DisplayedChildren.Count;
 		}
 
 		public async override Task NavigateToItemAsync()

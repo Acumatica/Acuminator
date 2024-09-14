@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
@@ -17,6 +18,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public DacSemanticModel DacModel { get; }
 
 		public override string Name

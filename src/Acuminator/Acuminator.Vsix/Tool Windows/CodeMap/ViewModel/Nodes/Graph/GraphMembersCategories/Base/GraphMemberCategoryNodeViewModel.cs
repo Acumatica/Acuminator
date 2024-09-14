@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
+
 		public GraphNodeViewModel GraphViewModel { get; }
 
 		public PXGraphEventSemanticModel GraphSemanticModel => GraphViewModel.GraphSemanticModel;
