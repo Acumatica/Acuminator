@@ -93,7 +93,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				ExpandCreatedNodes = false;
 			}
 
-			var rootsToAdd = roots.Where(root => root.DisplayedChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(root));
+			var rootsToAdd = roots.Where(root => root.AllChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(root));
 
 			codeMapTree.FillCodeMapTree(rootsToAdd, filterOptions);
 			return codeMapTree;
@@ -130,7 +130,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					BuildSubTree(child);
 			}
 
-			var childrenToAdd = children.Where(c => c != null && (c.DisplayedChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(c)));
+			var childrenToAdd = children.Where(c => c != null && (c.AllChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(c)));
 
 			subtreeRoot.AllChildren.Reset(childrenToAdd);
 		}
