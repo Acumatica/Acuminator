@@ -167,6 +167,38 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual Task NavigateToItemAsync() => Task.CompletedTask;
 
+		/// <summary>
+		/// Check if node is visible in filter going from the node to its descendants.
+		/// </summary>
+		/// <param name="filterOptions">Filter options.</param>
+		/// <returns>
+		/// True if visible in filter, false if not.
+		/// </returns>
+		public bool IsVisibleInFilter(FilterOptions? filterOptions)
+		{
+			if (filterOptions == null || !filterOptions.HasFilter)
+				return true;
+
+			switch (FilterBehavior)
+			{
+				case TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter:
+					if (NameMatchesPattern(filterOptions.FilterPattern))
+						return true;
+
+					return AllChildren.Count > 0 && AllChildren.Any(childNode => childNode.IsVisibleInFilter(filterOptions));
+
+				case TreeNodeFilterBehavior.AlwaysHidden:
+					return false;
+
+				case TreeNodeFilterBehavior.AlwaysDisplayed:
+				default:
+					return true;
+			}
+		}
+
+		public bool NameMatchesPattern(string? pattern) =>
+			pattern.IsNullOrEmpty() || Name.Contains(pattern, StringComparison.OrdinalIgnoreCase);
+
 		public abstract TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input);
 
 		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor);
