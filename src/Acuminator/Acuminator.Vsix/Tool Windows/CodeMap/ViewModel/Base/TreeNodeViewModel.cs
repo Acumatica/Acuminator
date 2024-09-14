@@ -211,25 +211,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#region Tree Traversal Methods
 		public IReadOnlyCollection<TreeNodeViewModel> AllDescendantsAndSelf() =>
 			AllChildren.Count > 0
-				? Descendants(includeSelf: true, collectOnlyDisplayedNodes: false)
+				? DescendantsBFS(includeSelf: true, collectOnlyDisplayedNodes: false)
 				: [this];
 
 		public IReadOnlyCollection<TreeNodeViewModel> AllDescendants() =>
 			AllChildren.Count > 0
-				? Descendants(includeSelf: false, collectOnlyDisplayedNodes: false)
+				? DescendantsBFS(includeSelf: false, collectOnlyDisplayedNodes: false)
 				: [];
 
 		public IEnumerable<TreeNodeViewModel> DisplayedDescendantsAndSelf() =>
 			DisplayedChildren.Count > 0
-				? Descendants(includeSelf: true, collectOnlyDisplayedNodes: true)
+				? DescendantsBFS(includeSelf: true, collectOnlyDisplayedNodes: true)
 				: [this];
 
 		public IEnumerable<TreeNodeViewModel> DisplayedDescendants() =>
 			DisplayedChildren.Count > 0
-				? Descendants(includeSelf: false, collectOnlyDisplayedNodes: true)
+				? DescendantsBFS(includeSelf: false, collectOnlyDisplayedNodes: true)
 				: [];
 
-		private IReadOnlyCollection<TreeNodeViewModel> Descendants(bool includeSelf, bool collectOnlyDisplayedNodes)
+		private List<TreeNodeViewModel> DescendantsBFS(bool includeSelf, bool collectOnlyDisplayedNodes)
 		{
 			// BFS traversal
 			IReadOnlyCollection<TreeNodeViewModel> childrenToTraverse = collectOnlyDisplayedNodes
