@@ -8,11 +8,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 public enum TreeNodeFilterBehavior
 {
 	/// <summary>
-	/// Tree node is displayed in Code Map if it meets the filter criteria.
-	/// </summary>
-	DisplayedIfNodeMeetsFilter,
-
-	/// <summary>
 	/// Tree node is displayed in Code Map if it or its children meet the filter criteria.
 	/// </summary>
 	DisplayedIfNodeOrChildrenMeetFilter,
