@@ -344,7 +344,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				nodesStack.Push(this);
 			else if (childrenToTraverse.Count > 0)
 			{
-				foreach (var child in childrenToTraverse)
+				var reversedChildren = childrenToTraverse.Reverse();	//Reverse children to push them in the same order as in the collection
+
+				foreach (var child in reversedChildren)
 					nodesStack.Push(child);
 			}
 
@@ -359,7 +361,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				if (currentNodeChildrenToTraverse.Count > 0)
 				{
-					foreach (var child in currentNodeChildrenToTraverse)
+					var currentNodeReversedChildren = currentNodeChildrenToTraverse.Reverse();    //Reverse children to push them in the same order as in the collection
+
+					foreach (var child in currentNodeReversedChildren)
 						nodesStack.Push(child);
 				}
 			}

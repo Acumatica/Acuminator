@@ -107,8 +107,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				AllRootItems.Reset(roots);
 
-				var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelf());
-				AllItems.Reset(flattenedTree);
+				RefreshFlattenedNodesList();
 			}
 			finally
 			{
@@ -121,7 +120,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public void RefreshFlattenedNodesList()
 		{
-			var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelf());
+			var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelfDFS());
 			AllItems.Reset(flattenedTree);
 		}
 
