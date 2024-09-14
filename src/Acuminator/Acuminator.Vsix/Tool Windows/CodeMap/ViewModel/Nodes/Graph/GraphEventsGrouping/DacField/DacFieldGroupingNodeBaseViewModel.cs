@@ -16,7 +16,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private readonly string _dacAndDacFieldNameForSearch;
 
-		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
 
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM => DacVM.GraphEventsCategoryVM;
 
@@ -49,8 +49,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_dacAndDacFieldNameForSearch = $"{DacVM.DacName}#{dacFieldName}";
 			FieldEvents = dacFieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}
-
-		public override bool NameMatchesPattern(string? pattern) => MatchPattern(_dacAndDacFieldNameForSearch, pattern);
 
 		public async override Task NavigateToItemAsync()
 		{

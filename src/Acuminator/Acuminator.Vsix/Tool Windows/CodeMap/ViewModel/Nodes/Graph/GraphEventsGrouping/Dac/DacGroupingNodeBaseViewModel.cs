@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class DacGroupingNodeBaseViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
-		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
 
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM { get; }
 
@@ -61,8 +61,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			SubscribeOnDisplayedChildrenCollectionChanged(DacChildrenChanged);
 		}
-
-		public override bool NameMatchesPattern(string? pattern) => MatchPattern(DacName, pattern);
 
 		protected virtual void DacChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
