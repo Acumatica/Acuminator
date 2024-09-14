@@ -347,7 +347,13 @@
 							</Grid.RowDefinitions>
 
 							<!-- Connecting Lines -->
-							<Rectangle x:Name="HorLn" Height="1" Margin="15,0,0,0" Style="{StaticResource linesStyle}"/>
+							<Rectangle x:Name="HorLn" Height="1">
+								<Rectangle.Style>
+									<Style TargetType="Rectangle" BasedOn="{StaticResource linesStyle}">
+										<Setter Property="Margin" Value="15,0,0,0"/>
+									</Style>
+								</Rectangle.Style>
+							</Rectangle>
 							<Rectangle x:Name="VerLn" Width="1" Grid.RowSpan="2" Style="{StaticResource linesStyle}"/>
 
 							<ToggleButton x:Name="Expander" ClickMode="Press" 
@@ -414,10 +420,12 @@
 							</DataTrigger>
 
 							<Trigger Property="IsExpanded" Value="False">
-								<Setter Property="Visibility" TargetName="ItemsHost" Value="Collapsed"/>
+								<Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
 							</Trigger>
 							<Trigger Property="HasItems" Value="False">
-								<Setter Property="Visibility" TargetName="Expander" Value="Hidden"/>
+								<Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+
+								<Setter TargetName="HorLn" Property="Margin" Value="10,0,0,0"/>
 							</Trigger>
 							<Trigger Property="IsEnabled" Value="False">
 								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
