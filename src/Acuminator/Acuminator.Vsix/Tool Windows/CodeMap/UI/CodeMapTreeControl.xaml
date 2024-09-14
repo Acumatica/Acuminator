@@ -539,7 +539,7 @@
 
 				<TreeView x:FieldModifier="private" Name="codeMapTreeView" Grid.Column="0" 
 						  Style="{StaticResource codeMapTreeViewStyle}"
-						  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+						  ItemsSource="{Binding Path=DisplayedRootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 						  Template="{StaticResource TreeViewWithoutInnerScrollViewerControlTemplate}">
 					<TreeView.ItemTemplate>
 						<HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"

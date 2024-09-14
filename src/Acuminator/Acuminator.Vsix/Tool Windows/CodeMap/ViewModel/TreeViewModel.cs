@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
@@ -11,11 +13,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class TreeViewModel : ViewModelBase
 	{
-		public CodeMapWindowViewModel CodeMapViewModel { get; } 
+		public CodeMapWindowViewModel CodeMapViewModel { get; }
 
-		public ExtendedObservableCollection<TreeNodeViewModel> RootItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
+		public ExtendedObservableCollection<TreeNodeViewModel> AllRootItems { get; } = new();
 
-		public ExtendedObservableCollection<TreeNodeViewModel> AllItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
+		private readonly ExtendedObservableCollection<TreeNodeViewModel> _mutableDisplayedRoots = new();
+
+		public ReadOnlyObservableCollection<TreeNodeViewModel> DisplayedRootItems { get; }
+
+		public ExtendedObservableCollection<TreeNodeViewModel> AllItems { get; } = new();
 
 		private TreeNodeViewModel? _selectedItem;
 
@@ -65,11 +71,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public TreeViewModel(CodeMapWindowViewModel windowViewModel)
 		{
 			CodeMapViewModel = windowViewModel.CheckIfNull();
+
+			AllRootItems.CollectionChanged += AllRootItems_CollectionChanged;
+			DisplayedRootItems = new ReadOnlyObservableCollection<TreeNodeViewModel>(_mutableDisplayedRoots);
 		}
 
 		public void Clear()
 		{
-			RootItems.Clear();
+			AllRootItems.Clear();
 			AllItems.Clear();
 		}
 
@@ -81,16 +90,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			RootItems.Reset(roots);
+			AllRootItems.Reset(roots);
 
-			var flattenedTree = RootItems.SelectMany(root => root.AllDescendantsAndSelf());
+			var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelf());
 			AllItems.Reset(flattenedTree);
 		}
 
 		public void RefreshFlattenedNodesList()
 		{
-			var flattenedTree = RootItems.SelectMany(root => root.AllDescendantsAndSelf());
+			var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelf());
 			AllItems.Reset(flattenedTree);
+		}
+
+		public void SubscribeOnDisplayedRootsCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
+		{
+			if (collectionChangedEventHandler != null)
+				_mutableDisplayedRoots.CollectionChanged += collectionChangedEventHandler;
+		}
+
+		private void AllRootItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var visibleChildren = e.Action != NotifyCollectionChangedAction.Move
+				? AllRootItems.Where(child => child.IsVisible)
+				: AllRootItems;
+
+			_mutableDisplayedRoots.Reset(visibleChildren);
 		}
 	}
 }
