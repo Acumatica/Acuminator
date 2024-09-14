@@ -142,6 +142,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				RefreshDisplayedRoots();
 				RefreshAllDisplayedItems();
 			}
+
+			if (SelectedItem != null && !SelectedItem.IsVisible)
+				SelectedItem = null;
 		}
 
 		public void RefreshDisplayedRoots() => RefreshDisplayedCollection(_mutableDisplayedRoots, AllRootItems);
