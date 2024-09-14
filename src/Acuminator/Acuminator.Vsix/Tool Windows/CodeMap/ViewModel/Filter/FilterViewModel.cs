@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 using Acuminator.Utilities.Common;
 
@@ -49,6 +50,7 @@ public class FilterViewModel : ViewModelBase
 		}
 	}
 
+	[MemberNotNullWhen(returnValue: true, nameof(FilterText))]
 	public bool HasFilterText => !_filterText.IsNullOrEmpty();
 
 	public Command ClearCommand { get; }
