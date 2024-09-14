@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -108,6 +109,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelf());
 			AllItems.Reset(flattenedTree);
 		}
+
+		public void RefreshNodesVisibleInFilter(FilterOptions? filterOptions)
+		{
+			foreach (var root in AllRootItems)
+			{
+				root.RefreshVisibilityForNodeAndSubTreeFromFilter(filterOptions);
+			}
+
+			if (filterOptions == null || !filterOptions.HasFilter)
+			{
+				_mutableDisplayedRoots.Reset(AllRootItems);
+				_mutableAllDisplayedItems.Reset(AllItems);
+			}
+			else
+			{
+				RefreshDisplayedRoots();
+				RefreshAllDisplayedItems();
+			}
+		}
+
+		public void RefreshDisplayedRoots() => RefreshDisplayedCollection(_mutableDisplayedRoots, AllRootItems);
+
+		public void RefreshAllDisplayedItems() => RefreshDisplayedCollection(_mutableAllDisplayedItems, AllItems);
 
 		public void SubscribeOnDisplayedRootsCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
 		{
