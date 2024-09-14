@@ -23,16 +23,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void TreeNode_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			if (e.Handled || e.ChangedButton != MouseButton.Left || e.ClickCount != 2)
+			if (e.Handled || e.ChangedButton != MouseButton.Left ||
+				sender is not FrameworkElement treeNodeContainer || treeNodeContainer.DataContext is not TreeNodeViewModel treeNodeVM)
+			{
 				return;
+			}
+			
+			treeNodeVM.IsSelected = true;
 
-			e.Handled = true;
-
-			if (sender is not FrameworkElement treeNodeContainer || treeNodeContainer.DataContext is not TreeNodeViewModel treeNodeVM)
-				return;
-
-			treeNodeVM.NavigateToItemAsync()
-					  .FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}");
+			if (e.ClickCount >= 2)
+			{
+				treeNodeVM.NavigateToItemAsync()
+						  .FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}");
+			}
 		}
 
 		private void TreeNode_MouseEnterOrLeave(object sender, MouseEventArgs e)
@@ -41,7 +44,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			
 			treeNode.IsMouseOver = frameworkElement.IsMouseOver;
-			e.Handled = true;	
 		}
 
 		private void TreeViewItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)

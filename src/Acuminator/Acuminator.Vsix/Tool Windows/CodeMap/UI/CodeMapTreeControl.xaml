@@ -20,12 +20,12 @@
 					<!--Converters-->
 					<converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
 					<converters:ColorToBrushConverter x:Key="colorToBrushConverter"/>
+					<converters:CollectionIsNonEmptyToBoolConverter x:Key="collectionIsNonEmptyConverter"/>
 
 					<codeMap:TreeViewLineConverter x:Key="lineConverter"/>
 					<codeMap:ElementWithTooltipToTooltipConverter x:Key="elementToTooltipConverter"/>
 					<codeMap:TreeIconTooltipConverter x:Key="iconTooltipConverter"/>
 					<codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
-					<codeMap:CollectionIsNonEmptyToBoolConverter x:Key="collectionIsNonEmptyConverter"/>
 
 					<!-- Bitmap Images -->
 					<BitmapImage x:Key="ExpandAllImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
@@ -38,7 +38,7 @@
 					<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
 
 					<!-- tree node Context Menu-->
-					<ContextMenu x:Key="codeMapContextMenu" Style="{StaticResource vsCodeMapContextMenuStyle}">
+					<ContextMenu x:Key="codeMapContextMenu" x:Shared="False" Style="{StaticResource vsCodeMapContextMenuStyle}">
 						<MenuItem Command="{Binding Path=Tree.CodeMapViewModel.ExpandOrCollapseAllCommand}" CommandParameter="{Binding}">
 							<MenuItem.Style>
 								<Style TargetType="MenuItem" BasedOn="{StaticResource vsCodeMapMenuItemStyle}">
@@ -335,7 +335,7 @@
 					</Style>
 
 					<ControlTemplate x:Key="TreeViewItemControlTemplate" TargetType="{x:Type TreeViewItem}">
-						<Grid>
+						<Grid Style="{StaticResource treeNodeContextMenuStyle}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition MinWidth="19" Width="Auto"/>
 								<ColumnDefinition Width="*"/>
@@ -396,8 +396,7 @@
 							</ToggleButton>
 							<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
 									Background="{TemplateBinding Background}" Grid.Column="1" Padding="{TemplateBinding Padding}" 
-									SnapsToDevicePixels="True" Style="{StaticResource treeNodeContextMenuStyle}" 
-									MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave"
+									SnapsToDevicePixels="True" MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave"
 									PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
 									PreviewMouseRightButtonDown="TreeViewItem_PreviewMouseRightButtonDown">
 								<ContentPresenter x:Name="PART_Header" ContentTemplate="{TemplateBinding HeaderTemplate}" 
