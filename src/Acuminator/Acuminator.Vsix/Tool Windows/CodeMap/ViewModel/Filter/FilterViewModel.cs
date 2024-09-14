@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using Acuminator.Utilities.Common;
 
@@ -31,7 +29,7 @@ public class FilterViewModel : ViewModelBase
 				NotifyPropertyChanged();
 				NotifyPropertyChanged(nameof(HasFilterText));
 
-				RaiseFilterChanged(new FilterEventArgs(_filterText, oldValue));
+				RaiseFilterChanged(_filterText, oldValue);
 			}
 		}
 	}
@@ -65,13 +63,24 @@ public class FilterViewModel : ViewModelBase
 		FilterText = null;
 	}
 
-	private void RaiseFilterChanged(FilterEventArgs filterEventArgs)
+	public FilterOptions CreateFilterOptionsFromCurrentFilter() =>
+		HasFilterText
+			? new FilterOptions(FilterText)
+			: FilterOptions.NoFilter;
+
+	private void RaiseFilterChanged(string? newFilterText, string? oldFilterText)
 	{
 		bool oldIsFiltering = IsFiltering;
 
 		try
 		{
 			IsFiltering = true;
+
+			var filterOptions = newFilterText.IsNullOrEmpty()
+				? FilterOptions.NoFilter
+				: new FilterOptions(newFilterText);
+			var filterEventArgs = new FilterEventArgs(filterOptions, oldFilterText);
+
 			FilterChanged?.Invoke(this, filterEventArgs);
 		}
 		finally

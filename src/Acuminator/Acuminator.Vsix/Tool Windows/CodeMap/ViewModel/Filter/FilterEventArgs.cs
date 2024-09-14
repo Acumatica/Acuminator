@@ -2,17 +2,21 @@
 
 using System;
 
+using Acuminator.Utilities.Common;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 public class FilterEventArgs : EventArgs
 {
-	public string? NewFilterText { get; }
+	public FilterOptions FilterOptions { get; }
+
+	public string? NewFilterText => FilterOptions.FilterPattern;
 
 	public string? OldFilterText { get; }
 
-	public FilterEventArgs(string? newFilterText, string? oldFilterText)
+	public FilterEventArgs(FilterOptions filterOptions, string? oldFilterText)
 	{
-		NewFilterText = newFilterText;
+		FilterOptions = FilterOptions.CheckIfNull();
 		OldFilterText = oldFilterText;
 	}
 }
