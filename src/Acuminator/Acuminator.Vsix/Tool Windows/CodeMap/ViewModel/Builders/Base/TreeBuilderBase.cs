@@ -137,18 +137,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual bool ShouldAddNodeWithoutChildrenToTree(TreeNodeViewModel node) => node switch
 		{
-			AttributesGroupNodeViewModel 	 => false,
-			AttributeNodeViewModel 			 => true,
-			GraphMemberCategoryNodeViewModel => false,
-			DacMemberCategoryNodeViewModel 	 => false,
-			DacMemberNodeViewModel 			 => true,
-			GraphMemberNodeViewModel 		 => true,
-			GraphMemberInfoNodeViewModel 	 => true,
-			DacGroupingNodeBaseViewModel 	 => false,
-			DacFieldGroupingNodeViewModel 	 => false,
-			GraphNodeViewModel 				 => true,
-			DacNodeViewModel 				 => true,
-			_ 								 => throw new NotImplementedException($"Nodes of type \"{node.GetType().Name}\" are not supported")
+			AttributesGroupNodeViewModel 	  => false,
+			AttributeNodeViewModel 			  => true,
+			GraphMemberCategoryNodeViewModel  => false,
+			DacMemberCategoryNodeViewModel 	  => false,
+			DacMemberNodeViewModel 			  => true,
+			GraphMemberNodeViewModel 		  => true,
+			GraphMemberInfoNodeViewModel 	  => true,
+			DacGroupingNodeBaseViewModel 	  => false,
+			DacFieldGroupingNodeBaseViewModel => false,
+			DacFieldNodeViewModel 			  => false,
+			GraphNodeViewModel 				  => true,
+			DacNodeViewModel 				  => true,
+			_ 								  => throw new NotImplementedException($"Nodes of type \"{node.GetType().Name}\" are not supported")
 		};
 	}
 }

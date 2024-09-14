@@ -10,13 +10,16 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacFieldGroupingNodeViewModel : TreeNodeViewModel, IElementWithTooltip, IGroupNodeWithCyclingNavigation
+	public class DacFieldNodeViewModel : TreeNodeViewModel, IElementWithTooltip, IGroupNodeWithCyclingNavigation
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public DacMemberCategoryNodeViewModel MemberCategory { get; }
 
 		public DacMemberCategory MemberType => MemberCategory.CategoryType;
@@ -47,9 +50,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
-		public DacFieldGroupingNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent,
-											 DacFieldInfo fieldInfo, bool isExpanded) :
-										base(dacMemberCategoryVM?.Tree!, parent, isExpanded)
+		public DacFieldNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, DacFieldInfo fieldInfo, 
+									 bool isExpanded) :
+								base(dacMemberCategoryVM?.Tree!, parent, isExpanded)
 		{
 			MemberCategory = dacMemberCategoryVM!;
 			FieldInfo = fieldInfo.CheckIfNull();
