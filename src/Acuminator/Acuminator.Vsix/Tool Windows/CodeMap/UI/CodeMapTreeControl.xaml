@@ -492,7 +492,8 @@
 						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
 						<Setter Property="VerticalContentAlignment" Value="Stretch"/>
 
-						<Setter Property="Visibility"  Value="{Binding Path=AreDetailsVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}"/>
+						<Setter Property="Visibility" Value="{Binding Path=AreDetailsVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
+																	  Converter={StaticResource boolToVisibilityConverter}}"/>
 
 						<Style.Triggers>
 							<DataTrigger Binding="{Binding Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
