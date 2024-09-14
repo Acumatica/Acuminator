@@ -69,8 +69,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <param name="selected">The selected.</param>
 		internal void SetSelectedWithoutNotification(TreeNodeViewModel? selected)
 		{
+			if (ReferenceEquals(SelectedItem, selected)) 
+				return;
+
+			var oldSelectedItem = SelectedItem;
+			oldSelectedItem?.NotifyPropertyChanged(nameof(oldSelectedItem.IsSelected));
+			
 			_selectedItem = selected;
+
 			NotifyPropertyChanged(nameof(SelectedItem));
+			_selectedItem?.NotifyPropertyChanged(nameof(_selectedItem.IsSelected));
 		}
 
 		public TreeViewModel(CodeMapWindowViewModel windowViewModel)

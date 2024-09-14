@@ -122,7 +122,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			get => ReferenceEquals(this, Tree.SelectedItem);
 			set
-			{ 
+			{
+				if (value == IsSelected)
+					return;
+
 				if (value)
 				{
 					Tree.SetSelectedWithoutNotification(this);
