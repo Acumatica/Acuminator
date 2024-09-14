@@ -90,7 +90,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			AllItems.Clear();
 		}
 
-		public void FillCodeMapTree(IEnumerable<TreeNodeViewModel> roots)
+		public void FillCodeMapTree(IEnumerable<TreeNodeViewModel> roots, FilterOptions? filterOptions)
 		{
 			if (roots.IsNullOrEmpty())
 			{
@@ -98,10 +98,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			AllRootItems.Reset(roots);
+			// Unsubscribe from the synchronization with displayed items temporarily for optimization
+			// Since the displayed items will be updated anyway
+			try
+			{
+				AllRootItems.CollectionChanged -= AllRootItems_CollectionChanged;
+				AllItems.CollectionChanged	   -= AllItems_CollectionChanged;
 
-			var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelf());
-			AllItems.Reset(flattenedTree);
+				AllRootItems.Reset(roots);
+
+				var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelf());
+				AllItems.Reset(flattenedTree);
+			}
+			finally
+			{
+				AllRootItems.CollectionChanged += AllRootItems_CollectionChanged;
+				AllItems.CollectionChanged	   += AllItems_CollectionChanged;
+			}
+
+			RefreshNodesVisibleInFilter(filterOptions);
 		}
 
 		public void RefreshFlattenedNodesList()
