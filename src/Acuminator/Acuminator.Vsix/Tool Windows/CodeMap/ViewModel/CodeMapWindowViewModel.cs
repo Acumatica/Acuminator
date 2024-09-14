@@ -32,6 +32,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private readonly CodeMapDteEventsObserver _dteEventsObserver;
 		private CancellationTokenSource? _cancellationTokenSource;
 
+		public event EventHandler<FilterEventArgs>? AfterCodeMapTreeIsFiltered;
+
 		public TreeBuilderBase TreeBuilder
 		{
 			get;
@@ -416,6 +418,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 					Tree = newTreeVM;
+					AfterCodeMapTreeIsFiltered?.Invoke(this, new FilterEventArgs(filterOptions, oldFilterText: null));
 				}
 			}
 			catch (OperationCanceledException)
@@ -449,6 +452,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private void FilterVM_FilterChanged(object sender, FilterEventArgs e)
 		{
 			Tree?.RefreshNodesVisibleInFilter(e.FilterOptions);
+
+			AfterCodeMapTreeIsFiltered?.Invoke(this, e);
 		}
 	}
 }
