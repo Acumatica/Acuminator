@@ -95,7 +95,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					_isExpanded = value;
 					NotifyPropertyChanged();
 
-					DisplayedDescendants().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
+					DisplayedDescendantsBFS().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -309,6 +309,60 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			return nodesQueue;
+		}
+
+		public IEnumerable<TreeNodeViewModel> AllDescendantsAndSelfDFS() =>
+			AllChildren.Count > 0
+				? DescendantsDFS(includeSelf: true, collectOnlyDisplayedNodes: false)
+				: [this];
+
+		public IEnumerable<TreeNodeViewModel> AllDescendantsDFS() =>
+			AllChildren.Count > 0
+				? DescendantsDFS(includeSelf: false, collectOnlyDisplayedNodes: false)
+				: [];
+
+		public IEnumerable<TreeNodeViewModel> DisplayedDescendantsAndSelfDFS() =>
+			DisplayedChildren.Count > 0
+				? DescendantsDFS(includeSelf: true, collectOnlyDisplayedNodes: true)
+				: [this];
+
+		public IEnumerable<TreeNodeViewModel> DisplayedDescendantsDFS() =>
+			DisplayedChildren.Count > 0
+				? DescendantsBFS(includeSelf: false, collectOnlyDisplayedNodes: true)
+				: [];
+
+		private IEnumerable<TreeNodeViewModel> DescendantsDFS(bool includeSelf, bool collectOnlyDisplayedNodes)
+		{
+			// DFS traversal
+			IReadOnlyCollection<TreeNodeViewModel> childrenToTraverse = collectOnlyDisplayedNodes
+				? DisplayedChildren
+				: AllChildren;
+
+			var nodesStack = new Stack<TreeNodeViewModel>(capacity: childrenToTraverse.Count * 2);
+
+			if (includeSelf)
+				nodesStack.Push(this);
+			else if (childrenToTraverse.Count > 0)
+			{
+				foreach (var child in childrenToTraverse)
+					nodesStack.Push(child);
+			}
+
+			while (nodesStack.Count > 0)
+			{
+				var currentNode = nodesStack.Pop();
+				yield return currentNode;
+
+				IReadOnlyCollection<TreeNodeViewModel> currentNodeChildrenToTraverse = collectOnlyDisplayedNodes
+					? currentNode.DisplayedChildren
+					: currentNode.AllChildren;
+
+				if (currentNodeChildrenToTraverse.Count > 0)
+				{
+					foreach (var child in currentNodeChildrenToTraverse)
+						nodesStack.Push(child);
+				}
+			}
 		}
 
 		public IEnumerable<TreeNodeViewModel> AncestorsAndSelf() => IsRoot
