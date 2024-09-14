@@ -190,7 +190,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (IsRoot)
 				return true;
 
-			return Ancestors().All(ancestor => ancestor.IsExpanded);
+			return Ancestors().All(ancestor => ancestor.IsExpanded && ancestor.IsVisible);
 		}
 
 		protected void SubscribeOnDisplayedChildrenCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
