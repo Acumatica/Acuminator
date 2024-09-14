@@ -121,22 +121,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_mutableAllDisplayedItems.CollectionChanged += collectionChangedEventHandler;
 		}
 
-		private void AllRootItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		private void AllRootItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => RefreshDisplayedRoots();
+
+		private void AllItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => RefreshAllDisplayedItems();
+
+		private static void RefreshDisplayedCollection(ExtendedObservableCollection<TreeNodeViewModel> displayedCollection,
+													   ExtendedObservableCollection<TreeNodeViewModel> allItemsCollection)
 		{
-			var visibleRoots = e.Action != NotifyCollectionChangedAction.Move
-				? AllRootItems.Where(child => child.IsVisible)
-				: AllRootItems;
-
-			_mutableDisplayedRoots.Reset(visibleRoots);
-		}
-
-		private void AllItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			var visibleNodes = e.Action != NotifyCollectionChangedAction.Move
-				? AllItems.Where(child => child.IsVisible)
-				: AllItems;
-
-			_mutableAllDisplayedItems.Reset(visibleNodes);
+			var visibleNodes = allItemsCollection.Where(node => node.IsVisible);
+			displayedCollection.Reset(visibleNodes);
 		}
 	}
 }

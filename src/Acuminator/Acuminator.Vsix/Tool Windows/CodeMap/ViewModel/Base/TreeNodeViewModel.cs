@@ -185,6 +185,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				NotifyPropertyChanged(nameof(NodeIcon));
 		}
 
+		public void RefreshDisplayedChildren()
+		{
+			var visibleChildren = AllChildren.Where(child => child.IsVisible);
+			_mutableDisplayedChildren.Reset(visibleChildren);
+		}
+
 		protected bool ShouldShowDetails()
 		{
 			if (IsRoot)
@@ -207,6 +213,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			_mutableDisplayedChildren.Reset(visibleChildren);
 		}
+
+		private void AllChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
+			RefreshDisplayedChildren();
 
 		#region Tree Traversal Methods
 		public IReadOnlyCollection<TreeNodeViewModel> AllDescendantsAndSelf() =>
