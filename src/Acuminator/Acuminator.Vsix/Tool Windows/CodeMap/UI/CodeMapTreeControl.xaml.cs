@@ -56,5 +56,39 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			treeNodeViewModel.IsSelected = true;
 		}
+
+		private void NameTextBox_Initialized(object sender, EventArgs e)
+		{
+			if (sender is not TextBox textBox || textBox.DataContext is not TreeNodeViewModel treeNodeVM)
+			{
+				return;
+			}
+
+			if (!treeNodeVM.IsVisible)
+			{
+				textBox.SelectionLength = 0;
+				return;
+			}
+
+			var filterVM = treeNodeVM.Tree.CodeMapViewModel.FilterVM;
+
+			if (filterVM.HasFilterText)
+			{
+				int selectionIndex = textBox.Text.IndexOf(filterVM.FilterText, StringComparison.OrdinalIgnoreCase);
+
+				if (selectionIndex < 0)
+				{
+					textBox.SelectionLength = 0;
+					return;
+				}
+
+				textBox.Select(selectionIndex, filterVM.FilterText.Length);
+			}
+			else
+			{
+				textBox.SelectionLength = 0;
+				return;
+			}
+		}
 	}
 }
