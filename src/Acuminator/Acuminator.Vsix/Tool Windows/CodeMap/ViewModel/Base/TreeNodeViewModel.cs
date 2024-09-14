@@ -183,6 +183,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (NameMatchesPattern(filterOptions.FilterPattern))
 						return true;
 
+					goto case TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
+
+				case TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter:
 					return AllChildren.Count > 0 && AllChildren.Any(childNode => childNode.IsVisibleInFilter(filterOptions));
 
 				case TreeNodeFilterBehavior.AlwaysHidden:

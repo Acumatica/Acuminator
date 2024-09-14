@@ -13,6 +13,11 @@ public enum TreeNodeFilterBehavior
 	DisplayedIfNodeOrChildrenMeetFilter,
 
 	/// <summary>
+	/// Tree node is displayed in Code Map if its children meet the filter criteria.
+	/// </summary>
+	DisplayedIfChildrenMeetFilter,
+
+	/// <summary>
 	/// Tree node is always displayed in Code Map no matter what the filter.
 	/// </summary>
 	AlwaysDisplayed,
@@ -21,4 +26,11 @@ public enum TreeNodeFilterBehavior
 	/// Tree node is always hidden in Code Map no matter what the filter.
 	/// </summary>
 	AlwaysHidden
+}
+
+public static class TreeNodeFilterBehaviorUtils
+{
+	public static bool DependsOnChildren(this TreeNodeFilterBehavior nodeFilterBehavior) =>
+		nodeFilterBehavior == TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter ||
+		nodeFilterBehavior == TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
 }

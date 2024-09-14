@@ -25,10 +25,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						node._mutableDisplayedChildren.Reset(node.AllChildren);
 				}
 
-				var ancestorsToUpdateToRefreshFromDescendantToRoot = 
-					root.Ancestors()
-						.Where(ancestor => ancestor.FilterBehavior == TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter)
-						.ToList(capacity: 8);
+				var ancestorsToUpdateToRefreshFromDescendantToRoot = root.Ancestors()
+																		 .Where(ancestor => ancestor.FilterBehavior.DependsOnChildren())
+																		 .ToList(capacity: 8);
 
 				foreach (var ancestor in ancestorsToUpdateToRefreshFromDescendantToRoot)
 				{
@@ -54,10 +53,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						node.RefreshDisplayedChildren();
 				}
 
-				var ancestorsToUpdateToRefreshFromDescendantToRoot =
-					root.Ancestors()
-						.Where(ancestor => ancestor.FilterBehavior == TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter)
-						.ToList(capacity: 8);
+				var ancestorsToUpdateToRefreshFromDescendantToRoot = root.Ancestors()
+																		 .Where(ancestor => ancestor.FilterBehavior.DependsOnChildren())
+																		 .ToList(capacity: 8);
 
 				foreach (var ancestor in ancestorsToUpdateToRefreshFromDescendantToRoot)
 				{
@@ -75,10 +73,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				switch (node.FilterBehavior)
 				{
 					case TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter:
-						return node.NameMatchesPattern(filterOptions.FilterPattern) ||
-							   (node.AllChildren.Count > 0 && node.AllChildren.Any(child => child.IsVisible));
+						if (node.NameMatchesPattern(filterOptions.FilterPattern))
+							return true;
+						
+						goto case TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
+
+					case TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter:
+						return node.AllChildren.Count > 0 && node.AllChildren.Any(child => child.IsVisible);
+
 					case TreeNodeFilterBehavior.AlwaysHidden:
 						return false;
+
 					case TreeNodeFilterBehavior.AlwaysDisplayed:
 					default:
 						return true;
