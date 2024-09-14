@@ -16,6 +16,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public partial class CodeMapTreeControl : UserControl
 	{
+		private bool _isSelectionChanging;
+		private bool _isFilterSelectionUpdating;
+
 		public CodeMapTreeControl()
 		{
 			InitializeComponent();
@@ -60,10 +63,44 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private void NameTextBox_Initialized(object sender, EventArgs e)
 		{
 			if (sender is not TextBox textBox || textBox.DataContext is not TreeNodeViewModel treeNodeVM)
-			{
 				return;
-			}
 
+			try
+			{
+				_isFilterSelectionUpdating = true;
+
+				UpdateFilterSelection(textBox, treeNodeVM);
+			}
+			finally
+			{
+				_isFilterSelectionUpdating = false;
+			}
+		}
+
+		private void NameTextBox_SelectionChanged(object sender, RoutedEventArgs e)
+		{
+			if (_isSelectionChanging || _isFilterSelectionUpdating || sender is not TextBox textBox)
+				return;
+
+			try
+			{
+				_isSelectionChanging = true;
+
+				if (textBox.DataContext is TreeNodeViewModel treeNodeVM)
+					UpdateFilterSelection(textBox, treeNodeVM);
+				else
+					textBox.SelectionLength = 0;
+
+				e.Handled = true;
+			}
+			finally
+			{
+				_isSelectionChanging = false;
+			}
+		}
+
+		private void UpdateFilterSelection(TextBox textBox, TreeNodeViewModel treeNodeVM)
+		{
 			if (!treeNodeVM.IsVisible)
 			{
 				textBox.SelectionLength = 0;

@@ -577,10 +577,11 @@
 								</Image>
 
 								<TextBox VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0" IsInactiveSelectionHighlightEnabled="True"
-										 Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Initialized="NameTextBox_Initialized"
+										 Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 										 Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource elementToTooltipConverter}}"
 										 IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent" TextWrapping="Wrap"
-										 IsReadOnlyCaretVisible="False" CaretBrush="Transparent" Cursor="Arrow" >
+										 IsReadOnlyCaretVisible="False" CaretBrush="Transparent" Cursor="Arrow" FocusVisualStyle="{x:Null}"
+										 Initialized="NameTextBox_Initialized" SelectionChanged="NameTextBox_SelectionChanged">
 									<TextBox.Style>
 										<Style TargetType="TextBox">
 											<Setter Property="SelectionBrush" Value="{DynamicResource {x:Static platformUI:TreeViewColors.HighlightedSpanBrushKey}}"/>
