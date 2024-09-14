@@ -2,21 +2,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
+using Acuminator.Vsix.Utilities;
 
 using Microsoft.VisualStudio.PlatformUI;
-using System.Collections.ObjectModel;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class TreeNodeViewModel : ViewModelBase
+	public abstract partial class TreeNodeViewModel : ViewModelBase
 	{
 		public TreeViewModel Tree { get; }
 
@@ -114,7 +114,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				{
 					_isVisible = value;
 					NotifyPropertyChanged();
-					DisplayedDescendants().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -228,7 +227,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (IsRoot)
 				return true;
 
-			return Ancestors().All(ancestor => ancestor.IsExpanded && ancestor.IsVisible);
+			return IsVisible && Ancestors().All(ancestor => ancestor.IsExpanded && ancestor.IsVisible);
 		}
 
 		protected void SubscribeOnDisplayedChildrenCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
@@ -237,13 +236,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_mutableDisplayedChildren.CollectionChanged += collectionChangedEventHandler;
 		}
 
-		private void AllChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		public void RefreshVisibilityForNodeAndSubTreeFromFilter(FilterOptions? filterOptions)
 		{
-			var visibleChildren = e.Action != NotifyCollectionChangedAction.Move
-				? AllChildren.Where(child => child.IsVisible)
-				: AllChildren;
+			// Breadth First Search Tree traversal will always order children after their parents,
+			// Therefore, the reversal wil always make nodes be processed from children to root
+			var nodesAndSelfFromRootToChildren = DescendantsBFS(includeSelf: true, collectOnlyDisplayedNodes: false);
 
-			_mutableDisplayedChildren.Reset(visibleChildren);
+			if (filterOptions == null || !filterOptions.HasFilter)
+			{
+				FilterHelper.RefreshSubTreeWithoutFilter(this, nodesAndSelfFromRootToChildren);
+			}
+			else
+			{
+				FilterHelper.RefreshSubTreeWithFilter(this, nodesAndSelfFromRootToChildren, filterOptions);
+			}
 		}
 
 		private void AllChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>

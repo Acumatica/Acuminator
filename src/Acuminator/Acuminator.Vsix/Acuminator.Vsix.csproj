@@ -495,6 +495,7 @@
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.FilterHelper.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterOptions.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\TreeNodeFilterBehavior.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterEventArgs.cs" />
