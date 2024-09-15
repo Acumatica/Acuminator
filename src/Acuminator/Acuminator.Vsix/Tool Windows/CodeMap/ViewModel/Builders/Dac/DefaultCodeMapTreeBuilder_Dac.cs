@@ -48,9 +48,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual DacMemberCategoryNodeViewModel? CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory) =>
 			dacMemberCategory switch
 			{
-				DacMemberCategory.InitializationAndActivation => new DacInitializationAndActivationCategoryNodeViewModel(dac, ExpandCreatedNodes),
-				DacMemberCategory.Keys 						  => new KeyDacFieldsCategoryNodeViewModel(dac, ExpandCreatedNodes),
-				DacMemberCategory.Property 					  => new AllDacFieldsDacCategoryNodeViewModel(dac, ExpandCreatedNodes),
+				DacMemberCategory.InitializationAndActivation => new DacInitializationAndActivationCategoryNodeViewModel(dac, dac, ExpandCreatedNodes),
+				DacMemberCategory.Keys 						  => new KeyDacFieldsCategoryNodeViewModel(dac, dac, ExpandCreatedNodes),
+				DacMemberCategory.Property 					  => new AllDacFieldsDacCategoryNodeViewModel(dac, dac, ExpandCreatedNodes),
 				_ 											  => null,
 			};
 

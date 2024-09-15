@@ -10,8 +10,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class DacFieldCategoryNodeViewModel : DacMemberCategoryNodeViewModel
 	{
-		protected DacFieldCategoryNodeViewModel(DacNodeViewModel dacViewModel, DacMemberCategory dacCategoryType, bool isExpanded) : 
-										   base(dacViewModel, dacCategoryType, isExpanded)
+		protected DacFieldCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, DacMemberCategory dacCategoryType, bool isExpanded) : 
+										   base(dacViewModel, parent, dacCategoryType, isExpanded)
 		{}
 
 		public abstract IEnumerable<DacFieldInfo> GetCategoryDacFields();

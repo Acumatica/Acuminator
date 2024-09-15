@@ -8,8 +8,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public enum DacMemberCategory
 	{
+		BaseTypes,
 		Keys,
-		Property,		
+		Property,
 		FieldsWithoutProperty,
 		InitializationAndActivation
 	}
