@@ -14,7 +14,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected override bool AllowNavigation => false;
 
-		public override Icon NodeIcon => Icon.Category;
+		public override Icon NodeIcon => Icon.BaseTypesCategory;
+
+		public override bool IconDependsOnCurrentTheme => true;
 
 		public DacInfo? BaseDacInfo { get; }
 
