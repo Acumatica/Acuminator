@@ -6,14 +6,12 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
 	/// <summary>
-	/// Generic class for overridable semantic infos from a graph or DAC with node and symbol.
+	/// Generic class for overridable semantic infos from a graph or DAC with symbol.
 	/// </summary>
 	/// <typeparam name="TInfo">Type of the information symbol.</typeparam>
-	/// <typeparam name="N">Type of the declaration node of the item.</typeparam>
 	/// <typeparam name="S">Type of the declaration symbol of the item.</typeparam>
-	public abstract class OverridableNodeSymbolItem<TInfo, N, S> : NodeSymbolItem<N, S>, IWriteableBaseItem<TInfo>
-	where TInfo : OverridableNodeSymbolItem<TInfo, N, S>
-	where N : SyntaxNode
+	public abstract class OverridableSymbolItem<TInfo, S> : SymbolItem<S>, IWriteableBaseItem<TInfo>
+	where TInfo : OverridableSymbolItem<TInfo, S>
 	where S : ISymbol
 	{
 		protected TInfo? _baseInfo;
@@ -37,13 +35,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
-		protected OverridableNodeSymbolItem(N? node, S symbol, int declarationOrder, TInfo baseInfo) : this(node, symbol, declarationOrder)
+		protected OverridableSymbolItem(S symbol, int declarationOrder, TInfo baseInfo) : this(symbol, declarationOrder)
 		{
 			_baseInfo = baseInfo.CheckIfNull();
 			CombineWithBaseInfo(_baseInfo);
 		}
 
-		protected OverridableNodeSymbolItem(N? node, S symbol, int declarationOrder) : base(node, symbol, declarationOrder)
+		protected OverridableSymbolItem(S symbol, int declarationOrder) : base(symbol, declarationOrder)
 		{
 		}
 
