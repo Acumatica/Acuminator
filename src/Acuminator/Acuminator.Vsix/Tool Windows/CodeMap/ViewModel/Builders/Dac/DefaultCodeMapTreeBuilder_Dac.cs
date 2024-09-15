@@ -3,12 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -91,14 +89,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			foreach (DacFieldInfo fieldInfo in categorySymbols)
 			{
 				Cancellation.ThrowIfCancellationRequested();
-				TreeNodeViewModel childNode = new DacFieldGroupingNodeViewModel(dacFieldCategory, parent: dacFieldCategory, 
-																				fieldInfo, ExpandCreatedNodes);
+				TreeNodeViewModel childNode = new DacFieldNodeViewModel(dacFieldCategory, parent: dacFieldCategory, 
+																		fieldInfo, ExpandCreatedNodes);
 				if (childNode != null)
 					yield return childNode;
 			}
 		}
 
-		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacFieldGroupingNodeViewModel dacField)
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacFieldNodeViewModel dacField)
 		{
 			if (dacField.FieldInfo.PropertyInfo != null)
 			{

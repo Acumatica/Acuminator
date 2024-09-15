@@ -24,7 +24,8 @@
                     <!--Converters-->                  
                     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
 					<converters:BoolInversionConverter x:Key="boolInverter"/>
-					
+					<converters:MultipleBoolsToSingleBoolConverter x:Key="multipleBoolsToSingleBoolConverter"/>
+
 					<!-- Bitmap Images -->
                     <BitmapImage x:Key="RefreshImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                                  UriSource="pack://application:,,,/Acuminator;component/Resources/Refresh.ico"/>
@@ -34,6 +35,61 @@
 
                     <!-- Button Style-->
 					<Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
+
+					<Style x:Key="RefreshButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Static vsshell:VsResourceKeys.ButtonStyleKey}}">
+						<Style.Resources>
+							<Style TargetType="Border">
+								<Setter Property="CornerRadius" Value="0" />
+							</Style>
+						</Style.Resources>
+						
+						<Setter Property="Background" Value="Transparent"/>
+						<Setter Property="BorderBrush" Value="Transparent"/>
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextActiveKey}}"/>
+
+						<Style.Triggers>
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="False"/>
+									<Condition Property="IsFocused" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonFocusedBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonFocusedTextBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderFocusedBrushKey}}"/>
+							</MultiTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarMouseOverBackgroundGradientKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextHoverKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarBorderKey}}"/>
+							</MultiTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsPressed" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarMouseDownBackgroundGradientKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextHoverKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarMouseDownBorderKey}}"/>
+							</MultiTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonDisabledBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonDisabledTextBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderDisabledBrushKey}}"/>
+								<Setter Property="Opacity" Value="0.3"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
 				</ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -49,8 +105,8 @@
     </UserControl.Style>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
         <!--<WrapPanel Orientation="Horizontal" Grid.Row="0">
@@ -59,6 +115,7 @@
                 
             </ComboBox>
         </WrapPanel>-->
+		
 
 		<Grid Grid.Row="0" Margin="5,2">
 			<Grid.ColumnDefinitions>
@@ -69,20 +126,53 @@
 			<WrapPanel Grid.Column="0" Orientation="Horizontal"
 					   Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
 											Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=!}">
-				<Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1" Command="{Binding Path=RefreshCodeMapCommand}"
-						 MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
-						 IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
+				<Button Name="RefreshButton" VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1" Command="{Binding Path=RefreshCodeMapCommand}"
+						MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20" Style="{StaticResource RefreshButtonStyle}">
+					
 					<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
+					<Button.IsEnabled>
+						<MultiBinding Mode="OneWay" Converter="{StaticResource multipleBoolsToSingleBoolConverter}" 
+									  ConverterParameter="{x:Static converters:MultipleBoolsAggregationMode.AllFalse}">
+							<Binding Path="IsCalculating" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+							<Binding Path="FilterVM.IsFiltering" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+						</MultiBinding>
+					</Button.IsEnabled>
 				</Button>
 			</WrapPanel>
 
+			<codeMap:CodeMapSearchBoxControl Grid.Column="1" Margin="5,0,0,0" MaxHeight="21" MinHeight="21" 
+											 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+											 DataContext="{Binding Path=FilterVM, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+											 IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, 
+																 Path=DataContext.IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
+																 Converter={StaticResource boolInverter}}">
+				<codeMap:CodeMapSearchBoxControl.Style>
+					<Style TargetType="codeMap:CodeMapSearchBoxControl">
+						<Setter Property="Visibility" Value="Visible"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.IsCalculating, 
+														   Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+								<Setter Property="Visibility" Value="Collapsed"/>
+							</DataTrigger>
+							<DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.Tree, 
+														   Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
+								<Setter Property="Visibility" Value="Collapsed"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</codeMap:CodeMapSearchBoxControl.Style>
+			</codeMap:CodeMapSearchBoxControl>
+			
 			<ProgressBar Grid.Column="1" IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
 						 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,0,0,0"
 						 Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
 											  Converter={StaticResource boolToVisibilityConverter}}"/>
 		</Grid>
 
-		<codeMap:CodeMapTreeControl Grid.Row="1" Margin="0,2"
-									DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<codeMap:CodeMapTreeControl Grid.Row="2" Margin="0,2"
+									DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+									IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.FilterVM.IsFiltering, 
+														Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}"/>
 	</Grid>
 </UserControl>

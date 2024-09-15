@@ -2,20 +2,31 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class TreeViewModel : ViewModelBase
 	{
-		public CodeMapWindowViewModel CodeMapViewModel { get; } 
+		public CodeMapWindowViewModel CodeMapViewModel { get; }
 
-		public ExtendedObservableCollection<TreeNodeViewModel> RootItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
+		public ExtendedObservableCollection<TreeNodeViewModel> AllRootItems { get; } = new();
 
-		public ExtendedObservableCollection<TreeNodeViewModel> AllItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
+		private readonly ExtendedObservableCollection<TreeNodeViewModel> _mutableDisplayedRoots = new();
+
+		public ReadOnlyObservableCollection<TreeNodeViewModel> DisplayedRootItems { get; }
+
+		public ExtendedObservableCollection<TreeNodeViewModel> AllItems { get; } = new();
+
+		private readonly ExtendedObservableCollection<TreeNodeViewModel> _mutableAllDisplayedItems = new();
+
+		public ReadOnlyObservableCollection<TreeNodeViewModel> AllDisplayedItems { get; }
 
 		private TreeNodeViewModel? _selectedItem;
 
@@ -58,22 +69,36 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <param name="selected">The selected.</param>
 		internal void SetSelectedWithoutNotification(TreeNodeViewModel? selected)
 		{
+			if (ReferenceEquals(SelectedItem, selected)) 
+				return;
+
+			var oldSelectedItem = SelectedItem;
+			oldSelectedItem?.NotifyPropertyChanged(nameof(oldSelectedItem.IsSelected));
+			
 			_selectedItem = selected;
+
 			NotifyPropertyChanged(nameof(SelectedItem));
+			_selectedItem?.NotifyPropertyChanged(nameof(_selectedItem.IsSelected));
 		}
 
 		public TreeViewModel(CodeMapWindowViewModel windowViewModel)
 		{
 			CodeMapViewModel = windowViewModel.CheckIfNull();
+
+			AllRootItems.CollectionChanged += AllRootItems_CollectionChanged;
+			DisplayedRootItems = new ReadOnlyObservableCollection<TreeNodeViewModel>(_mutableDisplayedRoots);
+
+			AllItems.CollectionChanged += AllItems_CollectionChanged;
+			AllDisplayedItems = new ReadOnlyObservableCollection<TreeNodeViewModel>(_mutableAllDisplayedItems);
 		}
 
 		public void Clear()
 		{
-			RootItems.Clear();
+			AllRootItems.Clear();
 			AllItems.Clear();
 		}
 
-		public void FillCodeMapTree(IEnumerable<TreeNodeViewModel> roots)
+		public void FillCodeMapTree(IEnumerable<TreeNodeViewModel> roots, FilterOptions? filterOptions)
 		{
 			if (roots.IsNullOrEmpty())
 			{
@@ -81,31 +106,79 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			RootItems.Reset(roots);
+			// Unsubscribe from the synchronization with displayed items temporarily for optimization
+			// Since the displayed items will be updated anyway
+			try
+			{
+				AllRootItems.CollectionChanged -= AllRootItems_CollectionChanged;
+				AllItems.CollectionChanged	   -= AllItems_CollectionChanged;
 
-			var flattenedTree = RootItems.SelectMany(root => GetNodeWithDescendants(root));
-			AllItems.Reset(flattenedTree);
+				AllRootItems.Reset(roots);
+
+				RefreshFlattenedNodesList();
+			}
+			finally
+			{
+				AllRootItems.CollectionChanged += AllRootItems_CollectionChanged;
+				AllItems.CollectionChanged	   += AllItems_CollectionChanged;
+			}
+
+			RefreshNodesVisibleInFilter(filterOptions);
 		}
 
 		public void RefreshFlattenedNodesList()
 		{
-			var flattenedTree = RootItems.SelectMany(root => GetNodeWithDescendants(root));
+			var flattenedTree = AllRootItems.SelectMany(root => root.AllDescendantsAndSelfDFS());
 			AllItems.Reset(flattenedTree);
 		}
 
-		private IEnumerable<TreeNodeViewModel> GetNodeWithDescendants(TreeNodeViewModel node)
+		public void RefreshNodesVisibleInFilter(FilterOptions? filterOptions)
 		{
-			yield return node;
-
-			if (node.Children.Count == 0)
-				yield break;
-
-			var descendants = node.Children.SelectMany(child => GetNodeWithDescendants(child));
-
-			foreach (var descendant in descendants)
+			foreach (var root in AllRootItems)
 			{
-				yield return descendant;
+				root.RefreshVisibilityForNodeAndSubTreeFromFilter(filterOptions);
 			}
+
+			if (filterOptions == null || !filterOptions.HasFilter)
+			{
+				_mutableDisplayedRoots.Reset(AllRootItems);
+				_mutableAllDisplayedItems.Reset(AllItems);
+			}
+			else
+			{
+				RefreshDisplayedRoots();
+				RefreshAllDisplayedItems();
+			}
+
+			if (SelectedItem != null && !SelectedItem.IsVisible)
+				SelectedItem = null;
+		}
+
+		public void RefreshDisplayedRoots() => RefreshDisplayedCollection(_mutableDisplayedRoots, AllRootItems);
+
+		public void RefreshAllDisplayedItems() => RefreshDisplayedCollection(_mutableAllDisplayedItems, AllItems);
+
+		public void SubscribeOnDisplayedRootsCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
+		{
+			if (collectionChangedEventHandler != null)
+				_mutableDisplayedRoots.CollectionChanged += collectionChangedEventHandler;
+		}
+
+		public void SubscribeOnAllDisplayedItemsCollectionChanged(NotifyCollectionChangedEventHandler collectionChangedEventHandler)
+		{
+			if (collectionChangedEventHandler != null)
+				_mutableAllDisplayedItems.CollectionChanged += collectionChangedEventHandler;
+		}
+
+		private void AllRootItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => RefreshDisplayedRoots();
+
+		private void AllItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => RefreshAllDisplayedItems();
+
+		private static void RefreshDisplayedCollection(ExtendedObservableCollection<TreeNodeViewModel> displayedCollection,
+													   ExtendedObservableCollection<TreeNodeViewModel> allItemsCollection)
+		{
+			var visibleNodes = allItemsCollection.Where(node => node.IsVisible);
+			displayedCollection.Reset(visibleNodes);
 		}
 	}
 }

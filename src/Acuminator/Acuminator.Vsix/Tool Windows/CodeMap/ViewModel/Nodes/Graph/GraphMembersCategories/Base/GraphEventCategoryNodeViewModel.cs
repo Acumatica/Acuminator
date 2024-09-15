@@ -30,20 +30,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override bool AllowNavigation => false;
 
 		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) :
-										     base(graphViewModel, graphMemberType, isExpanded)
+											 base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
-			Children.CollectionChanged += Children_CollectionChanged;
+			SubscribeOnDisplayedChildrenCollectionChanged(DisplayedChildren_CollectionChanged);
 		}
 
-		private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		private void DisplayedChildren_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Remove || 
 				e.Action == NotifyCollectionChangedAction.Reset)
 			{
-				int eventsCount = Children.OfType<DacGroupingNodeBaseViewModel>().Sum(dacVM => dacVM.EventsCount);
+				int eventsCount = DisplayedChildren.OfType<DacGroupingNodeBaseViewModel>().Sum(dacVM => dacVM.EventsCount);
 
-				if (Children.Count <= 0)
+				if (DisplayedChildren.Count <= 0)
 					return;
 
 				Name = $"{CategoryDescription}({eventsCount})";

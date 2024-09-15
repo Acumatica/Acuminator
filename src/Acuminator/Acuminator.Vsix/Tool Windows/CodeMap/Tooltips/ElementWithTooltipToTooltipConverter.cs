@@ -18,15 +18,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	[ValueConversion(sourceType: typeof(IElementWithTooltip), targetType: typeof(string))]
 	public class ElementWithTooltipToTooltipConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (value is not IElementWithTooltip elementWithTooltip)
-				return Binding.DoNothing;
+				return null;
 
 			TooltipInfo? tooltipInfo = elementWithTooltip.CalculateTooltip();
 
 			if (tooltipInfo == null)
-				return Binding.DoNothing;
+				return null;
 
 			if (tooltipInfo.TrimExcess)
 				return tooltipInfo.Tooltip.TrimExcess(tooltipInfo.MaxLength, tooltipInfo.OverflowSuffix);		

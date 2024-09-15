@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.Utilities.Navigation;
 
 using Microsoft.CodeAnalysis;
@@ -15,6 +16,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class DacMemberNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public DacMemberCategoryNodeViewModel MemberCategory { get; }
 
 		public SymbolItem MemberInfo { get; }
@@ -31,10 +34,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override bool DisplayNodeWithoutChildren => true;
-
 		public DacMemberNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
-									  SymbolItem memberInfo, bool isExpanded = false) :
+									  SymbolItem memberInfo, bool isExpanded) :
 								 base(dacMemberCategoryVM?.Tree!, parent, isExpanded)
 		{
 			MemberInfo = memberInfo.CheckIfNull();

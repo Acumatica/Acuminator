@@ -14,7 +14,7 @@ public class IGraphWithInitializationSymbols : SymbolsSetForTypeBase
 
 	internal IGraphWithInitializationSymbols(Compilation compilation) : base(compilation, TypeFullNames.IGraphWithInitialization)
 	{
-		Initialize = Type.GetMethods(DelegateNames.Initialize)
-						 .FirstOrDefault(m => m.IsValidInitializeMethod());
+		Initialize = Type?.GetMethods(DelegateNames.Initialize)
+						  .FirstOrDefault(m => m.IsValidInitializeMethod());
 	}
 }

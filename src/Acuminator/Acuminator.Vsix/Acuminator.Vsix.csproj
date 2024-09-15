@@ -277,6 +277,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="AcuminatorIcons.imagemanifest">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\codemap.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -484,9 +489,16 @@
     <Compile Include="Tool Windows\CodeMap\Model\Infos\BaseMemberOverrideInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Infos\InstanceConstructorInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\UI\CodeMapSearchBox.xaml.cs">
+      <DependentUpon>CodeMapSearchBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.FilterHelper.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterOptions.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\TreeNodeFilterBehavior.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterEventArgs.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Base\AttributesGroupNodeViewModelGeneric.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\Groups\Graph\GraphAttributesGroupNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\LeafNodes\Base\AttributeNodeViewModelGeneric.cs" />
@@ -509,7 +521,11 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\GraphBaseMembeOverrideNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveForGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterViewModel.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
+    <Compile Include="Tool Windows\Converters\MultipleBoolsToSingleBoolConverter.cs" />
+    <Compile Include="Tool Windows\Converters\CollectionIsNonEmptyToBoolConverter.cs" />
+    <Compile Include="Tool Windows\Converters\StringIsNonEmptyToBoolConverter.cs" />
     <Compile Include="Utils\Polyfills\NotNullIfNotNullAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullWhenAttribute.cs" />
     <Compile Include="Utils\Polyfills\MemberNotNullAttribute.cs" />
@@ -563,7 +579,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacKeysCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\AllDacFieldsDacCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\Base\DacMemberCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacFieldGroupingNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacFieldNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\Base\DacMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeForFieldEventViewModel.cs" />
@@ -674,6 +690,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Tool Windows\CodeMap\UI\CodeMapSearchBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
     <Page Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -6,16 +6,17 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class DacMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfChildrenMeetFilter;
+
 		public DacNodeViewModel DacViewModel { get; }
 
 		public DacSemanticModel DacModel => DacViewModel.DacModel;
-
-		public override bool DisplayNodeWithoutChildren => false;
 
 		public DacMemberCategory CategoryType { get; }
 
@@ -23,7 +24,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => $"{CategoryDescription}({Children.Count})";
+			get => $"{CategoryDescription}({DisplayedChildren.Count})";
 			protected set { }
 		}
 
@@ -39,7 +40,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, DacMemberCategory dacCategoryType, bool isExpanded) : 
 										    base(dacViewModel?.Tree!, dacViewModel, isExpanded)

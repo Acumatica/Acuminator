@@ -101,8 +101,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(15, 44),
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(19, 37),
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(22, 10),
-				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(26, 10),
-				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(28, 34));
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(27, 10),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(29, 38));
 
 		[Theory]
 		[EmbeddedFileData("DerivedDacWithInconsistentTypes.cs", "DerivedDacWithInconsistentTypes_Expected.cs")]

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
@@ -22,6 +23,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected const string AttributeSuffix = nameof(System.Attribute);
 
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public bool IsInSource => AttributeInfo.IsInSource;
 
 		public bool IsInMetadata => AttributeInfo.IsInMetadata;
@@ -34,8 +37,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public override bool DisplayNodeWithoutChildren => true;
-
 		public override Icon NodeIcon => Icon.Attribute;
 
 		public override bool IconDependsOnCurrentTheme => true;
@@ -44,7 +45,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public AttributePlacement Placement => AttributeInfo.Placement;
 
-		protected AttributeNodeViewModel(TreeNodeViewModel parent, AttributeInfoBase attributeInfo, bool isExpanded = false) :
+		protected AttributeNodeViewModel(TreeNodeViewModel parent, AttributeInfoBase attributeInfo, bool isExpanded) :
 									base(parent?.Tree!, parent, isExpanded)
 		{
 			AttributeInfo = attributeInfo.CheckIfNull();

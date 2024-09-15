@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -26,28 +28,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			private set;
 		} = CancellationToken.None;
 
-		protected TreeBuilderBase() : base(Enumerable.Empty<TreeNodeViewModel>())
+		protected TreeBuilderBase() : base([])
 		{
 		}
 
 		public virtual TreeViewModel CreateEmptyCodeMapTree(CodeMapWindowViewModel windowViewModel) => new TreeViewModel(windowViewModel);
 
-		public TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren, CancellationToken cancellation)
+		public TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, FilterOptions? filterOptions, bool expandRoots, 
+											   bool expandChildren, CancellationToken cancellation)
 		{
 			windowViewModel.ThrowOnNull();
+			filterOptions ??= FilterOptions.NoFilter;
 
 			try
 			{
-				Cancellation = cancellation;
-				return BuildCodeMapTree(windowViewModel, expandRoots, expandChildren);
+				Cancellation  = cancellation;
+				return BuildCodeMapTree(windowViewModel, filterOptions, expandRoots, expandChildren);
 			}
 			finally
 			{
-				Cancellation = CancellationToken.None;
+				Cancellation  = CancellationToken.None;
 			}		
 		}
 
-		protected TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren)
+		protected TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, FilterOptions filterOptions, bool expandRoots,
+												  bool expandChildren)
 		{
 			Cancellation.ThrowIfCancellationRequested();
 
@@ -62,7 +67,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			try
 			{
 				ExpandCreatedNodes = expandRoots;
-				roots = CreateRoots(codeMapTree).Where(root => root != null).ToList();
+				roots = CreateRoots(codeMapTree).Where(root => root != null).ToList(capacity: 4);
 			}
 			finally
 			{
@@ -88,9 +93,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				ExpandCreatedNodes = false;
 			}
 
-			var rootsToAdd = roots.Where(root => root.Children.Count > 0 || root.DisplayNodeWithoutChildren);
+			var rootsToAdd = roots.Where(root => root.AllChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(root));
 
-			codeMapTree.FillCodeMapTree(rootsToAdd);
+			codeMapTree.FillCodeMapTree(rootsToAdd, filterOptions);
 			return codeMapTree;
 		}
 
@@ -105,9 +110,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				TreeNodeViewModel? rootVM = CreateRoot(rootSemanticModel, tree);
 
 				if (rootVM != null)
-				{
 					yield return rootVM;
-				}
 			}
 		}
 
@@ -127,9 +130,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					BuildSubTree(child);
 			}
 
-			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
+			var childrenToAdd = children.Where(c => c != null && (c.AllChildren.Count > 0 || ShouldAddNodeWithoutChildrenToTree(c)));
 
-			subtreeRoot.Children.Reset(childrenToAdd);
+			subtreeRoot.AllChildren.Reset(childrenToAdd);
 		}
+
+		protected virtual bool ShouldAddNodeWithoutChildrenToTree(TreeNodeViewModel node) => node switch
+		{
+			AttributesGroupNodeViewModel 	  => false,
+			AttributeNodeViewModel 			  => true,
+			GraphMemberCategoryNodeViewModel  => false,
+			DacMemberCategoryNodeViewModel 	  => false,
+			DacMemberNodeViewModel 			  => true,
+			GraphMemberNodeViewModel 		  => true,
+			GraphMemberInfoNodeViewModel 	  => true,
+			DacGroupingNodeBaseViewModel 	  => false,
+			DacFieldGroupingNodeBaseViewModel => false,
+			DacFieldNodeViewModel 			  => false,
+			GraphNodeViewModel 				  => true,
+			DacNodeViewModel 				  => true,
+			_ 								  => throw new NotImplementedException($"Nodes of type \"{node.GetType().Name}\" are not supported")
+		};
 	}
 }

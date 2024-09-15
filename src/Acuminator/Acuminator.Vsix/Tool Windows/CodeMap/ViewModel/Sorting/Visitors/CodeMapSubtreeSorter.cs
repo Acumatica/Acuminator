@@ -21,6 +21,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
+		protected override bool VisitOnlyDisplayedNodes => false;
+
 		public CodeMapSubtreeSorter(NodesSorter? nodesSorter = null)
 		{
 			NodesSorter = nodesSorter ?? new NodesSorter();
@@ -56,15 +58,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			SetTreeNodeSortProperties(node);
 
-			if (node.Children.Count == 0)
+			if (node.DisplayedChildren.Count == 0)
 				return;
-			else if (node.Children.Count > 1)  //Optimization for single element collections - do not sort and reset them
+			else if (node.DisplayedChildren.Count > 1)  //Optimization for single element collections - do not sort and reset them
 			{
-				var sorted = NodesSorter.SortNodes(node.Children, SortContext.SortType, SortContext.SortDirection)
-								?.ToList(capacity: node.Children.Count)
+				var sorted = NodesSorter.SortNodes(node.DisplayedChildren, SortContext.SortType, SortContext.SortDirection)
+								?.ToList(capacity: node.DisplayedChildren.Count)
 								?? Enumerable.Empty<TreeNodeViewModel>();
 
-				node.Children.Reset(sorted);
+				node.AllChildren.Reset(sorted);
 			}
 
 			if (SortContext.SortDescendants)
