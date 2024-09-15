@@ -15,46 +15,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 /// <summary>
 /// Information about the Configure special method in graph extensions.
 /// </summary>
-public class ConfigureMethodInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>, IWriteableBaseItem<ConfigureMethodInfo>
+public class ConfigureMethodInfo : OverridableNodeSymbolItem<ConfigureMethodInfo, MethodDeclarationSyntax, IMethodSymbol>
 {
 	/// <summary>
 	/// The Configure method declaration order to place it fourth after the Initialize method.
 	/// </summary>
 	internal const int ConfigureDeclarationOrderToPlaceItFourth = InitializeMethodInfo.InitializeMethodDeclarationOrderToPlaceItThird + 1;
 
-	protected ConfigureMethodInfo? _baseInfo;
-
-	/// <summary>
-	/// The overriden Configure method if any.
-	/// </summary>
-	public ConfigureMethodInfo? Base => _baseInfo;
-
-	ConfigureMethodInfo? IWriteableBaseItem<ConfigureMethodInfo>.Base
-	{
-		get => Base;
-		set 
-		{
-			_baseInfo = value;
-
-			if (value != null)
-				CombineWithBaseInfo(value);
-		}
-	}
-
 	public ConfigureMethodInfo(MethodDeclarationSyntax? configureMethodNode, IMethodSymbol configureMethod, int declarationOrder, 
 							   ConfigureMethodInfo baseInfo) : 
-						  this(configureMethodNode, configureMethod, declarationOrder)
+						  base(configureMethodNode, configureMethod, declarationOrder, baseInfo)
 	{
-		_baseInfo = baseInfo.CheckIfNull();
-		CombineWithBaseInfo(_baseInfo);
 	}
 
 	public ConfigureMethodInfo(MethodDeclarationSyntax? configureMethodNode, IMethodSymbol configureMethod, int declarationOrder) : 
 						  base(configureMethodNode, configureMethod, declarationOrder)
-	{
-	}
-
-	public void CombineWithBaseInfo(ConfigureMethodInfo baseInfo)
 	{
 	}
 

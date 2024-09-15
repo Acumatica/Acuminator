@@ -15,46 +15,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 /// <summary>
 /// Information about the Initialize special method in graph extensions.
 /// </summary>
-public class InitializeMethodInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>, IWriteableBaseItem<InitializeMethodInfo>
+public class InitializeMethodInfo : OverridableNodeSymbolItem<InitializeMethodInfo, MethodDeclarationSyntax, IMethodSymbol>
 {
 	/// <summary>
 	/// The Initialize method declaration order to place it third after IsActiveForGraph method.
 	/// </summary>
 	internal const int InitializeMethodDeclarationOrderToPlaceItThird = IsActiveForGraphMethodInfo.IsActiveForGraphDeclarationOrderToPlaceItSecond + 1;
 
-	protected InitializeMethodInfo? _baseInfo;
-
-	/// <summary>
-	/// The overriden Initialize method if any.
-	/// </summary>
-	public InitializeMethodInfo? Base => _baseInfo;
-
-	InitializeMethodInfo? IWriteableBaseItem<InitializeMethodInfo>.Base
-	{
-		get => Base;
-		set 
-		{
-			_baseInfo = value;
-
-			if (value != null)
-				CombineWithBaseInfo(value);
-		}
-	}
-
 	public InitializeMethodInfo(MethodDeclarationSyntax? initializeMethodNode, IMethodSymbol initializeMethod, int declarationOrder,
 							    InitializeMethodInfo baseInfo) :
-						  this(initializeMethodNode, initializeMethod, declarationOrder)
+						  base(initializeMethodNode, initializeMethod, declarationOrder, baseInfo)
 	{
-		_baseInfo = baseInfo.CheckIfNull();
-		CombineWithBaseInfo(_baseInfo);
 	}
 
 	public InitializeMethodInfo(MethodDeclarationSyntax? initializeMethodNode, IMethodSymbol initializeMethod, int declarationOrder) :
 						  base(initializeMethodNode, initializeMethod, declarationOrder)
-	{
-	}
-
-	public void CombineWithBaseInfo(InitializeMethodInfo baseInfo)
 	{
 	}
 
