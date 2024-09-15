@@ -119,7 +119,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 			else
 			{
-				DacSymbol = Symbol.GetDacFromDacExtension(PXContext);
+				DacSymbol = symbol.GetDacFromDacExtension(PXContext);
 				DacOrDacExtInfo = DacExtensionInfo.Create(symbol, node, DacSymbol, PXContext, declarationOrder, cancellation).CheckIfNull();
 			}
 
