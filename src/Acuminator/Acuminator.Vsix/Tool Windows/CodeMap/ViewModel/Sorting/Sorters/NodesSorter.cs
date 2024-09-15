@@ -104,6 +104,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				DacGroupingNodeBaseViewModel or DacFieldGroupingNodeBaseViewModel => sortType == SortType.Alphabet,
 
+				BaseDacNodeViewModel		  => false,
 				DacFieldPropertyNodeViewModel => false,
 				DacBqlFieldNodeViewModel	  => false,
 
