@@ -7,6 +7,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -26,8 +27,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return rootSemanticModel switch
 			{
 				GraphSemanticModelForCodeMap graphSemanticModel => CreateGraphNode(graphSemanticModel, tree),
-				DacSemanticModel dacSemanticModel               => CreateDacNode(dacSemanticModel, tree),
-				_                                               => null,
+				DacSemanticModelForCodeMap dacSemanticModel 	=> CreateDacNode(dacSemanticModel, tree),
+				_ 												=> null,
 			};
 		}
 

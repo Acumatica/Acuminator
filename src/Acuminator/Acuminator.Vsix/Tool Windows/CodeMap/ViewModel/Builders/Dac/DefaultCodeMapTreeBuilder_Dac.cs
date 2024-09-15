@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public partial class DefaultCodeMapTreeBuilder : TreeBuilderBase
 	{
-		protected virtual DacNodeViewModel CreateDacNode(DacSemanticModel dacSemanticModel, TreeViewModel tree) =>
+		protected virtual DacNodeViewModel CreateDacNode(DacSemanticModelForCodeMap dacSemanticModel, TreeViewModel tree) =>
 			new DacNodeViewModel(dacSemanticModel, tree, ExpandCreatedNodes);
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacNodeViewModel dac)
@@ -36,10 +36,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		protected virtual DacAttributesGroupNodeViewModel GetDacAttributesGroupNode(DacNodeViewModel dac) =>
-			new DacAttributesGroupNodeViewModel(dac.DacModel, dac, ExpandCreatedNodes);
+			new DacAttributesGroupNodeViewModel(dac.DacModelForCodeMap.DacModel, dac, ExpandCreatedNodes);
 
 		protected virtual IEnumerable<DacMemberCategory> GetDacMemberCategoriesInOrder()
 		{
+			yield return DacMemberCategory.BaseTypes;
 			yield return DacMemberCategory.InitializationAndActivation;
 			yield return DacMemberCategory.Keys;
 			yield return DacMemberCategory.Property;
@@ -49,6 +50,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual DacMemberCategoryNodeViewModel? CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory) =>
 			dacMemberCategory switch
 			{
+				DacMemberCategory.BaseTypes					  => new DacBaseTypesCategoryNodeViewModel(dac, dac, ExpandCreatedNodes),
 				DacMemberCategory.InitializationAndActivation => new DacInitializationAndActivationCategoryNodeViewModel(dac, dac, ExpandCreatedNodes),
 				DacMemberCategory.Keys 						  => new KeyDacFieldsCategoryNodeViewModel(dac, dac, ExpandCreatedNodes),
 				DacMemberCategory.Property 					  => new AllDacFieldsDacCategoryNodeViewModel(dac, dac, ExpandCreatedNodes),

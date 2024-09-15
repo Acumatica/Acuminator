@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ChangesClassification;
 
 using Microsoft.CodeAnalysis;
@@ -110,7 +111,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			for (int i = 0; i < _codeMapViewModel.DocumentModel.CodeMapSemanticModels.Count; i++)
 			{
-				if (_codeMapViewModel.DocumentModel.CodeMapSemanticModels[i] is not DacSemanticModel dacSemanticModel)
+				DacSemanticModel? dacSemanticModel = _codeMapViewModel.DocumentModel.CodeMapSemanticModels[i] switch
+				{
+					DacSemanticModelForCodeMap dacModelForCodeMap => dacModelForCodeMap.DacModel,
+					DacSemanticModel dacModel					  => dacModel,
+					_ 											  => null
+				};
+
+				if (dacSemanticModel == null)
 					continue;
 				else if (IsPropertyFromDAC(changedProperty, dacSemanticModel))
 					return ChangeInfluenceScope.Class;

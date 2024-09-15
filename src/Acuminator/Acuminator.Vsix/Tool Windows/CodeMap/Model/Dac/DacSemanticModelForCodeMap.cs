@@ -2,16 +2,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
-using Microsoft.CodeAnalysis;
-
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap.Dac
@@ -27,6 +28,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap.Dac
 		public INamedTypeSymbol Symbol => DacModel.Symbol;
 
 		public PXContext PXContext => DacModel.PXContext;
+
+		public string Name => DacModel.Name;
+
+		public DacType DacType => DacModel.DacType;
+
+		public bool IsProjectionDac => DacModel.IsProjectionDac;
+
+		public ImmutableArray<DacAttributeInfo> Attributes => DacModel.Attributes;
 
 		private DacSemanticModelForCodeMap(DacSemanticModel dacSemanticModel, DacInfo? baseDacInfo, DacExtensionInfo? baseExtensionInfo)
 		{

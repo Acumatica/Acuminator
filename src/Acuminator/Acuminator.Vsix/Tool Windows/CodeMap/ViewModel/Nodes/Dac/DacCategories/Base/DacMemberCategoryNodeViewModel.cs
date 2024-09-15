@@ -17,7 +17,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DacNodeViewModel DacViewModel { get; }
 
-		public DacSemanticModel DacModel => DacViewModel.DacModel;
+		public DacSemanticModelForCodeMap DacModelForCodeMap => DacViewModel.DacModelForCodeMap;
+
+		public DacSemanticModel DacModel => DacModelForCodeMap.DacModel;
 
 		public DacMemberCategory CategoryType { get; }
 

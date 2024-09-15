@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
@@ -20,43 +21,43 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
 
-		public DacSemanticModel DacModel { get; }
+		public DacSemanticModelForCodeMap DacModelForCodeMap { get; }
 
 		public override string Name
 		{
-			get => DacModel.Name;
+			get => DacModelForCodeMap.Name;
 			protected set { }
 		}
 
-		public override Icon NodeIcon => DacModel.DacType == DacType.Dac
+		public override Icon NodeIcon => DacModelForCodeMap.DacType == DacType.Dac
 			? Icon.Dac
 			: Icon.DacExtension;
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
-		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : 
+		public DacNodeViewModel(DacSemanticModelForCodeMap dacModel, TreeViewModel tree, bool isExpanded) : 
 						   base(tree, parent: null, isExpanded)
 		{
-			DacModel = dacModel.CheckIfNull();
-			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos());
+			DacModelForCodeMap = dacModel.CheckIfNull();
+			ExtraInfos		   = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos());
 		}
 
 		private IEnumerable<ExtraInfoViewModel> GetDacExtraInfos()
 		{
-			if (DacModel.IsProjectionDac)
+			if (DacModelForCodeMap.IsProjectionDac)
 			{
 				yield return new IconViewModel(this, Icon.ProjectionDac);
 			}
 
 			Color color = Color.FromRgb(38, 155, 199);
 
-			string dacType = DacModel.DacType == DacType.Dac
+			string dacType = DacModelForCodeMap.DacType == DacType.Dac
 				? VSIXResource.CodeMap_ExtraInfo_IsDac
 				: VSIXResource.CodeMap_ExtraInfo_IsDacExtension;
 
 			yield return new TextViewModel(this, dacType, darkThemeForeground: color, lightThemeForeground: color);
 
-			var pxCacheNameAttributeInfo = DacModel.Attributes.FirstOrDefault(attrInfo => attrInfo.IsPXCacheName);
+			var pxCacheNameAttributeInfo = DacModelForCodeMap.Attributes.FirstOrDefault(attrInfo => attrInfo.IsPXCacheName);
 			string? dacFriendlyName = pxCacheNameAttributeInfo?.AttributeData.GetNameFromPXCacheNameAttribute()
 																			 .NullIfWhiteSpace();
 			if (dacFriendlyName != null)
@@ -66,7 +67,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override Task NavigateToItemAsync() => DacModel.Symbol.NavigateToAsync();
+		public override Task NavigateToItemAsync() => DacModelForCodeMap.Symbol.NavigateToAsync();
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
