@@ -86,8 +86,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return false;
 			}
 
-			dacSemanticModel = DacSemanticModelForCodeMap.Create(regularDacSemanticModel, cancellationToken);
-			return dacSemanticModel != null;
+			dacSemanticModel = new DacSemanticModelForCodeMap(regularDacSemanticModel);
+			return true;
 		}
 	}
 }
