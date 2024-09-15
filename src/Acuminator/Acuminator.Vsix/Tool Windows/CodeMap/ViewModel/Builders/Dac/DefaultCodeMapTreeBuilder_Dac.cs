@@ -61,6 +61,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			attributeGroupNode.AttributeInfos()
 							  .Select(attrInfo => new DacAttributeNodeViewModel(attributeGroupNode, attrInfo, ExpandCreatedNodes));
 
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacBaseTypesCategoryNodeViewModel dacBaseTypesCategory)
+		{
+			Cancellation.ThrowIfCancellationRequested();
+
+			if (dacBaseTypesCategory.BaseDacInfo != null)
+			{
+				yield return new BaseDacNodeViewModel(dacBaseTypesCategory.BaseDacInfo, dacBaseTypesCategory.DacViewModel,
+													  dacBaseTypesCategory, ExpandCreatedNodes);
+			}
+
+			if (dacBaseTypesCategory.BaseDacExtensionInfo != null)
+			{
+				yield return new BaseDacNodeViewModel(dacBaseTypesCategory.BaseDacExtensionInfo, dacBaseTypesCategory.DacViewModel, 
+													  dacBaseTypesCategory, ExpandCreatedNodes);
+			}
+		}
+
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory)
 		{
 			Cancellation.ThrowIfCancellationRequested();
