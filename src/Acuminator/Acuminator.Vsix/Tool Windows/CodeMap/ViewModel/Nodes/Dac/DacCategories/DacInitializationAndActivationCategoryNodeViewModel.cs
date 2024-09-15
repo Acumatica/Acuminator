@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacInitializationAndActivationCategoryNodeViewModel : DacMemberCategoryNodeViewModel
