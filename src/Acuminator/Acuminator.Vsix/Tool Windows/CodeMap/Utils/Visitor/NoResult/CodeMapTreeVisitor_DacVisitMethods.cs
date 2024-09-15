@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#region Roots
 		public virtual void VisitNode(DacNodeViewModel dac) => DefaultVisit(dac);
 
-		public virtual void VisitNode(BaseDacNodeViewModel baseDac) => DefaultVisit(baseDac);
+		public virtual void VisitNode(BaseDacPlaceholderNodeViewModel baseDac) => DefaultVisit(baseDac);
 		#endregion
 
 		#region Categories

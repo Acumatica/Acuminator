@@ -68,13 +68,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (dacBaseTypesCategory.BaseDacInfo != null)
 			{
-				yield return new BaseDacNodeViewModel(dacBaseTypesCategory.BaseDacInfo, dacBaseTypesCategory.DacViewModel,
+				yield return new BaseDacPlaceholderNodeViewModel(dacBaseTypesCategory.BaseDacInfo, dacBaseTypesCategory.DacViewModel,
 													  dacBaseTypesCategory, ExpandCreatedNodes);
 			}
 
 			if (dacBaseTypesCategory.BaseDacExtensionInfo != null)
 			{
-				yield return new BaseDacNodeViewModel(dacBaseTypesCategory.BaseDacExtensionInfo, dacBaseTypesCategory.DacViewModel, 
+				yield return new BaseDacPlaceholderNodeViewModel(dacBaseTypesCategory.BaseDacExtensionInfo, dacBaseTypesCategory.DacViewModel, 
 													  dacBaseTypesCategory, ExpandCreatedNodes);
 			}
 		}
