@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -117,14 +118,86 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			foreach (ISemanticModel rootSemanticModel in semanticModels)
 			{
 				Cancellation.ThrowIfCancellationRequested();
-				TreeNodeViewModel? rootVM = CreateRoot(rootSemanticModel, tree);
+				TreeNodeViewModel? rootVM = CreateRoot(rootSemanticModel, parent: null, tree);
 
 				if (rootVM != null)
 					yield return rootVM;
 			}
 		}
 
-		protected abstract TreeNodeViewModel? CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree);
+		/// <summary>
+		/// Creates root node with a built subtree of descendants attached to a <paramref name="rootParent"/> node of existing tree.<br/>
+		/// The root won't be added to <paramref name="tree"/> roots.
+		/// </summary>
+		/// <param name="rootSemanticModel">The root semantic model.</param>
+		/// <param name="tree">The custom tree, reference to which will be set in all nodes.</param>
+		/// <param name="rootParent">(Optional) The root parent.</param>
+		/// <param name="filterOptions">(Optional)Options for controlling the filter.</param>
+		/// <param name="expandRoots">True to expand roots.</param>
+		/// <param name="expandChildren">True to expand children.</param>
+		/// <param name="cancellation">Cancellation token.</param>
+		/// <returns>
+		/// New separate root with built sub-tree.
+		/// </returns>
+		public TreeNodeViewModel? CreateAttachedRootWithSubTree(ISemanticModel rootSemanticModel, TreeViewModel tree, TreeNodeViewModel? rootParent,
+																FilterOptions? filterOptions, bool expandRoots, bool expandChildren,
+																CancellationToken cancellation)
+		{
+			rootSemanticModel.ThrowOnNull();
+			tree.ThrowOnNull();
+
+			filterOptions ??= FilterOptions.NoFilter;
+
+			try
+			{
+				Cancellation = cancellation;
+				var root = CreateStandAloneRootWithSubTree(rootSemanticModel, tree, rootParent, filterOptions, expandRoots, expandChildren);
+
+				return root;
+			}
+			finally
+			{
+				Cancellation = CancellationToken.None;
+			}
+		}
+
+		private TreeNodeViewModel? CreateStandAloneRootWithSubTree(ISemanticModel rootSemanticModel, TreeViewModel tree, TreeNodeViewModel? parent,
+																   FilterOptions filterOptions, bool expandRoots, bool expandChildren)
+		{
+			TreeNodeViewModel? rootNode;
+
+			try
+			{	
+				ExpandCreatedNodes = expandRoots;
+				rootNode = CreateRoot(rootSemanticModel, parent, tree);
+			}
+			finally
+			{
+				ExpandCreatedNodes = false;
+			}
+
+			if (rootNode == null)
+				return null;
+
+			try
+			{
+				ExpandCreatedNodes = expandChildren;
+
+				BuildSubTree(rootNode);
+			}
+			finally
+			{
+				ExpandCreatedNodes = false;
+			}
+
+			if (rootNode.AllChildren.Count == 0 && !ShouldAddNodeWithoutChildrenToTree(rootNode))
+				return null;
+
+			rootNode.RefreshVisibilityForNodeAndSubTreeFromFilter(filterOptions);
+			return rootNode;
+		}
+
+		protected abstract TreeNodeViewModel? CreateRoot(ISemanticModel rootSemanticModel, TreeNodeViewModel? parent, TreeViewModel tree);
 
 		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot)
 		{

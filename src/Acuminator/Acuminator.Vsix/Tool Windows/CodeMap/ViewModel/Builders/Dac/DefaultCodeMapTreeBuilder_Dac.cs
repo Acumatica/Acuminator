@@ -13,8 +13,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public partial class DefaultCodeMapTreeBuilder : TreeBuilderBase
 	{
-		protected virtual DacNodeViewModel CreateDacNode(DacSemanticModelForCodeMap dacSemanticModel, TreeViewModel tree) =>
-			new DacNodeViewModel(dacSemanticModel, tree, ExpandCreatedNodes);
+		protected virtual DacNodeViewModel CreateDacNode(DacSemanticModelForCodeMap dacSemanticModel, TreeNodeViewModel? parent, 
+														 TreeViewModel tree) =>
+			new DacNodeViewModel(dacSemanticModel, tree, parent, ExpandCreatedNodes);
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(DacNodeViewModel dac)
 		{

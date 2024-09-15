@@ -22,12 +22,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								new CodeMapTreeInitialSorter(defaultSortType: SortType.Declaration, defaultSortDirection: SortDirection.Ascending);
 		}
 
-		protected override TreeNodeViewModel? CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree)
+		protected override TreeNodeViewModel? CreateRoot(ISemanticModel rootSemanticModel, TreeNodeViewModel? rootParent, TreeViewModel tree)
 		{
 			return rootSemanticModel switch
 			{
 				GraphSemanticModelForCodeMap graphSemanticModel => CreateGraphNode(graphSemanticModel, tree),
-				DacSemanticModelForCodeMap dacSemanticModel 	=> CreateDacNode(dacSemanticModel, tree),
+				DacSemanticModelForCodeMap dacSemanticModel 	=> CreateDacNode(dacSemanticModel, rootParent, tree),
 				_ 												=> null,
 			};
 		}
