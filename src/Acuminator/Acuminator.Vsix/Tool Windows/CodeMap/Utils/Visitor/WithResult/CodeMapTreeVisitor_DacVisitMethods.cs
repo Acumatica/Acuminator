@@ -21,6 +21,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory) =>
 			DefaultVisit(dacInitializationAndActivationCategory);
+
+		public virtual TResult VisitNode(DacBaseTypesCategoryNodeViewModel dacBaseTypesCategory) => DefaultVisit(dacBaseTypesCategory);
 		#endregion
 
 		#region Leaf Nodes

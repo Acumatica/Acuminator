@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -22,6 +20,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual void VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory) =>
 			DefaultVisit(dacInitializationAndActivationCategory);
+
+		public virtual void VisitNode(DacBaseTypesCategoryNodeViewModel dacBaseTypesCategory) => DefaultVisit(dacBaseTypesCategory);
 		#endregion
 
 		#region Leaf Nodes
