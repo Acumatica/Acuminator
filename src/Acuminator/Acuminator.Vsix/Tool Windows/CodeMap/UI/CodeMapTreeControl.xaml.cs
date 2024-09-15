@@ -32,7 +32,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 			
-			treeNodeVM.IsSelected = true;
+			treeNodeVM.Tree.SelectedItem = treeNodeVM;
 
 			if (e.ClickCount >= 2)
 			{
@@ -57,7 +57,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			treeNodeViewModel.IsSelected = true;
+			treeNodeViewModel.Tree.SelectedItem = treeNodeViewModel;
 		}
 
 		private void NameTextBox_Initialized(object sender, EventArgs e)
