@@ -10,7 +10,7 @@ using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.ToolWindows.CodeMap.Graph
 {
 	public enum MemberOverrideKind : byte
 	{

@@ -486,8 +486,8 @@
     <Compile Include="Settings\ISettingsEvents.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\BaseMemberOverrideInfo.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\InstanceConstructorInfo.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\Infos\BaseMemberOverrideInfo.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\Infos\InstanceConstructorInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapSearchBox.xaml.cs">
       <DependentUpon>CodeMapSearchBox.xaml</DependentUpon>
@@ -563,8 +563,8 @@
     <Compile Include="Tool Windows\CodeMap\Tooltips\ElementWithTooltipToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberInfoType.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
