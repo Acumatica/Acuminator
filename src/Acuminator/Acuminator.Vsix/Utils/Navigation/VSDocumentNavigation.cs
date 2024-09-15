@@ -94,7 +94,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 			if (wpfTextView == null)
 			{
-				var (window, textDocument) = await OpenCodeFileNotInSolutionWithDTEAsync(serviceProvider, filePath);
+				var window = await OpenCodeFileNotInSolutionWithDTEAsync(serviceProvider, filePath);
 
 				if (window == null)
 					return default;
@@ -136,7 +136,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 			if (wpfTextView == null)
 			{
-				var (window, _) = await OpenCodeFileNotInSolutionWithDTEAsync(serviceProvider, filePath);
+				var window = await OpenCodeFileNotInSolutionWithDTEAsync(serviceProvider, filePath);
 
 				if (window == null)
 					return default;
@@ -220,34 +220,35 @@ namespace Acuminator.Vsix.Utilities.Navigation
 							.ForEach(region => outliningManager.Expand(region));
 		}
 
-		public static async Task<(EnvDTE.Window? Window, EnvDTE.TextDocument? TextDocument)> OpenCodeFileNotInSolutionWithDTEAsync(
-																									this IAsyncServiceProvider serviceProvider, 
-																									string? filePath)
+		public static async Task<EnvDTE.Window?> OpenCodeFileNotInSolutionWithDTEAsync(this IAsyncServiceProvider serviceProvider, string? filePath)
 		{
 			serviceProvider.ThrowOnNull();
 
 			if (!File.Exists(filePath) )
-				return default;
+				return null;
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			DTE? dte = await serviceProvider.GetServiceAsync<DTE>();
 
 			if (dte == null)
-				return default;
+				return null;
 
+			return TryFallBackNavigationWithDTE(filePath!, dte);
+		}
+
+		// Dynamic DTE parameter is used for the simultaneous support of VS 2019 and VS 2022.
+		// This will use late COM binding which will bind to the correct VS SDK COM type 
+		private static EnvDTE.Window? TryFallBackNavigationWithDTE(string filePath, dynamic dte)
+		{
 			try
 			{
 				//EnvDTE.Constants.vsViewKindCode, removed due to CS1752 error  Interop type 'EnvDTE.Constants' cannot be embedded
-				const string vsViewKindCode = "{7651A701-06E5-11D1-8EBD-00A0C90F26EA}";  
-				var window = dte.ItemOperations.OpenFile(filePath, vsViewKindCode);
-				var textDocument = window?.GetTextDocumentFromWindow();
+				const string vsViewKindCode = "{7651A701-06E5-11D1-8EBD-00A0C90F26EA}";
 
-				if (textDocument == null)
-					return default;
-
+				var window = dte.ItemOperations.OpenFile(filePath, vsViewKindCode);	
 				window!.Visible = true;
-				textDocument.StartPoint.TryToShow();
-				return (window, textDocument);
+
+				return window;
 			}
 			catch
 			{
