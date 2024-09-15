@@ -24,7 +24,7 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac.Sources
 	}
 
 	[PXHidden]
-	public class BaseDac : IBqlTable
+	public class BaseDac : PX.Objects.AP.APInvoice
 	{
 		#region CreatedByID
 		public abstract class createdByID : PX.Data.BQL.BqlGuid.Field<createdByID> { }
