@@ -18,18 +18,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	{
 		protected TInfo? _baseInfo;
 
-		/// <summary>
-		/// The overriden base info if any.
-		/// </summary>
 		public TInfo? Base => _baseInfo;
 
-		/// <summary>
-		/// The overriden base info if any.
-		/// </summary>
 		TInfo? IWriteableBaseItem<TInfo>.Base
 		{
 			get => Base;
-			set {
+			set 
+			{
 				_baseInfo = value;
 
 				if (value != null)
@@ -50,9 +45,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		void IWriteableBaseItem<TInfo>.CombineWithBaseInfo(TInfo baseInfo) => 
 			CombineWithBaseInfo(baseInfo);
 
-		/// <summary>
-		/// Combine this info with info from base types.
-		/// </summary>
+		/// <inheritdoc cref="IWriteableBaseItem{T}.CombineWithBaseInfo(T)"/>
 		protected virtual void CombineWithBaseInfo(TInfo baseInfo)
 		{
 
