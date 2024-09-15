@@ -114,7 +114,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			if (DacType == DacType.Dac)
 			{
-				DacOrDacExtInfo = new DacInfo(node, symbol, declarationOrder);
+				DacOrDacExtInfo = DacInfo.Create(symbol, node, pxContext, declarationOrder, cancellation).CheckIfNull();
 				DacSymbol = Symbol;
 			}
 			else
