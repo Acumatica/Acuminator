@@ -562,7 +562,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\ElementWithTooltipToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />

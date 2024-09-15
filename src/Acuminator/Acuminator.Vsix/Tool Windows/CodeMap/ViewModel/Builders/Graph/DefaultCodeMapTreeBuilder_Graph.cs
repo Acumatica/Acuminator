@@ -11,6 +11,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 
 using Microsoft.CodeAnalysis;
 

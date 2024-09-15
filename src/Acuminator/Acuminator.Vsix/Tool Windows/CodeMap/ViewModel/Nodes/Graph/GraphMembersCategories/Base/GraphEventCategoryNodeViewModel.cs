@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
+
 using NotifyCollectionChangedAction = System.Collections.Specialized.NotifyCollectionChangedAction;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
