@@ -9,26 +9,52 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
-using Microsoft.VisualStudio.Shell;
 
-using Document = Microsoft.CodeAnalysis.Document;
 using DTE = EnvDTE.DTE;
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Task = System.Threading.Tasks.Task;
+using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 namespace Acuminator.Vsix.Utilities.Navigation
 {
 	public static class VSDocumentNavigation
 	{
+		public static async Task<(IWpfTextView? WpfTextView, CaretPosition CaretPosition)> NavigateToAsync(this Location? location,
+																											bool selectSpan = true,
+																											CancellationToken cToken = default)
+		{
+			cToken.ThrowIfCancellationRequested();
+
+			location = location.NullIfLocationKindIsNone();
+
+			if (location?.SourceTree == null || location.SourceTree.FilePath == null)
+				return default;
+
+			string filePath = location.SourceTree.FilePath;
+			TextSpan textSpanToNavigate = location.SourceSpan;
+
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			cToken.ThrowIfCancellationRequested();
+
+			var workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+
+			if (workspace == null)
+				return default;
+
+			return await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace.CurrentSolution, filePath,
+																							 textSpanToNavigate, selectSpan);
+		}
+
 		public static Task<(IWpfTextView? WpfTextView, CaretPosition CaretPosition)> NavigateToAsync(this ISymbol symbol,
 																									bool selectSpan = true,
 																									CancellationToken cToken = default)
@@ -52,7 +78,11 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			var workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 			TextSpan textSpanToNavigate = await GetTextSpanToNavigateFromSymbolAsync(symbol, reference, cToken);
-			return await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace.CheckIfNull().CurrentSolution, filePath,
+
+			if (workspace == null)
+				return default;
+
+			return await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace.CurrentSolution, filePath,
 																							 textSpanToNavigate, selectSpan);
 		}
 
