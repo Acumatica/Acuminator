@@ -17,9 +17,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap.Dac
 	{
 		public DacSemanticModel DacModel { get; }
 
-		public DacInfo? BaseDacInfo { get; }
+		public DacInfo? DacInfo { get; }
 
-		public DacExtensionInfo? BaseDacExtensionInfo { get; }
+		public DacExtensionInfo? DacExtensionInfo { get; }
 		
 		public INamedTypeSymbol Symbol => DacModel.Symbol;
 
@@ -39,13 +39,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap.Dac
 
 			if (DacType == DacType.Dac)
 			{
-				BaseDacInfo = DacModel.DacOrDacExtInfo as DacInfo;
-				BaseDacExtensionInfo = null;
+				DacInfo = DacModel.DacOrDacExtInfo as DacInfo;
+				DacExtensionInfo = null;
 			}
 			else
 			{
-				BaseDacExtensionInfo = DacModel.DacOrDacExtInfo as DacExtensionInfo;
-				BaseDacInfo = BaseDacExtensionInfo?.Dac;
+				DacExtensionInfo = DacModel.DacOrDacExtInfo as DacExtensionInfo;
+				DacInfo = DacExtensionInfo?.Dac;
 			}
 		}
 	}

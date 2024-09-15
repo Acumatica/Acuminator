@@ -16,9 +16,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Icon NodeIcon => Icon.Category;
 
-		public DacInfo? BaseDacInfo => DacViewModel.DacModelForCodeMap.BaseDacInfo;
+		public DacInfo? BaseDacInfo => DacViewModel.DacModelForCodeMap.DacInfo?.Base;
 
-		public DacExtensionInfo? BaseDacExtensionInfo => DacViewModel.DacModelForCodeMap.BaseDacExtensionInfo;
+		public DacExtensionInfo? BaseDacExtensionInfo => DacViewModel.DacModelForCodeMap.DacExtensionInfo?.Base;
 
 		public DacBaseTypesCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, bool isExpanded) : 
 											base(dacViewModel, parent, DacMemberCategory.BaseTypes, isExpanded)

@@ -18,6 +18,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public DacSemanticModelForCodeMap DacModelForCodeMap { get; }
 
+		public DacSemanticModel DacModel => DacModelForCodeMap.DacModel;
+
 		public override string Name
 		{
 			get => DacModelForCodeMap.Name;
