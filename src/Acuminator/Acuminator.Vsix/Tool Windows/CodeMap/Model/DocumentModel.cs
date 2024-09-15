@@ -76,7 +76,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				foreach (var (candidateSymbol, candidateNode) in candidateSymbols)
 				{
-					if (semanticModelFactory.TryToInferSemanticModel(candidateSymbol, candidateNode, context, out ISemanticModel? codeMapSemanticModel, 
+					if (semanticModelFactory.TryToInferSemanticModel(candidateSymbol, context, out ISemanticModel? codeMapSemanticModel, 
 																	 declarationOrder, cancellationToken) &&
 						codeMapSemanticModel != null)
 					{
