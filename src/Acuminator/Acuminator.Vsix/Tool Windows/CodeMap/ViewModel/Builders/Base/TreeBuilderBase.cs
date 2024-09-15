@@ -34,31 +34,41 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TreeViewModel CreateEmptyCodeMapTree(CodeMapWindowViewModel windowViewModel) => new TreeViewModel(windowViewModel);
 
-		public TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, FilterOptions? filterOptions, bool expandRoots, 
-											   bool expandChildren, CancellationToken cancellation)
+		public TreeViewModel? BuildCodeMapTreeForCustomSemanticModel(CodeMapWindowViewModel windowViewModel, IReadOnlyCollection<ISemanticModel>? semanticModels, 
+																	 FilterOptions? filterOptions, bool expandRoots, bool expandChildren, 
+																	 CancellationToken cancellation) =>
+			BuildCodeMapTree(windowViewModel, semanticModels, filterOptions, expandRoots, expandChildren, cancellation);
+
+		public TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, FilterOptions? filterOptions, bool expandRoots,
+											   bool expandChildren, CancellationToken cancellation) =>
+			BuildCodeMapTree(windowViewModel, semanticModels: windowViewModel.DocumentModel?.CodeMapSemanticModels, 
+							 filterOptions, expandRoots, expandChildren, cancellation);
+
+		private TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, IReadOnlyCollection<ISemanticModel>? semanticModels,
+												FilterOptions? filterOptions, bool expandRoots, bool expandChildren, CancellationToken cancellation)
 		{
 			windowViewModel.ThrowOnNull();
 			filterOptions ??= FilterOptions.NoFilter;
 
 			try
 			{
-				Cancellation  = cancellation;
-				return BuildCodeMapTree(windowViewModel, filterOptions, expandRoots, expandChildren);
+				Cancellation = cancellation;
+				return BuildCodeMapTree(windowViewModel, semanticModels, filterOptions, expandRoots, expandChildren);
 			}
 			finally
 			{
-				Cancellation  = CancellationToken.None;
-			}		
+				Cancellation = CancellationToken.None;
+			}
 		}
 
-		protected TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, FilterOptions filterOptions, bool expandRoots,
-												  bool expandChildren)
+		protected TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, IReadOnlyCollection<ISemanticModel>? semanticModels, 
+												  FilterOptions filterOptions, bool expandRoots, bool expandChildren)
 		{
 			Cancellation.ThrowIfCancellationRequested();
-
+			
 			TreeViewModel codeMapTree = CreateEmptyCodeMapTree(windowViewModel);
 
-			if (codeMapTree == null)
+			if (codeMapTree == null || semanticModels.IsNullOrEmpty())
 				return null;
 
 			Cancellation.ThrowIfCancellationRequested();
@@ -67,7 +77,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			try
 			{
 				ExpandCreatedNodes = expandRoots;
-				roots = CreateRoots(codeMapTree).Where(root => root != null).ToList(capacity: 4);
+				roots = CreateRoots(codeMapTree, semanticModels).Where(root => root != null).ToList(capacity: 4);
 			}
 			finally
 			{
@@ -99,12 +109,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return codeMapTree;
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree)
+		protected virtual IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, IEnumerable<ISemanticModel> semanticModels)
 		{
 			if (tree.CodeMapViewModel.DocumentModel == null)
 				yield break;
 
-			foreach (ISemanticModel rootSemanticModel in tree.CodeMapViewModel.DocumentModel.CodeMapSemanticModels)
+			foreach (ISemanticModel rootSemanticModel in semanticModels)
 			{
 				Cancellation.ThrowIfCancellationRequested();
 				TreeNodeViewModel? rootVM = CreateRoot(rootSemanticModel, tree);
