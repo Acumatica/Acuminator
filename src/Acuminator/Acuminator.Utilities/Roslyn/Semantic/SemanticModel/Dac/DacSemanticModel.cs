@@ -108,28 +108,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			PXContext = pxContext;
+			PXContext 	  = pxContext;
 			_cancellation = cancellation;
-			DacType = dacType;
+			DacType 	  = dacType;
 
 			if (DacType == DacType.Dac)
 			{
-				DacOrDacExtInfo = DacInfo.Create(symbol, node, pxContext, declarationOrder, cancellation).CheckIfNull();
+				DacOrDacExtInfo = DacInfo.Create(symbol, node, PXContext, declarationOrder, cancellation).CheckIfNull();
 				DacSymbol = Symbol;
 			}
 			else
 			{
-				DacOrDacExtInfo = new DacExtensionInfo(node, symbol, declarationOrder);
 				DacSymbol = Symbol.GetDacFromDacExtension(PXContext);
+				DacOrDacExtInfo = DacExtensionInfo.Create(symbol, node, DacSymbol, PXContext, declarationOrder, cancellation).CheckIfNull();
 			}
 
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(PXContext.PXMappedCacheExtensionType);
 
-			Attributes         = GetDacAttributes();
-			BqlFieldsByNames   = GetDacBqlFields();
-			PropertiesByNames  = GetDacProperties();
-			DacFieldsByNames   = DacFieldsCollector.CollectDacFieldsFromDacPropertiesAndBqlFields(Symbol, DacType, PXContext,
-																								   BqlFieldsByNames, PropertiesByNames);
+			Attributes		  = GetDacAttributes();
+			BqlFieldsByNames  = GetDacBqlFields();
+			PropertiesByNames = GetDacProperties();
+			DacFieldsByNames  = DacFieldsCollector.CollectDacFieldsFromDacPropertiesAndBqlFields(Symbol, DacType, PXContext,
+																								 BqlFieldsByNames, PropertiesByNames);
 			IsActiveMethodInfo = GetIsActiveMethodInfo();
 
 			IsFullyUnbound  = DacFieldPropertiesWithAcumaticaAttributes.All(p => p.EffectiveDbBoundness is DbBoundnessType.Unbound or DbBoundnessType.NotDefined);
