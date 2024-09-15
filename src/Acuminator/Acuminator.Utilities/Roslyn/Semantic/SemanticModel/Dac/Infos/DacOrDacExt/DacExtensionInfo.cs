@@ -50,8 +50,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				var baseDacExtNode = dacExtension.GetSyntax(cancellation) as ClassDeclarationSyntax;
 
 				aggregatedBaseDacInfo = prevDacInfo != null
-					? new DacExtensionInfo(baseDacExtNode, baseExtensionType, dacInfo, declarationOrder: 0, prevDacInfo)
-					: new DacExtensionInfo(baseDacExtNode, baseExtensionType, dacInfo, declarationOrder: 0);
+					? new DacExtensionInfo(baseDacExtNode, baseExtensionType, dacInfo, declarationOrder: 1, prevDacInfo)
+					: new DacExtensionInfo(baseDacExtNode, baseExtensionType, dacInfo, declarationOrder: 1);
 
 				prevDacInfo = aggregatedBaseDacInfo;
 			}
