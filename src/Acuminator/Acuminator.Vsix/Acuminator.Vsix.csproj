@@ -515,6 +515,8 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacBqlFieldNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacFieldPropertyNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\InitializationAndActivation\IsActiveDacMethodNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\BaseDacNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\Base\DacNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphBaseMemberOverridesCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphInitializeMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphConfigureMethodNodeViewModel.cs" />
@@ -583,7 +585,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\Base\DacMemberCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacFieldNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\Base\DacMemberNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\DacNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeForFieldEventViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeBaseViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeForFieldEventViewModel.cs" />
