@@ -33,22 +33,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				yield return new IconViewModel(this, Icon.ProjectionDac);
 			}
 
-			Color color = Color.FromRgb(38, 155, 199);
-
-			string dacType = dacSemanticModel.DacType == DacType.Dac
-				? VSIXResource.CodeMap_ExtraInfo_IsDac
-				: VSIXResource.CodeMap_ExtraInfo_IsDacExtension;
-
-			yield return new TextViewModel(this, dacType, darkThemeForeground: color, lightThemeForeground: color);
+			yield return CreateDacTypeInfo(dacSemanticModel.DacType == DacType.Dac);
 
 			var pxCacheNameAttributeInfo = dacSemanticModel.Attributes.FirstOrDefault(attrInfo => attrInfo.IsPXCacheName);
 			string? dacFriendlyName		 = pxCacheNameAttributeInfo?.AttributeData.GetNameFromPXCacheNameAttribute()
 																				  .NullIfWhiteSpace();
 			if (dacFriendlyName != null)
 			{
+				Color color = Color.FromRgb(38, 155, 199);
 				dacFriendlyName = $"\"{dacFriendlyName}\"";
+
 				yield return new TextViewModel(this, dacFriendlyName, darkThemeForeground: color, lightThemeForeground: color);
 			}
+		}
+
+		protected TextViewModel CreateDacTypeInfo(bool isDac)
+		{
+			Color color = Color.FromRgb(38, 155, 199);
+
+			string dacType = isDac
+				? VSIXResource.CodeMap_ExtraInfo_IsDac
+				: VSIXResource.CodeMap_ExtraInfo_IsDacExtension;
+
+			return new TextViewModel(this, dacType, darkThemeForeground: color, lightThemeForeground: color);
 		}
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip() => CalculateTooltip();
