@@ -422,11 +422,18 @@
 							<Trigger Property="IsExpanded" Value="False">
 								<Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
 							</Trigger>
-							<Trigger Property="HasItems" Value="False">
-								<Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
 
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=HasItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+											   Value="False"/>
+									<Condition Binding="{Binding Path=IsExpanderAlwaysVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
 								<Setter TargetName="HorLn" Property="Margin" Value="10,0,0,0"/>
-							</Trigger>
+							</MultiDataTrigger>
+							
 							<Trigger Property="IsEnabled" Value="False">
 								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
 							</Trigger>
