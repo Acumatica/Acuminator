@@ -16,13 +16,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Icon NodeIcon => Icon.Category;
 
-		public DacInfo? BaseDacInfo => DacViewModel.DacModelForCodeMap.DacInfo?.Base;
+		public DacInfo? BaseDacInfo { get; }
 
-		public DacExtensionInfo? BaseDacExtensionInfo => DacViewModel.DacModelForCodeMap.DacExtensionInfo?.Base;
+		public DacExtensionInfo? BaseDacExtensionInfo { get; }
 
 		public DacBaseTypesCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, bool isExpanded) : 
 											base(dacViewModel, parent, DacMemberCategory.BaseTypes, isExpanded)
-		{		
+		{
+			if (dacViewModel.DacModel.DacType == DacType.Dac)
+			{
+				BaseDacInfo = DacViewModel.DacModelForCodeMap.DacInfo?.Base;
+				BaseDacExtensionInfo = null;
+			}
+			else
+			{
+				BaseDacInfo = DacViewModel.DacModelForCodeMap.DacInfo;
+				BaseDacExtensionInfo = DacViewModel.DacModelForCodeMap.DacExtensionInfo?.Base;
+			}
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
