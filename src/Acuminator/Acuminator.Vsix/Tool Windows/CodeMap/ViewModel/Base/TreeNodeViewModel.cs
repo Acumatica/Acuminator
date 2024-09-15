@@ -92,10 +92,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				if (_isExpanded != value)
 				{
+					BeforeNodeExpansionChanged(oldValue: _isExpanded, newValue: value);
+
 					_isExpanded = value;
 					NotifyPropertyChanged();
 
 					DisplayedDescendantsBFS().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
+
+					AfterNodeExpansionChanged(_isExpanded);
 				}
 			}
 		}
@@ -207,6 +211,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor);
 
 		public abstract void AcceptVisitor(CodeMapTreeVisitor treeVisitor);
+
+		protected virtual void BeforeNodeExpansionChanged(bool oldValue, bool newValue) { }
+
+		protected virtual void AfterNodeExpansionChanged(bool isExpanded) { }
 
 		public virtual void ExpandOrCollapseAll(bool expand)
 		{
