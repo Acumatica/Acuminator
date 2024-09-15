@@ -9,6 +9,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 
 using Microsoft.CodeAnalysis;
@@ -77,7 +78,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																		out ISemanticModel? dacSemanticModel, 
 																		CancellationToken cancellationToken = default)
 		{
-			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, declarationOrder, cancellationToken);
+			var regularDacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, declarationOrder, cancellationToken);
+
+			if (regularDacSemanticModel == null)
+			{
+				dacSemanticModel = null;
+				return false;
+			}
+
+			dacSemanticModel = DacSemanticModelForCodeMap.Create(regularDacSemanticModel, cancellationToken);
 			return dacSemanticModel != null;
 		}
 	}
