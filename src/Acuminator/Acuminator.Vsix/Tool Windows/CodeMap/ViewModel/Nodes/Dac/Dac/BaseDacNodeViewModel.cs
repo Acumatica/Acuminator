@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ToolWindows.Common;
@@ -58,10 +59,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Task NavigateToItemAsync()
 		{
-			if (DacOrDacExtInfo.IsInMetadata)
-				return Task.CompletedTask;
+			var references = DacOrDacExtInfo.Symbol.DeclaringSyntaxReferences;
 
-			return DacOrDacExtInfo.Symbol.NavigateToAsync();
+			if (references.IsDefaultOrEmpty)
+			{
+				if (DacOrDacExtInfo.IsInMetadata)
+					return Task.CompletedTask;
+
+				var location = DacOrDacExtInfo.Node.Identifier.GetLocation().NullIfLocationKindIsNone() ??
+							   DacOrDacExtInfo.Node.GetLocation();
+				return location.NavigateToAsync();
+			}
+			else
+				return DacOrDacExtInfo.Symbol.NavigateToAsync();
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => 
