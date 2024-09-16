@@ -47,7 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				var baseDacExtNode = dacExtension.GetSyntax(cancellation) as ClassDeclarationSyntax;
+				var baseDacExtNode = baseExtensionType.GetSyntax(cancellation) as ClassDeclarationSyntax;
 
 				aggregatedBaseDacInfo = prevDacInfo != null
 					? new DacExtensionInfo(baseDacExtNode, baseExtensionType, dacInfo, declarationOrder: 1, prevDacInfo)
