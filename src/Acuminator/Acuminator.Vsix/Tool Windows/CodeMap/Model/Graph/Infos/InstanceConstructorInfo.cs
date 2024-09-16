@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 
 using Acuminator.Utilities.Roslyn.Semantic;
 
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.ToolWindows.CodeMap.Graph
 {
 	/// <summary>
 	/// A simple information for code map about graph instance constructor. 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.ToolWindows.CodeMap.Graph
 {
 	/// <summary>
 	/// Values that represent graph member additional information types.

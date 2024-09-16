@@ -9,37 +9,16 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class DataViewDelegateInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>, IWriteableBaseItem<DataViewDelegateInfo>
+	public class DataViewDelegateInfo : OverridableNodeSymbolItem<DataViewDelegateInfo, MethodDeclarationSyntax, IMethodSymbol>
 	{
-		protected DataViewDelegateInfo? _baseInfo;
-
-		/// <summary>
-		/// The overriden item if any
-		/// </summary>
-		public DataViewDelegateInfo? Base => _baseInfo;
-
-		DataViewDelegateInfo? IWriteableBaseItem<DataViewDelegateInfo>.Base
-		{
-			get => Base;
-			set 
-			{
-				_baseInfo = value;
-
-				if (value != null)
-					CombineWithBaseInfo(value);
-			}
-		}
-
 		public DataViewDelegateInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder)
 			: base(node, symbol, declarationOrder)
 		{
 		}
 
 		public DataViewDelegateInfo(MethodDeclarationSyntax? node, IMethodSymbol symbol, int declarationOrder, DataViewDelegateInfo baseInfo)
-			: this(node, symbol, declarationOrder)
+			: base(node, symbol, declarationOrder, baseInfo)
 		{
-			_baseInfo = baseInfo.CheckIfNull();
-			CombineWithBaseInfo(_baseInfo);
 		}
 
 		/// <summary>
@@ -62,13 +41,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				currentDelegate = currentDelegate.Base;
 				counter++;
 			}
-		}
-
-		void IWriteableBaseItem<DataViewDelegateInfo>.CombineWithBaseInfo(DataViewDelegateInfo baseInfo) => 
-			CombineWithBaseInfo(baseInfo);
-
-		private void CombineWithBaseInfo(DataViewDelegateInfo baseInfo)
-		{
 		}
 	}
 }

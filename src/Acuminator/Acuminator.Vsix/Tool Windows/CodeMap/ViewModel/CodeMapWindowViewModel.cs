@@ -113,7 +113,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public bool IsCalculating
 		{
 			get => _isCalculating;
-			private set 
+			internal set 
 			{
 				if (_isCalculating != value)
 				{

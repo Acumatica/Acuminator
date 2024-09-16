@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 using Acuminator.Vsix.Utilities.Navigation;
 
 using Microsoft.CodeAnalysis;

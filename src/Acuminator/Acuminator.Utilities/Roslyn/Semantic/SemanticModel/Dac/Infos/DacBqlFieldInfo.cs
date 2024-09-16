@@ -1,36 +1,15 @@
 ﻿#nullable enable
+using System;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
-using System;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
-	public class DacBqlFieldInfo : NodeSymbolItem<ClassDeclarationSyntax, INamedTypeSymbol>, 
-								   IWriteableBaseItem<DacBqlFieldInfo>,
-								   IEquatable<DacBqlFieldInfo>
+	public class DacBqlFieldInfo : OverridableNodeSymbolItem<DacBqlFieldInfo, ClassDeclarationSyntax, INamedTypeSymbol>, IEquatable<DacBqlFieldInfo>
 	{
-		protected DacBqlFieldInfo? _baseInfo;
-
-		/// <summary>
-		/// The overriden dac field if any
-		/// </summary>
-		public DacBqlFieldInfo? Base => _baseInfo;
-	
-		DacBqlFieldInfo? IWriteableBaseItem<DacBqlFieldInfo>.Base
-		{
-			get => Base;
-			set 
-			{
-				_baseInfo = value;
-
-				if (value != null)
-					CombineWithBaseInfo(value);
-			}
-		}
-
 		/// <summary>
 		/// The declared BQL field data type corresponding to the BQL field type. 
 		/// <see langword="null"/> if the BQL field is weakly typed and just implements <c>IBqlField</c> interface.
@@ -76,9 +55,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: new DacBqlFieldInfo(bqlFieldNode, bqlField, declarationOrder);
 		}
 
-		void IWriteableBaseItem<DacBqlFieldInfo>.CombineWithBaseInfo(DacBqlFieldInfo baseInfo) => CombineWithBaseInfo(baseInfo);
-
-		private void CombineWithBaseInfo(DacBqlFieldInfo baseInfo)
+		protected override void CombineWithBaseInfo(DacBqlFieldInfo baseInfo)
 		{
 			BqlFieldDataTypeEffective ??= baseInfo.BqlFieldDataTypeEffective;
 		}

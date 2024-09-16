@@ -13,6 +13,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	{
 		string Name { get; }
 
+		/// <summary>
+		/// The overriden base info if any.
+		/// </summary>
 		T? Base { get; }
 
 		int DeclarationOrder { get; }
@@ -21,12 +24,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	internal interface IWriteableBaseItem<T> : IOverridableItem<T>
 	where T : IOverridableItem<T>
 	{
+		/// <inheritdoc cref="IOverridableItem{T}.Base"/>
 		new T? Base
 		{
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// Combine this info with info from base types.
+		/// </summary>
 		void CombineWithBaseInfo(T baseInfo);
 	}
 }

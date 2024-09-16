@@ -7,6 +7,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -16,8 +17,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Icon NodeIcon => Icon.DacKeysCategory;
 
-		public KeyDacFieldsCategoryNodeViewModel(DacNodeViewModel dacViewModel, bool isExpanded) : 
-											base(dacViewModel, DacMemberCategory.Keys, isExpanded)
+		public KeyDacFieldsCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, bool isExpanded) : 
+											base(dacViewModel, parent, DacMemberCategory.Keys, isExpanded)
 		{		
 		}
 

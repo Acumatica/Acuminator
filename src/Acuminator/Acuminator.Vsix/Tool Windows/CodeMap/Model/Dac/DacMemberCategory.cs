@@ -4,12 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.ToolWindows.CodeMap.Dac
 {
 	public enum DacMemberCategory
 	{
+		BaseTypes,
 		Keys,
-		Property,		
+		Property,
 		FieldsWithoutProperty,
 		InitializationAndActivation
 	}
@@ -18,6 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private static readonly Dictionary<DacMemberCategory, string> _descriptions = new Dictionary<DacMemberCategory, string>
 		{
+			{ DacMemberCategory.BaseTypes, "Base Types" },
 			{ DacMemberCategory.Keys, "Keys" },
 			{ DacMemberCategory.Property, "DAC Fields" },
 			{ DacMemberCategory.FieldsWithoutProperty, "Fields without property" },

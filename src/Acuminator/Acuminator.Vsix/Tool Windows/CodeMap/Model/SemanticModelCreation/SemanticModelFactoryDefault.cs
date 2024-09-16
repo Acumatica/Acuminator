@@ -9,6 +9,8 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 
 using Microsoft.CodeAnalysis;
 
@@ -24,7 +26,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// the <paramref name="semanticModel"/> is null and the method returns false.
 		/// </summary>
 		/// <param name="rootSymbol">The root symbol.</param>
-		/// <param name="rootNode">The root node.</param>
 		/// <param name="context">The context.</param>
 		/// <param name="semanticModel">[out] The inferred semantic model.</param>
 		/// <param name="declarationOrder">(Optional) The declaration order of the <see cref="ISemanticModel.Symbol"/>.</param>
@@ -32,7 +33,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
-		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, SyntaxNode rootNode, PXContext context, out ISemanticModel? semanticModel,
+		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, PXContext context, out ISemanticModel? semanticModel,
 													int? declarationOrder = null, CancellationToken cancellationToken = default)
 		{
 			rootSymbol.ThrowOnNull();
@@ -76,8 +77,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																		out ISemanticModel? dacSemanticModel, 
 																		CancellationToken cancellationToken = default)
 		{
-			dacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, declarationOrder, cancellationToken);
-			return dacSemanticModel != null;
+			var regularDacSemanticModel = DacSemanticModel.InferModel(context, dacSymbol, declarationOrder, cancellationToken);
+
+			if (regularDacSemanticModel == null)
+			{
+				dacSemanticModel = null;
+				return false;
+			}
+
+			dacSemanticModel = new DacSemanticModelForCodeMap(regularDacSemanticModel);
+			return true;
 		}
 	}
 }

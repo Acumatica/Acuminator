@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -16,7 +17,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DacNodeViewModel DacViewModel { get; }
 
-		public DacSemanticModel DacModel => DacViewModel.DacModel;
+		public DacSemanticModelForCodeMap DacModelForCodeMap => DacViewModel.DacModelForCodeMap;
+
+		public DacSemanticModel DacModel => DacModelForCodeMap.DacModel;
 
 		public DacMemberCategory CategoryType { get; }
 
@@ -42,8 +45,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
-		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, DacMemberCategory dacCategoryType, bool isExpanded) : 
-										    base(dacViewModel?.Tree!, dacViewModel, isExpanded)
+		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, DacMemberCategory dacCategoryType, bool isExpanded) : 
+											base(dacViewModel?.Tree!, parent, isExpanded)
 		{
 			DacViewModel = dacViewModel!;
 			CategoryType = dacCategoryType;

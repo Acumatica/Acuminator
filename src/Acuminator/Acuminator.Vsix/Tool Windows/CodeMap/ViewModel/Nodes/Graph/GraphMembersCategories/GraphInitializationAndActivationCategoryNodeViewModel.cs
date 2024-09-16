@@ -7,8 +7,8 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {

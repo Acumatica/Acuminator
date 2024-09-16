@@ -4,10 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap

@@ -412,6 +412,12 @@
     <Resource Include="Resources\CodeMap\InitializeMethod.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\CodeMap\BaseTypesCategoryDark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\BaseTypesCategoryLight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -486,8 +492,9 @@
     <Compile Include="Settings\ISettingsEvents.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\BaseMemberOverrideInfo.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\InstanceConstructorInfo.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Dac\DacSemanticModelForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\Infos\BaseMemberOverrideInfo.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\Infos\InstanceConstructorInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapSearchBox.xaml.cs">
       <DependentUpon>CodeMapSearchBox.xaml</DependentUpon>
@@ -510,9 +517,12 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Attributes\LeafNodes\Graph\CacheAttachedAttributeNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\Base\DacFieldCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacInitializationAndActivationCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacBaseTypesCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacBqlFieldNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacFieldPropertyNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\InitializationAndActivation\IsActiveDacMethodNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\BaseDacPlaceholderNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\Base\DacNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphBaseMemberOverridesCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphInitializeMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphConfigureMethodNodeViewModel.cs" />
@@ -560,10 +570,10 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapTreeInitialSorter.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\ElementWithTooltipToTooltipConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Dac\DacMemberCategory.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphSemanticModelForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberInfoType.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
@@ -581,7 +591,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\Base\DacMemberCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\DacFieldNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\Base\DacMemberNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\DacNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeForFieldEventViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeBaseViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeForFieldEventViewModel.cs" />

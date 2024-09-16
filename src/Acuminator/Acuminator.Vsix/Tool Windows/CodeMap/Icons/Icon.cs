@@ -23,6 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		DacKeysCategory,
 
 		Category,
+		BaseTypesCategory,
 
 		GroupingDac,
 		GroupingDacField,
