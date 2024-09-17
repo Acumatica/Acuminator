@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -11,7 +10,6 @@ using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utilities.Navigation;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -31,7 +29,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			? Icon.Dac
 			: Icon.DacExtension;
 
-		public DacOrDacExtInfoBase DacOrDacExtInfo { get; }
+		public override DacOrDacExtInfoBase DacOrDacExtInfo { get; }
 
 		public bool IsDac => DacOrDacExtInfo is DacInfo;
 
@@ -52,23 +50,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var dacTypeInfo = CreateDacTypeInfo(IsDac);
 			return [dacTypeInfo];
-		}
-
-		public override Task NavigateToItemAsync()
-		{
-			var references = DacOrDacExtInfo.Symbol.DeclaringSyntaxReferences;
-
-			if (references.IsDefaultOrEmpty)
-			{
-				if (DacOrDacExtInfo.IsInMetadata)
-					return Task.CompletedTask;
-
-				var location = DacOrDacExtInfo.Node.Identifier.GetLocation().NullIfLocationKindIsNone() ??
-							   DacOrDacExtInfo.Node.GetLocation();
-				return location.NavigateToAsync();
-			}
-			else
-				return DacOrDacExtInfo.Symbol.NavigateToAsync();
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) =>

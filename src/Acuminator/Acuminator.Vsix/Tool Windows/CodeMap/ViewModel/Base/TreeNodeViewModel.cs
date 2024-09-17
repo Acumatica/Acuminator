@@ -175,8 +175,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual Task NavigateToItemAsync() => Task.CompletedTask;
 
-		protected bool TryNavigateToItemWithVisualStudioWorkspace(ISymbol symbol, CancellationToken cancellation)
+		protected bool TryNavigateToItemWithVisualStudioWorkspace(ISymbol symbol)
 		{
+			CancellationToken cancellation = Tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken;
+
 			if (Tree.CodeMapViewModel.Workspace is VisualStudioWorkspace workspace && Tree.CodeMapViewModel.Document?.Project is { } project)
 				return workspace.TryGoToDefinition(symbol, project, cancellation);
 
