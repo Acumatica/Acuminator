@@ -16,6 +16,7 @@ using Acuminator.Vsix.Utilities.Navigation;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;	
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.LanguageServices;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -69,14 +70,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public async override Task NavigateToItemAsync()
 		{
+			// Navigate to the parent first to make an entry in the navigation journal
+			var parentToNavigate = (Parent as AttributesGroupNodeViewModel)?.Parent ?? Parent;
+			
+			if (parentToNavigate != null)
+				await parentToNavigate.NavigateToItemAsync();
+
 			var syntaxReference = AttributeInfo.AttributeData.ApplicationSyntaxReference;
 
 			if (syntaxReference == null)
 				return;
 
+			// Navigate again to the attribute declaration
 			TextSpan span = syntaxReference.Span;
 			string filePath = syntaxReference.SyntaxTree.FilePath;
-			Workspace? workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+
+			var workspace = Tree.CodeMapViewModel.Workspace as VisualStudioWorkspace;
+
+			if (workspace == null)
+				workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
 			if (workspace?.CurrentSolution == null)
 				return;

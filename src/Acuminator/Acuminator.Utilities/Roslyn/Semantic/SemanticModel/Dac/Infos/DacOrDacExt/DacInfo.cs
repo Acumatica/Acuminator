@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				cancellation.ThrowIfCancellationRequested();
 
 				var baseDacNode = isInSource
-					? dac.GetSyntax(cancellation) as ClassDeclarationSyntax
+					? baseType.GetSyntax(cancellation) as ClassDeclarationSyntax
 					: null;
 
 				isInSource = baseDacNode != null;

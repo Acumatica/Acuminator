@@ -6,12 +6,15 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.Utilities;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -171,6 +174,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public virtual Task NavigateToItemAsync() => Task.CompletedTask;
+
+		protected bool TryNavigateToItemWithVisualStudioWorkspace(ISymbol symbol)
+		{
+			CancellationToken cancellation = Tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken;
+
+			if (Tree.CodeMapViewModel.Workspace is VisualStudioWorkspace workspace && Tree.CodeMapViewModel.Document?.Project is { } project)
+				return workspace.TryGoToDefinition(symbol, project, cancellation);
+
+			return false;
+		}
 
 		/// <summary>
 		/// Check if node is visible in filter going from the node to its descendants.
