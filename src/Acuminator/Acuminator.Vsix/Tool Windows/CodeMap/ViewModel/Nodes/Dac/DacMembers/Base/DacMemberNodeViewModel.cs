@@ -43,6 +43,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			MemberCategory = dacMemberCategoryVM!;
 		}
 
-		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();
+		public override Task NavigateToItemAsync() =>
+			TryNavigateToItemWithVisualStudioWorkspace(MemberSymbol)
+				? Task.CompletedTask
+				: MemberSymbol.NavigateToAsync();
 	}
 }

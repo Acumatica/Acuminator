@@ -48,7 +48,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphMemberInfoType = graphMemberInfoType;
 		}
 
-		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
+		public override Task NavigateToItemAsync() =>
+			TryNavigateToItemWithVisualStudioWorkspace(GraphMemberInfoSymbol)
+				? Task.CompletedTask
+				: GraphMemberInfoSymbol.NavigateToAsync();
 
 		private static Icon GetIconType(GraphMemberInfoType graphMemberInfoType) =>
 			graphMemberInfoType switch

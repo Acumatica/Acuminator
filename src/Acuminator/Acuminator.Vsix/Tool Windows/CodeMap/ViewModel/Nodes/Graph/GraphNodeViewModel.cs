@@ -63,7 +63,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Task NavigateToItemAsync()
 		{
-			if (GraphSemanticModel.IsInMetadata)
+			if (TryNavigateToItemWithVisualStudioWorkspace(GraphSemanticModel.Symbol) || GraphSemanticModel.IsInMetadata)
 				return Task.CompletedTask;
 
 			var syntaxReferences = GraphSemanticModel.Symbol.DeclaringSyntaxReferences;
