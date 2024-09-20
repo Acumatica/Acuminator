@@ -1,4 +1,5 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier;
+﻿using System.Threading.Tasks;
+using Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier;
 using Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Tests.Helpers;
@@ -25,41 +26,41 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		[Theory]
 		[EmbeddedFileData("InvalidHandlerModifier.cs",
 						  "InvalidHandlerModifier_Expected.cs")]
-		public void Test_Invalid_Modifiers_In_Event_Handlers(string actual, string expected)
+		public async Task Test_Invalid_Modifiers_In_Event_Handlers(string actual, string expected)
 		{
-			VerifyCSharpFix(actual, expected);
+			await VerifyCSharpFixAsync(actual, expected);
 		}
 
 		[Theory]
 		[EmbeddedFileData("ContainerWithInterface.cs",
 						  "ContainerWithInterface_Expected.cs")]
-		public void Test_Modifiers_With_Interfaces(string actual, string expected)
+		public async Task Test_Modifiers_With_Interfaces(string actual, string expected)
 		{
-			VerifyCSharpFix(actual, expected);
+			await VerifyCSharpFixAsync(actual, expected);
 		}
 
 		[Theory]
 		[EmbeddedFileData("SealedContainer.cs",
 						  "SealedContainer_Expected.cs")]
-		public void Test_Modifiers_With_Sealed_Class(string actual, string expected)
+		public async Task Test_Modifiers_With_Sealed_Class(string actual, string expected)
 		{
-			VerifyCSharpFix(actual, expected);
+			await VerifyCSharpFixAsync(actual, expected);
 		}
 
 		[Theory]
 		[EmbeddedFileData("PrivateModifier.cs",
 						  "PrivateModifier_Expected.cs")]
-		public void Test_Private_Modifiers_In_Event_Handlers(string actual, string expected)
+		public async Task Test_Private_Modifiers_In_Event_Handlers(string actual, string expected)
 		{
-			VerifyCSharpFix(actual, expected);
+			await VerifyCSharpFixAsync(actual, expected);
 		}
 
 		[Theory]
 		[EmbeddedFileData("PrivateModifierComments.cs",
 						  "PrivateModifierComments_Expected.cs")]
-		public void Test_Modifiers_With_Comments(string actual, string expected)
+		public async Task Test_Modifiers_With_Comments(string actual, string expected)
 		{
-			VerifyCSharpFix(actual, expected);
+			await VerifyCSharpFixAsync(actual, expected);
 		}
 	}
 }

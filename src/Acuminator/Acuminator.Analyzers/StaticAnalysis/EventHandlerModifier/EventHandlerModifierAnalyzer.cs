@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 {
@@ -15,12 +16,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 			ImmutableArray.Create(
 				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual,
 				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations);
+		
+		private static readonly Dictionary<SyntaxKind, string> ModifierText = new()
+		{
+			{ SyntaxKind.PublicKeyword, "public" },
+			{ SyntaxKind.ProtectedKeyword, "protected" },
+			{ SyntaxKind.VirtualKeyword, "virtual" }
+		};
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphExtension)
+		private static readonly Dictionary<Accessibility, SyntaxKind> AccessibilitySyntaxKindMap = new()
+		{
+			{ Accessibility.Public, SyntaxKind.PublicKeyword },
+			{ Accessibility.Protected, SyntaxKind.ProtectedKeyword }
+		};
+
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphEventSemanticModel graphOrGraphExtension)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
+			
+			var declaredEventHandlers = graphOrGraphExtension
+				.GetAllEvents()
+				.Where(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphOrGraphExtension.Symbol));
 
-			foreach (var handler in graphExtension.GetAllEvents().Where(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphExtension.Symbol)))
+			var allInterfaces = graphOrGraphExtension
+				.Symbol
+				.AllInterfaces
+				.SelectMany(im => im.GetMethods())
+				.Where(im => im.GetEventHandlerType(pxContext) != EventType.None)
+				.ToList();
+
+			foreach (var handler in declaredEventHandlers)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -38,103 +63,59 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 
 				var properties = new Dictionary<string, string?>
 				{
-					{ "IsOverride",							handler.Symbol.IsOverride.ToString()},
-					{ "IsExplicitInterfaceImplementation", (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation).ToString()},
-					{ "ImplementsInterface",				HelperMethods.ImplementsInterface(handler.Symbol, pxContext).ToString()},
-					{ "IsContainingTypeSealed",				handler.Symbol.ContainingType.IsSealed.ToString()}
-				}
-				.ToImmutableDictionary();
+					{ DiagnosticProperty.IsContainingTypeSealed, handler.Symbol.ContainingType.IsSealed.ToString() }
+				};
 
 				if (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location, properties));
 				}
-				else if (!HelperMethods.ImplementsInterface(handler.Symbol, pxContext))
+				else if (!IsImplicitInterfaceImplementation(handler.Symbol, allInterfaces))
 				{
+					properties.Add(StaticAnalysis.DiagnosticProperty.RegisterCodeFix, true.ToString());
+
 					var targetAccessibility = handler.Symbol.ContainingType.IsSealed ? Accessibility.Public : Accessibility.Protected;
 
 					if (!(handler.Symbol.IsVirtual || handler.Symbol.ContainingType.IsSealed) || handler.Symbol.DeclaredAccessibility != targetAccessibility)
 					{
-						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties));
-					}
-				}
-			}
-		}
-
-		private static class HelperMethods
-		{
-			internal static bool ImplementsInterface(IMethodSymbol method, PXContext pxContext)
-			{
-				return method
-					.ContainingType
-					.AllInterfaces
-					.SelectMany(i => i.GetMethods(method.Name))
-					.Any(m =>
-						IsEventHandlerInfosMatch(method, m, pxContext) &&
-						IsImplicitInterfaceImplementation(method, m)
-					);
-			}
-
-			private static bool IsEventHandlerInfosMatch(IMethodSymbol method, IMethodSymbol other, PXContext pxContext)
-			{
-				return method.GetEventHandlerInfo(pxContext).Equals(other.GetEventHandlerInfo(pxContext));
-			}
-
-			private static bool IsImplicitInterfaceImplementation(IMethodSymbol method, IMethodSymbol interfaceMethod)
-			{
-				if (method.Name != interfaceMethod.Name)
-				{
-					return false;
-				}
-
-				if (method.Parameters.Length != interfaceMethod.Parameters.Length)
-				{
-					return false;
-				}
-
-				if (!method.ReturnType.Equals(interfaceMethod.ReturnType, SymbolEqualityComparer.Default))
-				{
-					return false;
-				}
-
-				if (method.Arity != interfaceMethod.Arity)
-				{
-					return false;
-				}
-
-				if (method.IsGenericMethod != interfaceMethod.IsGenericMethod)
-				{
-					return false;
-				}
-
-				if (method.IsGenericMethod)
-				{
-					if (method.TypeArguments.Length != interfaceMethod.TypeArguments.Length)
-					{
-						return false;
-					}
-
-					for (int i = 0; i < method.TypeArguments.Length; i++)
-					{
-						if (!method.TypeArguments[i].Equals(interfaceMethod.TypeArguments[i], SymbolEqualityComparer.Default))
+						if (handler.Symbol.DeclaredAccessibility == Accessibility.Private)
 						{
-							return false;
+							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBePrivate, location, properties.ToImmutableDictionary()));
+						}
+						else
+						{
+							var modifierText = GetModifierFormatArg(AccessibilitySyntaxKindMap[targetAccessibility], !handler.Symbol.ContainingType.IsSealed);
+							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties.ToImmutableDictionary(), modifierText));
 						}
 					}
 				}
-
-				for (int i = 0; i < method.Parameters.Length; i++)
-				{
-					if (!method.Parameters[i].Type.Equals(interfaceMethod.Parameters[i].Type, SymbolEqualityComparer.Default))
-					{
-						return false;
-					}
-				}
-
-				var implicitImplementation = method.ContainingType.FindImplementationForInterfaceMember(interfaceMethod);
-
-				return implicitImplementation?.Equals(method, SymbolEqualityComparer.Default) ?? false;
 			}
 		}
+
+		internal static string GetModifierFormatArg(SyntaxKind accessibilityModifier, bool addVirtualModifier)
+		{
+			var modifierFormatArg = ModifierText[accessibilityModifier];
+
+			if (addVirtualModifier)
+			{
+				modifierFormatArg += " " + ModifierText[SyntaxKind.VirtualKeyword];
+			}
+
+			return modifierFormatArg;
+		}
+
+		private static bool IsImplicitInterfaceImplementation(IMethodSymbol method, List<IMethodSymbol> allInterfaces)
+		{
+			return allInterfaces.Any(im =>
+				method.ContainingType.FindImplementationForInterfaceMember(im)?.Equals(method, SymbolEqualityComparer.Default) ?? false);
+		}
+	}
+
+	internal static class DiagnosticProperty
+	{
+		/// <summary>
+		/// The property used to pass the information whether the containing type is selaed or not. 
+		/// </summary>
+		public const string IsContainingTypeSealed = nameof(IsContainingTypeSealed);
 	}
 }

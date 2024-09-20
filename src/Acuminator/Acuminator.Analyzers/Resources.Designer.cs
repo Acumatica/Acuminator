@@ -1672,15 +1672,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove the explicit interface signature.
-        /// </summary>
-        public static string PX1077Fix_RemoveExplicitInterface {
-            get {
-                return ResourceManager.GetString("PX1077Fix_RemoveExplicitInterface", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Event handlers should be protected and virtual.
         /// </summary>
         public static string PX1077Title {
@@ -1690,11 +1681,29 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Event handlers should not be private.
+        /// </summary>
+        public static string PX1077Title_EventHandlersShouldNotBePrivate {
+            get {
+                return ResourceManager.GetString("PX1077Title_EventHandlersShouldNotBePrivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Event handlers should not be explicit interface implementations.
         /// </summary>
         public static string PX1077Title_ExplicitInterfaceImplementation {
             get {
                 return ResourceManager.GetString("PX1077Title_ExplicitInterfaceImplementation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should be {0}.
+        /// </summary>
+        public static string PX1077TitleFormatWithReason {
+            get {
+                return ResourceManager.GetString("PX1077TitleFormatWithReason", resourceCulture);
             }
         }
         

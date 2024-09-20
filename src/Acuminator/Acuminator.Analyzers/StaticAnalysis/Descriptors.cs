@@ -407,7 +407,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1076", nameof(Resources.PX1076Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1076);
 
 		public static DiagnosticDescriptor PX1077_EventHandlersShouldBeProtectedVirtual { get; } =
-			Rule("PX1077", nameof(Resources.PX1077Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1077);
+			Rule("PX1077", nameof(Resources.PX1077Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1077,
+				messageFormat: nameof(Resources.PX1077TitleFormatWithReason).GetLocalized());
+
+		public static DiagnosticDescriptor PX1077_EventHandlersShouldNotBePrivate { get; } =
+			Rule("PX1077", nameof(Resources.PX1077Title_EventHandlersShouldNotBePrivate).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1077);
 
 		public static DiagnosticDescriptor PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations { get; } =
 			Rule("PX1077", nameof(Resources.PX1077Title_ExplicitInterfaceImplementation).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1077);

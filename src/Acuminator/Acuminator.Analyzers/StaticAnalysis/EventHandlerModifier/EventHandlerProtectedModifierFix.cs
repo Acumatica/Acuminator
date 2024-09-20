@@ -9,6 +9,8 @@ using Microsoft.CodeAnalysis.CodeActions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
+using Microsoft.CodeAnalysis.Text;
+using Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 {
@@ -17,177 +19,110 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(
+				Descriptors.PX1077_EventHandlersShouldNotBePrivate.Id,
 				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.Id,
 				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations.Id);
 
-		protected override async Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
+		protected override Task RegisterCodeFixesForDiagnosticAsync(CodeFixContext context, Diagnostic diagnostic)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var root = await context.Document
-				.GetSyntaxRootAsync(context.CancellationToken)
+			var registerCodeFix = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.RegisterCodeFix);
+			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, PrivateEventHandlers.DiagnosticProperty.IsContainingTypeSealed);
+
+			if (!registerCodeFix)
+			{
+				return Task.CompletedTask;
+			}
+
+			var accessibilityModifier = isContainingTypeSealed
+				? SyntaxKind.PublicKeyword
+				: SyntaxKind.ProtectedKeyword;
+
+			var addVirtualModifier = !isContainingTypeSealed;
+
+			var modifierFormatArg = EventHandlerModifierAnalyzer.GetModifierFormatArg(accessibilityModifier, addVirtualModifier);
+
+			var makeProtectedTitle = nameof(Resources.PX1077Fix).GetLocalized(modifierFormatArg).ToString();
+
+
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+
+			var codeFixAction = CodeAction.Create(
+				makeProtectedTitle,
+				cToken => ChangeAccessibilityModifierAsync(context.Document, context.Span, accessibilityModifier, addVirtualModifier, cToken),
+				equivalenceKey: makeProtectedTitle);
+
+			context.RegisterCodeFix(codeFixAction, diagnostic);
+			return Task.CompletedTask;
+		}
+
+		private static readonly List<SyntaxKind> AccessibilityModifiers =
+		[
+			SyntaxKind.PrivateKeyword,
+			SyntaxKind.PublicKeyword,
+			SyntaxKind.ProtectedKeyword,
+			SyntaxKind.InternalKeyword,
+			SyntaxKind.VirtualKeyword
+		];
+
+		private static async Task<Document> ChangeAccessibilityModifierAsync(
+			Document document,
+			TextSpan span,
+			SyntaxKind accessibilityModifier,
+			bool addVirtual,
+			CancellationToken cancellationToken)
+		{
+			var root = await document
+				.GetSyntaxRootAsync(cancellationToken)
 				.ConfigureAwait(false);
 
-			if (root?.FindNode(context.Span) is not MethodDeclarationSyntax node)
+			if (root?.FindNode(span) is not MethodDeclarationSyntax method)
 			{
-				return;
+				return document;
 			}
 
-			var isOverride = GetPropertyValue(diagnostic, "IsOverride");
-			var isExplicitInterfaceImplementation = GetPropertyValue(diagnostic, "IsExplicitInterfaceImplementation");
-			var implementsInterface = GetPropertyValue(diagnostic, "ImplementsInterface");
-			var isContainingTypeSealed = GetPropertyValue(diagnostic, "IsContainingTypeSealed");
+			var index = GetFirstModifierIndex(method);
 
-			context.CancellationToken.ThrowIfCancellationRequested();
-
-			if (isOverride)
+			var newToken = SyntaxFactory.Token(accessibilityModifier);
+			if (index > -1)
 			{
-				return;
+				newToken = newToken.WithTriviaFrom(method.Modifiers[index]);
 			}
 
-			if (isExplicitInterfaceImplementation)
+			var newModifiers = method.Modifiers.Where(m => !AccessibilityModifiers.Contains(m.Kind()));
+
+			var syntaxModifiers = SyntaxFactory.TokenList(newToken);
+
+			if (addVirtual)
 			{
-				var removeExplicitInterface = nameof(Resources.PX1077Fix_RemoveExplicitInterface).GetLocalized().ToString();
-				var codeFixAction = new RemoveExplicitInterfaceAction(removeExplicitInterface, context.Document, node);
-
-				context.RegisterCodeFix(codeFixAction, diagnostic);
+				syntaxModifiers = syntaxModifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
 			}
-			else
-			{
-				if (!implementsInterface)
-				{
-					var accessibilityModifier = isContainingTypeSealed
-						? SyntaxKind.PublicKeyword
-						: SyntaxKind.ProtectedKeyword;
 
-					var addVirtualModifier = !isContainingTypeSealed;
+			syntaxModifiers = syntaxModifiers.AddRange(newModifiers);
 
-					var localizedText = SyntaxFactory.Token(accessibilityModifier).Text;
-					if (addVirtualModifier)
-					{
-						localizedText += " " + SyntaxFactory.Token(SyntaxKind.VirtualKeyword).Text;
-					}
+			var localDeclaration = method.WithModifiers(syntaxModifiers);
 
-					var makeProtectedTitle = nameof(Resources.PX1077Fix).GetLocalized(localizedText).ToString();
-					var codeFixAction = new ChangeAccessibilityModifierAction(makeProtectedTitle, context.Document, node, accessibilityModifier, addVirtualModifier);
+			var oldRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			var newRoot = oldRoot!.ReplaceNode(method, localDeclaration);
 
-					context.RegisterCodeFix(codeFixAction, diagnostic);
-				}
-			}
+			return document.WithSyntaxRoot(newRoot);
 		}
 
-		private static bool GetPropertyValue(Diagnostic diagnostic, string propertyName)
+		private static int GetFirstModifierIndex(MethodDeclarationSyntax method)
 		{
-			if (diagnostic.TryGetPropertyValue(propertyName, out string? strValue) && bool.TryParse(strValue, out bool value))
+			var index = -1;
+			for (var i = 0; i < method.Modifiers.Count; i++)
 			{
-				return value;
-			}
-
-			return false;
-		}
-
-		internal class ChangeAccessibilityModifierAction : CodeAction
-		{
-			private readonly string _title;
-			private readonly Document _document;
-			private readonly MethodDeclarationSyntax _method;
-			private readonly SyntaxKind _accessibilityModifier;
-			private readonly bool _addVirtual;
-
-			private static readonly List<SyntaxKind> SyntaxKinds =
-			[
-				SyntaxKind.PrivateKeyword,
-				SyntaxKind.PublicKeyword,
-				SyntaxKind.ProtectedKeyword,
-				SyntaxKind.InternalKeyword,
-				SyntaxKind.VirtualKeyword,
-				SyntaxKind.OverrideKeyword
-			];
-
-			public override string Title => _title;
-			public override string EquivalenceKey => _title;
-
-			public ChangeAccessibilityModifierAction(string title, Document document, MethodDeclarationSyntax method, SyntaxKind accessibilityModifier, bool addVirtual)
-			{
-				_title = title;
-				_document = document;
-				_method = method;
-				_accessibilityModifier = accessibilityModifier;
-				_addVirtual = addVirtual;
-			}
-
-			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
-			{
-				var index = -1;
-				for (var i = 0; i < _method.Modifiers.Count; i++)
+				if (AccessibilityModifiers.Contains(method.Modifiers[i].Kind()))
 				{
-					if (SyntaxKinds.Contains(_method.Modifiers[i].Kind()))
-					{
-						index = i;
-						break;
-					}
+					index = i;
+					break;
 				}
-
-				var newToken = SyntaxFactory.Token(_accessibilityModifier);
-				if (index > -1)
-				{
-					newToken = newToken.WithTriviaFrom(_method.Modifiers[index]);
-				}
-
-				var newModifiers = _method.Modifiers.Where(m => !SyntaxKinds.Contains(m.Kind()));
-
-				var syntaxModifiers = SyntaxFactory.TokenList(newToken);
-
-				if (_addVirtual)
-				{
-					syntaxModifiers = syntaxModifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
-				}
-
-				syntaxModifiers = syntaxModifiers.AddRange(newModifiers);
-
-				var localDeclaration = _method.WithModifiers(syntaxModifiers);
-
-				var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-				var newRoot = oldRoot!.ReplaceNode(_method, localDeclaration);
-
-				return _document.WithSyntaxRoot(newRoot);
-			}
-		}
-
-		internal class RemoveExplicitInterfaceAction : CodeAction
-		{
-			private readonly string _title;
-			private readonly Document _document;
-			private readonly MethodDeclarationSyntax _method;
-
-			public override string Title => _title;
-			public override string EquivalenceKey => _title;
-
-			public RemoveExplicitInterfaceAction(string title, Document document, MethodDeclarationSyntax method)
-			{
-				_title = title;
-				_document = document;
-				_method = method;
 			}
 
-			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
-			{
-				var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
-				if (_method.ExplicitInterfaceSpecifier != null)
-				{
-					var localDeclaration = _method.RemoveNode(_method.ExplicitInterfaceSpecifier!, SyntaxRemoveOptions.KeepLeadingTrivia);
-
-					if (localDeclaration != null)
-					{
-						var newRoot = oldRoot!.ReplaceNode(_method, localDeclaration!);
-
-						return _document.WithSyntaxRoot(newRoot);
-					}
-				}
-
-				return _document;
-			}
+			return index;
 		}
 	}
 }

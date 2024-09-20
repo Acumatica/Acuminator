@@ -13,7 +13,6 @@ namespace Acuminator.Tests.Sources
 		// Second line
 		private void _(Events.CacheAttached<PX.Objects.AR.ARInvoice.discDate> e)
 		{
-			return;
 		}
 	}
 }

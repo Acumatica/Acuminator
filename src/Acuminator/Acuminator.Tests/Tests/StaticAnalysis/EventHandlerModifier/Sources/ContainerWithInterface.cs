@@ -7,18 +7,15 @@ namespace Acuminator.Tests.Sources
 	{
 		public void HandleCacheAttachedDiscDate(Events.CacheAttached<PX.Objects.AR.ARInvoice.discDate> e)
 		{
-			return;
 		}
 
 		public void IExtension.HandleCacheAttachedBatchSeqNbr(Events.CacheAttached<PX.Objects.CA.CABatch.batchSeqNbr> e)
 		{
-			return;
 		}
 
-		// comments
+		// comments: we don't propose a fix for this case, we just produce a warning.
 		public void IExtension.HandleCacheAttachedRefNbr(Events.CacheAttached<PX.Objects.AR.ARInvoice.refNbr> e)
 		{
-			return;
 		}
 	}
 

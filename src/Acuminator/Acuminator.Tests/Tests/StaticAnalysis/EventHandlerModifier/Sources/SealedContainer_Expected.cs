@@ -7,7 +7,6 @@ namespace Acuminator.Tests.Sources
 	{
 		public void _(Events.CacheAttached<PX.Objects.AR.ARInvoice.discDate> e)
 		{
-			return;
 		}
 	}
 

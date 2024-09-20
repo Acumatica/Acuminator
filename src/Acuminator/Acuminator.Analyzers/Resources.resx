@@ -660,11 +660,14 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1077Fix" xml:space="preserve">
     <value>Change the accessibility modifier to {0}</value>
   </data>
-  <data name="PX1077Fix_RemoveExplicitInterface" xml:space="preserve">
-    <value>Remove the explicit interface signature</value>
-  </data>
   <data name="PX1077Title" xml:space="preserve">
     <value>Event handlers should be protected and virtual</value>
+  </data>
+  <data name="PX1077TitleFormatWithReason" xml:space="preserve">
+	<value>Event handlers should be {0}</value>
+  </data>
+  <data name="PX1077Title_EventHandlersShouldNotBePrivate" xml:space="preserve">
+    <value>Event handlers should not be private</value>
   </data>
   <data name="PX1077Title_ExplicitInterfaceImplementation" xml:space="preserve">
     <value>Event handlers should not be explicit interface implementations</value>
