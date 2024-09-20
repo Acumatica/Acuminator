@@ -34,24 +34,28 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			{ nameof(Double) , "BqlDouble" },
 			{ nameof(Decimal), "BqlDecimal" },
 
-			{ $"{nameof(Byte)}[]", "BqlByteArray" },
-			{ "ByteArray"		 , "BqlByteArray" }
+			{ "byte[]"   , "BqlByteArray" },
+			{ "ByteArray", "BqlByteArray" },
+
+			{ "string[]"   , "BqlAttributes" },
+			{ "StringArray", "BqlAttributes" }
 		};
 
 		private static readonly Dictionary<string, string> _bqlFieldTypeToDataType = new(StringComparer.OrdinalIgnoreCase)
 		{
-			{ "BqlString"	 , nameof(String) 	   },
-			{ "BqlGuid"		 , nameof(Guid) 	   },
-			{ "BqlDateTime"	 , nameof(DateTime)	   },
-			{ "BqlBool"		 , nameof(Boolean) 	   },
-			{ "BqlByte" 	 , nameof(Byte) 	   },
-			{ "BqlShort"	 , nameof(Int16)	   },
-			{ "BqlInt"		 , nameof(Int32) 	   },
-			{ "BqlLong"		 , nameof(Int64) 	   },
-			{ "BqlFloat"	 , nameof(Single) 	   },
-			{ "BqlDouble" 	 , nameof(Double)	   },
-			{ "BqlDecimal" 	 , nameof(Decimal) 	   },
-			{ "BqlByteArray" , $"{nameof(Byte)}[]" },
+			{ "BqlString"	 , nameof(String)  },
+			{ "BqlGuid" 	 , nameof(Guid)    },
+			{ "BqlDateTime"	 , nameof(DateTime)},
+			{ "BqlBool"		 , nameof(Boolean) },
+			{ "BqlByte"		 , nameof(Byte)    },
+			{ "BqlShort"	 , nameof(Int16)   },
+			{ "BqlInt"		 , nameof(Int32)   },
+			{ "BqlLong"		 , nameof(Int64)   },
+			{ "BqlFloat"	 , nameof(Single)  },
+			{ "BqlDouble"	 , nameof(Double)  },
+			{ "BqlDecimal"	 , nameof(Decimal) },
+			{ "BqlByteArray" , $"byte[]" 	   },
+			{ "BqlAttributes", $"string[]" 	   }
 		};
 
 		public static bool ContainsDataType(DataTypeName dataType) =>
