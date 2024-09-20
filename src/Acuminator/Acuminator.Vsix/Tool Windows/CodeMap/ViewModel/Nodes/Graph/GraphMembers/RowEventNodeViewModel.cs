@@ -9,6 +9,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class RowEventNodeViewModel : GraphMemberNodeViewModel
 	{
+		private readonly string _dacNameWithEventTypeForSearch;
+
 		public DacGroupingNodeBaseViewModel DacViewModel { get; }
 
 		public override string Name
@@ -24,7 +26,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			DacViewModel = dacViewModel!;
 			Name = eventInfo.EventType.ToString();
+			_dacNameWithEventTypeForSearch = $"{DacViewModel.DacName}#{Name}";
 		}
+
+		public override bool NameMatchesPattern(string? pattern) => MatchPattern(_dacNameWithEventTypeForSearch, pattern);
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 

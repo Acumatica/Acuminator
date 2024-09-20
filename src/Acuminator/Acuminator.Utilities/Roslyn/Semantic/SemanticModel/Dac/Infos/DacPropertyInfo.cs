@@ -14,27 +14,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
-	public class DacPropertyInfo : NodeSymbolItem<PropertyDeclarationSyntax, IPropertySymbol>, IWriteableBaseItem<DacPropertyInfo>
+	public class DacPropertyInfo : OverridableNodeSymbolItem<DacPropertyInfo, PropertyDeclarationSyntax, IPropertySymbol>
 	{
-		protected DacPropertyInfo? _baseInfo;
-
-		/// <summary>
-		/// The overriden property if any
-		/// </summary>
-		public DacPropertyInfo? Base => _baseInfo;
-
-		DacPropertyInfo? IWriteableBaseItem<DacPropertyInfo>.Base
-		{
-			get => Base;
-			set
-			{
-				_baseInfo = value;
-
-				if (value != null)
-					CombineWithBaseInfo(value);
-			}
-		}
-
 		public ImmutableArray<DacFieldAttributeInfo> Attributes { get; }
 
 		/// <summary>
@@ -163,10 +144,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		void IWriteableBaseItem<DacPropertyInfo>.CombineWithBaseInfo(DacPropertyInfo baseInfo) => 
-			CombineWithBaseInfo(baseInfo);
-
-		private void CombineWithBaseInfo(DacPropertyInfo baseProperty)
+		protected override void CombineWithBaseInfo(DacPropertyInfo baseProperty)
 		{
 			// TODO - need to add support for PXMergeAttributesAttribute in the future
 			EffectiveDbBoundness 			= DeclaredDbBoundness.Combine(baseProperty.EffectiveDbBoundness);

@@ -14,7 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	[ValueConversion(sourceType: typeof(TreeNodeViewModel), targetType: typeof(string))]
 	public class TreeIconTooltipConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			Icon icon = GetIcon(value);
 			var node = GetNode(value);
@@ -28,7 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				Icon.Processing when node is GraphNodeViewModel => VSIXResource.CodeMap_ExtraInfo_ProcessingGraphIconTooltip,
 				Icon.ProjectionDac 								=> VSIXResource.CodeMap_ExtraInfo_ProjectionDacIndicatorTooltip,
 				Icon.ProjectionAttribute 						=> VSIXResource.CodeMap_Icon_ProjectionAttributeTooltip,
-				_ 												=> Binding.DoNothing
+				_ 												=> null
 			};
 		}
 

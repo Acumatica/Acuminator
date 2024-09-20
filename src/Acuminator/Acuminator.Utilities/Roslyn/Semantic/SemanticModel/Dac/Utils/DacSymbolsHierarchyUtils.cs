@@ -130,6 +130,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			type?.Name == TypeNames.PXCacheExtension;
 
 		/// <summary>
+		/// Gets base DAC extensions from DAC extension type. The type itself is not included.
+		/// </summary>
+		/// <param name="dacExtension">The DAC extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="sortDirection">The sort direction. The <see cref="SortDirection.Descending"/> order is from the extension to its base extensions/graph.
+		/// The <see cref="SortDirection.Ascending"/> order is from the DAC/base extensions to the most derived one.</param>
+		/// <param name="includeDac">True to include, false to exclude the DAC type.</param>
+		/// <returns/>
+		public static IEnumerable<ITypeSymbol> GetBaseExtensions(this ITypeSymbol dacExtension, PXContext pxContext,
+																 SortDirection sortDirection, bool includeDac) =>
+			GetDacExtensionWithBaseExtensions(dacExtension, pxContext, sortDirection, includeDac, includeDacExtension: false);
+
+		/// <summary>
 		/// Gets the DAC extension with base DAC extensions from DAC extension type.
 		/// </summary>
 		/// <param name="dacExtension">The DAC extension to act on.</param>
@@ -139,7 +152,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <param name="includeDac">True to include, false to exclude the DAC type.</param>
 		/// <returns/>
 		public static IEnumerable<ITypeSymbol> GetDacExtensionWithBaseExtensions(this ITypeSymbol dacExtension, PXContext pxContext,
-																				 SortDirection sortDirection, bool includeDac)
+																				 SortDirection sortDirection, bool includeDac) =>
+			GetDacExtensionWithBaseExtensions(dacExtension, pxContext, sortDirection, includeDac, includeDacExtension: true);
+
+		private static IEnumerable<ITypeSymbol> GetDacExtensionWithBaseExtensions(this ITypeSymbol dacExtension, PXContext pxContext,
+																				  SortDirection sortDirection, bool includeDac, bool includeDacExtension)
 		{
 			pxContext.ThrowOnNull();
 
@@ -157,12 +174,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return [];
 
 			return sortDirection == SortDirection.Ascending
-				? GetExtensionInAscendingOrder(dacType, dacExtension, extensionBaseType, pxContext, includeDac)
-				: GetExtensionInDescendingOrder(dacType, dacExtension, extensionBaseType, pxContext, includeDac);
+				? GetExtensionInAscendingOrder(dacType, dacExtension, extensionBaseType, pxContext, includeDac, includeDacExtension)
+				: GetExtensionInDescendingOrder(dacType, dacExtension, extensionBaseType, pxContext, includeDac, includeDacExtension);
 		}
 
+
 		private static IEnumerable<ITypeSymbol> GetExtensionInAscendingOrder(ITypeSymbol dacType, ITypeSymbol dacExtension,
-																			 INamedTypeSymbol extensionBaseType, PXContext pxContext, bool includeDac)
+																			 INamedTypeSymbol extensionBaseType, PXContext pxContext, 
+																			 bool includeDac, bool includeDacExtension)
 		{
 			int dacIndex = extensionBaseType.TypeArguments.Length - 1;
 			var extensions = new List<ITypeSymbol>(capacity: extensionBaseType.TypeArguments.Length);
@@ -184,16 +203,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				extensions.Add(baseExtension);      //According to Platform team we shouldn't consider case when the extensions chaining mixes with .Net inheritance
 			}
 
-			extensions.AddRange(dacExtension.GetDacExtensionWithBaseTypes().Reverse());
+			if (includeDacExtension)
+				extensions.AddRange(dacExtension.GetDacExtensionWithBaseTypes().Reverse());
+			
 			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
 
 		private static IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder(ITypeSymbol dacType, ITypeSymbol dacExtension,
-																			  INamedTypeSymbol extensionBaseType, PXContext pxContext, bool includeDac)
+																			  INamedTypeSymbol extensionBaseType, PXContext pxContext, 
+																			  bool includeDac, bool includeDacExtension)
 		{
 			int dacIndex = extensionBaseType.TypeArguments.Length - 1;
 			var extensions = new List<ITypeSymbol>(capacity: extensionBaseType.TypeArguments.Length);
-			extensions.AddRange(dacExtension.GetDacExtensionWithBaseTypes());
+
+			if (includeDacExtension)
+				extensions.AddRange(dacExtension.GetDacExtensionWithBaseTypes());
 
 			for (int i = 0; i <= dacIndex - 1; i++)
 			{

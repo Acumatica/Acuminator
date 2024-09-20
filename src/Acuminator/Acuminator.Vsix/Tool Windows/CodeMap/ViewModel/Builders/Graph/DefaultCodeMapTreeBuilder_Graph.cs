@@ -11,6 +11,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 
 using Microsoft.CodeAnalysis;
 
@@ -206,7 +207,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var hasViewDelegate = viewNode.MemberCategory.GraphSemanticModel.ViewDelegatesByNames.TryGetValue(viewNode.MemberSymbol.Name,
 																											  out DataViewDelegateInfo? viewDelegate);
 			return hasViewDelegate
-				? new GraphMemberInfoNodeViewModel(viewNode, viewDelegate!, GraphMemberInfoType.ViewDelegate).ToEnumerable()
+				? new GraphMemberInfoNodeViewModel(viewNode, viewDelegate!, GraphMemberInfoType.ViewDelegate, ExpandCreatedNodes).ToEnumerable()
 				: DefaultValue;
 		}
 
@@ -216,7 +217,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				actionNode.MemberCategory.GraphSemanticModel.ActionHandlersByNames.TryGetValue(actionNode.MemberSymbol.Name,
 																							   out ActionHandlerInfo? actionHandler);
 			return hasActionHandler
-				? new GraphMemberInfoNodeViewModel(actionNode, actionHandler!, GraphMemberInfoType.ActionHandler).ToEnumerable()
+				? new GraphMemberInfoNodeViewModel(actionNode, actionHandler!, GraphMemberInfoType.ActionHandler, ExpandCreatedNodes).ToEnumerable()
 				: DefaultValue;
 		}
 

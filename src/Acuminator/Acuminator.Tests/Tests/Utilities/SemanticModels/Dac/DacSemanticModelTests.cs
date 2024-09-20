@@ -53,6 +53,9 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 
 			dacSemanticModel.DacType.Should().Be(DacType.Dac);
 
+			dacSemanticModel.DacOrDacExtInfo.Should().NotBeNull();
+			dacSemanticModel.DacOrDacExtInfo.Base.Should().NotBeNull();
+
 			// Check that fields from base types from PX.Objects were collected
 			TestDacFields(dacSemanticModel, ["docType", "refNbr", "noteID"], minFieldsCount: 4);
 
@@ -78,6 +81,9 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac
 			var dacSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
 
 			dacSemanticModel.DacType.Should().Be(DacType.Dac);
+
+			dacSemanticModel.DacOrDacExtInfo.Should().NotBeNull();
+			dacSemanticModel.DacOrDacExtInfo.Base.Should().NotBeNull();
 
 			TestDacFields(dacSemanticModel, requiredDacFields: ["OrderType", "OrderNbr", "CreatedByID", "CreatedByScreenID", "CreatedDateTime"], 
 						  fieldsCount: 5);

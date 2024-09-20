@@ -12,6 +12,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		#region Roots
 		public virtual TResult VisitNode(DacNodeViewModel dac) => DefaultVisit(dac);
+
+		public virtual TResult VisitNode(BaseDacPlaceholderNodeViewModel baseDac) => DefaultVisit(baseDac);
 		#endregion
 
 		#region Categories
@@ -21,10 +23,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategory) =>
 			DefaultVisit(dacInitializationAndActivationCategory);
+
+		public virtual TResult VisitNode(DacBaseTypesCategoryNodeViewModel dacBaseTypesCategory) => DefaultVisit(dacBaseTypesCategory);
 		#endregion
 
 		#region Leaf Nodes
-		public virtual TResult VisitNode(DacFieldGroupingNodeViewModel dacField) => DefaultVisit(dacField);
+		public virtual TResult VisitNode(DacFieldNodeViewModel dacField) => DefaultVisit(dacField);
 
 		public virtual TResult VisitNode(IsActiveDacMethodNodeViewModel isActiveDacMethodNode) =>
 			DefaultVisit(isActiveDacMethodNode);

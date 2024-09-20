@@ -1,0 +1,322 @@
+﻿<UserControl x:Class="Acuminator.Vsix.ToolWindows.CodeMap.CodeMapSearchBoxControl"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+			 xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+			 xmlns:codeMap="clr-namespace:Acuminator.Vsix.ToolWindows.CodeMap"
+			 xmlns:filter="clr-namespace:Acuminator.Vsix.ToolWindows.CodeMap.Filter"
+			 xmlns:utils="clr-namespace:Acuminator.Utilities.Common;assembly=Acuminator.Utilities"
+			 xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
+			 mc:Ignorable="d" 
+			 d:DesignHeight="20" d:DesignWidth="200"
+			 d:DataContext="{d:DesignInstance Type={x:Type filter:FilterViewModel}, IsDesignTimeCreatable=True}">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="../../../Resources/Themes/Styles.xaml"/>
+				<ResourceDictionary>
+					<!--#region Converters-->
+					<converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+					<converters:StringIsNonEmptyToBoolConverter x:Key="stringIsNonEmptyConverter"/>
+					<!--#endregion-->
+
+					<!--#region Border Contaner Style-->
+					<Style x:Key="SearchBoxContainerStyle" TargetType="Border">
+						<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:SearchControlColors.UnfocusedBrushKey}}"/>
+						<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:SearchControlColors.UnfocusedBorderBrushKey}}"/>
+
+						<Style.Triggers>
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedBackgroundBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedBorderBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=Text, Mode=OneWay, 
+																 Converter={StaticResource stringIsNonEmptyConverter}}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:SearchControlColors.SearchActiveBackgroundBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:SearchControlColors.UnfocusedBorderBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverBackgroundBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverBorderBrushKey}}"/>
+							</MultiTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:SearchControlColors.DisabledBrushKey}}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:SearchControlColors.DisabledBorderBrushKey}}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<!--#region -->
+					
+					<!--#region Search Box Style-->
+					<Style x:Key="SearchBoxStyle" TargetType="{x:Type TextBox}">
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.UnfocusedTextBrushKey}}"/>
+
+						<Style.Triggers>
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsKeyboardFocused" Value="True"/>
+									<Condition Property="IsMouseOver" Value="False"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedBackgroundTextBrushKey}}"/>
+							</MultiTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text, Mode=OneWay, 
+														 Converter={StaticResource stringIsNonEmptyConverter}}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.SearchActiveBackgroundTextBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverBackgroundTextBrushKey}}"/>
+							</MultiTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.DisabledTextBrushKey }}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<!--#endregion-->
+
+					<!--#region Watermark Style-->
+					<Style x:Key="WatermarkStyle" TargetType="{x:Type TextBlock}">
+						<Setter Property="Visibility" Value="Collapsed"/>
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.UnfocusedWatermarkTextBrushKey}}"/>
+
+						<Style.Triggers>
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+														 Converter={StaticResource stringIsNonEmptyConverter}}" Value="False"/>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+									   Value="False"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Visibility" Value="Visible"/>
+							</MultiDataTrigger>
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="Visibility" Value="Visible"/>
+									<Condition Property="IsMouseOver" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverWatermarkTextBrushKey}}"/>
+							</MultiTrigger>
+						</Style.Triggers>
+					</Style>
+					<!--#endregion-->
+					
+					<!--#region Clear Button Style-->
+					<Style x:Key="ClearButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource vsButtonStyle}">
+						<Style.Resources>
+							<Style TargetType="Border">
+								<Setter Property="CornerRadius" Value="0" />
+							</Style>
+						</Style.Resources>
+						
+						<Setter Property="Visibility" Value="Collapsed"/>
+						<Setter Property="IsEnabled" Value="False"/>
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ClearGlyphBrushKey}}"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding ElementName=SearchTextBox, Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+												   Converter={StaticResource stringIsNonEmptyConverter}}" Value="True">
+								<Setter Property="Visibility" Value="Visible"/>
+								<Setter Property="IsEnabled" Value="True"/>
+							</DataTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedClearGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverClearGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:SearchControlColors.DisabledBrushKey }}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<!--#region -->
+					
+					<!--#region SearchGlyph Icon-->
+					<Style x:Key="SearchGlyphIconStyle" TargetType="Path">
+						<Setter Property="Visibility" Value="Visible"/>
+						<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.SearchGlyphBrushKey}}"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding ElementName=ClearButton, Path=Visibility, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+								 Value="Visible">
+								<Setter Property="Visibility" Value="Collapsed"/>
+								<Setter Property="IsEnabled" Value="False"/>
+							</DataTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverSearchGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedSearchGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonMouseOverGlyphBrushKey}}"/>
+							</MultiTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonDisabledGlyphBrushKey}}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<!--#endregion-->
+
+					<!--#region ClearGlyph Icon-->
+					<Style x:Key="ClearGlyphIconStyle" TargetType="Path">
+						<Setter Property="Visibility" Value="Visible"/>
+						<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ClearGlyphBrushKey}}"/>
+
+						<Style.Triggers>
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.MouseOverClearGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding ElementName=SearchTextBox, Path=IsKeyboardFocused, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding ElementName=Bd, Path=IsMouseOver, Mode=OneWay}" Value="False"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.FocusedClearGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsMouseOver" Value="True"/>
+									<Condition Property="IsEnabled" Value="True"/>
+								</MultiTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonMouseOverGlyphBrushKey}}"/>
+							</MultiTrigger>
+
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, 
+																 Path=IsPressed, Mode=OneWay}" Value="True"/>
+									<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Mode=OneWay}" Value="True"/>
+								</MultiDataTrigger.Conditions>
+
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonMouseDownGlyphBrushKey}}"/>
+							</MultiDataTrigger>
+
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Fill" Value="{DynamicResource {x:Static platformUI:SearchControlColors.ActionButtonDisabledGlyphBrushKey}}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<!--#endregion-->
+				</ResourceDictionary>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Border Name="Bd" BorderThickness="1" Style="{StaticResource SearchBoxContainerStyle}">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+
+			<TextBox Name="SearchTextBox" x:FieldModifier="private" Grid.Column="0" BorderThickness="0" Padding="2,0"
+					 TextChanged="SearchTextBox_TextChanged" Background="Transparent" VerticalAlignment="Center"
+					 Text="{Binding Path=FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}"
+					 CaretBrush="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+					 ToolTip="Type words to filter Code Map" Style="{StaticResource SearchBoxStyle}"/>
+
+			<TextBlock x:Name="WatermarkTextBlock" IsHitTestVisible="False" Text="Search..." Focusable="False" Margin="5,0,0,0" Background="Transparent"
+					   VerticalAlignment="Center" Style="{StaticResource WatermarkStyle}"/>
+
+			<Button x:Name="ClearButton" Grid.Column="1" Focusable="False" Padding="0" BorderThickness="0" Background="Transparent"
+					Command="{Binding Path=ClearCommand}" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="18" MaxWidth="18" 
+					MinHeight="21" MaxHeight="21" ToolTip="Clear filter" Style="{StaticResource ClearButtonStyle}">
+
+				<Path x:Name="ClearGlyphIcon" SnapsToDevicePixels="True" VerticalAlignment="Center" HorizontalAlignment="Center"
+					  StrokeThickness="1" Style="{StaticResource ClearGlyphIconStyle}" MinHeight="8" MaxHeight="8" MinWidth="8" MaxWidth="8" 
+					  Data="F1M0,1L1,0 4,3 7,0 8,1 5,4 8,7 7,8 4,5 1,8 0,7 3,4 0,1z"/>
+			</Button>
+
+			<Path x:Name="SearchGlyphIcon" Grid.Column="1" Margin="3,1" Focusable="False" SnapsToDevicePixels="True"
+				  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MaxWidth="14" MinWidth="14" MaxHeight="14" MinHeight="14"
+				  ToolTip="Type words to filter Code Map" StrokeThickness="1" Style="{StaticResource SearchGlyphIconStyle}"
+				  Data="F1M8.5,7C7.12,7 6,5.88 6,4.5 6,3.12 7.12,2 8.5,2 9.88,2 11,3.12 11,4.5 11,5.88 9.88,7 8.5,7z M8.5,0C6.02,0 4,2.02 4,4.5 4,5.23 4.19,5.9
+						 4.49,6.5L0,11 2,13 6.49,8.51C7.1,8.81 7.77,9 8.5,9 11,9 13,7 13,4.5 13,2.02 11,0 8.5,0z"/>
+		</Grid>
+	</Border>
+</UserControl>

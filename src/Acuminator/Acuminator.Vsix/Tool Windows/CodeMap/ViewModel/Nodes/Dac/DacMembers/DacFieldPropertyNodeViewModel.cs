@@ -30,8 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			var attributeStrings = Children.OfType<AttributeNodeViewModel>()
-										   .Select(attribute => attribute.CalculateTooltip().Tooltip);
+			var attributeStrings = AllChildren.OfType<AttributeNodeViewModel>()
+											  .Select(attribute => attribute.CalculateTooltip().Tooltip);
 			string aggregatedTooltip = string.Join(Environment.NewLine, attributeStrings);
 			return aggregatedTooltip.IsNullOrWhiteSpace()
 				? null

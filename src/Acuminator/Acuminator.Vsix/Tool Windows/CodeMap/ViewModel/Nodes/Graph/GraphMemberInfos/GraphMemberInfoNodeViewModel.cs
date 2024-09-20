@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
@@ -17,6 +19,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class GraphMemberInfoNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
 	{
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
+
 		public GraphMemberNodeViewModel GraphMember { get; }
 
 		public SymbolItem GraphMemberInfoData { get; }
@@ -35,18 +39,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override bool DisplayNodeWithoutChildren => true;
-
 		public GraphMemberInfoNodeViewModel(GraphMemberNodeViewModel graphMemberVM, SymbolItem memberInfoData, 
-											GraphMemberInfoType graphMemberInfoType, bool isExpanded = false) :
-									  base(graphMemberVM?.Tree!, graphMemberVM, isExpanded)
+											GraphMemberInfoType graphMemberInfoType, bool isExpanded) :
+										base(graphMemberVM?.Tree!, graphMemberVM, isExpanded)
 		{
 			GraphMemberInfoData = memberInfoData.CheckIfNull();
 			GraphMember = graphMemberVM!;
 			GraphMemberInfoType = graphMemberInfoType;
 		}
 
-		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
+		public override Task NavigateToItemAsync() =>
+			TryNavigateToItemWithVisualStudioWorkspace(GraphMemberInfoSymbol)
+				? Task.CompletedTask
+				: GraphMemberInfoSymbol.NavigateToAsync();
 
 		private static Icon GetIconType(GraphMemberInfoType graphMemberInfoType) =>
 			graphMemberInfoType switch

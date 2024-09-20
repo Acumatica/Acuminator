@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacInitializationAndActivationCategoryNodeViewModel : DacMemberCategoryNodeViewModel
@@ -11,8 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Icon NodeIcon => Icon.InitializationAndActivationDacCategory;
 
-		public DacInitializationAndActivationCategoryNodeViewModel(DacNodeViewModel dacViewModel, bool isExpanded) : 
-															  base(dacViewModel, DacMemberCategory.InitializationAndActivation, isExpanded)
+		public DacInitializationAndActivationCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, bool isExpanded) : 
+															  base(dacViewModel, parent, DacMemberCategory.InitializationAndActivation, isExpanded)
 		{		
 		}
 

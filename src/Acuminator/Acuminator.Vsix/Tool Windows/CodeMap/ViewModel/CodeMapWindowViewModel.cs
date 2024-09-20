@@ -7,22 +7,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Community.VisualStudio.Toolkit;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Shell.Interop;
+using Community.VisualStudio.Toolkit;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Threading;
 
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.Common;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -30,6 +31,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private readonly CodeMapDteEventsObserver _dteEventsObserver;
 		private CancellationTokenSource? _cancellationTokenSource;
+
+		public event EventHandler<FilterEventArgs>? AfterCodeMapTreeIsFiltered;
 
 		public TreeBuilderBase TreeBuilder
 		{
@@ -101,6 +104,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public FilterViewModel FilterVM { get; }
+
 		public CancellationToken? CancellationToken => _cancellationTokenSource?.Token;
 
 		private bool _isCalculating;
@@ -108,7 +113,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public bool IsCalculating
 		{
 			get => _isCalculating;
-			private set 
+			internal set 
 			{
 				if (_isCalculating != value)
 				{
@@ -161,6 +166,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
+			FilterVM = new FilterViewModel();
+			FilterVM.FilterChanged += FilterVM_FilterChanged;
 
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
@@ -245,12 +252,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			IsCalculating = false;
+			FilterVM.IsFiltering = false;
 			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
 		private async Task RefreshCodeMapAsync(IWpfTextView? activeWpfTextView = null, Document? activeDocument = null)
 		{
-			if (IsCalculating)
+			if (IsCalculating || FilterVM.IsFiltering)
 				return;
 
 			if (!ThreadHelper.CheckAccess())
@@ -401,7 +409,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (!isSuccess || cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
 						return;
 
-					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
+					FilterOptions filterOptions = FilterVM.CreateFilterOptionsFromCurrentFilter();
+					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, filterOptions, expandRoots: true, expandChildren: false, cancellationToken);
 
 					if (newTreeVM == null)
 						return;
@@ -409,6 +418,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 					Tree = newTreeVM;
+					AfterCodeMapTreeIsFiltered?.Invoke(this, new FilterEventArgs(filterOptions, oldFilterText: null));
 				}
 			}
 			catch (OperationCanceledException)
@@ -424,21 +434,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel? node)
 		{
-			if (node != null)
-			{
-				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
-			}
+			node?.ExpandOrCollapseAll(expand: !node.IsExpanded);
 		}
 
 		protected override void OnVsColorThemeChanged(ThemeChangedEventArgs e)
 		{
 			base.OnVsColorThemeChanged(e);
 
+			// VS theme is refreshed for all nodes, not only for visible ones
 			if (Tree?.AllItems.Count is null or 0)
 				return;
 
 			foreach (var node in Tree.AllItems)
 				node.OnVsColorThemeChanged(e);
+		}
+
+		private void FilterVM_FilterChanged(object sender, FilterEventArgs e)
+		{
+			Tree?.RefreshNodesVisibleInFilter(e.FilterOptions);
+
+			AfterCodeMapTreeIsFiltered?.Invoke(this, e);
 		}
 	}
 }

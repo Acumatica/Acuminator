@@ -8,6 +8,8 @@ using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
+using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
@@ -19,6 +21,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class GraphNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		private int _currentNavigationIndex;
+
+		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
 
 		public GraphSemanticModelForCodeMap CodeMapGraphModel { get; }
 
@@ -33,8 +37,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => GraphSemanticModel.GraphType == GraphType.PXGraph
 			? Icon.Graph
 			: Icon.GraphExtension;
-
-		public override bool DisplayNodeWithoutChildren => true;
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
@@ -61,7 +63,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Task NavigateToItemAsync()
 		{
-			if (GraphSemanticModel.IsInMetadata)
+			if (TryNavigateToItemWithVisualStudioWorkspace(GraphSemanticModel.Symbol) || GraphSemanticModel.IsInMetadata)
 				return Task.CompletedTask;
 
 			var syntaxReferences = GraphSemanticModel.Symbol.DeclaringSyntaxReferences;
@@ -86,7 +88,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
-			var graphAttributesGroupNode = Children.OfType<GraphAttributesGroupNodeViewModel>().FirstOrDefault();
+			var graphAttributesGroupNode = AllChildren.OfType<GraphAttributesGroupNodeViewModel>().FirstOrDefault();
 			return graphAttributesGroupNode is IElementWithTooltip elementWithTooltip
 				? elementWithTooltip.CalculateTooltip()
 				: null;

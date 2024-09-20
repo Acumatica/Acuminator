@@ -8,25 +8,27 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Outlining;
-using Microsoft.VisualStudio.Threading;
-
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
-using Document = Microsoft.CodeAnalysis.Document;
-using Shell =  Microsoft.VisualStudio.Shell;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.LanguageServices;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
+using Microsoft.VisualStudio.Threading;
 
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
+
+using Shell = Microsoft.VisualStudio.Shell;
+
+using Document = Microsoft.CodeAnalysis.Document;
+using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 namespace Acuminator.Vsix.GoToDeclaration
 {
@@ -182,12 +184,19 @@ namespace Acuminator.Vsix.GoToDeclaration
 		private async Task NavigateToPXActionHandlerAsync(Document document, IWpfTextView textView, ISymbol actionSymbol,
 														  PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
-			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo? actionHandler))
+			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo? actionHandler) ||
+				actionHandler == null)
+			{
 				return;
+			}
 
+			// Try to navigate to the symbol using Visual Studio workspace
+			if (TryNavigateToSymbolWithVisualStudioWorkspace(document, actionHandler.Symbol))
+				return;
+			
 			IWpfTextView? textViewToNavigateTo = textView;
 
-			if (actionHandler?.Node is not MethodDeclarationSyntax handlerNode || handlerNode.SyntaxTree == null)
+			if (actionHandler.Node is not MethodDeclarationSyntax handlerNode || handlerNode.SyntaxTree == null)
 				return;
 
 			if (handlerNode.SyntaxTree.FilePath != document.FilePath)
@@ -223,6 +232,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 								 .FirstOrDefault();
 			}
 
+			// Try to navigate to the symbol using Visual Studio workspace
+			if (TryNavigateToSymbolWithVisualStudioWorkspace(document, viewDelegateInfoToNavigateTo.Symbol))
+				return;
+
 			if (viewDelegateInfoToNavigateTo.Node is not MethodDeclarationSyntax methodNode || methodNode.SyntaxTree == null)
 				return;
 
@@ -247,6 +260,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 			ISymbol? symbolToNavigate = GetActionOrViewSymbolToNavigateTo(methodSymbol, graphSemanticModel, context);
 
 			if (symbolToNavigate == null || Package.DisposalToken.IsCancellationRequested)
+				return;
+
+			// Try to navigate to the symbol using Visual Studio workspace
+			if (TryNavigateToSymbolWithVisualStudioWorkspace(document, symbolToNavigate))
 				return;
 
 			ImmutableArray<SyntaxReference> syntaxReferences = symbolToNavigate.DeclaringSyntaxReferences;
@@ -280,6 +297,14 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 
 			await SetNewPositionInTextViewAsync(textView, textSpan);
+		}
+
+		private bool TryNavigateToSymbolWithVisualStudioWorkspace(Document document, ISymbol symbol)
+		{
+			if (document.Project?.Solution?.Workspace is VisualStudioWorkspace workspace)
+				return workspace.TryGoToDefinition(symbol, document.Project, Package.DisposalToken);
+
+			return false;
 		}
 
 		private static ISymbol? GetActionOrViewSymbolToNavigateTo(IMethodSymbol methodSymbol, PXGraphSemanticModel graphSemanticModel,
