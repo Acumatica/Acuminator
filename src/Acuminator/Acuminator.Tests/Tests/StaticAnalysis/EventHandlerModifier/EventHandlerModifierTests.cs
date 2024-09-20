@@ -53,5 +53,45 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 				Descriptors.PX1077_EventHandlersShouldNotBePrivate.CreateFor(8, 16)
 			);
 		}
+
+		[Theory]
+		[EmbeddedFileData("ContainerWithInterface_Expected.cs")]
+		public async Task ExpectedFileCheck_ExplicitInterfaceImplementations(string source)
+		{
+			// The test should return exactly two errors. There is no code fix for the explicit interface implementations.
+
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(12, 26),
+				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations.CreateFor(17, 26)
+			);
+		}
+
+		[Theory]
+		[EmbeddedFileData("InvalidHandlerModifier_Expected.cs")]
+		public async Task ExpectedFileCheck_WrongModifiers(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source);
+		}
+
+		[Theory]
+		[EmbeddedFileData("PrivateModifier_Expected.cs")]
+		public async Task ExpectedFilesCheck_PrivateModifiers(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source);
+		}
+
+		[Theory]
+		[EmbeddedFileData("PrivateModifierComments_Expected.cs")]
+		public async Task ExpectedFilesCheck_PrivateModifierWithComments(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source);
+		}
+
+		[Theory]
+		[EmbeddedFileData("SealedContainer_Expected.cs")]
+		public async Task ExpectedFilesCheck_SealedContainer(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source);
+		}
 	}
 }
