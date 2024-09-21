@@ -201,7 +201,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 															 string newBqlFieldTypeName, string bqlFieldName,
 															 CancellationToken cancellation)
 		{
-			if (nodeWithDiagnostic is not IdentifierNameSyntax bqlFieldTypeNode || !IsBqlFieldTypeNode(bqlFieldTypeNode))
+			bool isAttributesField = bqlFieldName.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase);
+
+			if (nodeWithDiagnostic is not IdentifierNameSyntax bqlFieldTypeNode || !IsBqlFieldTypeNode(bqlFieldTypeNode) || isAttributesField)
 			{
 				return ChangeEntireBqlFieldTypeAsync(document, root, nodeWithDiagnostic, newBqlFieldTypeName,
 													 bqlFieldName, cancellation);
