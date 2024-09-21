@@ -73,14 +73,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				.FirstOrDefault(t => t.IsGenericType && t.InheritsFromOrEqualsGeneric(pxContext.BqlConstantType!))?
 				.TypeArguments[0];
 
-			if (constantUnderlyingType == null || constantUnderlyingType.Name.IsNullOrWhiteSpace())
+			if (constantUnderlyingType == null)
 				return false;
 
-			var constantDataTypeName = new DataTypeName(constantUnderlyingType.Name);
+			var constantUnderlyingTypeSimpleName = constantUnderlyingType.GetSimplifiedName();
+
+			if (constantUnderlyingTypeSimpleName.IsNullOrWhiteSpace())
+				return false;
+
+			var constantDataTypeName = new DataTypeName(constantUnderlyingTypeSimpleName);
 
 			if (DataTypeToBqlFieldTypeMapping.ContainsDataType(constantDataTypeName))
 			{
-				constantType = constantUnderlyingType.Name;
+				constantType = constantDataTypeName.Value;
 				return true;
 			}
 
