@@ -37,8 +37,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			{ "byte[]"   , "BqlByteArray" },
 			{ "ByteArray", "BqlByteArray" },
 
-			{ "string[]"   , "BqlAttributes" },
-			{ "StringArray", "BqlAttributes" }
+			{ "string[]"   , TypeNames.BqlField.BqlAttributes },
+			{ "StringArray", TypeNames.BqlField.BqlAttributes }
 		};
 
 		private static readonly Dictionary<string, string> _bqlFieldTypeToDataType = new(StringComparer.OrdinalIgnoreCase)
@@ -55,7 +55,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			{ "BqlDouble"	 , nameof(Double)  },
 			{ "BqlDecimal"	 , nameof(Decimal) },
 			{ "BqlByteArray" , $"byte[]" 	   },
-			{ "BqlAttributes", $"string[]" 	   }
+
+			{ TypeNames.BqlField.BqlAttributes, $"string[]" }
 		};
 
 		public static bool ContainsDataType(DataTypeName dataType) =>

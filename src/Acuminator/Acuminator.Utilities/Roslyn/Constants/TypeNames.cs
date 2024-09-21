@@ -50,6 +50,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string IBqlField = "IBqlField";
 			public const string Field	  = "Field";
 			public const string BqlType   = "BqlType";
+
+			public const string BqlAttributes = "BqlAttributes";
 		}
 
 		/// <summary>
