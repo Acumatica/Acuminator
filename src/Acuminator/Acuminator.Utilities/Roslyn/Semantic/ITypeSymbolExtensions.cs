@@ -665,5 +665,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			typeSymbol.CheckIfNull(nameof(typeSymbol))
 					  .GetContainingTypesAndThis()
 					  .All(type => type.DeclaredAccessibility == Accessibility.Public);
+
+		/// <summary>
+		/// Check if <paramref name="typeSymbol"/> type is one dimensional string array.
+		/// </summary>
+		/// <param name="typeSymbol">The type to act on.</param>
+		/// <returns>
+		/// True if one dimensional string array, false if not.
+		/// </returns>
+		public static bool IsOneDimensionalStringArray(this ITypeSymbol? typeSymbol) =>
+			typeSymbol is IArrayTypeSymbol arrayType && arrayType.Rank == 1 && 
+			arrayType.ElementType.SpecialType == SpecialType.System_String;
 	}
 }
