@@ -8,12 +8,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
+namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 {
-	public class EventHandlerModifierAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class ForbidPrivateEventHandlersAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(
+				Descriptors.PX1077_EventHandlersShouldNotBePrivate,
 				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual,
 				Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations);
 		
@@ -38,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 				.GetAllEvents()
 				.Where(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphOrGraphExtension.Symbol));
 
-			var allInterfaces = graphOrGraphExtension
+			var allInterfaceMethods = graphOrGraphExtension
 				.Symbol
 				.AllInterfaces
 				.SelectMany(im => im.GetMethods())
@@ -70,13 +71,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location, properties));
 				}
-				else if (!IsImplicitInterfaceImplementation(handler.Symbol, allInterfaces))
+				else if (!IsImplicitInterfaceImplementation(handler.Symbol, allInterfaceMethods))
 				{
+					var targetAccessibility = handler.Symbol.ContainingType.IsSealed ? Accessibility.Public : Accessibility.Protected;
+					var addVirtualModifier = !handler.Symbol.ContainingType.IsSealed && !handler.Symbol.IsAbstract;
+
+					properties.Add(DiagnosticProperty.AddVirtualModifier, addVirtualModifier.ToString());
 					properties.Add(StaticAnalysis.DiagnosticProperty.RegisterCodeFix, true.ToString());
 
-					var targetAccessibility = handler.Symbol.ContainingType.IsSealed ? Accessibility.Public : Accessibility.Protected;
-
-					if (!(handler.Symbol.IsVirtual || handler.Symbol.ContainingType.IsSealed) || handler.Symbol.DeclaredAccessibility != targetAccessibility)
+					if (!(handler.Symbol.IsVirtual || handler.Symbol.ContainingType.IsSealed || handler.Symbol.IsAbstract) || handler.Symbol.DeclaredAccessibility != targetAccessibility)
 					{
 						if (handler.Symbol.DeclaredAccessibility == Accessibility.Private)
 						{
@@ -84,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 						}
 						else
 						{
-							var modifierText = GetModifierFormatArg(AccessibilitySyntaxKindMap[targetAccessibility], !handler.Symbol.ContainingType.IsSealed);
+							var modifierText = GetModifierFormatArg(AccessibilitySyntaxKindMap[targetAccessibility], addVirtualModifier);
 							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties.ToImmutableDictionary(), modifierText));
 						}
 					}
@@ -104,9 +107,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 			return modifierFormatArg;
 		}
 
-		private static bool IsImplicitInterfaceImplementation(IMethodSymbol method, List<IMethodSymbol> allInterfaces)
+		private static bool IsImplicitInterfaceImplementation(IMethodSymbol method, List<IMethodSymbol> allInterfaceMethods)
 		{
-			return allInterfaces.Any(im =>
+			return allInterfaceMethods.Any(im =>
 				method.ContainingType.FindImplementationForInterfaceMember(im)?.Equals(method, SymbolEqualityComparer.Default) ?? false);
 		}
 	}
@@ -114,8 +117,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers
 	internal static class DiagnosticProperty
 	{
 		/// <summary>
-		/// The property used to pass the information whether the containing type is selaed or not. 
+		/// The property used to pass the information whether the containing type is sealed or not. 
 		/// </summary>
 		public const string IsContainingTypeSealed = nameof(IsContainingTypeSealed);
+
+		/// <summary>
+		/// The property used to pass the information whether to add virtual modifier or not. 
+		/// </summary>
+		public const string AddVirtualModifier = nameof(AddVirtualModifier);
 	}
 }

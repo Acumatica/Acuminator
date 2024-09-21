@@ -17,7 +17,7 @@ using Acuminator.Analyzers.StaticAnalysis.NameConventionEventsInGraphsAndGraphEx
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicGraphsDacsAndExtensions;
 using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
-using Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers;
+using Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationInGraphInWrongPlaces;
 using Acuminator.Analyzers.StaticAnalysis.PXOverrideMismatch;
@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			new StaticFieldOrPropertyInGraphAnalyzer(),
 			new TypoInViewAndActionHandlerNameAnalyzer(),
 			new PXOverrideMismatchAnalyzer(),
-			new EventHandlerModifierAnalyzer())
+			new ForbidPrivateEventHandlersAnalyzer())
 		{
 		}
 

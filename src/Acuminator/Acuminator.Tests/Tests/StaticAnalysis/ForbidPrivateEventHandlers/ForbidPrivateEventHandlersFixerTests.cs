@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier;
-using Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers;
+using Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -9,18 +8,18 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
+namespace Acuminator.Tests.Tests.StaticAnalysis.ForbidPrivateEventHandlers
 {
-	public class EventHandlerModifierFixerTests : CodeFixVerifier
+	public class ForbidPrivateEventHandlersFixerTests : CodeFixVerifier
 	{
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new EventHandlerProtectedModifierFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new ForbidPrivateEventHandlersFix();
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default
 									.WithRecursiveAnalysisEnabled()
 									.WithStaticAnalysisEnabled()
 									.WithSuppressionMechanismDisabled(),
-				new EventHandlerModifierAnalyzer());
+				new ForbidPrivateEventHandlersAnalyzer());
 
 
 		[Theory]
@@ -56,9 +55,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		}
 
 		[Theory]
-		[EmbeddedFileData("PrivateModifierComments.cs",
-						  "PrivateModifierComments_Expected.cs")]
+		[EmbeddedFileData("ModifierComments.cs",
+						  "ModifierComments_Expected.cs")]
 		public async Task Test_Modifiers_With_Comments(string actual, string expected)
+		{
+			await VerifyCSharpFixAsync(actual, expected);
+		}
+
+		[Theory]
+		[EmbeddedFileData("AbstractHandler.cs",
+						  "AbstractHandler_Expected.cs")]
+		public async Task Test_Abstract_modifier(string actual, string expected)
 		{
 			await VerifyCSharpFixAsync(actual, expected);
 		}

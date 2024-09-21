@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
 using Microsoft.CodeAnalysis.Text;
-using Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers;
+using Acuminator.Utilities.Common;
 
-namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
+namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class EventHandlerProtectedModifierFix : PXCodeFixProvider
+	public class ForbidPrivateEventHandlersFix : PXCodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(
@@ -27,8 +27,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var registerCodeFix = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.RegisterCodeFix);
-			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, PrivateEventHandlers.DiagnosticProperty.IsContainingTypeSealed);
+			var registerCodeFix = DiagnosticUtils.IsFlagSet(diagnostic, StaticAnalysis.DiagnosticProperty.RegisterCodeFix);
+			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.IsContainingTypeSealed);
+			var addVirtualModifier = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.AddVirtualModifier);
 
 			if (!registerCodeFix)
 			{
@@ -39,9 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 				? SyntaxKind.PublicKeyword
 				: SyntaxKind.ProtectedKeyword;
 
-			var addVirtualModifier = !isContainingTypeSealed;
-
-			var modifierFormatArg = EventHandlerModifierAnalyzer.GetModifierFormatArg(accessibilityModifier, addVirtualModifier);
+			var modifierFormatArg = ForbidPrivateEventHandlersAnalyzer.GetModifierFormatArg(accessibilityModifier, addVirtualModifier);
 
 			var makeProtectedTitle = nameof(Resources.PX1077Fix).GetLocalized(modifierFormatArg).ToString();
 
@@ -52,13 +51,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 			var codeFixAction = CodeAction.Create(
 				makeProtectedTitle,
 				cToken => ChangeAccessibilityModifierAsync(context.Document, context.Span, accessibilityModifier, addVirtualModifier, cToken),
-				equivalenceKey: makeProtectedTitle);
+				equivalenceKey: Resources.PX1077Fix);
 
 			context.RegisterCodeFix(codeFixAction, diagnostic);
 			return Task.CompletedTask;
 		}
 
-		private static readonly List<SyntaxKind> AccessibilityModifiers =
+		private static readonly List<SyntaxKind> ModifiersToBeRemoved =
 		[
 			SyntaxKind.PrivateKeyword,
 			SyntaxKind.PublicKeyword,
@@ -83,46 +82,52 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlerModifier
 				return document;
 			}
 
-			var index = GetFirstModifierIndex(method);
-
 			var newToken = SyntaxFactory.Token(accessibilityModifier);
-			if (index > -1)
+			var firstToken = method.Modifiers.FirstOrDefault();
+			var removeLeadingTriviaFromReturnType = firstToken == default;
+
+			if (firstToken != default)
 			{
-				newToken = newToken.WithTriviaFrom(method.Modifiers[index]);
+				newToken = newToken.WithTriviaFrom(firstToken);
+			}
+			else
+			{
+				newToken = newToken.WithLeadingTrivia(method.ReturnType.GetLeadingTrivia());
+
 			}
 
-			var newModifiers = method.Modifiers.Where(m => !AccessibilityModifiers.Contains(m.Kind()));
-
-			var syntaxModifiers = SyntaxFactory.TokenList(newToken);
+			var modifiers = new List<SyntaxToken>
+			{
+				newToken
+			};
 
 			if (addVirtual)
 			{
-				syntaxModifiers = syntaxModifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
+				modifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
 			}
 
-			syntaxModifiers = syntaxModifiers.AddRange(newModifiers);
+			var restOfModifiers = method.Modifiers.Select(m => SyntaxFactory.Token(m.Kind())).ToList();
 
-			var localDeclaration = method.WithModifiers(syntaxModifiers);
+			if (firstToken != default && !ModifiersToBeRemoved.Contains(firstToken.Kind()))
+			{
+				modifiers.Add(SyntaxFactory.Token(firstToken.Kind()));
+				modifiers.AddRange(restOfModifiers.Skip(1).Where(m => !ModifiersToBeRemoved.Contains(m.Kind())));
+			}
+			else
+			{
+				modifiers.AddRange(restOfModifiers.Where(m => !ModifiersToBeRemoved.Contains(m.Kind())));
+			}
+
+			var localDeclaration = method.WithModifiers(SyntaxFactory.TokenList(modifiers));
+			if (removeLeadingTriviaFromReturnType)
+			{
+				localDeclaration = localDeclaration.WithReturnType(localDeclaration.ReturnType.WithoutLeadingTrivia());
+			}
 
 			var oldRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var newRoot = oldRoot!.ReplaceNode(method, localDeclaration);
 
 			return document.WithSyntaxRoot(newRoot);
-		}
-
-		private static int GetFirstModifierIndex(MethodDeclarationSyntax method)
-		{
-			var index = -1;
-			for (var i = 0; i < method.Modifiers.Count; i++)
-			{
-				if (AccessibilityModifiers.Contains(method.Modifiers[i].Kind()))
-				{
-					index = i;
-					break;
-				}
-			}
-
-			return index;
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.PrivateEventHandlers;
+using Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -8,16 +8,16 @@ using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
+namespace Acuminator.Tests.Tests.StaticAnalysis.ForbidPrivateEventHandlers
 {
-	public class EventHandlerModifierTests : DiagnosticVerifier
+	public class ForbidPrivateEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphAnalyzer(
 				CodeAnalysisSettings.Default
 									.WithRecursiveAnalysisEnabled()
 									.WithStaticAnalysisEnabled()
 									.WithSuppressionMechanismDisabled(),
-				new EventHandlerModifierAnalyzer());
+				new ForbidPrivateEventHandlersAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("PrivateModifier.cs")]
@@ -55,6 +55,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		}
 
 		[Theory]
+		[EmbeddedFileData("AbstractHandler.cs")]
+		public async Task AbstractHandler(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source,
+				Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual.CreateFor(8, 24, "protected")
+			);
+		}
+
+		[Theory]
 		[EmbeddedFileData("ContainerWithInterface_Expected.cs")]
 		public async Task ExpectedFileCheck_ExplicitInterfaceImplementations(string source)
 		{
@@ -81,8 +90,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		}
 
 		[Theory]
-		[EmbeddedFileData("PrivateModifierComments_Expected.cs")]
-		public async Task ExpectedFilesCheck_PrivateModifierWithComments(string source)
+		[EmbeddedFileData("ModifierComments_Expected.cs")]
+		public async Task ExpectedFilesCheck_ModifierWithComments(string source)
 		{
 			await VerifyCSharpDiagnosticAsync(source);
 		}
@@ -90,6 +99,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.EventHandlerModifier
 		[Theory]
 		[EmbeddedFileData("SealedContainer_Expected.cs")]
 		public async Task ExpectedFilesCheck_SealedContainer(string source)
+		{
+			await VerifyCSharpDiagnosticAsync(source);
+		}
+
+		[Theory]
+		[EmbeddedFileData("AbstractHandler_Expected.cs")]
+		public async Task ExpectedFilesCheck_AbstractHandler(string source)
 		{
 			await VerifyCSharpDiagnosticAsync(source);
 		}

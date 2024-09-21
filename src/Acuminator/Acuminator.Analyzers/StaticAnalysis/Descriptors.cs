@@ -414,7 +414,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1077", nameof(Resources.PX1077Title_EventHandlersShouldNotBePrivate).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1077);
 
 		public static DiagnosticDescriptor PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations { get; } =
-			Rule("PX1077", nameof(Resources.PX1077Title_ExplicitInterfaceImplementation).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1077);
+			Rule("PX1077", nameof(Resources.PX1077Title_ExplicitInterfaceImplementation).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1077);
 
 		public static DiagnosticDescriptor PX1080_DataViewDelegateLongOperationStart { get; } =
 			Rule("PX1080", nameof(Resources.PX1080Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1080);
