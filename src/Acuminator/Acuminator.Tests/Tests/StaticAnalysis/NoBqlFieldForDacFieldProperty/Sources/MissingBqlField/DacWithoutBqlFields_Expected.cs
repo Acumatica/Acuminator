@@ -121,5 +121,10 @@ namespace PX.Analyzers.Test.Sources
 
 		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
 		public bool HasGuidField => GuidField != null;
+
+		public abstract class attributes : PX.Objects.CR.BqlAttributes.Field<attributes> { }
+
+		[PXUIField]
+		public virtual string[] Attributes { get; set; }
 	}
 }
