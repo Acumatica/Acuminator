@@ -7,8 +7,8 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDerived;
 
 internal readonly record struct NotRedeclaredBqlFieldInfo(string DacFieldName, string NameOfBaseDacDeclaringBqlField, string BqlFieldName,
-														  string? BqlFieldType, Location Location, bool IsReportedOnProperty)
+														  string? BqlFieldType, Location Location)
 {
 	public string GetBqlFieldWithTypeDataString() => 
-		$"{BqlFieldName}{Separators.TypePartSeparator}{BqlFieldType.NullIfWhiteSpace() ?? string.Empty}";
+		$"{BqlFieldName}{Constants.TypePartSeparator}{BqlFieldType.NullIfWhiteSpace() ?? string.Empty}";
 }
