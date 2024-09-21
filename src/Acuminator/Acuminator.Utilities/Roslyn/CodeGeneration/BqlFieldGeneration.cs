@@ -90,16 +90,34 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 						.WithGreaterThanToken(
 							Token(leading: TriviaList(), SyntaxKind.GreaterThanToken, TriviaList(Space))));
 
+			bool isAttributesBqlField = bqlFieldName.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase); 
+			QualifiedNameSyntax bqlFieldNamespaceName;
+
+			if (isAttributesBqlField)
+			{
+				bqlFieldNamespaceName =
+					QualifiedName(
+						QualifiedName(
+							IdentifierName("PX"),
+							IdentifierName("Objects")),
+							IdentifierName("CR"));
+			}
+			else
+			{
+				bqlFieldNamespaceName =
+					QualifiedName(
+						QualifiedName(
+							IdentifierName("PX"),
+							IdentifierName("Data")),
+							IdentifierName("BQL"));
+			}
+
 			var newBaseType =
 				SimpleBaseType(
 					QualifiedName(
 						QualifiedName(
-							QualifiedName(
-								QualifiedName(
-									IdentifierName("PX"),
-									IdentifierName("Data")),
-									IdentifierName("BQL")),
-									IdentifierName(bqlFieldTypeName)),
+							bqlFieldNamespaceName,
+							IdentifierName(bqlFieldTypeName)),
 						fieldTypeNode));
 
 			return newBaseType;
