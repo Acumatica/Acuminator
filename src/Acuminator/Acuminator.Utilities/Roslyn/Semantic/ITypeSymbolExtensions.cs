@@ -416,7 +416,39 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
-		/// An INamedTypeSymbol extension method that gets CLR-style full type name from type.
+		/// A <see cref="String"/> extension method that removes the empty spaces in array type names described by dataTypeName.
+		/// </summary>
+		/// <exception cref="ArgumentException">Thrown when one or more arguments have unsupported or illegal values.</exception>
+		/// <param name="dataTypeName">The dataTypeName to act on.</param>
+		/// <returns>
+		/// A string.
+		/// </returns>
+		public static string RemoveEmptySpacesInArrayTypeNames(this string dataTypeName)
+		{
+			dataTypeName.ThrowOnNullOrWhiteSpace();
+
+			bool isArrayTypeName = dataTypeName[^1] == ']';
+
+			if (!isArrayTypeName)
+				return dataTypeName;
+			else if (dataTypeName.Length <= 2)
+				throw new ArgumentException($"Invalid data type name \"{dataTypeName}\"", nameof(dataTypeName));
+
+			// if there is no empty spaces in array, return the original string
+			if (dataTypeName[^2] == '[' && !char.IsWhiteSpace(dataTypeName[^3]))
+				return dataTypeName;
+
+			int indexOfOpeningSquareBracket = dataTypeName.LastIndexOf('[');
+
+			if (indexOfOpeningSquareBracket < 0)
+				throw new ArgumentException($"Invalid data type name \"{dataTypeName}\"", nameof(dataTypeName));
+
+			var elementTypeName = dataTypeName[..indexOfOpeningSquareBracket].Trim();
+			return $"{elementTypeName}[]";
+		}
+
+		/// <summary>
+		/// An <see cref="INamedTypeSymbol"/> extension method that gets CLR-style full type name from type.
 		/// </summary>
 		/// <param name="typeSymbol">The typeSymbol to act on.</param>
 		/// <returns/>
