@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
+using PX.Objects.CR;
 
 namespace PX.Analyzers.Test.Sources
 {
@@ -56,5 +56,9 @@ namespace PX.Analyzers.Test.Sources
 		public abstract class legacyBinaryField : PX.Data.BQL.BqlByteArray.Field<legacyBinaryField> { }
 		[PXDBBinary]
 		public byte[] LegacyBinaryField { get; set; }
+
+		public abstract class attributes : PX.Objects.CR.BqlAttributes.Field<attributes> { }
+		[CRAttributesField(typeof(CRQuote.opportunityClassID))]
+		public virtual string[] Attributes { get; set; }
 	}
 }
