@@ -90,7 +90,8 @@ namespace Acuminator.Utilities.Roslyn.CodeGeneration
 						.WithGreaterThanToken(
 							Token(leading: TriviaList(), SyntaxKind.GreaterThanToken, TriviaList(Space))));
 
-			bool isAttributesBqlField = bqlFieldName.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase); 
+			bool isAttributesBqlField = bqlFieldName.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase) &&
+										bqlFieldTypeName.Equals(TypeNames.BqlField.BqlAttributes, StringComparison.OrdinalIgnoreCase); 
 			QualifiedNameSyntax bqlFieldNamespaceName;
 
 			if (isAttributesBqlField)
