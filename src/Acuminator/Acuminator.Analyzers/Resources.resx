@@ -609,10 +609,28 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1066TitleFormat" xml:space="preserve">
     <value>A possible typo in the BQL field name. The DAC field property name for this BQL field: {0}.</value>
   </data>
-  <data name="PX1067FixFormat" xml:space="preserve">
+  <data name="PX1067From_2_To_5_FieldsFixFormat" xml:space="preserve">
+    <value>Redeclare the {0} BQL fields in the "{1}" DAC</value>
+  </data>
+  <data name="PX1067From_2_To_5_FieldsTitleFormat" xml:space="preserve">
+    <value>BQL fields from a base DAC should be redeclared in the derived DAC. The "{0}" DAC does not contain a redeclaration of {1} BQL fields.</value>
+  </data>
+  <data name="PX1067MoreThan5FieldsFixFormat" xml:space="preserve">
+    <value>Redeclare the {0} and {1} more BQL {2} in the "{3}" DAC</value>
+  </data>
+  <data name="PX1067MoreThan5FieldsTitleFormat" xml:space="preserve">
+    <value>BQL fields from a base DAC should be redeclared in the derived DAC. The "{0}" DAC does not contain a redeclaration of {1} and {2} more BQL {3}.</value>
+  </data>
+  <data name="PX1067MoreThan5Fields_RemainderMultipleFields" xml:space="preserve">
+    <value>fields</value>
+  </data>
+  <data name="PX1067MoreThan5Fields_RemainderSingleField" xml:space="preserve">
+    <value>field</value>
+  </data>
+  <data name="PX1067SingleFieldFixFormat" xml:space="preserve">
     <value>Redeclare the "{0}" BQL field in the "{1}" DAC</value>
   </data>
-  <data name="PX1067TitleFormat" xml:space="preserve">
+  <data name="PX1067SingleFieldTitleFormat" xml:space="preserve">
     <value>BQL fields from a base DAC should be redeclared in the derived DAC. The "{0}" DAC does not contain a redeclaration of the "{1}" BQL field declared in the "{2}" base DAC.</value>
   </data>
   <data name="PX1068FixBqlType" xml:space="preserve">
