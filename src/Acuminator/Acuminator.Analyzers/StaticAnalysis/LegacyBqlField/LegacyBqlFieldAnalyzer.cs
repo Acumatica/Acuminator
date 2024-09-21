@@ -17,8 +17,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 {
 	public class LegacyBqlFieldAnalyzer : DacAggregatedAnalyzerBase
 	{
-		private const string StringArray = "string[]";
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1060_LegacyBqlField);
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
@@ -49,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 					continue;
 
 				// Is field type is string array, then show diagnostic warning only for the Attributes field
-				if (propertyDataTypeName.Value.Equals(StringArray, StringComparison.OrdinalIgnoreCase) &&
+				if (propertyDataTypeName.Value.Equals(TypeNames.StringArray, StringComparison.OrdinalIgnoreCase) &&
 					!property.Name.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase))
 				{
 					continue;

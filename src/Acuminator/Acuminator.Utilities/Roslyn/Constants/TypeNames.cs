@@ -105,6 +105,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 				StringComparer.OrdinalIgnoreCase);
 		}
 
+		public const string StringArray = "string[]";
+
 		public const string PXView = "PXView";
 
 		public const string PXAdapter = "PXAdapter";
