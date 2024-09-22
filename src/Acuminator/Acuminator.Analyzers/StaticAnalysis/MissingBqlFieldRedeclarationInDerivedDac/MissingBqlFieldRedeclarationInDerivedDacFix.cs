@@ -208,7 +208,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 
 			int dacMembersCount = dacNode.Members.Count;
 			var newMembers = dacNode.Members;
-			var orderedNewFields = newBqlFields.OrderByDescending(fieldWithIndex => fieldWithIndex.IndexToInsert);
+			var orderedNewFields = newBqlFields.OrderByDescending(fieldWithIndex => fieldWithIndex.IndexToInsert)
+											   .ToList(newBqlFields.Count);
+
+			var lastFieldInsertedAtTheEnd  = orderedNewFields.LastOrDefault(field => field.IndexToInsert == dacMembersCount);
 			bool insertedSomeFieldAtTheEnd = false;
 
 			foreach (var (newBqlFieldNode, relatedProperty, indexToInsert) in orderedNewFields)
@@ -218,19 +221,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 				if (relatedProperty != null)
 				{
 					var relatedPropertyWithoutRegions = CodeGeneration.RemoveRegionsFromLeadingTrivia(relatedProperty);
-					newMembers = newMembers.Replace(relatedProperty, relatedPropertyWithoutRegions);
+
+					// Do this two step replacement of relatedProperty indtead of ReplaceNode because relatedProperty won't be found in the new syntax tree
+					newMembers = newMembers.RemoveAt(indexToInsert);
+					newMembers = newMembers.Insert(indexToInsert, relatedPropertyWithoutRegions);
 				}
+
+				var newBqlFieldNodeWithTrivia = ReferenceEquals(lastFieldInsertedAtTheEnd.NewBqlNode, newBqlFieldNode)
+					? CodeGeneration.CopyRegionsFromTrivia(newBqlFieldNode, dacNode.CloseBraceToken.LeadingTrivia)
+					: newBqlFieldNode;
 
 				bool insertAtTheEnd = indexToInsert == dacMembersCount;
 
 				if (insertAtTheEnd)
 				{
-					var newBqlFieldNodeWithRegions = CodeGeneration.CopyRegionsFromTrivia(newBqlFieldNode, dacNode.CloseBraceToken.LeadingTrivia);
-					newMembers = newMembers.Add(newBqlFieldNodeWithRegions);
+					newMembers = newMembers.Add(newBqlFieldNodeWithTrivia);
 					insertedSomeFieldAtTheEnd = true;
 				}
 				else
-					newMembers = newMembers.Insert(indexToInsert, newBqlFieldNode);
+					newMembers = newMembers.Insert(indexToInsert, newBqlFieldNodeWithTrivia);
+
+				dacMembersCount++;
 			}
 
 			return (newMembers, insertedSomeFieldAtTheEnd);
