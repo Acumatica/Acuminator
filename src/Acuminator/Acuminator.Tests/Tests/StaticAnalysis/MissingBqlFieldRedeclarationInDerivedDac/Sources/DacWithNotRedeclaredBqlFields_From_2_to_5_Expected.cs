@@ -13,13 +13,13 @@ namespace PX.Analyzers.Test.Sources
 		[PXUIField(DisplayName = "Shipment Nbr.")]
 		public override int? ShipmentNbr { get; set; }
 		#endregion
-		public new abstract class Tstamp : PX.Data.BQL.BqlByteArray.Field<Tstamp> { }
-
-		public new abstract class status : PX.Data.BQL.BqlString.Field<status> { }
+		public new abstract class Tstamp3 : PX.Data.BQL.BqlByteArray.Field<Tstamp3> { }
 
 		public new abstract class Tstamp2 : PX.Data.BQL.BqlByteArray.Field<Tstamp2> { }
 
-		public new abstract class Tstamp3 : PX.Data.BQL.BqlByteArray.Field<Tstamp3> { }
+		public new abstract class status : PX.Data.BQL.BqlString.Field<status> { }
+
+		public new abstract class Tstamp : PX.Data.BQL.BqlByteArray.Field<Tstamp> { }
 	}
 
 	[PXHidden]
