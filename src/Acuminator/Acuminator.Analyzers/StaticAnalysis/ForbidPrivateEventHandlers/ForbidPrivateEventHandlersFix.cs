@@ -27,14 +27,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var registerCodeFix = DiagnosticUtils.IsFlagSet(diagnostic, StaticAnalysis.DiagnosticProperty.RegisterCodeFix);
-			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.IsContainingTypeSealed);
-			var addVirtualModifier = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.AddVirtualModifier);
-
-			if (!registerCodeFix)
+			if (!diagnostic.IsRegisteredForCodeFix(false))
 			{
 				return Task.CompletedTask;
 			}
+
+			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.IsContainingTypeSealed);
+			var addVirtualModifier = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.AddVirtualModifier);
 
 			var accessibilityModifier = isContainingTypeSealed
 				? SyntaxKind.PublicKeyword
@@ -84,16 +83,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 
 			var newToken = SyntaxFactory.Token(accessibilityModifier);
 			var firstToken = method.Modifiers.FirstOrDefault();
-			var removeLeadingTriviaFromReturnType = firstToken == default;
+			var hasModifiers = firstToken != default;
 
-			if (firstToken != default)
-			{
-				newToken = newToken.WithTriviaFrom(firstToken);
-			}
-			else
-			{
-				newToken = newToken.WithLeadingTrivia(method.ReturnType.GetLeadingTrivia());
+			// Preserve the leading trivia of the first token, if it exists. If not, take over the leading trivia from the return type.
+			newToken = hasModifiers ?
+				newToken.WithTriviaFrom(firstToken) :
+				newToken.WithLeadingTrivia(method.ReturnType.GetLeadingTrivia());
 
+			if (hasModifiers)
+			{
+				// Preserve the leading and trailing trivia of the modifiers that are about to be removed.
+
+				var modifiersToBeRemoved = method.Modifiers
+					.Skip(1) // skip the first token, as the trivia from it was already handled.
+					.Where(m => ModifiersToBeRemoved.Contains(m.Kind()));
+
+				var leadingTrivia = modifiersToBeRemoved.SelectMany(m => m.LeadingTrivia);
+				var trailingTrivia = modifiersToBeRemoved.SelectMany(m => m.TrailingTrivia);
+
+				if (leadingTrivia.Count() > 0)
+				{
+					newToken = newToken.WithLeadingTrivia(leadingTrivia);
+				}
+
+				if (trailingTrivia.Count() > 0)
+				{
+					newToken = newToken.WithTrailingTrivia(trailingTrivia);
+				}
 			}
 
 			var modifiers = new List<SyntaxToken>
@@ -106,28 +122,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 				modifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
 			}
 
-			var restOfModifiers = method.Modifiers.Select(m => SyntaxFactory.Token(m.Kind())).ToList();
-
-			if (firstToken != default && !ModifiersToBeRemoved.Contains(firstToken.Kind()))
+			if (hasModifiers && !ModifiersToBeRemoved.Contains(firstToken.Kind()))
 			{
-				modifiers.Add(SyntaxFactory.Token(firstToken.Kind()));
-				modifiers.AddRange(restOfModifiers.Skip(1).Where(m => !ModifiersToBeRemoved.Contains(m.Kind())));
+				// if the previously first token was not a modifier to be removed, we need to add it back _without_ the leading trivia.
+				// That's why we add it separately first, and then we add the rest.
+
+				modifiers.Add(SyntaxFactory.Token(firstToken.Kind()).WithTrailingTrivia(firstToken.TrailingTrivia));
+				modifiers.AddRange(FilterModifiers(method.Modifiers, 1));
 			}
 			else
 			{
-				modifiers.AddRange(restOfModifiers.Where(m => !ModifiersToBeRemoved.Contains(m.Kind())));
+				modifiers.AddRange(FilterModifiers(method.Modifiers, 0));
 			}
 
-			var localDeclaration = method.WithModifiers(SyntaxFactory.TokenList(modifiers));
-			if (removeLeadingTriviaFromReturnType)
+			var newMethod = method.WithModifiers(SyntaxFactory.TokenList(modifiers));
+
+			if (!hasModifiers)
 			{
-				localDeclaration = localDeclaration.WithReturnType(localDeclaration.ReturnType.WithoutLeadingTrivia());
+				// if there are no modifiers in the original method, we took over the leading trivia from the return type to the new modifier token.
+				// now we need to remove it (the leading trivia) from the return type token.
+				newMethod = newMethod.WithReturnType(newMethod.ReturnType.WithoutLeadingTrivia());
 			}
 
 			var oldRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			var newRoot = oldRoot!.ReplaceNode(method, localDeclaration);
+			var newRoot = oldRoot!.ReplaceNode(method, newMethod);
 
 			return document.WithSyntaxRoot(newRoot);
 		}
+
+		private static IEnumerable<SyntaxToken> FilterModifiers(SyntaxTokenList modifiers, int skip)
+			=> modifiers
+				.Skip(skip)
+				.Where(m => !ModifiersToBeRemoved.Contains(m.Kind()));
 	}
 }

@@ -62,33 +62,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 					continue;
 				}
 
-				var properties = new Dictionary<string, string?>
-				{
-					{ DiagnosticProperty.IsContainingTypeSealed, handler.Symbol.ContainingType.IsSealed.ToString() }
-				};
-
 				if (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location, properties));
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location));
 				}
 				else if (!IsImplicitInterfaceImplementation(handler.Symbol, allInterfaceMethods))
 				{
 					var targetAccessibility = handler.Symbol.ContainingType.IsSealed ? Accessibility.Public : Accessibility.Protected;
 					var addVirtualModifier = !handler.Symbol.ContainingType.IsSealed && !handler.Symbol.IsAbstract;
 
-					properties.Add(DiagnosticProperty.AddVirtualModifier, addVirtualModifier.ToString());
-					properties.Add(StaticAnalysis.DiagnosticProperty.RegisterCodeFix, true.ToString());
+					var properties = new Dictionary<string, string?>
+					{
+						{ DiagnosticProperty.IsContainingTypeSealed, handler.Symbol.ContainingType.IsSealed.ToString() },
+						{ DiagnosticProperty.AddVirtualModifier, addVirtualModifier.ToString() },
+						{ StaticAnalysis.DiagnosticProperty.RegisterCodeFix, true.ToString() }
+					}.ToImmutableDictionary();
 
-					if (!(handler.Symbol.IsVirtual || handler.Symbol.ContainingType.IsSealed || handler.Symbol.IsAbstract) || handler.Symbol.DeclaredAccessibility != targetAccessibility)
+					if ((!handler.Symbol.IsVirtual && addVirtualModifier) || handler.Symbol.DeclaredAccessibility != targetAccessibility)
 					{
 						if (handler.Symbol.DeclaredAccessibility == Accessibility.Private)
 						{
-							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBePrivate, location, properties.ToImmutableDictionary()));
+							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBePrivate, location, properties));
 						}
 						else
 						{
 							var modifierText = GetModifierFormatArg(AccessibilitySyntaxKindMap[targetAccessibility], addVirtualModifier);
-							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties.ToImmutableDictionary(), modifierText));
+							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties, modifierText));
 						}
 					}
 				}

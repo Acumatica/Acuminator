@@ -29,6 +29,15 @@ namespace Acuminator.Tests.Sources
 
 		// comments
 		abstract public void HandleCacheAttachedApproverID(Events.CacheAttached<PX.Objects.AR.ARInvoice.approverID> e);
+
+		// comments
+		abstract void _(Events.CacheAttached<PX.Objects.AR.ARInvoice.refNbr> e);
+
+		// comments
+		public abstract /* new */ void _(Events.CacheAttached<PX.Objects.AR.ARInvoice.docType> e);
+
+		// comments
+		abstract /* new */ public /* further comments */ void _(Events.CacheAttached<PX.Objects.AR.ARInvoice.curyDocBal> e);
 	}
 
 	public class MyExtension : PXGraphExtension<MyGraph>
