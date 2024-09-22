@@ -18,6 +18,26 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MissingBqlFieldRedeclarationInDe
 {
 	public class MissingBqlFieldRedeclarationInDerivedDacTests : CodeFixVerifier
 	{
+		#region Single Field
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_SingleField.cs")]
+		public async Task Dac_WithoutRedeclaredBqlFields_SingleField(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_SingleField
+						   .CreateFor(8, 15, "DerivedDac", "status", "BaseDac"));
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_SingleField.cs", "DacWithNotRedeclaredBqlFields_SingleField_Expected.cs")]
+		public async Task Dac_RedeclareBqlFields_SingleField_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_SingleField_Expected.cs")]
+		public async Task Dac_WithRedeclaredBqlFields_SingleField_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
+
+		#region 2 to 5 Fields
 		[Theory]
 		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_From_2_to_5.cs")]
 		public async Task Dac_WithoutRedeclaredBqlFields_From_2_To_5_Fields(string actual) =>
@@ -27,13 +47,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MissingBqlFieldRedeclarationInDe
 
 		[Theory]
 		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_From_2_to_5.cs", "DacWithNotRedeclaredBqlFields_From_2_to_5_Expected.cs")]
-		public async Task Dac_RedeclareBqlFields_From_2_To_5_Fields_CodeFix(string actual, string expected) => 
+		public async Task Dac_RedeclareBqlFields_From_2_To_5_Fields_CodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_From_2_to_5_Expected.cs")]
 		public async Task Dac_WithRedeclaredBqlFields_From_2_To_5_Fields_AfterFix_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
 			new DacAnalyzersAggregator(

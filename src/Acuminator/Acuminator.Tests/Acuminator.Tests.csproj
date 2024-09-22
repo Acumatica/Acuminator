@@ -99,6 +99,8 @@
     <Compile Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\MissingBqlFieldRedeclarationInDerivedDacTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_From_2_to_5_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_From_2_to_5.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_SingleField_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_SingleField.cs" />
     <Compile Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\NameConventionEventsInGraphsAndGraphExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached_Expected.cs" />
