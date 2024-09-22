@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 				return Task.CompletedTask;
 			}
 
-			var notRedeclaredBqlFields = ParseBqlFieldDataString(bqlFieldDataString).ToList();
+			var notRedeclaredBqlFields = ParseBqlFieldDataString(bqlFieldDataString).OrderBy(field => field).ToList();
 
 			if (notRedeclaredBqlFields.Count == 0)
 				return Task.CompletedTask;
@@ -180,8 +180,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 																		List<(string BqlFieldName, string? BqlFieldTypeName)> bqlFieldsToRedeclare,
 																		CancellationToken cancellationToken)
 		{
-			bqlFieldsToRedeclare.Sort();
-
 			for (int i = 0; i < bqlFieldsToRedeclare.Count; i++)
 			{
 				var(bqlFieldName, bqlFieldTypeName)		 = bqlFieldsToRedeclare[i];
