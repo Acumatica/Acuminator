@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -73,14 +74,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				.FirstOrDefault(t => t.IsGenericType && t.InheritsFromOrEqualsGeneric(pxContext.BqlConstantType!))?
 				.TypeArguments[0];
 
-			if (constantUnderlyingType == null || constantUnderlyingType.Name.IsNullOrWhiteSpace())
+			if (constantUnderlyingType == null || constantUnderlyingType is IArrayTypeSymbol || constantUnderlyingType.Name.IsNullOrWhiteSpace())
 				return false;
 
 			var constantDataTypeName = new DataTypeName(constantUnderlyingType.Name);
+			var constantBqlFieldType = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(constantDataTypeName);
 
-			if (DataTypeToBqlFieldTypeMapping.ContainsDataType(constantDataTypeName))
+			if (constantBqlFieldType != null)
 			{
-				constantType = constantUnderlyingType.Name;
+				constantType = constantDataTypeName.Value;
 				return true;
 			}
 

@@ -33,7 +33,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(12, 46),
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(15, 10),
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(19, 34),
-				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(22, 18));
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(22, 18),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(33, 38));
 
 		[Theory]
 		[EmbeddedFileData("DacWithInconsistentTypes_BqlFieldFirst.cs", "DacWithInconsistentTypes_BqlFieldFirst_Expected.cs")]
@@ -56,7 +57,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(20, 18),
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(22, 34),
 				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(27, 18),
-				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(29, 46));
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(29, 46),
+				Descriptors.PX1068_PropertyAndBqlFieldTypesMismatch.CreateFor(41, 18));
 
 		[Theory]
 		[EmbeddedFileData("DacWithInconsistentTypes_PropertyFirst.cs", "DacWithInconsistentTypes_PropertyFirst_Expected.cs")]

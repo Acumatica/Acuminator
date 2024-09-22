@@ -34,5 +34,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol IBqlDecimal => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlDecimalType)!;
 
 		public INamedTypeSymbol IBqlByteArray => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlByteArrayType)!;
+
+		public INamedTypeSymbol? IBqlAttributes => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlAttributes);
 	}
 }

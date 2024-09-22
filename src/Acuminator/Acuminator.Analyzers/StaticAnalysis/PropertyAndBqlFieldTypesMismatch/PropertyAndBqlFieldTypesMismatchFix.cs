@@ -116,6 +116,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			cancellation.ThrowIfCancellationRequested();
 
 			var newPropertyType = CreateDataTypeNode(newPropertyDataTypeName, makePropertyTypeNullable);
+
+			if (newPropertyType == null)
+				return Task.FromResult(document);
+
 			var newPropertyNode = propertyNode.WithType(newPropertyType);
 			var newRoot			= root.ReplaceNode(propertyNode, newPropertyNode);
 
@@ -125,13 +129,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 			return Task.FromResult(newDocument);
 		}
 
-		private TypeSyntax CreateDataTypeNode(string dataTypeName, bool makePropertyTypeNullable)
-		{			
-			int indexOfOpeningSquareBracket = dataTypeName.LastIndexOf('[');
-			bool isArrayType = indexOfOpeningSquareBracket >= 0;
-
+		private TypeSyntax? CreateDataTypeNode(string dataTypeName, bool makePropertyTypeNullable)
+		{
+			bool isArrayType = dataTypeName[^1] == ']';
+			
 			if (isArrayType)
 			{
+				int indexOfOpeningSquareBracket = dataTypeName.LastIndexOf('[');
+
+				if (indexOfOpeningSquareBracket < 0)
+					return null;
+
 				var elementTypeName	   = dataTypeName[..indexOfOpeningSquareBracket].Trim();
 				var predefinedTypeKind = GetPredefinedTypeKind(elementTypeName);
 
@@ -193,7 +201,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PropertyAndBqlFieldTypesMismatch
 															 string newBqlFieldTypeName, string bqlFieldName,
 															 CancellationToken cancellation)
 		{
-			if (nodeWithDiagnostic is not IdentifierNameSyntax bqlFieldTypeNode || !IsBqlFieldTypeNode(bqlFieldTypeNode))
+			bool isAttributesField = bqlFieldName.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase);
+
+			if (nodeWithDiagnostic is not IdentifierNameSyntax bqlFieldTypeNode || !IsBqlFieldTypeNode(bqlFieldTypeNode) || isAttributesField)
 			{
 				return ChangeEntireBqlFieldTypeAsync(document, root, nodeWithDiagnostic, newBqlFieldTypeName,
 													 bqlFieldName, cancellation);

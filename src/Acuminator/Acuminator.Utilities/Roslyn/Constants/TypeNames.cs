@@ -50,6 +50,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string IBqlField = "IBqlField";
 			public const string Field	  = "Field";
 			public const string BqlType   = "BqlType";
+
+			public const string BqlAttributes = "BqlAttributes";
 		}
 
 		/// <summary>
@@ -102,6 +104,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 				],
 				StringComparer.OrdinalIgnoreCase);
 		}
+
+		public const string StringArray = "string[]";
 
 		public const string PXView = "PXView";
 

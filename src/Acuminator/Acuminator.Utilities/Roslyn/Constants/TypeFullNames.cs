@@ -111,6 +111,7 @@
 		internal const string IBqlDoubleType = "PX.Data.BQL.IBqlDouble";
 		internal const string IBqlDecimalType = "PX.Data.BQL.IBqlDecimal";
 		internal const string IBqlByteArrayType = "PX.Data.BQL.IBqlByteArray";
+		internal const string IBqlAttributes = "PX.Objects.CR.IBqlAttributes";
 
 		internal const string CustomPredicate = "PX.Data.CustomPredicate";
 		internal const string AreSame2 = "PX.Data.AreSame`2";

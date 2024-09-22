@@ -6,6 +6,8 @@ using System.Linq;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
@@ -63,22 +65,42 @@ public class PropertyAndBqlFieldTypesMismatchAnalyzer : DacAggregatedAnalyzerBas
 
 		bool makePropertyTypeNullable = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.IsValueType;
 		string propertyTypeName		  = declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable!.GetSimplifiedName();
-		string? bqlFieldDataTypeName  = declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.GetSimplifiedName();
-		string? bqlFieldName		  = GetBqlFieldName(declaredDacFieldWithMismatchingTypes);
+		
+		string? bqlFieldName	 = GetBqlFieldName(declaredDacFieldWithMismatchingTypes);
+		var bqlFieldDataTypeName = new DataTypeName(declaredDacFieldWithMismatchingTypes.BqlFieldDataTypeEffective!.GetSimplifiedName());
+		string? bqlFieldTypeName = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(bqlFieldDataTypeName);
+
+		// Report property or BQL field of the Attributes DAC field only if their types are different from the default types for the Attributes field 
+		bool isAttributesField = declaredDacFieldWithMismatchingTypes.Name.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase);
+		bool reportDiagnosicOnPropertyType, reportDiagnosticOnBqlFieldType;
+
+		if (isAttributesField)
+		{
+			reportDiagnosicOnPropertyType  = !declaredDacFieldWithMismatchingTypes.PropertyTypeUnwrappedNullable.IsOneDimensionalStringArray();
+			reportDiagnosticOnBqlFieldType = !TypeNames.BqlField.BqlAttributes.Equals(bqlFieldTypeName, StringComparison.OrdinalIgnoreCase);
+
+			if (!reportDiagnosicOnPropertyType && !reportDiagnosticOnBqlFieldType)
+				return;
+		}
+		else
+		{
+			reportDiagnosicOnPropertyType  = true;
+			reportDiagnosticOnBqlFieldType = true;
+		}
 
 		var sharedProperties = new Dictionary<string, string?>
 		{
 			{ DiagnosticProperty.PropertyType					, propertyTypeName },
-			{ DiagnosticProperty.BqlFieldDataType				, bqlFieldDataTypeName },
+			{ DiagnosticProperty.BqlFieldDataType				, bqlFieldDataTypeName.Value },
 			{ DiagnosticProperty.BqlFieldName					, bqlFieldName },
 			{ PX1068DiagnosticProperty.MakePropertyTypeNullable , makePropertyTypeNullable.ToString() }
 		}
 		.ToImmutableDictionary();
 
-		if (propertyTypeLocation != null)
+		if (propertyTypeLocation != null && reportDiagnosicOnPropertyType)
 			ReportDiagnostic(isProperty: true, symbolContext, pxContext, propertyTypeLocation, sharedProperties);
 
-		if (bqlTypeLocation != null)
+		if (bqlTypeLocation != null && reportDiagnosticOnBqlFieldType)
 			ReportDiagnostic(isProperty: false, symbolContext, pxContext, bqlTypeLocation, sharedProperties);
 	}
 

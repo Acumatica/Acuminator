@@ -37,7 +37,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlField
 				Descriptors.PX1060_LegacyBqlField.CreateFor(44, 25, "legacyStringField"),
 				Descriptors.PX1060_LegacyBqlField.CreateFor(48, 25, "legacyDateField"),
 				Descriptors.PX1060_LegacyBqlField.CreateFor(52, 25, "legacyGuidField"),
-				Descriptors.PX1060_LegacyBqlField.CreateFor(56, 25, "legacyBinaryField"));
+				Descriptors.PX1060_LegacyBqlField.CreateFor(56, 25, "legacyBinaryField"),
+				Descriptors.PX1060_LegacyBqlField.CreateFor(60, 25, "attributes"));
 
 		[Theory]
 		[EmbeddedFileData("LegacyBqlFieldBad.cs", "LegacyBqlFieldBad_Expected.cs")]
