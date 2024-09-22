@@ -127,7 +127,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 				// if the previously first token was not a modifier to be removed, we need to add it back _without_ the leading trivia.
 				// That's why we add it separately first, and then we add the rest.
 
-				modifiers.Add(SyntaxFactory.Token(firstToken.Kind()).WithTrailingTrivia(firstToken.TrailingTrivia));
+				modifiers.Add(firstToken.WithoutTrivia().WithTrailingTrivia(firstToken.TrailingTrivia));
 				modifiers.AddRange(FilterModifiers(method.Modifiers, 1));
 			}
 			else
