@@ -20,6 +20,8 @@ namespace PX.Analyzers.Test.Sources
 		public new abstract class Tstamp : PX.Data.BQL.BqlByteArray.Field<Tstamp> { }
 
 		public new abstract class status : PX.Data.BQL.BqlString.Field<status> { }
+
+		public new abstract class opportunityIsActive : PX.Data.BQL.BqlBool.Field<opportunityIsActive> { }
 	}
 
 	[PXHidden]
@@ -54,6 +56,13 @@ namespace PX.Analyzers.Test.Sources
 		public virtual byte[] tstamp3 { get; set; }
 
 		public abstract class Tstamp3 : IBqlField { }
+		#endregion
+
+		#region OpportunityIsActive
+		public abstract class opportunityIsActive : PX.Data.BQL.BqlBool.Field<opportunityIsActive> { }
+
+		[PXDBBool]
+		public virtual bool? OpportunityIsActive { get; set; }
 		#endregion
 	}
 }

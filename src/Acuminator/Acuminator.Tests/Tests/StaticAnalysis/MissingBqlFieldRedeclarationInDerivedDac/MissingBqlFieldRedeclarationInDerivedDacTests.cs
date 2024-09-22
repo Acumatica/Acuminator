@@ -56,6 +56,27 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MissingBqlFieldRedeclarationInDe
 			await VerifyCSharpDiagnosticAsync(actual);
 		#endregion
 
+		#region More than 5 Fields
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_MoreThan5.cs")]
+		public async Task Dac_WithoutRedeclaredBqlFields_MoreThan5_Fields(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_MoreThan5Fields
+						   .CreateFor(8, 15, 
+									  "DerivedDac", "\"Tstamp\", \"status\", \"Tstamp2\", \"Tstamp3\", \"opportunityIsActive\"", 
+									  1, Acuminator.Analyzers.Resources.PX1067MoreThan5Fields_RemainderSingleField));
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_MoreThan5.cs", "DacWithNotRedeclaredBqlFields_MoreThan5_Expected.cs")]
+		public async Task Dac_RedeclareBqlFields_MoreThan5_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_MoreThan5_Expected.cs")]
+		public async Task Dac_WithRedeclaredBqlFields_MoreThan5_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
+
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
