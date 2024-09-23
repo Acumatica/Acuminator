@@ -36,9 +36,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			SortDirection = defaultSortDirection;
 		}
 
-		public IReadOnlyCollection<TreeNodeViewModel> SortGeneratedChildren(TreeNodeViewModel parentNode, 
-															 IReadOnlyCollection<TreeNodeViewModel> generatedChildren) =>
-			VisitNode(parentNode, generatedChildren);
+		public IReadOnlyCollection<TreeNodeViewModel> SortGeneratedChildren(TreeNodeViewModel parentNode,
+															 IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
+		{
+			if (parentNode == null)
+				return DefaultValue;
+
+			if (generatedChildren?.Count > 0)
+				return VisitNode(parentNode, generatedChildren);
+			else
+			{
+				// Optimization - do not make a visit if the children are empty
+				SetTreeNodeSortProperties(parentNode);
+				return DefaultValue;
+			}
+		}
 
 		public override IReadOnlyCollection<TreeNodeViewModel> DefaultVisit(TreeNodeViewModel node, 
 																IReadOnlyCollection<TreeNodeViewModel> generatedChildren)
