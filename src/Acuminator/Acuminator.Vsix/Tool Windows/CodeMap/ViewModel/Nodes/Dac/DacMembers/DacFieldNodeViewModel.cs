@@ -17,7 +17,8 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacFieldNodeViewModel : TreeNodeViewModel, IElementWithTooltip, IGroupNodeWithCyclingNavigation
+	public class DacFieldNodeViewModel : TreeNodeViewModel, 
+										 IElementWithTooltip, IGroupNodeWithCyclingNavigation, INodeWithDeclarationOrder
 	{
 		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
 
@@ -44,6 +45,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get => FieldInfo.Name;
 			protected set { }
 		}
+
+		public int DeclarationOrder => FieldInfo.DeclarationOrder;
 
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => true;
 		
