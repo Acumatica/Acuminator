@@ -41,7 +41,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoBqlFieldForDacFieldProperty
 			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(70, 20, "DateField"),
 			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(74, 16, "GuidField"),
 			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(77, 17, "BinaryField"),
-			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(81, 17, "BinaryField2"));
+			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(81, 17, "BinaryField2"),
+			Descriptors.PX1065_NoBqlFieldForDacFieldProperty.CreateFor(88, 27, "Attributes"));
 
 		[Theory]
 		[EmbeddedFileData(@"MissingBqlField\DacWithBqlFieldMissingInBaseDac.cs")]

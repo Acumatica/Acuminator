@@ -111,8 +111,12 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ForbidPrivateEventHandlers\Sources\AbstractHandler.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ForbidPrivateEventHandlers\Sources\AbstractHandler_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\MissingBqlFieldRedeclarationInDerivedDacTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_From_2_to_5_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_From_2_to_5.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_SingleField_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_SingleField.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_MoreThan5_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\MissingBqlFieldRedeclarationInDerivedDac\Sources\DacWithNotRedeclaredBqlFields_MoreThan5.cs" />
     <Compile Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\NameConventionEventsInGraphsAndGraphExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NameConventionEventsInGraphsAndGraphExtensions\Sources\CacheAttached_Expected.cs" />
@@ -687,6 +691,7 @@
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacWithBaseTypeNonDac.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacExtensionWithBaseTypeNonDac.cs" />
     <EmbeddedResource Include="Tests\Utilities\SemanticModels\Dac\Sources\DacChainedExtensionWithBaseTypeNonDac.cs" />
+    <Compile Include="Tests\Utilities\DataTypeToBqlFieldTypeMapping\DataTypeNameTests.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\RoslynTestContext.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\SemanticModelTestsBase.cs" />
     <Compile Include="Tests\Utilities\SemanticModels\Dac\DacSemanticModelTests.cs" />

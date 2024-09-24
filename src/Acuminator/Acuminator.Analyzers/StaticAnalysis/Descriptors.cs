@@ -364,8 +364,17 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1066_TypoInBqlFieldName { get; } =
 			Rule("PX1066", nameof(Resources.PX1066TitleFormat).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1066);
 
-		public static DiagnosticDescriptor PX1067_MissingBqlFieldRedeclarationInDerivedDac { get; } =
-			Rule("PX1067", nameof(Resources.PX1067TitleFormat).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1067);
+		public static DiagnosticDescriptor PX1067_MissingBqlFieldRedeclarationInDerivedDac_SingleField { get; } =
+			Rule("PX1067", nameof(Resources.PX1067SingleFieldTitleFormat).GetLocalized(), Category.Acuminator, 
+				 DiagnosticSeverity.Warning, DiagnosticsShortName.PX1067);
+
+		public static DiagnosticDescriptor PX1067_MissingBqlFieldRedeclarationInDerivedDac_From_2_To_5_Fields { get; } =
+			Rule("PX1067", nameof(Resources.PX1067From_2_To_5_FieldsTitleFormat).GetLocalized(), Category.Acuminator, 
+				 DiagnosticSeverity.Warning, DiagnosticsShortName.PX1067);
+
+		public static DiagnosticDescriptor PX1067_MissingBqlFieldRedeclarationInDerivedDac_MoreThan5Fields { get; } =
+			Rule("PX1067", nameof(Resources.PX1067MoreThan5FieldsTitleFormat).GetLocalized(), Category.Acuminator, 
+				 DiagnosticSeverity.Warning, DiagnosticsShortName.PX1067);
 
 		public static DiagnosticDescriptor PX1068_PropertyAndBqlFieldTypesMismatch { get; } =
 			Rule("PX1068", nameof(Resources.PX1068Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Error, DiagnosticsShortName.PX1068);

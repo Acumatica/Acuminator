@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -44,6 +45,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 				if (!DataTypeToBqlFieldTypeMapping.ContainsDataType(propertyDataTypeName))
 					continue;
+
+				// Is field type is string array, then show diagnostic warning only for the Attributes field
+				if (propertyDataTypeName.Value.Equals(TypeNames.StringArray, StringComparison.OrdinalIgnoreCase) &&
+					!property.Name.Equals(DacFieldNames.System.Attributes, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
 
 				var args = ImmutableDictionary.CreateBuilder<string, string?>();
 				args.Add(DiagnosticProperty.PropertyType, propertyTypeName);

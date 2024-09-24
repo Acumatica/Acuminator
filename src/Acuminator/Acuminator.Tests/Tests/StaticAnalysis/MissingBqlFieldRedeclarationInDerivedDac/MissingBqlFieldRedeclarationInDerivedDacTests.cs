@@ -18,25 +18,64 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MissingBqlFieldRedeclarationInDe
 {
 	public class MissingBqlFieldRedeclarationInDerivedDacTests : CodeFixVerifier
 	{
+		#region Single Field
 		[Theory]
-		[EmbeddedFileData("DacWithNotRedeclaredBqlFields.cs")]
-		public async Task Dac_WithoutRedeclaredBqlFields_FromBaseDac(string actual) =>
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_SingleField.cs")]
+		public async Task Dac_WithoutRedeclaredBqlFields_SingleField(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual,
-				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "Tstamp", "BaseDac"),
-				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "status", "BaseDac"),
-				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "Tstamp2", "BaseDac"),
-				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(8, 15, "DerivedDac", "Tstamp3", "BaseDac"),
-				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac.CreateFor(12, 24, "DerivedDac", "shipmentNbr", "BaseDac"));
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_SingleField
+						   .CreateFor(8, 15, "DerivedDac", "status", "BaseDac"));
 
 		[Theory]
-		[EmbeddedFileData("DacWithNotRedeclaredBqlFields.cs", "DacWithNotRedeclaredBqlFields_Expected.cs")]
-		public async Task Dac_RedeclareBqlFields_CodeFix(string actual, string expected) => 
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_SingleField.cs", "DacWithNotRedeclaredBqlFields_SingleField_Expected.cs")]
+		public async Task Dac_RedeclareBqlFields_SingleField_CodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
-		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_Expected.cs")]
-		public async Task Dac_WithRedeclaredBqlFields_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_SingleField_Expected.cs")]
+		public async Task Dac_WithRedeclaredBqlFields_SingleField_AfterFix_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
+
+		#region 2 to 5 Fields
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_From_2_to_5.cs")]
+		public async Task Dac_WithoutRedeclaredBqlFields_From_2_To_5_Fields(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_From_2_To_5_Fields
+						   .CreateFor(8, 15, "DerivedDac", "\"Tstamp\", \"status\", \"Tstamp2\", \"Tstamp3\", \"shipmentNbr\""));
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_From_2_to_5.cs", "DacWithNotRedeclaredBqlFields_From_2_to_5_Expected.cs")]
+		public async Task Dac_RedeclareBqlFields_From_2_To_5_Fields_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_From_2_to_5_Expected.cs")]
+		public async Task Dac_WithRedeclaredBqlFields_From_2_To_5_Fields_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
+
+		#region More than 5 Fields
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_MoreThan5.cs")]
+		public async Task Dac_WithoutRedeclaredBqlFields_MoreThan5_Fields(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_MoreThan5Fields
+						   .CreateFor(8, 15, 
+									  "DerivedDac", "\"Tstamp\", \"status\", \"Tstamp2\", \"Tstamp3\", \"opportunityIsActive\"", 
+									  1, Acuminator.Analyzers.Resources.PX1067MoreThan5Fields_RemainderSingleField));
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_MoreThan5.cs", "DacWithNotRedeclaredBqlFields_MoreThan5_Expected.cs")]
+		public async Task Dac_RedeclareBqlFields_MoreThan5_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithNotRedeclaredBqlFields_MoreThan5_Expected.cs")]
+		public async Task Dac_WithRedeclaredBqlFields_MoreThan5_AfterFix_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+		#endregion
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
 			new DacAnalyzersAggregator(

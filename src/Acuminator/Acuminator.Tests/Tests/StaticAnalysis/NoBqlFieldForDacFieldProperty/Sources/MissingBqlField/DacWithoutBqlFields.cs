@@ -83,5 +83,8 @@ namespace PX.Analyzers.Test.Sources
 
 		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
 		public bool HasGuidField => GuidField != null;
+
+		[PXUIField]
+		public virtual string[] Attributes { get; set; }
 	}
 }

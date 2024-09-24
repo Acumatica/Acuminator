@@ -1519,20 +1519,74 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Redeclare the {0} BQL fields in the &quot;{1}&quot; DAC.
+        /// </summary>
+        public static string PX1067From_2_To_5_FieldsFixFormat {
+            get {
+                return ResourceManager.GetString("PX1067From_2_To_5_FieldsFixFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL fields from a base DAC should be redeclared in the derived DAC. The &quot;{0}&quot; DAC does not contain a redeclaration of {1} BQL fields..
+        /// </summary>
+        public static string PX1067From_2_To_5_FieldsTitleFormat {
+            get {
+                return ResourceManager.GetString("PX1067From_2_To_5_FieldsTitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to fields.
+        /// </summary>
+        public static string PX1067MoreThan5Fields_RemainderMultipleFields {
+            get {
+                return ResourceManager.GetString("PX1067MoreThan5Fields_RemainderMultipleFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to field.
+        /// </summary>
+        public static string PX1067MoreThan5Fields_RemainderSingleField {
+            get {
+                return ResourceManager.GetString("PX1067MoreThan5Fields_RemainderSingleField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redeclare the {0} and {1} more BQL {2} in the &quot;{3}&quot; DAC.
+        /// </summary>
+        public static string PX1067MoreThan5FieldsFixFormat {
+            get {
+                return ResourceManager.GetString("PX1067MoreThan5FieldsFixFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL fields from a base DAC should be redeclared in the derived DAC. The &quot;{0}&quot; DAC does not contain a redeclaration of {1} and {2} more BQL {3}..
+        /// </summary>
+        public static string PX1067MoreThan5FieldsTitleFormat {
+            get {
+                return ResourceManager.GetString("PX1067MoreThan5FieldsTitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redeclare the &quot;{0}&quot; BQL field in the &quot;{1}&quot; DAC.
         /// </summary>
-        public static string PX1067FixFormat {
+        public static string PX1067SingleFieldFixFormat {
             get {
-                return ResourceManager.GetString("PX1067FixFormat", resourceCulture);
+                return ResourceManager.GetString("PX1067SingleFieldFixFormat", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to BQL fields from a base DAC should be redeclared in the derived DAC. The &quot;{0}&quot; DAC does not contain a redeclaration of the &quot;{1}&quot; BQL field declared in the &quot;{2}&quot; base DAC..
         /// </summary>
-        public static string PX1067TitleFormat {
+        public static string PX1067SingleFieldTitleFormat {
             get {
-                return ResourceManager.GetString("PX1067TitleFormat", resourceCulture);
+                return ResourceManager.GetString("PX1067SingleFieldTitleFormat", resourceCulture);
             }
         }
         

@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class DacMemberNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
+	public abstract class DacMemberNodeViewModel : TreeNodeViewModel, INodeWithDeclarationOrder
 	{
 		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
 
@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public SymbolItem MemberInfo { get; }
 
-		SymbolItem INodeWithSymbolItem.Symbol => MemberInfo;
+		public int DeclarationOrder => MemberInfo.DeclarationOrder;
 
 		public ISymbol MemberSymbol => MemberInfo.SymbolBase;
 

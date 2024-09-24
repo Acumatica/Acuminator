@@ -29,6 +29,13 @@ namespace PX.Analyzers.Test.Sources
 		public virtual int? ShipmentNbr { get; set; }
 		#endregion
 
+		#region Attributes
+		public abstract class attributes : BqlByteArray.Field<attributes> { }
+
+		[PXUIField]
+		public virtual string[] Attributes { get; set; }
+		#endregion
+
 		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
 		public bool HasNoteID => NoteID != null;
 	}

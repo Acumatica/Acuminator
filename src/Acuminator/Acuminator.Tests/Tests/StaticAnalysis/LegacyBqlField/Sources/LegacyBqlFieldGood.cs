@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
+using PX.Objects.CR;
 
 namespace PX.Analyzers.Test.Sources
 {
@@ -57,8 +58,13 @@ namespace PX.Analyzers.Test.Sources
 		[PXDBBinary]
 		public byte[] ModernBinaryField { get; set; }
 
+		public abstract class attributes : BqlAttributes.Field<attributes> { }
+
+		[CRAttributesField(typeof(CRQuote.opportunityClassID))]
+		public virtual string[] Attributes { get; set; }
+
 		public abstract class unsupportedField1 : IBqlField { }
-		public uint UnsupportedField1 { get; set; }
+		public uint? UnsupportedField1 { get; set; }
 
 		public abstract class unsupportedField2 : IBqlField { }
 		public uint[] UnsupportedField2 { get; set; }

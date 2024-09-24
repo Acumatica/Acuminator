@@ -22,7 +22,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
-				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_SingleField,
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_From_2_To_5_Fields,
+				Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_MoreThan5Fields
 			);
 
 		public override bool ShouldAnalyze(PXContext pxContext, [NotNullWhen(true)] DacSemanticModel dac) => 
@@ -32,69 +34,68 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
+			var notRedeclaredBqlFieldInfos = GetNotRedeclaredBqlFieldInfos(symbolContext, pxContext, dac);
+
+			if (notRedeclaredBqlFieldInfos.Count > 0)
+			{
+				ReportDiagnosticOnDac(symbolContext, pxContext, dac, notRedeclaredBqlFieldInfos);
+			}
+		}
+
+		private List<NotRedeclaredBqlFieldInfo> GetNotRedeclaredBqlFieldInfos(SymbolAnalysisContext symbolContext, PXContext pxContext, 
+																			  DacSemanticModel dac)
+		{
+			var notRedeclaredBqlFieldInfos = new List<NotRedeclaredBqlFieldInfo>();
+
 			foreach (var dacField in dac.DacFields)
 			{
 				symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-				if (!dacField.HasBqlFieldEffective)		// skip all DACs without BQL field - they have nothing to redeclare
+				if (!dacField.HasBqlFieldEffective)     // skip all DACs without BQL field - they have nothing to redeclare
 					continue;
 
 				if (dacField.IsDeclaredInType(dac.Symbol))
 				{
 					// DAC field is declared in DAC, but does not have a BQL field redeclaration in DAC
 					if (!dacField.HasBqlFieldDeclared)
-						ReportNotRedeclaredBqlField(symbolContext, pxContext, dac, dacField, isDacFieldDeclaredInDac: true);
+					{
+						var notRedeclaredInfo = AnalyzeNotRedeclaredBqlField(symbolContext, pxContext, dac, dacField, isDacFieldDeclaredInDac: true);
+
+						if (notRedeclaredInfo.HasValue)
+							notRedeclaredBqlFieldInfos.Add(notRedeclaredInfo.Value);
+					}
 				}
-				else	// DAC field is not declared in DAC, but has BQL field which means that DAC should redeclare it
+				else    // DAC field is not declared in DAC, but has BQL field which means that DAC should redeclare it
 				{
-					ReportNotRedeclaredBqlField(symbolContext, pxContext, dac, dacField, isDacFieldDeclaredInDac: false);
+					var notRedeclaredInfo = AnalyzeNotRedeclaredBqlField(symbolContext, pxContext, dac, dacField, isDacFieldDeclaredInDac: false);
+
+					if (notRedeclaredInfo.HasValue)
+						notRedeclaredBqlFieldInfos.Add(notRedeclaredInfo.Value);
 				}
 			}
+
+			return notRedeclaredBqlFieldInfos;
 		}
 
-		private void ReportNotRedeclaredBqlField(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dac,
-												 DacFieldInfo notRedeclaredBqlField, bool isDacFieldDeclaredInDac)
+		private NotRedeclaredBqlFieldInfo? AnalyzeNotRedeclaredBqlField(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dac,
+																		DacFieldInfo notRedeclaredBqlField, bool isDacFieldDeclaredInDac)
 		{
 			var dacFieldWithDeclaredBqlField = notRedeclaredBqlField.ThisAndOverridenItems()
 																	.FirstOrDefault(dacField => dacField.HasBqlFieldDeclared);
 			if (dacFieldWithDeclaredBqlField == null)
-				return;
+				return null;
 
-			var location = GetLocationToReport(dac, notRedeclaredBqlField, isDacFieldDeclaredInDac);
+			var location = dac.Node!.Identifier.GetLocation().NullIfLocationKindIsNone() ?? dac.Node.GetLocation();
 
 			if (location == null)
-				return;
+				return null;
 
+			string bqlFieldName = dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name;
 			string? bqlFieldTypeName = GetBqlFieldTypeName(notRedeclaredBqlField, dacFieldWithDeclaredBqlField.BqlFieldInfo!);
-
-			var properties = new Dictionary<string, string?>
-			{
-				{ DiagnosticProperty.DacName,	   dac.Name},
-				{ DiagnosticProperty.BqlFieldName, dacFieldWithDeclaredBqlField.BqlFieldInfo!.Name },
-				{ DiagnosticProperty.BqlFieldType, bqlFieldTypeName}
-			}
-			.ToImmutableDictionary();
-
 			string nameOfBaseDacDeclaringBqlField = dacFieldWithDeclaredBqlField.DacType.Name;
-			var diagnostic = Diagnostic.Create(Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac, location, properties,
-											   dac.Name, dacFieldWithDeclaredBqlField.BqlFieldInfo.Name, nameOfBaseDacDeclaringBqlField);
-			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
-		}
 
-		private Location? GetLocationToReport(DacSemanticModel dac, DacFieldInfo notRedeclaredBqlField, bool isDacFieldDeclaredInDac)
-		{
-			if (isDacFieldDeclaredInDac && notRedeclaredBqlField.PropertyInfo?.IsInSource == true)
-			{
-				var location = notRedeclaredBqlField.PropertyInfo.Node.Identifier.GetLocation().NullIfLocationKindIsNone() ??
-							   notRedeclaredBqlField.PropertyInfo.Node.GetLocation() ??
-							   dac.Node!.Identifier.GetLocation().NullIfLocationKindIsNone();	// Node is not null because aggregated DAC analysis runs only on DACs from the source code
-				return location;
-			}
-			else
-			{
-				// Node is not null because aggregated DAC analysis runs only on DACs from the source code
-				return dac.Node!.Identifier.GetLocation().NullIfLocationKindIsNone();
-			}
+			return new NotRedeclaredBqlFieldInfo(DacFieldName: notRedeclaredBqlField.Name, nameOfBaseDacDeclaringBqlField, bqlFieldName,
+												 bqlFieldTypeName, location);
 		}
 
 		private string? GetBqlFieldTypeName(DacFieldInfo notRedeclaredBqlField, DacBqlFieldInfo declaredBqlFieldFromBaseDacs)
@@ -125,6 +126,81 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingBqlFieldRedeclarationInDeri
 			string? mappedBqlFieldType = DataTypeToBqlFieldTypeMapping.GetBqlFieldType(propertyDataTypeName);
 
 			return mappedBqlFieldType;
+		}
+
+		private void ReportDiagnosticOnDac(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dac,
+										   List<NotRedeclaredBqlFieldInfo> notRedeclaredBqlFieldInfosReportedOnDac)
+		{
+			if (notRedeclaredBqlFieldInfosReportedOnDac.Count == 0)
+				return;
+			else if (notRedeclaredBqlFieldInfosReportedOnDac.Count == 1)
+			{
+				ReportDiagnosticForSingleField(symbolContext, pxContext, dac, notRedeclaredBqlFieldInfosReportedOnDac[0]);
+				return;
+			}
+
+			var location = notRedeclaredBqlFieldInfosReportedOnDac[0].Location;
+			string bqlFieldsDataString = GetBqlFieldsDataStringForCodeFix(notRedeclaredBqlFieldInfosReportedOnDac);
+
+			var properties = new Dictionary<string, string?>
+			{
+				{ DiagnosticProperty.DacName						, dac.Name },
+				{ PX1067DiagnosticProperty.BqlFieldsWithBqlTypesData, bqlFieldsDataString },
+			}
+			.ToImmutableDictionary();
+
+			Diagnostic diagnostic;
+
+			if (notRedeclaredBqlFieldInfosReportedOnDac.Count > Constants.FieldsNumberToCutOff)
+			{
+				string fieldNamesToDisplay = notRedeclaredBqlFieldInfosReportedOnDac.Take(Constants.FieldsNumberToCutOff)
+																					.Select(field => $"\"{field.BqlFieldName}\"")
+																					.Join(", ");
+				int remainingFieldsCount  = notRedeclaredBqlFieldInfosReportedOnDac.Count - Constants.FieldsNumberToCutOff;
+				string remainingFieldsArg = remainingFieldsCount == 1
+					? Resources.PX1067MoreThan5Fields_RemainderSingleField
+					: Resources.PX1067MoreThan5Fields_RemainderMultipleFields;
+
+				diagnostic = Diagnostic.Create(Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_MoreThan5Fields, location,
+											   properties, dac.Name, fieldNamesToDisplay, remainingFieldsCount.ToString(), remainingFieldsArg);
+			}
+			else // from 2 to 5 fields
+			{
+				string fieldNamesToDisplay = notRedeclaredBqlFieldInfosReportedOnDac.Select(field => $"\"{field.BqlFieldName}\"")
+																					.Join(", ");
+				diagnostic = Diagnostic.Create(Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_From_2_To_5_Fields, location,
+											   properties, dac.Name, fieldNamesToDisplay);
+			} 
+
+			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+		}
+
+		private string GetBqlFieldsDataStringForCodeFix(List<NotRedeclaredBqlFieldInfo> notRedeclaredBqlFieldInfos)
+		{
+			if (notRedeclaredBqlFieldInfos.Count == 0)
+				return string.Empty;
+
+			return notRedeclaredBqlFieldInfos.Select(info => info.GetBqlFieldWithTypeDataString())
+											 .Join(Constants.FieldsSeparator);
+		}
+
+		private void ReportDiagnosticForSingleField(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dac,
+													NotRedeclaredBqlFieldInfo notRedeclaredBqlFieldInfo)
+		{
+			string bqlFieldDataString = notRedeclaredBqlFieldInfo.GetBqlFieldWithTypeDataString();
+
+			var properties = new Dictionary<string, string?>
+			{
+				{ DiagnosticProperty.DacName						, dac.Name },
+				{ PX1067DiagnosticProperty.BqlFieldsWithBqlTypesData, bqlFieldDataString },
+			}
+			.ToImmutableDictionary();
+
+			var diagnostic = Diagnostic.Create(Descriptors.PX1067_MissingBqlFieldRedeclarationInDerivedDac_SingleField, 
+											   notRedeclaredBqlFieldInfo.Location, properties, dac.Name, notRedeclaredBqlFieldInfo.BqlFieldName, 
+											   notRedeclaredBqlFieldInfo.NameOfBaseDacDeclaringBqlField);
+
+			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
 	}
 }
