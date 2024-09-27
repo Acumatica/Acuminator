@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -16,6 +14,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// </summary>
 	public static class GraphSymbolHierarchyUtils
 	{
+		/// <summary>
+		/// Gets graph base types up to first met <see cref="PX.Data.PXGraph"/>.
+		/// </summary>
+		/// <param name="graphType">The graph type to act on.</param>
+		/// <returns/>
+		public static IEnumerable<ITypeSymbol> GetGraphBaseTypes(this ITypeSymbol graphType) =>
+			graphType.GetBaseTypes()
+					 .TakeWhile(type => !type.IsGraphBaseType());
+
 		/// <summary>
 		/// Gets the graph type with its base types up to first met <see cref="PX.Data.PXGraph"/>.
 		/// </summary>
