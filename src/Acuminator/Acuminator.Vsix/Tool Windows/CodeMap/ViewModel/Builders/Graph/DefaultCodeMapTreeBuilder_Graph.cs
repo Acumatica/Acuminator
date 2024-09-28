@@ -141,14 +141,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																								   Func<TSymbolInfo, TreeNodeViewModel?> constructor)
 		where TSymbolInfo : SymbolItem
 		{
-			IEnumerable<SymbolItem> categoryTreeNodes = graphMemberCategory.CheckIfNull()
-																		   .GetCategoryGraphNodeSymbols();
-			if (categoryTreeNodes.IsNullOrEmpty())
+			var categoryInfos = graphMemberCategory?.GetCategoryGraphNodeSymbols();
+
+			if (categoryInfos.IsNullOrEmpty())
 				return DefaultValue;
 
 			Cancellation.ThrowIfCancellationRequested();
-			var graphSemanticModel = graphMemberCategory.GraphSemanticModel;
-			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes.OfType<TSymbolInfo>()
+			var graphSemanticModel = graphMemberCategory!.GraphSemanticModel;
+			var graphMemberViewModels = from graphMemberInfo in categoryInfos.OfType<TSymbolInfo>()
 										where graphMemberInfo.SymbolBase.IsDeclaredInType(graphSemanticModel.Symbol)
 										select constructor(graphMemberInfo);
 
