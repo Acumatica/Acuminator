@@ -15,6 +15,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		#region Roots
 		public virtual void VisitNode(GraphNodeViewModel graph) => DefaultVisit(graph);
+
+		public virtual void VisitNode(BaseGraphPlaceholderNodeViewModel baseGraph) => DefaultVisit(baseGraph);
 		#endregion
 
 		#region Categories
