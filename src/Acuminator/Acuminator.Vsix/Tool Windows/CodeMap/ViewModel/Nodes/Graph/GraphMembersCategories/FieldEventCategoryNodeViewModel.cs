@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class FieldEventCategoryNodeViewModel : GraphEventCategoryNodeViewModel
 	{
 		public FieldEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) :
-										  base(graphViewModel, GraphMemberType.FieldEvent, isExpanded)
+										  base(graphViewModel, GraphMemberCategory.FieldEvent, isExpanded)
 		{
 		}
 

@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public ISymbol MemberSymbol => MemberInfo.SymbolBase;
 
-		public GraphMemberType MemberType => MemberCategory.CategoryType;
+		public GraphMemberCategory MemberType => MemberCategory.CategoryType;
 
 		public override string Name
 		{

@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override bool AllowNavigation => true;
 
 		public PXOverridesCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
-										   base(graphViewModel, GraphMemberType.PXOverride, isExpanded)
+										   base(graphViewModel, GraphMemberCategory.PXOverride, isExpanded)
 		{		
 		}
 

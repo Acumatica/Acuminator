@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (graphAttributesGroup != null)
 				yield return graphAttributesGroup;
 
-			foreach (GraphMemberType graphMemberType in GetGraphMemberTypesInOrder())
+			foreach (GraphMemberCategory graphMemberType in GetGraphMemberTypesInOrder())
 			{
 				Cancellation.ThrowIfCancellationRequested();
 				GraphMemberCategoryNodeViewModel? graphMemberCategory = CreateCategory(graph, graphMemberType);
@@ -48,31 +48,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual GraphAttributesGroupNodeViewModel GetGraphAttributesGroupNode(GraphNodeViewModel graph) =>
 			new GraphAttributesGroupNodeViewModel(graph.GraphSemanticModel, graph, ExpandCreatedNodes);
 
-		protected virtual IEnumerable<GraphMemberType> GetGraphMemberTypesInOrder()
+		protected virtual IEnumerable<GraphMemberCategory> GetGraphMemberTypesInOrder()
 		{
-			yield return GraphMemberType.InitializationAndActivation;
-			yield return GraphMemberType.View;
-			yield return GraphMemberType.Action;
-			yield return GraphMemberType.PXOverride;
-			yield return GraphMemberType.BaseMemberOverride;
-			yield return GraphMemberType.CacheAttached;
-			yield return GraphMemberType.RowEvent;
-			yield return GraphMemberType.FieldEvent;
-			yield return GraphMemberType.NestedDAC;
-			yield return GraphMemberType.NestedGraph;
+			yield return GraphMemberCategory.InitializationAndActivation;
+			yield return GraphMemberCategory.View;
+			yield return GraphMemberCategory.Action;
+			yield return GraphMemberCategory.PXOverride;
+			yield return GraphMemberCategory.BaseMemberOverride;
+			yield return GraphMemberCategory.CacheAttached;
+			yield return GraphMemberCategory.RowEvent;
+			yield return GraphMemberCategory.FieldEvent;
+			yield return GraphMemberCategory.NestedDAC;
+			yield return GraphMemberCategory.NestedGraph;
 		}
 
-		protected virtual GraphMemberCategoryNodeViewModel? CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType) =>
+		protected virtual GraphMemberCategoryNodeViewModel? CreateCategory(GraphNodeViewModel graph, GraphMemberCategory graphMemberType) =>
 			graphMemberType switch
 			{
-				GraphMemberType.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.View 						=> new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.Action 						=> new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.CacheAttached 				=> new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.RowEvent 					=> new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.FieldEvent 					=> new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.PXOverride 					=> new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberType.BaseMemberOverride 			=> new GraphBaseMemberOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.View 						=> new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.Action 						=> new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.CacheAttached 				=> new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.RowEvent 					=> new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.FieldEvent 					=> new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.PXOverride 					=> new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.BaseMemberOverride 			=> new GraphBaseMemberOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
 				_ 											=> null,
 			};
 

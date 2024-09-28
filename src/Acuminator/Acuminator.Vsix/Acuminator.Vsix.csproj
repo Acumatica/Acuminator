@@ -573,7 +573,7 @@
     <Compile Include="Tool Windows\CodeMap\Model\Dac\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberInfoType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberType.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />

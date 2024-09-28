@@ -68,7 +68,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (e.Action == NotifyCollectionChangedAction.Move)
 				return;
 
-			EventsCount = GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
+			EventsCount = GraphEventsCategoryVM.CategoryType == GraphMemberCategory.FieldEvent
 				? DisplayedChildren.Sum(dacFieldVM => dacFieldVM.DisplayedChildren.Count)
 				: DisplayedChildren.Count;
 		}
