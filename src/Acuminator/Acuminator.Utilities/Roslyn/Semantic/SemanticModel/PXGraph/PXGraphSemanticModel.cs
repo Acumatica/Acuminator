@@ -162,13 +162,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (GraphType == GraphType.PXGraph)
 			{
-				GraphOrGraphExtInfo = new GraphInfo(node, symbol, declarationOrder);
+				GraphOrGraphExtInfo = GraphInfo.Create(symbol, node, PXContext, declarationOrder, cancellation).CheckIfNull();
 				GraphSymbol = Symbol;
 			}
 			else
 			{
-				GraphOrGraphExtInfo = new GraphExtensionInfo(node, symbol, declarationOrder);
-				GraphSymbol = Symbol.GetGraphFromGraphExtension(PXContext);
+				GraphSymbol = symbol.GetGraphFromGraphExtension(PXContext);
+				GraphOrGraphExtInfo = GraphExtensionInfo.Create(symbol, node, GraphSymbol, PXContext, declarationOrder, cancellation).CheckIfNull();
 			}
 
 			_cancellation 		 = cancellation;
