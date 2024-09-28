@@ -33,6 +33,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					 .TakeWhile(type => !type.IsGraphBaseType());
 
 		/// <summary>
+		/// Gets the extension base types up to first met <see cref="PX.Data.PXGraphExtension"/>.
+		/// </summary>
+		/// <param name="extensionType">The extension type to act on.</param>
+		/// <returns/>
+		public static IEnumerable<ITypeSymbol> GetExtensionBaseTypes(this ITypeSymbol extensionType) =>
+			extensionType.GetBaseTypes()
+						 .TakeWhile(type => !type.IsGraphExtensionBaseType());
+
+		/// <summary>
 		/// Gets the extension type with its base types up to first met <see cref="PX.Data.PXGraphExtension"/>.
 		/// </summary>
 		/// <param name="extensionType">The extension type to act on.</param>
@@ -53,7 +62,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			type?.Name == TypeNames.PXGraphExtension;
 
 		/// <summary>
-		/// Gets the graph extension with base graph extensions from graph extension type.
+		/// Gets base graph extensions from graph extension type.
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="sortDirection">The sort direction. The <see cref="SortDirection.Descending"/> order is from the extension to its base extensions/graph.
+		/// The <see cref="SortDirection.Ascending"/> order is from the graph/base extensions to the most derived one.</param>
+		/// <param name="includeGraph">True to include, false to exclude the graph type.</param>
+		/// <returns/>
+		public static IEnumerable<ITypeSymbol> GetBaseGraphExtensions(this ITypeSymbol graphExtension, PXContext pxContext,
+																	  SortDirection sortDirection, bool includeGraph) =>
+			GetGraphExtensionWithBaseExtensions(graphExtension, pxContext, sortDirection, includeGraph, includeGraphExtension: false);
+
+		/// <summary>
+		/// Gets the graph extension with its base graph extensions from graph extension type.
 		/// </summary>
 		/// <param name="graphExtension">The graph extension to act on.</param>
 		/// <param name="pxContext">Context.</param>
@@ -62,7 +84,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="includeGraph">True to include, false to exclude the graph type.</param>
 		/// <returns/>
 		public static IEnumerable<ITypeSymbol> GetGraphExtensionWithBaseExtensions(this ITypeSymbol graphExtension, PXContext pxContext,
-																				   SortDirection sortDirection, bool includeGraph)
+																				   SortDirection sortDirection, bool includeGraph) =>
+			GetGraphExtensionWithBaseExtensions(graphExtension, pxContext, sortDirection, includeGraph, includeGraphExtension: true);
+
+		private static IEnumerable<ITypeSymbol> GetGraphExtensionWithBaseExtensions(ITypeSymbol graphExtension, PXContext pxContext,
+																					SortDirection sortDirection, bool includeGraph, 
+																					bool includeGraphExtension)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -80,12 +107,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return [];
 
 			return sortDirection == SortDirection.Ascending
-				? GetExtensionInAscendingOrder(graphType, graphExtension, extensionBaseType, pxContext, includeGraph)
-				: GetExtensionInDescendingOrder(graphType, graphExtension, extensionBaseType, pxContext, includeGraph);			
+				? GetExtensionInAscendingOrder(graphType, graphExtension, extensionBaseType, pxContext, includeGraph, includeGraphExtension)
+				: GetExtensionInDescendingOrder(graphType, graphExtension, extensionBaseType, pxContext, includeGraph, includeGraphExtension);
 		}
 
 		private static IEnumerable<ITypeSymbol> GetExtensionInAscendingOrder(ITypeSymbol graphType, ITypeSymbol graphExtension, 
-																			 INamedTypeSymbol extensionBaseType, PXContext pxContext, bool includeGraph)
+																			 INamedTypeSymbol extensionBaseType, PXContext pxContext, 
+																			 bool includeGraph, bool includeGraphExtension)
 		{
 			int graphIndex = extensionBaseType.TypeArguments.Length - 1;
 			var extensions = new List<ITypeSymbol>(capacity: extensionBaseType.TypeArguments.Length);
@@ -105,16 +133,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				extensions.Add(baseExtension);		//According to Platform team we shouldn't consider case when the graph extensions chaining mixes with .Net inheritance
 			}
 
-			extensions.AddRange(graphExtension.GetExtensionWithBaseTypes().Reverse());
+			if (includeGraphExtension)
+				extensions.AddRange(graphExtension.GetExtensionWithBaseTypes().Reverse());
+			
 			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
 
 		private static IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder(ITypeSymbol graphType, ITypeSymbol graphExtension, 
-																			  INamedTypeSymbol extensionBaseType, PXContext pxContext, bool includeGraph)
+																			  INamedTypeSymbol extensionBaseType, PXContext pxContext, 
+																			  bool includeGraph, bool includeGraphExtension)
 		{
 			int graphIndex = extensionBaseType.TypeArguments.Length - 1;
 			var extensions = new List<ITypeSymbol>(capacity: extensionBaseType.TypeArguments.Length);
-			extensions.AddRange(graphExtension.GetExtensionWithBaseTypes());
+
+			if (includeGraphExtension)
+				extensions.AddRange(graphExtension.GetExtensionWithBaseTypes());
 
 			for (int i = 0; i <= graphIndex - 1; i++)
 			{
