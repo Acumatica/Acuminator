@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			return rootSemanticModel switch
 			{
-				GraphSemanticModelForCodeMap graphSemanticModel => CreateGraphNode(graphSemanticModel, tree),
+				GraphSemanticModelForCodeMap graphSemanticModel => CreateGraphNode(graphSemanticModel, rootParent, tree),
 				DacSemanticModelForCodeMap dacSemanticModel 	=> CreateDacNode(dacSemanticModel, rootParent, tree),
 				_ 												=> null,
 			};
