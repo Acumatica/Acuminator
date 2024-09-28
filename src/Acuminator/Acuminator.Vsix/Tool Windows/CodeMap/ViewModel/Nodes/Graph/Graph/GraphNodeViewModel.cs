@@ -4,11 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.ToolWindows.CodeMap.Filter;
 using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
@@ -18,27 +16,17 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphNodeViewModel : TreeNodeViewModel, IElementWithTooltip
+	public class GraphNodeViewModel : GraphNodeViewModelBase, IElementWithTooltip
 	{
 		private int _currentNavigationIndex;
-
-		public override TreeNodeFilterBehavior FilterBehavior => TreeNodeFilterBehavior.DisplayedIfNodeOrChildrenMeetFilter;
 
 		public GraphSemanticModelForCodeMap CodeMapGraphModel { get; }
 
 		public PXGraphEventSemanticModel GraphSemanticModel => CodeMapGraphModel.GraphModel; 
 
-		public override string Name
-		{
-			get => GraphSemanticModel.Name;
-			protected set { }
-		}
-
-		public override Icon NodeIcon => GraphSemanticModel.GraphType == GraphType.PXGraph
-			? Icon.Graph
-			: Icon.GraphExtension;
-
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
+
+		public override GraphOrGraphExtInfoBase GraphOrGraphExtInfo => GraphSemanticModel.GraphOrGraphExtInfo;
 
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, parent: null, isExpanded)
@@ -54,11 +42,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				yield return new IconViewModel(this, Icon.Processing);
 			}
 
-			Color color = Color.FromRgb(38, 155, 199);
-			string graphType = GraphSemanticModel.GraphType == GraphType.PXGraph
-				? VSIXResource.CodeMap_ExtraInfo_IsGraph
-				: VSIXResource.CodeMap_ExtraInfo_IsGraphExtension;
-			yield return new TextViewModel(this, graphType, darkThemeForeground: color, lightThemeForeground: color);
+			yield return CreateGraphTypeInfo();
 		}
 
 		public override Task NavigateToItemAsync()
