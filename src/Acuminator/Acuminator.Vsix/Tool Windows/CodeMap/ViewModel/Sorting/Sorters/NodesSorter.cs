@@ -109,8 +109,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				DacFieldPropertyNodeViewModel 	  => false,
 				DacBqlFieldNodeViewModel	  	  => false,
 
-				DacNodeViewModel dacNode 
-				when dacNode.Parent != null => false, 
+				DacNodeViewModel dacNode	 when dacNode.Parent != null   => false,
+				GraphNodeViewModel graphNode when graphNode.Parent != null => false,
 
 				_ => sortType == SortType.Alphabet || sortType == SortType.Declaration
 			};
