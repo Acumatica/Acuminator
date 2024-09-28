@@ -50,6 +50,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual IEnumerable<GraphMemberCategory> GetGraphMemberTypesInOrder()
 		{
+			yield return GraphMemberCategory.BaseTypes;
 			yield return GraphMemberCategory.InitializationAndActivation;
 			yield return GraphMemberCategory.View;
 			yield return GraphMemberCategory.Action;
@@ -65,6 +66,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual GraphMemberCategoryNodeViewModel? CreateCategory(GraphNodeViewModel graph, GraphMemberCategory graphMemberType) =>
 			graphMemberType switch
 			{
+				GraphMemberCategory.BaseTypes 					=> new GraphBaseTypesCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
 				GraphMemberCategory.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, parent: graph, 
 																															 ExpandCreatedNodes),
 				GraphMemberCategory.View 						=> new ViewCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),

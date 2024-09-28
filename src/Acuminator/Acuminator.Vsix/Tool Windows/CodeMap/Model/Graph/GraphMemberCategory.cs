@@ -5,6 +5,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap.Graph
 {
 	public enum GraphMemberCategory
 	{
+		BaseTypes,
 		View,
 		Action,
 		CacheAttached,
@@ -21,6 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap.Graph
 	{
 		private static readonly Dictionary<GraphMemberCategory, string> _descriptions = new Dictionary<GraphMemberCategory, string>
 		{
+			{ GraphMemberCategory.BaseTypes					 , "Base Types" },
 			{ GraphMemberCategory.View						 , "Views" },
 			{ GraphMemberCategory.Action					 , "Actions" },
 			{ GraphMemberCategory.PXOverride				 , "PXOverrides" },
