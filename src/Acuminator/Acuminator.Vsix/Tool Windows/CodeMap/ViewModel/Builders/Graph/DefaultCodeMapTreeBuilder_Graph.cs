@@ -25,8 +25,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected delegate DacFieldGroupingNodeBaseViewModel DacFieldVmConstructor(DacGroupingNodeBaseViewModel dacNodeVm, string dacName,
 																				   IEnumerable<GraphFieldEventInfo> fieldEvents);
-		protected virtual GraphNodeViewModel CreateGraphNode(GraphSemanticModelForCodeMap graph, TreeViewModel tree) =>
-			new GraphNodeViewModel(graph, tree, ExpandCreatedNodes);
+		protected virtual GraphNodeViewModel CreateGraphNode(GraphSemanticModelForCodeMap graph, TreeNodeViewModel? parent, TreeViewModel tree) =>
+			new GraphNodeViewModel(graph, tree, parent, ExpandCreatedNodes);
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphNodeViewModel graph)
 		{
@@ -104,6 +104,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																												 isActiveForGraphMethodInfo, ExpandCreatedNodes),
 				_													  => null
 			};
+		}
+
+		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphBaseTypesCategoryNodeViewModel graphBaseTypesCategory)
+		{
+			var baseTypesInfos = graphBaseTypesCategory?.GetCategoryGraphNodeSymbols();
+
+			if (baseTypesInfos.IsNullOrEmpty())
+				return DefaultValue;
+
+			Cancellation.ThrowIfCancellationRequested();
+
+			return baseTypesInfos.OfType<GraphOrGraphExtInfoBase>()
+								 .Select(graphOrGraphExtInfo => new BaseGraphPlaceholderNodeViewModel(graphOrGraphExtInfo, graphBaseTypesCategory!.GraphViewModel,
+																									  graphBaseTypesCategory, ExpandCreatedNodes));
 		}
 
 		public override IEnumerable<TreeNodeViewModel>? VisitNode(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategory) =>
