@@ -37,7 +37,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		/// <param name="extensionType">The extension type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetExtensionBaseTypes(this ITypeSymbol extensionType) =>
+		public static IEnumerable<ITypeSymbol> GetGraphExtensionBaseTypes(this ITypeSymbol extensionType) =>
 			extensionType.GetBaseTypes()
 						 .TakeWhile(type => !type.IsGraphExtensionBaseType());
 
@@ -46,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		/// <param name="extensionType">The extension type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetExtensionWithBaseTypes(this ITypeSymbol extensionType) =>
+		public static IEnumerable<ITypeSymbol> GetGraphExtensionWithBaseTypes(this ITypeSymbol extensionType) =>
 			extensionType.GetBaseTypesAndThis()
 						 .TakeWhile(type => !type.IsGraphExtensionBaseType());
 
@@ -134,7 +134,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 
 			if (includeGraphExtension)
-				extensions.AddRange(graphExtension.GetExtensionWithBaseTypes().Reverse());
+				extensions.AddRange(graphExtension.GetGraphExtensionWithBaseTypes().Reverse());
 			
 			return extensions.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default);
 		}
@@ -147,7 +147,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			var extensions = new List<ITypeSymbol>(capacity: extensionBaseType.TypeArguments.Length);
 
 			if (includeGraphExtension)
-				extensions.AddRange(graphExtension.GetExtensionWithBaseTypes());
+				extensions.AddRange(graphExtension.GetGraphExtensionWithBaseTypes());
 
 			for (int i = 0; i <= graphIndex - 1; i++)
 			{
