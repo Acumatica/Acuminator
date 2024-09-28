@@ -15,23 +15,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	{
 		public GraphInfo? Graph { get; }
 
-		public ImmutableArray<GraphExtensionInfo> GraphExtensionsFromPreviousLevels { get; }
-
 		protected GraphExtensionInfo(ClassDeclarationSyntax? node, INamedTypeSymbol graphExtension, GraphInfo? graph,
-									 ImmutableArray<GraphExtensionInfo> graphExtensionsFromPreviousLevels, int declarationOrder, 
-									 GraphExtensionInfo baseInfo) :
-							  this(node, graphExtension, graph, graphExtensionsFromPreviousLevels, declarationOrder)
+									 int declarationOrder, GraphExtensionInfo baseInfo) :
+								this(node, graphExtension, graph, declarationOrder)
 		{
 			_baseInfo = baseInfo.CheckIfNull();
 			CombineWithBaseInfo(baseInfo);
 		}
 
-		protected GraphExtensionInfo(ClassDeclarationSyntax? node, INamedTypeSymbol graphExtension, GraphInfo? graph,
-									 ImmutableArray<GraphExtensionInfo> graphExtensionsFromPreviousLevels, int declarationOrder) :
+		protected GraphExtensionInfo(ClassDeclarationSyntax? node, INamedTypeSymbol graphExtension, GraphInfo? graph, int declarationOrder) :
 								base(node, graphExtension, declarationOrder)
 		{
 			Graph = graph;
-			GraphExtensionsFromPreviousLevels = graphExtensionsFromPreviousLevels;
 		}
 
 		public static GraphExtensionInfo? Create(INamedTypeSymbol? graphExtension, ClassDeclarationSyntax? graphExtensionNode, ITypeSymbol? graph,
@@ -57,60 +52,51 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return null;
 
 			bool isInSource = graphExtensionNode != null;
-			var extensionsFromPreviousLevels = GetExtensionsFromPreviouslLevels(extensionBaseType, pxContext, graphInfo, cancellation);
+			var extensionFromPreviousLevels = GetAggregatedExtensionFromPreviouslLevels(extensionBaseType, pxContext, graphInfo, cancellation);
 			GraphExtensionInfo? aggregatedBaseGraphExtInfo = !SymbolEqualityComparer.Default.Equals(graphExtension.BaseType, extensionBaseType)
-				? GetAggregatedBaseExtensions(graphExtension, graphInfo, extensionsFromPreviousLevels, isInSource, cancellation)
+				? GetAggregatedBaseExtensions(graphExtension, graphInfo, extensionFromPreviousLevels, isInSource, cancellation)
 				: null;
 
 			var graphExtensionInfo = aggregatedBaseGraphExtInfo != null
-				? new GraphExtensionInfo(graphExtensionNode, graphExtension, graphInfo, extensionsFromPreviousLevels, 
-										 graphExtDeclarationOrder, aggregatedBaseGraphExtInfo)
-				: new GraphExtensionInfo(graphExtensionNode, graphExtension, graphInfo, extensionsFromPreviousLevels, graphExtDeclarationOrder);
+				? new GraphExtensionInfo(graphExtensionNode, graphExtension, graphInfo, graphExtDeclarationOrder, aggregatedBaseGraphExtInfo)
+				: extensionFromPreviousLevels != null
+					? new GraphExtensionInfo(graphExtensionNode, graphExtension, graphInfo, graphExtDeclarationOrder, extensionFromPreviousLevels)
+					: new GraphExtensionInfo(graphExtensionNode, graphExtension, graphInfo, graphExtDeclarationOrder);
 
 			return graphExtensionInfo;
 		}
 
-		private static ImmutableArray<GraphExtensionInfo> GetExtensionsFromPreviouslLevels(INamedTypeSymbol extensionBaseType, PXContext pxContext,
-																						   GraphInfo? graphInfo, CancellationToken cancellation)
+		private static GraphExtensionInfo? GetAggregatedExtensionFromPreviouslLevels(INamedTypeSymbol extensionBaseType, PXContext pxContext,
+																					 GraphInfo? graphInfo, CancellationToken cancellation)
 		{
 			if (!extensionBaseType.IsGenericType)
-				return ImmutableArray<GraphExtensionInfo>.Empty;
+				return null;
 
 			var typeArguments = extensionBaseType.TypeArguments;
 
 			if (typeArguments.Length <= 1)
-				return ImmutableArray<GraphExtensionInfo>.Empty;
+				return null;
 
-			int baseExtensionDeclarationOrder = 1;
-			int graphIndex = typeArguments.Length - 1;
-			var extensionsFromPreviousLevels = ImmutableArray.CreateBuilder<GraphExtensionInfo>();
+			if (typeArguments[0] is not INamedTypeSymbol previousLevelExtensionType || !previousLevelExtensionType.IsPXGraphExtension(pxContext))
+				return null;
 
-			for (int i = graphIndex - 1; i >= 0; i--)
-			{
-				cancellation.ThrowIfCancellationRequested();
+			var prevLevelExtensionNode = previousLevelExtensionType.GetSyntax(cancellation) as ClassDeclarationSyntax;
+			var aggregatedPrevLevelGraphExtensionInfo = 
+				Create(previousLevelExtensionType, prevLevelExtensionNode, graphInfo, pxContext, graphExtDeclarationOrder: 0, cancellation);
 
-				if (extensionBaseType.TypeArguments[i] is not INamedTypeSymbol baseExtension || !baseExtension.IsPXGraphExtension(pxContext))
-					continue;
-
-				var baseExtensionNode = baseExtension.GetSyntax(cancellation) as ClassDeclarationSyntax;
-				var baseExtensionInfo = Create(baseExtension, baseExtensionNode, graphInfo, pxContext, baseExtensionDeclarationOrder, cancellation);
-
-				if (baseExtensionInfo != null)
-					extensionsFromPreviousLevels.Add(baseExtensionInfo);
-			}
-
-			return extensionsFromPreviousLevels.ToImmutable();
+			return aggregatedPrevLevelGraphExtensionInfo;
 		}
 
 		private static GraphExtensionInfo? GetAggregatedBaseExtensions(INamedTypeSymbol graphExtension, GraphInfo? graphInfo,
-																	   in ImmutableArray<GraphExtensionInfo> extensionsFromBaseLevels,
+																	   GraphExtensionInfo? aggregatedExtensionFromBaseLevels,
 																	   bool isInSource, CancellationToken cancellation)
 		{
 			var graphExtensionsBaseTypesFromBaseToDerived = graphExtension.GetGraphExtensionBaseTypes()
 																		  .OfType<INamedTypeSymbol>()
 																		  .Reverse();
 
-			GraphExtensionInfo? aggregatedBaseGraphExtensionInfo = null, prevGraphExtensionInfo = null;
+			GraphExtensionInfo? aggregatedBaseGraphExtensionInfo = null; 
+			GraphExtensionInfo? prevGraphExtensionInfo = aggregatedExtensionFromBaseLevels;
 
 			foreach (INamedTypeSymbol baseType in graphExtensionsBaseTypesFromBaseToDerived)
 			{
@@ -122,8 +108,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 				isInSource = baseGraphExtensionNode != null;
 				aggregatedBaseGraphExtensionInfo = prevGraphExtensionInfo != null
-					? new GraphExtensionInfo(baseGraphExtensionNode, baseType, graphInfo, extensionsFromBaseLevels, declarationOrder: 0, prevGraphExtensionInfo)
-					: new GraphExtensionInfo(baseGraphExtensionNode, baseType, graphInfo, extensionsFromBaseLevels, declarationOrder: 0);
+					? new GraphExtensionInfo(baseGraphExtensionNode, baseType, graphInfo, declarationOrder: 0, prevGraphExtensionInfo)
+					: new GraphExtensionInfo(baseGraphExtensionNode, baseType, graphInfo, declarationOrder: 0);
 
 				prevGraphExtensionInfo = aggregatedBaseGraphExtensionInfo;
 			}
