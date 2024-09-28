@@ -65,14 +65,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual GraphMemberCategoryNodeViewModel? CreateCategory(GraphNodeViewModel graph, GraphMemberCategory graphMemberType) =>
 			graphMemberType switch
 			{
-				GraphMemberCategory.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberCategory.View 						=> new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberCategory.Action 						=> new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberCategory.CacheAttached 				=> new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberCategory.RowEvent 					=> new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberCategory.FieldEvent 					=> new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberCategory.PXOverride 					=> new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
-				GraphMemberCategory.BaseMemberOverride 			=> new GraphBaseMemberOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberCategory.InitializationAndActivation => new GraphInitializationAndActivationCategoryNodeViewModel(graph, parent: graph, 
+																															 ExpandCreatedNodes),
+				GraphMemberCategory.View 						=> new ViewCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
+				GraphMemberCategory.Action 						=> new ActionCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
+				GraphMemberCategory.CacheAttached 				=> new CacheAttachedCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
+				GraphMemberCategory.RowEvent 					=> new RowEventCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
+				GraphMemberCategory.FieldEvent 					=> new FieldEventCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
+				GraphMemberCategory.PXOverride 					=> new PXOverridesCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
+				GraphMemberCategory.BaseMemberOverride 			=> new GraphBaseMemberOverridesCategoryNodeViewModel(graph, parent: graph, ExpandCreatedNodes),
 				_ 											=> null,
 			};
 

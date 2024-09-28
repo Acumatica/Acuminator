@@ -31,8 +31,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected override bool AllowNavigation => false;
 
-		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberCategory graphMemberType, bool isExpanded) :
-											 base(graphViewModel, graphMemberType, isExpanded)
+		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, TreeNodeViewModel parent, GraphMemberCategory graphMemberType, 
+												  bool isExpanded) :
+											 base(graphViewModel, parent, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
 			SubscribeOnDisplayedChildrenCollectionChanged(DisplayedChildren_CollectionChanged);
