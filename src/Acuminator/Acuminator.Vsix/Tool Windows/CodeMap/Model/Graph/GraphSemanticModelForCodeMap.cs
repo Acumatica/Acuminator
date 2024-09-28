@@ -25,11 +25,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap.Graph
 
 		public PXContext PXContext => GraphModel.PXContext;
 
+		public GraphType GraphType => GraphModel.GraphType;
+
+		public GraphInfo? GraphInfo { get; }
+
+		public GraphExtensionInfo? GraphExtensionInfo { get; }
+
 		public GraphSemanticModelForCodeMap(PXGraphEventSemanticModel graphEventSemanticModel)
 		{
 			GraphModel 			 = graphEventSemanticModel.CheckIfNull();
 			InstanceConstructors = GetInstanceConstructors(graphEventSemanticModel.Symbol).ToImmutableArray();
 			BaseMemberOverrides  = GetBaseMemberOverrides(graphEventSemanticModel.Symbol).ToImmutableArray();
+
+			if (GraphType == GraphType.PXGraph)
+			{
+				GraphInfo = GraphModel.GraphOrGraphExtInfo as GraphInfo;
+				GraphExtensionInfo = null;
+			}
+			else
+			{
+				GraphExtensionInfo = GraphModel.GraphOrGraphExtInfo as GraphExtensionInfo;
+				GraphInfo = GraphExtensionInfo?.Graph;
+			}
 		}
 
 		protected virtual IEnumerable<InstanceConstructorInfo> GetInstanceConstructors(INamedTypeSymbol graphOrExtension)
