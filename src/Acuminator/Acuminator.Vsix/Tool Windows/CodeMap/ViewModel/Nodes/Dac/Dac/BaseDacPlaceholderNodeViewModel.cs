@@ -8,48 +8,31 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
-using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class BaseDacPlaceholderNodeViewModel : DacNodeViewModelBase, IElementWithTooltip
+	public class BaseDacPlaceholderNodeViewModel : DacNodeViewModelBase
 	{
 		public DacNodeViewModel ContainingDacNode { get; }
 
 		public DacSemanticModelForCodeMap ParentDacModel => ContainingDacNode.DacModelForCodeMap;
 
-		public override string Name
-		{
-			get => DacOrDacExtInfo.Name;
-			protected set { }
-		}
-
-		public override Icon NodeIcon => IsDac
-			? Icon.Dac
-			: Icon.DacExtension;
-
 		public override DacOrDacExtInfoBase DacOrDacExtInfo { get; }
-
-		public bool IsDac => DacOrDacExtInfo is DacInfo;
 
 		public override bool IsExpanderAlwaysVisible => true;
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public BaseDacPlaceholderNodeViewModel(DacOrDacExtInfoBase dacOrDacExtInfo, DacNodeViewModel containingDacNode, 
-									TreeNodeViewModel parent, bool isExpanded) : 
-							   base(containingDacNode.Tree, parent, isExpanded)
+											   TreeNodeViewModel parent, bool isExpanded) : 
+										base(containingDacNode.CheckIfNull().Tree, parent, isExpanded)
 		{
 			DacOrDacExtInfo	  = dacOrDacExtInfo.CheckIfNull();
-			ContainingDacNode = containingDacNode.CheckIfNull(); 
-			ExtraInfos		  = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos(dacSemanticModel: null));
-		}
+			ContainingDacNode = containingDacNode;
 
-		protected override IEnumerable<ExtraInfoViewModel> GetDacExtraInfos(DacSemanticModelForCodeMap? dacSemanticModel)
-		{
-			var dacTypeInfo = CreateDacTypeInfo(IsDac);
-			return [dacTypeInfo];
+			var dacTypeInfo = CreateDacTypeInfo();
+			ExtraInfos		= new ExtendedObservableCollection<ExtraInfoViewModel>(dacTypeInfo);
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) =>
