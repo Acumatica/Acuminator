@@ -15,8 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 		}
 
-		public GraphInfo(ClassDeclarationSyntax? node, INamedTypeSymbol graph, int declarationOrder) :
-					base(node, graph, declarationOrder)
+		protected GraphInfo(ClassDeclarationSyntax? node, INamedTypeSymbol graph, int declarationOrder) :
+					   base(node, graph, declarationOrder)
 		{
 		}
 
