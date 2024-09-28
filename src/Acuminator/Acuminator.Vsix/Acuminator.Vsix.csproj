@@ -533,6 +533,8 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveForGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\Graph\BaseGraphPlaceholderNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\Graph\Base\GraphNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
     <Compile Include="Tool Windows\Converters\MultipleBoolsToSingleBoolConverter.cs" />
     <Compile Include="Tool Windows\Converters\CollectionIsNonEmptyToBoolConverter.cs" />
