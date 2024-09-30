@@ -9,6 +9,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
+using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
@@ -17,8 +18,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class BaseGraphPlaceholderNodeViewModel : GraphNodeViewModelBase, IPlaceholderNode
+	public class BaseGraphPlaceholderNodeViewModel : GraphNodeViewModelBase, IPlaceholderNode, IElementWithTooltip
 	{
+		private readonly Lazy<TooltipInfo?> _tooltipLazy;
+
 		public GraphNodeViewModel ContainingGraphNode { get; }
 
 		public GraphSemanticModelForCodeMap ParentGraphModel => ContainingGraphNode.CodeMapGraphModel;
@@ -44,6 +47,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			var graphTypeInfo = CreateGraphTypeInfo();
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(graphTypeInfo);
+
+			_tooltipLazy = new Lazy<TooltipInfo?>(CalculateTooltipFromAttributes);
 		}
 
 		protected override bool BeforeNodeExpansionChanged(bool oldValue, bool newValue)
@@ -93,5 +98,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
+
+		TooltipInfo? IElementWithTooltip.CalculateTooltip() => _tooltipLazy.Value;
+
+		private TooltipInfo? CalculateTooltipFromAttributes()
+		{
+			var attributes = GraphOrGraphExtInfo.Symbol.GetAttributes();
+
+			if (attributes.IsDefaultOrEmpty)
+				return null;
+
+			string aggregatedTooltip = attributes.Select(attributeData => $"[{attributeData.ToString().RemoveCommonAcumaticaNamespacePrefixes()}]")
+												 .Join(Environment.NewLine);
+			return aggregatedTooltip.IsNullOrWhiteSpace()
+				? null
+				: new TooltipInfo(aggregatedTooltip);
+		}
 	}
 }
