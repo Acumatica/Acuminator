@@ -2,20 +2,18 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Vsix.Utilities
 {
 	public static class IndentUtils
 	{
-		private const string PxDataNamespacePrefix = "PX.Data.";
-		private const string PxObjectsNamespacePrefix = "PX.Objects.";
-
 		public static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
 			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
 			: 0;
@@ -89,10 +87,20 @@ namespace Acuminator.Vsix.Utilities
 			}
 		}
 
-	
-		public static string? RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment) =>
-			codeFragment?.Replace(PxDataNamespacePrefix, string.Empty)
-						?.Replace(PxObjectsNamespacePrefix, string.Empty);
+		[return: NotNullIfNotNull(parameterName: nameof(codeFragment))]
+		public static string? RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment)
+		{
+			if (codeFragment.IsNullOrWhiteSpace())
+				return codeFragment;
+
+			var codeFragmentSB = new StringBuilder(codeFragment);
+			codeFragmentSB = codeFragmentSB.Replace(NamespaceNames.PXDataWithDot, string.Empty)
+										   .Replace(NamespaceNames.PXObjectsWithDot, string.Empty)
+										   .Replace(NamespaceNames.PXCommonStdWithDot, string.Empty)
+										   .Replace(NamespaceNames.PXCommoneWithDot, string.Empty);
+
+			return codeFragmentSB.ToString();
+		}
 
 		public static int GetNodeIndentLength(this SyntaxNode? node, int tabSize)
 		{
