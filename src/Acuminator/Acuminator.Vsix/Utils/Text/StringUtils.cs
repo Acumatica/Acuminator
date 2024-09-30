@@ -3,8 +3,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Vsix.Utilities
 {
@@ -46,6 +48,21 @@ namespace Acuminator.Vsix.Utilities
 			}
 			
 			return trimmedText;
+		}
+
+		[return: NotNullIfNotNull(parameterName: nameof(codeFragment))]
+		public static string? RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment)
+		{
+			if (codeFragment.IsNullOrWhiteSpace())
+				return codeFragment;
+
+			var codeFragmentSB = new StringBuilder(codeFragment);
+			codeFragmentSB = codeFragmentSB.Replace(NamespaceNames.PXDataWithDot, string.Empty)
+										   .Replace(NamespaceNames.PXObjectsWithDot, string.Empty)
+										   .Replace(NamespaceNames.PXCommonStdWithDot, string.Empty)
+										   .Replace(NamespaceNames.PXCommoneWithDot, string.Empty);
+
+			return codeFragmentSB.ToString();
 		}
 	}
 }

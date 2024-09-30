@@ -2,13 +2,11 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Vsix.Utilities
 {
@@ -85,21 +83,6 @@ namespace Acuminator.Vsix.Utilities
 						return;
 				}
 			}
-		}
-
-		[return: NotNullIfNotNull(parameterName: nameof(codeFragment))]
-		public static string? RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment)
-		{
-			if (codeFragment.IsNullOrWhiteSpace())
-				return codeFragment;
-
-			var codeFragmentSB = new StringBuilder(codeFragment);
-			codeFragmentSB = codeFragmentSB.Replace(NamespaceNames.PXDataWithDot, string.Empty)
-										   .Replace(NamespaceNames.PXObjectsWithDot, string.Empty)
-										   .Replace(NamespaceNames.PXCommonStdWithDot, string.Empty)
-										   .Replace(NamespaceNames.PXCommoneWithDot, string.Empty);
-
-			return codeFragmentSB.ToString();
 		}
 
 		public static int GetNodeIndentLength(this SyntaxNode? node, int tabSize)
