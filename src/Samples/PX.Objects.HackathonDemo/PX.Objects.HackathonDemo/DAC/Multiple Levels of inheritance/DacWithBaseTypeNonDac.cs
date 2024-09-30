@@ -27,24 +27,24 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Dac.Sources
 	public class BaseDac : PX.Objects.AP.APInvoice
 	{
 		#region CreatedByID
-		public abstract class createdByID : PX.Data.BQL.BqlGuid.Field<createdByID> { }
+		public new abstract class createdByID : PX.Data.BQL.BqlGuid.Field<createdByID> { }
 
 		[PXDBCreatedByID()]
-		public virtual Guid? CreatedByID { get; set; }
+		public new virtual Guid? CreatedByID { get; set; }
 		#endregion
 
 		#region CreatedByScreenID
-		public abstract class createdByScreenID : PX.Data.BQL.BqlString.Field<createdByScreenID> { }
+		public new abstract class createdByScreenID : PX.Data.BQL.BqlString.Field<createdByScreenID> { }
 
 		[PXDBCreatedByScreenID()]
-		public virtual string CreatedByScreenID { get; set; }
+		public new virtual string CreatedByScreenID { get; set; }
 		#endregion
 
 		#region CreatedDateTime
-		public abstract class createdDateTime : PX.Data.BQL.BqlDateTime.Field<createdDateTime> { }
+		public new abstract class createdDateTime : PX.Data.BQL.BqlDateTime.Field<createdDateTime> { }
 
 		[PXDBCreatedDateTime()]
-		public virtual DateTime? CreatedDateTime { get; set; }
+		public new virtual DateTime? CreatedDateTime { get; set; }
 		#endregion
 	}
 }
