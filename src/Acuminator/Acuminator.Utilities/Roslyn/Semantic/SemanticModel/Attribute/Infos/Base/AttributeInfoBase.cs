@@ -33,7 +33,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		public INamedTypeSymbol? AttributeType => AttributeData.AttributeClass;
 
-		public virtual string Name => AttributeType?.Name ?? ToString();
+		public virtual string Name => AttributeType?.Name ?? AttributeData.ToString();
 
 		/// <summary>
 		/// The index number of the attribute in the attribute declaration.

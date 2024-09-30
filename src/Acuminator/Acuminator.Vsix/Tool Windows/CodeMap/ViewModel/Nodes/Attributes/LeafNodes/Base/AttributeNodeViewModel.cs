@@ -100,20 +100,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private TooltipInfo CalculateAttributeTooltip()
 		{
-			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
+			var cancellationToken = Tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken;
 			var attributeListNode = AttributeInfo.AttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
 			string? tooltip;
 
 			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
 			{
-				tooltip = $"[{AttributeInfo.ToString()}]";
+				tooltip = $"[{AttributeInfo.AttributeData.ToString()}]";
 			}
 			else
 			{
 				int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
 				tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
 										   .RemoveCommonAcumaticaNamespacePrefixes();
-				tooltip = tooltip.NullIfWhiteSpace() ?? $"[{AttributeInfo.ToString()}]";
+				tooltip = tooltip.NullIfWhiteSpace() ?? $"[{AttributeInfo.AttributeData.ToString()}]";
 			}
 
 			return new TooltipInfo(tooltip);
