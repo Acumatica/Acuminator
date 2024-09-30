@@ -106,14 +106,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
 			{
-				tooltip = $"[{AttributeInfo.AttributeData.ToString()}]";
+				string attributeString = AttributeInfo.AttributeData.ToString().RemoveCommonAcumaticaNamespacePrefixes();
+				tooltip = $"[{attributeString}]";
 			}
 			else
 			{
 				int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
 				tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
 										   .RemoveCommonAcumaticaNamespacePrefixes();
-				tooltip = tooltip.NullIfWhiteSpace() ?? $"[{AttributeInfo.AttributeData.ToString()}]";
+
+				if (tooltip.IsNullOrWhiteSpace())
+				{
+					string attributeString = AttributeInfo.AttributeData.ToString().RemoveCommonAcumaticaNamespacePrefixes();
+					tooltip = $"[{attributeString}]";
+				}
 			}
 
 			return new TooltipInfo(tooltip);
