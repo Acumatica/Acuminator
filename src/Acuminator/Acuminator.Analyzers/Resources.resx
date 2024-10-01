@@ -675,6 +675,21 @@ public virtual int? SomeDacField{ get; set; }</value>
   <data name="PX1076Title" xml:space="preserve">
     <value>This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use</value>
   </data>
+  <data name="PX1077Fix" xml:space="preserve">
+    <value>Change the accessibility modifier to {0}</value>
+  </data>
+  <data name="PX1077Title" xml:space="preserve">
+    <value>Event handlers should be protected and virtual</value>
+  </data>
+  <data name="PX1077TitleFormatWithReason" xml:space="preserve">
+	<value>Event handlers should be {0}</value>
+  </data>
+  <data name="PX1077Title_EventHandlersShouldNotBePrivate" xml:space="preserve">
+    <value>Event handlers should not be private</value>
+  </data>
+  <data name="PX1077Title_ExplicitInterfaceImplementation" xml:space="preserve">
+    <value>Event handlers should not be explicit interface implementations</value>
+  </data>
   <data name="PX1080Title" xml:space="preserve">
     <value>Data view delegates should not start long-running operations</value>
   </data>

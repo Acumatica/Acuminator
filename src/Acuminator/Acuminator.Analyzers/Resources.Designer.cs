@@ -1717,6 +1717,51 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change the accessibility modifier to {0}.
+        /// </summary>
+        public static string PX1077Fix {
+            get {
+                return ResourceManager.GetString("PX1077Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should be protected and virtual.
+        /// </summary>
+        public static string PX1077Title {
+            get {
+                return ResourceManager.GetString("PX1077Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should not be private.
+        /// </summary>
+        public static string PX1077Title_EventHandlersShouldNotBePrivate {
+            get {
+                return ResourceManager.GetString("PX1077Title_EventHandlersShouldNotBePrivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should not be explicit interface implementations.
+        /// </summary>
+        public static string PX1077Title_ExplicitInterfaceImplementation {
+            get {
+                return ResourceManager.GetString("PX1077Title_ExplicitInterfaceImplementation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event handlers should be {0}.
+        /// </summary>
+        public static string PX1077TitleFormatWithReason {
+            get {
+                return ResourceManager.GetString("PX1077TitleFormatWithReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data view delegates should not start long-running operations.
         /// </summary>
         public static string PX1080Title {

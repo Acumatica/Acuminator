@@ -1,17 +1,14 @@
 ﻿#nullable enable
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -226,6 +223,5 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			return method.IsVirtual || method.IsOverride || method.IsAbstract;
 		}
-
 	}
 }
