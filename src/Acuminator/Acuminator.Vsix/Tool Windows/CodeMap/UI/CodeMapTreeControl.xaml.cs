@@ -36,8 +36,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (e.ClickCount >= 2)
 			{
-				treeNodeVM.NavigateToItemAsync()
-						  .FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}");
+				NavigateOnClickAsync(treeNodeVM)
+					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}");
+			}
+		}
+
+		private async System.Threading.Tasks.Task NavigateOnClickAsync(TreeNodeViewModel treeNodeVM)
+		{
+			Cursor oldCursor = Mouse.OverrideCursor;
+
+			try
+			{
+				Mouse.OverrideCursor = Cursors.Wait;
+
+				await treeNodeVM.NavigateToItemAsync();
+			}
+			finally
+			{
+				Mouse.OverrideCursor = oldCursor;
 			}
 		}
 
