@@ -38,14 +38,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			
-			var declaredEventHandlers = graphOrGraphExtension
-				.GetAllEvents()
-				.Where(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphOrGraphExtension.Symbol));
+			var declaredEventHandlers = graphOrGraphExtension.GetAllEvents()
+															 .Where(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphOrGraphExtension.Symbol));
 
-			var allInterfaceMethods = graphOrGraphExtension.Symbol.AllInterfaces
-																  .SelectMany(im => im.GetMethods())
-																  .Where(im => im.GetEventHandlerType(pxContext) != EventType.None)
-																  .ToList();
+			List<IMethodSymbol>? allInterfaceMethodsImplementations = GetAllInterfaceMethodsImplementations(graphOrGraphExtension.Symbol, pxContext);
+
 			foreach (var handler in declaredEventHandlers)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
@@ -63,7 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 								Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location),
 								pxContext.CodeAnalysisSettings);
 				}
-				else if (!IsImplicitInterfaceImplementation(handler.Symbol, allInterfaceMethods))
+				else if (!IsImplicitInterfaceImplementation(handler.Symbol, allInterfaceMethodsImplementations))
 				{
 					var targetAccessibility = handler.Symbol.ContainingType.IsSealed ? Accessibility.Public : Accessibility.Protected;
 					var addVirtualModifier = !handler.Symbol.ContainingType.IsSealed && !handler.Symbol.IsAbstract;
@@ -108,10 +105,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 			return modifierFormatArg;
 		}
 
-		private static bool IsImplicitInterfaceImplementation(IMethodSymbol method, List<IMethodSymbol> allInterfaceMethods)
+		private static List<IMethodSymbol>? GetAllInterfaceMethodsImplementations(INamedTypeSymbol graphOrGraphExtSymbol, PXContext pxContext)
 		{
-			return allInterfaceMethods.Any(im =>
-				method.ContainingType.FindImplementationForInterfaceMember(im)?.Equals(method, SymbolEqualityComparer.Default) ?? false);
+			var allInterfaces = graphOrGraphExtSymbol.AllInterfaces;
+
+			if (allInterfaces.IsDefaultOrEmpty)
+				return null;
+
+			var allInterfaceMethods = allInterfaces.SelectMany(@interface => @interface.GetMethods())
+												   .Where(iMethod => iMethod.GetEventHandlerType(pxContext) != EventType.None);
+
+			var allInterfaceMethodsImplementations = allInterfaceMethods.Select(graphOrGraphExtSymbol.FindImplementationForInterfaceMember)
+																		.OfType<IMethodSymbol>()	//removes null
+																		.ToList();
+			return allInterfaceMethodsImplementations;
+		}
+
+		private static bool IsImplicitInterfaceImplementation(IMethodSymbol method, List<IMethodSymbol>? allInterfaceMethodsImplementations)
+		{
+			if (allInterfaceMethodsImplementations?.Count is null or 0)
+				return false;
+
+			return allInterfaceMethodsImplementations.Any(
+						interfaceMethodImplementation => interfaceMethodImplementation.Equals(method, SymbolEqualityComparer.Default));
 		}
 	}
 }
