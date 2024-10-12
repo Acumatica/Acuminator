@@ -1,12 +1,15 @@
-﻿using System.Collections.Immutable;
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
+
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 {
@@ -39,25 +42,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 				.GetAllEvents()
 				.Where(graphEvent => graphEvent.Symbol.IsDeclaredInType(graphOrGraphExtension.Symbol));
 
-			var allInterfaceMethods = graphOrGraphExtension
-				.Symbol
-				.AllInterfaces
-				.SelectMany(im => im.GetMethods())
-				.Where(im => im.GetEventHandlerType(pxContext) != EventType.None)
-				.ToList();
-
+			var allInterfaceMethods = graphOrGraphExtension.Symbol.AllInterfaces
+																  .SelectMany(im => im.GetMethods())
+																  .Where(im => im.GetEventHandlerType(pxContext) != EventType.None)
+																  .ToList();
 			foreach (var handler in declaredEventHandlers)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
 				var location = handler.Symbol.Locations.FirstOrDefault();
 
-				if (location == null)
-				{
-					continue;
-				}
-
-				if (handler.Symbol.IsOverride)
+				if (location == null || handler.Symbol.IsOverride)
 				{
 					continue;
 				}
@@ -118,18 +113,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 			return allInterfaceMethods.Any(im =>
 				method.ContainingType.FindImplementationForInterfaceMember(im)?.Equals(method, SymbolEqualityComparer.Default) ?? false);
 		}
-	}
-
-	internal static class DiagnosticProperty
-	{
-		/// <summary>
-		/// The property used to pass the information whether the containing type is sealed or not. 
-		/// </summary>
-		public const string IsContainingTypeSealed = nameof(IsContainingTypeSealed);
-
-		/// <summary>
-		/// The property used to pass the information whether to add virtual modifier or not. 
-		/// </summary>
-		public const string AddVirtualModifier = nameof(AddVirtualModifier);
 	}
 }
