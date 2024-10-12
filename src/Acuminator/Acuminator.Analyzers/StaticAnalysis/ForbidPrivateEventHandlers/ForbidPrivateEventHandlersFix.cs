@@ -70,30 +70,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 
 			newAccessibilityModifier = CopyTriviaForNewAccessModifier(newAccessibilityModifier, hasModifiers, firstModifier, eventHandler);
 
-			var modifiers = new List<SyntaxToken>
+			var newModifiers = new List<SyntaxToken>(capacity: 4)
 			{
 				newAccessibilityModifier
 			};
 
 			if (addVirtual)
 			{
-				modifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
+				newModifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
 			}
 
-			if (hasModifiers && !ShouldModifierBeRemoved(firstModifier.Kind()))
+			if (hasModifiers)
 			{
-				// if the previously first token was not a modifier to be removed, we need to add it back _without_ the leading trivia.
-				// That's why we add it separately first, and then we add the rest.
-
-				modifiers.Add(firstModifier.WithoutTrivia().WithTrailingTrivia(firstModifier.TrailingTrivia));
-				modifiers.AddRange(FilterModifiers(eventHandler.Modifiers, skip: 1));
-			}
-			else
-			{
-				modifiers.AddRange(FilterModifiers(eventHandler.Modifiers, skip: 0));
+				var modifiersToKeep = GetModifiersToKeep(firstModifier, eventHandler.Modifiers);
+				newModifiers.AddRange(modifiersToKeep);
 			}
 
-			var newEventHandler = eventHandler.WithModifiers(SyntaxFactory.TokenList(modifiers));
+			var newModifiersTokenList = SyntaxFactory.TokenList(newModifiers);
+			var newEventHandler = eventHandler.WithModifiers(newModifiersTokenList);
 
 			if (!hasModifiers)
 			{
@@ -108,7 +102,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 		}
 
 		private static SyntaxToken CopyTriviaForNewAccessModifier(in SyntaxToken newAccessibilityModifier, bool hasModifiers,
-																  SyntaxToken firstModifier, MethodDeclarationSyntax eventHandler)
+																  in SyntaxToken firstModifier, MethodDeclarationSyntax eventHandler)
 		{
 			// Preserve the leading trivia of the first token, if it exists. If not, take over the leading trivia from the return type.
 			SyntaxToken newAccessibilityModifierWithTrivia;
@@ -121,7 +115,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 				// Get the leading and trailing trivia of the modifiers that are about to be removed.
 
 				var modifiersToBeRemoved = eventHandler.Modifiers.Skip(1)	// skip the first token, as the trivia from it is always added
-																 .Where(m => ShouldModifierBeRemoved(m.Kind()))
+																 .Where(m => ShouldModifierBeRemoved(m))
 																 .ToList();
 				if (modifiersToBeRemoved.Count > 0)
 				{
@@ -148,13 +142,55 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 			return newAccessibilityModifierWithTrivia;
 		}
 
-		private static IEnumerable<SyntaxToken> FilterModifiers(SyntaxTokenList modifiers, int skip)
-			=> modifiers.Skip(skip)
-						.Where(m => !ShouldModifierBeRemoved(m.Kind()));
-
-		private static bool ShouldModifierBeRemoved(SyntaxKind modifierKind)
+		private static IEnumerable<SyntaxToken> GetModifiersToKeep(in SyntaxToken firstModifier, in SyntaxTokenList modifiers)
 		{
-			switch (modifierKind)
+			if (!ShouldModifierBeRemoved(firstModifier))
+			{
+				// if the previously first token was not a modifier to be removed, we need to add it back _without_ the leading trivia.
+				// That's why we add it separately first, and then we add the rest.
+				var firstModifierWithoutLeadingTrivia = firstModifier.WithLeadingTrivia(default(SyntaxTriviaList));
+				var modifiersToKeep = FilterModifiers(modifiers, includeFirstModifier: false);
+
+				return modifiersToKeep.PrependItem(firstModifierWithoutLeadingTrivia);
+			}
+			else
+				return FilterModifiers(modifiers, includeFirstModifier: true);
+		}
+
+		private static IEnumerable<SyntaxToken> FilterModifiers(in SyntaxTokenList modifiers, bool includeFirstModifier)
+		{
+			if (includeFirstModifier)
+				return modifiers.Where(m => !ShouldModifierBeRemoved(m));
+
+			switch (modifiers.Count)
+			{
+				case <= 1:
+					return [];
+				case 2:
+					SyntaxToken secondModifier = modifiers[1];
+					return ShouldModifierBeRemoved(secondModifier) 
+						? [] 
+						: [secondModifier];
+				default:
+					return SkipFirstModifiersFilterMoreThanTwoModifiers(modifiers);
+			}
+
+			//-----------------------------Local Function-------------------------------------------
+			static IEnumerable<SyntaxToken> SkipFirstModifiersFilterMoreThanTwoModifiers(SyntaxTokenList modifiers)
+			{
+				for (int i = 1; i < modifiers.Count; i++)
+				{
+					SyntaxToken modifier = modifiers[i];
+
+					if (!ShouldModifierBeRemoved(modifier))
+						yield return modifier;
+				}
+			}
+		}
+
+		private static bool ShouldModifierBeRemoved(in SyntaxToken modifier)
+		{
+			switch (modifier.Kind())
 			{
 				case SyntaxKind.PrivateKeyword:
 				case SyntaxKind.PublicKeyword:
