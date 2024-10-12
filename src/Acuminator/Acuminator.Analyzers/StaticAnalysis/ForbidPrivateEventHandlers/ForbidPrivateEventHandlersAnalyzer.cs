@@ -64,7 +64,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 
 				if (handler.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location));
+					context.ReportDiagnosticWithSuppressionCheck(
+								Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBeExplicitInterfaceImplementations, location),
+								pxContext.CodeAnalysisSettings);
 				}
 				else if (!IsImplicitInterfaceImplementation(handler.Symbol, allInterfaceMethods))
 				{
@@ -83,12 +85,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 					{
 						if (handler.Symbol.DeclaredAccessibility == Accessibility.Private)
 						{
-							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBePrivate, location, properties));
+							context.ReportDiagnosticWithSuppressionCheck(
+								Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldNotBePrivate, location, properties), 
+								pxContext.CodeAnalysisSettings);
 						}
 						else
 						{
 							var modifierText = GetModifierFormatArg(AccessibilitySyntaxKindMap[targetAccessibility], addVirtualModifier);
-							context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties, modifierText));
+							context.ReportDiagnosticWithSuppressionCheck(
+								Diagnostic.Create(Descriptors.PX1077_EventHandlersShouldBeProtectedVirtual, location, properties, modifierText),
+								pxContext.CodeAnalysisSettings);
 						}
 					}
 				}
