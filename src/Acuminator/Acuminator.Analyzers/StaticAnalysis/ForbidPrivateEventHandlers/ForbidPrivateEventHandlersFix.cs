@@ -29,19 +29,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!diagnostic.IsRegisteredForCodeFix(false))
-			{
+			if (!diagnostic.IsRegisteredForCodeFix(considerRegisteredByDefault: false))
 				return Task.CompletedTask;
-			}
 
-			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, PX1077DiagnosticProperty.IsContainingTypeSealed);
-			var addVirtualModifier = DiagnosticUtils.IsFlagSet(diagnostic, PX1077DiagnosticProperty.AddVirtualModifier);
+			var isContainingTypeSealed = diagnostic.IsFlagSet(PX1077DiagnosticProperty.IsContainingTypeSealed);
+			var addVirtualModifier	   = diagnostic.IsFlagSet(PX1077DiagnosticProperty.AddVirtualModifier);
 
 			var accessibilityModifier = isContainingTypeSealed
 				? SyntaxKind.PublicKeyword
 				: SyntaxKind.ProtectedKeyword;
 
-			var modifierFormatArg = ForbidPrivateEventHandlersAnalyzer.GetModifierFormatArg(accessibilityModifier, addVirtualModifier);
+			var modifierFormatArg = ForbidPrivateEventHandlersAnalyzer.GetModifiersText(isPublic: isContainingTypeSealed, addVirtualModifier);
 			var makeProtectedTitle = nameof(Resources.PX1077Fix).GetLocalized(modifierFormatArg).ToString();
 
 			context.CancellationToken.ThrowIfCancellationRequested();
