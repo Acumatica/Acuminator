@@ -32,8 +32,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 				return Task.CompletedTask;
 			}
 
-			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.IsContainingTypeSealed);
-			var addVirtualModifier = DiagnosticUtils.IsFlagSet(diagnostic, DiagnosticProperty.AddVirtualModifier);
+			var isContainingTypeSealed = DiagnosticUtils.IsFlagSet(diagnostic, PX1077DiagnosticProperty.IsContainingTypeSealed);
+			var addVirtualModifier = DiagnosticUtils.IsFlagSet(diagnostic, PX1077DiagnosticProperty.AddVirtualModifier);
 
 			var accessibilityModifier = isContainingTypeSealed
 				? SyntaxKind.PublicKeyword

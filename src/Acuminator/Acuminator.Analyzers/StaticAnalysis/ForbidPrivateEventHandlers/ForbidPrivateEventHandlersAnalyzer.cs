@@ -73,10 +73,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 
 					var properties = new Dictionary<string, string?>
 					{
-						{ DiagnosticProperty.IsContainingTypeSealed, handler.Symbol.ContainingType.IsSealed.ToString() },
-						{ DiagnosticProperty.AddVirtualModifier, addVirtualModifier.ToString() },
-						{ StaticAnalysis.DiagnosticProperty.RegisterCodeFix, true.ToString() }
-					}.ToImmutableDictionary();
+						{ PX1077DiagnosticProperty.IsContainingTypeSealed, handler.Symbol.ContainingType.IsSealed.ToString() },
+						{ PX1077DiagnosticProperty.AddVirtualModifier	 , addVirtualModifier.ToString() },
+						{ DiagnosticProperty.RegisterCodeFix			 , bool.TrueString }
+					}
+					.ToImmutableDictionary();
 
 					if ((!handler.Symbol.IsVirtual && addVirtualModifier) || handler.Symbol.DeclaredAccessibility != targetAccessibility)
 					{
