@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -63,40 +64,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 				return document;
 			}
 
-			var newToken = SyntaxFactory.Token(accessibilityModifier);
-			var firstToken = eventHandler.Modifiers.FirstOrDefault();
-			var hasModifiers = firstToken != default;
+			SyntaxToken newAccessibilityModifier = SyntaxFactory.Token(accessibilityModifier);
+			SyntaxToken firstModifier = eventHandler.Modifiers.FirstOrDefault();
+			bool hasModifiers = firstModifier != default;
 
-			// Preserve the leading trivia of the first token, if it exists. If not, take over the leading trivia from the return type.
-			newToken = hasModifiers ?
-				newToken.WithTriviaFrom(firstToken) :
-				newToken.WithLeadingTrivia(eventHandler.ReturnType.GetLeadingTrivia());
-
-			if (hasModifiers)
-			{
-				// Preserve the leading and trailing trivia of the modifiers that are about to be removed.
-
-				var modifiersToBeRemoved = eventHandler.Modifiers
-					.Skip(1) // skip the first token, as the trivia from it was already handled.
-					.Where(m => ShouldModifierBeRemoved(m.Kind()));
-
-				var leadingTrivia = modifiersToBeRemoved.SelectMany(m => m.LeadingTrivia);
-				var trailingTrivia = modifiersToBeRemoved.SelectMany(m => m.TrailingTrivia);
-
-				if (leadingTrivia.Count() > 0)
-				{
-					newToken = newToken.WithLeadingTrivia(leadingTrivia);
-				}
-
-				if (trailingTrivia.Count() > 0)
-				{
-					newToken = newToken.WithTrailingTrivia(trailingTrivia);
-				}
-			}
+			newAccessibilityModifier = CopyTriviaForNewAccessModifier(newAccessibilityModifier, hasModifiers, firstModifier, eventHandler);
 
 			var modifiers = new List<SyntaxToken>
 			{
-				newToken
+				newAccessibilityModifier
 			};
 
 			if (addVirtual)
@@ -104,17 +80,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 				modifiers.Add(SyntaxFactory.Token(SyntaxKind.VirtualKeyword));
 			}
 
-			if (hasModifiers && !ShouldModifierBeRemoved(firstToken.Kind()))
+			if (hasModifiers && !ShouldModifierBeRemoved(firstModifier.Kind()))
 			{
 				// if the previously first token was not a modifier to be removed, we need to add it back _without_ the leading trivia.
 				// That's why we add it separately first, and then we add the rest.
 
-				modifiers.Add(firstToken.WithoutTrivia().WithTrailingTrivia(firstToken.TrailingTrivia));
-				modifiers.AddRange(FilterModifiers(eventHandler.Modifiers, 1));
+				modifiers.Add(firstModifier.WithoutTrivia().WithTrailingTrivia(firstModifier.TrailingTrivia));
+				modifiers.AddRange(FilterModifiers(eventHandler.Modifiers, skip: 1));
 			}
 			else
 			{
-				modifiers.AddRange(FilterModifiers(eventHandler.Modifiers, 0));
+				modifiers.AddRange(FilterModifiers(eventHandler.Modifiers, skip: 0));
 			}
 
 			var newEventHandler = eventHandler.WithModifiers(SyntaxFactory.TokenList(modifiers));
@@ -129,6 +105,47 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 			var newRoot = root.ReplaceNode(eventHandler, newEventHandler);
 
 			return document.WithSyntaxRoot(newRoot);
+		}
+
+		private static SyntaxToken CopyTriviaForNewAccessModifier(in SyntaxToken newAccessibilityModifier, bool hasModifiers,
+																  SyntaxToken firstModifier, MethodDeclarationSyntax eventHandler)
+		{
+			// Preserve the leading trivia of the first token, if it exists. If not, take over the leading trivia from the return type.
+			SyntaxToken newAccessibilityModifierWithTrivia;
+
+			if (hasModifiers)
+			{
+				SyntaxTriviaList leadingTriviaToAdd  = firstModifier.LeadingTrivia;
+				SyntaxTriviaList trailingTriviaToAdd = firstModifier.TrailingTrivia;
+
+				// Get the leading and trailing trivia of the modifiers that are about to be removed.
+
+				var modifiersToBeRemoved = eventHandler.Modifiers.Skip(1)	// skip the first token, as the trivia from it is always added
+																 .Where(m => ShouldModifierBeRemoved(m.Kind()))
+																 .ToList();
+				if (modifiersToBeRemoved.Count > 0)
+				{
+					var leadingTriviaFromRemovedModifiers  = modifiersToBeRemoved.Where(m => m.HasLeadingTrivia)
+																				 .SelectMany(m => m.LeadingTrivia);
+					var trailingTriviaFromRemovedModifiers = modifiersToBeRemoved.Where(m => m.HasTrailingTrivia)
+																				 .SelectMany(m => m.TrailingTrivia);
+
+					if (leadingTriviaFromRemovedModifiers.Any())
+						leadingTriviaToAdd = leadingTriviaToAdd.AddRange(leadingTriviaFromRemovedModifiers);
+
+					if (trailingTriviaFromRemovedModifiers.Any())
+						trailingTriviaToAdd = trailingTriviaToAdd.AddRange(trailingTriviaFromRemovedModifiers);
+				}
+
+				newAccessibilityModifierWithTrivia = newAccessibilityModifier.WithLeadingTrivia(leadingTriviaToAdd)
+																			 .WithTrailingTrivia(trailingTriviaToAdd);
+			}
+			else
+			{
+				newAccessibilityModifierWithTrivia = newAccessibilityModifier.WithLeadingTrivia(eventHandler.ReturnType.GetLeadingTrivia());
+			}
+
+			return newAccessibilityModifierWithTrivia;
 		}
 
 		private static IEnumerable<SyntaxToken> FilterModifiers(SyntaxTokenList modifiers, int skip)
