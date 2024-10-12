@@ -67,9 +67,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 			SyntaxToken newAccessibilityModifier = SyntaxFactory.Token(accessibilityModifier);
 			SyntaxToken firstModifier = eventHandler.Modifiers.FirstOrDefault();
 			bool hasModifiers = firstModifier != default;
+			bool shouldRemoveFirstModifier = ShouldModifierBeRemoved(firstModifier);
 
-			newAccessibilityModifier = CopyTriviaForNewAccessModifier(newAccessibilityModifier, hasModifiers, firstModifier, eventHandler);
-
+			newAccessibilityModifier = CopyTriviaForNewAccessModifier(newAccessibilityModifier, hasModifiers, shouldRemoveFirstModifier, 
+																	  firstModifier, eventHandler);
 			var newModifiers = new List<SyntaxToken>(capacity: 4)
 			{
 				newAccessibilityModifier
@@ -82,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 
 			if (hasModifiers)
 			{
-				var modifiersToKeep = GetModifiersToKeep(firstModifier, eventHandler.Modifiers);
+				var modifiersToKeep = GetModifiersToKeep(firstModifier, eventHandler.Modifiers, shouldRemoveFirstModifier);
 				newModifiers.AddRange(modifiersToKeep);
 			}
 
@@ -101,29 +102,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 			return document.WithSyntaxRoot(newRoot);
 		}
 
-		private static SyntaxToken CopyTriviaForNewAccessModifier(in SyntaxToken newAccessibilityModifier, bool hasModifiers,
+		private static SyntaxToken CopyTriviaForNewAccessModifier(in SyntaxToken newAccessibilityModifier, bool hasModifiers, bool shouldRemoveFirstModifier,
 																  in SyntaxToken firstModifier, MethodDeclarationSyntax eventHandler)
 		{
+			var modifiers = eventHandler.Modifiers;
+
 			// Preserve the leading trivia of the first token, if it exists. If not, take over the leading trivia from the return type.
 			SyntaxToken newAccessibilityModifierWithTrivia;
 
 			if (hasModifiers)
 			{
 				SyntaxTriviaList leadingTriviaToAdd  = firstModifier.LeadingTrivia;
-				SyntaxTriviaList trailingTriviaToAdd = firstModifier.TrailingTrivia;
+				SyntaxTriviaList trailingTriviaToAdd = shouldRemoveFirstModifier 
+					? firstModifier.TrailingTrivia 
+					: SyntaxTriviaList.Create(SyntaxFactory.Space);
 
 				// Get the leading and trailing trivia of the modifiers that are about to be removed.
-
-				var modifiersToBeRemoved = eventHandler.Modifiers.Skip(1)	// skip the first token, as the trivia from it is always added
-																 .Where(m => ShouldModifierBeRemoved(m))
-																 .ToList();
+				var modifiersToBeRemoved = modifiers.Skip(1)	// skip the first token, as the trivia from it is always added
+													.Where(m => ShouldModifierBeRemoved(m))
+													.ToList();
 				if (modifiersToBeRemoved.Count > 0)
 				{
 					var leadingTriviaFromRemovedModifiers  = modifiersToBeRemoved.Where(m => m.HasLeadingTrivia)
 																				 .SelectMany(m => m.LeadingTrivia);
 					var trailingTriviaFromRemovedModifiers = modifiersToBeRemoved.Where(m => m.HasTrailingTrivia)
 																				 .SelectMany(m => m.TrailingTrivia);
-
 					if (leadingTriviaFromRemovedModifiers.Any())
 						leadingTriviaToAdd = leadingTriviaToAdd.AddRange(leadingTriviaFromRemovedModifiers);
 
@@ -131,8 +134,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 						trailingTriviaToAdd = trailingTriviaToAdd.AddRange(trailingTriviaFromRemovedModifiers);
 				}
 
-				newAccessibilityModifierWithTrivia = newAccessibilityModifier.WithLeadingTrivia(leadingTriviaToAdd)
-																			 .WithTrailingTrivia(trailingTriviaToAdd);
+				var formattedLeadingTriviaToAdd    = RemoveSequantialWhiteSpaces(leadingTriviaToAdd);
+				var formattedTrailingTriviaToAdd   = RemoveSequantialWhiteSpaces(trailingTriviaToAdd);
+				newAccessibilityModifierWithTrivia = newAccessibilityModifier.WithLeadingTrivia(formattedLeadingTriviaToAdd)
+																			 .WithTrailingTrivia(formattedTrailingTriviaToAdd);
 			}
 			else
 			{
@@ -142,9 +147,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbidPrivateEventHandlers
 			return newAccessibilityModifierWithTrivia;
 		}
 
-		private static IEnumerable<SyntaxToken> GetModifiersToKeep(in SyntaxToken firstModifier, in SyntaxTokenList modifiers)
+		private static IEnumerable<SyntaxTrivia> RemoveSequantialWhiteSpaces(SyntaxTriviaList syntaxTrivias)
 		{
-			if (!ShouldModifierBeRemoved(firstModifier))
+			SyntaxTrivia? previousTrivia = null;
+
+			foreach (var trivia in syntaxTrivias)
+			{
+				if (!trivia.IsKind(SyntaxKind.WhitespaceTrivia) || previousTrivia == null || !previousTrivia.Value.IsKind(SyntaxKind.WhitespaceTrivia))
+					yield return trivia;
+
+				previousTrivia = trivia;
+			}
+		}
+
+		private static IEnumerable<SyntaxToken> GetModifiersToKeep(in SyntaxToken firstModifier, in SyntaxTokenList modifiers,
+																   bool shouldRemoveFirstModifier)
+		{
+			if (!shouldRemoveFirstModifier)
 			{
 				// if the previously first token was not a modifier to be removed, we need to add it back _without_ the leading trivia.
 				// That's why we add it separately first, and then we add the rest.
