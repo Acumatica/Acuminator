@@ -22,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphSemanticModelForCodeMap CodeMapGraphModel => GraphViewModel.CodeMapGraphModel;
 
-		public GraphMemberType CategoryType { get; }
+		public GraphMemberCategory CategoryType { get; }
 
 		protected string CategoryDescription { get; }
 
@@ -46,9 +46,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
-		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
-													bool isExpanded) : 
-											 base(graphViewModel?.Tree!, graphViewModel, isExpanded)
+		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, TreeNodeViewModel parent,
+												   GraphMemberCategory graphMemberType, bool isExpanded) : 
+											  base(graphViewModel?.Tree!, parent, isExpanded)
 		{
 			GraphViewModel = graphViewModel!;
 			CategoryType = graphMemberType;

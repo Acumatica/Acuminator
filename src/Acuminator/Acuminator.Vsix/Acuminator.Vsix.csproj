@@ -502,6 +502,8 @@
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tool Windows\CodeMap\Utils\PlaceholderNodeUtils.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IPlaceholderNode.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.FilterHelper.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterOptions.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\TreeNodeFilterBehavior.cs" />
@@ -524,6 +526,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\BaseDacPlaceholderNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\Dac\Base\DacNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphBaseMemberOverridesCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphBaseTypesCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphInitializeMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphConfigureMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphStaticConstructorNodeViewModel.cs" />
@@ -532,6 +535,8 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveForGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActive\IsActiveGraphMethodNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Filter\FilterViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\Graph\BaseGraphPlaceholderNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\Graph\Base\GraphNodeViewModelBase.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
     <Compile Include="Tool Windows\Converters\MultipleBoolsToSingleBoolConverter.cs" />
     <Compile Include="Tool Windows\Converters\CollectionIsNonEmptyToBoolConverter.cs" />
@@ -573,7 +578,7 @@
     <Compile Include="Tool Windows\CodeMap\Model\Dac\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberInfoType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberType.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Graph\GraphMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
@@ -621,7 +626,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\ViewNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\RowEventNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\CacheAttachedNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\Graph\GraphNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />

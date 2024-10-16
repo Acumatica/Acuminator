@@ -12,6 +12,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		#region Roots
 		public virtual TResult VisitNode(GraphNodeViewModel graph, TInput input) => DefaultVisit(graph, input);
+
+		public virtual TResult VisitNode(BaseGraphPlaceholderNodeViewModel baseGraph, TInput input) => DefaultVisit(baseGraph, input);
 		#endregion
 
 		#region Categories
@@ -32,6 +34,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategory, TInput input) =>
 			DefaultVisit(graphBaseMemberOverridesCategory, input);
+
+		public virtual TResult VisitNode(GraphBaseTypesCategoryNodeViewModel graphBaseTypesCategory, TInput input) => 
+			DefaultVisit(graphBaseTypesCategory, input);
 		#endregion
 
 		#region DAC Grouping

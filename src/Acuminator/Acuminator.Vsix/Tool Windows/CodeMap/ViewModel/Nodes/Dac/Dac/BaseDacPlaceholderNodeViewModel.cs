@@ -5,51 +5,48 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Vsix.ToolWindows.CodeMap.Dac;
 using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 
+using Microsoft.CodeAnalysis;
+
+using static Acuminator.Utilities.BannedApi.ApiConstants.Format;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class BaseDacPlaceholderNodeViewModel : DacNodeViewModelBase, IElementWithTooltip
+	public class BaseDacPlaceholderNodeViewModel : DacNodeViewModelBase, IPlaceholderNode, IElementWithTooltip
 	{
+		private readonly Lazy<TooltipInfo?> _tooltipLazy;
+
 		public DacNodeViewModel ContainingDacNode { get; }
 
 		public DacSemanticModelForCodeMap ParentDacModel => ContainingDacNode.DacModelForCodeMap;
 
-		public override string Name
-		{
-			get => DacOrDacExtInfo.Name;
-			protected set { }
-		}
-
-		public override Icon NodeIcon => IsDac
-			? Icon.Dac
-			: Icon.DacExtension;
-
 		public override DacOrDacExtInfoBase DacOrDacExtInfo { get; }
-
-		public bool IsDac => DacOrDacExtInfo is DacInfo;
 
 		public override bool IsExpanderAlwaysVisible => true;
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
+		#region IPlaceholderNode implementation
+		INamedTypeSymbol IPlaceholderNode.PlaceholderSymbol => DacOrDacExtInfo.Symbol;
+
+		int IPlaceholderNode.PlaceholderSymbolDeclarationOrder => DacOrDacExtInfo.DeclarationOrder;
+		#endregion
+
 		public BaseDacPlaceholderNodeViewModel(DacOrDacExtInfoBase dacOrDacExtInfo, DacNodeViewModel containingDacNode, 
-									TreeNodeViewModel parent, bool isExpanded) : 
-							   base(containingDacNode.Tree, parent, isExpanded)
+											   TreeNodeViewModel parent, bool isExpanded) : 
+										base(containingDacNode.CheckIfNull().Tree, parent, isExpanded)
 		{
 			DacOrDacExtInfo	  = dacOrDacExtInfo.CheckIfNull();
-			ContainingDacNode = containingDacNode.CheckIfNull(); 
-			ExtraInfos		  = new ExtendedObservableCollection<ExtraInfoViewModel>(GetDacExtraInfos(dacSemanticModel: null));
-		}
+			ContainingDacNode = containingDacNode;
 
-		protected override IEnumerable<ExtraInfoViewModel> GetDacExtraInfos(DacSemanticModelForCodeMap? dacSemanticModel)
-		{
-			var dacTypeInfo = CreateDacTypeInfo(IsDac);
-			return [dacTypeInfo];
+			var dacTypeInfo = CreateDacTypeInfo();
+			ExtraInfos		= new ExtendedObservableCollection<ExtraInfoViewModel>(dacTypeInfo);
+
+			_tooltipLazy = new Lazy<TooltipInfo?>(CalculateTooltipFromAttributes);
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) =>
@@ -63,66 +60,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			base.BeforeNodeExpansionChanged(oldValue, newValue);
 
-			bool isExpanding = newValue;
-
-			if (!isExpanding || Tree.CodeMapViewModel.IsCalculating)
-				return false;
-
-			bool oldIsCalculating = Tree.CodeMapViewModel.IsCalculating;
-
-			try
-			{
-				Tree.CodeMapViewModel.IsCalculating = true;
-				BuildBaseDacNodes();
-
-				// Never expand substitute node
-				return false;
-			}
-			finally
-			{
-				Tree.CodeMapViewModel.IsCalculating = oldIsCalculating;
-			}
+			return this.ReplacePlaceholderWithSubTreeOnExpansion(ContainingDacNode.DacModel.PXContext, isExpanding: newValue);
 		}
 
-		private void BuildBaseDacNodes()
+		TooltipInfo? IElementWithTooltip.CalculateTooltip() => _tooltipLazy.Value;
+
+		private TooltipInfo? CalculateTooltipFromAttributes()
 		{
-			var pxContext = ContainingDacNode.DacModel.PXContext;
-			var semanticModelFactory = Tree.CodeMapViewModel.SemanticModelFactory;
+			var attributes = DacOrDacExtInfo.Symbol.GetAttributes();
 
-			if (!semanticModelFactory.TryToInferSemanticModel(DacOrDacExtInfo.Symbol, pxContext, out ISemanticModel? semanticModel, 
-															 DacOrDacExtInfo.DeclarationOrder) ||
-				semanticModel is not DacSemanticModelForCodeMap baseDacSemanticModel)
-			{
-				return;
-			}
-
-			var treeBuilder   = Tree.CodeMapViewModel.TreeBuilder;
-			var filterOptions = Tree.CodeMapViewModel.FilterVM.CreateFilterOptionsFromCurrentFilter();
-			var rootParent	  = Parent;
-
-			if (rootParent == null)
-				return;
-
-			var baseDacNode = treeBuilder.CreateAttachedRootWithSubTree(baseDacSemanticModel, Tree, rootParent, filterOptions, 
-																		expandRoots: true, expandChildren: false,
-																		Tree.CodeMapViewModel.CancellationToken ?? default) as DacNodeViewModel;
-			if (baseDacNode == null)
-				return;
-
-			int nodeIndex = rootParent.AllChildren.IndexOf(this);
-
-			if (nodeIndex >= 0)
-			{
-				rootParent.AllChildren.RemoveAt(nodeIndex);
-				rootParent.AllChildren.Insert(nodeIndex, baseDacNode);
-			}
-			else
-			{
-				rootParent.AllChildren.Remove(this);
-				rootParent.AllChildren.Add(baseDacNode);
-			}
-
-			Tree.RefreshFlattenedNodesList();
+			if (attributes.IsDefaultOrEmpty)
+				return null;
+			
+			string aggregatedTooltip = attributes.Select(attributeData => $"[{attributeData.ToString().RemoveCommonAcumaticaNamespacePrefixes()}]")
+												 .Join(Environment.NewLine);
+			return aggregatedTooltip.IsNullOrWhiteSpace()
+				? null
+				: new TooltipInfo(aggregatedTooltip);
 		}
 	}
 }

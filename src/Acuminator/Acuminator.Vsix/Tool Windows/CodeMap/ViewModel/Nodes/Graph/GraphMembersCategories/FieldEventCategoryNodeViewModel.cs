@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
@@ -12,8 +11,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class FieldEventCategoryNodeViewModel : GraphEventCategoryNodeViewModel
 	{
-		public FieldEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) :
-										  base(graphViewModel, GraphMemberType.FieldEvent, isExpanded)
+		public FieldEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, TreeNodeViewModel parent, bool isExpanded) :
+										  base(graphViewModel, parent, GraphMemberCategory.FieldEvent, isExpanded)
 		{
 		}
 

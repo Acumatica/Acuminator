@@ -2,7 +2,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -13,9 +12,6 @@ namespace Acuminator.Vsix.Utilities
 {
 	public static class IndentUtils
 	{
-		private const string PxDataNamespacePrefix = "PX.Data.";
-		private const string PxObjectsNamespacePrefix = "PX.Objects.";
-
 		public static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
 			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
 			: 0;
@@ -88,11 +84,6 @@ namespace Acuminator.Vsix.Utilities
 				}
 			}
 		}
-
-	
-		public static string? RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment) =>
-			codeFragment?.Replace(PxDataNamespacePrefix, string.Empty)
-						?.Replace(PxObjectsNamespacePrefix, string.Empty);
 
 		public static int GetNodeIndentLength(this SyntaxNode? node, int tabSize)
 		{

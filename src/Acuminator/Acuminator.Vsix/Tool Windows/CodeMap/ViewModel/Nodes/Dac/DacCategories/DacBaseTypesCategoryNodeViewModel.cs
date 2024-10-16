@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public DacBaseTypesCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, bool isExpanded) : 
 											base(dacViewModel, parent, DacMemberCategory.BaseTypes, isExpanded)
 		{
-			if (dacViewModel.DacModel.DacType == DacType.Dac)
+			if (DacViewModel.DacModel.DacType == DacType.Dac)
 			{
 				BaseDacInfo = DacViewModel.DacModelForCodeMap.DacInfo?.Base;
 				BaseDacExtensionInfo = null;

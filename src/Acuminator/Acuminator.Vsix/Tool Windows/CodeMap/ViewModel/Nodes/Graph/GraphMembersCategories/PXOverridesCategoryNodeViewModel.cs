@@ -12,8 +12,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected override bool AllowNavigation => true;
 
-		public PXOverridesCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
-										   base(graphViewModel, GraphMemberType.PXOverride, isExpanded)
+		public PXOverridesCategoryNodeViewModel(GraphNodeViewModel graphViewModel, TreeNodeViewModel parent, bool isExpanded) : 
+										   base(graphViewModel, parent, GraphMemberCategory.PXOverride, isExpanded)
 		{		
 		}
 

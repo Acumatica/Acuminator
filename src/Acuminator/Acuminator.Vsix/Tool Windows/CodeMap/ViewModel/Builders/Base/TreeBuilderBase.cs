@@ -233,6 +233,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphNodeViewModel 				  => true,
 			DacNodeViewModel 				  => true,
 			BaseDacPlaceholderNodeViewModel	  => true,
+			BaseGraphPlaceholderNodeViewModel => true,
 			_ 								  => throw new NotImplementedException($"Nodes of type \"{node.GetType().Name}\" are not supported")
 		};
 	}

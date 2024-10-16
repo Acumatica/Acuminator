@@ -22,6 +22,27 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Graph
 	public class GraphSemanticModelTests : SemanticModelTestsBase<PXGraphSemanticModel>
 	{
 		[Theory]
+		[EmbeddedFileData("2ndLevelGraphExtension.cs")]
+		public async Task SecondLevel_Derived_GraphExtension_InfoCollection(string text)
+		{
+			var graphSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
+			var graphExtensionInfo = graphSemanticModel.GraphOrGraphExtInfo as GraphExtensionInfo;
+
+			graphExtensionInfo.Should().NotBeNull();
+			graphExtensionInfo!.Graph.Should().NotBeNull();
+			graphExtensionInfo!.Graph!.Name.Should().Be("MyGraph");
+			graphExtensionInfo.Base.Should().NotBeNull();
+			graphExtensionInfo.Base!.Name.Should().Be("SecondLevelGraphExtension");
+
+			var extensionFromPreviousLevel = graphExtensionInfo.Base!.Base;
+
+			extensionFromPreviousLevel.Should().NotBeNull();
+			extensionFromPreviousLevel!.Name.Should().Be("BaseExtension");
+			extensionFromPreviousLevel!.Graph.Should().NotBeNull();
+			extensionFromPreviousLevel.Base.Should().BeNull();
+		}
+
+		[Theory]
 		[EmbeddedFileData("GraphWithSetupViews.cs")]
 		public async Task Graph_WithSetupViews_Recognition(string text)
 		{
@@ -79,6 +100,10 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Graph
 		{
 			var graphSemanticModel = await PrepareSemanticModelAsync(text).ConfigureAwait(false);
 
+			var graphExtInfo = graphSemanticModel.GraphOrGraphExtInfo as GraphExtensionInfo;
+
+			graphExtInfo.Should().NotBeNull();
+			graphExtInfo!.Graph.Should().NotBeNull();
 			graphSemanticModel.GraphType.Should().Be(GraphType.PXGraphExtension);
 			graphSemanticModel.InitializeMethodInfo.Should().BeNull();
 		}
@@ -97,7 +122,9 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels.Graph
 																			GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
 																			cancellation: cancellation);
 			graphSemanticModel.Should().NotBeNull();
-			return Task.FromResult(graphSemanticModel!);
+			graphSemanticModel!.GraphOrGraphExtInfo.Should().NotBeNull();
+
+			return Task.FromResult(graphSemanticModel);
 		}
 	}
 }
