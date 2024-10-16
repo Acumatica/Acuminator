@@ -73,8 +73,8 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1063](diagnostics/PX1063.md) | The declaration of the exception class does not contain a serialization constructor. This will cause an incorrect deserialization of the exception data and will lead to runtime errors in Acumatica ERP. | Error | Available |
 | [PX1064](diagnostics/PX1064.md) | The declaration of the exception class introduces new serializable fields but does not declare an override for the `GetObjectData` method. This will cause an incorrect serialization of the exception data and will lead to runtime errors in Acumatica ERP. | Error | Available |
 | [PX1065](diagnostics/PX1065.md) | The DAC field property does not have a corresponding BQL field. | Error | Available |
-| [PX1066](diagnostics/PX1066.md) | The name of the BQL field possibly contains mistake. | Warning (ISV Level 3: Informational) | Available |
-| [PX1067](diagnostics/PX1067.md) | DAC does not contain a redeclaration of a BQL field declared in the base DAC. | Warning (ISV Level 3: Informational) | Available |
+| [PX1066](diagnostics/PX1066.md) | The name of the BQL field may contain a mistake. | Warning (ISV Level 3: Informational) | Available |
+| [PX1067](diagnostics/PX1067.md) | The DAC does not contain a redeclaration of a BQL field declared in the base DAC. | Warning (ISV Level 3: Informational) | Available |
 | [PX1068](diagnostics/PX1068.md) | The type of the DAC field property does not correspond to the type of the BQL field. | Error | Available |
 | [PX1070](diagnostics/PX1070.md) | The state of fields and actions can be configured only in `RowSelected` event handlers. | Error | Unavailable |
 | [PX1071](diagnostics/PX1071.md) | Actions cannot be executed within event handlers. | Error | Unavailable |
@@ -100,4 +100,4 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute. | Warning (ISV Level 3: Informational) | Available |
 | [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` or `PXDBScalar` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error | Unavailable |
 | [PX1096](diagnostics/PX1096.md) | The signature of a method with the `PXOverride` attribute must match the overridden method. | Error | Unavailable |
-| [PX1099](diagnostics/PX1099.md) | The API reported by the diagnostic should not be used with Acumatica Framework. | Warning | Unavailable |
+| [PX1099](diagnostics/PX1099.md) | The API reported by the diagnostic should not be used with the Acumatica Framework. | Warning | Unavailable |
