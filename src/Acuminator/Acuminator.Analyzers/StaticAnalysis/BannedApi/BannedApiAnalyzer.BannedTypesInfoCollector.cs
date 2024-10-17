@@ -17,16 +17,16 @@ public partial class BannedApiAnalyzer
 	{
 		private readonly CancellationToken _cancellation;
 		private readonly IApiInfoRetriever _apiBanInfoRetriever;
-		private readonly IApiInfoRetriever? _whiteListInfoRetriever;
+		private readonly IApiInfoRetriever? _allowedInfoRetriever;
 		private readonly HashSet<ITypeSymbol> _checkedTypes = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 
 		public HashSet<string> NamespacesWithUsedWhiteListedMembers { get; } = new();
 
-		public BannedTypesInfoCollector(IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? whiteListInfoRetriever,
+		public BannedTypesInfoCollector(IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? allowedInfoRetriever,
 										CancellationToken cancellation)
 		{
-			_apiBanInfoRetriever = apiBanInfoRetriever;
-			_whiteListInfoRetriever = whiteListInfoRetriever;
+			_apiBanInfoRetriever  = apiBanInfoRetriever;
+			_allowedInfoRetriever = allowedInfoRetriever;
 			_cancellation = cancellation;
 		}
 
@@ -165,7 +165,7 @@ public partial class BannedApiAnalyzer
 
 		private bool IsInWhiteList(ISymbol symbol)
 		{
-			if (_whiteListInfoRetriever?.GetInfoForApi(symbol) is ApiSearchResult)
+			if (_allowedInfoRetriever?.GetInfoForApi(symbol) is ApiSearchResult)
 			{
 				if (symbol.ContainingNamespace != null && !symbol.ContainingNamespace.IsGlobalNamespace)
 					NamespacesWithUsedWhiteListedMembers.Add(symbol.ContainingNamespace.ToString());
