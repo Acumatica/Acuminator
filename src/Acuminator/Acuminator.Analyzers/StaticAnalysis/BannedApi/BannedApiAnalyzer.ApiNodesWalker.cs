@@ -57,8 +57,8 @@ public partial class BannedApiAnalyzer
 			if (_suspiciousUsings.Count == 0)
 				return;
 
-			if (_bannedTypesInfoCollector.NamespacesWithUsedWhiteListedMembers.Count > 0)
-				_namespacesWithUsedAllowedMembers.AddRange(_bannedTypesInfoCollector.NamespacesWithUsedWhiteListedMembers);
+			if (_bannedTypesInfoCollector.NamespacesWithUsedAllowedMembers.Count > 0)
+				_namespacesWithUsedAllowedMembers.AddRange(_bannedTypesInfoCollector.NamespacesWithUsedAllowedMembers);
 
 			var usingsToReport = _namespacesWithUsedAllowedMembers.Count > 0
 				? _suspiciousUsings.Where(usingInfo => !_namespacesWithUsedAllowedMembers.Contains(usingInfo.Namespace.ToString()))

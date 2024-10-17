@@ -99,11 +99,11 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 		if (banInfoRetriever == null)
 			return;
 
-		var whiteListInfoRetriever = GetApiInfoRetriever(_customAllowedInfoRetriever, _customAllowedApiStorage, _customAllowedApiDataProvider,
-														 BannedApiSettings?.WhiteListApiFilePath, globalApiDataRetriever: GlobalApiData.GetWhiteListApiData,
-														 pxContext.CodeAnalysisSettings, compilationStartContext.CancellationToken);
+		var allowedInfoRetriever = GetApiInfoRetriever(_customAllowedInfoRetriever, _customAllowedApiStorage, _customAllowedApiDataProvider,
+													    BannedApiSettings?.AllowedApisFilePath, globalApiDataRetriever: GlobalApiData.GetAllowedApisData,
+														pxContext.CodeAnalysisSettings, compilationStartContext.CancellationToken);
 
-		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, pxContext, banInfoRetriever, whiteListInfoRetriever),
+		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, pxContext, banInfoRetriever, allowedInfoRetriever),
 														 SyntaxKind.CompilationUnit);
 	}
 

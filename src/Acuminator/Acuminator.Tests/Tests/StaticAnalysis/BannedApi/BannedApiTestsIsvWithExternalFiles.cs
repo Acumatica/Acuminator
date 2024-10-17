@@ -30,7 +30,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 				BannedApiSettings.Default.WithBannedApiAnalysisEnabled()
 										 .WithBannedApiFilePath(
 											BannedApiFilePath())
-										 .WithWhiteListApiFilePath(
+										 .WithAllowedApisFilePath(
 											WhiteListFilePath())
 				);
 

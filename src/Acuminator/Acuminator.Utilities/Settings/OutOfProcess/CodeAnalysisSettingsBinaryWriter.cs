@@ -45,7 +45,7 @@ namespace Acuminator.Utilities.Settings.OutOfProcess
 			string bannedApiFilePath = bannedApiSettings.BannedApiFilePath ?? string.Empty;
 			_writer.Write(bannedApiFilePath);
 
-			string whiteListApiFilePath = bannedApiSettings.WhiteListApiFilePath ?? string.Empty;
+			string whiteListApiFilePath = bannedApiSettings.AllowedApisFilePath ?? string.Empty;
 			_writer.Write(whiteListApiFilePath);
 		}
 
