@@ -140,13 +140,13 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 	}
 
 	private void AnalyzeSyntaxTree(in SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
-								   IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? whiteListInfoRetriever)
+								   IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? allowedInfoRetriever)
 	{
 		syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 		if (syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax)
 		{
-			var apiNodesWalker = new ApiNodesWalker(syntaxContext, pxContext, apiBanInfoRetriever, whiteListInfoRetriever, checkInterfaces: false);
+			var apiNodesWalker = new ApiNodesWalker(syntaxContext, pxContext, apiBanInfoRetriever, allowedInfoRetriever, checkInterfaces: false);
 			apiNodesWalker.CheckSyntaxTree(compilationUnitSyntax);
 		}
 	}
