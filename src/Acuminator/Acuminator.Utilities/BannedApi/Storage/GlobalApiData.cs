@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.BannedApi.Storage;
 /// </remarks>
 public sealed class GlobalApiData
 {
-	private static readonly GlobalApiData _bannedApiStorage    = new();
+	private static readonly GlobalApiData _bannedApiStorage  = new();
 	private static readonly GlobalApiData _allowedApiStorage = new();
 
 	private readonly object _initializationLock = new object();
@@ -30,7 +30,7 @@ public sealed class GlobalApiData
 		_bannedApiStorage.GetApiData(externalBannedApiFilePath, ApiConstants.Storage.BannedApiAssemblyResourceName, cancellation);
 
 	public static IApiStorage GetAllowedApisData(string? externalAllowedApisFilePath, CancellationToken cancellation) =>
-		_allowedApiStorage.GetApiData(externalAllowedApisFilePath, ApiConstants.Storage.WhiteListAssemblyResourceName, cancellation);
+		_allowedApiStorage.GetApiData(externalAllowedApisFilePath, ApiConstants.Storage.AllowedApiAssemblyResourceName, cancellation);
 
 	private IApiStorage GetApiData(string? externalApiFilePath, string assemblyResourceName, CancellationToken cancellation)
 	{
