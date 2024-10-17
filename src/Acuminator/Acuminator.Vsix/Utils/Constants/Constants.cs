@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.Utilities
 		{
 			public const string All = "All";
 			public const string BannedApiFilePath = nameof(GeneralOptionsPage.BannedApiFilePath);
-			public const string WhiteListApiFilePath = nameof(GeneralOptionsPage.WhiteListApiFilePath);
+			public const string AllowedApiFilePath = nameof(GeneralOptionsPage.AllowedApiFilePath);
 
 			public static class Coloring
 			{

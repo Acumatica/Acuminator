@@ -343,26 +343,26 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private string? _whiteListApiFilePath;
+		private string? _allowedApisFilePath;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_AllowedApiFilePath_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_AllowedApiFilePath_Description))]
-		public string? WhiteListApiFilePath
+		public string? AllowedApiFilePath
 		{
-			get => _whiteListApiFilePath;
+			get => _allowedApisFilePath;
 			set 
 			{
 				string? newValue = value.NullIfWhiteSpace()?.Trim();
-				bool fileChanged = !string.Equals(_whiteListApiFilePath, newValue, StringComparison.OrdinalIgnoreCase);
-				_whiteListApiFilePath = newValue;
+				bool fileChanged = !string.Equals(_allowedApisFilePath, newValue, StringComparison.OrdinalIgnoreCase);
+				_allowedApisFilePath = newValue;
 
 				if (!fileChanged)
 					return;
 
 				_allowedApiFileSettingChanged = true;
 				_codeAnalysisSettingsChanged	= true;
-				_allowedApiFileInvalid = !CheckFilePath(_whiteListApiFilePath, VSIXResource.Setting_BannedAPI_AllowedApiFilePath_Title);
+				_allowedApiFileInvalid = !CheckFilePath(_allowedApisFilePath, VSIXResource.Setting_BannedAPI_AllowedApiFilePath_Title);
 			}
 		}
 
@@ -386,8 +386,8 @@ namespace Acuminator.Vsix
 			_isvSpecificAnalyzersEnabled 		  = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
 			_px1007DocumentationDiagnosticEnabled = CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled;
 
-			bool hadBannedFileSetting	 = !_bannedApiFilePath.IsNullOrWhiteSpace() && !_bannedApiFileInvalid;
-			bool hadWhiteListFileSetting = !_whiteListApiFilePath.IsNullOrWhiteSpace() && !_allowedApiFileInvalid;
+			bool hadBannedApiFileSetting  = !_bannedApiFilePath.IsNullOrWhiteSpace() && !_bannedApiFileInvalid;
+			bool hadAllowedApiFileSetting = !_allowedApisFilePath.IsNullOrWhiteSpace() && !_allowedApiFileInvalid;
 
 			_colorSettingsChanged 		 = false;
 			_codeAnalysisSettingsChanged = false;
@@ -398,7 +398,7 @@ namespace Acuminator.Vsix
 			_bannedApiFileSettingChanged = false;
 			_bannedApiFileInvalid		 = false;
 
-			_whiteListApiFilePath 			= null;
+			_allowedApisFilePath 			= null;
 			_allowedApiFileSettingChanged = false;
 			_allowedApiFileInvalid 	 	= false;
 			
@@ -406,7 +406,7 @@ namespace Acuminator.Vsix
 
 			OnColoringSettingChanged(Constants.Settings.All);
 			OnCodeAnalysisSettingChanged(Constants.Settings.All);
-			OnBannedApiSettingChanged(hadBannedFileSetting, hadWhiteListFileSetting);
+			OnBannedApiSettingChanged(hadBannedApiFileSetting, hadAllowedApiFileSetting);
 		}
 
 		public override void SaveSettingsToStorage()
@@ -419,7 +419,7 @@ namespace Acuminator.Vsix
 
 			if (_allowedApiFileInvalid)
 			{
-				_whiteListApiFilePath 	 = null;
+				_allowedApisFilePath 	 = null;
 				_allowedApiFileInvalid = false;
 			}
 
@@ -438,11 +438,11 @@ namespace Acuminator.Vsix
 			}
 
 			OnBannedApiSettingChanged(_bannedApiFileSettingChanged, _allowedApiFileSettingChanged);
-			_bannedApiFileSettingChanged	= false;
+			_bannedApiFileSettingChanged  = false;
 			_allowedApiFileSettingChanged = false;
 		}
 
-		public void SetDeployedBannedApiSettings(string? deployedBannedApisFile, string? deployedWhiteListFile)
+		public void SetDeployedBannedApiSettings(string? deployedBannedApisFile, string? deployedAllowedApisFile)
 		{
 			if (!deployedBannedApisFile.IsNullOrWhiteSpace() && BannedApiFilePath.IsNullOrWhiteSpace() &&
 				File.Exists(deployedBannedApisFile))
@@ -452,11 +452,11 @@ namespace Acuminator.Vsix
 				_bannedApiFileSettingChanged = true;
 			}
 
-			if (!deployedWhiteListFile.IsNullOrWhiteSpace() && WhiteListApiFilePath.IsNullOrWhiteSpace() &&
-				File.Exists(deployedWhiteListFile))
+			if (!deployedAllowedApisFile.IsNullOrWhiteSpace() && AllowedApiFilePath.IsNullOrWhiteSpace() &&
+				File.Exists(deployedAllowedApisFile))
 			{
-				_whiteListApiFilePath = deployedWhiteListFile;
-				_codeAnalysisSettingsChanged	= true;
+				_allowedApisFilePath = deployedAllowedApisFile;
+				_codeAnalysisSettingsChanged  = true;
 				_allowedApiFileSettingChanged = true;
 			}
 
@@ -467,8 +467,8 @@ namespace Acuminator.Vsix
 		public void SetBannedApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
 			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _bannedApiFilePath, ref _bannedApiFileSettingChanged);
 
-		public void SetWhiteListFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
-			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _whiteListApiFilePath, ref _allowedApiFileSettingChanged);
+		public void SetAllowedApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
+			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _allowedApisFilePath, ref _allowedApiFileSettingChanged);
 
 
 		private void SetApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents, ref string? apiFileSettingField,
@@ -497,14 +497,14 @@ namespace Acuminator.Vsix
 		private void OnCodeAnalysisSettingChanged(string setting) =>
 			CodeAnalysisSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
 
-		private void OnBannedApiSettingChanged(bool bannedApiFileSettingChanged, bool whiteListApiFileSettingChanged)
+		private void OnBannedApiSettingChanged(bool bannedApiFileSettingChanged, bool allowedApiFileSettingChanged)
 		{
-			if (bannedApiFileSettingChanged && whiteListApiFileSettingChanged)
+			if (bannedApiFileSettingChanged && allowedApiFileSettingChanged)
 				OnBannedApiSettingChanged(Constants.Settings.All);
 			else if (bannedApiFileSettingChanged)
 				OnBannedApiSettingChanged(Constants.Settings.BannedApiFilePath);
-			else if (whiteListApiFileSettingChanged)
-				OnBannedApiSettingChanged(Constants.Settings.WhiteListApiFilePath);
+			else if (allowedApiFileSettingChanged)
+				OnBannedApiSettingChanged(Constants.Settings.AllowedApiFilePath);
 		}
 
 		private void OnBannedApiSettingChanged(string setting) =>

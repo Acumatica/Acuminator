@@ -205,7 +205,7 @@ namespace Acuminator.Vsix
 			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep: 1);
 
 			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
-			var (deployedBannedApisFile, deployedWhiteListFile) = DeployBannedApiFiles(MyDocumentsStorage);
+			var (deployedBannedApisFile, deployedAllowedApisFile) = DeployBannedApiFiles(MyDocumentsStorage);
 			#endregion
 
 			#region Initialize Settings
@@ -214,7 +214,7 @@ namespace Acuminator.Vsix
 
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
 
-			await InitializeCodeAnalysisSettingsAsync(deployedBannedApisFile, deployedWhiteListFile);
+			await InitializeCodeAnalysisSettingsAsync(deployedBannedApisFile, deployedAllowedApisFile);
 			#endregion
 
 			#region Initialize Logger
@@ -419,7 +419,7 @@ namespace Acuminator.Vsix
 																			: new VsixBuildActionSetterVS2019());
 		}
 
-		private static (string? DeployedBannedApisFile, string? DeployedWhiteListFile) DeployBannedApiFiles(
+		private static (string? DeployedBannedApisFile, string? DeployedAllowedApisFile) DeployBannedApiFiles(
 																							AcuminatorMyDocumentsStorage? myDocumentsStorage)
 		{
 			var bannedApiDeployer = BannedApiDeployer.Create(myDocumentsStorage);
@@ -430,25 +430,25 @@ namespace Acuminator.Vsix
 				return default;
 			}
 
-			var (deployedBannedApisFile, deployedWhiteListFile) = bannedApiDeployer.DeployBannedApiFiles();
+			var (deployedBannedApisFile, deployedAllowedApisFile) = bannedApiDeployer.DeployBannedApiFiles();
 
 			if (deployedBannedApisFile.IsNullOrWhiteSpace())
-				AcuminatorLogger.LogMessage("Failed to initialize Banned API", LogMode.Warning);
+				AcuminatorLogger.LogMessage("Failed to initialize Banned APIs", LogMode.Warning);
 
-			if (deployedWhiteListFile.IsNullOrWhiteSpace())
-				AcuminatorLogger.LogMessage("Failed to initialize White List API", LogMode.Warning);
+			if (deployedAllowedApisFile.IsNullOrWhiteSpace())
+				AcuminatorLogger.LogMessage("Failed to initialize Allowed APIs", LogMode.Warning);
 
-			return (deployedBannedApisFile, deployedWhiteListFile);
+			return (deployedBannedApisFile, deployedAllowedApisFile);
 		}
 
-		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync(string? deployedBannedApisFile, string? deployedWhiteListFile)
+		private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync(string? deployedBannedApisFile, string? deployedAllowedApisFile)
 		{
 			CodeAnalysisSettings codeAnalysisSettings;
 			BannedApiSettings bannedApiSettings;
 
 			if (GeneralOptionsPage != null)
 			{
-				GeneralOptionsPage.SetDeployedBannedApiSettings(deployedBannedApisFile, deployedWhiteListFile);
+				GeneralOptionsPage.SetDeployedBannedApiSettings(deployedBannedApisFile, deployedAllowedApisFile);
 
 				codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
 				bannedApiSettings	 = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
@@ -510,7 +510,7 @@ namespace Acuminator.Vsix
 
 		public string? BannedApiFilePath => GeneralOptionsPage?.BannedApiFilePath;
 
-		public string? WhiteListApiFilePath => GeneralOptionsPage?.WhiteListApiFilePath;
+		public string? AllowedApiFilePath => GeneralOptionsPage?.AllowedApiFilePath;
 		#endregion
 	}
 }

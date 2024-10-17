@@ -25,6 +25,6 @@ namespace Acuminator.Vsix.Settings
 
 		public override string? BannedApiFilePath => _optionsPage.BannedApiFilePath;
 
-		public override string? AllowedApisFilePath => _optionsPage.WhiteListApiFilePath;
+		public override string? AllowedApisFilePath => _optionsPage.AllowedApiFilePath;
 	}
 }

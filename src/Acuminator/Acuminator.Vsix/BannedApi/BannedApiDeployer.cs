@@ -46,42 +46,42 @@ namespace Acuminator.Vsix.BannedApi
 		}
 
 		/// <summary>
-		/// Deploy banned API and White List files.
+		/// Deploy banned and allowed API files.
 		/// </summary>
 		/// <returns>
-		/// A pair of files - Banned API and White List file paths. Each file path is null if the file was not deployed.
+		/// A pair of files - Banned API and Allowed API file paths. Each file path is null if the file was not deployed.
 		/// </returns>
-		public (string? DeployedBannedApisFile, string? DeployedWhiteListFile) DeployBannedApiFiles()
+		public (string? DeployedBannedApisFile, string? DeployedAllowedApisFile) DeployBannedApiFiles()
 		{
-			string bannedApiFile = Path.Combine(_bannedApiFolder, ApiConstants.Storage.BannedApiFile);
-			string whiteListFile = Path.Combine(_bannedApiFolder, ApiConstants.Storage.WhiteListFile);
+			string bannedApiFile  = Path.Combine(_bannedApiFolder, ApiConstants.Storage.BannedApiFile);
+			string allowedApiFile = Path.Combine(_bannedApiFolder, ApiConstants.Storage.AllowedApiFile);
 
-			if (!ShouldUpdateBannedApis(bannedApiFile, whiteListFile))
+			if (!ShouldUpdateBannedApis(bannedApiFile, allowedApiFile))
 				return (null, null);
 
-			var (deployedBannedApis, deployedWhiteList) = DeployBannedApis();
+			var (deployedBannedApis, deployedAllowedApis) = DeployBannedApis();
 
-			string? resultBannedApiFile = deployedBannedApis ? bannedApiFile : null;
-			string? resultWhiteListFile = deployedWhiteList ? whiteListFile : null;
+			string? resultBannedApiFile  = deployedBannedApis ? bannedApiFile : null;
+			string? resultAllowedApiFile = deployedAllowedApis ? allowedApiFile : null;
 
-			return (resultBannedApiFile, resultWhiteListFile);
+			return (resultBannedApiFile, resultAllowedApiFile);
 		}
 
-		private bool ShouldUpdateBannedApis(string bannedApiFile, string whiteListFile) =>
+		private bool ShouldUpdateBannedApis(string bannedApiFile, string allowedApiFile) =>
 			_myDocumentsStorage.ShouldUpdateStorage || !Directory.Exists(_bannedApiFolder) ||
-			!File.Exists(bannedApiFile) || !File.Exists(whiteListFile);
+			!File.Exists(bannedApiFile) || !File.Exists(allowedApiFile);
 
-		private (bool DeployedBannedApis, bool DeployedWhiteList) DeployBannedApis()
+		private (bool DeployedBannedApis, bool DeployedAllowedApis) DeployBannedApis()
 		{
 			if (!StorageUtils.ReCreateDirectory(_bannedApiFolder))
 				return (false, false);
 
 			Assembly utilsAssembly = typeof(ApiConstants).Assembly;
 
-			bool deployedBannedApis = DeployFileFromResource(utilsAssembly, ApiConstants.Storage.BannedApiAssemblyResourceName);
-			bool deployedWhiteList  = DeployFileFromResource(utilsAssembly, ApiConstants.Storage.WhiteListAssemblyResourceName);
+			bool deployedBannedApis  = DeployFileFromResource(utilsAssembly, ApiConstants.Storage.BannedApiAssemblyResourceName);
+			bool deployedAllowedApis = DeployFileFromResource(utilsAssembly, ApiConstants.Storage.AllowedApiAssemblyResourceName);
 
-			return (deployedBannedApis, deployedWhiteList);
+			return (deployedBannedApis, deployedAllowedApis);
 		}
 
 		private bool DeployFileFromResource(Assembly currentAssembly, string resourceName)
