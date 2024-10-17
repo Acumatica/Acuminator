@@ -51,9 +51,9 @@ namespace Acuminator.Vsix
 		private const string BannedApiCategoryName = "Banned API";
 
 		private bool _colorSettingsChanged;
-		private bool _bannedApiFileInvalid, _whiteListApiFileInvalid;
+		private bool _bannedApiFileInvalid, _allowedApiFileInvalid;
 		private bool _codeAnalysisSettingsChanged;
-		private bool _bannedApiFileSettingChanged, _whiteListApiFileSettingChanged;
+		private bool _bannedApiFileSettingChanged, _allowedApiFileSettingChanged;
 
 		public event EventHandler<SettingChangedEventArgs>? ColoringSettingChanged;
 		public event EventHandler<SettingChangedEventArgs>? CodeAnalysisSettingChanged;
@@ -346,8 +346,8 @@ namespace Acuminator.Vsix
 		private string? _whiteListApiFilePath;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_BannedAPI), BannedApiCategoryName)]
-		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Title))]
-		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Description))]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_AllowedApiFilePath_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_BannedAPI_AllowedApiFilePath_Description))]
 		public string? WhiteListApiFilePath
 		{
 			get => _whiteListApiFilePath;
@@ -360,9 +360,9 @@ namespace Acuminator.Vsix
 				if (!fileChanged)
 					return;
 
-				_whiteListApiFileSettingChanged = true;
+				_allowedApiFileSettingChanged = true;
 				_codeAnalysisSettingsChanged	= true;
-				_whiteListApiFileInvalid = !CheckFilePath(_whiteListApiFilePath, VSIXResource.Setting_BannedAPI_WhiteListApiFilePath_Title);
+				_allowedApiFileInvalid = !CheckFilePath(_whiteListApiFilePath, VSIXResource.Setting_BannedAPI_AllowedApiFilePath_Title);
 			}
 		}
 
@@ -387,7 +387,7 @@ namespace Acuminator.Vsix
 			_px1007DocumentationDiagnosticEnabled = CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled;
 
 			bool hadBannedFileSetting	 = !_bannedApiFilePath.IsNullOrWhiteSpace() && !_bannedApiFileInvalid;
-			bool hadWhiteListFileSetting = !_whiteListApiFilePath.IsNullOrWhiteSpace() && !_whiteListApiFileInvalid;
+			bool hadWhiteListFileSetting = !_whiteListApiFilePath.IsNullOrWhiteSpace() && !_allowedApiFileInvalid;
 
 			_colorSettingsChanged 		 = false;
 			_codeAnalysisSettingsChanged = false;
@@ -399,8 +399,8 @@ namespace Acuminator.Vsix
 			_bannedApiFileInvalid		 = false;
 
 			_whiteListApiFilePath 			= null;
-			_whiteListApiFileSettingChanged = false;
-			_whiteListApiFileInvalid 	 	= false;
+			_allowedApiFileSettingChanged = false;
+			_allowedApiFileInvalid 	 	= false;
 			
 			base.ResetSettings();
 
@@ -417,10 +417,10 @@ namespace Acuminator.Vsix
 				_bannedApiFileInvalid = false;
 			}
 
-			if (_whiteListApiFileInvalid)
+			if (_allowedApiFileInvalid)
 			{
 				_whiteListApiFilePath 	 = null;
-				_whiteListApiFileInvalid = false;
+				_allowedApiFileInvalid = false;
 			}
 
 			base.SaveSettingsToStorage();
@@ -437,9 +437,9 @@ namespace Acuminator.Vsix
 				OnCodeAnalysisSettingChanged(Constants.Settings.All);
 			}
 
-			OnBannedApiSettingChanged(_bannedApiFileSettingChanged, _whiteListApiFileSettingChanged);
+			OnBannedApiSettingChanged(_bannedApiFileSettingChanged, _allowedApiFileSettingChanged);
 			_bannedApiFileSettingChanged	= false;
-			_whiteListApiFileSettingChanged = false;
+			_allowedApiFileSettingChanged = false;
 		}
 
 		public void SetDeployedBannedApiSettings(string? deployedBannedApisFile, string? deployedWhiteListFile)
@@ -457,7 +457,7 @@ namespace Acuminator.Vsix
 			{
 				_whiteListApiFilePath = deployedWhiteListFile;
 				_codeAnalysisSettingsChanged	= true;
-				_whiteListApiFileSettingChanged = true;
+				_allowedApiFileSettingChanged = true;
 			}
 
 			if (_codeAnalysisSettingsChanged)
@@ -468,7 +468,7 @@ namespace Acuminator.Vsix
 			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _bannedApiFilePath, ref _bannedApiFileSettingChanged);
 
 		public void SetWhiteListFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents) =>
-			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _whiteListApiFilePath, ref _whiteListApiFileSettingChanged);
+			SetApiFilePathExternally(newFilePath, raiseBannedApiUpdateEvents, ref _whiteListApiFilePath, ref _allowedApiFileSettingChanged);
 
 
 		private void SetApiFilePathExternally(string? newFilePath, bool raiseBannedApiUpdateEvents, ref string? apiFileSettingField,

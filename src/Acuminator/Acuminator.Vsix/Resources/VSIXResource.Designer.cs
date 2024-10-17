@@ -673,6 +673,25 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A path to the file with allowed APIs that will not be reported by Acuminator even if their containing namespaces or types are contained in the &quot;Banned API File&quot; as banned.
+        ///This option should be used together with the &quot;Banned API File&quot; setting..
+        /// </summary>
+        public static string Setting_BannedAPI_AllowedApiFilePath_Description {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_AllowedApiFilePath_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allowed API File.
+        /// </summary>
+        public static string Setting_BannedAPI_AllowedApiFilePath_Title {
+            get {
+                return ResourceManager.GetString("Setting_BannedAPI_AllowedApiFilePath_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable Acuminator PX1099 diagnostic which reports calls to API that should not be used with Acumatica Framework. .
         /// </summary>
         public static string Setting_BannedAPI_BannedApiAnalysisEnabled_Description {
@@ -705,25 +724,6 @@ namespace Acuminator.Vsix {
         public static string Setting_BannedAPI_BannedApiFilePath_Title {
             get {
                 return ResourceManager.GetString("Setting_BannedAPI_BannedApiFilePath_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A path to the file with white listed APIs that will not be reported by Acuminator even if their containing namespaces or types are contained in the &quot;Banned API File&quot; as banned.
-        ///This option should be used together with the &quot;Banned API File&quot; setting..
-        /// </summary>
-        public static string Setting_BannedAPI_WhiteListApiFilePath_Description {
-            get {
-                return ResourceManager.GetString("Setting_BannedAPI_WhiteListApiFilePath_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to White List API File.
-        /// </summary>
-        public static string Setting_BannedAPI_WhiteListApiFilePath_Title {
-            get {
-                return ResourceManager.GetString("Setting_BannedAPI_WhiteListApiFilePath_Title", resourceCulture);
             }
         }
         
