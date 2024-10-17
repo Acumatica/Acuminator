@@ -19,14 +19,14 @@
     <WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="BannedApi\Data\AllowedApis.txt" />
     <None Remove="BannedApi\Data\BannedApis.txt" />
-    <None Remove="BannedApi\Data\WhiteList.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BannedApi\Data\BannedApis.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="BannedApi\Data\WhiteList.txt">
+    <EmbeddedResource Include="BannedApi\Data\AllowedApis.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="DiagnosticSuppression\IO\Validation\XmlSchema\SuppressionFileSchema.xsd" />
