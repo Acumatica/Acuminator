@@ -86,16 +86,16 @@ internal class Program
 		if (bannedApiFilePath == EmptyStringPlaceHolder)
 			bannedApiFilePath = null;
 
-		string? whiteListFilePath = args.Length > 7
+		string? allowedApiFilePath = args.Length > 7
 			? args[7]
 			: null;
 
-		if (whiteListFilePath == EmptyStringPlaceHolder)
-			whiteListFilePath = null;
+		if (allowedApiFilePath == EmptyStringPlaceHolder)
+			allowedApiFilePath = null;
 
 		var analysisSettings = new CodeAnalysisSettings(recursiveAnalysisEnabled, isvSpecificAnalyzersEnabled, staticAnalysisEnabled, 
 														suppressionMechanismEnabled, px1007DocumentationDiagnosticEnabled);
-		var bannedApiSettings = new BannedApiSettings(bannedApiAnalysisEnabled, bannedApiFilePath, whiteListFilePath);
+		var bannedApiSettings = new BannedApiSettings(bannedApiAnalysisEnabled, bannedApiFilePath, allowedApiFilePath);
 
 		return (analysisSettings, bannedApiSettings);
 	}
