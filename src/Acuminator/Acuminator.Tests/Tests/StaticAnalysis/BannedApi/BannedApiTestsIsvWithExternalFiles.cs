@@ -22,16 +22,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
 			new BannedApiAnalyzer(customBannedApiStorage: null, customBannedApiDataProvider: null, 
-								  customWhiteListStorage: null, customWhiteListDataProvider: null,
-								  customBanInfoRetriever: null, customWhiteListInfoRetriever: null,
+								  customAllowedApiStorage: null, customAllowedApiDataProvider: null,
+								  customBanInfoRetriever: null, customAllowedInfoRetriever: null,
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled()
 											.WithIsvSpecificAnalyzersEnabled(),
 				BannedApiSettings.Default.WithBannedApiAnalysisEnabled()
 										 .WithBannedApiFilePath(
 											BannedApiFilePath())
-										 .WithWhiteListApiFilePath(
-											WhiteListFilePath())
+										 .WithAllowedApisFilePath(
+											AllowedApisFilePath())
 				);
 
 		private static string BannedApiFilePath([CallerFilePath] string? testFilePath = null)
@@ -41,11 +41,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 			return bannedApiFile;
 		}
 
-		private static string WhiteListFilePath([CallerFilePath] string? testFilePath = null)
+		private static string AllowedApisFilePath([CallerFilePath] string? testFilePath = null)
 		{
-			string directory	 = Path.GetDirectoryName(testFilePath);
-			string whiteListFile = Path.Combine(directory, "BannedData", "CustomWhiteList.txt");
-			return whiteListFile;
+			string directory	   = Path.GetDirectoryName(testFilePath);
+			string allowedApisFile = Path.Combine(directory, "BannedData", "CustomAllowedApis.txt");
+			return allowedApisFile;
 		}
 
 		[Theory]

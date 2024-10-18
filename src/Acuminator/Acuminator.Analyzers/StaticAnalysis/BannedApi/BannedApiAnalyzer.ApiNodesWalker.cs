@@ -25,10 +25,10 @@ public partial class BannedApiAnalyzer
 		private readonly PXContext _pxContext;
 
 		private readonly IApiInfoRetriever _apiBanInfoRetriever;
-		private readonly IApiInfoRetriever? _whiteListInfoRetriever;
+		private readonly IApiInfoRetriever? _allowedInfoRetriever;
 		private readonly BannedTypesInfoCollector _bannedTypesInfoCollector;
 
-		private readonly HashSet<string> _namespacesWithUsedWhiteListedMembers = new();
+		private readonly HashSet<string> _namespacesWithUsedAllowedMembers = new();
 		private readonly List<(UsingDirectiveSyntax Using, INamespaceSymbol Namespace, ApiSearchResult BanApiInfo)> _suspiciousUsings = new();
 
 		private readonly HashSet<(Location ErrorLocation, Api ErrorInfo)> _reportedErrors = new();
@@ -40,13 +40,13 @@ public partial class BannedApiAnalyzer
 		private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
 
 		public ApiNodesWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, IApiInfoRetriever apiBanInfoRetriever,
-							  IApiInfoRetriever? whiteListInfoRetriever, bool checkInterfaces)
+							  IApiInfoRetriever? allowedInfoRetriever, bool checkInterfaces)
 		{
 			_syntaxContext 			  = syntaxContext;
 			_pxContext 				  = pxContext;
 			_apiBanInfoRetriever 	  = apiBanInfoRetriever;
-			_whiteListInfoRetriever   = whiteListInfoRetriever;
-			_bannedTypesInfoCollector = new BannedTypesInfoCollector(apiBanInfoRetriever, whiteListInfoRetriever, syntaxContext.CancellationToken);
+			_allowedInfoRetriever	  = allowedInfoRetriever;
+			_bannedTypesInfoCollector = new BannedTypesInfoCollector(apiBanInfoRetriever, allowedInfoRetriever, syntaxContext.CancellationToken);
 			CheckInterfaces 		  = checkInterfaces;
 		}
 
@@ -57,11 +57,11 @@ public partial class BannedApiAnalyzer
 			if (_suspiciousUsings.Count == 0)
 				return;
 
-			if (_bannedTypesInfoCollector.NamespacesWithUsedWhiteListedMembers.Count > 0)
-				_namespacesWithUsedWhiteListedMembers.AddRange(_bannedTypesInfoCollector.NamespacesWithUsedWhiteListedMembers);
+			if (_bannedTypesInfoCollector.NamespacesWithUsedAllowedMembers.Count > 0)
+				_namespacesWithUsedAllowedMembers.AddRange(_bannedTypesInfoCollector.NamespacesWithUsedAllowedMembers);
 
-			var usingsToReport = _namespacesWithUsedWhiteListedMembers.Count > 0
-				? _suspiciousUsings.Where(usingInfo => !_namespacesWithUsedWhiteListedMembers.Contains(usingInfo.Namespace.ToString()))
+			var usingsToReport = _namespacesWithUsedAllowedMembers.Count > 0
+				? _suspiciousUsings.Where(usingInfo => !_namespacesWithUsedAllowedMembers.Contains(usingInfo.Namespace.ToString()))
 				: _suspiciousUsings;
 
 			foreach (var (@using, @namespace, banInfo) in usingsToReport)
@@ -163,7 +163,7 @@ public partial class BannedApiAnalyzer
 			else if (GetBannedSymbolInfoForNonTypeSymbol(symbol) is ApiSearchResult bannedSymbolInfo)
 			{
 				var location = GetLocationFromNode(genericNameNode);
-				ReportApi(symbol, bannedSymbolInfo, location, checkWhiteList: true);
+				ReportApi(symbol, bannedSymbolInfo, location, checkIfAllowed: true);
 			}
 
 			Cancellation.ThrowIfCancellationRequested();
@@ -217,7 +217,7 @@ public partial class BannedApiAnalyzer
 			var symbolBeingAccessed = SemanticModel.GetSymbolOrFirstCandidate(expressionBeingAccessed, Cancellation);
 			
 			if (symbolBeingAccessed == null || symbolBeingAccessed.Equals(accessedMember.ContainingType, SymbolEqualityComparer.Default))
-				return !IsInWhiteList(accessedMember);
+				return !IsAllowedApi(accessedMember);
 			
 			Cancellation.ThrowIfCancellationRequested();
 
@@ -308,25 +308,25 @@ public partial class BannedApiAnalyzer
 
 		private bool ReportApiList(ISymbol symbolToReport, List<ApiSearchResult> bannedApisList, Location location)
 		{
-			if (IsInWhiteList(symbolToReport))
+			if (IsAllowedApi(symbolToReport))
 				return false;
 
 			bool anythingReported = false;
 
 			foreach (ApiSearchResult bannedApiInfo in bannedApisList)
 			{
-				anythingReported = ReportApi(symbolToReport, bannedApiInfo, location, checkWhiteList: false) || anythingReported;
+				anythingReported = ReportApi(symbolToReport, bannedApiInfo, location, checkIfAllowed: false) || anythingReported;
 			}
 
 			return anythingReported;
 		}
 
 		private bool ReportApi(ISymbol symbolToReport, ApiSearchResult banApiInfo, SyntaxNode? node) =>
-			ReportApi(symbolToReport, banApiInfo, node?.GetLocation(), checkWhiteList: true);
+			ReportApi(symbolToReport, banApiInfo, node?.GetLocation(), checkIfAllowed: true);
 
-		private bool ReportApi(ISymbol symbolToReport, ApiSearchResult banApiInfo, Location? location, bool checkWhiteList)
+		private bool ReportApi(ISymbol symbolToReport, ApiSearchResult banApiInfo, Location? location, bool checkIfAllowed)
 		{
-			if (checkWhiteList && IsInWhiteList(symbolToReport))
+			if (checkIfAllowed && IsAllowedApi(symbolToReport))
 				return false;
 
 			if (location != null && !_reportedErrors.Add((location, banApiInfo.ClosestBannedApi)!))
@@ -363,12 +363,12 @@ public partial class BannedApiAnalyzer
 			_ 				  => string.Empty
 		};
 
-		private bool IsInWhiteList(ISymbol symbol)
+		private bool IsAllowedApi(ISymbol symbol)
 		{
-			if (_whiteListInfoRetriever?.GetInfoForApi(symbol) is ApiSearchResult)
+			if (_allowedInfoRetriever?.GetInfoForApi(symbol) is ApiSearchResult)
 			{
 				if (symbol.ContainingNamespace != null && !symbol.ContainingNamespace.IsGlobalNamespace)
-					_namespacesWithUsedWhiteListedMembers.Add(symbol.ContainingNamespace.ToString());
+					_namespacesWithUsedAllowedMembers.Add(symbol.ContainingNamespace.ToString());
 
 				return true;
 			}

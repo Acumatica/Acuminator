@@ -39,22 +39,22 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 	private readonly IApiStorage? _customBannedApiStorage;
 	private readonly IApiDataProvider? _customBannedApiDataProvider;
 
-	private readonly IApiStorage? _customWhiteListStorage;
-	private readonly IApiDataProvider? _customWhiteListDataProvider;
+	private readonly IApiStorage? _customAllowedApiStorage;
+	private readonly IApiDataProvider? _customAllowedApiDataProvider;
 
 	private readonly IApiInfoRetriever? _customBanInfoRetriever;
-	private readonly IApiInfoRetriever? _customWhiteListInfoRetriever;
+	private readonly IApiInfoRetriever? _customAllowedInfoRetriever;
 
 	public BannedApiAnalyzer() : this(customBannedApiStorage: null, customBannedApiDataProvider: null,
-									  customWhiteListStorage: null, customWhiteListDataProvider: null,
-									  customBanInfoRetriever: null, customWhiteListInfoRetriever: null,
+									  customAllowedApiStorage: null, customAllowedApiDataProvider: null,
+									  customBanInfoRetriever: null, customAllowedInfoRetriever: null,
 									  codeAnalysisSettings: null, bannedApiSettings: null)
 	{
 	}
 
 	public BannedApiAnalyzer(IApiStorage? customBannedApiStorage, IApiDataProvider? customBannedApiDataProvider,
-							 IApiStorage? customWhiteListStorage, IApiDataProvider? customWhiteListDataProvider,
-							 IApiInfoRetriever? customBanInfoRetriever, IApiInfoRetriever? customWhiteListInfoRetriever,
+							 IApiStorage? customAllowedApiStorage, IApiDataProvider? customAllowedApiDataProvider,
+							 IApiInfoRetriever? customBanInfoRetriever, IApiInfoRetriever? customAllowedInfoRetriever,
 							 CodeAnalysisSettings? codeAnalysisSettings, BannedApiSettings? bannedApiSettings) :
 						base(codeAnalysisSettings)
 	{
@@ -63,10 +63,10 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 
 		_customBannedApiStorage 	  = customBannedApiStorage;
 		_customBannedApiDataProvider  = customBannedApiDataProvider;
-		_customWhiteListStorage 	  = customWhiteListStorage;
-		_customWhiteListDataProvider  = customWhiteListDataProvider;
+		_customAllowedApiStorage 	  = customAllowedApiStorage;
+		_customAllowedApiDataProvider = customAllowedApiDataProvider;
 		_customBanInfoRetriever 	  = customBanInfoRetriever;
-		_customWhiteListInfoRetriever = customWhiteListInfoRetriever;
+		_customAllowedInfoRetriever	  = customAllowedInfoRetriever;
 	}
 
 	[MemberNotNull(nameof(BannedApiSettings))]
@@ -99,11 +99,11 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 		if (banInfoRetriever == null)
 			return;
 
-		var whiteListInfoRetriever = GetApiInfoRetriever(_customWhiteListInfoRetriever, _customWhiteListStorage, _customWhiteListDataProvider,
-														 BannedApiSettings?.WhiteListApiFilePath, globalApiDataRetriever: GlobalApiData.GetWhiteListApiData,
-														 pxContext.CodeAnalysisSettings, compilationStartContext.CancellationToken);
+		var allowedInfoRetriever = GetApiInfoRetriever(_customAllowedInfoRetriever, _customAllowedApiStorage, _customAllowedApiDataProvider,
+													    BannedApiSettings?.AllowedApisFilePath, globalApiDataRetriever: GlobalApiData.GetAllowedApisData,
+														pxContext.CodeAnalysisSettings, compilationStartContext.CancellationToken);
 
-		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, pxContext, banInfoRetriever, whiteListInfoRetriever),
+		compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeSyntaxTree(context, pxContext, banInfoRetriever, allowedInfoRetriever),
 														 SyntaxKind.CompilationUnit);
 	}
 
@@ -140,13 +140,13 @@ public partial class BannedApiAnalyzer : PXDiagnosticAnalyzer
 	}
 
 	private void AnalyzeSyntaxTree(in SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
-								   IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? whiteListInfoRetriever)
+								   IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? allowedInfoRetriever)
 	{
 		syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 		if (syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax)
 		{
-			var apiNodesWalker = new ApiNodesWalker(syntaxContext, pxContext, apiBanInfoRetriever, whiteListInfoRetriever, checkInterfaces: false);
+			var apiNodesWalker = new ApiNodesWalker(syntaxContext, pxContext, apiBanInfoRetriever, allowedInfoRetriever, checkInterfaces: false);
 			apiNodesWalker.CheckSyntaxTree(compilationUnitSyntax);
 		}
 	}

@@ -17,11 +17,11 @@ namespace Acuminator.Vsix.BannedApi
 	internal class BannedApiSettingsObserver : IDisposable
 	{
 		private const string BannedApiWatcherDescription = "Banned API";
-		private const string WhiteListWatcherDescription = "White List API";
+		private const string AllowedApiWatcherDescription = "Allowed API";
 
 		private readonly GeneralOptionsPage _optionsPage;
 		private readonly ApiFileSettingWatcher _bannedApiFileWatcher;
-		private readonly ApiFileSettingWatcher _whiteListApiFileWatcher;
+		private readonly ApiFileSettingWatcher _allowedApiFileWatcher;
 
 		public BannedApiSettingsObserver(GeneralOptionsPage optionsPage)
 		{
@@ -31,8 +31,8 @@ namespace Acuminator.Vsix.BannedApi
 
 			_bannedApiFileWatcher = new ApiFileSettingWatcher(BannedApiWatcherDescription, optionsPage, 
 											(options, newFilePath, raiseEvents) => options.SetBannedApiFilePathExternally(newFilePath, raiseEvents));
-			_whiteListApiFileWatcher = new ApiFileSettingWatcher(WhiteListWatcherDescription, optionsPage,
-											(options, newFilePath, raiseEvents) => options.SetWhiteListFilePathExternally(newFilePath, raiseEvents));
+			_allowedApiFileWatcher = new ApiFileSettingWatcher(AllowedApiWatcherDescription, optionsPage,
+											(options, newFilePath, raiseEvents) => options.SetAllowedApiFilePathExternally(newFilePath, raiseEvents));
 		}
 
 		public void Dispose()
@@ -50,12 +50,12 @@ namespace Acuminator.Vsix.BannedApi
 				case Constants.Settings.BannedApiFilePath:
 					_bannedApiFileWatcher.UpdateApiFileWatcher(_optionsPage.BannedApiFilePath);
 					return;
-				case Constants.Settings.WhiteListApiFilePath:
-					_whiteListApiFileWatcher.UpdateApiFileWatcher(_optionsPage.WhiteListApiFilePath);
+				case Constants.Settings.AllowedApiFilePath:
+					_allowedApiFileWatcher.UpdateApiFileWatcher(_optionsPage.AllowedApiFilePath);
 					return;
 				case Constants.Settings.All:
 					_bannedApiFileWatcher.UpdateApiFileWatcher(_optionsPage.BannedApiFilePath);
-					_whiteListApiFileWatcher.UpdateApiFileWatcher(_optionsPage.WhiteListApiFilePath);
+					_allowedApiFileWatcher.UpdateApiFileWatcher(_optionsPage.AllowedApiFilePath);
 					return;
 				default:
 					return;

@@ -27,13 +27,13 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 		[Theory]
 		[InlineData(true, true, true, true, true, false, null, null, "PlainGoodCode.cs")]
 		[InlineData(false, false, false, false, false, true, "", "    ", "PlainGoodCode.cs")]
-		[InlineData(false, true, false, false, true, true, @"C:\bannedApiPath.txt", @"C:\whiteListPath.txt", "PlainGoodCode.cs")]
-		[InlineData(true, false, false, true, true, false, null, @"C:\whiteListPath.txt", "PlainGoodCode.cs")]
+		[InlineData(false, true, false, false, true, true, @"C:\bannedApiPath.txt", @"C:\allowedApisPath.txt", "PlainGoodCode.cs")]
+		[InlineData(true, false, false, true, true, false, null, @"C:\allowedApisPath.txt", "PlainGoodCode.cs")]
 		[InlineData(true, false, false, true, true, true, @"C:\bannedApiPath.txt", null, "PlainGoodCode.cs")]
 		public async Task CheckAnalyzerReadSettingsCorrectlyASync(bool recursiveAnalysisEnabled, bool isvSpecificAnalyzersEnabled,
 																  bool staticAnalysisEnabled, bool suppressionMechanismEnabled,
 																  bool px1007DocumentationDiagnosticEnabled, bool bannedApiAnalysisEnabled,
-																  string? bannedApiFilePath, string? whiteListFilePath,
+																  string? bannedApiFilePath, string? allowedApisFilePath,
 																  string sourceFileName)
 		{
 			var sourceCode = GetSourceCode(sourceFileName);
@@ -43,7 +43,7 @@ namespace Acuminator.Tests.Tests.Utilities.CodeAnalysisSettingsSerialization
 			var expectedCodeAnalysisSettings = new CodeAnalysisSettings(recursiveAnalysisEnabled, isvSpecificAnalyzersEnabled,
 																		staticAnalysisEnabled, suppressionMechanismEnabled,
 																		px1007DocumentationDiagnosticEnabled);
-			var expectedBannedApiSettings = new BannedApiSettings(bannedApiAnalysisEnabled, bannedApiFilePath, whiteListFilePath);
+			var expectedBannedApiSettings = new BannedApiSettings(bannedApiAnalysisEnabled, bannedApiFilePath, allowedApisFilePath);
 
 			GlobalSettings.InitializeGlobalSettingsThreadUnsafeForTestsOnly(expectedCodeAnalysisSettings, expectedBannedApiSettings);
 

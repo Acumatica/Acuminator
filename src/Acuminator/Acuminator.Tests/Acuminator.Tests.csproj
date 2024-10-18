@@ -923,7 +923,7 @@
     <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomBannedApis.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomWhiteList.txt">
+    <Content Include="Tests\StaticAnalysis\BannedApi\BannedData\CustomAllowedApis.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="FormatterTests.playlist" />

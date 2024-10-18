@@ -41,15 +41,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 				AnalyzeMethodDeclarationInDac(method, context, pxContext);
 			}
 
-			HashSet<INamedTypeSymbol> whiteList = GetWhitelist(pxContext);
+			HashSet<INamedTypeSymbol> allowedApis = GetAllowedApis(pxContext);
 
 			foreach (DacPropertyInfo property in dac.AllDeclaredProperties)
 			{
-				AnalyzeMethodInvocationInDacProperty(property, whiteList, context, pxContext, semanticModel);
+				AnalyzeMethodInvocationInDacProperty(property, allowedApis, context, pxContext, semanticModel);
 			}
 		}
 
-		private HashSet<INamedTypeSymbol> GetWhitelist(PXContext pxContext)
+		private HashSet<INamedTypeSymbol> GetAllowedApis(PXContext pxContext)
 		{
 			return new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default)
 			{
@@ -80,7 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 			}
 		}
 
-		private void AnalyzeMethodInvocationInDacProperty(DacPropertyInfo property, HashSet<INamedTypeSymbol> whiteList,
+		private void AnalyzeMethodInvocationInDacProperty(DacPropertyInfo property, HashSet<INamedTypeSymbol> allowedApis,
 														  SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
 		{
 			// Node is not null here because DAC aggregated analyzers run only on DACs declared in source code,
@@ -96,9 +96,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 					if (symbol is not IMethodSymbol method || method.IsStatic || method.IsExtensionMethod)
 						continue;
 
-					bool inWhitelist = whiteList.Contains(method.ContainingType) ||
-									   whiteList.Contains(method.ContainingType.ConstructedFrom);
-					if (inWhitelist)
+					bool isAllowedApi = allowedApis.Contains(method.ContainingType) ||
+										allowedApis.Contains(method.ContainingType.ConstructedFrom);
+					if (isAllowedApi)
 						continue;
 
 					context.ReportDiagnosticWithSuppressionCheck(

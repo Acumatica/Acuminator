@@ -4,11 +4,11 @@
 	{
 		public static class Storage
 		{
-			public const string BannedApiFile = "BannedApis.txt";
-			public const string WhiteListFile = "WhiteList.txt";
+			public const string BannedApiFile  = "BannedApis.txt";
+			public const string AllowedApiFile = "AllowedApis.txt";
 
 			public const string BannedApiAssemblyResourceName = $"Acuminator.Utilities.BannedApi.Data.{BannedApiFile}";
-			public const string WhiteListAssemblyResourceName = $"Acuminator.Utilities.BannedApi.Data.{WhiteListFile}";
+			public const string AllowedApiAssemblyResourceName = $"Acuminator.Utilities.BannedApi.Data.{AllowedApiFile}";
 
 			public const string FileExtension = ".txt";
 		}

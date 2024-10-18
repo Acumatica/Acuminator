@@ -17,16 +17,16 @@ public partial class BannedApiAnalyzer
 	{
 		private readonly CancellationToken _cancellation;
 		private readonly IApiInfoRetriever _apiBanInfoRetriever;
-		private readonly IApiInfoRetriever? _whiteListInfoRetriever;
+		private readonly IApiInfoRetriever? _allowedInfoRetriever;
 		private readonly HashSet<ITypeSymbol> _checkedTypes = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 
-		public HashSet<string> NamespacesWithUsedWhiteListedMembers { get; } = new();
+		public HashSet<string> NamespacesWithUsedAllowedMembers { get; } = new();
 
-		public BannedTypesInfoCollector(IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? whiteListInfoRetriever,
+		public BannedTypesInfoCollector(IApiInfoRetriever apiBanInfoRetriever, IApiInfoRetriever? allowedInfoRetriever,
 										CancellationToken cancellation)
 		{
-			_apiBanInfoRetriever = apiBanInfoRetriever;
-			_whiteListInfoRetriever = whiteListInfoRetriever;
+			_apiBanInfoRetriever  = apiBanInfoRetriever;
+			_allowedInfoRetriever = allowedInfoRetriever;
 			_cancellation = cancellation;
 		}
 
@@ -116,7 +116,7 @@ public partial class BannedApiAnalyzer
 
 		private List<ApiSearchResult>? GetBannedInfosFromType(ITypeSymbol typeSymbol, List<ApiSearchResult>? alreadyCollectedInfos, bool checkInterfaces)
 		{
-			if (_apiBanInfoRetriever.GetInfoForApi(typeSymbol) is ApiSearchResult bannedTypeInfo && !IsInWhiteList(typeSymbol))
+			if (_apiBanInfoRetriever.GetInfoForApi(typeSymbol) is ApiSearchResult bannedTypeInfo && !IsAllowedApi(typeSymbol))
 			{
 				alreadyCollectedInfos ??= new List<ApiSearchResult>(capacity: 4);
 				alreadyCollectedInfos.Add(bannedTypeInfo);
@@ -163,12 +163,12 @@ public partial class BannedApiAnalyzer
 			return alreadyCollectedInfos;
 		}
 
-		private bool IsInWhiteList(ISymbol symbol)
+		private bool IsAllowedApi(ISymbol symbol)
 		{
-			if (_whiteListInfoRetriever?.GetInfoForApi(symbol) is ApiSearchResult)
+			if (_allowedInfoRetriever?.GetInfoForApi(symbol) is ApiSearchResult)
 			{
 				if (symbol.ContainingNamespace != null && !symbol.ContainingNamespace.IsGlobalNamespace)
-					NamespacesWithUsedWhiteListedMembers.Add(symbol.ContainingNamespace.ToString());
+					NamespacesWithUsedAllowedMembers.Add(symbol.ContainingNamespace.ToString());
 
 				return true;
 			}
