@@ -683,7 +683,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allowed API File.
+        ///   Looks up a localized string similar to Allowed APIs File.
         /// </summary>
         public static string Setting_BannedAPI_AllowedApiFilePath_Title {
             get {
@@ -701,7 +701,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable PX1099 diagnostic for banned API.
+        ///   Looks up a localized string similar to Enable PX1099 diagnostic for banned APIs.
         /// </summary>
         public static string Setting_BannedAPI_BannedApiAnalysisEnabled_Title {
             get {
@@ -719,7 +719,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Banned API File.
+        ///   Looks up a localized string similar to Banned APIs File.
         /// </summary>
         public static string Setting_BannedAPI_BannedApiFilePath_Title {
             get {
