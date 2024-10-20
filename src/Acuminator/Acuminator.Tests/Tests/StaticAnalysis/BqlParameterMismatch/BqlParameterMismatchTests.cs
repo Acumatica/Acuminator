@@ -91,5 +91,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 		[EmbeddedFileData("PXSelectExtensionCall.cs")]
 		public virtual async Task PXSelectExtension_Call_NoDiagnostic(string source) => 
 			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("BqlWithGenericDacFieldCall.cs")]
+		public virtual async Task PXSelectCall_WithGenericDacField_NoDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
 	}
 }
