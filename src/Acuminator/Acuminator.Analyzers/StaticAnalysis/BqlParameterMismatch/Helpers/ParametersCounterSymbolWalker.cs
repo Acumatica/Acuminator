@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -17,6 +18,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		/// </summary>
 		protected class ParametersCounterSymbolWalker : SymbolVisitor
 		{
+			private readonly HashSet<ITypeParameterSymbol> _typeParametersWithConstraintsBeingVisited = new(SymbolEqualityComparer.Default);
+
 			private readonly bool _isAcumatica2018R2;
 			private readonly INamedTypeSymbol? _iViewConfig2018R2;
 
@@ -89,10 +92,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (typeParameterSymbol == null)
 					return;
 
-				foreach (ITypeSymbol constraintType in typeParameterSymbol.ConstraintTypes)
+				bool isFirstVisitOfTypeParameter = false;
+
+				try
 				{
-					_cancellationToken.ThrowIfCancellationRequested();
-					Visit(constraintType);
+					isFirstVisitOfTypeParameter = _typeParametersWithConstraintsBeingVisited.Add(typeParameterSymbol);
+
+					if (!isFirstVisitOfTypeParameter)
+						return;
+
+					foreach (ITypeSymbol constraintType in typeParameterSymbol.ConstraintTypes)
+					{
+						_cancellationToken.ThrowIfCancellationRequested();
+						Visit(constraintType);
+					}
+				}
+				finally
+				{
+					if (isFirstVisitOfTypeParameter)
+						_typeParametersWithConstraintsBeingVisited.Remove(typeParameterSymbol);
 				}
 
 				_cancellationToken.ThrowIfCancellationRequested();
