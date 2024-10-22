@@ -6,6 +6,7 @@ using Acuminator.Utilities.BannedApi.Model;
 using Acuminator.Utilities.BannedApi.Storage;
 
 using Microsoft.CodeAnalysis;
+using System.Diagnostics.SymbolStore;
 
 namespace Acuminator.Utilities.BannedApi.ApiInfoRetrievers;
 
@@ -34,20 +35,52 @@ public class DirectApiInfoRetriever(IApiStorage apiStorage, CodeAnalysisSettings
 			: null;
 	}
 
-	protected Api? GetInfoForSymbol(ISymbol symbol, ApiKind symbolKind)
+	protected Api? GetInfoForSymbol(ISymbol symbol, ApiKind symbolKind) =>
+		symbolKind switch
+		{
+			ApiKind.Method => GetInfoForMethodSymbol(symbol as IMethodSymbol),
+			ApiKind.Type   => GetInfoForTypeSymbol(symbol as INamedTypeSymbol),
+			_ 			   => GetInfoForRegularSymbol(symbol, symbolKind)
+		};
+
+	protected Api? GetInfoForMethodSymbol(IMethodSymbol? method)
 	{
-		if (symbolKind != ApiKind.Method || symbol is not IMethodSymbol method)
-			return GetInfoForRegularSymbol(symbol, symbolKind);
+		if (method == null)
+			return null;
 
 		if (method.MethodKind == MethodKind.ReducedExtension && method.ReducedFrom != null)
 		{
-			var apiInfoForOriginalExtensionMethod = GetInfoForRegularSymbol(method.ReducedFrom, symbolKind);
+			var apiInfoForOriginalExtensionMethod = GetInfoForRegularSymbol(method.ReducedFrom, ApiKind.Method);
 
 			if (apiInfoForOriginalExtensionMethod != null)
 				return apiInfoForOriginalExtensionMethod;
 		}
 
-		return GetInfoForRegularSymbol(symbol, symbolKind);
+		if (method.OriginalDefinition != null && !SymbolEqualityComparer.Default.Equals(method, method.OriginalDefinition))
+		{
+			var apiInfoForOriginalGenericMethod = GetInfoForRegularSymbol(method.OriginalDefinition, ApiKind.Method);
+
+			if (apiInfoForOriginalGenericMethod != null)
+				return apiInfoForOriginalGenericMethod;
+		}
+
+		return GetInfoForRegularSymbol(method, ApiKind.Method);
+	}
+
+	protected Api? GetInfoForTypeSymbol(INamedTypeSymbol? type)
+	{
+		if (type == null)
+			return null;
+
+		if (type.IsGenericType && type.OriginalDefinition != null)
+		{
+			var apiInfoForOriginalGenericType = GetInfoForRegularSymbol(type.OriginalDefinition, ApiKind.Type);
+
+			if (apiInfoForOriginalGenericType != null)
+				return apiInfoForOriginalGenericType;
+		}
+
+		return GetInfoForRegularSymbol(type, ApiKind.Type);
 	}
 
 	protected Api? GetInfoForRegularSymbol(ISymbol symbol, ApiKind symbolKind)
