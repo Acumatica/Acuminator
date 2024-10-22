@@ -339,13 +339,13 @@ public partial class BannedApiAnalyzer
 			{
 				diagnostic = Diagnostic.Create(
 								Descriptors.PX1099_ForbiddenApiUsage_WithReason, location, 
-								apiKindDescription, banApiInfo.ClosestBannedApi.FullName, banApiInfo.ClosestBannedApi.BanReason);
+								apiKindDescription, banApiInfo.ClosestBannedApiSymbolName, banApiInfo.ClosestBannedApi.BanReason);
 			}
 			else
 			{
 				diagnostic = Diagnostic.Create(
 								Descriptors.PX1099_ForbiddenApiUsage_WithoutReason, location, 
-								apiKindDescription, banApiInfo.ClosestBannedApi.FullName);
+								apiKindDescription, banApiInfo.ClosestBannedApiSymbolName);
 			}
 
 			_syntaxContext.ReportDiagnosticWithSuppressionCheck(diagnostic, _pxContext.CodeAnalysisSettings);

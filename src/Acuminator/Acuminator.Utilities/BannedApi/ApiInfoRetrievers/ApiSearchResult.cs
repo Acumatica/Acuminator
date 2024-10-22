@@ -14,20 +14,20 @@ namespace Acuminator.Utilities.BannedApi.ApiInfoRetrievers
 	/// </summary>
 	public readonly struct ApiSearchResult
 	{
+		public string ClosestBannedApiSymbolName { get; }
+
+		public string ApiFoundInDbSymbolName { get; }
+
 		public Api ClosestBannedApi { get; }
 
 		public Api ApiFoundInDB { get; }
 
-        public ApiSearchResult(Api closestBannedApi, Api apiFoundInDB)
+        public ApiSearchResult(Api closestBannedApi, Api apiFoundInDB, string closestBannedApiSymbolName, string apiFoundInDbSymbolName)
         {
-			ClosestBannedApi = closestBannedApi.CheckIfNull();
-			ApiFoundInDB	 = apiFoundInDB.CheckIfNull();
+			ClosestBannedApi 		   = closestBannedApi.CheckIfNull();
+			ApiFoundInDB	 		   = apiFoundInDB.CheckIfNull();
+			ClosestBannedApiSymbolName = closestBannedApiSymbolName.CheckIfNullOrWhiteSpace();
+			ApiFoundInDbSymbolName 	   = apiFoundInDbSymbolName.CheckIfNullOrWhiteSpace();
         }
-
-		public void Deconstruct(out Api closestBannedApi, out Api apiFoundInDB)
-		{
-			closestBannedApi = ClosestBannedApi;
-			apiFoundInDB 	 = ApiFoundInDB;
-		}
     }
 }
