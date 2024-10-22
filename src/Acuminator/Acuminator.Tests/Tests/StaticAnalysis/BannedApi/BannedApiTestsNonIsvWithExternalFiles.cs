@@ -59,9 +59,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 		[EmbeddedFileData("CallsToMathRoundAPIs.cs")]
 		public virtual async Task Calls_To_MathRound_API(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(15, 13, Resources.PX1099Title_MethodFormatArg, "System.Math.Round(System.Decimal,System.Int32)",
+				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(15, 13, Resources.PX1099Title_MethodFormatArg, "System.Math.Round(decimal, int)",
 					"Math.Round uses Bankers Rounding by default, which rounds to the closest even number. Usually, this is not the desired rounding behavior. Use Math.Round overload with MidpointRounding parameter to explicitly specify the desired rounding behavior."),
-				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(24, 18, Resources.PX1099Title_MethodFormatArg, "System.Math.Round(System.Decimal)",
+				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(24, 18, Resources.PX1099Title_MethodFormatArg, "System.Math.Round(decimal)",
 					"Math.Round uses Bankers Rounding by default, which rounds to the closest even number. Usually, this is not the desired rounding behavior. Use Math.Round overload with MidpointRounding parameter to explicitly specify the desired rounding behavior."));
 	}
 }
