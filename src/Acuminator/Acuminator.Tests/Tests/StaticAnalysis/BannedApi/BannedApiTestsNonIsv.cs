@@ -94,7 +94,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 					" It also prevents Acumatica request profiler and resource governor from correctly managing system resources."),
 
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(28, 23, Resources.PX1099Title_MethodFormatArg,
-					"System.Threading.Tasks-Task.Start(System.Threading.Tasks.TaskScheduler)",
+					"System.Threading.Tasks.Task.Start(System.Threading.Tasks.TaskScheduler)",
 					"Usage of the Task.Start method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context." +
 					" It also prevents Acumatica request profiler and resource governor from correctly managing system resources."),
 
