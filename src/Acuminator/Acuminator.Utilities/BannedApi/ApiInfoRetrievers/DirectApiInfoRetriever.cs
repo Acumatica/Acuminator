@@ -36,6 +36,22 @@ public class DirectApiInfoRetriever(IApiStorage apiStorage, CodeAnalysisSettings
 
 	protected Api? GetInfoForSymbol(ISymbol symbol, ApiKind symbolKind)
 	{
+		if (symbolKind != ApiKind.Method || symbol is not IMethodSymbol method)
+			return GetInfoForRegularSymbol(symbol, symbolKind);
+
+		if (method.MethodKind == MethodKind.ReducedExtension && method.ReducedFrom != null)
+		{
+			var apiInfoForOriginalExtensionMethod = GetInfoForRegularSymbol(method.ReducedFrom, symbolKind);
+
+			if (apiInfoForOriginalExtensionMethod != null)
+				return apiInfoForOriginalExtensionMethod;
+		}
+
+		return GetInfoForRegularSymbol(symbol, symbolKind);
+	}
+
+	protected Api? GetInfoForRegularSymbol(ISymbol symbol, ApiKind symbolKind)
+	{
 		string? symbolDocID = symbol.GetDocumentationCommentId().NullIfWhiteSpace();
 
 		if (symbolDocID == null)
