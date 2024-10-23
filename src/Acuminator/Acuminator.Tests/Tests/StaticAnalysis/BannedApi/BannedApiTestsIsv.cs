@@ -32,17 +32,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BannedApi
 		public virtual async Task Calls_To_API_ForbiddenForISV(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(13, 22, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
-					"Usage of reflection is forbidden in Acumatica customizations."),
+					"Use of reflection is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(13, 57, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
-					"Usage of reflection is forbidden in Acumatica customizations."),
+					"Use of reflection is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(18, 10, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
-					"Usage of reflection is forbidden in Acumatica customizations."),
+					"Use of reflection is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(20, 4, Resources.PX1099Title_TypeFormatArg, "System.Reflection.MethodInfo",
-					"Usage of reflection is forbidden in Acumatica customizations."),
+					"Use of reflection is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(26, 40, Resources.PX1099Title_TypeFormatArg, "System.OperatingSystem",
-					"Usage of the OperatingSystem type is forbidden in Acumatica customizations."),
+					"Use of the OperatingSystem type is forbidden in Acumatica customizations."),
 				Descriptors.PX1099_ForbiddenApiUsage_WithReason.CreateFor(26, 107, Resources.PX1099Title_TypeFormatArg, "System.Environment",
-					"Usage of the Environment type is forbidden in Acumatica customizations."));
+					"Use of the Environment type is forbidden in Acumatica customizations."));
 
 		[Theory]
 		[EmbeddedFileData("CallsToMathRoundAPIs.cs")]
