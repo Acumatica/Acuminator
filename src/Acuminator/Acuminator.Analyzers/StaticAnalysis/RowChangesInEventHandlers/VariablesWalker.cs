@@ -55,7 +55,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 							.ToImmutableHashSet<ILocalSymbol>(SymbolEqualityComparer.Default);
 					}
 				}
-				
+
 			}
 
 			public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
@@ -84,9 +84,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			{
 				_cancellationToken.ThrowIfCancellationRequested();
 
-				if (isPatternExpression.Pattern is DeclarationPatternSyntax declarationPattern && declarationPattern.Designation != null)
+				VariableDesignationSyntax? designation = isPatternExpression.Pattern switch
 				{
-					var variableSymbol = _semanticModel.GetDeclaredSymbol(declarationPattern.Designation, _cancellationToken) as ILocalSymbol;
+					DeclarationPatternSyntax declarationPattern => declarationPattern.Designation,
+					RecursivePatternSyntax recursivePattern => recursivePattern.Designation,
+					_ => null
+				};
+
+				if (designation != null)
+				{
+					var variableSymbol = _semanticModel.GetDeclaredSymbol(designation, _cancellationToken) as ILocalSymbol;
 					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, isPatternExpression.Expression);
 				}
 			}

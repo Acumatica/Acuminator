@@ -21,7 +21,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
 					.WithRecursiveAnalysisEnabled()
-					.WithIsvSpecificAnalyzersEnabled(), 
+					.WithIsvSpecificAnalyzersEnabled(),
 				new RowChangesInEventHandlersAnalyzer());
 
 		[Theory]
@@ -29,7 +29,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 		public Task IsPatternAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(17, 4, EventType.RowSelected),
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(25, 4, EventType.FieldDefaulting),
-			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(33, 4, EventType.FieldVerifying));
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(33, 4, EventType.FieldVerifying),
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(41, 4, EventType.RowSelected),
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(49, 4, EventType.FieldDefaulting),
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(57, 4, EventType.FieldVerifying));
 
 		[Theory]
 		[EmbeddedFileData("DirectAssignment.cs")]
@@ -81,14 +84,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 		[EmbeddedFileData("NonRowAssignment.cs")]
 		public Task NonRowAssignment_ShouldNotShowDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
 
-
 		[Theory]
 		[EmbeddedFileData(@"Reversed\IsPatternAssignment.cs")]
 		public Task Reversed_IsPatternAssignment_ShouldNotShowDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 		[EmbeddedFileData(@"Reversed\DirectAssignment.cs")]
-		public Task Reversed_DirectAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+		public Task Reversed_DirectAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly.CreateFor(17, 4, EventType.RowInserting),
 			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly.CreateFor(23, 4, EventType.RowSelecting));
 

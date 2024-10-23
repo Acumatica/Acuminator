@@ -26,6 +26,22 @@ namespace PX.Objects
 
 			invoice.RefNbr = "<NEW>"; // should be OK
 		}
+
+		protected virtual void _(Events.RowInserting<SOLine> e)
+		{
+			if (!(e.Row is { } row))
+				return;
+
+			row.RefNbr = "<NEW>"; // should be OK
+		}
+
+		protected virtual void _(Events.RowSelecting<SOLine> e)
+		{
+			if (!(e.Row is { RefNbr: { } } row))
+				return;
+
+			row.RefNbr = "<NEW>" // should be OK
+		}
 	}
 
 	public class SOInvoice : IBqlTable
@@ -34,6 +50,15 @@ namespace PX.Objects
 		[PXDBString(8, IsKey = true, InputMask = "")]
 		public string RefNbr { get; set; }
 		public abstract class refNbr : IBqlField { }
-		#endregion	
+		#endregion
+	}
+
+	public class SOLine : IBqlTable
+	{
+		#region RefNbr
+		[PXDBString(8, IsKey = true, InputMask = "")]
+		public string RefNbr { get; set; }
+		public abstract class refNbr : IBqlField { }
+		#endregion
 	}
 }
