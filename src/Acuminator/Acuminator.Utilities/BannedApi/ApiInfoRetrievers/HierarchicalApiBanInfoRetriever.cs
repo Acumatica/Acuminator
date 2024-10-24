@@ -28,22 +28,26 @@ public class HierarchicalApiBanInfoRetriever : DirectApiInfoRetriever
 		if (apiKind is ApiKind.Namespace or ApiKind.Undefined)
 			return null;
 
-		Api? namespaceInfo = GetInfoForApiNamespace(apiSymbol.ContainingNamespace);
+		var (namespaceInfo, namespaceName) = GetInfoForApiNamespace(apiSymbol.ContainingNamespace);
 
 		if (namespaceInfo != null)
 		{
 			Api apiInBannedNamespace = new Api(apiSymbol, namespaceInfo.BanKind, namespaceInfo.BanReason);
-			return new ApiSearchResult(closestBannedApi: apiInBannedNamespace, namespaceInfo);
+			return new ApiSearchResult(closestBannedApi: apiInBannedNamespace, apiFoundInDB: namespaceInfo,
+									   closestBannedApiSymbolName: apiSymbol.ToString(), apiFoundInDbSymbolName: namespaceName!);
 		}
 
 		// We checked API for info directly and for namespaces. Non nested types don't have other parent APIs
 		if (apiSymbol is ITypeSymbol typeSymbol && typeSymbol.ContainingType == null)
 			return null;
 
-		Api? containingTypeInfo = GetInfoForContainingTypes(apiSymbol.ContainingType);
+		var (containingTypeInfo, typeName) = GetInfoForContainingTypes(apiSymbol.ContainingType);
 
 		if (containingTypeInfo != null)
-			return new ApiSearchResult(closestBannedApi: containingTypeInfo, containingTypeInfo);
+		{
+			return new ApiSearchResult(closestBannedApi: containingTypeInfo, apiFoundInDB: containingTypeInfo,
+									   closestBannedApiSymbolName: typeName!, apiFoundInDbSymbolName: typeName!);
+		}
 
 		// We checked API directly and its containing namespace and types. 
 		// Fields, events, properties and normal methods don't have other parent APIs
@@ -54,39 +58,40 @@ public class HierarchicalApiBanInfoRetriever : DirectApiInfoRetriever
 		}
 
 		// The only API kind left to check are property and event accessors, since they are contained inside their corresponding property/event
-		Api? accessorBanInfo = GetInfoForAccessorMethod(methodSymbol);
+		var (accessorBanInfo, accessorName) = GetInfoForAccessorMethod(methodSymbol);
 		return accessorBanInfo != null
-			? new ApiSearchResult(closestBannedApi: accessorBanInfo, accessorBanInfo)
+			? new ApiSearchResult(closestBannedApi: accessorBanInfo, apiFoundInDB: accessorBanInfo, 
+								  closestBannedApiSymbolName: accessorName!, apiFoundInDbSymbolName: accessorName!)
 			: null;
 	}
 
-	private Api? GetInfoForApiNamespace(INamespaceSymbol? apiNamespaceSymbol) =>
+	private (Api? Info, string? SymbolName) GetInfoForApiNamespace(INamespaceSymbol? apiNamespaceSymbol) =>
 		apiNamespaceSymbol != null && !apiNamespaceSymbol.IsGlobalNamespace
 			? GetInfoForSymbol(apiNamespaceSymbol, ApiKind.Namespace)
-			: null;
+			: default;
 
-	private Api? GetInfoForContainingTypes(INamedTypeSymbol? firstContainingType)
+	private (Api? Info, string? SymbolName) GetInfoForContainingTypes(INamedTypeSymbol? firstContainingType)
 	{
 		INamedTypeSymbol? currentType = firstContainingType;
 
 		while (currentType != null)
 		{
-			var typeInfo = GetInfoForSymbol(currentType, ApiKind.Type);
+			var (typeInfo, typeName) = GetInfoForSymbol(currentType, ApiKind.Type);
 
 			if (typeInfo != null)
-				return typeInfo;
+				return (typeInfo, typeName);
 
 			currentType = currentType.ContainingType;
 		}
 
-		return null;
+		return default;
 	}
 
-	private Api? GetInfoForAccessorMethod(IMethodSymbol acessorMethod) =>
+	private (Api? Info, string? SymbolName) GetInfoForAccessorMethod(IMethodSymbol acessorMethod) =>
 		acessorMethod.AssociatedSymbol switch
 		{
 			IPropertySymbol propertySymbol => GetInfoForSymbol(propertySymbol, ApiKind.Property),
-			IEventSymbol eventSymbol => GetInfoForSymbol(eventSymbol, ApiKind.Event),
-			_ => null
+			IEventSymbol eventSymbol 	   => GetInfoForSymbol(eventSymbol, ApiKind.Event),
+			_ 							   => default
 		};
 }

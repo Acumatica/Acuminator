@@ -1,16 +1,37 @@
-N:System.Data.Entity ISV Usage of this namespace is forbidden in Acumatica customizations.
-N:System.Data.SqlClient ISV Usage of this namespace is forbidden in Acumatica customizations.
+N:System.Data.Entity ISV Use of this namespace is forbidden in Acumatica customizations.
+N:System.Data.SqlClient ISV Use of this namespace is forbidden in Acumatica customizations.
 
-T:System-AppDomain ISV Usage of the AppDomain type is forbidden in Acumatica customizations.
-T:System.Diagnostics-ProcessStartInfo ISV Usage of the ProcessStartInfo type is forbidden in Acumatica customizations.
-T:System-Environment ISV Usage of the Environment type is forbidden in Acumatica customizations.
-T:System.IO-File ISV Usage of the File type is forbidden in Acumatica customizations.
+T:System-AppDomain ISV Use of the AppDomain type is forbidden in Acumatica customizations.
+T:System.Diagnostics-ProcessStartInfo ISV Use of the ProcessStartInfo type is forbidden in Acumatica customizations.
+T:System-Environment ISV Use of the Environment type is forbidden in Acumatica customizations.
+T:System.IO-File ISV Use of the File type is forbidden in Acumatica customizations.
 T:System-GC ISV Access to garbage collector is forbidden in Acumatica customizations.
-T:System-OperatingSystem ISV Usage of the OperatingSystem type is forbidden in Acumatica customizations.
-T:System.Reflection-MethodInfo ISV Usage of reflection is forbidden in Acumatica customizations.
+T:System-OperatingSystem ISV Use of the OperatingSystem type is forbidden in Acumatica customizations.
+T:System.Reflection-MethodInfo ISV Use of reflection is forbidden in Acumatica customizations.
 T:PX.Common-WebConfig ISV Access to the WebConfig type is forbidden in Acumatica customizations.
 
 M:System-Math.Round(System.Double) General Math.Round uses Banker's Rounding by default, which rounds to the closest even number. Usually, this is not the desired rounding behavior. Use the Math.Round overload with the MidpointRounding parameter to explicitly specify the desired rounding behavior.
 M:System-Math.Round(System.Decimal) General Math.Round uses Banker's Rounding by default, which rounds to the closest even number. Usually, this is not the desired rounding behavior. Use the Math.Round overload with the MidpointRounding parameter to explicitly specify the desired rounding behavior.
 M:System-Math.Round(System.Double,System.Int32) General Math.Round uses Banker's Rounding by default, which rounds to the closest even number. Usually, this is not the desired rounding behavior. Use the Math.Round overload with the MidpointRounding parameter to explicitly specify the desired rounding behavior.
 M:System-Math.Round(System.Decimal,System.Int32) General Math.Round uses Banker's Rounding by default, which rounds to the closest even number. Usually, this is not the desired rounding behavior. Use the Math.Round overload with the MidpointRounding parameter to explicitly specify the desired rounding behavior.
+
+T:System.Threading.Tasks-Parallel General Use of the Parallel type is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+
+M:System.Linq-ParallelEnumerable.AsParallel``1(System.Collections.Generic.IEnumerable{``0}) General Use of Parallel LINQ is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Linq-ParallelEnumerable.AsParallel``1(System.Collections.Concurrent.Partitioner{``0}) General Use of Parallel LINQ is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Linq-ParallelEnumerable.AsParallel(System.Collections.IEnumerable) General Use of Parallel LINQ is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+
+M:System.Threading.Tasks-Task.Run(System.Action) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Run(System.Action,System.Threading.CancellationToken) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Run``1(System.Func{``0}) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Run(System.Func{System.Threading.Tasks.Task},System.Threading.CancellationToken) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Run``1(System.Func{``0},System.Threading.CancellationToken) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Run``1(System.Func{System.Threading.Tasks.Task{``0}}) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Run``1(System.Func{System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Run(System.Func{System.Threading.Tasks.Task}) General Use of the Task.Run method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+
+M:System.Threading.Tasks-Task.Start General Use of the Task.Start method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task.Start(System.Threading.Tasks.TaskScheduler) General Use of the Task.Start method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+
+M:System.Threading.Tasks-Task.ConfigureAwait(System.Boolean) General Use of the Task.ConfigureAwait method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
+M:System.Threading.Tasks-Task`1.ConfigureAwait(System.Boolean) General Use of the Task.ConfigureAwait method is forbidden in Acumatica because it may lead to deadlocks and a loss of Acumatica synchronization context. It also prevents Acumatica request profiler and resource governor from correctly managing system resources.
