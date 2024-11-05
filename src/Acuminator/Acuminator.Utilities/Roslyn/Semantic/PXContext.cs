@@ -18,18 +18,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public bool IsAcumatica2018R2_OrGreater { get; }
 		public bool IsAcumatica2019R1_OrGreater { get; }
 
-		public bool IsAcumatica2023R1_OrGreater => PXCache.RowSelectingWhileReading != null;
+		public bool IsAcumatica2023R1_OrGreater { get; }
 
-		public bool IsAcumatica2024R1_OrGreater => PXBqlTable != null;
+		public bool IsAcumatica2024R1_OrGreater { get; }
 
 		public CodeAnalysisSettings CodeAnalysisSettings { get; }
+
+		public Compilation Compilation { get; }
 
 		/// <summary>
 		/// Is platform referenced in the current solution. If not then diagnostic can't run on the solution.
 		/// </summary>
 		public bool IsPlatformReferenced { get; }
 
-		public Compilation Compilation { get; }
+		public AcumaticaVersion AcumaticaVersion { get; }
 
 		private readonly Lazy<BQLSymbols> _bql;
 		public BQLSymbols BQL => _bql.Value;
@@ -51,23 +53,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private readonly Lazy<AttributeSymbols> _attributes;
 		public AttributeSymbols AttributeTypes => _attributes.Value;
 
-        private readonly Lazy<LocalizationSymbols> _localizationMethods;
-        public LocalizationSymbols Localization => _localizationMethods.Value;
+		private readonly Lazy<LocalizationSymbols> _localizationMethods;
+		public LocalizationSymbols Localization => _localizationMethods.Value;
 
-        private readonly Lazy<PXGraphSymbols> _pxGraph;
-        public PXGraphSymbols PXGraph => _pxGraph.Value;
+		private readonly Lazy<PXGraphSymbols> _pxGraph;
+		public PXGraphSymbols PXGraph => _pxGraph.Value;
 
-        private readonly Lazy<PXCacheSymbols> _pxCache;
-        public PXCacheSymbols PXCache => _pxCache.Value;
+		private readonly Lazy<PXCacheSymbols> _pxCache;
+		public PXCacheSymbols PXCache => _pxCache.Value;
 
 		private readonly Lazy<PXActionSymbols> _pxAction;
 		public PXActionSymbols PXAction => _pxAction.Value;
 
-        private readonly Lazy<PXSelectBaseGenericSymbols> _pxSelectBaseGeneric;
-        public PXSelectBaseGenericSymbols PXSelectBaseGeneric => _pxSelectBaseGeneric.Value;
+		private readonly Lazy<PXSelectBaseGenericSymbols> _pxSelectBaseGeneric;
+		public PXSelectBaseGenericSymbols PXSelectBaseGeneric => _pxSelectBaseGeneric.Value;
 
-        private readonly Lazy<PXSelectBaseSymbols> _pxSelectBase;
-        public PXSelectBaseSymbols PXSelectBase => _pxSelectBase.Value;
+		private readonly Lazy<PXSelectBaseSymbols> _pxSelectBase;
+		public PXSelectBaseSymbols PXSelectBase => _pxSelectBase.Value;
 
 		private readonly Lazy<PXSelectExtensionSymbols> _pxSelectExtensionSymbols;
 
@@ -86,7 +88,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public SerializationSymbols Serialization => _serialization.Value;
 
 		private readonly Lazy<PXProcessingBaseSymbols> _pxProcessingBase;
-        public PXProcessingBaseSymbols PXProcessingBase => _pxProcessingBase.Value;
+		public PXProcessingBaseSymbols PXProcessingBase => _pxProcessingBase.Value;
 
 		private readonly Lazy<PXReferentialIntegritySymbols> _referentialIntegritySymbols;
 		public PXReferentialIntegritySymbols ReferentialIntegritySymbols => _referentialIntegritySymbols.Value;
@@ -122,10 +124,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(TypeFullNames.PXFieldState)!;
 		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute)!;
 
-        public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(TypeFullNames.IPXLocalizableList)!;
+		public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(TypeFullNames.IPXLocalizableList)!;
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(TypeFullNames.PXConnectionScope)!;
 
-        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMethods(DelegateNames.StartOperation).ToImmutableArray();
+		public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMethods(DelegateNames.StartOperation).ToImmutableArray();
 
 		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(TypeFullNames.IImplementType)!;
 
@@ -135,9 +137,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			compilation.ThrowOnNull();
 
+			INamedTypeSymbol? pxGraphSymbol = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph);
+
 			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.Default;
 			Compilation = compilation;
-			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph) != null;
+			IsPlatformReferenced = pxGraphSymbol != null;
+			AcumaticaVersion = new(pxGraphSymbol?.ContainingAssembly);
 
 			_bql 						 = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_bqlTypes 					 = new Lazy<BqlDataTypeSymbols>(() => new BqlDataTypeSymbols(Compilation));
@@ -165,8 +170,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
 
-			IsAcumatica2018R2_OrGreater = PXSelectBase2018R2NewType != null;
-			IsAcumatica2019R1_OrGreater = IImplementType != null;
+			// Acumatica 2018 R2 Preview started in the 18.19X range.
+			IsAcumatica2018R2_OrGreater = AcumaticaVersion.Major == 18
+				? AcumaticaVersion.Minor >= 191
+				: AcumaticaVersion.Major > 18;
+			IsAcumatica2019R1_OrGreater = AcumaticaVersion.Major >= 19;
+			IsAcumatica2023R1_OrGreater = AcumaticaVersion.Major >= 23;
+			IsAcumatica2024R1_OrGreater = AcumaticaVersion.Major >= 24;
 		}
 
 		private ImmutableHashSet<IMethodSymbol> GetUiPresentationLogicMethods()

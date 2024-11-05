@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
-using System;
 using System.Collections.Immutable;
-using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
@@ -21,8 +19,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol GenericType { get; }
 		
-		public IEventSymbol? RowSelectingWhileReading { get; }
-
 		internal PXCacheSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXCache)
 		{
 			Type.ThrowOnNull();
@@ -34,9 +30,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			Delete = Type.GetMethods(DelegateNames.Delete).ToImmutableArray();
 
 			RaiseExceptionHandling   = Type.GetMethods(DelegateNames.RaiseExceptionHandling).ToImmutableArray();
-			RowSelectingWhileReading = Type.GetMembers(EventsNames.PXCache.RowSelectingWhileReading)
-										   .OfType<IEventSymbol>()
-										   .FirstOrDefault();
 		}
 	}
 }
