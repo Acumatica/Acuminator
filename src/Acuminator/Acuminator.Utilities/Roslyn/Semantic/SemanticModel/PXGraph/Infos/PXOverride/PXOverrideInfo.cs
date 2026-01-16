@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			BaseMethod = baseMethod;
 		}
 
-		internal static IEnumerable<PXOverrideInfo> GetDeclaredPXOverrides(GraphOrGraphExtInfoBase graphExtensionInfo, PXContext context, 
+		internal static IEnumerable<PXOverrideInfo> GetDeclaredPXOverrides(GraphExtensionInfo graphExtensionInfo, PXContext context, 
 																		   CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();

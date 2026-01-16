@@ -409,8 +409,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		protected ImmutableArray<PXOverrideInfo> GetDeclaredPXOverrideInfos()
 		{
-			var pxOverrides = PXOverrideInfo.GetDeclaredPXOverrides(GraphOrGraphExtInfo, PXContext, _cancellation);
-			return pxOverrides.ToImmutableArray();
+			if (GraphOrGraphExtInfo is GraphExtensionInfo graphExtensionInfo)
+			{
+				var pxOverrides = PXOverrideInfo.GetDeclaredPXOverrides(graphExtensionInfo, PXContext, _cancellation);
+				return pxOverrides.ToImmutableArray();
+			}
+			else
+				return ImmutableArray<PXOverrideInfo>.Empty;
 		}
 
 		protected bool IsPXProtectedAccessAttributeDeclared() =>
