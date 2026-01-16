@@ -46,7 +46,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																	.Select(info => info.Symbol)
 																	.Distinct<ITypeSymbol>(SymbolEqualityComparer.Default)
 																	.Where(baseType => !directBaseTypesAndThis.Contains(baseType, SymbolEqualityComparer.Default))
-																	.ToList(capacity: 4);
+																	.ToList(capacity: 8);
+			if (graphExtensionInfo.BaseGraph != null)
+			{
+				// To recognize methods from the base PXGraph we must also include base graph types
+				var baseGraphTypes = graphExtensionInfo.BaseGraph.Symbol.GetBaseTypesAndThis()
+																		.SkipWhile(baseType => !baseType.IsGraphBaseType())
+																		.TakeWhile(baseType => baseType.SpecialType != SpecialType.System_Object);
+				graphAndGraphExtensionBaseTypes.AddRange(baseGraphTypes);
+			}
 
 			var declaredMethods = graphExtensionInfo.Symbol.GetMethods();
 			int declarationOrder = 0;
