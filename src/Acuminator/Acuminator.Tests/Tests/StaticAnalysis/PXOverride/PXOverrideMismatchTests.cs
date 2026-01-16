@@ -153,6 +153,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXOverride
 		public Task BaseTypeImplementsPxGraphExtension(string source) => VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
+		[EmbeddedFileData(@"SignatureMismatch\PXOverrideOfMethodFromBasePXGraph.cs")]
+		public Task PXOverride_OfMethod_FromBasePXGraph(string source) => VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
 		[EmbeddedFileData(@"SignatureMismatch\BaseTypeImplementsPxGraphExtensionSignatureIsWrong.cs")]
 		public Task BaseTypeImplementsPxGraphExtensionSignatureIsWrong(string source)
 		{
