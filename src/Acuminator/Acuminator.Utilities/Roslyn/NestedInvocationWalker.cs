@@ -53,6 +53,8 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
 
+		private readonly SymbolInfoCache _cache = new();
+
         /// <summary>
         /// Cancellation token
         /// </summary>
@@ -119,20 +121,22 @@ namespace Acuminator.Utilities.Roslyn
 		protected virtual T? GetSymbol<T>(ExpressionSyntax node)
 			where T : class, ISymbol
 		{
-			var semanticModel = GetSemanticModel(node.SyntaxTree);
-
-			if (semanticModel != null)
+			SymbolInfo? cached = _cache.GetOrCreate(node, () =>
 			{
-				var symbolInfo = semanticModel.GetSymbolInfo(node, CancellationToken);
+				SemanticModel? semanticModel = GetSemanticModel(node.SyntaxTree);
+				return semanticModel?.GetSymbolInfo(node, CancellationToken);
+			});
 
-				if (symbolInfo.Symbol is T symbol)
+			if (cached is not null)
+			{
+				if (cached.Value.Symbol is T symbol)
 				{
 					return symbol;
 				}
 
-				if (!symbolInfo.CandidateSymbols.IsEmpty)
+				if (!cached.Value.CandidateSymbols.IsEmpty)
 				{
-					return symbolInfo.CandidateSymbols.OfType<T>().FirstOrDefault();
+					return cached.Value.CandidateSymbols.OfType<T>().FirstOrDefault();
 				}
 			}
 
