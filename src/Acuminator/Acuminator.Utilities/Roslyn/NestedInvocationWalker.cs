@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
 
-		private readonly SymbolInfoCache _cache = new();
+		private readonly SymbolInfoCache _cache;
 
         /// <summary>
         /// Cancellation token
@@ -89,6 +89,8 @@ namespace Acuminator.Utilities.Roslyn
 
 			//Use lazy to avoid calling virtual methods inside the constructor
 			_typesToBypass = new Lazy<HashSet<INamedTypeSymbol>>(valueFactory: GetTypesToBypass, isThreadSafe: false);
+
+			_cache = new SymbolInfoCache(GetType());
 		}
 
 		/// <summary>
