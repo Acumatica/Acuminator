@@ -210,8 +210,16 @@ namespace Acuminator.Utilities.Roslyn
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
-			VisitPropertyOrIndexerAccessExpression(node);
-			base.VisitMemberAccessExpression(node);
+			if (node.Parent is InvocationExpressionSyntax invocation && invocation.Expression == node)
+			{
+				// we already visit this node by VisitInvocationExpression, so we just skip it here
+				base.VisitMemberAccessExpression(node);
+			}
+			else
+			{
+				VisitPropertyOrIndexerAccessExpression(node);
+				base.VisitMemberAccessExpression(node);
+			}
 		}
 
 		public override void VisitElementAccessExpression(ElementAccessExpressionSyntax node)
