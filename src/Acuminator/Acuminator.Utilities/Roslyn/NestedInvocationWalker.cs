@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
 
-		private readonly SymbolInfoCache _cache;
+		private readonly SymbolInfoCache _symbolsCache;
 
         /// <summary>
         /// Cancellation token
@@ -90,7 +90,7 @@ namespace Acuminator.Utilities.Roslyn
 			//Use lazy to avoid calling virtual methods inside the constructor
 			_typesToBypass = new Lazy<HashSet<INamedTypeSymbol>>(valueFactory: GetTypesToBypass, isThreadSafe: false);
 
-			_cache = new SymbolInfoCache(GetType());
+			_symbolsCache = new SymbolInfoCache();
 		}
 
 		/// <summary>
@@ -123,7 +123,7 @@ namespace Acuminator.Utilities.Roslyn
 		protected virtual T? GetSymbol<T>(ExpressionSyntax node)
 			where T : class, ISymbol
 		{
-			SymbolInfo? cached = _cache.GetOrCreate(node, () =>
+			SymbolInfo? cached = _symbolsCache.GetOrCreate(node, () =>
 			{
 				SemanticModel? semanticModel = GetSemanticModel(node.SyntaxTree);
 				return semanticModel?.GetSymbolInfo(node, CancellationToken);
