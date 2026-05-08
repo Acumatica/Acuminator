@@ -15,78 +15,78 @@ using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
-    /// <summary>
-    /// Values that represent tagger types.
-    /// </summary>
-    public enum TaggerType
-    {
-        /// <summary>
-        /// The general tagger which chooses other taggers according to the settings.
-        /// </summary>
-        General,
+	/// <summary>
+	/// Values that represent tagger types.
+	/// </summary>
+	public enum TaggerType
+	{
+		/// <summary>
+		/// The general tagger which chooses other taggers according to the settings.
+		/// </summary>
+		General,
 
-        /// <summary>
-        /// The tagger based on Roslyn 
-        /// </summary>
-        Roslyn,
+		/// <summary>
+		/// The tagger based on Roslyn 
+		/// </summary>
+		Roslyn,
 
-        /// <summary>
-        /// The tagger based on regular expressions
-        /// </summary>
-        RegEx,
+		/// <summary>
+		/// The tagger based on regular expressions
+		/// </summary>
+		RegEx,
 
-        /// <summary>
-        /// The tagger used for outlining
-        /// </summary>
-        Outlining
-    };
+		/// <summary>
+		/// The tagger used for outlining
+		/// </summary>
+		Outlining
+	};
 
-    public abstract class PXTaggerBase : IDisposable
-    {
+	public abstract class PXTaggerBase : IDisposable
+	{
 #pragma warning disable CS0067
-        public event EventHandler<SnapshotSpanEventArgs>? TagsChanged;
+		public event EventHandler<SnapshotSpanEventArgs>? TagsChanged;
 #pragma warning restore CS0067
 
-        protected ITextBuffer Buffer { get; }
+		protected ITextBuffer Buffer { get; }
 
-        protected internal ITextSnapshot? Snapshot { get; private set; }
+		protected internal ITextSnapshot? Snapshot { get; private set; }
 
-        protected bool ColoringSettingsChanged { get; private set; }
+		protected bool ColoringSettingsChanged { get; private set; }
 
-        protected bool SubscribedToSettingsChanges { get; private set; }
+		protected bool SubscribedToSettingsChanges { get; private set; }
 
-        protected PXTaggerProviderBase ProviderBase { get; }
+		protected PXTaggerProviderBase ProviderBase { get; }
 
-        /// <summary>
-        /// The type of the tagger.
-        /// </summary>      
-        public abstract TaggerType TaggerType { get; }
+		/// <summary>
+		/// The type of the tagger.
+		/// </summary>      
+		public abstract TaggerType TaggerType { get; }
 
-        protected bool CacheCheckingEnabled { get; }
+		protected bool CacheCheckingEnabled { get; }
 
-        protected PXTaggerBase(ITextBuffer buffer, PXTaggerProviderBase provider, bool subscribeToSettingsChanges, bool useCacheChecking)
-        {
-            Buffer = buffer.CheckIfNull();
-            ProviderBase = provider.CheckIfNull();
-            SubscribedToSettingsChanges = subscribeToSettingsChanges;
-            CacheCheckingEnabled = useCacheChecking;
+		protected PXTaggerBase(ITextBuffer buffer, PXTaggerProviderBase provider, bool subscribeToSettingsChanges, bool useCacheChecking)
+		{
+			Buffer = buffer.CheckIfNull();
+			ProviderBase = provider.CheckIfNull();
+			SubscribedToSettingsChanges = subscribeToSettingsChanges;
+			CacheCheckingEnabled = useCacheChecking;
 
-            if (SubscribedToSettingsChanges)
-            {
-                var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
+			if (SubscribedToSettingsChanges)
+			{
+				var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
 
-                if (genOptionsPage != null)
-                {
-                    genOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
-                }
-            }
-        }
+				if (genOptionsPage != null)
+				{
+					genOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
+				}
+			}
+		}
 
-        protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
-        {
-            ColoringSettingsChanged = true;
+		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
+		{
+			ColoringSettingsChanged = true;
 			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
-        }
+		}
 
 		internal async virtual Task RaiseTagsChangedAsync()
 		{
@@ -101,26 +101,26 @@ namespace Acuminator.Vsix.Coloriser
 					  new Span(0, Buffer.CurrentSnapshot.Length))));
 		}
 
-        protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
-        {
-            ColoringSettingsChanged = false;
-            Snapshot = newCache;
-        }
+		protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
+		{
+			ColoringSettingsChanged = false;
+			Snapshot = newCache;
+		}
 
-        protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
-            CacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;
+		protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
+			CacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;
 
-        public virtual void Dispose()
-        {
-            if (!SubscribedToSettingsChanges)
-                return;
+		public virtual void Dispose()
+		{
+			if (!SubscribedToSettingsChanges)
+				return;
 
-            var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
+			var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
 
-            if (genOptionsPage != null)
-            {
-                genOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
-            }
-        }
-    }
+			if (genOptionsPage != null)
+			{
+				genOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
+			}
+		}
+	}
 }
