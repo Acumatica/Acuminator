@@ -94,7 +94,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			AreClassificationsInitialized = true;
 			InitializeClassificationTypes();
-			IncreaseCommentFormatTypesPrioirity(_classificationRegistry, _classificationFormatMapService,
+			IncreaseCommentFormatTypesPriority(_classificationRegistry, _classificationFormatMapService,
 												_codeColoringClassificationTypes[PXCodeType.BqlParameter]);
 		}
 
@@ -142,7 +142,7 @@ namespace Acuminator.Vsix.Coloriser
 			};
 		}
 
-		private static void IncreaseCommentFormatTypesPrioirity(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
+		private static void IncreaseCommentFormatTypesPriority(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
 															   IClassificationType highestPriorityType)
 		{
 			bool lockTaken = false;
