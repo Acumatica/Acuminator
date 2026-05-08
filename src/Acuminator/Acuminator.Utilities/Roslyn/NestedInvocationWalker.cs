@@ -53,6 +53,8 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
 
+		private readonly SymbolInfoCache _symbolsCache;
+
         /// <summary>
         /// Cancellation token
         /// </summary>
@@ -87,6 +89,8 @@ namespace Acuminator.Utilities.Roslyn
 
 			//Use lazy to avoid calling virtual methods inside the constructor
 			_typesToBypass = new Lazy<HashSet<INamedTypeSymbol>>(valueFactory: GetTypesToBypass, isThreadSafe: false);
+
+			_symbolsCache = new SymbolInfoCache();
 		}
 
 		/// <summary>
@@ -119,20 +123,22 @@ namespace Acuminator.Utilities.Roslyn
 		protected virtual T? GetSymbol<T>(ExpressionSyntax node)
 			where T : class, ISymbol
 		{
-			var semanticModel = GetSemanticModel(node.SyntaxTree);
-
-			if (semanticModel != null)
+			SymbolInfo? cached = _symbolsCache.GetOrCreate(node, () =>
 			{
-				var symbolInfo = semanticModel.GetSymbolInfo(node, CancellationToken);
+				SemanticModel? semanticModel = GetSemanticModel(node.SyntaxTree);
+				return semanticModel?.GetSymbolInfo(node, CancellationToken);
+			});
 
-				if (symbolInfo.Symbol is T symbol)
+			if (cached is not null)
+			{
+				if (cached.Value.Symbol is T symbol)
 				{
 					return symbol;
 				}
 
-				if (!symbolInfo.CandidateSymbols.IsEmpty)
+				if (!cached.Value.CandidateSymbols.IsEmpty)
 				{
-					return symbolInfo.CandidateSymbols.OfType<T>().FirstOrDefault();
+					return cached.Value.CandidateSymbols.OfType<T>().FirstOrDefault();
 				}
 			}
 
@@ -204,8 +210,16 @@ namespace Acuminator.Utilities.Roslyn
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
-			VisitPropertyOrIndexerAccessExpression(node);
-			base.VisitMemberAccessExpression(node);
+			if (node.Parent is InvocationExpressionSyntax invocation && invocation.Expression == node)
+			{
+				// we already visit this node by VisitInvocationExpression, so we just skip it here
+				base.VisitMemberAccessExpression(node);
+			}
+			else
+			{
+				VisitPropertyOrIndexerAccessExpression(node);
+				base.VisitMemberAccessExpression(node);
+			}
 		}
 
 		public override void VisitElementAccessExpression(ElementAccessExpressionSyntax node)
