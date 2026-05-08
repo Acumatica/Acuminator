@@ -48,9 +48,9 @@ namespace Acuminator.Vsix.Coloriser
 			// No need for synchronization because FromCurrentSynchronizationContext creates schedulers which wrap around the same synchronization context
 			// Therefore all schedulers should be identical and nothing wrong will happen if different thread will create multiple instance of the scheduler in a race condition
 			_vsTaskScheduler = _vsTaskScheduler ?? TaskScheduler.FromCurrentSynchronizationContext();
-			backgroundTagging.TaggingTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(tagger, backgroundTagging.CancellationToken),  //continuation should be on the UI thread
+			backgroundTagging.TaggingTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(task, tagger, backgroundTagging.CancellationToken),  //continuation should be on the UI thread
 																	 backgroundTagging.CancellationToken,
-																	 TaskContinuationOptions.OnlyOnRanToCompletion,
+																	 TaskContinuationOptions.NotOnCanceled,
 																	 _vsTaskScheduler);
 			return backgroundTagging;
 		}
@@ -76,10 +76,19 @@ namespace Acuminator.Vsix.Coloriser
 			_cancellationTokenSource.Dispose();
 		}
 
-		private static Task AfterTaggingActionAsync(PXColorizerTaggerBase tagger, CancellationToken cancellationToken)
+		private static Task AfterTaggingActionAsync(Task taggingTask, PXColorizerTaggerBase tagger, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			if (taggingTask.IsCanceled || cancellationToken.IsCancellationRequested)
+			{
+				tagger.LastTaggingWasSuccessful = false;
 				return Task.FromCanceled(cancellationToken);
+			}
+			
+			if (taggingTask.IsFaulted)
+			{
+				tagger.LastTaggingWasSuccessful = false;
+				return Task.FromException(taggingTask.Exception!);
+			}
 
 			// We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed         
 			return Shell.ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task;
