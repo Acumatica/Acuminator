@@ -28,7 +28,7 @@ namespace Acuminator.Vsix.Coloriser
 {
 	public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
 	{
-		protected class PXColoriserSyntaxWalker : CSharpSyntaxWalker
+		protected class PXColorizerSyntaxWalker : CSharpSyntaxWalker
 		{
 			private const string VarKeyword = "var";
 
@@ -43,7 +43,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			private bool IsInsideBqlCommand => _bqlDeepnessLevel > 0;
 
-			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
+			public PXColorizerSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
 									  base(SyntaxWalkerDepth.Node)
 			{
 				_tagger = tagger.CheckIfNull();
