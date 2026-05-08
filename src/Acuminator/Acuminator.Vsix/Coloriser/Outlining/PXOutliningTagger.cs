@@ -25,6 +25,12 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected PXColorizerTaggerBase? ColorizerTagger { get; private set; }
 
+		internal override bool LastTaggingWasSuccessful 
+		{
+			get => ColorizerTagger?.LastTaggingWasSuccessful ?? false;
+			set { }
+		}
+
 		public PXOutliningTagger(ITextBuffer buffer, PXOutliningTaggerProvider aProvider,
 								 bool subscribeToSettingsChanges, bool useCacheChecking) :
 							base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)

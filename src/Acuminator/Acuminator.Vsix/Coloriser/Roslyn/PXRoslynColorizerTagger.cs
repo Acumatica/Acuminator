@@ -27,6 +27,8 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => _outliningTagsCache;
 
+		internal override bool LastTaggingWasSuccessful { get; set; }
+
 		internal PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges,
 										 bool useCacheChecking) :
 									base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
@@ -103,7 +105,10 @@ namespace Acuminator.Vsix.Coloriser
 #pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
 
 			if (document != null)
+			{
 				WalkDocumentSyntaxTreeForTags(document, CancellationToken.None);
+				LastTaggingWasSuccessful = ClassificationTagsCache.IsCompleted;
+			}
 			//documentCache = document;
 			//isParsed = true;
 
@@ -131,13 +136,14 @@ namespace Acuminator.Vsix.Coloriser
 			if (document == null || cToken.IsCancellationRequested)
 				return ClassificationTagsCache.ProcessedTags;
 
-			await WalkDocumentSyntaxTreeForTagsAsync(document, cToken).TryAwait();
+			bool completedSuccessfully = await WalkDocumentSyntaxTreeForTagsAsync(document, cToken).TryAwait();
+			LastTaggingWasSuccessful = completedSuccessfully && ClassificationTagsCache.IsCompleted;
 			return ClassificationTagsCache.ProcessedTags;
 		}
 
 		private void WalkDocumentSyntaxTreeForTags(ParsedDocument document, CancellationToken cancellationToken)
 		{
-			var syntaxWalker = new PXColoriserSyntaxWalker(this, document, cancellationToken);
+			var syntaxWalker = new PXColorizerSyntaxWalker(this, document, cancellationToken);
 
 			syntaxWalker.Visit(document.SyntaxRoot);
 			ClassificationTagsCache.CompleteProcessing();

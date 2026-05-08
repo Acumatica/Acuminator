@@ -55,6 +55,8 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected bool SubscribedToSettingsChanges { get; private set; }
 
+		internal abstract bool LastTaggingWasSuccessful { get; set; }
+
 		protected PXTaggerProviderBase ProviderBase { get; }
 
 		/// <summary>
@@ -85,6 +87,7 @@ namespace Acuminator.Vsix.Coloriser
 		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
 		{
 			ColoringSettingsChanged = true;
+			LastTaggingWasSuccessful = false;
 			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
 		}
 
@@ -104,11 +107,12 @@ namespace Acuminator.Vsix.Coloriser
 		protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
 		{
 			ColoringSettingsChanged = false;
+			LastTaggingWasSuccessful = false;
 			Snapshot = newCache;
 		}
 
 		protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
-			CacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;
+			CacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged && LastTaggingWasSuccessful;
 
 		public virtual void Dispose()
 		{

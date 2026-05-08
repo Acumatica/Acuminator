@@ -32,6 +32,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => _outliningTagsCache;
 
+		internal override bool LastTaggingWasSuccessful { get; set; }
 
 		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> _tagsBag = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 
@@ -48,17 +49,33 @@ namespace Acuminator.Vsix.Coloriser
 										.TryAwait();
 
 			if (!taggingInfo.IsSuccess)
+			{
+				LastTaggingWasSuccessful = false;
 				return [];
+			}
 
 			return taggingInfo.Result ?? [];
 		}
 
 		protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
 		{
-			GetTagsFromSnapshot(snapshot);
+			bool success;
+
+			try
+			{
+				GetTagsFromSnapshot(snapshot);
+				success = true;
+			}
+			catch (Exception)
+			{
+				success = false;
+			}
+			
 			_classificationTagsCache.AddTags(_tagsBag);
 			ClassificationTagsCache.CompleteProcessing();
 			OutliningsTagsCache.CompleteProcessing();
+			LastTaggingWasSuccessful = success && ClassificationTagsCache.IsCompleted;
+
 			return ClassificationTagsCache;
 		}
 

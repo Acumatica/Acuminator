@@ -27,7 +27,8 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected internal override bool UseAsyncTagging
 		{
-			get {
+			get 
+			{
 				TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 				return _taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
 					? tagger.UseAsyncTagging
@@ -37,7 +38,8 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache
 		{
-			get {
+			get 
+			{
 				TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 				return _taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
 					? tagger.ClassificationTagsCache
@@ -47,11 +49,36 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache
 		{
-			get {
+			get 
+			{
 				TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 				return _taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
 					? tagger.OutliningsTagsCache
 					: throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
+			}
+		}
+
+		internal override bool LastTaggingWasSuccessful 
+		{
+			get 
+			{
+				TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
+				return _taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
+					? tagger.LastTaggingWasSuccessful
+					: throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
+			}
+			set 
+			{
+				TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
+
+				if (_taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger))
+				{
+					tagger.LastTaggingWasSuccessful = value;
+				}
+				else
+				{
+					throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
+				}
 			}
 		}
 
