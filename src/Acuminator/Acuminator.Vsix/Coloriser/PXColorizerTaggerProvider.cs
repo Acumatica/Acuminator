@@ -77,9 +77,9 @@ namespace Acuminator.Vsix.Coloriser
 
 			Initialize(textBuffer);
 
-			var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXColorizerTaggerBase), () =>
+			var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXRoslynColorizerTagger), () =>
 			{
-				return new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true, useCacheChecking: true);
+				return new PXRoslynColorizerTagger(textBuffer, this, subscribeToSettingsChanges: true, useCacheChecking: true);
 			});
 
 			return tagger as ITagger<T>;
@@ -104,17 +104,17 @@ namespace Acuminator.Vsix.Coloriser
 
 			_codeColoringClassificationTypes = new Dictionary<PXCodeType, IClassificationType>
 			{
-				[PXCodeType.Dac] = _classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
+				[PXCodeType.Dac] 		  = _classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
 				[PXCodeType.DacExtension] = _classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
-				[PXCodeType.DacField] = _classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
+				[PXCodeType.DacField] 	  = _classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
 				[PXCodeType.BqlParameter] = _classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
-				[PXCodeType.BqlOperator] = bqlClassificationType,
-				[PXCodeType.BqlCommand] = bqlClassificationType,
+				[PXCodeType.BqlOperator]  = bqlClassificationType,
+				[PXCodeType.BqlCommand]   = bqlClassificationType,
 
 				[PXCodeType.BQLConstantPrefix] = _classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat),
 				[PXCodeType.BQLConstantEnding] = _classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat),
 
-				[PXCodeType.PXGraph] = _classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
+				[PXCodeType.PXGraph]  = _classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
 				[PXCodeType.PXAction] = _classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
 			};
 
@@ -132,7 +132,7 @@ namespace Acuminator.Vsix.Coloriser
 				[7] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_8_Format),
 				[8] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_9_Format),
 
-				[9] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_10_Format),
+				[9]  = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_10_Format),
 				[10] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_11_Format),
 				[11] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_12_Format),
 

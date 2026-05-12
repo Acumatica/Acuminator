@@ -14,11 +14,9 @@ using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 
@@ -26,7 +24,7 @@ using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
+	internal partial class PXRoslynColorizerTagger : PXTaggerBase
 	{
 		protected class PXColorizerSyntaxWalker : CSharpSyntaxWalker
 		{

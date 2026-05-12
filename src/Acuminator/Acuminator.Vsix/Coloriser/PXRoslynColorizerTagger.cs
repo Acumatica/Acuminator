@@ -6,45 +6,97 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	/// <content>
-	/// A colorizer tagger base class.
-	/// </content>
-	public abstract class PXColorizerTaggerBase : PXTaggerBase, ITagger<IClassificationTag>, IDisposable
+
+	/// <summary>
+	/// A Roslyn-based colorizer tagger.
+	/// </summary>
+	internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassificationTag>, IDisposable
 	{
-		public BackgroundTagging? BackgroundTagging { get; protected set; }
+		protected internal TagsCacheAsync<IClassificationTag> ClassificationTagsCache { get; }
 
-		protected internal abstract ITagsCache<IClassificationTag> ClassificationTagsCache { get; }
+		protected internal TagsCacheAsync<IOutliningRegionTag> OutliningsTagsCache { get; }
 
-		protected internal abstract ITagsCache<IOutliningRegionTag> OutliningsTagsCache { get; }
+		public BackgroundTagging? BackgroundTagging { get; private set; }
 
-		protected internal abstract bool UseAsyncTagging { get; }
-
-		protected PXColorizerTaggerProvider Provider => (ProviderBase as PXColorizerTaggerProvider)!;
+		protected PXColorizerTaggerProvider Provider { get; }
 
 		private bool _hasReferenceToAcumaticaPlatform;
 
 		public sealed override bool HasReferenceToAcumaticaPlatform => _hasReferenceToAcumaticaPlatform;
 
-		protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges,
+		internal override bool LastTaggingWasSuccessful { get; set; }
+
+		public PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider provider, bool subscribeToSettingsChanges,
 										bool useCacheChecking) :
-								   base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
+								  base(buffer, subscribeToSettingsChanges, useCacheChecking)
 		{
+			Provider = provider.CheckIfNull();
+
+			ClassificationTagsCache = new TagsCacheAsync<IClassificationTag>();
+			OutliningsTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
+
 			if (RoslynWorkspace != null)
 			{
 				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(projectId: null);
 				RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
 			}
+
+			//Buffer.Changed += Buffer_Changed;
 		}
+
+		#region Commented Parsing optimizations
+		//private bool isParsed;
+		//private ParsedDocument documentCache;
+		//private volatile static int walking;
+
+		//private async void Buffer_Changed(object sender, TextContentChangedEventArgs e)
+		//{
+		//    if (TagsChangedIsNull() || Buffer.CurrentSnapshot == null || e.Changes.IsNullOrEmpty())
+		//        return;
+
+		//    if (e.After != Buffer.CurrentSnapshot)
+		//        return;
+
+		//    try
+		//    {
+		//        // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event).               
+		//        int min = Int32.MaxValue, max = Int32.MinValue;
+
+		//        foreach (var change in e.Changes)
+		//        {
+		//            min = Math.Min(min, change.NewPosition);
+		//            max = Math.Max(max, change.NewPosition + change.NewLength);
+		//        }
+
+		//        TextSpan span = new TextSpan(min, max); 
+		//        var parsedDoc = await ParsedDocument.Resolve(Buffer, Buffer.CurrentSnapshot).ConfigureAwait(false);
+
+		//        documentCache = parsedDoc;
+
+		//        if (System.Threading.Interlocked.CompareExchange(ref walking, 1, comparand: 0) == 0)
+		//        {
+		//            WalkDocumentSyntaxTreeForTags(parsedDoc);
+		//            RaiseTagsChanged();
+		//            walking = 0;
+		//        }
+		//    }
+		//    catch
+		//    {
+
+		//    }
+		//}
+		#endregion
 
 		protected internal override void ResetCacheAndFlags(ITextSnapshot? newSnapshotToCache)
 		{
@@ -53,6 +105,13 @@ namespace Acuminator.Vsix.Coloriser
 			OutliningsTagsCache.Reset();
 		}
 
+		/// <summary>
+		/// Gets the tags asynchronously from the specified snapshot with Roslyn.
+		/// </summary>
+		/// <param name="spans">The spans for tagging. The current implementation doesn't take them into account and re-tags the entire document.</param>
+		/// <returns>
+		/// The current snapshot of the collected tags.
+		/// </returns>
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
 			if ((spans?.Count is null or 0) || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
@@ -65,45 +124,57 @@ namespace Acuminator.Vsix.Coloriser
 				return ClassificationTagsCache.ProcessedTags;
 			}
 
-			if (UseAsyncTagging)
-			{
-				return GetTagsAsync(newSnapshotToTag);
-			}
-			else
-			{
-				ResetCacheAndFlags(newSnapshotToTag);
-				return GetTagsSynchronousImplementation(newSnapshotToTag);
-			}
-		}
-
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods - this method is async by its nature.
-		/// <summary>
-		/// Gets the tags asynchronous in this collection.
-		/// </summary>
-		/// <param name="snapshot">The snapshot.</param>
-		/// <returns>
-		/// An enumerator that allows foreach to be used to process the tags asynchronous in this collection.
-		/// </returns>
-		protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
-
-		{
 			if (BackgroundTagging != null)
 			{
 				BackgroundTagging.CancelTagging();   //Cancel currently running task
 				BackgroundTagging = null;
 			}
 
-			ResetCacheAndFlags(snapshot);
+			ResetCacheAndFlags(newSnapshotToTag);
 			BackgroundTagging = BackgroundTagging.StartBackgroundTagging(this);
 
 			return ClassificationTagsCache.ProcessedTags;
 		}
-#pragma warning restore VSTHRD200
 
-		protected internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
+		protected internal async Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementationAsync(ITextSnapshot snapshot,
+																												 CancellationToken cToken)
+		{
+			ClassificationTagsCache.SetCancellation(cToken);
+			OutliningsTagsCache.SetCancellation(cToken);
 
-		protected internal abstract Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementationAsync(ITextSnapshot snapshot,
-																													CancellationToken cancellationToken);
+			Task<ParsedDocument?> getDocumentTask = ParsedDocument.ResolveAsync(snapshot, cToken);
+
+			if (cToken.IsCancellationRequested)              // Razor cshtml returns a null document for some reason.
+				return ClassificationTagsCache.ProcessedTags;
+
+			var documentTaskResult = await getDocumentTask.TryAwait();
+
+			if (!documentTaskResult.IsSuccess)
+				return ClassificationTagsCache.ProcessedTags;
+
+			ParsedDocument? document = documentTaskResult.Result;
+
+			if (document == null || cToken.IsCancellationRequested)
+				return ClassificationTagsCache.ProcessedTags;
+
+			bool completedSuccessfully = await WalkDocumentSyntaxTreeForTagsOnThreadpoolAsync(document, cToken).TryAwait();
+			LastTaggingWasSuccessful = completedSuccessfully && ClassificationTagsCache.IsCompleted;
+			return ClassificationTagsCache.ProcessedTags;
+		}
+
+		private Task WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(ParsedDocument document, CancellationToken cancellationToken)
+		{
+			return Task.Run(() => WalkDocumentSyntaxTreeForTags(document, cancellationToken));
+		}
+
+		private void WalkDocumentSyntaxTreeForTags(ParsedDocument document, CancellationToken cancellationToken)
+		{
+			var syntaxWalker = new PXColorizerSyntaxWalker(this, document, cancellationToken);
+
+			syntaxWalker.Visit(document.SyntaxRoot);
+			ClassificationTagsCache.CompleteProcessing();
+			OutliningsTagsCache.CompleteProcessing();
+		}
 
 		public override void Dispose()
 		{

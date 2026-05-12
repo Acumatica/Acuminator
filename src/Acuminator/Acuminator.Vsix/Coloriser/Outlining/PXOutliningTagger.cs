@@ -11,13 +11,13 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
+	internal class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
 	{
 		private int _isSubscribed = NOT_SUBSCRIBED;
 		private const int NOT_SUBSCRIBED = 0;
 		private const int SUBSCRIBED = 1;
 
-		protected PXColorizerTaggerBase? ColorizerTagger { get; private set; }
+		protected PXRoslynColorizerTagger? ColorizerTagger { get; private set; }
 
 		internal override bool LastTaggingWasSuccessful 
 		{
@@ -40,7 +40,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			if (ColorizerTagger == null)
 			{
-				if (!TryGetColorizingTaggerFromBuffer(Buffer, out PXColorizerTaggerBase colorizingTagger) || colorizingTagger == null)
+				if (!TryGetColorizingTaggerFromBuffer(Buffer, out PXRoslynColorizerTagger colorizingTagger) || colorizingTagger == null)
 					return [];
 
 				SubscribeToColorizingTaggerEvents(colorizingTagger);
@@ -53,12 +53,12 @@ namespace Acuminator.Vsix.Coloriser
 			return ColorizerTagger.OutliningsTagsCache.ProcessedTags;
 		}
 
-		private static bool TryGetColorizingTaggerFromBuffer(ITextBuffer textBuffer, out PXColorizerTaggerBase colorizingTagger)
+		private static bool TryGetColorizingTaggerFromBuffer(ITextBuffer textBuffer, out PXRoslynColorizerTagger colorizingTagger)
 		{
-			return textBuffer.Properties.TryGetProperty(typeof(PXColorizerTaggerBase), out colorizingTagger);
+			return textBuffer.Properties.TryGetProperty(typeof(PXRoslynColorizerTagger), out colorizingTagger);
 		}
 
-		private void SubscribeToColorizingTaggerEvents(PXColorizerTaggerBase colorizerTagger)
+		private void SubscribeToColorizingTaggerEvents(PXRoslynColorizerTagger colorizerTagger)
 		{
 			if (Interlocked.Exchange(ref _isSubscribed, SUBSCRIBED) == NOT_SUBSCRIBED)
 			{

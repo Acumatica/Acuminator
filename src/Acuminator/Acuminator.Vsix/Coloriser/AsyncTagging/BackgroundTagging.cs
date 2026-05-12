@@ -1,7 +1,5 @@
 ﻿#nullable enable
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,10 +11,9 @@ using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public class BackgroundTagging : IDisposable
+	internal class BackgroundTagging : IDisposable
 	{
-		private static TaskScheduler? _vsTaskScheduler;
-
+		private static TaskScheduler? _vsTaskScheduler; 
 		private CancellationTokenSource _cancellationTokenSource = new();
 
 		public CancellationToken CancellationToken => _cancellationTokenSource.Token;
@@ -27,10 +24,9 @@ namespace Acuminator.Vsix.Coloriser
 
 		private BackgroundTagging()
 		{
-
 		}
 
-		public static BackgroundTagging StartBackgroundTagging(PXColorizerTaggerBase tagger)
+		public static BackgroundTagging StartBackgroundTagging(PXRoslynColorizerTagger tagger)
 		{
 			tagger.ThrowOnNull();
 
@@ -76,7 +72,7 @@ namespace Acuminator.Vsix.Coloriser
 			_cancellationTokenSource.Dispose();
 		}
 
-		private static Task AfterTaggingActionAsync(Task taggingTask, PXColorizerTaggerBase tagger, CancellationToken cancellationToken)
+		private static Task AfterTaggingActionAsync(Task taggingTask, PXRoslynColorizerTagger tagger, CancellationToken cancellationToken)
 		{
 			if (taggingTask.IsCanceled || cancellationToken.IsCancellationRequested)
 			{
