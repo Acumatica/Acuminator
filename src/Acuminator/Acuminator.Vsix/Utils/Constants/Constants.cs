@@ -55,7 +55,7 @@ namespace Acuminator.Vsix.Utilities
 		/// </summary>
 		public static class BannedApi
 		{
-			public const string BannnedApiFolder = "Acumatica Banned API";
+			public const string BannedApiFolder = "Acumatica Banned API";
 		}
 
 		/// <summary>

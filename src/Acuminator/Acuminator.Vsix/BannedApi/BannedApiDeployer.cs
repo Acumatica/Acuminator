@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.BannedApi
 				return null;
 			try
 			{
-				string bannedApiFolder = Path.Combine(myDocumentsStorage.AcuminatorFolder, Constants.BannedApi.BannnedApiFolder);
+				string bannedApiFolder = Path.Combine(myDocumentsStorage.AcuminatorFolder, Constants.BannedApi.BannedApiFolder);
 				return new BannedApiDeployer(myDocumentsStorage, bannedApiFolder);
 			}
 			catch (Exception e)
