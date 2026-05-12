@@ -65,16 +65,29 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			ColoringSettingsChanged = true;
 			LastTaggingWasSuccessful = false;
-			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
+			RaiseTagsChanged();
 		}
 
-		internal async virtual Task RaiseTagsChangedAsync()
+		internal async Task RaiseTagsChangedAsync()
 		{
 			if (!Shell.ThreadHelper.CheckAccess())
 			{
 				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
+			RaiseTagsChangedImpl();
+		}
+
+		internal void RaiseTagsChanged()
+		{
+			if (!Shell.ThreadHelper.CheckAccess())
+				return;
+
+			RaiseTagsChangedImpl();
+		}
+
+		private void RaiseTagsChangedImpl()
+		{
 			TagsChanged?.Invoke(this,
 			  new SnapshotSpanEventArgs(
 				  new SnapshotSpan(Buffer.CurrentSnapshot,

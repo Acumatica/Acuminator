@@ -90,7 +90,7 @@ namespace Acuminator.Vsix.Coloriser
 				return Task.FromException(taggingTask.Exception!);
 			}
 
-			// We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed         
+			// We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed
 			return Shell.ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task;
 		}
 	}

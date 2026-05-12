@@ -9,8 +9,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 
-using Shell = Microsoft.VisualStudio.Shell;
-
 namespace Acuminator.Vsix.Coloriser
 {
 	public class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
@@ -86,7 +84,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		private void OnColorizingTaggerTagsChanged(object sender, SnapshotSpanEventArgs e)
 		{
-			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
+			RaiseTagsChanged();
 		}
 
 		public override void Dispose()
