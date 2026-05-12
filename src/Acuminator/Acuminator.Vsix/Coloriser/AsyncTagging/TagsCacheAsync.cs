@@ -6,14 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public class TagsCacheAsync<TTag> : ITagsCache<TTag>
+	public class TagsCacheAsync<TTag> : IReadOnlyCollection<ITagSpan<TTag>>
 	where TTag : ITag
 	{
 		protected CancellationToken CancellationToken { get; set; }
@@ -75,8 +74,8 @@ namespace Acuminator.Vsix.Coloriser
 			}
 		}
 
-		public IEnumerator<ITagSpan<TTag>> GetEnumerator() => ProcessedTags.GetEnumerator();
-
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public IEnumerator<ITagSpan<TTag>> GetEnumerator() => ProcessedTags.GetEnumerator();	
 	}
 }
