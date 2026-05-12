@@ -164,7 +164,10 @@ namespace Acuminator.Vsix.Coloriser
 
 		private Task WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(ParsedDocument document, CancellationToken cancellationToken)
 		{
-			return Task.Run(() => WalkDocumentSyntaxTreeForTags(document, cancellationToken));
+			return Task.Factory.StartNew(() => WalkDocumentSyntaxTreeForTags(document, cancellationToken), 
+										 cancellationToken, 
+										 TaskCreationOptions.LongRunning, 
+										 TaskScheduler.Default);
 		}
 
 		private void WalkDocumentSyntaxTreeForTags(ParsedDocument document, CancellationToken cancellationToken)
