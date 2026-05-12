@@ -78,11 +78,11 @@ namespace Acuminator.Vsix.Coloriser
 					  new Span(0, Buffer.CurrentSnapshot.Length))));
 		}
 
-		protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
+		protected internal virtual void ResetCacheAndFlags(ITextSnapshot newSnapshotToCache)
 		{
 			ColoringSettingsChanged = false;
 			LastTaggingWasSuccessful = false;
-			Snapshot = newCache;
+			Snapshot = newSnapshotToCache;
 		}
 
 		protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>

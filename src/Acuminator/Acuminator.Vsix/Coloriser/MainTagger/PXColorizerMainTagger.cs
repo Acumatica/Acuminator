@@ -134,10 +134,10 @@ namespace Acuminator.Vsix.Coloriser
 			base.Dispose();
 		}
 
-		protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
+		protected internal override void ResetCacheAndFlags(ITextSnapshot newSnapshotToCache)
 		{
-			base.ResetCacheAndFlags(newCache);
-			_taggersByType.Values.ForEach(tagger => tagger.ResetCacheAndFlags(newCache));
+			base.ResetCacheAndFlags(newSnapshotToCache);
+			_taggersByType.Values.ForEach(tagger => tagger.ResetCacheAndFlags(newSnapshotToCache));
 		}
 
 		protected TaggerType GetCurrentTaggerTypeFromSettings()

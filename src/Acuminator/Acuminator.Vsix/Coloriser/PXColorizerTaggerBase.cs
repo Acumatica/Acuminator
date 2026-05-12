@@ -35,9 +35,9 @@ namespace Acuminator.Vsix.Coloriser
 		{
 		}
 
-		protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
+		protected internal override void ResetCacheAndFlags(ITextSnapshot newSnapshotToCache)
 		{
-			base.ResetCacheAndFlags(newCache);
+			base.ResetCacheAndFlags(newSnapshotToCache);
 			ClassificationTagsCache.Reset();
 			OutliningsTagsCache.Reset();
 		}
