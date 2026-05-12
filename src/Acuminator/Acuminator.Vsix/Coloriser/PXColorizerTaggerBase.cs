@@ -41,7 +41,7 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			if (RoslynWorkspace != null)
 			{
-				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(ProviderBase.Workspace, Buffer.CurrentSnapshot);
+				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(projectId: null);
 				RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
 			}
 		}
@@ -121,48 +121,94 @@ namespace Acuminator.Vsix.Coloriser
 
 		private void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
+			bool oldValue = _hasReferenceToAcumaticaPlatform;
+
 			switch (e.Kind)
 			{
 				case WorkspaceChangeKind.SolutionRemoved:
 				case WorkspaceChangeKind.SolutionCleared:
 					_hasReferenceToAcumaticaPlatform = false;
 					break;
-				case WorkspaceChangeKind.SolutionChanged:
+
 				case WorkspaceChangeKind.SolutionAdded:
-				case WorkspaceChangeKind.SolutionReloaded:
 				case WorkspaceChangeKind.ProjectAdded:
+					_hasReferenceToAcumaticaPlatform |= CheckIfCurrentSolutionHasReferenceToAcumatica(e.ProjectId);
+					break;
+
+				case WorkspaceChangeKind.SolutionChanged:
+				case WorkspaceChangeKind.SolutionReloaded:
 				case WorkspaceChangeKind.ProjectRemoved:
+					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.ProjectId);
+					break;
+
 				case WorkspaceChangeKind.ProjectChanged:
 				case WorkspaceChangeKind.ProjectReloaded:
-					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(ProviderBase.Workspace, Snapshot);
+					if (e.IsProjectMetadataChanged())
+					{
+						_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.ProjectId);
+					}
+
 					break;
+
+				default:
+					return;
+			}
+
+			if (Buffer.CurrentSnapshot != null && (oldValue != _hasReferenceToAcumaticaPlatform || !LastTaggingWasSuccessful))
+			{
+				ResetCacheAndFlags(newSnapshotToCache: null);
+				RaiseTagsChanged();
 			}
 		}
 
-		protected static bool CheckIfCurrentSolutionHasReferenceToAcumatica(Workspace? workspace, ITextSnapshot? textSnapshot)
+		protected bool CheckIfCurrentSolutionHasReferenceToAcumatica(ProjectId? projectId)
 		{
-			var currentSolution = workspace?.CurrentSolution;
+			var currentSolution = RoslynWorkspace?.CurrentSolution;
 
 			if (currentSolution == null || currentSolution.ProjectIds.Count == 0)
 				return false;
 
-			var roslynDocument = textSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+			var roslynDocument = Buffer.CurrentSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+			var currentProject = roslynDocument?.Project;
+			bool allProjectsChanged = projectId == null;
 
-			if (roslynDocument?.Project != null && CanCreateGraphFastCheck(roslynDocument.Project) is bool canCreateGraph)
-				return canCreateGraph;
+			if (allProjectsChanged)
+			{
+				bool hasAcumaticaProjectsInSolution =
+					currentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) || IsAcumaticaAssemblyName(project.AssemblyName));
 
-			bool hasAcumaticaProjectsInSolution =
-				currentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) || IsAcumaticaAssemblyName(project.AssemblyName));
+				if (hasAcumaticaProjectsInSolution)
+					return true;
 
-			if (hasAcumaticaProjectsInSolution)
-				return true;
+				bool hasReferenceInMetadata = (from project in currentSolution.Projects
+											   from reference in project.MetadataReferences
+											   select Path.GetFileNameWithoutExtension(reference.Display))
+											   .Any(reference => IsAcumaticaAssemblyName(reference));
+				return hasReferenceInMetadata;
+			}
+			else if (currentProject?.Id == projectId)  // Check that the changed project is the same as the project of the current document. If not, then return the old value.
+			{
+				if (CanCreateGraphFastCheck(currentProject!) is bool canCreateGraph)
+					return canCreateGraph;
 
-			bool hasMetadataRefs = (from project in currentSolution.Projects
-									from reference in project.MetadataReferences
-									select Path.GetFileNameWithoutExtension(reference.Display))
-								   .Any(reference => IsAcumaticaAssemblyName(reference));
+				bool hasReferenceInMetadata = currentProject!.MetadataReferences.Count > 0
+					? currentProject.MetadataReferences.Any(IsAcumaticaAssemblyName)
+					: false;
 
-			return hasMetadataRefs;
+				if (hasReferenceInMetadata)
+					return true;
+
+				bool isAcumaticaProject = IsAcumaticaAssemblyName(currentProject.Name) || IsAcumaticaAssemblyName(currentProject.AssemblyName);
+				return isAcumaticaProject;
+			}
+			else
+				return _hasReferenceToAcumaticaPlatform;
+		}
+
+		private static bool IsAcumaticaAssemblyName(MetadataReference reference)
+		{
+			string referenceName = Path.GetFileNameWithoutExtension(reference.Display);
+			return IsAcumaticaAssemblyName(referenceName);
 		}
 
 		private static bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName == dllName ||
