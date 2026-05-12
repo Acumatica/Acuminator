@@ -36,6 +36,8 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	internal override bool LastTaggingWasSuccessful { get; set; }
 
+	public Workspace? RoslynWorkspace { get; private set; }
+
 	public PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider provider, bool subscribeToSettingsChanges,
 									bool useCacheChecking) :
 							  base(buffer, subscribeToSettingsChanges, useCacheChecking)
@@ -44,6 +46,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 		ClassificationTagsCache = new TagsCacheAsync<IClassificationTag>();
 		OutliningsTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
+		RoslynWorkspace = Buffer.GetWorkspaceThatSupportsColoring();
 
 		if (RoslynWorkspace != null)
 		{
@@ -113,7 +116,23 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	/// </returns>
 	public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 	{
-		if ((spans?.Count is null or 0) || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
+		if (spans?.Count is null or 0 || AcuminatorVSPackage.Instance?.ColoringEnabled != true)
+			return [];
+
+		// If Roslyn workspace wasn't initialized yet, we need to try to initialize it.
+		if (RoslynWorkspace == null)
+		{
+			RoslynWorkspace = Buffer.GetWorkspaceThatSupportsColoring();
+
+			if (RoslynWorkspace == null)
+				return [];
+
+			// If initialization was successful, we need to subscribe to workspace events and calculate the hasReferenceToAcumaticaPlatform flag.
+			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(projectId: null);
+			RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
+		}
+
+		if (!HasReferenceToAcumaticaPlatform)
 			return [];
 
 		ITextSnapshot newSnapshotToTag = spans[0].Snapshot;

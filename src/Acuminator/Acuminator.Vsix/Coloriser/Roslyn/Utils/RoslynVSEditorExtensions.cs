@@ -4,6 +4,7 @@ using System;
 
 using Acuminator.Utilities.Common;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
@@ -13,7 +14,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public static class RoslynVSEditorExtensions
+	internal static class RoslynVSEditorExtensions
 	{
 		public static ITagSpan<IClassificationTag> ToClassificationTagSpan(this TextSpan span, ITextSnapshot snapshot, IClassificationType classificationType)
 		{
@@ -43,5 +44,18 @@ namespace Acuminator.Vsix.Coloriser
 
 
 		public static string GetText(this ITextSnapshot snapshot, TextSpan span) => snapshot.GetText(span.Start, span.Length);
+
+		public static Workspace? GetWorkspaceThatSupportsColoring(this ITextBuffer? buffer)
+		{
+			var workspace = buffer?.GetWorkspace();
+
+			if (workspace == null)
+				return null;
+
+			const string previewWorkspaceKind = "MiscellaneousFiles";
+			return previewWorkspaceKind.Equals(workspace.Kind, StringComparison.OrdinalIgnoreCase) 
+				? null 
+				: workspace;
+		}
 	}
 }
