@@ -19,6 +19,8 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+
 namespace Acuminator.Vsix.Coloriser
 {
 	[ContentType(Constants.CSharp.LegacyLanguageName)]
@@ -71,9 +73,12 @@ namespace Acuminator.Vsix.Coloriser
 		public virtual ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
 		where T : ITag
 		{
+			if (textView == null || textBuffer == null || textView.TextBuffer != textBuffer || !ThreadHelper.CheckAccess())
+				return null;
+
 			Initialize(textBuffer);
 
-			if (textView.TextBuffer != textBuffer || !HasReferenceToAcumaticaPlatform)
+			if (Workspace == null)
 				return null;
 
 			var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXColorizerTaggerBase), () =>

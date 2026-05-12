@@ -14,18 +14,14 @@ namespace Acuminator.Vsix.Coloriser
 {
 	public abstract class PXTaggerProviderBase
 	{
-		protected bool HasReferenceToAcumaticaPlatform { get; private set; }
-
 		public Workspace? Workspace { get; private set; }
 
 		/// <summary>
-		/// Initializes the base fields - <see cref="Workspace"/> and <see cref="HasReferenceToAcumaticaPlatform"/>.
+		/// Initializes the base <see cref="Workspace"/>.
 		/// </summary>
 		protected virtual void Initialize(ITextBuffer buffer)
 		{
 			Workspace = buffer?.GetWorkspace();
-			HasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica();
-		}
 
 		protected bool CheckIfCurrentSolutionHasReferenceToAcumatica()
 		{
