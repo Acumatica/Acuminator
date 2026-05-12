@@ -22,28 +22,6 @@ namespace Acuminator.Vsix.Coloriser
 		protected virtual void Initialize(ITextBuffer buffer)
 		{
 			Workspace = buffer?.GetWorkspace();
-
-		protected bool CheckIfCurrentSolutionHasReferenceToAcumatica()
-		{
-			if (Workspace?.CurrentSolution == null)
-				return false;
-
-			bool hasAcumaticaProjectsInSolution =
-				Workspace.CurrentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) ||
-																  IsAcumaticaAssemblyName(project.AssemblyName));
-			if (hasAcumaticaProjectsInSolution)
-				return true;
-
-			bool hasMetadataRefs = (from project in Workspace.CurrentSolution.Projects
-									from reference in project.MetadataReferences
-									select Path.GetFileNameWithoutExtension(reference.Display))
-								   .Any(reference => IsAcumaticaAssemblyName(reference));
-
-			return hasMetadataRefs;
-
-			//*********************************************************************************************************************************
-			static bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName == dllName ||
-																   ColoringConstants.AppDllName == dllName;
 		}
 	}
 }

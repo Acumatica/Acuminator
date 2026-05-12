@@ -1,15 +1,16 @@
 ﻿#nullable enable
-// <summary> The asynchronous tagging part of the PXColorizerTaggerBase class</summary>
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Roslyn.Constants;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
@@ -29,10 +30,19 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected PXColorizerTaggerProvider Provider => (ProviderBase as PXColorizerTaggerProvider)!;
 
+		private bool _hasReferenceToAcumaticaPlatform;
+
+		public sealed override bool HasReferenceToAcumaticaPlatform => _hasReferenceToAcumaticaPlatform;
+
 		protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges,
 										bool useCacheChecking) :
 								   base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
 		{
+			if (RoslynWorkspace != null)
+			{
+				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(ProviderBase.Workspace, Buffer.CurrentSnapshot);
+				RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
+			}
 		}
 
 		protected internal override void ResetCacheAndFlags(ITextSnapshot newSnapshotToCache)
@@ -42,9 +52,9 @@ namespace Acuminator.Vsix.Coloriser
 			OutliningsTagsCache.Reset();
 		}
 
-		public virtual IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
-			if (spans == null || spans.Count == 0 || AcuminatorVSPackage.Instance?.ColoringEnabled != true)
+			if ((spans?.Count is null or 0) || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
 				return Array.Empty<ITagSpan<IClassificationTag>>();
 
 			ITextSnapshot snapshot = spans[0].Snapshot;
@@ -100,7 +110,70 @@ namespace Acuminator.Vsix.Coloriser
 			ClassificationTagsCache?.Reset();
 			OutliningsTagsCache?.Reset();
 
+			if (RoslynWorkspace != null)
+			{
+				RoslynWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
+			}
+
 			base.Dispose();
+		}
+
+		private void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
+		{
+			switch (e.Kind)
+			{
+				case WorkspaceChangeKind.SolutionRemoved:
+				case WorkspaceChangeKind.SolutionCleared:
+					_hasReferenceToAcumaticaPlatform = false;
+					break;
+				case WorkspaceChangeKind.SolutionChanged:
+				case WorkspaceChangeKind.SolutionAdded:
+				case WorkspaceChangeKind.SolutionReloaded:
+				case WorkspaceChangeKind.ProjectAdded:
+				case WorkspaceChangeKind.ProjectRemoved:
+				case WorkspaceChangeKind.ProjectChanged:
+				case WorkspaceChangeKind.ProjectReloaded:
+					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(ProviderBase.Workspace, Snapshot);
+					break;
+			}
+		}
+
+		protected static bool CheckIfCurrentSolutionHasReferenceToAcumatica(Workspace? workspace, ITextSnapshot? textSnapshot)
+		{
+			var currentSolution = workspace?.CurrentSolution;
+
+			if (currentSolution == null || currentSolution.ProjectIds.Count == 0)
+				return false;
+
+			var roslynDocument = textSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (roslynDocument?.Project != null && CanCreateGraphFastCheck(roslynDocument.Project) is bool canCreateGraph)
+				return canCreateGraph;
+
+			bool hasAcumaticaProjectsInSolution =
+				currentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) || IsAcumaticaAssemblyName(project.AssemblyName));
+
+			if (hasAcumaticaProjectsInSolution)
+				return true;
+
+			bool hasMetadataRefs = (from project in currentSolution.Projects
+									from reference in project.MetadataReferences
+									select Path.GetFileNameWithoutExtension(reference.Display))
+								   .Any(reference => IsAcumaticaAssemblyName(reference));
+
+			return hasMetadataRefs;
+		}
+
+		private static bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName == dllName ||
+																	   ColoringConstants.AppDllName == dllName;
+
+		private static bool? CanCreateGraphFastCheck(Project project)
+		{
+			if (!project.TryGetCompilation(out var compilation) || compilation == null)
+				return null;
+
+			var graphType = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph);
+			return graphType != null;
 		}
 	}
 }
