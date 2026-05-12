@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		/// <summary>
 		/// The type of the tagger.
-		/// </summary>      
+		/// </summary>
 		public abstract TaggerType TaggerType { get; }
 
 		protected bool CacheCheckingEnabled { get; }
@@ -94,15 +94,15 @@ namespace Acuminator.Vsix.Coloriser
 					  new Span(0, Buffer.CurrentSnapshot.Length))));
 		}
 
-		protected internal virtual void ResetCacheAndFlags(ITextSnapshot newSnapshotToCache)
+		protected internal virtual void ResetCacheAndFlags(ITextSnapshot? newSnapshotToCache)
 		{
 			ColoringSettingsChanged = false;
 			LastTaggingWasSuccessful = false;
 			Snapshot = newSnapshotToCache;
 		}
 
-		protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
-			CacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged && LastTaggingWasSuccessful;
+		protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot newSnapshotToTag) =>
+			CacheCheckingEnabled && Snapshot != null && Snapshot == newSnapshotToTag && !ColoringSettingsChanged && LastTaggingWasSuccessful;
 
 		public virtual void Dispose()
 		{

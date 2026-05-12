@@ -134,7 +134,7 @@ namespace Acuminator.Vsix.Coloriser
 			base.Dispose();
 		}
 
-		protected internal override void ResetCacheAndFlags(ITextSnapshot newSnapshotToCache)
+		protected internal override void ResetCacheAndFlags(ITextSnapshot? newSnapshotToCache)
 		{
 			base.ResetCacheAndFlags(newSnapshotToCache);
 			_taggersByType.Values.ForEach(tagger => tagger.ResetCacheAndFlags(newSnapshotToCache));

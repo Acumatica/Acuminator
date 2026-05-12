@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -45,7 +46,7 @@ namespace Acuminator.Vsix.Coloriser
 			}
 		}
 
-		protected internal override void ResetCacheAndFlags(ITextSnapshot newSnapshotToCache)
+		protected internal override void ResetCacheAndFlags(ITextSnapshot? newSnapshotToCache)
 		{
 			base.ResetCacheAndFlags(newSnapshotToCache);
 			ClassificationTagsCache.Reset();
@@ -55,23 +56,23 @@ namespace Acuminator.Vsix.Coloriser
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
 			if ((spans?.Count is null or 0) || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
-				return Array.Empty<ITagSpan<IClassificationTag>>();
+				return [];
 
-			ITextSnapshot snapshot = spans[0].Snapshot;
+			ITextSnapshot newSnapshotToTag = spans[0].Snapshot;
 
-			if (CheckIfRetaggingIsNotNecessary(snapshot))
+			if (CheckIfRetaggingIsNotNecessary(newSnapshotToTag))
 			{
 				return ClassificationTagsCache.ProcessedTags;
 			}
 
 			if (UseAsyncTagging)
 			{
-				return GetTagsAsync(snapshot);
+				return GetTagsAsync(newSnapshotToTag);
 			}
 			else
 			{
-				ResetCacheAndFlags(snapshot);
-				return GetTagsSynchronousImplementation(snapshot);
+				ResetCacheAndFlags(newSnapshotToTag);
+				return GetTagsSynchronousImplementation(newSnapshotToTag);
 			}
 		}
 
