@@ -504,9 +504,6 @@ namespace Acuminator.Vsix
 		#region Package Settings
 		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? AcuminatorConstants.Settings.Coloring.ColoringEnabledDefault;
 
-
-		public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? AcuminatorConstants.Settings.Coloring.UseRegexColoringDefault;
-
 		public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? AcuminatorConstants.Settings.Outlining.UseBqlOutliningDefault;
 
 		public bool UseBqlDetailedOutlining => 
