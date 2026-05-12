@@ -149,25 +149,6 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _useRegexColoring = Constants.Settings.Coloring.UseRegexColoringDefault;
-
-		[DefaultValue(Constants.Settings.Coloring.UseRegexColoringDefault)]
-		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
-		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
-		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
-		public bool UseRegexColoring
-		{
-			get => _useRegexColoring;
-			set
-			{
-				if (_useRegexColoring != value)
-				{
-					_useRegexColoring = value;
-					_colorSettingsChanged = true;
-				}
-			}
-		}
-
 		private bool _useBqlOutlining = Constants.Settings.Outlining.UseBqlOutliningDefault;
 
 		[DefaultValue(Constants.Settings.Outlining.UseBqlOutliningDefault)]
@@ -375,7 +356,6 @@ namespace Acuminator.Vsix
 			_useBqlDetailedOutlining = Constants.Settings.Outlining.UseBqlDetailedOutliningDefault;
 
 			_coloringEnabled 		 = Constants.Settings.Coloring.ColoringEnabledDefault;
-			_useRegexColoring		 = Constants.Settings.Coloring.UseRegexColoringDefault;
 			_pxActionColoringEnabled = Constants.Settings.Coloring.PXActionColoringEnabledDefault;
 			_pxGraphColoringEnabled  = Constants.Settings.Coloring.PXGraphColoringEnabledDefault;
 			_colorOnlyInsideBQL 	 = Constants.Settings.Coloring.ColorOnlyInsideBQLDefault;

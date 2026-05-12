@@ -33,7 +33,6 @@ namespace Acuminator.Vsix.Utilities
 				public const bool PXActionColoringEnabledDefault = true;
 				public const bool PXGraphColoringEnabledDefault  = true;
 				public const bool ColorOnlyInsideBQLDefault 	 = false;
-				public const bool UseRegexColoringDefault 		 = false;
 			}
 
 			public static class Outlining
