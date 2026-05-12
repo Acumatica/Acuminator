@@ -31,6 +31,8 @@ namespace Acuminator.Vsix.Coloriser
 			set { }
 		}
 
+		public override bool HasReferenceToAcumaticaPlatform => ColorizerTagger?.HasReferenceToAcumaticaPlatform ?? false;
+
 		public PXOutliningTagger(ITextBuffer buffer, PXOutliningTaggerProvider aProvider,
 								 bool subscribeToSettingsChanges, bool useCacheChecking) :
 							base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
@@ -49,6 +51,10 @@ namespace Acuminator.Vsix.Coloriser
 
 				SubscribeToColorizingTaggerEvents(colorizingTagger);
 			}
+
+			// Check reference to Acumatica platform only after initializing ColorizerTagger
+			if (!HasReferenceToAcumaticaPlatform)
+				return [];
 
 			switch (ColorizerTagger?.TaggerType)
 			{

@@ -1,5 +1,4 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,8 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Settings;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
 
 using Shell = Microsoft.VisualStudio.Shell;
 
@@ -31,7 +30,11 @@ namespace Acuminator.Vsix.Coloriser
 
 		internal abstract bool LastTaggingWasSuccessful { get; set; }
 
+		public abstract bool HasReferenceToAcumaticaPlatform { get; }
+
 		protected PXTaggerProviderBase ProviderBase { get; }
+
+		protected Workspace? RoslynWorkspace => ProviderBase.Workspace;
 
 		/// <summary>
 		/// The type of the tagger.
