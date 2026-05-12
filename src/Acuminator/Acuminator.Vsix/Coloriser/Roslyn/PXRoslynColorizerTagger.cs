@@ -17,8 +17,6 @@ namespace Acuminator.Vsix.Coloriser
 	{
 		protected internal override bool UseAsyncTagging => true;
 
-		public override TaggerType TaggerType => TaggerType.Roslyn;
-
 		private readonly TagsCacheAsync<IClassificationTag> _classificationTagsCache;
 
 		protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache => _classificationTagsCache;

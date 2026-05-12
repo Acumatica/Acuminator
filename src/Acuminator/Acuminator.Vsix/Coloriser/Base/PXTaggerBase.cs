@@ -32,11 +32,6 @@ namespace Acuminator.Vsix.Coloriser
 
 		public abstract bool HasReferenceToAcumaticaPlatform { get; }
 
-		/// <summary>
-		/// The type of the tagger.
-		/// </summary>
-		public abstract TaggerType TaggerType { get; }
-
 		protected bool CacheCheckingEnabled { get; }
 
 		protected PXTaggerBase(ITextBuffer buffer, bool subscribeToSettingsChanges, bool useCacheChecking)

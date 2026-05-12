@@ -1,7 +1,7 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -17,8 +17,6 @@ namespace Acuminator.Vsix.Coloriser
 		private const int NOT_SUBSCRIBED = 0;
 		private const int SUBSCRIBED = 1;
 
-		public override TaggerType TaggerType => TaggerType.Outlining;
-
 		protected PXColorizerTaggerBase? ColorizerTagger { get; private set; }
 
 		internal override bool LastTaggingWasSuccessful 
@@ -27,6 +25,7 @@ namespace Acuminator.Vsix.Coloriser
 			set { }
 		}
 
+		[MemberNotNullWhen(returnValue: true, nameof(ColorizerTagger))]
 		public override bool HasReferenceToAcumaticaPlatform => ColorizerTagger?.HasReferenceToAcumaticaPlatform ?? false;
 
 		public PXOutliningTagger(ITextBuffer buffer, bool subscribeToSettingsChanges, bool useCacheChecking) :
@@ -51,14 +50,6 @@ namespace Acuminator.Vsix.Coloriser
 			if (!HasReferenceToAcumaticaPlatform)
 				return [];
 
-			switch (ColorizerTagger?.TaggerType)
-			{
-				case TaggerType.General when AcuminatorVSPackage.Instance?.UseRegexColoring == true:
-				case TaggerType.RegEx:
-				case null:
-					return [];
-			}
-
 			return ColorizerTagger.OutliningsTagsCache.ProcessedTags;
 		}
 
@@ -69,9 +60,6 @@ namespace Acuminator.Vsix.Coloriser
 
 		private void SubscribeToColorizingTaggerEvents(PXColorizerTaggerBase colorizerTagger)
 		{
-			if (colorizerTagger.TaggerType == TaggerType.RegEx)
-				return;
-
 			if (Interlocked.Exchange(ref _isSubscribed, SUBSCRIBED) == NOT_SUBSCRIBED)
 			{
 				ColorizerTagger = colorizerTagger;
