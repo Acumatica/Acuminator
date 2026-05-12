@@ -1,5 +1,4 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -27,7 +26,7 @@ namespace Acuminator.Vsix.Coloriser
 	[TagType(typeof(IClassificationTag))]
 	[TextViewRole(PredefinedTextViewRoles.Document)]
 	[Export(typeof(IViewTaggerProvider))]
-	public class PXColorizerTaggerProvider : PXTaggerProviderBase, IViewTaggerProvider
+	public class PXColorizerTaggerProvider : IViewTaggerProvider
 	{
 		[Import]
 		internal IClassificationTypeRegistryService _classificationRegistry = null!; // Set via MEF
@@ -78,9 +77,6 @@ namespace Acuminator.Vsix.Coloriser
 
 			Initialize(textBuffer);
 
-			if (Workspace == null)
-				return null;
-
 			var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXColorizerTaggerBase), () =>
 			{
 				return new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true, useCacheChecking: true);
@@ -90,10 +86,8 @@ namespace Acuminator.Vsix.Coloriser
 		}
 
 		[MemberNotNull(nameof(_codeColoringClassificationTypes), nameof(_braceTypeByLevel))]
-		protected override void Initialize(ITextBuffer textBuffer)
+		protected void Initialize(ITextBuffer textBuffer)
 		{
-			base.Initialize(textBuffer);
-
 			if (AreClassificationsInitialized)
 				return;
 

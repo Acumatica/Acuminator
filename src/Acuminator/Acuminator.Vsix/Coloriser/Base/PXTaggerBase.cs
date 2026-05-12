@@ -32,10 +32,6 @@ namespace Acuminator.Vsix.Coloriser
 
 		public abstract bool HasReferenceToAcumaticaPlatform { get; }
 
-		protected PXTaggerProviderBase ProviderBase { get; }
-
-		protected Workspace? RoslynWorkspace => ProviderBase.Workspace;
-
 		/// <summary>
 		/// The type of the tagger.
 		/// </summary>
@@ -43,10 +39,9 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected bool CacheCheckingEnabled { get; }
 
-		protected PXTaggerBase(ITextBuffer buffer, PXTaggerProviderBase provider, bool subscribeToSettingsChanges, bool useCacheChecking)
+		protected PXTaggerBase(ITextBuffer buffer, bool subscribeToSettingsChanges, bool useCacheChecking)
 		{
 			Buffer = buffer.CheckIfNull();
-			ProviderBase = provider.CheckIfNull();
 			SubscribedToSettingsChanges = subscribeToSettingsChanges;
 			CacheCheckingEnabled = useCacheChecking;
 

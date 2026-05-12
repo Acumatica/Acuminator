@@ -19,8 +19,6 @@ namespace Acuminator.Vsix.Coloriser
 
 		public override TaggerType TaggerType => TaggerType.Outlining;
 
-		protected PXOutliningTaggerProvider Provider => (ProviderBase as PXOutliningTaggerProvider)!;
-
 		protected PXColorizerTaggerBase? ColorizerTagger { get; private set; }
 
 		internal override bool LastTaggingWasSuccessful 
@@ -31,9 +29,8 @@ namespace Acuminator.Vsix.Coloriser
 
 		public override bool HasReferenceToAcumaticaPlatform => ColorizerTagger?.HasReferenceToAcumaticaPlatform ?? false;
 
-		public PXOutliningTagger(ITextBuffer buffer, PXOutliningTaggerProvider aProvider,
-								 bool subscribeToSettingsChanges, bool useCacheChecking) :
-							base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
+		public PXOutliningTagger(ITextBuffer buffer, bool subscribeToSettingsChanges, bool useCacheChecking) :
+							base(buffer, subscribeToSettingsChanges, useCacheChecking)
 		{
 		}
 

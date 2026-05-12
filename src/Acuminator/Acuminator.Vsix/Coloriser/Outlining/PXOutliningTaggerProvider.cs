@@ -18,18 +18,16 @@ namespace Acuminator.Vsix.Coloriser
 	[TagType(typeof(IOutliningRegionTag))]
 	[TextViewRole(PredefinedTextViewRoles.Document)]
 	[Export(typeof(ITaggerProvider))]
-	public class PXOutliningTaggerProvider : PXTaggerProviderBase, ITaggerProvider
+	public class PXOutliningTaggerProvider : ITaggerProvider
 	{
 		public ITagger<T>? CreateTagger<T>(ITextBuffer buffer) where T : ITag
 		{
 			if (buffer == null || !ThreadHelper.CheckAccess())
 				return null;
 
-			Initialize(buffer);
-
 			PXOutliningTagger outliningTagger = buffer.Properties.GetOrCreateSingletonProperty(() =>
 			{
-				return new PXOutliningTagger(buffer, this, subscribeToSettingsChanges: true, useCacheChecking: true);
+				return new PXOutliningTagger(buffer, subscribeToSettingsChanges: true, useCacheChecking: true);
 			});
 
 			return outliningTagger as ITagger<T>;
