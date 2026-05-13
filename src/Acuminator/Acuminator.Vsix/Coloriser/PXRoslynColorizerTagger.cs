@@ -174,17 +174,14 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (document == null || cToken.IsCancellationRequested)
 			return ClassificationTagsCache.ProcessedTags;
 
-		bool completedSuccessfully = await WalkDocumentSyntaxTreeForTagsOnThreadpoolAsync(document, cToken).TryAwait();
+		bool completedSuccessfully = await WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(document, cToken).TryAwait();
 		LastTaggingWasSuccessful = completedSuccessfully && ClassificationTagsCache.IsCompleted;
 		return ClassificationTagsCache.ProcessedTags;
 	}
 
 	private Task WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(ParsedDocument document, CancellationToken cancellationToken)
 	{
-		return Task.Factory.StartNew(() => WalkDocumentSyntaxTreeForTags(document, cancellationToken), 
-									 cancellationToken, 
-									 TaskCreationOptions.LongRunning, 
-									 TaskScheduler.Default);
+		return Task.Run(() => WalkDocumentSyntaxTreeForTags(document, cancellationToken));
 	}
 
 	private void WalkDocumentSyntaxTreeForTags(ParsedDocument document, CancellationToken cancellationToken)
