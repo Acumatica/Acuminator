@@ -4,6 +4,7 @@
 
 * [Code Style](#code-style)
     * [Naming of Private and Protected Fields](#naming-of-private-and-protected-fields)
+    * [Naming of Objects Used in Lock Statements](#naming-of-objects-used-in-lock-statements)
     * [Naming of Constants](#naming-of-constants)
     * [Naming of Asynchronous Methods](#naming-of-asynchronous-methods)
     * [Naming of Value Tuples](#naming-of-value-tuples)
@@ -47,6 +48,13 @@ public class MyClass
  
   protected object _correctlyNamedField;  //Correct naming
 }
+```
+
+### Naming of Objects Used in Lock Statements 
+
+The common well-known naming convention is to call lock objects used in C# `lock` statements as "locker" or "lock". It is recommended to follow the convention in the Acuminator code.
+```C#
+private readonly object _locker = new();
 ```
 
 ### Naming of Constants
