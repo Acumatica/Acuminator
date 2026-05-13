@@ -93,9 +93,6 @@ namespace Acuminator.Vsix.Coloriser
 			Snapshot = newSnapshotToCache;
 		}
 
-		protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot newSnapshotToTag) =>
-			CacheCheckingEnabled && Snapshot != null && Snapshot == newSnapshotToTag && !ColoringSettingsChanged && LastTaggingWasSuccessful;
-
 		public virtual void Dispose()
 		{
 			if (!SubscribedToSettingsChanges)
