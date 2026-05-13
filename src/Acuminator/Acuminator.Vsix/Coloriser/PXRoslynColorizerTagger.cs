@@ -120,19 +120,9 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			return [];
 
 		// If Roslyn workspace wasn't initialized yet, we need to try to initialize it.
-		if (RoslynWorkspace == null)
-		{
-			RoslynWorkspace = Buffer.GetWorkspaceThatSupportsColoring();
+		UpdateWorkspaceAndStateIfNeeded();
 
-			if (RoslynWorkspace == null)
-				return [];
-
-			// If initialization was successful, we need to subscribe to workspace events and calculate the hasReferenceToAcumaticaPlatform flag.
-			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(projectId: null);
-			RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
-		}
-
-		if (!HasReferenceToAcumaticaPlatform)
+		if (RoslynWorkspace == null || !HasReferenceToAcumaticaPlatform)
 			return [];
 
 		ITextSnapshot newSnapshotToTag = spans[0].Snapshot;
@@ -152,6 +142,30 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		BackgroundTagging = BackgroundTagging.StartBackgroundTagging(this);
 
 		return ClassificationTagsCache.ProcessedTags;
+	}
+
+	private void UpdateWorkspaceAndStateIfNeeded()
+	{
+		Workspace? currentBufferWorkspace = Buffer.GetWorkspaceThatSupportsColoring();
+
+		if (ReferenceEquals(RoslynWorkspace, currentBufferWorkspace))
+			return;
+
+		if (RoslynWorkspace != null)
+			RoslynWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
+
+		RoslynWorkspace = currentBufferWorkspace;
+
+		// If initialization was successful, we need to subscribe to workspace events and calculate the hasReferenceToAcumaticaPlatform flag.
+		if (RoslynWorkspace != null)
+		{
+			RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
+			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(projectId: null);
+		}
+		else
+		{
+			_hasReferenceToAcumaticaPlatform = false;
+		}
 	}
 
 	protected internal async Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementationAsync(ITextSnapshot snapshot,
