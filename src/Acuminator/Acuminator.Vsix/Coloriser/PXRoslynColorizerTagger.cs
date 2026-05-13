@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 
 using Microsoft.CodeAnalysis;
@@ -224,20 +223,23 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 			case WorkspaceChangeKind.SolutionAdded:
 			case WorkspaceChangeKind.ProjectAdded:
-				_hasReferenceToAcumaticaPlatform |= CheckIfCurrentSolutionHasReferenceToAcumatica(e.ProjectId);
+				_hasReferenceToAcumaticaPlatform |= CheckIfCurrentSolutionHasReferenceToAcumatica(
+																	_roslynWorkspaceProvider.Workspace, e.ProjectId);
 				break;
 
 			case WorkspaceChangeKind.SolutionChanged:
 			case WorkspaceChangeKind.SolutionReloaded:
 			case WorkspaceChangeKind.ProjectRemoved:
-				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.ProjectId);
+				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(
+																	_roslynWorkspaceProvider.Workspace, e.ProjectId);
 				break;
 
 			case WorkspaceChangeKind.ProjectChanged:
 			case WorkspaceChangeKind.ProjectReloaded:
 				if (e.IsProjectMetadataChanged())
 				{
-					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.ProjectId);
+					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(
+																	_roslynWorkspaceProvider.Workspace, e.ProjectId);
 				}
 
 				break;
@@ -246,11 +248,13 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 				return;
 		}
 
-		if (Buffer.CurrentSnapshot != null && (oldValue != _hasReferenceToAcumaticaPlatform || !LastTaggingWasSuccessful))
+		if (oldValue != _hasReferenceToAcumaticaPlatform)
 		{
 			ResetCacheAndFlags(newSnapshotToCache: null);
-			RaiseTagsChanged();
-	private void WorkspaceAttachedToDocumentChanged(object sender, WorkspaceChangedEventArgs e)
+			ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
+		}	
+	}
+
 	private void WorkspaceAttachedToDocumentChanged(object sender, DocumentWorkspaceChangedEventArgs e)
 	{
 		if (e.OldWorkspace != null)
@@ -272,35 +276,42 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
 	}
 
-	protected bool CheckIfCurrentSolutionHasReferenceToAcumatica(ProjectId? projectId)
+	protected bool CheckIfCurrentSolutionHasReferenceToAcumatica(Workspace? workspace, ProjectId? projectId)
 	{
-		var currentSolution = RoslynWorkspace?.CurrentSolution;
+		var currentSolution = workspace?.CurrentSolution;
 
 		if (currentSolution == null || currentSolution.ProjectIds.Count == 0)
 			return false;
 
-		var roslynDocument = Buffer.CurrentSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
-		var currentProject = roslynDocument?.Project;
 		bool allProjectsChanged = projectId == null;
 
 		if (allProjectsChanged)
 		{
+			bool hasReferenceInMetadata = currentSolution.Projects.SelectMany(project => project.MetadataReferences)
+																  .Any(IsAcumaticaAssemblyName);
+			if (hasReferenceInMetadata)
+				return true;
+
 			bool hasAcumaticaProjectsInSolution =
 				currentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) || IsAcumaticaAssemblyName(project.AssemblyName));
 
-			if (hasAcumaticaProjectsInSolution)
-				return true;
-
-			bool hasReferenceInMetadata = (from project in currentSolution.Projects
-										   from reference in project.MetadataReferences
-										   select Path.GetFileNameWithoutExtension(reference.Display))
-										   .Any(reference => IsAcumaticaAssemblyName(reference));
-			return hasReferenceInMetadata;
+			return hasAcumaticaProjectsInSolution;
 		}
-		else if (currentProject?.Id == projectId)  // Check that the changed project is the same as the project of the current document. If not, then return the old value.
+
+		if (Buffer.CurrentSnapshot == null)
+			return false;
+
+		SourceTextContainer sourceTextContainer = Buffer.AsTextContainer();
+		var documentId = workspace!.GetDocumentIdInCurrentContext(sourceTextContainer);
+
+		if (documentId == null) 
+			return false;
+		else if (documentId.ProjectId == projectId)  // Check that the changed project is the same as the project of the current document. If not, then return the old value.
 		{
-			if (CanCreateGraphFastCheck(currentProject!) is bool canCreateGraph)
-				return canCreateGraph;
+			Project? currentProject = currentSolution.GetProject(projectId);
+
+			if (currentProject == null)
+				return false;
 
 			bool hasReferenceInMetadata = currentProject!.MetadataReferences.Count > 0
 				? currentProject.MetadataReferences.Any(IsAcumaticaAssemblyName)
@@ -324,13 +335,4 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	private static bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName == dllName ||
 																   ColoringConstants.AppDllName == dllName;
-
-	private static bool? CanCreateGraphFastCheck(Project project)
-	{
-		if (!project.TryGetCompilation(out var compilation) || compilation == null)
-			return null;
-
-		var graphType = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph);
-		return graphType != null;
-	}
 }
