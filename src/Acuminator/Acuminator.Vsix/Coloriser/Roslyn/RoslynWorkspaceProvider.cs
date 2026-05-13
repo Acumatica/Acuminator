@@ -45,7 +45,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 		}
 	}
 
-	public event EventHandler<WorkspaceChangedEventArgs>? WorkspaceChanged;
+	public event EventHandler<DocumentWorkspaceChangedEventArgs>? WorkspaceChanged;
 
 	public RoslynWorkspaceProvider(ITextBuffer buffer)
 	{
@@ -74,7 +74,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 			_workspace = newWorkspace;
 		}
 
-		WorkspaceChangedEventArgs eventArgs = new(oldWorkspace, newWorkspace);
+		DocumentWorkspaceChangedEventArgs eventArgs = new(oldWorkspace, newWorkspace);
 		WorkspaceChanged?.Invoke(this, eventArgs);
 	}
 

@@ -277,6 +277,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			ResetCacheAndFlags(newSnapshotToCache: null);
 			RaiseTagsChanged();
 	private void WorkspaceAttachedToDocumentChanged(object sender, WorkspaceChangedEventArgs e)
+	private void WorkspaceAttachedToDocumentChanged(object sender, DocumentWorkspaceChangedEventArgs e)
 	{
 		if (e.OldWorkspace != null)
 			e.OldWorkspace.WorkspaceChanged -= OnWorkspaceChanged;

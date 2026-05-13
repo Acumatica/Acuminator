@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.Coloriser;
 
-public class WorkspaceChangedEventArgs(Workspace? oldWorkspace, Workspace? newWorkspace) : EventArgs()
+public class DocumentWorkspaceChangedEventArgs(Workspace? oldWorkspace, Workspace? newWorkspace) : EventArgs()
 {
 	public Workspace? OldWorkspace { get; } = oldWorkspace;
 
