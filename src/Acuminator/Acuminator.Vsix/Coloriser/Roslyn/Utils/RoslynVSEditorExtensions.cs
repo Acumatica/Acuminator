@@ -44,18 +44,5 @@ namespace Acuminator.Vsix.Coloriser
 
 
 		public static string GetText(this ITextSnapshot snapshot, TextSpan span) => snapshot.GetText(span.Start, span.Length);
-
-		public static Workspace? GetWorkspaceThatSupportsColoring(this ITextBuffer? buffer)
-		{
-			var workspace = buffer?.GetWorkspace();
-
-			if (workspace == null)
-				return null;
-
-			const string previewWorkspaceKind = "MiscellaneousFiles";
-			return previewWorkspaceKind.Equals(workspace.Kind, StringComparison.OrdinalIgnoreCase) 
-				? null 
-				: workspace;
-		}
 	}
 }
