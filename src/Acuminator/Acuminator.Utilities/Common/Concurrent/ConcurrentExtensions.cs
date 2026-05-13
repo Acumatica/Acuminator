@@ -32,7 +32,7 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
-		/// A Task extension method that attempts to await task which could be cancelled.
+		/// A Task extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
 		/// <param name="task">The task to act on.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
@@ -54,7 +54,7 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
-		/// A <see cref="ValueTask"/> extension method that attempts to await task which could be cancelled.
+		/// A <see cref="ValueTask"/> extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
 		/// <param name="task">The task to act on.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
@@ -76,7 +76,7 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
-		/// A <see cref="Task{TResult}"/> extension method that attempts to await task which could be cancelled.
+		/// A <see cref="Task{TResult}"/> extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
 		/// <typeparam name="TResult">Type of the result.</typeparam>
 		/// <param name="task">The task to act on.</param>
@@ -100,7 +100,7 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
-		/// A <see cref="ValueTask{TResult}"/> extension method that attempts to await task which could be cancelled.
+		/// A <see cref="ValueTask{TResult}"/> extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
 		/// <typeparam name="TResult">Type of the result.</typeparam>
 		/// <param name="task">The task to act on.</param>
