@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Settings;
 
-using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 
-using Shell = Microsoft.VisualStudio.Shell;
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -51,18 +50,21 @@ namespace Acuminator.Vsix.Coloriser
 			}
 		}
 
-		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
+		private void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
 		{
 			ColoringSettingsChanged = true;
 			LastTaggingWasSuccessful = false;
+
+			// Coloring setting should be called from the UI thread and there is a safety check in RaiseTagsChanged
+			// It should be OK to make a sync call
 			RaiseTagsChanged();
 		}
 
 		internal async Task RaiseTagsChangedAsync()
 		{
-			if (!Shell.ThreadHelper.CheckAccess())
+			if (!ThreadHelper.CheckAccess())
 			{
-				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
 			RaiseTagsChangedImpl();
@@ -70,7 +72,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		internal void RaiseTagsChanged()
 		{
-			if (!Shell.ThreadHelper.CheckAccess())
+			if (!ThreadHelper.CheckAccess())
 				return;
 
 			RaiseTagsChangedImpl();
