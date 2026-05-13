@@ -15,6 +15,8 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+
 namespace Acuminator.Vsix.Coloriser;
 
 /// <summary>
@@ -36,22 +38,24 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	internal override bool LastTaggingWasSuccessful { get; set; }
 
-	public Workspace? RoslynWorkspace { get; private set; }
+	private readonly RoslynWorkspaceProvider _roslynWorkspaceProvider;
 
 	public PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider provider, bool subscribeToSettingsChanges,
 									bool useCacheChecking) :
 							  base(buffer, subscribeToSettingsChanges, useCacheChecking)
 	{
 		Provider = provider.CheckIfNull();
-
 		ClassificationTagsCache = new TagsCacheAsync<IClassificationTag>();
 		OutliningsTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
-		RoslynWorkspace = Buffer.GetWorkspaceThatSupportsColoring();
 
-		if (RoslynWorkspace != null)
+		_roslynWorkspaceProvider = new RoslynWorkspaceProvider(buffer);
+		_roslynWorkspaceProvider.WorkspaceChanged += WorkspaceAttachedToDocumentChanged;
+		var currentWorkspace = _roslynWorkspaceProvider.Workspace;
+
+		if (currentWorkspace != null)
 		{
-			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(projectId: null);
-			RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
+			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(currentWorkspace, projectId: null);
+			currentWorkspace.WorkspaceChanged += OnWorkspaceChanged;
 		}
 
 		//Buffer.Changed += Buffer_Changed;
@@ -221,11 +225,15 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ClassificationTagsCache?.Reset();
 		OutliningsTagsCache?.Reset();
 
-		if (RoslynWorkspace != null)
-		{
-			RoslynWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
-		}
+		var workspace = _roslynWorkspaceProvider.Workspace;
 
+		if (workspace != null)
+			workspace.WorkspaceChanged -= OnWorkspaceChanged;
+
+		_roslynWorkspaceProvider.WorkspaceChanged -= WorkspaceAttachedToDocumentChanged;
+		_roslynWorkspaceProvider.Dispose();
+
+		_hasReferenceToAcumaticaPlatform = false;
 		base.Dispose();
 	}
 
@@ -268,7 +276,25 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		{
 			ResetCacheAndFlags(newSnapshotToCache: null);
 			RaiseTagsChanged();
+	private void WorkspaceAttachedToDocumentChanged(object sender, WorkspaceChangedEventArgs e)
+	{
+		if (e.OldWorkspace != null)
+			e.OldWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
+
+		// if new Workspace supports coloring, we need to subscribe to workspace events and calculate the hasReferenceToAcumaticaPlatform flag.
+		if (e.NewWorkspace != null)
+		{
+			e.NewWorkspace.WorkspaceChanged += OnWorkspaceChanged;
+			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewWorkspace, projectId: null);
 		}
+		else
+		{
+			_hasReferenceToAcumaticaPlatform = false;
+		}
+
+		// We need to raise the tags changed event to trigger re-coloring on workspace change
+		ResetCacheAndFlags(newSnapshotToCache: null);
+		ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
 	}
 
 	protected bool CheckIfCurrentSolutionHasReferenceToAcumatica(ProjectId? projectId)
