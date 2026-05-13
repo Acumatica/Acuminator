@@ -120,18 +120,17 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	/// </returns>
 	public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 	{
-		if (spans?.Count is null or 0 || AcuminatorVSPackage.Instance?.ColoringEnabled != true)
+		if (spans?.Count is null or 0 || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
 			return [];
 
-		// If Roslyn workspace wasn't initialized yet, we need to try to initialize it.
-		UpdateWorkspaceAndStateIfNeeded();
-
-		if (RoslynWorkspace == null || !HasReferenceToAcumaticaPlatform)
+		var workspace = _roslynWorkspaceProvider.Workspace; 
+		
+		if (workspace == null)
 			return [];
 
 		ITextSnapshot newSnapshotToTag = spans[0].Snapshot;
 
-		if (CheckIfRetaggingIsNotNecessary(newSnapshotToTag))
+		if (CheckIfParsingAndRetaggingIsNotNecessary(newSnapshotToTag))
 		{
 			return ClassificationTagsCache.ProcessedTags;
 		}
@@ -148,29 +147,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		return ClassificationTagsCache.ProcessedTags;
 	}
 
-	private void UpdateWorkspaceAndStateIfNeeded()
-	{
-		Workspace? currentBufferWorkspace = Buffer.GetWorkspaceThatSupportsColoring();
-
-		if (ReferenceEquals(RoslynWorkspace, currentBufferWorkspace))
-			return;
-
-		if (RoslynWorkspace != null)
-			RoslynWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
-
-		RoslynWorkspace = currentBufferWorkspace;
-
-		// If initialization was successful, we need to subscribe to workspace events and calculate the hasReferenceToAcumaticaPlatform flag.
-		if (RoslynWorkspace != null)
-		{
-			RoslynWorkspace.WorkspaceChanged += OnWorkspaceChanged;
-			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(projectId: null);
-		}
-		else
-		{
-			_hasReferenceToAcumaticaPlatform = false;
-		}
-	}
+	
 
 	protected virtual bool CheckIfParsingAndRetaggingIsNotNecessary(ITextSnapshot newSnapshotToTag) =>
 		CacheCheckingEnabled && Snapshot != null && Snapshot == newSnapshotToTag && !ColoringSettingsChanged &&
