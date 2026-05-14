@@ -36,7 +36,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 			{
 				lock (_locker)
 				{
-					if (!ReferenceEquals(value, _workspace))
+					if (!ReferenceEquals(_workspace, value))
 					{
 						_workspace = value;
 					}
@@ -81,8 +81,8 @@ internal class RoslynWorkspaceProvider : IDisposable
 	public void Dispose()
 	{
 		WorkspaceChanged = null;
-		Workspace = null;
 		_workspaceRegistration.WorkspaceChanged -= OnWorkspaceChanged;
+		Workspace = null;
 	}
 
 	private static Workspace? GetWorkspaceThatSupportsColoring(WorkspaceRegistration workspaceRegistration)

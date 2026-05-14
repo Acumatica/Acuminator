@@ -31,7 +31,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	protected PXColorizerTaggerProvider Provider { get; }
 
-	private bool _hasReferenceToAcumaticaPlatform;
+	private volatile bool _hasReferenceToAcumaticaPlatform;
 
 	public sealed override bool HasReferenceToAcumaticaPlatform => _hasReferenceToAcumaticaPlatform;
 
