@@ -59,14 +59,14 @@ namespace Acuminator.Utilities.Common
 		/// <param name="task">The task to act on.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
 		/// <returns/>
-		public async static ValueTask<bool> TryAwait(this ValueTask? task, bool continueOnCapturedContext = false)
+		public async static ValueTask<bool> TryAwait(this ValueTask task, bool continueOnCapturedContext = false)
 		{
-			if (task == null || task.Value.IsCanceled || task.Value.IsFaulted)
+			if (task.IsCanceled || task.IsFaulted)
 				return false;
 
 			try
 			{
-				await task.Value.ConfigureAwait(continueOnCapturedContext);
+				await task.ConfigureAwait(continueOnCapturedContext);
 				return true;
 			}
 			catch (Exception exception)
@@ -106,15 +106,15 @@ namespace Acuminator.Utilities.Common
 		/// <param name="task">The task to act on.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
 		/// <returns/>
-		public async static ValueTask<TaskResult<TResult>> TryAwait<TResult>(this ValueTask<TResult>? task, 
+		public async static ValueTask<TaskResult<TResult>> TryAwait<TResult>(this ValueTask<TResult> task,
 																			 bool continueOnCapturedContext = false)
 		{
-			if (task == null || task.Value.IsCanceled || task.Value.IsFaulted)
+			if (task.IsCanceled || task.IsFaulted)
 				return new TaskResult<TResult>(false, default);
 
 			try
 			{
-				TResult? result = await task.Value.ConfigureAwait(continueOnCapturedContext);
+				TResult? result = await task.ConfigureAwait(continueOnCapturedContext);
 				return new TaskResult<TResult>(true, result);
 			}
 			catch (Exception exception)
