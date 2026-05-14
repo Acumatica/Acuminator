@@ -30,19 +30,6 @@ internal class RoslynWorkspaceProvider : IDisposable
 				return _workspace;
 			}
 		}
-		private set 
-		{
-			if (!ReferenceEquals(_workspace, value))
-			{
-				lock (_locker)
-				{
-					if (!ReferenceEquals(_workspace, value))
-					{
-						_workspace = value;
-					}
-				}
-			}
-		}
 	}
 
 	public event EventHandler<DocumentWorkspaceChangedEventArgs>? WorkspaceChanged;
@@ -53,7 +40,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 		_workspaceRegistration = Workspace.GetWorkspaceRegistration(sourceTextContainer);
 		_workspaceRegistration.WorkspaceChanged += OnWorkspaceChanged;
 
-		Workspace = GetWorkspaceThatSupportsColoring(_workspaceRegistration);
+		_workspace = GetWorkspaceThatSupportsColoring(_workspaceRegistration);
 	}
 
 	private void OnWorkspaceChanged(object sender, EventArgs e)
@@ -82,7 +69,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 
 		// Clear workspace reference to prevent any external usage after disposal
 		var oldWorkspace = Workspace;
-		Workspace = null;
+		_workspace = null;
 
 		// Let subscribers know that the workspace is no longer available due to disposal and unsubscribe from events to prevent memory leaks
 		DocumentWorkspaceChangedEventArgs disposalEventArgs = new(oldWorkspace, null);
