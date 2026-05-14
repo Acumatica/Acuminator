@@ -7,10 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
@@ -198,15 +196,8 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ClassificationTagsCache?.Reset();
 		OutliningsTagsCache?.Reset();
 
-		var workspace = _roslynWorkspaceProvider.Workspace;
-
-		if (workspace != null)
-			workspace.WorkspaceChanged -= OnWorkspaceChanged;
-
-		_roslynWorkspaceProvider.WorkspaceChanged -= WorkspaceAttachedToDocumentChanged;
-		_roslynWorkspaceProvider.Dispose();
-
 		_hasReferenceToAcumaticaPlatform = false;
+		_roslynWorkspaceProvider.Dispose();
 		base.Dispose();
 	}
 

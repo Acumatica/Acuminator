@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Logger;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -75,14 +76,36 @@ internal class RoslynWorkspaceProvider : IDisposable
 		}
 
 		DocumentWorkspaceChangedEventArgs eventArgs = new(oldWorkspace, newWorkspace);
-		WorkspaceChanged?.Invoke(this, eventArgs);
+		InvokeWorkspaceChangedEventSafely(eventArgs);
 	}
 
 	public void Dispose()
 	{
-		WorkspaceChanged = null;
 		_workspaceRegistration.WorkspaceChanged -= OnWorkspaceChanged;
+
+		// Clear workspace reference to prevent any external usage after disposal
+		var oldWorkspace = Workspace;
 		Workspace = null;
+
+		// Let subscribers know that the workspace is no longer available due to disposal and unsubscribe from events to prevent memory leaks
+		DocumentWorkspaceChangedEventArgs disposalEventArgs = new(oldWorkspace, null);
+		InvokeWorkspaceChangedEventSafely(disposalEventArgs);
+
+		// Clear event subscribers
+		WorkspaceChanged = null;
+	}
+
+	private void InvokeWorkspaceChangedEventSafely(DocumentWorkspaceChangedEventArgs eventArgs)
+	{
+		try
+		{
+			WorkspaceChanged?.Invoke(this, eventArgs);
+		}
+		catch (Exception exception)
+		{
+			AcuminatorVSPackage.Instance.AcuminatorLogger.LogException(exception, logOnlyFromAcuminatorAssemblies: false,
+																	   LogMode.Warning);
+		}
 	}
 
 	private static Workspace? GetWorkspaceThatSupportsColoring(WorkspaceRegistration workspaceRegistration)
