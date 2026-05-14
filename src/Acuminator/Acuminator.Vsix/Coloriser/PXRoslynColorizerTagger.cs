@@ -165,8 +165,6 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		return ClassificationTagsCache.ProcessedTags;
 	}
 
-	
-
 	protected virtual bool CheckIfParsingAndRetaggingIsNotNecessary(ITextSnapshot newSnapshotToTag) =>
 		CacheCheckingEnabled && Snapshot != null && Snapshot == newSnapshotToTag && !ColoringSettingsChanged &&
 		(LastTaggingWasSuccessful || BackgroundTagging?.IsTaskRunning() == true);
