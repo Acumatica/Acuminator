@@ -53,7 +53,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 		if (currentWorkspace != null)
 		{
-			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(currentWorkspace, projectId: null);
+			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(currentWorkspace);
 			currentWorkspace.WorkspaceChanged += OnWorkspaceChanged;
 		}
 
@@ -223,23 +223,20 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 			case WorkspaceChangeKind.SolutionAdded:
 			case WorkspaceChangeKind.ProjectAdded:
-				_hasReferenceToAcumaticaPlatform |= CheckIfCurrentSolutionHasReferenceToAcumatica(
-																	_roslynWorkspaceProvider.Workspace, e.ProjectId);
+				_hasReferenceToAcumaticaPlatform |= CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
 				break;
 
 			case WorkspaceChangeKind.SolutionChanged:
 			case WorkspaceChangeKind.SolutionReloaded:
 			case WorkspaceChangeKind.ProjectRemoved:
-				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(
-																	_roslynWorkspaceProvider.Workspace, e.ProjectId);
+				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
 				break;
 
 			case WorkspaceChangeKind.ProjectChanged:
 			case WorkspaceChangeKind.ProjectReloaded:
 				if (e.IsProjectMetadataChanged())
 				{
-					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(
-																	_roslynWorkspaceProvider.Workspace, e.ProjectId);
+					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
 				}
 
 				break;
@@ -264,7 +261,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (e.NewWorkspace != null)
 		{
 			e.NewWorkspace.WorkspaceChanged += OnWorkspaceChanged;
-			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewWorkspace, projectId: null);
+			_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewWorkspace);
 		}
 		else
 		{
@@ -276,55 +273,22 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
 	}
 
-	protected bool CheckIfCurrentSolutionHasReferenceToAcumatica(Workspace? workspace, ProjectId? projectId)
+	protected bool CheckIfCurrentSolutionHasReferenceToAcumatica(Workspace? workspace)
 	{
 		var currentSolution = workspace?.CurrentSolution;
 
 		if (currentSolution == null || currentSolution.ProjectIds.Count == 0)
 			return false;
 
-		bool allProjectsChanged = projectId == null;
+		bool hasReferenceInMetadata = currentSolution.Projects.SelectMany(project => project.MetadataReferences)
+															  .Any(IsAcumaticaAssemblyName);
+		if (hasReferenceInMetadata)
+			return true;
 
-		if (allProjectsChanged)
-		{
-			bool hasReferenceInMetadata = currentSolution.Projects.SelectMany(project => project.MetadataReferences)
-																  .Any(IsAcumaticaAssemblyName);
-			if (hasReferenceInMetadata)
-				return true;
+		bool hasAcumaticaProjectsInSolution =
+			currentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) || IsAcumaticaAssemblyName(project.AssemblyName));
 
-			bool hasAcumaticaProjectsInSolution =
-				currentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) || IsAcumaticaAssemblyName(project.AssemblyName));
-
-			return hasAcumaticaProjectsInSolution;
-		}
-
-		if (Buffer.CurrentSnapshot == null)
-			return false;
-
-		SourceTextContainer sourceTextContainer = Buffer.AsTextContainer();
-		var documentId = workspace!.GetDocumentIdInCurrentContext(sourceTextContainer);
-
-		if (documentId == null) 
-			return false;
-		else if (documentId.ProjectId == projectId)  // Check that the changed project is the same as the project of the current document. If not, then return the old value.
-		{
-			Project? currentProject = currentSolution.GetProject(projectId);
-
-			if (currentProject == null)
-				return false;
-
-			bool hasReferenceInMetadata = currentProject!.MetadataReferences.Count > 0
-				? currentProject.MetadataReferences.Any(IsAcumaticaAssemblyName)
-				: false;
-
-			if (hasReferenceInMetadata)
-				return true;
-
-			bool isAcumaticaProject = IsAcumaticaAssemblyName(currentProject.Name) || IsAcumaticaAssemblyName(currentProject.AssemblyName);
-			return isAcumaticaProject;
-		}
-		else
-			return _hasReferenceToAcumaticaPlatform;
+		return hasAcumaticaProjectsInSolution;
 	}
 
 	private static bool IsAcumaticaAssemblyName(MetadataReference reference)
