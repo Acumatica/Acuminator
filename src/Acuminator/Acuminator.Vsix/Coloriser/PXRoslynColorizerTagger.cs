@@ -177,13 +177,21 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ClassificationTagsCache.SetCancellation(cToken);
 		OutliningsTagsCache.SetCancellation(cToken);
 
-		Task<ParsedDocument?> getDocumentTask = ParsedDocument.ResolveAsync(snapshot, cToken);  // Razor cshtml returns a null document for some reason.
+		Workspace? workspace;
+
+		lock (_workspaceSubscriptionLock)
+		{
+			workspace = _subscribedWorkspace;
+		}
 
 		if (cToken.IsCancellationRequested)
 		{
 			LastTaggingWasSuccessful = false;
 			return [];
 		}
+
+		Task<(ParsedDocument? Parsed, bool TaggingSupported)> getDocumentTask = 
+			ParsedDocument.ResolveAsync(snapshot, workspace, cToken);  // Razor cshtml returns a null document for some reason.
 
 		var documentTaskResult = await getDocumentTask.TryAwait();
 
@@ -193,11 +201,12 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			return [];
 		}
 
-		ParsedDocument? document = documentTaskResult.Result;
+		var (document, taggingSupported) = documentTaskResult.Result;
 
 		if (document == null || cToken.IsCancellationRequested)
 		{
-			LastTaggingWasSuccessful = false;
+			// If the text buffer doesn't support tagging, we can mark tagging as successful to avoid repeated attempts
+			LastTaggingWasSuccessful = !taggingSupported;
 			return [];
 		}
 

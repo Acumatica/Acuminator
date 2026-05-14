@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
@@ -33,32 +34,27 @@ namespace Acuminator.Vsix.Coloriser
 
 		public ITextSnapshot Snapshot { get; } = snapshot.CheckIfNull();
 
-		public static async Task<ParsedDocument?> ResolveAsync(ITextSnapshot snapshot, CancellationToken cancellationToken)
+		public static async Task<(ParsedDocument? Parsed, bool TaggingSupported)> ResolveAsync(ITextSnapshot snapshot, Workspace? workspace,
+																							CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-				return null;
+			if (workspace == null || cancellationToken.IsCancellationRequested)
+				return (Parsed: null, TaggingSupported: true);
 
-			Workspace? workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync()
-																	 .ConfigureAwait(false);
 			Document? document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
-			if (workspace == null || document == null || !IsSupportedFileType(document) || !document.SupportsSemanticModel ||
+			if (document == null || !IsSupportedFileType(document) || !document.SupportsSemanticModel ||
 				!document.SupportsSyntaxTree)
 			{
-				return null;        // Razor cshtml returns a null document for some reason.
+				return (Parsed: null, TaggingSupported: false);				// Razor cshtml returns a null document for some reason.
 			}
-			
-			var semanticModel = await GetSemanticModelAsync(document, cancellationToken).ConfigureAwait(false);
 
-			if (cancellationToken.IsCancellationRequested || semanticModel is null)
-				return null;
+			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync(cancellationToken);
 
-			var syntaxRoot = await GetSyntaxRootAsync(document, cancellationToken).ConfigureAwait(false);
+			if (semanticModel is null || syntaxRoot is null || cancellationToken.IsCancellationRequested)
+				return (Parsed: null, TaggingSupported: true);
 
-			if (cancellationToken.IsCancellationRequested || syntaxRoot is null)
-				return null;
-
-			return new ParsedDocument(workspace, document, syntaxRoot, semanticModel, snapshot);
+			var parsed = new ParsedDocument(workspace, document, syntaxRoot, semanticModel, snapshot);
+			return (parsed, TaggingSupported: true);
 		}
 
 		private static async ValueTask<SemanticModel?> GetSemanticModelAsync(Document document, CancellationToken cancellationToken)
