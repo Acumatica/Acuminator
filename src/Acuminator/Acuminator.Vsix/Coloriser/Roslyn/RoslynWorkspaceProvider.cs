@@ -16,7 +16,6 @@ namespace Acuminator.Vsix.Coloriser;
 /// </summary>
 internal class RoslynWorkspaceProvider : IDisposable
 {
-	private readonly ITextBuffer _buffer;
 	private readonly WorkspaceRegistration _workspaceRegistration;
 
 	private readonly object _locker = new object();
@@ -50,9 +49,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 
 	public RoslynWorkspaceProvider(ITextBuffer buffer)
 	{
-		_buffer = buffer.CheckIfNull();
-
-		SourceTextContainer sourceTextContainer = _buffer.AsTextContainer();
+		SourceTextContainer sourceTextContainer = buffer.CheckIfNull().AsTextContainer();
 		_workspaceRegistration = Workspace.GetWorkspaceRegistration(sourceTextContainer);
 		_workspaceRegistration.WorkspaceChanged += OnWorkspaceChanged;
 
