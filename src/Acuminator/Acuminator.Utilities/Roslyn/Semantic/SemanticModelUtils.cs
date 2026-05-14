@@ -15,10 +15,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	public static class SemanticModelUtils
 	{
 		/// <summary>
-		/// Safely analyse data flow for a <paramref name="node"/> and return <see cref="DataFlowAnalysis"/> if analysis succeeded.
+		/// Safely analyze data flow for a <paramref name="node"/> and return <see cref="DataFlowAnalysis"/> if analysis succeeded.
 		/// </summary>
 		/// <param name="semanticModel">The semanticModel to act on.</param>
-		/// <param name="node">The node to analyse.</param>
+		/// <param name="node">The node to analyze.</param>
 		/// <returns>
 		/// A <see cref="DataFlowAnalysis"/> if the data flow analysis succeeded, <see langword="null"/> if not.
 		/// </returns>
@@ -62,12 +62,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "Aggregated await is used")]
 		public static async Task<(SemanticModel? SemanticModel, SyntaxNode? Root)> GetSemanticModelAndRootAsync(this Document document, 
-																												CancellationToken cancellation = default)
+																												CancellationToken cancellation = default,
+																												bool continueOnCapturedContext = false)
 		{
 			var semanticModelTask = document.CheckIfNull().GetSemanticModelAsync(cancellation);
 			var syntaxRootTask = document.GetSyntaxRootAsync(cancellation);
 
-			await Task.WhenAll(semanticModelTask, syntaxRootTask).ConfigureAwait(false);
+			await Task.WhenAll(semanticModelTask, syntaxRootTask)
+					  .ConfigureAwait(continueOnCapturedContext);
 
 			return (semanticModelTask.Result, syntaxRootTask.Result);
 		}
