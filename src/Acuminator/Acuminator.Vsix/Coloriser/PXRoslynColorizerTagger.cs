@@ -177,20 +177,29 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ClassificationTagsCache.SetCancellation(cToken);
 		OutliningsTagsCache.SetCancellation(cToken);
 
-		Task<ParsedDocument?> getDocumentTask = ParsedDocument.ResolveAsync(snapshot, cToken);
+		Task<ParsedDocument?> getDocumentTask = ParsedDocument.ResolveAsync(snapshot, cToken);  // Razor cshtml returns a null document for some reason.
 
-		if (cToken.IsCancellationRequested)              // Razor cshtml returns a null document for some reason.
-			return ClassificationTagsCache.ProcessedTags;
+		if (cToken.IsCancellationRequested)
+		{
+			LastTaggingWasSuccessful = false;
+			return [];
+		}
 
 		var documentTaskResult = await getDocumentTask.TryAwait();
 
 		if (!documentTaskResult.IsSuccess)
-			return ClassificationTagsCache.ProcessedTags;
+		{
+			LastTaggingWasSuccessful = false;
+			return [];
+		}
 
 		ParsedDocument? document = documentTaskResult.Result;
 
 		if (document == null || cToken.IsCancellationRequested)
-			return ClassificationTagsCache.ProcessedTags;
+		{
+			LastTaggingWasSuccessful = false;
+			return [];
+		}
 
 		bool completedSuccessfully = await WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(document, cToken).TryAwait();
 		LastTaggingWasSuccessful = completedSuccessfully && ClassificationTagsCache.IsCompleted;
