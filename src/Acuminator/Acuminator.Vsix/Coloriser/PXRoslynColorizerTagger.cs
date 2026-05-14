@@ -193,7 +193,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		Task<(ParsedDocument? Parsed, bool TaggingSupported)> getDocumentTask = 
 			ParsedDocument.ResolveAsync(snapshot, workspace, cToken);  // Razor cshtml returns a null document for some reason.
 
-		var documentTaskResult = await getDocumentTask.TryAwait();
+		var documentTaskResult = await getDocumentTask.TryAwait(LogError);
 
 		if (!documentTaskResult.IsSuccess)
 		{
@@ -210,10 +210,14 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			return [];
 		}
 
-		bool completedSuccessfully = await WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(document, cToken).TryAwait();
+		bool completedSuccessfully = await WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(document, cToken).TryAwait(LogError);
 		LastTaggingWasSuccessful = completedSuccessfully && ClassificationTagsCache.IsCompleted;
 		return ClassificationTagsCache.ProcessedTags;
 	}
+
+	private static void LogError(Exception exception) =>
+		AcuminatorVSPackage.Instance?.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: true,
+																	 Logger.LogMode.Warning);
 
 	private Task WalkDocumentSyntaxTreeForTagsOnThreadPoolAsync(ParsedDocument document, CancellationToken cancellationToken)
 	{

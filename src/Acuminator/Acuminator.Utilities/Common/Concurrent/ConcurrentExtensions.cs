@@ -35,9 +35,11 @@ namespace Acuminator.Utilities.Common
 		/// A Task extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
 		/// <param name="task">The task to act on.</param>
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
-		/// <returns/>      
-		public async static Task<bool> TryAwait(this Task? task, bool continueOnCapturedContext = false)
+		/// <returns/>
+		public async static Task<bool> TryAwait(this Task? task, Action<Exception>? logger = null, 
+												bool continueOnCapturedContext = false)
 		{
 			if (task == null || task.IsCanceled || task.IsFaulted)
 				return false;
@@ -47,8 +49,13 @@ namespace Acuminator.Utilities.Common
 				await task.ConfigureAwait(continueOnCapturedContext);
 				return true;
 			}
+			catch (OperationCanceledException cancelledException)
+			{
+				return false;
+			}
 			catch (Exception exception)
 			{
+				logger?.Invoke(exception);
 				return false;
 			}
 		}
@@ -57,9 +64,11 @@ namespace Acuminator.Utilities.Common
 		/// A <see cref="ValueTask"/> extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
 		/// <param name="task">The task to act on.</param>
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
 		/// <returns/>
-		public async static ValueTask<bool> TryAwait(this ValueTask task, bool continueOnCapturedContext = false)
+		public async static ValueTask<bool> TryAwait(this ValueTask task, Action<Exception>? logger = null, 
+													 bool continueOnCapturedContext = false)
 		{
 			if (task.IsCanceled || task.IsFaulted)
 				return false;
@@ -69,8 +78,13 @@ namespace Acuminator.Utilities.Common
 				await task.ConfigureAwait(continueOnCapturedContext);
 				return true;
 			}
+			catch (OperationCanceledException cancelledException)
+			{
+				return false;
+			}
 			catch (Exception exception)
 			{
+				logger?.Invoke(exception);
 				return false;
 			}
 		}
@@ -80,9 +94,10 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		/// <typeparam name="TResult">Type of the result.</typeparam>
 		/// <param name="task">The task to act on.</param>
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
 		/// <returns/>      
-		public async static Task<TaskResult<TResult>> TryAwait<TResult>(this Task<TResult>? task,
+		public async static Task<TaskResult<TResult>> TryAwait<TResult>(this Task<TResult>? task, Action<Exception>? logger = null,
 																		bool continueOnCapturedContext = false)
 		{
 			if (task == null || task.IsCanceled || task.IsFaulted)
@@ -93,8 +108,13 @@ namespace Acuminator.Utilities.Common
 				TResult? result = await task.ConfigureAwait(continueOnCapturedContext);
 				return new TaskResult<TResult>(true, result);
 			}
+			catch (OperationCanceledException cancelledException)
+			{
+				return new TaskResult<TResult>(false, default);
+			}
 			catch (Exception exception)
 			{
+				logger?.Invoke(exception);
 				return new TaskResult<TResult>(false, default);
 			}
 		}
@@ -104,9 +124,10 @@ namespace Acuminator.Utilities.Common
 		/// </summary>
 		/// <typeparam name="TResult">Type of the result.</typeparam>
 		/// <param name="task">The task to act on.</param>
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
 		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
 		/// <returns/>
-		public async static ValueTask<TaskResult<TResult>> TryAwait<TResult>(this ValueTask<TResult> task,
+		public async static ValueTask<TaskResult<TResult>> TryAwait<TResult>(this ValueTask<TResult> task, Action<Exception>? logger = null,
 																			 bool continueOnCapturedContext = false)
 		{
 			if (task.IsCanceled || task.IsFaulted)
@@ -117,8 +138,13 @@ namespace Acuminator.Utilities.Common
 				TResult? result = await task.ConfigureAwait(continueOnCapturedContext);
 				return new TaskResult<TResult>(true, result);
 			}
+			catch (OperationCanceledException cancelledException)
+			{
+				return new TaskResult<TResult>(false, default);
+			}
 			catch (Exception exception)
 			{
+				logger?.Invoke(exception);
 				return new TaskResult<TResult>(false, default);
 			}
 		}

@@ -48,7 +48,12 @@ namespace Acuminator.Vsix.Coloriser
 				return (Parsed: null, TaggingSupported: false);				// Razor cshtml returns a null document for some reason.
 			}
 
-			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync(cancellationToken);
+			var taskResult = await document.GetSemanticModelAndRootAsync(cancellationToken)
+										   .TryAwait(LogError);
+			if (!taskResult.IsSuccess)
+				return (Parsed: null, TaggingSupported: true);
+
+			var (semanticModel, syntaxRoot) = taskResult.Result;
 
 			if (semanticModel is null || syntaxRoot is null || cancellationToken.IsCancellationRequested)
 				return (Parsed: null, TaggingSupported: true);
@@ -57,30 +62,10 @@ namespace Acuminator.Vsix.Coloriser
 			return (parsed, TaggingSupported: true);
 		}
 
-		private static async ValueTask<SemanticModel?> GetSemanticModelAsync(Document document, CancellationToken cancellationToken)
-		{
-			if (document.TryGetSemanticModel(out SemanticModel? semanticModel))
-				return semanticModel;
-
-			var semanticModelTaskResult = await document.GetSemanticModelAsync(cancellationToken)
-														.TryAwait()
-														.ConfigureAwait(false);
-			semanticModel = semanticModelTaskResult.Result;
-			return semanticModelTaskResult.IsSuccess ? semanticModel : null;
-		}
-
-		private static async ValueTask<SyntaxNode?> GetSyntaxRootAsync(Document document, CancellationToken cancellationToken)
-		{
-			if (document.TryGetSyntaxRoot(out SyntaxNode? syntaxRoot))
-				return syntaxRoot;
-
-			var syntaxRootTaskResult = await document.GetSyntaxRootAsync(cancellationToken)
-													 .TryAwait()
-													 .ConfigureAwait(false);
-			syntaxRoot = syntaxRootTaskResult.Result;
-			return syntaxRootTaskResult.IsSuccess ? syntaxRoot : null;
-		}
-
 		private static bool IsSupportedFileType(Document document) => allowedExtensions.Contains(Path.GetExtension(document.FilePath));
+
+		private static void LogError(Exception exception) =>
+			AcuminatorVSPackage.Instance?.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: true,
+																		 Logger.LogMode.Warning);
 	}
 }
