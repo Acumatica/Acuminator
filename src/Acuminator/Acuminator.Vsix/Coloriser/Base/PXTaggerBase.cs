@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -73,7 +74,11 @@ namespace Acuminator.Vsix.Coloriser
 		internal void RaiseTagsChanged()
 		{
 			if (!ThreadHelper.CheckAccess())
+			{
+				Debug.Fail("RaiseTagsChanged should be called from the UI thread. " + 
+							"Call RaiseTagsChangedAsync if you need to raise tags changed from a background thread.");
 				return;
+			}
 
 			RaiseTagsChangedImpl();
 		}
