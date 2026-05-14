@@ -44,10 +44,22 @@ namespace Acuminator.Vsix.Coloriser
 			// No need for synchronization because FromCurrentSynchronizationContext creates schedulers which wrap around the same synchronization context
 			// Therefore all schedulers should be identical and nothing wrong will happen if different thread will create multiple instance of the scheduler in a race condition
 			_vsTaskScheduler = _vsTaskScheduler ?? TaskScheduler.FromCurrentSynchronizationContext();
-			backgroundTagging.TaggingTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(task, tagger, backgroundTagging.CancellationToken),  //continuation should be on the UI thread
+			var continuationTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(task, tagger, backgroundTagging.CancellationToken),  //continuation should be on the UI thread
 																	 backgroundTagging.CancellationToken,
 																	 TaskContinuationOptions.NotOnCanceled,
 																	 _vsTaskScheduler);
+
+			// ContinueWith schedules the lambda on the VS UI thread scheduler. The lambda runs on the UI thread and calls AfterTaggingActionAsync(...).
+			// Inside AfterTaggingActionAsync, the important path calls ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task 
+			// this starts RaiseTagsChangedAsync and immediately returns the underlying Task representing it (still running).
+			// The lambda returns that inner Task immediately — it does not await it.
+			// The outer Task<Task> stored in TaggingTask is marked as Completed (RanToCompletion) at this point, because the lambda has returned. 
+			// The outer task's result is the still-running inner task, but the outer task itself is done.
+			// RaiseTagsChangedAsync may still be running in the background raising tags-changed notifications. 
+			// 
+			// Thus, we need to keep the nested unwrapped task as the tagging task to be able to correctly calculate IsTaskRunning() and 
+			// handle exceptions thrown in the AfterTaggingActionAsync.
+			backgroundTagging.TaggingTask = continuationTask.Unwrap();
 			return backgroundTagging;
 		}
 
