@@ -83,8 +83,8 @@ internal class RoslynWorkspaceProvider : IDisposable
 		}
 		catch (Exception exception)
 		{
-			AcuminatorVSPackage.Instance.AcuminatorLogger.LogException(exception, logOnlyFromAcuminatorAssemblies: false,
-																	   LogMode.Warning);
+			AcuminatorVSPackage.Instance?.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false,
+																		 LogMode.Warning);
 		}
 	}
 

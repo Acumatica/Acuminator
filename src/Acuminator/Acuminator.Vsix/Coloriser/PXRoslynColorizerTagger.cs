@@ -34,10 +34,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	public sealed override bool HasReferenceToAcumaticaPlatform => _hasReferenceToAcumaticaPlatform;
 
 	private readonly object _lastTaggingLock = new object();
-	private volatile bool _lastTaggingWasSuccessful;
-
-	private volatile Workspace? _subscribedWorkspace;
-	private readonly object _workspaceSubscriptionLock = new();
+	private bool _lastTaggingWasSuccessful;
 
 	internal override bool LastTaggingWasSuccessful
 	{
@@ -56,6 +53,9 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			}
 		}
 	}
+
+	private volatile Workspace? _subscribedWorkspace;
+	private readonly object _workspaceSubscriptionLock = new();
 
 	private readonly RoslynWorkspaceProvider _roslynWorkspaceProvider;
 
