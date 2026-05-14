@@ -222,23 +222,13 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 				break;
 
 			case WorkspaceChangeKind.SolutionAdded:
-			case WorkspaceChangeKind.ProjectAdded:
-				_hasReferenceToAcumaticaPlatform |= CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
-				break;
-
 			case WorkspaceChangeKind.SolutionChanged:
 			case WorkspaceChangeKind.SolutionReloaded:
+			case WorkspaceChangeKind.ProjectAdded:
 			case WorkspaceChangeKind.ProjectRemoved:
-				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
-				break;
-
 			case WorkspaceChangeKind.ProjectChanged:
 			case WorkspaceChangeKind.ProjectReloaded:
-				if (e.IsProjectMetadataChanged())
-				{
-					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
-				}
-
+				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
 				break;
 
 			default:
