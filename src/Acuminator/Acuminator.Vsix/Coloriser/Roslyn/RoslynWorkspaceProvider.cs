@@ -66,17 +66,13 @@ internal class RoslynWorkspaceProvider : IDisposable
 	public void Dispose()
 	{
 		_workspaceRegistration.WorkspaceChanged -= OnWorkspaceChanged;
-
-		// Clear workspace reference to prevent any external usage after disposal
-		var oldWorkspace = Workspace;
-		_workspace = null;
-
-		// Let subscribers know that the workspace is no longer available due to disposal and unsubscribe from events to prevent memory leaks
-		DocumentWorkspaceChangedEventArgs disposalEventArgs = new(oldWorkspace, null);
-		InvokeWorkspaceChangedEventSafely(disposalEventArgs);
-
-		// Clear event subscribers
 		WorkspaceChanged = null;
+
+		lock (_locker)
+		{
+			// Clear workspace reference to prevent any external usage after disposal
+			_workspace = null;
+		}
 	}
 
 	private void InvokeWorkspaceChangedEventSafely(DocumentWorkspaceChangedEventArgs eventArgs)

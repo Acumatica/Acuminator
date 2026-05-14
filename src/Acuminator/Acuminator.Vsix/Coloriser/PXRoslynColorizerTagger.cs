@@ -213,11 +213,6 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	public override void Dispose()
 	{
-		BackgroundTagging?.Dispose();
-		ClassificationTagsCache?.Reset();
-		OutliningsTagsCache?.Reset();
-
-		_hasReferenceToAcumaticaPlatform = false;
 		_roslynWorkspaceProvider.Dispose();
 
 		if (_subscribedWorkspace != null)
@@ -231,6 +226,12 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 				}
 			}
 		}
+
+		BackgroundTagging?.Dispose();
+		ClassificationTagsCache?.Reset();
+		OutliningsTagsCache?.Reset();
+
+		_hasReferenceToAcumaticaPlatform = false;
 
 		base.Dispose();
 	}
