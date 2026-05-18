@@ -582,5 +582,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1120_IncorrectTaskUsageInAsyncCode_NotAwaitedTaskReturningExpression { get; } =
 			Rule("PX1120", nameof(Resources.PX1120Title_NotAwaitedTaskReturningExpression).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning,
 				DiagnosticsShortName.PX1120_NotAwaitedTaskReturningExpression);
+
+		public static DiagnosticDescriptor PX1121_MissingSchemaMutationGuard { get; } =
+			Rule("PX1121", nameof(Resources.PX1121Title).GetLocalized(), Category.Acuminator, DiagnosticSeverity.Warning,
+				DiagnosticsShortName.PX1121);
 	}
 }

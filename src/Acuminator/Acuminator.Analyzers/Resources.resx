@@ -935,4 +935,7 @@ Reason: {2}</value>
   <data name="SuppressDiagnosticWithCommentNonNestedCodeActionTitle" xml:space="preserve">
     <value>Suppress the {0} diagnostic with Acuminator in a comment</value>
   </data>
+  <data name="PX1121Title" xml:space="preserve">
+    <value>The PXDatabase.Execute call performs an unguarded schema mutation (ALTER TABLE ADD, CREATE TABLE, or CREATE INDEX). Acumatica customization plugins re-run UpdateDatabase on every publish; wrap the mutation in an existence guard (IF NOT EXISTS, IF COL_LENGTH, IF OBJECT_ID) so subsequent publishes do not fail.</value>
+  </data>
 </root>

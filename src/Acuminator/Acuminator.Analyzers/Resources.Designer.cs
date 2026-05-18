@@ -2491,5 +2491,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("SuppressDiagnosticWithCommentNonNestedCodeActionTitle", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The PXDatabase.Execute call performs an unguarded schema mutation.
+        /// </summary>
+        public static string PX1121Title {
+            get {
+                return ResourceManager.GetString("PX1121Title", resourceCulture);
+            }
+        }
     }
 }

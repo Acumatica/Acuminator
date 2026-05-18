@@ -1193,5 +1193,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1120_StoreTaskInVariable", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MissingSchemaMutationGuard.
+        /// </summary>
+        public static string PX1121 {
+            get {
+                return ResourceManager.GetString("PX1121", resourceCulture);
+            }
+        }
     }
 }
