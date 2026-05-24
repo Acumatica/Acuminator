@@ -22,8 +22,8 @@ The following rules are provided as a recommendation for developers to keep the 
 1. Please try to keep the related changes together in a single commit. This is the most subjective rule here, so use your best judgment to decide what changes are related. 
 2. Please keep commits granular. If you have a large change that can be logically split into smaller parts, please break it into multiple commits. Do not commit it as a single commit.
    This will make the investigation of the history with Git blame easier.
-3. If you have a big refactoring of format (for example, fixing indentation in the file), please do not mix it with the functional changes. It is better to have a separate commit for the refactoring
-   and mention that the commit contains refactoring changes in the commit message.
+3. If you have significant formatting-only changes (for example, fixing indentation in the file), please do not mix them with functional changes. It is better to have a separate commit for the formatting changes
+   and mention that the commit contains formatting changes in the commit message.
 4. The commit message should follow the guidelines described in the next section.
 
 ## Commit Message General Guidelines
