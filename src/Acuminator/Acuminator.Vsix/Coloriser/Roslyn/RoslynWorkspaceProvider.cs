@@ -18,14 +18,25 @@ internal class RoslynWorkspaceProvider : IDisposable
 {
 	private readonly WorkspaceRegistration _workspaceRegistration;
 
-	private readonly object _locker = new object();
+	/// <summary>
+	/// Gets the workspace subscription locker.
+	/// </summary>
+	/// <value>
+	/// The workspace subscription locker.
+	/// </value>
+	/// <remarks>
+	/// This locker has to be externally available because external subscribers like Roslyn colorizer subscribe on workspace changes and have unavoidable race condition<br/>
+	/// that has to use this locker to synchronize with change of the Roslyn workspace associated with a VS text buffer.
+	/// </remarks>
+	public object WorkspaceSubscriptionLocker { get; } = new object();
+
 	private Workspace? _workspace;
 
 	public Workspace? Workspace
 	{ 
 		get 
 		{
-			lock (_locker)
+			lock (WorkspaceSubscriptionLocker)
 			{
 				return _workspace;
 			}
@@ -48,7 +59,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 		Workspace? newWorkspace = GetWorkspaceThatSupportsColoring(_workspaceRegistration);
 		Workspace? oldWorkspace;
 
-		lock (_locker)
+		lock (WorkspaceSubscriptionLocker)
 		{
 			oldWorkspace = _workspace;
 
@@ -68,7 +79,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 		_workspaceRegistration.WorkspaceChanged -= OnWorkspaceChanged;
 		WorkspaceChanged = null;
 
-		lock (_locker)
+		lock (WorkspaceSubscriptionLocker)
 		{
 			// Clear workspace reference to prevent any external usage after disposal
 			_workspace = null;

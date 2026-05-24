@@ -54,9 +54,6 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		}
 	}
 
-	private volatile Workspace? _subscribedWorkspace;
-	private readonly object _workspaceSubscriptionLock = new();
-
 	private readonly RoslynWorkspaceProvider _roslynWorkspaceProvider;
 
 	public PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider provider, bool subscribeToSettingsChanges,
@@ -177,9 +174,9 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 		Workspace? workspace;
 
-		lock (_workspaceSubscriptionLock)
+		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
 		{
-			workspace = _subscribedWorkspace;
+			workspace = _roslynWorkspaceProvider.Workspace;
 		}
 
 		if (cToken.IsCancellationRequested)
@@ -233,19 +230,15 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	public override void Dispose()
 	{
-		_roslynWorkspaceProvider.WorkspaceChanged -= WorkspaceAttachedToDocumentChanged;
-
-		if (_subscribedWorkspace != null)
+		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
 		{
-			lock (_workspaceSubscriptionLock)
-			{
-				if (_subscribedWorkspace != null)
-				{
-					_subscribedWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
-					_subscribedWorkspace = null;
-				}
-			}
+			_roslynWorkspaceProvider.WorkspaceChanged -= WorkspaceAttachedToDocumentChanged;
+			var workspaceToUnsubscribe = _roslynWorkspaceProvider.Workspace;
+
+			if (workspaceToUnsubscribe != null)
+				workspaceToUnsubscribe.WorkspaceChanged -= OnWorkspaceChanged;
 		}
+		
 
 		_roslynWorkspaceProvider.Dispose();
 		BackgroundTagging?.Dispose();
@@ -291,22 +284,16 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	private void WorkspaceAttachedToDocumentChanged(object sender, DocumentWorkspaceChangedEventArgs e)
 	{
-		lock (_workspaceSubscriptionLock)
+		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
 		{
-			// Idempotency guard: ignore if we're already subscribed to this exact workspace.
-			if (ReferenceEquals(_subscribedWorkspace, e.NewWorkspace))
-				return;
-
-			if (_subscribedWorkspace != null)
-				_subscribedWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
-
-			_subscribedWorkspace = e.NewWorkspace;
+			if (e.OldWorkspace != null)
+				e.OldWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
 
 			// if new Workspace supports coloring, we need to subscribe to workspace events and calculate the hasReferenceToAcumaticaPlatform flag.
-			if (_subscribedWorkspace != null)
+			if (e.NewWorkspace != null)
 			{
-				_subscribedWorkspace.WorkspaceChanged += OnWorkspaceChanged;
-				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(_subscribedWorkspace);
+				e.NewWorkspace.WorkspaceChanged += OnWorkspaceChanged;
+				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewWorkspace);
 			}
 			else
 			{
