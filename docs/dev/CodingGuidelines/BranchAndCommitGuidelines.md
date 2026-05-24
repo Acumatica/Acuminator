@@ -1,6 +1,6 @@
 # Git Branch Naming Guidelines
 When creating a new branch for a feature or bug fix, please follow the guidelines below to name your branch.
-1. The branch name should be descriptive and concise. In this case it is better to add extra details to the name of hte branch if needed.
+1. The branch name should be descriptive and concise. In this case it is better to add extra details to the name of the branch if needed.
 2. The branch name should start with the type of the branch, which can be either "**feature**" or "**bugfix**". This will help to quickly identify the purpose of the branch.
    For example, branch with a new diagnostic is a "feature" branch. Branch with a fix for an existing diagnostic is a "bugfix" branch.
 3. Optionally, the branch should include the base branch name, which is usually the "dev" branch. This will help to quickly identify the base branch for the changes.
