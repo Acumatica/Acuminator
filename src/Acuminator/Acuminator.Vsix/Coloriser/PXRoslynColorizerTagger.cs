@@ -285,6 +285,11 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			if (e.OldWorkspace != null)
 				e.OldWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
 
+			// Defensive check in case workspace changed event fired by different threads in a quick succession
+			// We check under lock that we subscribe to the latest namespace
+			if (!ReferenceEquals(_roslynWorkspaceProvider.Workspace, e.NewWorkspace))
+				return;
+
 			// if new Workspace supports coloring, we need to subscribe to workspace events and calculate the hasReferenceToAcumaticaPlatform flag.
 			if (e.NewWorkspace != null)
 			{
