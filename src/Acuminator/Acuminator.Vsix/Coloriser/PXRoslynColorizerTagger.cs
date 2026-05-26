@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+using Acuminator.Vsix.Settings;
 
 namespace Acuminator.Vsix.Coloriser;
 
@@ -35,7 +36,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	private volatile bool _lastTaggingWasSuccessful;
 
-	internal override bool LastTaggingWasSuccessful
+	internal bool LastTaggingWasSuccessful
 	{
 		get => _lastTaggingWasSuccessful;
 		set => _lastTaggingWasSuccessful = value;
@@ -106,9 +107,18 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	//}
 	#endregion
 
+	protected override void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
+	{
+		LastTaggingWasSuccessful = false;
+
+		base.ColoringSettingChangedHandler(sender, e);
+	}
+
 	protected internal override void ResetCacheAndFlags(ITextSnapshot? newSnapshotToCache)
 	{
 		base.ResetCacheAndFlags(newSnapshotToCache);
+
+		LastTaggingWasSuccessful = false;
 		ClassificationTagsCache.Reset();
 		OutliningsTagsCache.Reset();
 	}

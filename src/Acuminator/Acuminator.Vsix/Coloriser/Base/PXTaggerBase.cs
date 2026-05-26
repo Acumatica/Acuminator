@@ -28,8 +28,6 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected bool SubscribedToSettingsChanges { get; private set; }
 
-		internal abstract bool LastTaggingWasSuccessful { get; set; }
-
 		public abstract bool HasReferenceToAcumaticaPlatform { get; }
 
 		protected bool CacheCheckingEnabled { get; }
@@ -51,10 +49,9 @@ namespace Acuminator.Vsix.Coloriser
 			}
 		}
 
-		private void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
+		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
 		{
 			ColoringSettingsChanged = true;
-			LastTaggingWasSuccessful = false;
 
 			// Coloring setting should be called from the UI thread and there is a safety check in RaiseTagsChanged
 			// It should be OK to make a sync call
@@ -94,7 +91,6 @@ namespace Acuminator.Vsix.Coloriser
 		protected internal virtual void ResetCacheAndFlags(ITextSnapshot? newSnapshotToCache)
 		{
 			ColoringSettingsChanged = false;
-			LastTaggingWasSuccessful = false;
 			Snapshot = newSnapshotToCache;
 		}
 

@@ -10,6 +10,10 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
 {
+	/// <summary>
+	/// An outlining tagger. Delegates the collection of outlining tags to the <see cref="PXRoslynColorizerTagger"/>.<br/>
+	/// Subscribes to the <see cref="PXRoslynColorizerTagger.TagsChanged"/> event to raise its own <see cref="ITagger{T}.TagsChanged"/> event when the colorizing tagger's tags change.
+	/// </summary>
 	internal class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
 	{
 		private int _isSubscribed = NOT_SUBSCRIBED;
@@ -17,12 +21,6 @@ namespace Acuminator.Vsix.Coloriser
 		private const int SUBSCRIBED = 1;
 
 		protected PXRoslynColorizerTagger? ColorizerTagger { get; private set; }
-
-		internal override bool LastTaggingWasSuccessful 
-		{
-			get => ColorizerTagger?.LastTaggingWasSuccessful ?? false;
-			set { }
-		}
 
 		[MemberNotNullWhen(returnValue: true, nameof(ColorizerTagger))]
 		public override bool HasReferenceToAcumaticaPlatform => ColorizerTagger?.HasReferenceToAcumaticaPlatform ?? false;
