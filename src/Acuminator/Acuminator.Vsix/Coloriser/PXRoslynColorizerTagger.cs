@@ -1,19 +1,20 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Settings;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-using Acuminator.Vsix.Settings;
 
 namespace Acuminator.Vsix.Coloriser;
 
@@ -244,7 +245,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	private void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 	{
-		bool oldValue = _hasReferenceToAcumaticaPlatform;
+		bool oldHasReferenceToAcumaticaPlatform = _hasReferenceToAcumaticaPlatform;
 
 		switch (e.Kind)
 		{
@@ -253,21 +254,37 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 				_hasReferenceToAcumaticaPlatform = false;
 				break;
 
+			// Solution replaced entirely — always re-check.
 			case WorkspaceChangeKind.SolutionAdded:
 			case WorkspaceChangeKind.SolutionChanged:
 			case WorkspaceChangeKind.SolutionReloaded:
-			case WorkspaceChangeKind.ProjectAdded:
-			case WorkspaceChangeKind.ProjectRemoved:
+				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewSolution.Workspace);
+				break;
+
 			case WorkspaceChangeKind.ProjectChanged:
 			case WorkspaceChangeKind.ProjectReloaded:
-				_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(_roslynWorkspaceProvider.Workspace);
+				_hasReferenceToAcumaticaPlatform = GetAcumaticaReferenceOnProjectChange(e, oldHasReferenceToAcumaticaPlatform);
+				break;
+
+			case WorkspaceChangeKind.ProjectAdded:
+				// If we already have a reference to Acumatica platform, adding another project can't change that fact, so we can skip the check
+				if (!oldHasReferenceToAcumaticaPlatform)   
+					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewSolution.Workspace);
+
+				break;
+
+			case WorkspaceChangeKind.ProjectRemoved:
+				// Recalculate only if we had a reference to Acumatica platform before, otherwise it can't be a change that would add the reference back
+				if (oldHasReferenceToAcumaticaPlatform)
+					_hasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewSolution.Workspace);
+
 				break;
 
 			default:
 				return;
 		}
 
-		if (oldValue != _hasReferenceToAcumaticaPlatform)
+		if (oldHasReferenceToAcumaticaPlatform != _hasReferenceToAcumaticaPlatform)
 		{
 			ResetCacheAndFlags(newSnapshotToCache: null);
 
@@ -277,6 +294,58 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 				ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
 		}	
 	}
+
+	private bool GetAcumaticaReferenceOnProjectChange(WorkspaceChangeEventArgs e, bool oldHasReferenceToAcumaticaPlatform)
+	{
+		if (e.ProjectId == null)
+			return CheckIfCurrentSolutionHasReferenceToAcumatica(e.NewSolution.Workspace);
+
+		var changedProject = e.NewSolution.GetProject(e.ProjectId);
+
+		if (changedProject == null)
+			return false;
+
+		var textContainer = Buffer.AsTextContainer();
+		var documentID = e.NewSolution.Workspace.GetDocumentIdInCurrentContext(textContainer);
+
+		if (!e.ProjectId.Equals(documentID?.ProjectId))
+			return oldHasReferenceToAcumaticaPlatform;
+
+		// Check for the project if the changed project has reference to Acumatica platform in its metadata or name.
+		if (CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata(changedProject))
+			return true;
+
+		// Do a BFS among the referenced projects. In practice, there should not be many projects referenced by the changed project.
+		// It's better that doing a full solution scan.
+		var visitedProjects = new HashSet<ProjectId>();
+		var referencedProjects = GetReferencedProjects(changedProject);
+		var projectsToVisit = new Queue<Project>(referencedProjects!);
+
+		while (projectsToVisit.Count > 0)
+		{
+			var currentProject = projectsToVisit.Dequeue();
+
+			if (!visitedProjects.Add(currentProject.Id))
+				continue;
+
+			if (CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata(currentProject))
+				return true;
+
+			var currentReferencedProjects = GetReferencedProjects(currentProject);
+
+			foreach (var refProject in currentReferencedProjects)
+			{
+				if (!visitedProjects.Contains(refProject.Id))
+					projectsToVisit.Enqueue(refProject);
+			}
+		}
+
+		return false;
+	}
+
+	private bool CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata(Project project) =>
+		project.MetadataReferences.Any(IsAcumaticaAssemblyName) ||
+		IsAcumaticaAssemblyName(project);
 
 	private void WorkspaceAttachedToDocumentChanged(object sender, DocumentWorkspaceChangedEventArgs e)
 	{
@@ -329,6 +398,9 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		return hasAcumaticaProjectsInSolution;
 	}
 
+	private static bool IsAcumaticaAssemblyName(Project project) =>
+		IsAcumaticaAssemblyName(project.Name) || IsAcumaticaAssemblyName(project.AssemblyName);
+
 	private static bool IsAcumaticaAssemblyName(MetadataReference reference)
 	{
 		string referenceName = Path.GetFileNameWithoutExtension(reference.Display);
@@ -337,4 +409,14 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	private static bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName == dllName ||
 																   ColoringConstants.AppDllName == dllName;
+
+	private static IEnumerable<Project> GetReferencedProjects(Project project)
+	{
+		if (project.AllProjectReferences.Count == 0)
+			return [];
+
+		return project.AllProjectReferences
+					  .Select(projectReference => project.Solution.GetProject(projectReference.ProjectId))
+					  .Where(project => project != null)!;
+	}
 }
