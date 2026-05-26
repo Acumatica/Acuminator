@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Settings;
 
 using Microsoft.CodeAnalysis;
@@ -304,11 +305,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 		if (changedProject == null)
 			return false;
-
-		var textContainer = Buffer.AsTextContainer();
-		var documentID = e.NewSolution.Workspace.GetDocumentIdInCurrentContext(textContainer);
-
-		if (!e.ProjectId.Equals(documentID?.ProjectId))
+		else if (!CanChangedProjectAffectDocumentColoring(changedProject))
 			return oldHasReferenceToAcumaticaPlatform;
 
 		// Check for the project if the changed project has reference to Acumatica platform in its metadata or name.
@@ -317,30 +314,34 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 		// Do a BFS among the referenced projects. In practice, there should not be many projects referenced by the changed project.
 		// It's better that doing a full solution scan.
-		var visitedProjects = new HashSet<ProjectId>();
-		var referencedProjects = GetReferencedProjects(changedProject);
-		var projectsToVisit = new Queue<Project>(referencedProjects!);
+		var allReferencedProjects = changedProject.GetAllReferencedProjects();
+		return allReferencedProjects.Count > 0 && 
+			   allReferencedProjects.Any(CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata);
+	}
 
-		while (projectsToVisit.Count > 0)
-		{
-			var currentProject = projectsToVisit.Dequeue();
+	private bool CanChangedProjectAffectDocumentColoring(Project changedProject)
+	{
+		var textContainer = Buffer.AsTextContainer();
 
-			if (!visitedProjects.Add(currentProject.Id))
-				continue;
+		if (textContainer == null)
+			return false;
 
-			if (CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata(currentProject))
-				return true;
+		var documentID = changedProject.Solution.Workspace.GetDocumentIdInCurrentContext(textContainer);
 
-			var currentReferencedProjects = GetReferencedProjects(currentProject);
+		if (documentID?.ProjectId == null)
+			return false;
+		else if (changedProject.Id.Equals(documentID.ProjectId))
+			return true;
 
-			foreach (var refProject in currentReferencedProjects)
-			{
-				if (!visitedProjects.Contains(refProject.Id))
-					projectsToVisit.Enqueue(refProject);
-			}
-		}
+		var documentProject = changedProject.Solution.GetProject(documentID.ProjectId);
 
-		return false;
+		if (documentProject?.AllProjectReferences.Count is null or 0)
+			return false;
+		else if (documentProject.AllProjectReferences.Any(projectRef => projectRef.ProjectId.Equals(changedProject.Id)))
+			return true;
+
+		var allReferencedProjects = documentProject.GetAllReferencedProjects();
+		return allReferencedProjects.Any(project => project.Id.Equals(changedProject.Id));
 	}
 
 	private bool CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata(Project project) =>
@@ -410,13 +411,5 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	private static bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName == dllName ||
 																   ColoringConstants.AppDllName == dllName;
 
-	private static IEnumerable<Project> GetReferencedProjects(Project project)
-	{
-		if (project.AllProjectReferences.Count == 0)
-			return [];
-
-		return project.AllProjectReferences
-					  .Select(projectReference => project.Solution.GetProject(projectReference.ProjectId))
-					  .Where(project => project != null)!;
-	}
+	
 }

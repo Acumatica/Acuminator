@@ -129,5 +129,80 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			return oldProject.MetadataReferences.Count != newProject.MetadataReferences.Count ||
 				   oldProject.AllProjectReferences.Count != newProject.AllProjectReferences.Count;
 		}
+
+		/// <summary>
+		/// Get DAG with all referenced projects of <paramref name="project"/> and the <paramref name="project"/> itself.
+		/// Collection starts with the <paramref name="project"/>.
+		/// </summary>
+		/// <param name="project">The project to act on.</param>
+		/// <returns>
+		/// DAG with all referenced projects of <paramref name="project"/> and the <paramref name="project"/> itself.
+		/// </returns>
+		public static IReadOnlyCollection<Project> GetAllReferencedProjectsAndThis(this Project project) =>
+			GetAllReferencedProjectsImpl(project, includeProject: true);
+
+		/// <summary>
+		/// Get DAG with all referenced projects of <paramref name="project"/>.
+		/// </summary>
+		/// <param name="project">The project to act on.</param>
+		/// <returns>
+		/// DAG with all referenced projects of <paramref name="project"/>.
+		/// </returns>
+		public static IReadOnlyCollection<Project> GetAllReferencedProjects(this Project project) =>
+			GetAllReferencedProjectsImpl(project, includeProject: false);
+
+		private static IReadOnlyCollection<Project> GetAllReferencedProjectsImpl(Project project, bool includeProject)
+		{
+			if (project.CheckIfNull().AllProjectReferences.Count == 0)
+			{
+				return includeProject
+					? [project]
+					: [];
+			}
+
+			var solution = project.Solution;
+			var allReferencedProjects = includeProject
+				? new List<Project>(2*project.AllProjectReferences.Count + 1) { project }
+				: new List<Project>(2*project.AllProjectReferences.Count);
+
+			var visitedProjects = new HashSet<ProjectId> { project.Id };
+			var projectsToVisit = new Queue<ProjectId>(project.AllProjectReferences.Select(pr => pr.ProjectId));
+
+			while (projectsToVisit.Count > 0)
+			{
+				var currentProjectId = projectsToVisit.Dequeue();
+
+				if (!visitedProjects.Add(currentProjectId))
+					continue;
+
+				var currentProject = solution.GetProject(currentProjectId);
+
+				if (currentProject == null)
+					continue;
+
+				allReferencedProjects.Add(currentProject);
+
+				if (currentProject.AllProjectReferences.Count == 0)
+					continue;
+
+				foreach (var projectReference in currentProject.AllProjectReferences)
+				{
+					if (!visitedProjects.Contains(projectReference.ProjectId))
+						projectsToVisit.Enqueue(projectReference.ProjectId);
+				}
+			}
+
+			return allReferencedProjects;
+		}
+
+		public static IEnumerable<Project> GetDirectlyReferencedProjects(this Project project)
+		{
+			if (project.CheckIfNull().AllProjectReferences.Count == 0)
+				return [];
+
+			return project.AllProjectReferences
+						  .Select(projectReference => project.Solution.GetProject(projectReference.ProjectId))
+						  .Where(project => project != null)!;
+		}
 	}
 }
