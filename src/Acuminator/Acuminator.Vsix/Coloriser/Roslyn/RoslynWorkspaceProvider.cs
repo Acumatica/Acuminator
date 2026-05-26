@@ -106,8 +106,8 @@ internal class RoslynWorkspaceProvider : IDisposable
 		if (workspace == null)
 			return null;
 
-		const string previewWorkspaceKind = "MiscellaneousFiles";
-		return previewWorkspaceKind.Equals(workspace.Kind, StringComparison.OrdinalIgnoreCase)
+		// Preview workspace created by VS while a proper workspace is being initialized has kind "MiscellaneousFiles".
+		return WorkspaceKind.MiscellaneousFiles.Equals(workspace.Kind, StringComparison.OrdinalIgnoreCase)
 			? null
 			: workspace;
 	}
