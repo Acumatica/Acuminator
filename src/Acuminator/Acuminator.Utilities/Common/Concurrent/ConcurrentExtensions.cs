@@ -41,8 +41,16 @@ namespace Acuminator.Utilities.Common
 		public async static Task<bool> TryAwait(this Task? task, Action<Exception>? logger = null, 
 												bool continueOnCapturedContext = false)
 		{
-			if (task == null || task.IsCanceled || task.IsFaulted)
+			if (task == null || task.IsCanceled)
 				return false;
+
+			if (task.IsFaulted)
+			{
+				if (task.Exception != null)
+					logger?.Invoke(task.Exception);
+
+				return false;
+			}
 
 			try
 			{
@@ -70,8 +78,21 @@ namespace Acuminator.Utilities.Common
 		public async static ValueTask<bool> TryAwait(this ValueTask task, Action<Exception>? logger = null, 
 													 bool continueOnCapturedContext = false)
 		{
-			if (task.IsCanceled || task.IsFaulted)
+			if (task.IsCanceled)
 				return false;
+
+			if (task.IsFaulted)
+			{
+				if (logger != null)
+				{
+					var exception = task.AsTask().Exception;
+
+					if (exception != null)
+						logger.Invoke(exception);
+				}
+
+				return false;
+			}
 
 			try
 			{
@@ -100,8 +121,16 @@ namespace Acuminator.Utilities.Common
 		public async static Task<TaskResult<TResult>> TryAwait<TResult>(this Task<TResult>? task, Action<Exception>? logger = null,
 																		bool continueOnCapturedContext = false)
 		{
-			if (task == null || task.IsCanceled || task.IsFaulted)
+			if (task == null || task.IsCanceled)
 				return new TaskResult<TResult>(false, default);
+
+			if (task.IsFaulted)
+			{
+				if (task.Exception != null)
+					logger?.Invoke(task.Exception);
+
+				return new TaskResult<TResult>(false, default);
+			}
 
 			try
 			{
@@ -130,8 +159,21 @@ namespace Acuminator.Utilities.Common
 		public async static ValueTask<TaskResult<TResult>> TryAwait<TResult>(this ValueTask<TResult> task, Action<Exception>? logger = null,
 																			 bool continueOnCapturedContext = false)
 		{
-			if (task.IsCanceled || task.IsFaulted)
+			if (task.IsCanceled)
 				return new TaskResult<TResult>(false, default);
+
+			if (task.IsFaulted)
+			{
+				if (logger != null)
+				{
+					var exception = task.AsTask().Exception;
+
+					if (exception != null)
+						logger.Invoke(exception);
+				}
+				
+				return new TaskResult<TResult>(false, default);
+			}
 
 			try
 			{
