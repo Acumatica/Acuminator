@@ -260,7 +260,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			if (e.NewWorkspace != null)
 			{
 				e.NewWorkspace.WorkspaceChanged += OnWorkspaceChanged;
-				_hasReferenceToAcumaticaPlatform = CalculateAcumaticaReferenceForDocumentProject(e.NewWorkspace.CurrentSolution);
+				_hasReferenceToAcumaticaPlatform = CalculateAcumaticaReferenceForDocumentInSolution(e.NewWorkspace.CurrentSolution);
 			}
 			else
 			{
@@ -292,7 +292,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			case WorkspaceChangeKind.SolutionAdded:
 			case WorkspaceChangeKind.SolutionChanged:
 			case WorkspaceChangeKind.SolutionReloaded:
-				_hasReferenceToAcumaticaPlatform = CalculateAcumaticaReferenceForDocumentProject(e.NewSolution);
+				_hasReferenceToAcumaticaPlatform = CalculateAcumaticaReferenceForDocumentInSolution(e.NewSolution);
 				break;
 
 			case WorkspaceChangeKind.ProjectChanged:
@@ -339,13 +339,13 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (e.ProjectId == null)
 		{
 			// In case the changed project is unknown, we need to recalculate the reference to Acumatica platform for the document project
-			return CalculateAcumaticaReferenceForDocumentProject(documentProjectNew);
+			return CalculateAcumaticaReferenceForProject(documentProjectNew);
 		}
 
 		var changedProjectNew = e.NewSolution.GetProject(e.ProjectId);
 
 		if (changedProjectNew == null || changedProjectNew.Id.Equals(documentProjectNew.Id))
-			return CalculateAcumaticaReferenceForDocumentProject(documentProjectNew);
+			return CalculateAcumaticaReferenceForProject(documentProjectNew);
 		else if (documentProjectNew.AllProjectReferences.Count == 0)
 			return oldHasReferenceToAcumaticaPlatform;
 
@@ -368,14 +368,14 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (e.ProjectId == null)
 		{
 			// In case the changed project is unknown, we need to recalculate the reference to Acumatica platform for the document project
-			return CalculateAcumaticaReferenceForDocumentProject(documentProjectNew);
+			return CalculateAcumaticaReferenceForProject(documentProjectNew);
 		}
 
 		var deletedProjectOld = e.OldSolution.GetProject(e.ProjectId);
 		var documentProjectOld = GetCurrentDocumentProject(e.OldSolution);
 
 		if (deletedProjectOld == null || documentProjectOld == null)
-			return CalculateAcumaticaReferenceForDocumentProject(documentProjectNew);
+			return CalculateAcumaticaReferenceForProject(documentProjectNew);
 		else if (documentProjectOld.Id.Equals(deletedProjectOld.Id))
 			return false;
 		else if (documentProjectOld.AllProjectReferences.Count == 0)
@@ -394,32 +394,28 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		return docProjectWithAllReferencedProjectsNew.Any(CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata);
 	}
 
-	private bool CalculateAcumaticaReferenceForDocumentProject(Solution? solution)
+	private bool CalculateAcumaticaReferenceForDocumentInSolution(Solution? solution)
 	{
 		if (solution == null || solution.ProjectIds.Count == 0)
 			return false;
 
 		var documentProjectNew = GetCurrentDocumentProject(solution);
-		return documentProjectNew != null && CalculateAcumaticaReferenceForDocumentProject(documentProjectNew);
+		return documentProjectNew != null && CalculateAcumaticaReferenceForProject(documentProjectNew);
 	}
 
-	private bool CalculateAcumaticaReferenceForDocumentProject(Project documentProject)
+	private bool CalculateAcumaticaReferenceForProject(Project project)
 	{
-		if (CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata(documentProject))
+		if (CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata(project))
 			return true;
-		else if (documentProject.AllProjectReferences.Count == 0)
+		else if (project.AllProjectReferences.Count == 0)
 			return false;
 		else
-			return documentProject.GetAllReferencedProjects().Any(CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata);
+			return project.GetAllReferencedProjects().Any(CheckIfProjectHasReferenceToAcumaticaInNameOrMetadata);
 	}
 
 	private Project? GetCurrentDocumentProject(Solution solution)
 	{
 		var textContainer = Buffer.AsTextContainer();
-
-		if (textContainer == null)
-			return null;
-
 		var documentID = solution.Workspace.GetDocumentIdInCurrentContext(textContainer);
 
 		if (documentID?.ProjectId == null)
