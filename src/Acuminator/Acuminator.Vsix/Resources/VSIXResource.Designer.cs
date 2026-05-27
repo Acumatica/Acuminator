@@ -19,7 +19,7 @@ namespace Acuminator.Vsix {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class VSIXResource {
@@ -953,7 +953,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expand Code Map attribute nodes on opening..
+        ///   Looks up a localized string similar to Expand attribute nodes when the Code Map is opened..
         /// </summary>
         public static string Setting_CodeMap_ExpandAttributeNodes_Description {
             get {
@@ -971,7 +971,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expand Code Map regular non-attribute nodes on opening..
+        ///   Looks up a localized string similar to Expand regular non-attribute nodes when the Code Map is opened..
         /// </summary>
         public static string Setting_CodeMap_ExpandRegularNodes_Description {
             get {
@@ -980,7 +980,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expand Regular Nodes .
+        ///   Looks up a localized string similar to Expand Regular Nodes.
         /// </summary>
         public static string Setting_CodeMap_ExpandRegularNodes_Title {
             get {
@@ -989,7 +989,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expand Code Map root nodes on opening..
+        ///   Looks up a localized string similar to Expand root nodes when the Code Map is opened..
         /// </summary>
         public static string Setting_CodeMap_ExpandRootNodes_Description {
             get {
@@ -1111,24 +1111,6 @@ namespace Acuminator.Vsix {
         public static string Setting_UseBqlOutlining_Title {
             get {
                 return ResourceManager.GetString("Setting_UseBqlOutlining_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use the syntax colorizer based on regular expressions, which provides worse coloring but works faster. If set to false, Roslyn coloring is used..
-        /// </summary>
-        public static string Setting_UseRegexColoring_Description {
-            get {
-                return ResourceManager.GetString("Setting_UseRegexColoring_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use RegEx colorizer.
-        /// </summary>
-        public static string Setting_UseRegexColoring_Title {
-            get {
-                return ResourceManager.GetString("Setting_UseRegexColoring_Title", resourceCulture);
             }
         }
         
