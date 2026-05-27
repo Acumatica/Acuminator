@@ -256,7 +256,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 				e.OldWorkspace.WorkspaceChanged -= OnWorkspaceChanged;
 
 			// Defensive check in case workspace changed event fired by different threads in a quick succession
-			// We check under lock that we subscribe to the latest namespace
+			// We check under lock that we subscribe to the latest workspace
 			if (!ReferenceEquals(_roslynWorkspaceProvider.Workspace, e.NewWorkspace))
 				return;
 
