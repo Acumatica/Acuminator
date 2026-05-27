@@ -32,44 +32,161 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
-		/// A Task extension method that attempts to await task which could be cancelled.
+		/// A Task extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
 		/// <param name="task">The task to act on.</param>
-		/// <returns/>      
-		public async static Task<bool> TryAwait(this Task? task)
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
+		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
+		/// <returns/>
+		public async static Task<bool> TryAwait(this Task? task, Action<Exception>? logger = null, 
+												bool continueOnCapturedContext = false)
 		{
-			if (task == null || task.IsCanceled || task.IsFaulted)
+			if (task == null || task.IsCanceled)
 				return false;
+
+			if (task.IsFaulted)
+			{
+				if (task.Exception != null)
+					logger?.Invoke(task.Exception);
+
+				return false;
+			}
 
 			try
 			{
-				await task.ConfigureAwait(false);
+				await task.ConfigureAwait(continueOnCapturedContext);
 				return true;
 			}
-			catch (OperationCanceledException)
+			catch (OperationCanceledException cancelledException)
 			{
+				return false;
+			}
+			catch (Exception exception)
+			{
+				logger?.Invoke(exception);
 				return false;
 			}
 		}
 
 		/// <summary>
-		/// A <see cref="Task{TResult}"/> extension method that attempts to await task which could be cancelled.
+		/// A <see cref="ValueTask"/> extension method that attempts to await task which could be cancelled or faulted.
 		/// </summary>
-		/// <typeparam name="TResult">Type of the result.</typeparam>
 		/// <param name="task">The task to act on.</param>
-		/// <returns/>      
-		public async static Task<TaskResult<TResult>> TryAwait<TResult>(this Task<TResult>? task)
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
+		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
+		/// <returns/>
+		public async static ValueTask<bool> TryAwait(this ValueTask task, Action<Exception>? logger = null, 
+													 bool continueOnCapturedContext = false)
 		{
-			if (task == null || task.IsCanceled || task.IsFaulted)
-				return new TaskResult<TResult>(false, default);
+			if (task.IsCanceled)
+				return false;
+
+			if (task.IsFaulted)
+			{
+				if (logger != null)
+				{
+					var exception = task.AsTask().Exception;
+
+					if (exception != null)
+						logger.Invoke(exception);
+				}
+
+				return false;
+			}
 
 			try
 			{
-				TResult? result = await task.ConfigureAwait(false);
+				await task.ConfigureAwait(continueOnCapturedContext);
+				return true;
+			}
+			catch (OperationCanceledException cancelledException)
+			{
+				return false;
+			}
+			catch (Exception exception)
+			{
+				logger?.Invoke(exception);
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// A <see cref="Task{TResult}"/> extension method that attempts to await task which could be cancelled or faulted.
+		/// </summary>
+		/// <typeparam name="TResult">Type of the result.</typeparam>
+		/// <param name="task">The task to act on.</param>
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
+		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
+		/// <returns/>      
+		public async static Task<TaskResult<TResult>> TryAwait<TResult>(this Task<TResult>? task, Action<Exception>? logger = null,
+																		bool continueOnCapturedContext = false)
+		{
+			if (task == null || task.IsCanceled)
+				return new TaskResult<TResult>(false, default);
+
+			if (task.IsFaulted)
+			{
+				if (task.Exception != null)
+					logger?.Invoke(task.Exception);
+
+				return new TaskResult<TResult>(false, default);
+			}
+
+			try
+			{
+				TResult? result = await task.ConfigureAwait(continueOnCapturedContext);
 				return new TaskResult<TResult>(true, result);
 			}
-			catch (OperationCanceledException)
+			catch (OperationCanceledException cancelledException)
 			{
+				return new TaskResult<TResult>(false, default);
+			}
+			catch (Exception exception)
+			{
+				logger?.Invoke(exception);
+				return new TaskResult<TResult>(false, default);
+			}
+		}
+
+		/// <summary>
+		/// A <see cref="ValueTask{TResult}"/> extension method that attempts to await task which could be cancelled or faulted.
+		/// </summary>
+		/// <typeparam name="TResult">Type of the result.</typeparam>
+		/// <param name="task">The task to act on.</param>
+		/// <param name="logger">(Optional) The optional logger for non cancellation exceptions.</param>
+		/// <param name="continueOnCapturedContext">(Optional) True to continue on captured context.</param>
+		/// <returns/>
+		public async static ValueTask<TaskResult<TResult>> TryAwait<TResult>(this ValueTask<TResult> task, Action<Exception>? logger = null,
+																			 bool continueOnCapturedContext = false)
+		{
+			if (task.IsCanceled)
+				return new TaskResult<TResult>(false, default);
+
+			if (task.IsFaulted)
+			{
+				if (logger != null)
+				{
+					var exception = task.AsTask().Exception;
+
+					if (exception != null)
+						logger.Invoke(exception);
+				}
+				
+				return new TaskResult<TResult>(false, default);
+			}
+
+			try
+			{
+				TResult? result = await task.ConfigureAwait(continueOnCapturedContext);
+				return new TaskResult<TResult>(true, result);
+			}
+			catch (OperationCanceledException cancelledException)
+			{
+				return new TaskResult<TResult>(false, default);
+			}
+			catch (Exception exception)
+			{
+				logger?.Invoke(exception);
 				return new TaskResult<TResult>(false, default);
 			}
 		}

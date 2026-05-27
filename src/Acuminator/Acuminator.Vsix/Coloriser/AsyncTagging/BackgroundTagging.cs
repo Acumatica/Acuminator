@@ -1,7 +1,5 @@
 ﻿#nullable enable
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,10 +11,9 @@ using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public class BackgroundTagging : IDisposable
+	internal class BackgroundTagging : IDisposable
 	{
-		private static TaskScheduler? _vsTaskScheduler;
-
+		private static TaskScheduler? _vsTaskScheduler; 
 		private CancellationTokenSource _cancellationTokenSource = new();
 
 		public CancellationToken CancellationToken => _cancellationTokenSource.Token;
@@ -27,10 +24,9 @@ namespace Acuminator.Vsix.Coloriser
 
 		private BackgroundTagging()
 		{
-
 		}
 
-		public static BackgroundTagging StartBackgroundTagging(PXColorizerTaggerBase tagger)
+		public static BackgroundTagging StartBackgroundTagging(PXRoslynColorizerTagger tagger)
 		{
 			tagger.ThrowOnNull();
 
@@ -48,10 +44,22 @@ namespace Acuminator.Vsix.Coloriser
 			// No need for synchronization because FromCurrentSynchronizationContext creates schedulers which wrap around the same synchronization context
 			// Therefore all schedulers should be identical and nothing wrong will happen if different thread will create multiple instance of the scheduler in a race condition
 			_vsTaskScheduler = _vsTaskScheduler ?? TaskScheduler.FromCurrentSynchronizationContext();
-			backgroundTagging.TaggingTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(tagger, backgroundTagging.CancellationToken),  //continuation should be on the UI thread
+			var continuationTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(task, tagger, backgroundTagging.CancellationToken),  //continuation should be on the UI thread
 																	 backgroundTagging.CancellationToken,
-																	 TaskContinuationOptions.OnlyOnRanToCompletion,
+																	 TaskContinuationOptions.NotOnCanceled,
 																	 _vsTaskScheduler);
+
+			// ContinueWith schedules the lambda on the VS UI thread scheduler. The lambda runs on the UI thread and calls AfterTaggingActionAsync(...).
+			// Inside AfterTaggingActionAsync, the important path calls ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task 
+			// this starts RaiseTagsChangedAsync and immediately returns the underlying Task representing it (still running).
+			// The lambda returns that inner Task immediately — it does not await it.
+			// The outer Task<Task> stored in TaggingTask is marked as Completed (RanToCompletion) at this point, because the lambda has returned. 
+			// The outer task's result is the still-running inner task, but the outer task itself is done.
+			// RaiseTagsChangedAsync may still be running in the background raising tags-changed notifications. 
+			// 
+			// Thus, we need to keep the nested unwrapped task as the tagging task to be able to correctly calculate IsTaskRunning() and 
+			// handle exceptions thrown in the AfterTaggingActionAsync.
+			backgroundTagging.TaggingTask = continuationTask.Unwrap();
 			return backgroundTagging;
 		}
 
@@ -76,12 +84,21 @@ namespace Acuminator.Vsix.Coloriser
 			_cancellationTokenSource.Dispose();
 		}
 
-		private static Task AfterTaggingActionAsync(PXColorizerTaggerBase tagger, CancellationToken cancellationToken)
+		private static Task AfterTaggingActionAsync(Task taggingTask, PXRoslynColorizerTagger tagger, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			if (taggingTask.IsCanceled || cancellationToken.IsCancellationRequested)
+			{
+				tagger.LastTaggingWasSuccessful = false;
 				return Task.FromCanceled(cancellationToken);
+			}
+			
+			if (taggingTask.IsFaulted)
+			{
+				tagger.LastTaggingWasSuccessful = false;
+				return Task.FromException(taggingTask.Exception!);
+			}
 
-			// We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed         
+			// We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed
 			return Shell.ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task;
 		}
 	}

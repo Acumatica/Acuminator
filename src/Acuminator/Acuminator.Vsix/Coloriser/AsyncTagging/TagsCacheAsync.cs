@@ -1,5 +1,4 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -7,77 +6,76 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Acuminator.Vsix.Coloriser
 {
-    public class TagsCacheAsync<TTag> : ITagsCache<TTag>
-    where TTag : ITag
-    {        
-        protected CancellationToken CancellationToken { get; set;  }
+	public class TagsCacheAsync<TTag> : IReadOnlyCollection<ITagSpan<TTag>>
+	where TTag : ITag
+	{
+		protected CancellationToken CancellationToken { get; set; }
 
-        public bool IsCompleted { get; private set; }
+		public bool IsCompleted { get; private set; }
 
-        private readonly ConcurrentQueue<ITagSpan<TTag>> _tagsQueue = new ConcurrentQueue<ITagSpan<TTag>>();
+		private readonly ConcurrentQueue<ITagSpan<TTag>> _tagsQueue = new ConcurrentQueue<ITagSpan<TTag>>();
 
-        public IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags => _tagsQueue;
-        
-        public int Count => ProcessedTags.Count;
+		public IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags => _tagsQueue;
 
-        public TagsCacheAsync()
-        {
-            CancellationToken = CancellationToken.None;
-        }
+		public int Count => ProcessedTags.Count;
 
-        internal void SetCancellation(CancellationToken cancellationToken)
-        {
-            CancellationToken = cancellationToken;
-        }
+		public TagsCacheAsync()
+		{
+			CancellationToken = CancellationToken.None;
+		}
 
-        public void CompleteProcessing()
-        {
-            if (CancellationToken.IsCancellationRequested)
-                return;
+		internal void SetCancellation(CancellationToken cancellationToken)
+		{
+			CancellationToken = cancellationToken;
+		}
 
-            IsCompleted = true;            
-        }
+		public void CompleteProcessing()
+		{
+			if (CancellationToken.IsCancellationRequested)
+				return;
 
-        public void Reset()
-        {
-            _tagsQueue.Clear();
+			IsCompleted = true;
+		}
 
-            IsCompleted = false;                    
-        }
+		public void Reset()
+		{
+			_tagsQueue.Clear();
 
-        public void AddTag(ITagSpan<TTag> tag)
-        {
-            if (tag == null || CancellationToken.IsCancellationRequested)
-                return;
+			IsCompleted = false;
+		}
 
-            _tagsQueue.Enqueue(tag);
-        }
+		public void AddTag(ITagSpan<TTag> tag)
+		{
+			if (tag == null || CancellationToken.IsCancellationRequested)
+				return;
 
-        public void AddTags(IEnumerable<ITagSpan<TTag>> tags)
-        {
-            List<ITagSpan<TTag>>? tagsCopy = tags?.ToList();
+			_tagsQueue.Enqueue(tag);
+		}
 
-            if (tagsCopy.IsNullOrEmpty() || CancellationToken.IsCancellationRequested)
-                return;
+		public void AddTags(IEnumerable<ITagSpan<TTag>> tags)
+		{
+			List<ITagSpan<TTag>>? tagsCopy = tags?.ToList();
 
-            foreach (ITagSpan<TTag> tag in tagsCopy)
-            {
-                if (CancellationToken.IsCancellationRequested)
-                    return;
+			if (tagsCopy.IsNullOrEmpty() || CancellationToken.IsCancellationRequested)
+				return;
 
-                _tagsQueue.Enqueue(tag);
-            }
-        }
+			foreach (ITagSpan<TTag> tag in tagsCopy)
+			{
+				if (CancellationToken.IsCancellationRequested)
+					return;
 
-        public IEnumerator<ITagSpan<TTag>> GetEnumerator() => ProcessedTags.GetEnumerator();
+				_tagsQueue.Enqueue(tag);
+			}
+		}
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    }
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public IEnumerator<ITagSpan<TTag>> GetEnumerator() => ProcessedTags.GetEnumerator();	
+	}
 }

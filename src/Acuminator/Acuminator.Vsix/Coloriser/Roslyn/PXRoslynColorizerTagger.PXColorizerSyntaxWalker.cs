@@ -14,11 +14,9 @@ using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 
@@ -26,9 +24,9 @@ using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
+	internal partial class PXRoslynColorizerTagger : PXTaggerBase
 	{
-		protected class PXColoriserSyntaxWalker : CSharpSyntaxWalker
+		protected class PXColorizerSyntaxWalker : CSharpSyntaxWalker
 		{
 			private const string VarKeyword = "var";
 
@@ -43,7 +41,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			private bool IsInsideBqlCommand => _bqlDeepnessLevel > 0;
 
-			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
+			public PXColorizerSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
 									  base(SyntaxWalkerDepth.Node)
 			{
 				_tagger = tagger.CheckIfNull();

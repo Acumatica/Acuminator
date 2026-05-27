@@ -1,33 +1,32 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-
-using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
+	/// <summary>
+	/// An outlining tagger. Delegates the collection of outlining tags to the <see cref="PXRoslynColorizerTagger"/>.<br/>
+	/// Subscribes to the <see cref="PXRoslynColorizerTagger.TagsChanged"/> event to raise its own <see cref="ITagger{T}.TagsChanged"/> event when the colorizing tagger's tags change.
+	/// </summary>
+	internal class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
 	{
 		private int _isSubscribed = NOT_SUBSCRIBED;
 		private const int NOT_SUBSCRIBED = 0;
 		private const int SUBSCRIBED = 1;
 
-		public override TaggerType TaggerType => TaggerType.Outlining;
+		protected PXRoslynColorizerTagger? ColorizerTagger { get; private set; }
 
-		protected PXOutliningTaggerProvider Provider => (ProviderBase as PXOutliningTaggerProvider)!;
+		[MemberNotNullWhen(returnValue: true, nameof(ColorizerTagger))]
+		public override bool HasReferenceToAcumaticaPlatform => ColorizerTagger?.HasReferenceToAcumaticaPlatform ?? false;
 
-		protected PXColorizerTaggerBase? ColorizerTagger { get; private set; }
-
-		public PXOutliningTagger(ITextBuffer buffer, PXOutliningTaggerProvider aProvider,
-								 bool subscribeToSettingsChanges, bool useCacheChecking) :
-							base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
+		public PXOutliningTagger(ITextBuffer buffer, bool subscribeToSettingsChanges, bool useCacheChecking) :
+							base(buffer, subscribeToSettingsChanges, useCacheChecking)
 		{
 		}
 
@@ -38,33 +37,26 @@ namespace Acuminator.Vsix.Coloriser
 
 			if (ColorizerTagger == null)
 			{
-				if (!TryGetColorizingTaggerFromBuffer(Buffer, out PXColorizerTaggerBase colorizingTagger) || colorizingTagger == null)
+				if (!TryGetColorizingTaggerFromBuffer(Buffer, out PXRoslynColorizerTagger colorizingTagger) || colorizingTagger == null)
 					return [];
 
 				SubscribeToColorizingTaggerEvents(colorizingTagger);
 			}
 
-			switch (ColorizerTagger?.TaggerType)
-			{
-				case TaggerType.General when AcuminatorVSPackage.Instance?.UseRegexColoring == true:
-				case TaggerType.RegEx:
-				case null:
-					return [];
-			}
+			// Check reference to Acumatica platform only after initializing ColorizerTagger
+			if (!HasReferenceToAcumaticaPlatform)
+				return [];
 
 			return ColorizerTagger.OutliningsTagsCache.ProcessedTags;
 		}
 
-		private static bool TryGetColorizingTaggerFromBuffer(ITextBuffer textBuffer, out PXColorizerTaggerBase colorizingTagger)
+		private static bool TryGetColorizingTaggerFromBuffer(ITextBuffer textBuffer, out PXRoslynColorizerTagger colorizingTagger)
 		{
-			return textBuffer.Properties.TryGetProperty(typeof(PXColorizerTaggerBase), out colorizingTagger);
+			return textBuffer.Properties.TryGetProperty(typeof(PXRoslynColorizerTagger), out colorizingTagger);
 		}
 
-		private void SubscribeToColorizingTaggerEvents(PXColorizerTaggerBase colorizerTagger)
+		private void SubscribeToColorizingTaggerEvents(PXRoslynColorizerTagger colorizerTagger)
 		{
-			if (colorizerTagger.TaggerType == TaggerType.RegEx)
-				return;
-
 			if (Interlocked.Exchange(ref _isSubscribed, SUBSCRIBED) == NOT_SUBSCRIBED)
 			{
 				ColorizerTagger = colorizerTagger;
@@ -74,7 +66,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		private void OnColorizingTaggerTagsChanged(object sender, SnapshotSpanEventArgs e)
 		{
-			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
+			RaiseTagsChanged();
 		}
 
 		public override void Dispose()

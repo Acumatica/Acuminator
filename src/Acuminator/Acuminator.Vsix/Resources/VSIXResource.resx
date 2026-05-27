@@ -469,12 +469,6 @@ This option should be used together with the "Banned API File" setting.</value>
   <data name="Setting_UseBqlOutlining_Title" xml:space="preserve">
     <value>Use BQL outlining</value>
   </data>
-  <data name="Setting_UseRegexColoring_Description" xml:space="preserve">
-    <value>Use the syntax colorizer based on regular expressions, which provides worse coloring but works faster. If set to false, Roslyn coloring is used.</value>
-  </data>
-  <data name="Setting_UseRegexColoring_Title" xml:space="preserve">
-    <value>Use RegEx colorizer</value>
-  </data>
   <data name="Settings_InvalidFileErrorCaption" xml:space="preserve">
     <value>Invalid or not existing file</value>
   </data>
