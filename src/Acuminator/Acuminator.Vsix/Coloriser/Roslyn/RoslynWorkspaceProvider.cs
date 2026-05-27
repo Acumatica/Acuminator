@@ -48,10 +48,14 @@ internal class RoslynWorkspaceProvider : IDisposable
 	public RoslynWorkspaceProvider(ITextBuffer buffer)
 	{
 		SourceTextContainer sourceTextContainer = buffer.CheckIfNull().AsTextContainer();
-		_workspaceRegistration = Workspace.GetWorkspaceRegistration(sourceTextContainer);
-		_workspaceRegistration.WorkspaceChanged += OnWorkspaceChanged;
 
-		_workspace = GetWorkspaceThatSupportsColoring(_workspaceRegistration);
+		lock (WorkspaceSubscriptionLocker)
+		{
+			_workspaceRegistration = Workspace.GetWorkspaceRegistration(sourceTextContainer);
+			_workspaceRegistration.WorkspaceChanged += OnWorkspaceChanged;
+
+			_workspace = GetWorkspaceThatSupportsColoring(_workspaceRegistration);
+		}
 	}
 
 	private void OnWorkspaceChanged(object sender, EventArgs e)

@@ -45,24 +45,28 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	}
 
 	private readonly RoslynWorkspaceProvider _roslynWorkspaceProvider;
+	private readonly SourceTextContainer _cachedTextContainer;
 
 	public PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider provider, bool subscribeToSettingsChanges,
 									bool useCacheChecking) :
 							  base(buffer, subscribeToSettingsChanges, useCacheChecking)
 	{
 		Provider = provider.CheckIfNull();
+		_cachedTextContainer = Buffer.AsTextContainer();
 		ClassificationTagsCache = new TagsCacheAsync<IClassificationTag>();
 		OutliningsTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
 
 		_roslynWorkspaceProvider = new RoslynWorkspaceProvider(buffer);
-		_roslynWorkspaceProvider.WorkspaceChanged += WorkspaceAttachedToDocumentChanged;
 
-		// Drive initial setup through the same code path as change events.
-		// If a real change fires between the subscribe above and this call, the handler is idempotent
-		// (guarded by _subscribedWorkspace) — whichever invocation runs second is a no-op.
-		WorkspaceAttachedToDocumentChanged(this,
-			new DocumentWorkspaceChangedEventArgs(oldWorkspace: null, newWorkspace: _roslynWorkspaceProvider.Workspace));
+		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
+		{
+			_roslynWorkspaceProvider.WorkspaceChanged += WorkspaceAttachedToDocumentChanged;
 
+			// Drive initial setup through the same code path as change events.
+			WorkspaceAttachedToDocumentChanged(this,
+				new DocumentWorkspaceChangedEventArgs(oldWorkspace: null, newWorkspace: _roslynWorkspaceProvider.Workspace));
+		}
+		
 		//Buffer.Changed += Buffer_Changed;
 	}
 
@@ -415,8 +419,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 	private Project? GetCurrentDocumentProject(Solution solution)
 	{
-		var textContainer = Buffer.AsTextContainer();
-		var documentID = solution.Workspace.GetDocumentIdInCurrentContext(textContainer);
+		var documentID = solution.Workspace.GetDocumentIdInCurrentContext(_cachedTextContainer);
 
 		if (documentID?.ProjectId == null)
 			return null;
