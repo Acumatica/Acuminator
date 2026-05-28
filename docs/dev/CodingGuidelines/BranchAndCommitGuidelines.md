@@ -7,7 +7,7 @@ When creating a new branch for a feature or a bug fix, follow the guidelines bel
    For example, branch with a new diagnostic is a "feature" branch. Branch with a fix for an existing diagnostic is a "bugfix" branch.
 3. Optionally, the branch should include the base branch name, which is usually the "dev" branch. This will help to quickly identify the base branch for the changes.
 
-Some of the Acuminator bugs and features are tracked in Acumatica internal bug tracking system and have an identifier assigned to them. These numbers have the following format: `ATR-XXX`, where XXX is a three digit number. If that is the case and this number is known, 
+Some of the Acuminator bugs and features are tracked in Acumatica internal bug tracking system and have an identifier assigned to them. These numbers have the following format: `ATR-XXX`, where XXX is a number. If that is the case and this number is known, 
 then the Git branch related to the bug or the feature should include this number in its name. The recommended naming convention for the branch in this case is:
 ```
 {type}/ATR-XXX-{baseBranch}-{shortDescription}
