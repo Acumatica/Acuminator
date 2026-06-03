@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 
 		public static CodeAnalysisSettings GetCodeAnalysisSettings(string? sharedMemoryName = null)
 		{
-			if (SharedVsSettings.IsInsideVsProcess)
+			if (GlobalSettings.HostType == AnalysisHostType.Runner || SharedVsSettings.IsInsideVsProcess)
 				return GlobalSettings.AnalysisSettings;
 
 			EnsureSharedMemoryIsOpened(sharedMemoryName);
@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 		public static (CodeAnalysisSettings AnalysisSettings, BannedApiSettings BannedApiSettings) GetCodeAnalysisAndBannedApiSettings(
 																										string? sharedMemoryName = null)
 		{
-			if (SharedVsSettings.IsInsideVsProcess)
+			if (GlobalSettings.HostType == AnalysisHostType.Runner || SharedVsSettings.IsInsideVsProcess)
 				return (GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
 
 			EnsureSharedMemoryIsOpened(sharedMemoryName);

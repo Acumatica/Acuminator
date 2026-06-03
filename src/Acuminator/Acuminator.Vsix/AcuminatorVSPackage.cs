@@ -468,7 +468,7 @@ namespace Acuminator.Vsix
 				bannedApiSettings	 = BannedApiSettings.Default;
 			}
 
-			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings, bannedApiSettings);
+			GlobalSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings, bannedApiSettings, AnalysisHostType.VisualStudio);
 
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
 			SharedVsSettings.VSVersion = VSVersion;

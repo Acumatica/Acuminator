@@ -40,7 +40,7 @@ namespace Acuminator.Runner.Analysis.Initialization
 		{
 			try
 			{
-				GlobalSettings.InitializeGlobalSettingsOnce(_analysisContext.CodeAnalysisSettings, _analysisContext.BannedApiSettings);
+				GlobalSettings.InitializeGlobalSettingsOnce(_analysisContext.CodeAnalysisSettings, _analysisContext.BannedApiSettings, AnalysisHostType.Runner);
 				var analyzers = CollectAnalyzers();
 
 				var acuminatorVersion = typeof(Acuminator.SharedConstants).Assembly.GetName()?.Version;
