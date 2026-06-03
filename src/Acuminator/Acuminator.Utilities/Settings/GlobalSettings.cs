@@ -20,7 +20,7 @@ namespace Acuminator.Utilities
 		public static BannedApiSettings BannedApiSettings => _cachedBannedApiSettings ?? BannedApiSettings.Default;
 
 		/// <summary>
-		/// Initializes the global settings once. Must be called on package initialization.
+		/// Initializes the global settings once. Must be called on analysis initialization before the analysis starts.
 		/// </summary>
 		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
 		/// <param name="bannedApiSettings">The banned API settings.</param>
