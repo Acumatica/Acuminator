@@ -5,13 +5,15 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities
 {
-	public class GlobalSettings
+	public static class GlobalSettings
 	{
 		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
 		private static int _isInitialized = NOT_INITIALIZED;
 
 		private static CodeAnalysisSettings? _cachedCodeAnalysisSettings;
 		private static BannedApiSettings? _cachedBannedApiSettings;
+
+		public static AnalysisHostType HostType { get; private set; } = AnalysisHostType.NotSpecified;
 
 		public static CodeAnalysisSettings AnalysisSettings => _cachedCodeAnalysisSettings ?? CodeAnalysisSettings.Default;
 
@@ -22,7 +24,9 @@ namespace Acuminator.Utilities
 		/// </summary>
 		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
 		/// <param name="bannedApiSettings">The banned API settings.</param>
-		public static void InitializeGlobalSettingsOnce(CodeAnalysisSettings codeAnalysisSettings, BannedApiSettings bannedApiSettings)
+		/// <param name="hostType">The type of the host in which the analysis is performed.</param>
+		public static void InitializeGlobalSettingsOnce(CodeAnalysisSettings codeAnalysisSettings, BannedApiSettings bannedApiSettings,
+														AnalysisHostType hostType)
 		{
 			codeAnalysisSettings.ThrowOnNull();
 			bannedApiSettings.ThrowOnNull();
@@ -31,6 +35,7 @@ namespace Acuminator.Utilities
 			{
 				_cachedCodeAnalysisSettings = codeAnalysisSettings;
 				_cachedBannedApiSettings 	= bannedApiSettings;
+				HostType = hostType;
 			}
 		}
 
@@ -39,11 +44,13 @@ namespace Acuminator.Utilities
 		/// </summary>
 		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
 		/// <param name="bannedApiSettings">The banned API settings.</param>
+		/// <param name="hostType">The type of the host in which the analysis is performed.</param>
 		internal static void InitializeGlobalSettingsThreadUnsafeForTestsOnly(CodeAnalysisSettings codeAnalysisSettings, 
 																			  BannedApiSettings bannedApiSettings)
 		{
 			_cachedCodeAnalysisSettings = codeAnalysisSettings.CheckIfNull();
 			_cachedBannedApiSettings 	= bannedApiSettings.CheckIfNull();
+			HostType = AnalysisHostType.NotSpecified;
 		}
 	}
 }
