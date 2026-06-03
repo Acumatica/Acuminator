@@ -44,7 +44,6 @@ namespace Acuminator.Utilities
 		/// </summary>
 		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
 		/// <param name="bannedApiSettings">The banned API settings.</param>
-		/// <param name="hostType">The type of the host in which the analysis is performed.</param>
 		internal static void InitializeGlobalSettingsThreadUnsafeForTestsOnly(CodeAnalysisSettings codeAnalysisSettings, 
 																			  BannedApiSettings bannedApiSettings)
 		{
