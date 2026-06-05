@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -34,48 +33,38 @@ namespace Acuminator.Vsix.Coloriser
 		internal ITextDocumentFactoryService TextDocumentFactory { get; }
 
 		private const string TextCategory = "text";
+
 		private static readonly object _syncRoot = new object();
-		private static bool _isPriorityIncreased;
+		private static volatile bool _isPriorityIncreased;
 
-		[MemberNotNullWhen(returnValue: true, nameof(_codeColoringClassificationTypes), nameof(_braceTypeByLevel))]
-		protected bool AreClassificationsInitialized
-		{
-			get;
-			private set;
-		}
+		private readonly Dictionary<PXCodeType, IClassificationType> _codeColoringClassificationTypes;
 
-		private Dictionary<PXCodeType, IClassificationType> _codeColoringClassificationTypes = null!;
-
-		public IClassificationType? this[PXCodeType codeType]
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get {
-				return _codeColoringClassificationTypes.TryGetValue(codeType, out IClassificationType type)
+		public IClassificationType? this[PXCodeType codeType] =>
+			_codeColoringClassificationTypes.TryGetValue(codeType, out IClassificationType type)
 				 ? type
 				 : null;
-			}
-		}
 
-		private Dictionary<int, IClassificationType> _braceTypeByLevel = null!;
+		private readonly Dictionary<int, IClassificationType> _braceTypeByLevel;
 
-		public IClassificationType? this[int braceLevel]
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get {
-				return _braceTypeByLevel.TryGetValue(braceLevel, out IClassificationType type)
+		public IClassificationType? this[int braceLevel] =>
+			_braceTypeByLevel.TryGetValue(braceLevel, out IClassificationType type)
 				 ? type
 				 : null;
-			}
-		}
 
 		[ImportingConstructor]
 		public PXColorizerTaggerProvider(IClassificationTypeRegistryService classificationRegistry,
 										 IClassificationFormatMapService classificationFormatMapService,
 										 ITextDocumentFactoryService textDocumentFactory)
 		{
-			_classificationRegistry = classificationRegistry;
+			_classificationRegistry 		= classificationRegistry;
 			_classificationFormatMapService = classificationFormatMapService;
-			TextDocumentFactory = textDocumentFactory;
+			TextDocumentFactory 			= textDocumentFactory;
+
+			_codeColoringClassificationTypes = GetClassificationTypesForAcumaticaCodeElements(_classificationRegistry);
+			_braceTypeByLevel = GetClassificationTypesForAngleBraces(_classificationRegistry);
+
+			IncreaseCommentFormatTypesPriority(_classificationRegistry, _classificationFormatMapService,
+												_codeColoringClassificationTypes[PXCodeType.BqlParameter]);
 		}
 
 		public virtual ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
@@ -83,8 +72,6 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			if (textView == null || textBuffer == null || textView.TextBuffer != textBuffer || !ThreadHelper.CheckAccess())
 				return null;
-
-			Initialize(textBuffer);
 
 			var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXRoslynColorizerTagger), () =>
 			{
@@ -94,84 +81,83 @@ namespace Acuminator.Vsix.Coloriser
 			return tagger as ITagger<T>;
 		}
 
-		[MemberNotNull(nameof(_codeColoringClassificationTypes), nameof(_braceTypeByLevel))]
-		protected void Initialize(ITextBuffer textBuffer)
+		private static Dictionary<PXCodeType, IClassificationType> GetClassificationTypesForAcumaticaCodeElements(
+																					IClassificationTypeRegistryService classificationRegistry)
 		{
-			if (AreClassificationsInitialized)
-				return;
-
-			AreClassificationsInitialized = true;
-			InitializeClassificationTypes();
-			IncreaseCommentFormatTypesPriority(_classificationRegistry, _classificationFormatMapService,
-												_codeColoringClassificationTypes[PXCodeType.BqlParameter]);
-		}
-
-		[MemberNotNull(nameof(_codeColoringClassificationTypes), nameof(_braceTypeByLevel))]
-		protected void InitializeClassificationTypes()
-		{
-			IClassificationType bqlClassificationType = _classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat);
-
-			_codeColoringClassificationTypes = new Dictionary<PXCodeType, IClassificationType>
+			IClassificationType bqlClassificationType = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat);
+			var acumaticaCodeElementsClassificationTypes = new Dictionary<PXCodeType, IClassificationType>
 			{
-				[PXCodeType.Dac] 		  = _classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
-				[PXCodeType.DacExtension] = _classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
-				[PXCodeType.DacField] 	  = _classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
-				[PXCodeType.BqlParameter] = _classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
+				[PXCodeType.Dac] 		  = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
+				[PXCodeType.DacExtension] = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
+				[PXCodeType.DacField] 	  = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
+				[PXCodeType.BqlParameter] = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
 				[PXCodeType.BqlOperator]  = bqlClassificationType,
 				[PXCodeType.BqlCommand]   = bqlClassificationType,
 
-				[PXCodeType.BQLConstantPrefix] = _classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat),
-				[PXCodeType.BQLConstantEnding] = _classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat),
+				[PXCodeType.BQLConstantPrefix] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat),
+				[PXCodeType.BQLConstantEnding] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat),
 
-				[PXCodeType.PXGraph]  = _classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
-				[PXCodeType.PXAction] = _classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
+				[PXCodeType.PXGraph]  = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
+				[PXCodeType.PXAction] = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
 			};
 
-			_braceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)
+			return acumaticaCodeElementsClassificationTypes;
+		}
+
+		private static Dictionary<int, IClassificationType> GetClassificationTypesForAngleBraces(IClassificationTypeRegistryService classificationRegistry)
+		{
+			var braceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)
 			{
-				[0] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_1_Format),
-				[1] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_2_Format),
-				[2] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_3_Format),
+				[0] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_1_Format),
+				[1] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_2_Format),
+				[2] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_3_Format),
 
-				[3] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_4_Format),
-				[4] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_5_Format),
-				[5] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_6_Format),
+				[3] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_4_Format),
+				[4] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_5_Format),
+				[5] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_6_Format),
 
-				[6] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_7_Format),
-				[7] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_8_Format),
-				[8] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_9_Format),
+				[6] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_7_Format),
+				[7] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_8_Format),
+				[8] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_9_Format),
 
-				[9]  = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_10_Format),
-				[10] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_11_Format),
-				[11] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_12_Format),
+				[9]  = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_10_Format),
+				[10] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_11_Format),
+				[11] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_12_Format),
 
-				[12] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_13_Format),
-				[13] = _classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_14_Format),
+				[12] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_13_Format),
+				[13] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_14_Format),
 			};
+
+			return braceTypeByLevel;
 		}
 
 		private static void IncreaseCommentFormatTypesPriority(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
 															   IClassificationType highestPriorityType)
 		{
+			if (_isPriorityIncreased)
+				return;
+
 			bool lockTaken = false;
 			Monitor.TryEnter(_syncRoot, ref lockTaken);
 
-			if (lockTaken)
+			if (!lockTaken)
+				return;
+
+			try
 			{
-				try
+				if (_isPriorityIncreased)
+					return;
+
+				if (formatMapService.GetClassificationFormatMap(category: TextCategory) is IClassificationFormatMap formatMap)
 				{
-					if (!_isPriorityIncreased)
-					{
-						_isPriorityIncreased = true;
-						IClassificationFormatMap formatMap = formatMapService.GetClassificationFormatMap(category: TextCategory);
-						IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.ExcludedCode, highestPriorityType);
-						IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment, highestPriorityType);
-					}
+					IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.ExcludedCode, highestPriorityType);
+					IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment, highestPriorityType);
+					_isPriorityIncreased = true;
 				}
-				finally
-				{
-					Monitor.Exit(_syncRoot);
-				}
+			}
+			finally
+			{
+				Monitor.Exit(_syncRoot);
 			}
 		}
 
