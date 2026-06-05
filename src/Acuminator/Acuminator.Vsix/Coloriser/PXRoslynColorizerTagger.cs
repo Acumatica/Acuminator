@@ -241,9 +241,10 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 			if (workspaceToUnsubscribe != null)
 				workspaceToUnsubscribe.WorkspaceChanged -= OnWorkspaceChanged;
+
+			_roslynWorkspaceProvider.Dispose();
 		}
 		
-		_roslynWorkspaceProvider.Dispose();
 		BackgroundTagging?.Dispose();
 		ClassificationTagsCache.Reset();
 		OutliningsTagsCache.Reset();
