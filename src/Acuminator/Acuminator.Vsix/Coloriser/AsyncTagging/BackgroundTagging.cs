@@ -80,7 +80,7 @@ namespace Acuminator.Vsix.Coloriser
 				return;
 
 			_isDisposed = true;
-			CancelTagging();
+			_cancellationTokenSource.Cancel();
 			_cancellationTokenSource.Dispose();
 		}
 
