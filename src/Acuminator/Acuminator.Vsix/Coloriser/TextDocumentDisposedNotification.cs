@@ -9,6 +9,12 @@ using Microsoft.VisualStudio.Text;
 
 namespace Acuminator.Vsix.Coloriser;
 
+/// <summary>
+/// A text document disposed notification provider.
+/// </summary>
+/// <remarks>
+/// This component is not thread safe and is supposed to run only on the UI thread.
+/// </remarks>
 internal class TextDocumentDisposedNotification
 {
 	private readonly ITextDocumentFactoryService _textDocumentFactory;
