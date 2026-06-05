@@ -14,8 +14,10 @@ using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.Coloriser
 {
-	public abstract class PXTaggerBase : IDisposable
+	public abstract class PXTaggerBase
 	{
+		private readonly TextDocumentDisposedNotification _disposedNotification;
+
 #pragma warning disable CS0067
 		public event EventHandler<SnapshotSpanEventArgs>? TagsChanged;
 #pragma warning restore CS0067
@@ -32,7 +34,8 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected bool CacheCheckingEnabled { get; }
 
-		protected PXTaggerBase(ITextBuffer buffer, bool subscribeToSettingsChanges, bool useCacheChecking)
+		protected PXTaggerBase(ITextBuffer buffer, ITextDocumentFactoryService textDocumentFactory, 
+							   bool subscribeToSettingsChanges, bool useCacheChecking)
 		{
 			Buffer = buffer.CheckIfNull();
 			SubscribedToSettingsChanges = subscribeToSettingsChanges;
@@ -47,6 +50,9 @@ namespace Acuminator.Vsix.Coloriser
 					genOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
 				}
 			}
+
+			_disposedNotification = new TextDocumentDisposedNotification(textDocumentFactory, Buffer);
+			_disposedNotification.OnCurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
 		}
 
 		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
@@ -94,8 +100,12 @@ namespace Acuminator.Vsix.Coloriser
 			Snapshot = newSnapshotToCache;
 		}
 
-		public virtual void Dispose()
+		protected virtual void CleanupOnTextDocumentDisposed(object sender, EventArgs e)
 		{
+			Type taggerType = GetType();
+			Buffer.Properties.RemoveProperty(taggerType);
+			_disposedNotification.OnCurrentTextDocumentDisposed -= CleanupOnTextDocumentDisposed;
+
 			if (!SubscribedToSettingsChanges)
 				return;
 
