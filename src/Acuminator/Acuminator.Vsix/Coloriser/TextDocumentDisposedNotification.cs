@@ -15,7 +15,7 @@ public class TextDocumentDisposedNotification
 	private readonly ITextBuffer _textBuffer;
 	private ITextDocument? _textDocument;
 
-	public event EventHandler? OnCurrentTextDocumentDisposed;
+	public event EventHandler? CurrentTextDocumentDisposed;
 
 	public TextDocumentDisposedNotification(ITextDocumentFactoryService textDocumentFactory, ITextBuffer textBuffer)
 	{
@@ -64,6 +64,6 @@ public class TextDocumentDisposedNotification
 
 		//Dispose of the subscription immediately to always run the handler only once
 		_textDocumentFactory.TextDocumentDisposed -= OnTextDocumentDisposed;
-		OnCurrentTextDocumentDisposed?.Invoke(this, EventArgs.Empty);
+		CurrentTextDocumentDisposed?.Invoke(this, EventArgs.Empty);
 	}
 }

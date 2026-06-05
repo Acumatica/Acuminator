@@ -52,7 +52,7 @@ namespace Acuminator.Vsix.Coloriser
 			}
 
 			_disposedNotification = new TextDocumentDisposedNotification(textDocumentFactory, Buffer);
-			_disposedNotification.OnCurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
+			_disposedNotification.CurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
 		}
 
 		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
@@ -104,7 +104,7 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			Type taggerType = GetType();
 			Buffer.Properties.RemoveProperty(taggerType);
-			_disposedNotification.OnCurrentTextDocumentDisposed -= CleanupOnTextDocumentDisposed;
+			_disposedNotification.CurrentTextDocumentDisposed -= CleanupOnTextDocumentDisposed;
 
 			if (!SubscribedToSettingsChanges)
 				return;
