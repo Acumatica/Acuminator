@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
@@ -22,7 +23,7 @@ namespace Acuminator.Vsix.Coloriser;
 /// <summary>
 /// A Roslyn-based colorizer tagger.
 /// </summary>
-internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassificationTag>, IDisposable
+internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassificationTag>
 {
 	protected internal TagsCacheAsync<IClassificationTag> ClassificationTagsCache { get; }
 
@@ -47,9 +48,9 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	private readonly RoslynWorkspaceProvider _roslynWorkspaceProvider;
 	private readonly SourceTextContainer _cachedTextContainer;
 
-	public PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider provider, bool subscribeToSettingsChanges,
-									bool useCacheChecking) :
-							  base(buffer, subscribeToSettingsChanges, useCacheChecking)
+	public PXRoslynColorizerTagger(ITextBuffer buffer, ITextDocumentFactoryService textDocumentFactory, PXColorizerTaggerProvider provider,
+								   bool subscribeToSettingsChanges, bool useCacheChecking) :
+							  base(buffer, textDocumentFactory, subscribeToSettingsChanges, useCacheChecking)
 	{
 		Provider = provider.CheckIfNull();
 		_cachedTextContainer = Buffer.AsTextContainer();
@@ -230,8 +231,10 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		OutliningsTagsCache.CompleteProcessing();
 	}
 
-	public override void Dispose()
+	protected override void CleanupOnTextDocumentDisposed(object sender, EventArgs e)
 	{
+		base.CleanupOnTextDocumentDisposed(sender, e);
+
 		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
 		{
 			_roslynWorkspaceProvider.WorkspaceChanged -= WorkspaceAttachedToDocumentChanged;
@@ -241,15 +244,12 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 				workspaceToUnsubscribe.WorkspaceChanged -= OnWorkspaceChanged;
 		}
 		
-
 		_roslynWorkspaceProvider.Dispose();
 		BackgroundTagging?.Dispose();
 		ClassificationTagsCache.Reset();
 		OutliningsTagsCache.Reset();
 
 		_hasReferenceToAcumaticaPlatform = false;
-
-		base.Dispose();
 	}
 
 	private void WorkspaceAttachedToDocumentChanged(object sender, DocumentWorkspaceChangedEventArgs e)
