@@ -31,8 +31,7 @@ namespace Acuminator.Vsix.Coloriser
 		private readonly IClassificationTypeRegistryService _classificationRegistry;
 		private readonly IClassificationFormatMapService _classificationFormatMapService;
 
-		[Import]
-		internal IClassificationFormatMapService _classificationFormatMapService = null!;  //Set via MEF
+		internal ITextDocumentFactoryService TextDocumentFactory { get; }
 
 		private const string TextCategory = "text";
 		private static readonly object _syncRoot = new object();
@@ -76,6 +75,7 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			_classificationRegistry = classificationRegistry;
 			_classificationFormatMapService = classificationFormatMapService;
+			TextDocumentFactory = textDocumentFactory;
 		}
 
 		public virtual ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
