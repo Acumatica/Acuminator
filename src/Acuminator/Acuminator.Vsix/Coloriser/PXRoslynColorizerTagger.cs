@@ -14,7 +14,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.TextManager.Interop;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 

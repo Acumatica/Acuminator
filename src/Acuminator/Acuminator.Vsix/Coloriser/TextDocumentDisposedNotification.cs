@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Text;
 
 namespace Acuminator.Vsix.Coloriser;
 
-public class TextDocumentDisposedNotification
+internal class TextDocumentDisposedNotification
 {
 	private readonly ITextDocumentFactoryService _textDocumentFactory;
 	private readonly ITextBuffer _textBuffer;
