@@ -28,8 +28,8 @@ namespace Acuminator.Vsix.Coloriser
 	[Export(typeof(IViewTaggerProvider))]
 	public class PXColorizerTaggerProvider : IViewTaggerProvider
 	{
-		[Import]
-		internal IClassificationTypeRegistryService _classificationRegistry = null!; // Set via MEF
+		private readonly IClassificationTypeRegistryService _classificationRegistry;
+		private readonly IClassificationFormatMapService _classificationFormatMapService;
 
 		[Import]
 		internal IClassificationFormatMapService _classificationFormatMapService = null!;  //Set via MEF
@@ -67,6 +67,15 @@ namespace Acuminator.Vsix.Coloriser
 				 ? type
 				 : null;
 			}
+		}
+
+		[ImportingConstructor]
+		public PXColorizerTaggerProvider(IClassificationTypeRegistryService classificationRegistry,
+										 IClassificationFormatMapService classificationFormatMapService,
+										 ITextDocumentFactoryService textDocumentFactory)
+		{
+			_classificationRegistry = classificationRegistry;
+			_classificationFormatMapService = classificationFormatMapService;
 		}
 
 		public virtual ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
