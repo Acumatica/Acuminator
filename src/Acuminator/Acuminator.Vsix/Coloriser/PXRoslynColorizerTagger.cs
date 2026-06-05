@@ -56,10 +56,14 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ClassificationTagsCache = new TagsCacheAsync<IClassificationTag>();
 		OutliningsTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
 
-		_roslynWorkspaceProvider = new RoslynWorkspaceProvider(buffer);
+		// Roslyn workspace provider creation and subscription to workspace events should be done under sync lock to avoid
+		// unlikely race condition in the constructor.
+		// The lock is expected to be re-entrant, the Monitor synchronization should not be changed to another synchronization mechanism without a rework.
+		object workspaceLock = new object();
 
-		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
+		lock (workspaceLock)
 		{
+			_roslynWorkspaceProvider = RoslynWorkspaceProvider.Create(_cachedTextContainer, workspaceLock);
 			_roslynWorkspaceProvider.WorkspaceChanged += WorkspaceAttachedToDocumentChanged;
 
 			// Drive initial setup through the same code path as change events.

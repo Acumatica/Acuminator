@@ -7,7 +7,6 @@ using Acuminator.Vsix.Logger;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
 
 namespace Acuminator.Vsix.Coloriser;
 
@@ -28,7 +27,7 @@ internal class RoslynWorkspaceProvider : IDisposable
 	/// This locker has to be externally available because external subscribers like Roslyn colorizer subscribe on workspace changes and have unavoidable race condition<br/>
 	/// that has to use this locker to synchronize with change of the Roslyn workspace associated with a VS text buffer.
 	/// </remarks>
-	public object WorkspaceSubscriptionLocker { get; } = new object();
+	public object WorkspaceSubscriptionLocker { get; }
 
 	private Workspace? _workspace;
 
@@ -45,16 +44,24 @@ internal class RoslynWorkspaceProvider : IDisposable
 
 	public event EventHandler<DocumentWorkspaceChangedEventArgs>? WorkspaceChanged;
 
-	public RoslynWorkspaceProvider(ITextBuffer buffer)
+	private RoslynWorkspaceProvider(WorkspaceRegistration workspaceRegistration, object workspaceSubscriptionLocker)
 	{
-		SourceTextContainer sourceTextContainer = buffer.CheckIfNull().AsTextContainer();
+		WorkspaceSubscriptionLocker = workspaceSubscriptionLocker;
+		_workspaceRegistration = workspaceRegistration;
+		_workspaceRegistration.WorkspaceChanged += OnWorkspaceChanged;
+		_workspace = GetWorkspaceThatSupportsColoring(_workspaceRegistration);
+	}
 
-		lock (WorkspaceSubscriptionLocker)
+	internal static RoslynWorkspaceProvider Create(SourceTextContainer sourceTextContainer, object syncLock)
+	{
+		sourceTextContainer.ThrowOnNull();
+		syncLock.ThrowOnNull();
+
+		lock (syncLock)
 		{
-			_workspaceRegistration = Workspace.GetWorkspaceRegistration(sourceTextContainer);
-			_workspaceRegistration.WorkspaceChanged += OnWorkspaceChanged;
-
-			_workspace = GetWorkspaceThatSupportsColoring(_workspaceRegistration);
+			var workspaceRegistration = Workspace.GetWorkspaceRegistration(sourceTextContainer);
+			var workspaceProvider = new RoslynWorkspaceProvider(workspaceRegistration, syncLock);
+			return workspaceProvider;
 		}
 	}
 
