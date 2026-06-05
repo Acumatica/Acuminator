@@ -3,16 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Threading;
 
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Vsix.Utilities;
 
-using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
@@ -26,14 +23,8 @@ namespace Acuminator.Vsix.Coloriser;
 [Export(typeof(IViewTaggerProvider))]
 public class PXColorizerTaggerProvider : IViewTaggerProvider
 {
-	private const string TextCategory = "text";
-	
 	private readonly IClassificationTypeRegistryService _classificationRegistry;
-	private readonly IClassificationFormatMapService _classificationFormatMapService;
 	private readonly ITextDocumentFactoryService _textDocumentFactory;
-
-	private static readonly object _syncRoot = new object();
-	private static volatile bool _isPriorityIncreased;
 
 	private readonly Dictionary<PXCodeType, IClassificationType> _codeColoringClassificationTypes;
 
@@ -50,19 +41,13 @@ public class PXColorizerTaggerProvider : IViewTaggerProvider
 			 : null;
 
 	[ImportingConstructor]
-	public PXColorizerTaggerProvider(IClassificationTypeRegistryService classificationRegistry,
-									 IClassificationFormatMapService classificationFormatMapService,
-									 ITextDocumentFactoryService textDocumentFactory)
+	public PXColorizerTaggerProvider(IClassificationTypeRegistryService classificationRegistry, ITextDocumentFactoryService textDocumentFactory)
 	{
-		_classificationRegistry 		= classificationRegistry;
-		_classificationFormatMapService = classificationFormatMapService;
-		_textDocumentFactory			= textDocumentFactory;
+		_classificationRegistry = classificationRegistry;
+		_textDocumentFactory	= textDocumentFactory;
 
 		_codeColoringClassificationTypes = GetClassificationTypesForAcumaticaCodeElements(_classificationRegistry);
 		_braceTypeByLevel = GetClassificationTypesForAngleBraces(_classificationRegistry);
-
-		IncreaseCommentFormatTypesPriority(_classificationRegistry, _classificationFormatMapService,
-											_codeColoringClassificationTypes[PXCodeType.BqlParameter]);
 	}
 
 	public virtual ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
@@ -127,47 +112,5 @@ public class PXColorizerTaggerProvider : IViewTaggerProvider
 		};
 
 		return braceTypeByLevel;
-	}
-
-	private static void IncreaseCommentFormatTypesPriority(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
-														   IClassificationType highestPriorityType)
-	{
-		if (_isPriorityIncreased)
-			return;
-
-		bool lockTaken = false;
-		Monitor.TryEnter(_syncRoot, ref lockTaken);
-
-		if (!lockTaken)
-			return;
-
-		try
-		{
-			if (_isPriorityIncreased)
-				return;
-
-			if (formatMapService.GetClassificationFormatMap(category: TextCategory) is IClassificationFormatMap formatMap)
-			{
-				IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.ExcludedCode, highestPriorityType);
-				IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment, highestPriorityType);
-				_isPriorityIncreased = true;
-			}
-		}
-		finally
-		{
-			Monitor.Exit(_syncRoot);
-		}
-	}
-
-	private static void IncreaseServiceFormatPriority(IClassificationFormatMap formatMap, IClassificationTypeRegistryService registry, string formatName,
-													  IClassificationType highestPriorityType)
-	{
-		IClassificationType predefinedClassificationType = registry.GetClassificationType(formatName);
-		IClassificationType artificialClassType = registry.CreateTransientClassificationType(predefinedClassificationType);
-		TextFormattingRunProperties properties = formatMap.GetExplicitTextProperties(predefinedClassificationType);
-
-		formatMap.AddExplicitTextProperties(artificialClassType, properties, highestPriorityType);
-		formatMap.SwapPriorities(artificialClassType, predefinedClassificationType);
-		formatMap.SwapPriorities(highestPriorityType, predefinedClassificationType);
 	}
 }
