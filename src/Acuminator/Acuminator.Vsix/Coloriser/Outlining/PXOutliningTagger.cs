@@ -25,8 +25,9 @@ namespace Acuminator.Vsix.Coloriser
 		[MemberNotNullWhen(returnValue: true, nameof(ColorizerTagger))]
 		public override bool HasReferenceToAcumaticaPlatform => ColorizerTagger?.HasReferenceToAcumaticaPlatform ?? false;
 
-		public PXOutliningTagger(ITextBuffer buffer, bool subscribeToSettingsChanges, bool useCacheChecking) :
-							base(buffer, subscribeToSettingsChanges, useCacheChecking)
+		public PXOutliningTagger(ITextBuffer buffer, ITextDocumentFactoryService textDocumentFactory, bool subscribeToSettingsChanges, 
+								 bool useCacheChecking) :
+							base(buffer, textDocumentFactory, subscribeToSettingsChanges, useCacheChecking)
 		{
 		}
 
@@ -69,15 +70,15 @@ namespace Acuminator.Vsix.Coloriser
 			RaiseTagsChanged();
 		}
 
-		public override void Dispose()
+		protected override void CleanupOnTextDocumentDisposed(object sender, EventArgs e)
 		{
+			base.CleanupOnTextDocumentDisposed(sender, e);
+
 			if (Interlocked.Exchange(ref _isSubscribed, NOT_SUBSCRIBED) == SUBSCRIBED && ColorizerTagger != null)
 			{
 				ColorizerTagger.TagsChanged -= OnColorizingTaggerTagsChanged;
 				ColorizerTagger = null;
 			}
-
-			base.Dispose();
 		}
 	} 
 }

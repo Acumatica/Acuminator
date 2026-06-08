@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Logger;
 
 using Shell = Microsoft.VisualStudio.Shell;
 
@@ -80,8 +81,32 @@ namespace Acuminator.Vsix.Coloriser
 				return;
 
 			_isDisposed = true;
-			CancelTagging();
-			_cancellationTokenSource.Dispose();
+
+			try
+			{
+				_cancellationTokenSource.Cancel();
+			}
+			catch (OperationCanceledException)
+			{
+			}
+			catch (AggregateException aggregateException)
+			{
+				var flattened = aggregateException.Flatten();
+				var exceptionsToLog = flattened.InnerExceptions.Where(ex => ex is not OperationCanceledException);
+
+				foreach (var exception in exceptionsToLog)
+				{
+					AcuminatorVSPackage.Instance?.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false, LogMode.Warning);
+				}
+			}
+			catch (Exception ex)
+			{
+				AcuminatorVSPackage.Instance?.AcuminatorLogger?.LogException(ex, logOnlyFromAcuminatorAssemblies: false, LogMode.Warning);
+			}
+			finally
+			{
+				_cancellationTokenSource.Dispose();
+			}
 		}
 
 		private static Task AfterTaggingActionAsync(Task taggingTask, PXRoslynColorizerTagger tagger, CancellationToken cancellationToken)

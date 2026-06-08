@@ -22,7 +22,7 @@ namespace Acuminator.Vsix.Coloriser;
 /// <summary>
 /// A Roslyn-based colorizer tagger.
 /// </summary>
-internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassificationTag>, IDisposable
+internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassificationTag>
 {
 	protected internal TagsCacheAsync<IClassificationTag> ClassificationTagsCache { get; }
 
@@ -47,19 +47,23 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	private readonly RoslynWorkspaceProvider _roslynWorkspaceProvider;
 	private readonly SourceTextContainer _cachedTextContainer;
 
-	public PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider provider, bool subscribeToSettingsChanges,
-									bool useCacheChecking) :
-							  base(buffer, subscribeToSettingsChanges, useCacheChecking)
+	public PXRoslynColorizerTagger(ITextBuffer buffer, ITextDocumentFactoryService textDocumentFactory, PXColorizerTaggerProvider provider,
+								   bool subscribeToSettingsChanges, bool useCacheChecking) :
+							  base(buffer, textDocumentFactory, subscribeToSettingsChanges, useCacheChecking)
 	{
 		Provider = provider.CheckIfNull();
 		_cachedTextContainer = Buffer.AsTextContainer();
 		ClassificationTagsCache = new TagsCacheAsync<IClassificationTag>();
 		OutliningsTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
 
-		_roslynWorkspaceProvider = new RoslynWorkspaceProvider(buffer);
+		// Roslyn workspace provider creation and subscription to workspace events should be done under sync lock to avoid
+		// unlikely race condition in the constructor.
+		// The lock is expected to be re-entrant, the Monitor synchronization should not be changed to another synchronization mechanism without a rework.
+		object workspaceLock = new object();
 
-		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
+		lock (workspaceLock)
 		{
+			_roslynWorkspaceProvider = RoslynWorkspaceProvider.Create(_cachedTextContainer, workspaceLock);
 			_roslynWorkspaceProvider.WorkspaceChanged += WorkspaceAttachedToDocumentChanged;
 
 			// Drive initial setup through the same code path as change events.
@@ -226,8 +230,10 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		OutliningsTagsCache.CompleteProcessing();
 	}
 
-	public override void Dispose()
+	protected override void CleanupOnTextDocumentDisposed(object sender, EventArgs e)
 	{
+		base.CleanupOnTextDocumentDisposed(sender, e);
+
 		lock (_roslynWorkspaceProvider.WorkspaceSubscriptionLocker)
 		{
 			_roslynWorkspaceProvider.WorkspaceChanged -= WorkspaceAttachedToDocumentChanged;
@@ -235,17 +241,15 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 			if (workspaceToUnsubscribe != null)
 				workspaceToUnsubscribe.WorkspaceChanged -= OnWorkspaceChanged;
+
+			_roslynWorkspaceProvider.Dispose();
 		}
 		
-
-		_roslynWorkspaceProvider.Dispose();
 		BackgroundTagging?.Dispose();
 		ClassificationTagsCache.Reset();
 		OutliningsTagsCache.Reset();
 
 		_hasReferenceToAcumaticaPlatform = false;
-
-		base.Dispose();
 	}
 
 	private void WorkspaceAttachedToDocumentChanged(object sender, DocumentWorkspaceChangedEventArgs e)
