@@ -52,8 +52,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <param name="node">The node to retrieve symbol for.</param>
 		/// <param name="cancellation">Cancellation token.</param>
 		/// <returns>
-		/// The symbol or the first candidate symbol.
+		/// The symbol or the best candidate symbol.
 		/// </returns>
+		/// <remarks>
+		/// The best candidate symbols is determined heuristically based on arguments count in case of method group or overloaded method invocation.<br/>
+		/// The candidate with the closest match in terms of arguments count is selected as the best candidate.
+		/// </remarks>
 		public static ISymbol? GetSymbolOrBestCandidate(this SemanticModel semanticModel, SyntaxNode node, 
 														CancellationToken cancellation)
 		{
