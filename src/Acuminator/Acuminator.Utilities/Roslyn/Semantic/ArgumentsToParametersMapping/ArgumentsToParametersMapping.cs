@@ -57,10 +57,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 			_length = parametersMapping.Length;
 		}
 
-		public IParameterSymbol GetMappedParameter(IMethodSymbol methodSymbol, int argIndex)
+		public IParameterSymbol? GetMappedParameter(IMethodSymbol methodSymbol, int argIndex)
 		{
 			methodSymbol.ThrowOnNull();
 			int parameterIndex = GetMappedParameterPosition(argIndex);
+
+			// In case of a broken solution we can get index out of bound because of a method node being mapped to a wrong symbol
+			if (parameterIndex >= methodSymbol.Parameters.Length)
+				return null;
+
 			return methodSymbol.Parameters[parameterIndex];
 		}
 
