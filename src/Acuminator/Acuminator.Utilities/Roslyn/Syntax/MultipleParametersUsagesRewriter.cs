@@ -34,7 +34,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		{
 			_cancellation.ThrowIfCancellationRequested();
 
-			var symbolInfo = _semanticModel.GetSymbolOrFirstCandidate(node, _cancellation) as IParameterSymbol;
+			var symbolInfo = _semanticModel.GetSymbolOrBestCandidate(node, _cancellation) as IParameterSymbol;
 
 			if (symbolInfo == null || !_parametersWithReplacements.TryGetValue(symbolInfo, out SyntaxNode replaceWith))
 				return base.VisitIdentifierName(node);

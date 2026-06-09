@@ -44,7 +44,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
-		/// Get symbol or first candidate symbol from the <see cref="SemanticModel"/>.
+		/// Get symbol or best candidate symbol from the <see cref="SemanticModel"/>.
 		/// </summary>
 		/// <param name="semanticModel">The semanticModel to act on.</param>
 		/// <param name="node">The node to retrieve symbol for.</param>
@@ -52,7 +52,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>
 		/// The symbol or the first candidate symbol.
 		/// </returns>
-		public static ISymbol? GetSymbolOrFirstCandidate(this SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellation)
+		public static ISymbol? GetSymbolOrBestCandidate(this SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellation)
 		{
 			node.ThrowOnNull();
 

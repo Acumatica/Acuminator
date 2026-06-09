@@ -135,7 +135,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 		private HashSet<ISymbol> GetDifferentSymbolsFromCallArgs(SemanticModel semanticModel, List<ExpressionSyntax> bqlSelectGraphArgNodes, 
 																 CancellationToken cancellation) =>
-			bqlSelectGraphArgNodes.Select(graphArgSyntax => semanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, cancellation))
+			bqlSelectGraphArgNodes.Select(graphArgSyntax => semanticModel.GetSymbolOrBestCandidate(graphArgSyntax, cancellation))
 								  .Where(graphArgSymbol => graphArgSymbol != null && graphArgSymbol is not (IPropertySymbol or IFieldSymbol))
 								  .ToHashSet(SymbolEqualityComparer.Default)!;
 
@@ -150,7 +150,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			foreach (var subNode in nodesToVisit)
 			{
-				var symbol = semanticModel.GetSymbolOrFirstCandidate(subNode, cancellation);
+				var symbol = semanticModel.GetSymbolOrBestCandidate(subNode, cancellation);
 
 				if (symbol != null && existingGraphs.Contains(symbol, SymbolEqualityComparer.Default))
 				{
@@ -183,7 +183,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				return;
 			}
 
-			var localVar = context.SemanticModel.GetSymbolOrFirstCandidate(graphArgSyntax, context.CancellationToken) as ILocalSymbol;
+			var localVar = context.SemanticModel.GetSymbolOrBestCandidate(graphArgSyntax, context.CancellationToken) as ILocalSymbol;
 
 			// Do not report and do not suggest to change the graph if it is used somewhere else to avoid disruptive side effects in the business logic
 			// This includes fields and properties that store graph or a graph extension. The analysis of type members that store graphs

@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			{
 				case DelegateNames.Processing.SetProcessDelegate:
 				case DelegateNames.Processing.SetAsyncProcessDelegate:
-					var setDelegateSymbol = semanticModel.GetSymbolOrFirstCandidate(methodAccessNode, cancellationToken) as IMethodSymbol;
+					var setDelegateSymbol = semanticModel.GetSymbolOrBestCandidate(methodAccessNode, cancellationToken) as IMethodSymbol;
 
 					if (setDelegateSymbol != null && setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBase.Type))
 						return (LongOperationDelegateType.ProcessingDelegate, setDelegateSymbol);
@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				case DelegateNames.Async.StartOperation:
 				case DelegateNames.Async.StartAsyncOperation:
 				case DelegateNames.Async.Await:
-					var longRunDelegate = semanticModel.GetSymbolOrFirstCandidate(methodAccessNode, cancellationToken) as IMethodSymbol;
+					var longRunDelegate = semanticModel.GetSymbolOrBestCandidate(methodAccessNode, cancellationToken) as IMethodSymbol;
 
 					if (longRunDelegate == null)
 						return null;

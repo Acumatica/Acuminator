@@ -78,7 +78,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (!isLocalizableException && !isPXExceptionInfo)
 				return;
 
-			var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
+			var symbol = syntaxContext.SemanticModel.GetSymbolOrBestCandidate(constructorCall, syntaxContext.CancellationToken);
 
 			if (symbol is not IMethodSymbol constructor)
 				return;
@@ -116,7 +116,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 			foreach (ConstructorInitializerSyntax constructorCall in baseOrThisConstructorCalls)
 			{
-				var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
+				var symbol = syntaxContext.SemanticModel.GetSymbolOrBestCandidate(constructorCall, syntaxContext.CancellationToken);
 
 				if (symbol is not IMethodSymbol constructorSymbol)
 					continue;

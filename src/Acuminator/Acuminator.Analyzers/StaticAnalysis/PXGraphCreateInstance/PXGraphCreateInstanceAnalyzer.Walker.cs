@@ -30,7 +30,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 			{
 				_context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (node.Type == null || _semanticModel.GetSymbolOrFirstCandidate(node.Type, _context.CancellationToken) is not ITypeSymbol typeSymbol)
+				if (node.Type == null || _semanticModel.GetSymbolOrBestCandidate(node.Type, _context.CancellationToken) is not ITypeSymbol typeSymbol)
 				{
 					base.VisitObjectCreationExpression(node);
 					return;
@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 			{
 				_context.CancellationToken.ThrowIfCancellationRequested();
 
-				var constructor = _semanticModel.GetSymbolOrFirstCandidate(node, _context.CancellationToken) as IMethodSymbol;
+				var constructor = _semanticModel.GetSymbolOrBestCandidate(node, _context.CancellationToken) as IMethodSymbol;
 
 				if (constructor?.ContainingType == null || constructor.MethodKind != MethodKind.Constructor) 
 				{

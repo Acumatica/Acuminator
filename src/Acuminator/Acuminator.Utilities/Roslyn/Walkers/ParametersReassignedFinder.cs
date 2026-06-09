@@ -255,7 +255,7 @@ namespace Acuminator.Utilities.Roslyn.Walkers
 				if (invocationExpression.Expression is not IdentifierNameSyntax)
 					return;
 
-				var localFunctionOrLambda = _semanticModel?.GetSymbolOrFirstCandidate(invocationExpression, _cancellation) as IMethodSymbol;
+				var localFunctionOrLambda = _semanticModel?.GetSymbolOrBestCandidate(invocationExpression, _cancellation) as IMethodSymbol;
 
 				// Analyse local functions since they can reassign parameters from containing methods
 				if (localFunctionOrLambda == null || !localFunctionOrLambda.IsNestedMethod())

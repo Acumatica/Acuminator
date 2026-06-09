@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 				// new PXGraph()
 				case ObjectCreationExpressionSyntax objCreationSyntax:
 				{
-					var typeSymbol = semanticModel.GetSymbolOrFirstCandidate(objCreationSyntax.Type, cancellation) as ITypeSymbol;
+					var typeSymbol = semanticModel.GetSymbolOrBestCandidate(objCreationSyntax.Type, cancellation) as ITypeSymbol;
 
 					if (typeSymbol == null || !typeSymbol.IsPXGraph(pxContext))
 						return GraphInstantiationType.None;
@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 				// PXGraph.CreateInstance
 				case InvocationExpressionSyntax invocationSyntax:
 				{
-						var methodSymbol = semanticModel.GetSymbolOrFirstCandidate(invocationSyntax, cancellation) as IMethodSymbol;
+						var methodSymbol = semanticModel.GetSymbolOrBestCandidate(invocationSyntax, cancellation) as IMethodSymbol;
 
 						if (methodSymbol == null || methodSymbol.MethodKind != MethodKind.Ordinary)
 							return GraphInstantiationType.None;

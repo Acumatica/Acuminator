@@ -65,7 +65,7 @@ namespace Acuminator.Vsix.Coloriser
 				if (_cancellationToken.IsCancellationRequested || IsVar(nodeText))
 					return;
 
-				ITypeSymbol? typeSymbol = _document.SemanticModel.GetSymbolOrFirstCandidate(node, _cancellationToken) as ITypeSymbol;
+				ITypeSymbol? typeSymbol = _document.SemanticModel.GetSymbolOrBestCandidate(node, _cancellationToken) as ITypeSymbol;
 
 				if (typeSymbol == null)
 				{
