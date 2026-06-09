@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
-
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
-using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
+using Acuminator.Utilities.Roslyn.Syntax;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -52,12 +54,61 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>
 		/// The symbol or the first candidate symbol.
 		/// </returns>
-		public static ISymbol? GetSymbolOrBestCandidate(this SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellation)
+		public static ISymbol? GetSymbolOrBestCandidate(this SemanticModel semanticModel, SyntaxNode node, 
+														CancellationToken cancellation)
 		{
 			node.ThrowOnNull();
-
 			var symbolInfo = semanticModel.CheckIfNull().GetSymbolInfo(node, cancellation);
-			return symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
+
+			// Fast paths
+			if (symbolInfo.Symbol != null)
+				return symbolInfo.Symbol;
+			else if (symbolInfo.CandidateSymbols.Length == 1)
+				return symbolInfo.CandidateSymbols[0];
+			else if (symbolInfo.CandidateSymbols.IsDefaultOrEmpty ||
+					 symbolInfo.CandidateReason is not (CandidateReason.Inaccessible or
+														CandidateReason.OverloadResolutionFailure or
+														CandidateReason.Ambiguous))
+			{
+				return null;
+			}
+
+			// Try to match symbol with node based on arguments count heuristic
+			var argumentList = node.GetArgumentsList();
+
+			if (argumentList == null)
+				return symbolInfo.CandidateSymbols.FirstOrDefault();
+
+			return GetBestCandidateHeuristicallyByArgsCount(symbolInfo, argumentList.Arguments.Count);
+		}
+
+		private static ISymbol? GetBestCandidateHeuristicallyByArgsCount(in SymbolInfo symbolInfo, int argsCount)
+		{
+			int minSuitableParametersCount = int.MaxValue;
+			ISymbol? heuristicBestCandidate = null;
+
+			foreach (ISymbol candidate in symbolInfo.CandidateSymbols)
+			{
+				var parameters = candidate.Parameters();
+
+				if (parameters == null)     // symbol doesn't have parameters
+					continue;
+
+				int parametersCount = parameters.Value.Length;
+
+				if (argsCount > parametersCount)
+					continue;
+				else if (argsCount == parametersCount)
+					return candidate;									// perfect match
+				else if (minSuitableParametersCount > parametersCount)
+				{
+					// Keep the overload with fewest parameters
+					minSuitableParametersCount = parametersCount;
+					heuristicBestCandidate = candidate;
+				}
+			}
+
+			return heuristicBestCandidate ?? symbolInfo.CandidateSymbols.FirstOrDefault();
 		}
 
 		[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "Aggregated await is used")]

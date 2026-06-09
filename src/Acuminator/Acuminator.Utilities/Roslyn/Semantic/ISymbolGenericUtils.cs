@@ -1,5 +1,4 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
+using System.Collections.Immutable;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -26,6 +26,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				IPropertySymbol property => property.IsReadOnly,
 				ITypeSymbol type 		 => type.IsReadOnly(),
 				_ 						 => false
+			};
+
+		public static ImmutableArray<IParameterSymbol>? Parameters(this ISymbol symbol) =>
+			symbol.CheckIfNull() switch
+			{
+				IMethodSymbol method 	 => method.Parameters,
+				IPropertySymbol property => property.Parameters,
+				_ 						 => null
 			};
 
 		public static bool IsReadOnly(this ITypeSymbol typeSymbol)
