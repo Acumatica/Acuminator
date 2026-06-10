@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.ArgumentsToParametersMapping
 			methodSymbol.ThrowOnNull();
 			int parameterIndex = GetMappedParameterPosition(argIndex);
 
-			// In case of a broken solution we can get index out of bound because of a method node being mapped to a wrong symbol
+			// In case of a broken solution we can get index out of range error because of a method node being mapped to a wrong symbol
 			if (parameterIndex >= methodSymbol.Parameters.Length)
 				return null;
 
