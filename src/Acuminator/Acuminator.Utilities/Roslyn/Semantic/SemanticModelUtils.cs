@@ -95,18 +95,40 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			{
 				var parameters = candidate.Parameters();
 
-				if (parameters == null)     // symbol doesn't have parameters
+				if (parameters == null)			// symbol doesn't have parameters
 					continue;
 
 				int parametersCount = parameters.Value.Length;
+				bool hasParamsParameter = parametersCount > 0 && parameters.Value[parametersCount - 1].IsParams;
 
-				if (argsCount > parametersCount)
+				if (!hasParamsParameter)
+				{
+					// perfect match heuristic: the same number of arguments and parameters and no params parameter
+					if (argsCount == parametersCount)
+						return candidate;
+					else if (argsCount > parametersCount)
+					{
+						// Filtering out candidates with too few parameters when the invocation has more arguments than parameters,
+						// but only if there is no params parameter that can match extra arguments
+						continue;
+					} 
+				}
+
+				int optionalCount = parameters.Value.Count(p => p.IsOptional);
+				int minRequiredParametersCount = hasParamsParameter
+					? parametersCount - optionalCount - 1       // params parameter can match 0 or more arguments, so it's not required
+					: parametersCount - optionalCount;
+
+				// If the invocation has fewer arguments than required parameters, then this candidate is not a good match
+				if (argsCount < minRequiredParametersCount)
 					continue;
-				else if (argsCount == parametersCount)
-					return candidate;									// perfect match
-				else if (minSuitableParametersCount > parametersCount)
+
+				if (minSuitableParametersCount > parametersCount)
 				{
 					// Keep the overload with fewest parameters
+					// In theory, we could specify parametersCount - 1 here for candidate with params parameter, 
+					// but in C# overload resolution method with params parameter is considered less specific 
+					// than the same method without params parameter, so we can keep the current heuristic simple
 					minSuitableParametersCount = parametersCount;
 					heuristicBestCandidate = candidate;
 				}
