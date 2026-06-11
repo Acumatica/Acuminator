@@ -55,8 +55,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// The symbol or the best candidate symbol.
 		/// </returns>
 		/// <remarks>
-		/// The best candidate symbols is determined heuristically based on arguments count in case of method group or overloaded method invocation.<br/>
-		/// The candidate with the closest match in terms of arguments count is selected as the best candidate.
+		/// The best candidate symbol is determined heuristically based on argument count in case of method group or overloaded method invocation.<br/>
+		/// The candidate with the closest match in terms of argument count is selected as the best candidate.
 		/// </remarks>
 		public static ISymbol? GetSymbolOrBestCandidate(this SemanticModel semanticModel, SyntaxNode node, 
 														CancellationToken cancellation)

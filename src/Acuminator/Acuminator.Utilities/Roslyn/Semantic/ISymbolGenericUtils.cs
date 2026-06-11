@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -10,7 +11,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
-using System.Collections.Immutable;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
