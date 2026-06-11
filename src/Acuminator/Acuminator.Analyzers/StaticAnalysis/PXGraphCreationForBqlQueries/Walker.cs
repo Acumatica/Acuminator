@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 					return;
 				}
 
-				var methodSymbol = _semanticModel.GetSymbolOrFirstCandidate(node, _cancellation) as IMethodSymbol;
+				var methodSymbol = _semanticModel.GetSymbolOrBestCandidate(node, _cancellation) as IMethodSymbol;
 
 				if (IsBqlSelectOrSearch(methodSymbol))
 				{
@@ -85,7 +85,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			private bool ArgumentIsPropertyOrField(IdentifierNameSyntax identifier)
 			{
-				var graphArgSymbol = _semanticModel.GetSymbolOrFirstCandidate(identifier, _cancellation);
+				var graphArgSymbol = _semanticModel.GetSymbolOrBestCandidate(identifier, _cancellation);
 				return graphArgSymbol is IPropertySymbol or IFieldSymbol;
 			}
 		}

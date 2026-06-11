@@ -63,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 
 			foreach (GenericNameSyntax baseClassTypeNode in baseClassesTypeNodes)
 			{
-				var baseClassTypeSymbol = semanticModel.GetSymbolOrFirstCandidate(baseClassTypeNode, context.CancellationToken) as INamedTypeSymbol;
+				var baseClassTypeSymbol = semanticModel.GetSymbolOrBestCandidate(baseClassTypeNode, context.CancellationToken) as INamedTypeSymbol;
 				Location? location = GetLocationFromBaseClassTypeNode(baseClassTypeNode, baseClassTypeSymbol, declaredPrimaryDacType);
 
 				if (location != null)

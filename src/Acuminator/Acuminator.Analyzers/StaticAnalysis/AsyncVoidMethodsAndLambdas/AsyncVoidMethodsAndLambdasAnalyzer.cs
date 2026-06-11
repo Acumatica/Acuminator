@@ -108,7 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AsyncVoidMethodsAndLambdas
 			if (!lambdaOrAnonymousDelegateDeclaration.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
 				return;
 
-			var lambdaMethodSymbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(lambdaOrAnonymousDelegateDeclaration, 
+			var lambdaMethodSymbol = syntaxContext.SemanticModel.GetSymbolOrBestCandidate(lambdaOrAnonymousDelegateDeclaration, 
 																						   syntaxContext.CancellationToken) as IMethodSymbol;
 			if (lambdaMethodSymbol == null || !lambdaMethodSymbol.ReturnsVoid)
 				return;

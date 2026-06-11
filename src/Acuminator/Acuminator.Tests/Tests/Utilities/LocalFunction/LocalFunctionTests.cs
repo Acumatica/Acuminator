@@ -73,7 +73,7 @@ namespace Acuminator.Tests.Tests.Utilities.SemanticModels
 
 				foreach (var lambda in lambdas)
 				{
-					var symbol = semanticModel.GetSymbolOrFirstCandidate(lambda, default) as IMethodSymbol;
+					var symbol = semanticModel.GetSymbolOrBestCandidate(lambda, default) as IMethodSymbol;
 					symbol.Should().NotBeNull();
 
 					symbol!.MethodKind.Should().Be(MethodKind.LambdaMethod);

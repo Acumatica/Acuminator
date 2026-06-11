@@ -91,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXOverride
 				if (attributes.Value[i] is not XmlCrefAttributeSyntax crefAttribute)
 					continue;
 
-				var referencedSymbol = semanticModel.GetSymbolOrFirstCandidate(crefAttribute.Cref, cancellation);
+				var referencedSymbol = semanticModel.GetSymbolOrBestCandidate(crefAttribute.Cref, cancellation);
 
 				if (DoesReferencedSymbolPointToBaseMethod(referencedSymbol, baseMethod))
 					return true;

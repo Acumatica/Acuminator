@@ -87,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				if (_generator == null) 
 					return base.VisitObjectCreationExpression(node);
 
-				var graphTypeSymbol		   = _semanticModel.GetSymbolOrFirstCandidate(node.Type, _cancellation) as ITypeSymbol;
+				var graphTypeSymbol		   = _semanticModel.GetSymbolOrBestCandidate(node.Type, _cancellation) as ITypeSymbol;
 				var createInstanceCallNode = GeneratePXGraphCreateInstanceCall(graphTypeSymbol);
 
 				return createInstanceCallNode ?? base.VisitObjectCreationExpression(node);
@@ -100,7 +100,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				if (_generator == null)
 					return base.VisitImplicitObjectCreationExpression(node);
 
-				var constructor = _semanticModel.GetSymbolOrFirstCandidate(node, _cancellation) as IMethodSymbol;
+				var constructor = _semanticModel.GetSymbolOrBestCandidate(node, _cancellation) as IMethodSymbol;
 
 				if (constructor?.ContainingType == null || constructor.MethodKind != MethodKind.Constructor)
 					return base.VisitImplicitObjectCreationExpression(node);

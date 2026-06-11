@@ -78,7 +78,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 			if (!isLocalizableException && !isPXExceptionInfo)
 				return;
 
-			var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
+			var symbol = syntaxContext.SemanticModel.GetSymbolOrBestCandidate(constructorCall, syntaxContext.CancellationToken);
 
 			if (symbol is not IMethodSymbol constructor)
 				return;
@@ -116,7 +116,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 			foreach (ConstructorInitializerSyntax constructorCall in baseOrThisConstructorCalls)
 			{
-				var symbol = syntaxContext.SemanticModel.GetSymbolOrFirstCandidate(constructorCall, syntaxContext.CancellationToken);
+				var symbol = syntaxContext.SemanticModel.GetSymbolOrBestCandidate(constructorCall, syntaxContext.CancellationToken);
 
 				if (symbol is not IMethodSymbol constructorSymbol)
 					continue;
@@ -145,9 +145,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
 			for (int argIndex = 0; argIndex < args.Arguments.Count; argIndex++)
 			{
-				IParameterSymbol mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(constructor, argIndex);
+				IParameterSymbol? mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(constructor, argIndex);
 
-				if (parametersWithLocalizableText.Contains(mappedParameter.Name, StringComparer.Ordinal))
+				if (mappedParameter != null && parametersWithLocalizableText.Contains(mappedParameter.Name, StringComparer.Ordinal))
 				{
 					var argument = args.Arguments[argIndex];
 					return argument.Expression;

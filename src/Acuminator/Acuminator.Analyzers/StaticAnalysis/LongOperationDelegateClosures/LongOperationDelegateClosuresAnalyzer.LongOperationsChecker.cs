@@ -698,7 +698,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 						continue;
 
 					var mappedParameter = argumentsToParametersMapping.Value.GetMappedParameter(calledMethod, argument.Index);
-					nonCapturableParametersOfCalledMethodFromCallArgs.Add(new PassedParameter(mappedParameter.Name, capturedTypes));
+
+					if (mappedParameter != null)
+					{
+						nonCapturableParametersOfCalledMethodFromCallArgs.Add(new PassedParameter(mappedParameter.Name, capturedTypes));
+					}
 				}
 
 				return nonCapturableParametersOfCalledMethodFromCallArgs;

@@ -65,7 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.IncorrectTaskUsageInAsyncCode
 				if (typeNode == null)
 					return;
 
-				var variableType = SemanticModel.GetSymbolOrFirstCandidate(typeNode, Cancellation) as ITypeSymbol;
+				var variableType = SemanticModel.GetSymbolOrBestCandidate(typeNode, Cancellation) as ITypeSymbol;
 
 				if (variableType == null || !IsTaskType(variableType))
 					return;
@@ -159,7 +159,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.IncorrectTaskUsageInAsyncCode
 			{
 				if (containingMethodOrLocalFunction is AnonymousFunctionExpressionSyntax lambdaDeclaration)
 				{
-					var lambdaSymbol = SemanticModel.GetSymbolOrFirstCandidate(lambdaDeclaration, Cancellation) as IMethodSymbol;
+					var lambdaSymbol = SemanticModel.GetSymbolOrBestCandidate(lambdaDeclaration, Cancellation) as IMethodSymbol;
 					return lambdaSymbol?.ReturnType;
 				}
 
@@ -174,7 +174,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.IncorrectTaskUsageInAsyncCode
 				if (returnTypeNode == null)
 					return null;
 
-				var returnTypeSymbol = SemanticModel.GetSymbolOrFirstCandidate(returnTypeNode, Cancellation) as ITypeSymbol;
+				var returnTypeSymbol = SemanticModel.GetSymbolOrBestCandidate(returnTypeNode, Cancellation) as ITypeSymbol;
 				return returnTypeSymbol;
 			}
 

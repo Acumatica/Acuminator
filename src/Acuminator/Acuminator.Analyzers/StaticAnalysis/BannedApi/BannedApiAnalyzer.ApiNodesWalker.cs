@@ -94,7 +94,7 @@ public partial class BannedApiAnalyzer
 			Cancellation.ThrowIfCancellationRequested();
 
 			if (usingDirectiveNode.Name == null ||
-				SemanticModel.GetSymbolOrFirstCandidate(usingDirectiveNode.Name, Cancellation) is not ISymbol typeOrNamespaceSymbol)
+				SemanticModel.GetSymbolOrBestCandidate(usingDirectiveNode.Name, Cancellation) is not ISymbol typeOrNamespaceSymbol)
 			{
 				return;
 			}
@@ -139,7 +139,7 @@ public partial class BannedApiAnalyzer
 		{
 			Cancellation.ThrowIfCancellationRequested();
 
-			if (SemanticModel.GetSymbolOrFirstCandidate(genericNameNode, Cancellation) is not ISymbol symbol)
+			if (SemanticModel.GetSymbolOrBestCandidate(genericNameNode, Cancellation) is not ISymbol symbol)
 			{
 				Cancellation.ThrowIfCancellationRequested();
 				base.VisitGenericName(genericNameNode);
@@ -202,8 +202,8 @@ public partial class BannedApiAnalyzer
 		{
 			Cancellation.ThrowIfCancellationRequested();
 
-			ISymbol? accessedMember = SemanticModel.GetSymbolOrFirstCandidate(wholeAccessExpression, Cancellation);
-			accessedMember ??= SemanticModel.GetSymbolOrFirstCandidate(accessMemberExpression, Cancellation);
+			ISymbol? accessedMember = SemanticModel.GetSymbolOrBestCandidate(wholeAccessExpression, Cancellation);
+			accessedMember ??= SemanticModel.GetSymbolOrBestCandidate(accessMemberExpression, Cancellation);
 
 			if (accessedMember == null)
 				return true;
@@ -214,7 +214,7 @@ public partial class BannedApiAnalyzer
 				return false;
 
 			expressionBeingAccessed = UnwrapAccessExpressionFromArrayAccess(expressionBeingAccessed);
-			var symbolBeingAccessed = SemanticModel.GetSymbolOrFirstCandidate(expressionBeingAccessed, Cancellation);
+			var symbolBeingAccessed = SemanticModel.GetSymbolOrBestCandidate(expressionBeingAccessed, Cancellation);
 			
 			if (symbolBeingAccessed == null || symbolBeingAccessed.Equals(accessedMember.ContainingType, SymbolEqualityComparer.Default))
 				return !IsAllowedApi(accessedMember);
@@ -238,7 +238,7 @@ public partial class BannedApiAnalyzer
 		{
 			Cancellation.ThrowIfCancellationRequested();
 
-			if (SemanticModel.GetSymbolOrFirstCandidate(identifierNode, Cancellation) is not ISymbol symbol)
+			if (SemanticModel.GetSymbolOrBestCandidate(identifierNode, Cancellation) is not ISymbol symbol)
 				return;
 
 			Cancellation.ThrowIfCancellationRequested();
@@ -249,7 +249,7 @@ public partial class BannedApiAnalyzer
 		{
 			Cancellation.ThrowIfCancellationRequested();
 
-			if (SemanticModel.GetSymbolOrFirstCandidate(qualifiedName, Cancellation) is not ISymbol symbol)
+			if (SemanticModel.GetSymbolOrBestCandidate(qualifiedName, Cancellation) is not ISymbol symbol)
 			{
 				base.VisitQualifiedName(qualifiedName);
 				return;
