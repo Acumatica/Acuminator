@@ -24,8 +24,8 @@ to ignore it. The suppression mechanism can be applied via comments in the code 
 
 ## Exit Codes
 
-Acuminator console runner was designed with the goal of being integrated into continuous integration processes and automated testing. The exit codes returned by the app follow the common conventions 
-of the shell scripting. Here is the list of exit codes returned by the Acuminator console runner:
+Acuminator console runner was designed with the goal of being integrated into continuous integration processes and automated testing. The exit codes returned by the app follow common shell-scripting conventions.
+Here is the list of exit codes returned by the Acuminator console runner:
 
 | Exit Code | Description                                                                                                                                                                              |
 |---------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
