@@ -22,6 +22,23 @@ You can find the list of all Acuminator diagnostics in this [summary](./Summary.
 Acuminator also provides its own mechanism for diagnostics suppression, which allows developers to selectively suppress specific diagnostics in their code. This is useful when a particular diagnostic is not applicable or when a developer has a valid reason
 to ignore it. The suppression mechanism can be applied via comments in the code or through special Acuminator suppression files.
 
+## Exit Codes
+
+Acuminator console runner was designed with the goal of being integrated into continuous integration processes and automated testing. The exit codes returned by the app follow the common conventions 
+of the shell scripting. Here is the list of exit codes returned by the Acuminator console runner:
+
+| Exit Code | Description                                                                                                                                                                              |
+|---------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    `0`    | Acuminator Console Runner finished the execution successfully and the analyzed code passed the Acuminator code analysis validation                                                       |
+|    `1`    | Acuminator Console Runner finished the execution successfully but the analyzed code did not pass the Acuminator code analysis validation.                                                |
+|    `2`    | The execution of Acuminator Console Runner was cancelled. This can happen if you started the validation in the interactive mode (which is the default mode) and pressed "Ctrl + C" keys. |
+|    `4`    | The execution of Acuminator Console Runner was interrupted by a runtime error.                                                                                                           |
+
+When you integrate Acuminator console runner into your CI/CD pipeline, you can use these exit codes to determine the outcome of the code analysis and take appropriate actions based on the results.
+The exit codes `0` and `1` indicate that the analysis completed successfully, so you can use them ot judge whether the code passed or failed the validation. 
+The rest of the exit codes indicate that the analysis was interrupted or failed due to an unexpected runtime error. You can use them to detect incidents in your automated testing.
+
+
 ## Command Line Arguments
 
 The Acuminator console runner provides several command line arguments to configure its code analysis and the format of the generated report. Run the tool with `--help` argument to see the documentation for all supported command line arguments in the console.
