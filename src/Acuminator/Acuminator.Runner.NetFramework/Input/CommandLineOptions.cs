@@ -269,7 +269,7 @@ namespace Acuminator.Runner.Input
 		/// Each of the mechanisms is used for different scenarios. Local suppression provides a notice to the reader that there is an Acuminator alert suppressed due to the specified reasons.<br/>
 		/// Global suppression does not provide any information regarding alerts suppressed in the code or the reason for the suppression of the alert to the reader.<br/>
 		/// It is useful for development processes in large codebases where the number of errors is large and the cost of fixing them is high.<br/>
-		/// For example, you can use the Acuminator console runner in CI scenarios to run automatic tests with Acuminator static analysis<br/>
+		/// For example, you can use the Acuminator Console Runner in CI scenarios to run automatic tests with Acuminator static analysis<br/>
 		/// which will rely on Acuminator suppression file for the main code base and report Acuminator warnings and errors only for the new code.<br/>
 		/// <br/>
 		/// Acuminator work modes are designed to provide better support for automated CI scenarios.<br/>
@@ -303,7 +303,7 @@ namespace Acuminator.Runner.Input
 						   Each of the mechanisms is used for different scenarios. Local suppression provides a notice to the reader that there is an Acuminator alert suppressed due to the specified reasons.
 						   Global suppression does not provide any information regarding alerts suppressed in the code or the reason for the suppression of the alert to the reader.
 						   It is useful for development processes in large codebases where the number of errors is large and the cost of fixing them is high.
-						   For example, you can use the Acuminator console runner in CI scenarios to run automatic tests with Acuminator static analysis
+						   For example, you can use the Acuminator Console Runner in CI scenarios to run automatic tests with Acuminator static analysis
 						   which will rely on Acuminator suppression file for the main code base and report Acuminator warnings and errors only for the new code.
 						   
 						   Acuminator work modes are designed to provide better support for automated CI scenarios.

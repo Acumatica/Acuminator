@@ -22,7 +22,7 @@
 	<PropertyGroup>
 		<Company>Acumatica, Inc.</Company>
 		<Authors>$(Company)</Authors>	
-		<Description>Acuminator console runner that executes Acuminator code analysis diagnostics from the command line.</Description>
+		<Description>Acuminator Console Runner that executes Acuminator code analysis diagnostics from the command line.</Description>
 		<Copyright>Copyright © 2017-$([System.DateTime]::Now.Year) $(Company)</Copyright>
 		<ApplicationIcon>Resources\acumatica.ico</ApplicationIcon>
 		<PlatformTarget>AnyCPU</PlatformTarget>
