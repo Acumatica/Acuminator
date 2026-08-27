@@ -1,10 +1,10 @@
 # Acuminator Console Runner
 
-**Acuminator console runner** is a standalone command-line tool that performs Acuminator static code analysis of .NET projects and solutions based on Acumatica Framework.
-Acuminator console runner serves as a command-line interface (CLI) for Acuminator code analysis that allows to run it outside of IDE. Such tool is useful for CI/CD pipelines and other automated scenarios.
+**Acuminator Console Runner** is a standalone command-line tool that performs Acuminator static code analysis of .NET projects and solutions based on Acumatica Framework.
+Acuminator Console Runner serves as a command-line interface (CLI) for Acuminator code analysis that allows to run it outside of IDE. Such tool is useful for CI/CD pipelines and other automated scenarios.
 The name of the executable file is `Acuminator.Runner.NetFramework.exe`.
 
-Acuminator console runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime.
+Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime.
 
 ## Analysis
 
@@ -24,29 +24,29 @@ to ignore it. The suppression mechanism can be applied via comments in the code 
 
 ## Exit Codes
 
-Acuminator console runner was designed with the goal of being integrated into continuous integration processes and automated testing. The exit codes returned by the app follow common shell-scripting conventions.
-Here is the list of exit codes returned by the Acuminator console runner:
+Acuminator Console Runner was designed for integration into continuous integration processes and automated testing. The exit codes returned by the app follow common shell-scripting conventions.
+The following table lists the exit codes returned by the Acuminator Console Runner.
 
 | Exit Code | Description                                                                                                                                                                              |
 |---------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    `0`    | Acuminator Console Runner finished the execution successfully and the analyzed code passed the Acuminator code analysis validation                                                       |
+|    `0`    | Acuminator Console Runner finished the execution successfully and the analyzed code passed the Acuminator code analysis validation.                                                      |
 |    `1`    | Acuminator Console Runner finished the execution successfully but the analyzed code did not pass the Acuminator code analysis validation.                                                |
-|    `2`    | The execution of Acuminator Console Runner was cancelled. This can happen if you started the validation in the interactive mode (which is the default mode) and pressed "Ctrl + C" keys. |
-|    `4`    | The execution of Acuminator Console Runner was interrupted by a runtime error.                                                                                                           |
+|    `2`    | The execution of Acuminator Console Runner has been cancelled. This can happen if you started the validation in the interactive mode (which is the default mode) and pressed "Ctrl + C" keys. |
+|    `4`    | The execution of Acuminator Console Runner has been interrupted by a runtime error.                                                                                                           |
 
-When you integrate Acuminator console runner into your CI/CD pipeline, you can use these exit codes to determine the outcome of the code analysis and take appropriate actions based on the results.
+When you integrate Acuminator Console Runner into your CI/CD pipeline, you can use these exit codes to determine the outcome of the code analysis and take appropriate actions based on the results.
 The exit codes `0` and `1` indicate that the analysis completed successfully, so you can use them ot judge whether the code passed or failed the validation. 
-The rest of the exit codes indicate that the analysis was interrupted or failed due to an unexpected runtime error. You can use them to detect incidents in your automated testing.
+The exit codes `2` and `3` indicate that the analysis was interrupted or failed due to an unexpected runtime error. You can use them to detect incidents in your automated testing.
 
 
 ## Command Line Arguments
 
-The Acuminator console runner provides several command line arguments to configure its code analysis and the format of the generated report. Run the tool with `--help` argument to see the documentation for all supported command line arguments in the console.
+The Acuminator Console Runner provides several command line arguments to configure its code analysis and the format of the generated report. Run the tool with `--help` argument to see the documentation for all supported command line arguments in the console.
 
 All command line arguments can be divided into the following three groups:
 - Code analysis arguments: These arguments control how the code analysis is performed.
 - Output arguments: These arguments control how the results of the code analysis are reported.
-- Other arguments: These additional arguments control different aspects of the Acuminator console runner.
+- Other arguments: These additional arguments control different aspects of the Acuminator Console Runner.
 
 ### Analysis Command Line Arguments
 
@@ -80,11 +80,11 @@ All command line arguments can be divided into the following three groups:
 | `--msBuild-path`                       | Optional. Provides an explicit path to the MSBuild tool that will be used for analysis. By default, MSBuild installations are detected automatically on the current machine and the latest found version will be used.                                                 |
 | `--non-interactive`                    | Optional. A flag that forces the Acuminator Console Runner to run in non-interactive mode. In this mode, some interactive features such as interactive cancellation of the analysis with "Ctrl + C" are disabled. This mode is useful when Acuminator is executed in automated environments like CI/CD pipelines where no user interaction is possible. Some automated environments such as Azure Pipelines may throw an error if the application attempts to use one of the interactive features. |
 | `--help`                               | Optional. A flag that allows you to see the description of all available command line arguments in the console. Use this flag without any other arguments.                                                                                                                                                                        |
-| `--version`                            | Optional. A flag that allows you to see the Acuminator console runner's version. Use this flag without any other arguments.                                                                                                                                                                                                              |
+| `--version`                            | Optional. A flag that allows you to see the Acuminator Console Runner's version. Use this flag without any other arguments.                                                                                                                                                                                                              |
 
 ## Usage Examples
 
-Below are examples of how you can run Acuminator console runner from the command line.
+Below are examples of how you can run Acuminator Console Runner from the command line.
 ```console
 Acuminator.Runner.NetFramework.exe <path to solution/project> --verbosity Debug --format json -f <path to output file> -g <grouping> --enable-PX1007 --disable-PX1099
 ```
@@ -103,11 +103,11 @@ This command does not specify any grouping for diagnostics, so they will be outp
 
 ## Acuminator Console Runner and Different .Net Runtimes
 
-Currently, there is only one version of Acuminator console runner based on .NET Framework runtime. The runner is based on the older .NET Framework runtime due to differences in Roslyn and MSBuild behavior for console applications 
+Currently, there is only one version of Acuminator Console Runner based on .NET Framework runtime. The runner is based on the older .NET Framework runtime due to differences in Roslyn and MSBuild behavior for console applications 
 based on different .NET runtimes. These differences can be observed on large complex code bases such as Acumatica ERP code. 
 
 In case of modern .NET runtimes, Roslyn (and MSBuild used by the tool to load solutions for analysis) fails to correctly load Acumatica  ERP solution for analysis. This results in the inability to correctly analyze Acumatica ERP projects. 
 On the other hand, when Roslyn and MSBuild are used with .Net Framework, they can correctly load Acumatica ERP solution and projects for analysis.
 
 It seems, the issue is related to the fact that Acumatica ERP solution is still based on .NET Framework, which causes compatibility problems with Roslyn and MSBuild DLLs that target different .NET runtimes. In the future, after Acumatica ERP 
-is fully migrated to .NET Core, a port of Acuminator console runner to .NET Core will probably appear.
+is fully migrated to .NET Core, a port of Acuminator Console Runner to .NET Core will probably appear.

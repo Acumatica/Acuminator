@@ -19,7 +19,7 @@ public enum AnalysisHostType
 	VisualStudio,
 
 	/// <summary>
-	/// The host is the Acuminator console runner.
+	/// The host is the Acuminator Console Runner.
 	/// </summary>
 	Runner
 }
