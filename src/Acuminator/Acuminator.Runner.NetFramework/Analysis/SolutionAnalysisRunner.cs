@@ -169,19 +169,32 @@ namespace Acuminator.Runner.Analysis
 
 		private bool TryRegisterMSBuildByPath(string msBuildPath)
 		{
+			bool fileExists = File.Exists(msBuildPath);
+			bool directoryExists = Directory.Exists(msBuildPath);
+
+			if (!fileExists && !directoryExists)
+			{
+				_logger.Error(Messages.MSBuildDoesNotExistAtTheProvidedPathError, msBuildPath);
+				return false;
+			}
+
+			string? msBuildDir = fileExists
+				? Path.GetDirectoryName(msBuildPath)
+				: msBuildPath;
+
+			_logger.Information(Messages.RegisteringMSBuildAtTheProvidedPathStatusMessage, msBuildDir);
+
 			try
 			{
-				_logger.Information(Messages.RegisteringMSBuildAtTheProvidedPathStatusMessage, msBuildPath);
-
-				string? msBuildDir = Path.GetDirectoryName(msBuildPath);
+				
 				MSBuildLocator.RegisterMSBuildPath(msBuildDir);
 
-				_logger.Information(Messages.SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage, msBuildPath);
+				_logger.Information(Messages.SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage, msBuildDir);
 				return true;
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, Messages.MSBuildRegistrationAtProvidedPathFailedError, msBuildPath);
+				_logger.Error(e, Messages.MSBuildRegistrationAtProvidedPathFailedError, msBuildDir);
 				return false;
 			}
 		}

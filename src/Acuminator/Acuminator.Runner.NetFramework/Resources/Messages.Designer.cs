@@ -268,6 +268,15 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to register MSBuild by using the provided path &quot;{MSBuildPath}&quot;. The path does not exist in the system..
+        /// </summary>
+        internal static string MSBuildDoesNotExistAtTheProvidedPathError {
+            get {
+                return ResourceManager.GetString("MSBuildDoesNotExistAtTheProvidedPathError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occured during registration of the MSBuild instance..
         /// </summary>
         internal static string MSBuildInstanceRegistrationError {

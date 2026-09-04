@@ -180,6 +180,9 @@
   <data name="LoadedProjectsCount_Information" xml:space="preserve">
     <value>The number of loaded projects: {ProjectsCount}.</value>
   </data>
+  <data name="MSBuildDoesNotExistAtTheProvidedPathError" xml:space="preserve">
+    <value>Failed to register MSBuild by using the provided path "{MSBuildPath}". The path does not exist in the system.</value>
+  </data>
   <data name="MSBuildInstanceRegistrationError" xml:space="preserve">
     <value>An error occured during registration of the MSBuild instance.</value>
   </data>
