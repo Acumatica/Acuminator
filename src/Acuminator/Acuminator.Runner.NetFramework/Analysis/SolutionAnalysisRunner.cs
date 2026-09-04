@@ -128,13 +128,14 @@ namespace Acuminator.Runner.Analysis
 
 		private bool TryRegisterMSBuild(AnalysisContext analysisContext)
 		{
+			if (MSBuildLocator.IsRegistered)
+				return true;
+
 			if (!MSBuildLocator.CanRegister)
 			{
 				_logger.Warning(Messages.MSBuild_RegistrationDeniedWarning);
-				return MSBuildLocator.IsRegistered;
+				return false;
 			}
-			else if (MSBuildLocator.IsRegistered)
-				return true;
 
 			if (analysisContext.MSBuildPath != null)
 			{
