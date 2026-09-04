@@ -184,7 +184,7 @@ namespace Acuminator.Runner.Analysis
 			if (fileExists)
 			{
 				string expandedFileName = Path.GetFullPath(msBuildPath);
-				msBuildDir = Path.GetDirectoryName(msBuildPath);
+				msBuildDir = Path.GetDirectoryName(expandedFileName);
 			}
 			else
 				msBuildDir = msBuildPath;
