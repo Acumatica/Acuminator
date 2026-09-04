@@ -277,7 +277,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured during registration of the MSBuild instance..
+        ///   Looks up a localized string similar to An error occurred during registration of the MSBuild instance..
         /// </summary>
         internal static string MSBuildInstanceRegistrationError {
             get {
@@ -295,7 +295,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path &quot;{MSBuildPath}&quot;..
+        ///   Looks up a localized string similar to An error occurred during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path &quot;{MSBuildPath}&quot;..
         /// </summary>
         internal static string MSBuildRegistrationAtProvidedPathFailedError {
             get {
