@@ -189,6 +189,9 @@
   <data name="MSBuildRegistrationAtProvidedPathFailedError" xml:space="preserve">
     <value>An error occured during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path "{MSBuildPath}".</value>
   </data>
+  <data name="MSBuild_RegistrationDeniedWarning" xml:space="preserve">
+    <value>The MSBuild registration request was denied by the MSBuild locator.</value>
+  </data>
   <data name="MSBuild_VisualStudioNameAndVersion_Info" xml:space="preserve">
     <value>Found MSBuild instance with name "{VisualStudioName}", version "{VisualStudioVersion}".</value>
   </data>
