@@ -178,9 +178,15 @@ namespace Acuminator.Runner.Analysis
 				return false;
 			}
 
-			string? msBuildDir = fileExists
-				? Path.GetDirectoryName(msBuildPath)
-				: msBuildPath;
+			string? msBuildDir;
+			
+			if (fileExists)
+			{
+				string expandedFileName = Path.GetFullPath(msBuildPath);
+				msBuildDir = Path.GetDirectoryName(msBuildPath);
+			}
+			else
+				msBuildDir = msBuildPath;
 
 			_logger.Information(Messages.RegisteringMSBuildAtTheProvidedPathStatusMessage, msBuildDir);
 
