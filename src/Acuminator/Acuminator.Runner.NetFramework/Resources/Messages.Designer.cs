@@ -19,7 +19,7 @@ namespace Acuminator.Runner.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Messages {
@@ -61,7 +61,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The project &quot;{0}&quot; passed Acuminator validation successfully.
+        ///   Looks up a localized string similar to The &quot;{0}&quot; project passed Acuminator validation successfully..
         /// </summary>
         internal static string AcuminatorValidationPassedMessage {
             get {
@@ -88,7 +88,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancelled Acuminator validation of the &quot;{CodeSource}&quot;. Project &quot;{ProjectName}&quot; validation result: {Result}..
+        ///   Looks up a localized string similar to Acuminator validation of the &quot;{CodeSource}&quot; has been cancelled. The result of the &quot;{ProjectName}&quot; project validation: {Result}..
         /// </summary>
         internal static string CancelledCodeSourceValidationInfo {
             get {
@@ -97,7 +97,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The validation is finished. &quot;{CodeSource}&quot; failed the validation..
+        ///   Looks up a localized string similar to The validation has been finished. &quot;{CodeSource}&quot; has failed the validation..
         /// </summary>
         internal static string CodeSourceFailedValidationMessage {
             get {
@@ -106,7 +106,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Code source to use for Acuminator validation is not found at {0}.
+        ///   Looks up a localized string similar to Code source to use for Acuminator validation has not been found at {0}..
         /// </summary>
         internal static string CodeSourceNotFoundError {
             get {
@@ -115,7 +115,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Code source is not specified.
+        ///   Looks up a localized string similar to The code source is not specified..
         /// </summary>
         internal static string CodeSourceNotSpecifiedError {
             get {
@@ -124,7 +124,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Acuminator validation of &quot;{CodeSource}&quot; was cancelled..
+        ///   Looks up a localized string similar to The Acuminator validation of &quot;{CodeSource}&quot; has been cancelled..
         /// </summary>
         internal static string CodeSourceValidationWasCancelled {
             get {
@@ -142,7 +142,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error during the collection of Acuminator analyzers.
+        ///   Looks up a localized string similar to An error occured during the collection of Acuminator analyzers..
         /// </summary>
         internal static string ErrorDuringAcuminatorAnalyzersCollection {
             get {
@@ -160,7 +160,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to initialize Acuminator global suppression mechanism for the code source &quot;{CodeSource}&quot;..
+        ///   Looks up a localized string similar to Failed to initialize the Acuminator global suppression mechanism for the code source &quot;{CodeSource}&quot;..
         /// </summary>
         internal static string FailedToInitializeAcuminatorGlobalSuppressionMechanismError {
             get {
@@ -169,7 +169,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to load Acuminator analyzers. The analysis of the code source &quot;{CodeSource}&quot; cannot be performed.
+        ///   Looks up a localized string similar to Failed to load Acuminator analyzers. The analysis of the code source &quot;{CodeSource}&quot; cannot be performed..
         /// </summary>
         internal static string FailedToLoadAcuminatorAnalyzersError {
             get {
@@ -178,7 +178,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to load solution from the code source &quot;{CodeSource}&quot;..
+        ///   Looks up a localized string similar to Failed to load the solution from the code source &quot;{CodeSource}&quot;..
         /// </summary>
         internal static string FailedToLoadSolutionFromCodeSourceError {
             get {
@@ -187,7 +187,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to obtain Acuminator version. The analysis will be performed without Acuminator version information..
+        ///   Looks up a localized string similar to Failed to obtain the Acuminator version. The analysis will be performed without Acuminator version information..
         /// </summary>
         internal static string FailedToObtainAcuminatorVersionWarning {
             get {
@@ -196,7 +196,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to obtain compilation with analyzers.
+        ///   Looks up a localized string similar to Failed to obtain the compilation with analyzers..
         /// </summary>
         internal static string FailedToObtainCompilationWithAnalyzersError {
             get {
@@ -205,7 +205,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to obtain Roslyn compilation data for the project with name &quot;{ProjectName}&quot; and path &quot;{ProjectPath}&quot;..
+        ///   Looks up a localized string similar to Failed to obtain the Roslyn compilation data for the project with the &quot;{ProjectName}&quot; name and the &quot;{ProjectPath}&quot; path..
         /// </summary>
         internal static string FailedToObtainRoslynCompilationDataForTheProjectError {
             get {
@@ -214,7 +214,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Finished Acuminator validation of the project &quot;{ProjectName}&quot;. Project validation result: {Result}..
+        ///   Looks up a localized string similar to Finished Acuminator validation of the &quot;{ProjectName}&quot; project. The result of the project validation: {Result}..
         /// </summary>
         internal static string FinishedAcuminatorValidationOfTheProjectInfo {
             get {
@@ -232,7 +232,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initialize Acuminator analyzers..
+        ///   Looks up a localized string similar to Initializing Acuminator analyzers....
         /// </summary>
         internal static string InitializeAcuminatorAnalyzersStatusMessage {
             get {
@@ -241,11 +241,20 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Count of loaded projects: {ProjectsCount}..
+        ///   Looks up a localized string similar to The number of loaded projects: {ProjectsCount}..
         /// </summary>
         internal static string LoadedProjectsCount_Information {
             get {
                 return ResourceManager.GetString("LoadedProjectsCount_Information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The MSBuild registration request was denied by the MSBuild locator..
+        /// </summary>
+        internal static string MSBuild_RegistrationDeniedWarning {
+            get {
+                return ResourceManager.GetString("MSBuild_RegistrationDeniedWarning", resourceCulture);
             }
         }
         
@@ -259,7 +268,16 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error during registration of MSBuild instance..
+        ///   Looks up a localized string similar to Failed to register MSBuild by using the provided path &quot;{MSBuildPath}&quot;. The path does not exist in the system..
+        /// </summary>
+        internal static string MSBuildDoesNotExistAtTheProvidedPathError {
+            get {
+                return ResourceManager.GetString("MSBuildDoesNotExistAtTheProvidedPathError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred during registration of the MSBuild instance..
         /// </summary>
         internal static string MSBuildInstanceRegistrationError {
             get {
@@ -277,7 +295,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error during the registration of MSBuild instance. Failed to register MSBuild using a provided path &quot;{MSBuildPath}&quot;..
+        ///   Looks up a localized string similar to An error occurred during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path &quot;{MSBuildPath}&quot;..
         /// </summary>
         internal static string MSBuildRegistrationAtProvidedPathFailedError {
             get {
@@ -295,7 +313,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No installed MSBuild version was found on the machine..
+        ///   Looks up a localized string similar to No installed MSBuild version has been found on the machine..
         /// </summary>
         internal static string NoInstalledMSBuildFoundError {
             get {
@@ -304,7 +322,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No project in the provided &quot;{CodeSource}&quot; references Acumatica Platform.
+        ///   Looks up a localized string similar to No project in the provided &quot;{CodeSource}&quot; references the Acumatica Framework..
         /// </summary>
         internal static string NoProjectInCodeSourceReferencesAcumaticaPlatformError {
             get {
@@ -322,7 +340,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not supported output format &quot;{0}&quot;. You can specify only &quot;{1}&quot; and &quot;{2}&quot; values as output formats..
+        ///   Looks up a localized string similar to Not supported output format &quot;{0}&quot;. You can specify only the &quot;{1}&quot; and &quot;{2}&quot; values as output formats..
         /// </summary>
         internal static string NotSupportedOutputFormat {
             get {
@@ -331,7 +349,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Obtained Roslyn compilation data for the project &quot;{ProjectName}&quot; successfully..
+        ///   Looks up a localized string similar to Roslyn compilation data for the project &quot;{ProjectName}&quot; has been obtained successfully..
         /// </summary>
         internal static string ObtainedRoslynCompilationDataForTheProjectDebug {
             get {
@@ -349,7 +367,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The project {ProjectName} does not reference Acumatica Platform. Validation can not be performed.
+        ///   Looks up a localized string similar to The {ProjectName} project does not reference Acumatica Framework. Validation can not be performed.
         /// </summary>
         internal static string ProjectDoesNotReferenceAcumaticaPlatformValidationError {
             get {
@@ -367,7 +385,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A runtime error was encountered during the validation..
+        ///   Looks up a localized string similar to A runtime error has been encountered during the validation..
         /// </summary>
         internal static string RuntimeErrorHappenedDuringValidationMessage {
             get {
@@ -385,7 +403,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start analyzing the code source &quot;{CodeSource}&quot;..
+        ///   Looks up a localized string similar to Analyzing the code source &quot;{CodeSource}&quot;....
         /// </summary>
         internal static string StartAnalyzingTheCodeSourceStatusMessage {
             get {
@@ -403,7 +421,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start loading the code source &quot;{CodeSource}&quot;..
+        ///   Looks up a localized string similar to Loading the code source &quot;{CodeSource}&quot;....
         /// </summary>
         internal static string StartLoadingTheCodeSourceAtPathStatusMessage {
             get {
@@ -412,7 +430,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start validating the solution..
+        ///   Looks up a localized string similar to Validating the solution....
         /// </summary>
         internal static string StartValidatingSolutionStatusMessage {
             get {
@@ -421,7 +439,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully finished validating the solution..
+        ///   Looks up a localized string similar to Validation of the solution has been finished successfully..
         /// </summary>
         internal static string SuccessfullyFinishedSolutionValidationStatusMessage {
             get {
@@ -430,7 +448,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully loaded the code source &quot;{CodeSource}&quot;..
+        ///   Looks up a localized string similar to The code source &quot;{CodeSource}&quot; has been loaded successfully..
         /// </summary>
         internal static string SuccessfullyLoadedCodeSourceAtPathStatusMessage {
             get {
@@ -439,7 +457,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully registered MSBuild instance at the provided path &quot;{MSBuildPath}&quot;..
+        ///   Looks up a localized string similar to The MSBuild instance at the provided path &quot;{MSBuildPath}&quot; has been registered successfully..
         /// </summary>
         internal static string SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage {
             get {
@@ -448,7 +466,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total Errors Count.
+        ///   Looks up a localized string similar to Total Error Count.
         /// </summary>
         internal static string TotalErrorsCountReportTitlePart {
             get {
@@ -457,7 +475,7 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error on attempt to unregister MSBuild..
+        ///   Looks up a localized string similar to An error has occurred on attempt to unregister MSBuild..
         /// </summary>
         internal static string UnregisterMSBuildInstanceError {
             get {

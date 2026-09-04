@@ -16,6 +16,10 @@
       "commandName": "Project",
       "commandLineArgs": "\"..\\..\\..\\..\\..\\Samples\\PX.Objects.HackathonDemo\\PX.Objects.HackathonDemo\\PX.Objects.HackathonDemo.csproj\" -f report.json  --format json -g d --enable-PX1007 --disable-PX1099"
     },
+    "msbuild + json + file + grouping by diagnostic + PX1007 + no PX1099": {
+      "commandName": "Project",
+      "commandLineArgs": "\"..\\..\\..\\..\\..\\Samples\\PX.Objects.HackathonDemo\\PX.Objects.HackathonDemo\\PX.Objects.HackathonDemo.csproj\" -f report.json  --format json -g d --enable-PX1007 --disable-PX1099 --msBuild-path \"C:\\Program Files\\Microsoft Visual Studio\\18\\Professional\\MSBuild\\Current\\Bin\""
+    },
     "text + console + grouping by diagnostic and file + ISV mode + PX1007 + PX1099": {
       "commandName": "Project",
       "commandLineArgs": "\"..\\..\\..\\..\\..\\Samples\\PX.Objects.HackathonDemo\\PX.Objects.HackathonDemo\\PX.Objects.HackathonDemo.csproj\" -g FD --isv-mode --enable-PX1007"

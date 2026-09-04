@@ -180,14 +180,20 @@
   <data name="LoadedProjectsCount_Information" xml:space="preserve">
     <value>The number of loaded projects: {ProjectsCount}.</value>
   </data>
+  <data name="MSBuildDoesNotExistAtTheProvidedPathError" xml:space="preserve">
+    <value>Failed to register MSBuild by using the provided path "{MSBuildPath}". The path does not exist in the system.</value>
+  </data>
   <data name="MSBuildInstanceRegistrationError" xml:space="preserve">
-    <value>An error occured during registration of the MSBuild instance.</value>
+    <value>An error occurred during registration of the MSBuild instance.</value>
   </data>
   <data name="MSBuildPath_Info" xml:space="preserve">
     <value>MSBuildPath: "{MSBuildPath}".</value>
   </data>
   <data name="MSBuildRegistrationAtProvidedPathFailedError" xml:space="preserve">
-    <value>An error occured during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path "{MSBuildPath}".</value>
+    <value>An error occurred during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path "{MSBuildPath}".</value>
+  </data>
+  <data name="MSBuild_RegistrationDeniedWarning" xml:space="preserve">
+    <value>The MSBuild registration request was denied by the MSBuild locator.</value>
   </data>
   <data name="MSBuild_VisualStudioNameAndVersion_Info" xml:space="preserve">
     <value>Found MSBuild instance with name "{VisualStudioName}", version "{VisualStudioVersion}".</value>

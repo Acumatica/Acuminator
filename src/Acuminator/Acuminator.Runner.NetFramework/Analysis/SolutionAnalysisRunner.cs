@@ -128,6 +128,15 @@ namespace Acuminator.Runner.Analysis
 
 		private bool TryRegisterMSBuild(AnalysisContext analysisContext)
 		{
+			if (MSBuildLocator.IsRegistered)
+				return true;
+
+			if (!MSBuildLocator.CanRegister)
+			{
+				_logger.Warning(Messages.MSBuild_RegistrationDeniedWarning);
+				return false;
+			}
+
 			if (analysisContext.MSBuildPath != null)
 			{
 				return TryRegisterMSBuildByPath(analysisContext.MSBuildPath);
@@ -161,19 +170,38 @@ namespace Acuminator.Runner.Analysis
 
 		private bool TryRegisterMSBuildByPath(string msBuildPath)
 		{
+			bool fileExists = File.Exists(msBuildPath);
+			bool directoryExists = Directory.Exists(msBuildPath);
+
+			if (!fileExists && !directoryExists)
+			{
+				_logger.Error(Messages.MSBuildDoesNotExistAtTheProvidedPathError, msBuildPath);
+				return false;
+			}
+
+			string? msBuildDir;
+			
+			if (fileExists)
+			{
+				string expandedFileName = Path.GetFullPath(msBuildPath);
+				msBuildDir = Path.GetDirectoryName(expandedFileName);
+			}
+			else
+				msBuildDir = msBuildPath;
+
+			_logger.Information(Messages.RegisteringMSBuildAtTheProvidedPathStatusMessage, msBuildDir);
+
 			try
 			{
-				_logger.Information(Messages.RegisteringMSBuildAtTheProvidedPathStatusMessage, msBuildPath);
-
-				string? msBuildDir = Path.GetDirectoryName(msBuildPath);
+				
 				MSBuildLocator.RegisterMSBuildPath(msBuildDir);
 
-				_logger.Information(Messages.SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage, msBuildPath);
+				_logger.Information(Messages.SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage, msBuildDir);
 				return true;
 			}
 			catch (Exception e)
 			{
-				_logger.Error(e, Messages.MSBuildRegistrationAtProvidedPathFailedError, msBuildPath);
+				_logger.Error(e, Messages.MSBuildRegistrationAtProvidedPathFailedError, msBuildDir);
 				return false;
 			}
 		}
