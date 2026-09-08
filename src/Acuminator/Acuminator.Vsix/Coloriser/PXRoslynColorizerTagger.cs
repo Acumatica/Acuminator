@@ -17,6 +17,8 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
+using static Microsoft.VisualStudio.Shell.TaskExtensions;
+
 namespace Acuminator.Vsix.Coloriser;
 
 /// <summary>
@@ -282,7 +284,12 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (ThreadHelper.CheckAccess())
 			RaiseTagsChanged();
 		else
-			ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
+		{
+			#pragma warning disable VSSDK007 // ThreadHelper.JoinableTaskFactory.RunAsync
+			ThreadHelper.JoinableTaskFactory.RunAsync(RaiseTagsChangedAsync)
+											.FireAndForget();
+			#pragma warning restore VSSDK007
+		}
 	}
 
 	private void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
@@ -333,8 +340,13 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			if (ThreadHelper.CheckAccess())
 				RaiseTagsChanged();
 			else
-				ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
-		}	
+			{
+#pragma warning disable VSSDK007 // ThreadHelper.JoinableTaskFactory.RunAsync
+				ThreadHelper.JoinableTaskFactory.RunAsync(RaiseTagsChangedAsync)
+												.FireAndForget();
+#pragma warning restore VSSDK007
+			}
+		}
 	}
 
 	private bool GetAcumaticaReferenceOnProjectChange(WorkspaceChangeEventArgs e, bool oldHasReferenceToAcumaticaPlatform)
