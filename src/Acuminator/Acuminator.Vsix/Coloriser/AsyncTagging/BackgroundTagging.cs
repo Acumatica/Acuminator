@@ -124,7 +124,7 @@ namespace Acuminator.Vsix.Coloriser
 			}
 
 			// We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed
-			return Shell.ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task;
+			return AcuminatorVSPackage.JTF.RunAsync(async () => await tagger.RaiseTagsChangedAsync(cancellationToken)).Task;
 		}
 	}
 }

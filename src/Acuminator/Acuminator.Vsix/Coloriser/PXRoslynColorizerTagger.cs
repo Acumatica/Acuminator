@@ -15,7 +15,6 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.Coloriser;
@@ -280,15 +279,8 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		// We need to raise the tags changed event to trigger re-coloring on workspace change
 		ResetCacheAndFlags(newSnapshotToCache: null);
 
-		if (ThreadHelper.CheckAccess())
-			RaiseTagsChanged();
-		else
-		{
-			#pragma warning disable VSSDK007 // ThreadHelper.JoinableTaskFactory.RunAsync
-			ThreadHelper.JoinableTaskFactory.RunAsync(RaiseTagsChangedAsync)
-											.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(PXRoslynColorizerTagger)}/{nameof(WorkspaceAttachedToDocumentChanged)}");
-			#pragma warning restore VSSDK007
-		}
+		var cancellation = BackgroundTagging?.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? CancellationToken.None;
+		RaiseTagsChangedAsyncAndForget(cancellation);
 	}
 
 	private void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
@@ -336,15 +328,8 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		{
 			ResetCacheAndFlags(newSnapshotToCache: null);
 
-			if (ThreadHelper.CheckAccess())
-				RaiseTagsChanged();
-			else
-			{
-#pragma warning disable VSSDK007 // ThreadHelper.JoinableTaskFactory.RunAsync
-				ThreadHelper.JoinableTaskFactory.RunAsync(RaiseTagsChangedAsync)
-												.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(PXRoslynColorizerTagger)}/{nameof(OnWorkspaceChanged)}");
-#pragma warning restore VSSDK007
-			}
+			var cancellation = BackgroundTagging?.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? CancellationToken.None;
+			RaiseTagsChangedAsyncAndForget(cancellation);
 		}
 	}
 

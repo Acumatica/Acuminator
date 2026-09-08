@@ -470,7 +470,7 @@ namespace Acuminator.Vsix.Coloriser
 				{
 					if (!cancellationToken.IsCancellationRequested)
 					{
-						await _tagger.RaiseTagsChangedAsync();
+						await _tagger.RaiseTagsChangedAsync(cancellationToken);
 					}
 				});
 				#pragma warning restore VSTHRD110 // Observe result of async calls

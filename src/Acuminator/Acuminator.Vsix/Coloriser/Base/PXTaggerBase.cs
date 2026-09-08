@@ -3,10 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Settings;
+using Acuminator.Vsix.Utilities;
 
 using Microsoft.VisualStudio.Text;
 
@@ -64,11 +67,35 @@ namespace Acuminator.Vsix.Coloriser
 			RaiseTagsChanged();
 		}
 
-		internal async Task RaiseTagsChangedAsync()
+		/// <summary>
+		/// Raises the tags changed asynchronously and do not observe the raised task.
+		/// </summary>
+		/// <remarks>
+		/// The method is intended to be called from void-returning event handlers.
+		/// </remarks>
+		/// <param name="cancellation">Cancellation.</param>
+		/// <param name="reportedFrom">(Optional) The method raising the tag changed event.</param>
+		protected void RaiseTagsChangedAsyncAndForget(CancellationToken cancellation, [CallerMemberName] string? calledFrom = null)
+		{
+			if (ThreadHelper.CheckAccess())
+				RaiseTagsChanged();
+			else
+			{
+				string taggerName = this.GetType().Name;
+				calledFrom = calledFrom.NullIfWhiteSpace() ?? nameof(RaiseTagsChangedAsyncAndForget);
+
+				// See the VS cookbook for file and forget methods
+				// https://github.com/microsoft/vs-threading/blob/main/docfx/docs/cookbook_vs.md#task-returning-fire-and-forget-methods
+				RaiseTagsChangedAsync(cancellation)
+					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{taggerName}/{calledFrom}", cancellation);
+			}
+		}
+
+		internal async Task RaiseTagsChangedAsync(CancellationToken cancellation)
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellation);
 			}
 
 			RaiseTagsChangedImpl();
