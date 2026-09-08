@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.Utilities
 			return serviceProvider?.GetService(typeof(TService)) as TService;
 		}
 
-		public static async Task<TService?> GetServiceAsync<TService>(this IAsyncServiceProvider serviceProvider)
+		public static async Task<TService?> GetServiceAsync<TService>(this IAsyncServiceProvider? serviceProvider)
 		where TService : class
 		{
 			if (serviceProvider == null)
@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.Utilities
 			return service as TService;
 		}
 
-		internal static async Task<VisualStudioWorkspace?> GetVSWorkspaceAsync(this IAsyncServiceProvider serviceProvider)
+		internal static async Task<VisualStudioWorkspace?> GetVSWorkspaceAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.Utilities
 			return componentModel?.GetService<VisualStudioWorkspace>();
 		}
 
-		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider serviceProvider)
+		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
@@ -67,7 +67,7 @@ namespace Acuminator.Vsix.Utilities
 			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
 		}
 
-		internal static async Task<IOutliningManager?> GetOutliningManagerAsync(this IAsyncServiceProvider serviceProvider, ITextView textView)
+		internal static async Task<IOutliningManager?> GetOutliningManagerAsync(this IAsyncServiceProvider? serviceProvider, ITextView? textView)
 		{
 			if (serviceProvider == null || textView == null)
 				return null;
