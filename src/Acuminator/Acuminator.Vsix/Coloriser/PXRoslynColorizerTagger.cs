@@ -15,9 +15,8 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-
-using static Microsoft.VisualStudio.Shell.TaskExtensions;
 
 namespace Acuminator.Vsix.Coloriser;
 
@@ -287,7 +286,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		{
 			#pragma warning disable VSSDK007 // ThreadHelper.JoinableTaskFactory.RunAsync
 			ThreadHelper.JoinableTaskFactory.RunAsync(RaiseTagsChangedAsync)
-											.FireAndForget();
+											.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(PXRoslynColorizerTagger)}/{nameof(WorkspaceAttachedToDocumentChanged)}");
 			#pragma warning restore VSSDK007
 		}
 	}
@@ -343,7 +342,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 			{
 #pragma warning disable VSSDK007 // ThreadHelper.JoinableTaskFactory.RunAsync
 				ThreadHelper.JoinableTaskFactory.RunAsync(RaiseTagsChangedAsync)
-												.FireAndForget();
+												.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(PXRoslynColorizerTagger)}/{nameof(OnWorkspaceChanged)}");
 #pragma warning restore VSSDK007
 			}
 		}
