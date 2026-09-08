@@ -466,7 +466,7 @@ namespace Acuminator.Vsix.Coloriser
 				var cancellationToken = _cancellationToken;
 
 				#pragma warning disable VSTHRD110 // Observe result of async calls
-				Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+				AcuminatorVSPackage.JTF.RunAsync(async () =>
 				{
 					if (!cancellationToken.IsCancellationRequested)
 					{

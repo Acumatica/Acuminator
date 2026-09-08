@@ -95,7 +95,7 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellation);
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			RaiseTagsChangedImpl();

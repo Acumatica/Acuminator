@@ -104,7 +104,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		protected async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			IComponentModel? componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>(throwOnFailure: false);
 
 			if (componentModel == null)
@@ -149,6 +149,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 																	SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 
 		protected abstract Task SuppressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
-																	 SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
+																	  SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 	}
 }

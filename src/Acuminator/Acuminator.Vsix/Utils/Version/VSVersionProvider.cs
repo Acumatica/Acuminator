@@ -27,7 +27,7 @@ namespace Acuminator.Vsix.Utilities
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			Version? shellVersion = await VS.Shell.GetVsVersionAsync();

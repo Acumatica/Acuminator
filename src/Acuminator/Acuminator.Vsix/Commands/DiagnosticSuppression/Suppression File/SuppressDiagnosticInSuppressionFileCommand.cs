@@ -92,7 +92,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		private async Task<(TextDocument SuppressionFile, Project Project)> GetProjectAndSuppressionFileAsync(ProjectId projectId)
 		{
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			var workspace = await Package.GetVSWorkspaceAsync();
 			Project? project = workspace?.CurrentSolution?.GetProject(projectId);
 

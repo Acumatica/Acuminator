@@ -173,7 +173,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				if (!ThreadHelper.CheckAccess())
 				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 				}
 
 				if (!_codeMapViewModel.IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
@@ -200,7 +200,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				if (!ThreadHelper.CheckAccess())
 				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 				}
 
 				var activeWpfTextViewTask = activeWpfTextView != null

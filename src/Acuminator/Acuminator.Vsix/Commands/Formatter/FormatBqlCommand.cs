@@ -73,7 +73,7 @@ namespace Acuminator.Vsix.Formatter
 
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null || Package.DisposalToken.IsCancellationRequested)
@@ -124,7 +124,7 @@ namespace Acuminator.Vsix.Formatter
 				formattedRoot = formatter.Format(syntaxRoot, semanticModel) ?? syntaxRoot;
 			}
 
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Return to UI thread
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync(); // Return to UI thread
 
 			if (!textView.TextBuffer.EditInProgress && !syntaxRoot.Equals(formattedRoot))
 			{

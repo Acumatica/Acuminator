@@ -81,7 +81,7 @@ namespace Acuminator.Vsix.Utilities
 			return outliningManagerService.GetOutliningManager(textView);
 		}
 
-		internal static async Task<IWpfTextView?> GetWpfTextViewAsync(this IAsyncServiceProvider serviceProvider)
+		internal static async Task<IWpfTextView?> GetWpfTextViewAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
@@ -109,7 +109,7 @@ namespace Acuminator.Vsix.Utilities
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			DTE2? dte2 = await serviceProvider.GetServiceAsync<SDTE, DTE2>(throwOnFailure: false);
@@ -149,7 +149,7 @@ namespace Acuminator.Vsix.Utilities
 			if (serviceProvider == null)
 				return null;
 
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			var errorService = await serviceProvider.GetServiceAsync<SVsErrorList, IVsTaskList>(throwOnFailure: false);
 
 			if (errorService == null)

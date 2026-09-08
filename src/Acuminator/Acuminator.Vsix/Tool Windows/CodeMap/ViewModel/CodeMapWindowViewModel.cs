@@ -248,7 +248,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			IsCalculating = false;
@@ -263,7 +263,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			var activeWpfTextViewTask = activeWpfTextView != null
@@ -307,7 +307,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			if (!IsVisible || e.IsActiveDocumentCleared(Document))
@@ -397,7 +397,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!ThreadHelper.CheckAccess())
 					{
-						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+						await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 					}
 
 					IsCalculating = true;
@@ -415,7 +415,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (newTreeVM == null)
 						return;
 
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 					Tree = newTreeVM;
 					AfterCodeMapTreeIsFiltered?.Invoke(this, new FilterEventArgs(filterOptions, oldFilterText: null));

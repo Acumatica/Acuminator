@@ -57,7 +57,7 @@ public static class VsTasksUtils
 			}
 			catch (Exception ex) when (FilterExceptions(ex, fileOnlyIf, logCancellations))
 			{
-				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync(cancellation);
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 				FaultEvent telemetryEvent = new FaultEvent(faultEventName, faultDescription, ex)
 				{
