@@ -123,7 +123,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			MessageBox.Show(errorMessage.ToString(), AcuminatorVSPackage.PackageName);
 		}
 
-		protected override Task SupressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
+		protected override Task SuppressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
 																	 SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
 			MessageBox.Show(VSIXResource.DiagnosticSuppression_MultipleDiagnosticFound, AcuminatorVSPackage.PackageName);

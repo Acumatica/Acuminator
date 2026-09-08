@@ -141,14 +141,14 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				case 1:
 					return SuppressSingleDiagnosticOnNodeAsync(diagnosticData[0], document, syntaxRoot, semanticModel, nodeWithDiagnostic);
 				default:
-					return SupressMultipleDiagnosticOnNodeAsync(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
+					return SuppressMultipleDiagnosticOnNodeAsync(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
 			}
 		}
 
 		protected abstract Task SuppressSingleDiagnosticOnNodeAsync(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
 																	SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 
-		protected abstract Task SupressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
+		protected abstract Task SuppressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
 																	 SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 	}
 }
