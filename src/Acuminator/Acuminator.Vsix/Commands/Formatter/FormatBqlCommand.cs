@@ -69,7 +69,7 @@ namespace Acuminator.Vsix.Formatter
 
 		protected override void CommandCallback(object sender, EventArgs e) =>
 			CommandCallbackAsync()
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(FormatBqlCommand)}", cancellation: AcuminatorVSPackage.Instance?.DisposalToken ?? default);
+				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(FormatBqlCommand)}");
 
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{

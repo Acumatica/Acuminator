@@ -19,11 +19,11 @@ namespace Acuminator.Vsix.Utilities;
 /// </summary>
 public static class VsTasksUtils
 {
-	/// <inheritdoc cref="FileAndForget(System.Threading.Tasks.Task, string?, CancellationToken, string?, bool, Func{Exception, bool}?)"/>
+	/// <inheritdoc cref="FileAndForgetAcuminatorTask(System.Threading.Tasks.Task, string?, string?, bool, Func{Exception, bool}?)"/>
 	/// <param name="joinableTask">The <see cref="JoinableTask"/> to act on.</param>
-	public static void FileAndForget(this JoinableTask joinableTask, string? faultEventName, CancellationToken cancellation, 
-									 string? faultDescription = null, bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null) =>
-		FileAndForget(joinableTask.CheckIfNull().Task, faultEventName, cancellation, faultDescription, logCancellations, fileOnlyIf);
+	public static void FileAndForget(this JoinableTask joinableTask, string? faultEventName, string? faultDescription = null, 
+									 bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null) =>
+		FileAndForgetAcuminatorTask(joinableTask.CheckIfNull().Task, faultEventName, faultDescription, logCancellations, fileOnlyIf);
 
 	/// <summary>
 	/// A <see cref="System.Threading.Tasks.Task"/> extension method that file and forget.
@@ -39,12 +39,11 @@ public static class VsTasksUtils
 	/// <param name="task">The task to act on.</param>
 	/// <param name="faultEventName">Name of the fault event. Use the name of the component for this with the following convention:<br/>
 	/// <c>"vs/{AcuminatorVSPackage.PackageName}/{componentName}/{methodName}"</c>.</param>
-	/// <param name="cancellation">A token that allows processing to be cancelled.</param>
 	/// <param name="faultDescription">(Optional) Information describing the fault.</param>
 	/// <param name="logCancellations">(Optional) True to log cancellation exceptions. False by default.</param>
 	/// <param name="fileOnlyIf">(Optional) The optional condition on exceptions to be logged. Takes precedence over the <paramref name="logCancellations"/> flag.</param>
-	public static void FileAndForget(this System.Threading.Tasks.Task task, string? faultEventName, CancellationToken cancellation,
-									 string? faultDescription = null, bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null)
+	public static void FileAndForgetAcuminatorTask(this System.Threading.Tasks.Task task, string? faultEventName, string? faultDescription = null, 
+												   bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null)
 	{
 		task.ThrowOnNull();
 		JoinableTask joinableTask = AcuminatorVSPackage.JTF.RunAsync(async delegate

@@ -278,9 +278,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 		// We need to raise the tags changed event to trigger re-coloring on workspace change
 		ResetCacheAndFlags(newSnapshotToCache: null);
-
-		var cancellation = BackgroundTagging?.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? CancellationToken.None;
-		RaiseTagsChangedAsyncAndForget(cancellation);
+		RaiseTagsChangedAsyncAndForget();
 	}
 
 	private void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
@@ -327,9 +325,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (oldHasReferenceToAcumaticaPlatform != _hasReferenceToAcumaticaPlatform)
 		{
 			ResetCacheAndFlags(newSnapshotToCache: null);
-
-			var cancellation = BackgroundTagging?.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? CancellationToken.None;
-			RaiseTagsChangedAsyncAndForget(cancellation);
+			RaiseTagsChangedAsyncAndForget();
 		}
 	}
 

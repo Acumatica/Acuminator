@@ -82,7 +82,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		protected override void CommandCallback(object sender, EventArgs e) =>
 			CommandCallbackAsync()
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}", cancellation: AcuminatorVSPackage.Instance?.DisposalToken ?? default);
+				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}");
 		
 		private async Task CommandCallbackAsync()
 		{

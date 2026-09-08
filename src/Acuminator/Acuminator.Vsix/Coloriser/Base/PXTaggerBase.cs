@@ -73,9 +73,8 @@ namespace Acuminator.Vsix.Coloriser
 		/// <remarks>
 		/// The method is intended to be called from void-returning event handlers.
 		/// </remarks>
-		/// <param name="cancellation">Cancellation.</param>
 		/// <param name="reportedFrom">(Optional) The method raising the tag changed event.</param>
-		protected void RaiseTagsChangedAsyncAndForget(CancellationToken cancellation, [CallerMemberName] string? calledFrom = null)
+		protected void RaiseTagsChangedAsyncAndForget([CallerMemberName] string? calledFrom = null)
 		{
 			if (ThreadHelper.CheckAccess())
 				RaiseTagsChanged();
@@ -86,12 +85,12 @@ namespace Acuminator.Vsix.Coloriser
 
 				// See the VS cookbook for file and forget methods
 				// https://github.com/microsoft/vs-threading/blob/main/docfx/docs/cookbook_vs.md#task-returning-fire-and-forget-methods
-				RaiseTagsChangedAsync(cancellation)
-					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{taggerName}/{calledFrom}", cancellation);
+				RaiseTagsChangedAsync()
+					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{taggerName}/{calledFrom}");
 			}
 		}
 
-		internal async Task RaiseTagsChangedAsync(CancellationToken cancellation)
+		internal async Task RaiseTagsChangedAsync()
 		{
 			if (!ThreadHelper.CheckAccess())
 			{

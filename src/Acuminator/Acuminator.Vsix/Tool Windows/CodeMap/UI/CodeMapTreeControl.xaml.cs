@@ -41,7 +41,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				var cancellation = treeNodeVM.Tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 				NavigateOnClickAsync(treeNodeVM)
-					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}", cancellation);
+					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}");
 			}
 		}
 

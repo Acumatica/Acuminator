@@ -139,14 +139,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					{
 						var cancellation = _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 						RefreshCodeMapAsync()
-							.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}", cancellation);
+							.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 					}
 				}
 				else if (IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty())
 				{
 					var cancellation = _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 					RefreshCodeMapAsync()
-						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}", cancellation);
+						.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 				}	
 
 				//-------------------------------------------Local Function----------------------------------------------------------------------------------------
@@ -166,8 +166,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
 				WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
-					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}",
-								   cancellation: _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default);
+					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
 
 			private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
 			{
