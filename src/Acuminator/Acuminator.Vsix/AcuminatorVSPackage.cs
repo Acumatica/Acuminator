@@ -97,6 +97,24 @@ namespace Acuminator.Vsix
 
 		public static AcuminatorVSPackage Instance { get; private set; } = null!;
 
+		/// <summary>
+		/// The <see cref="JoinableTaskFactory"/> instance initialized for the <see cref="AsyncPackage"/>.<br/>
+		/// If the package is not initialized yet, <see cref="Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory"/> is returned instead.
+		/// </summary>
+		/// <remarks>
+		/// According to VS cookbook and VS team's discussion, the <see cref="AsyncPackage.JoinableTaskFactory"/> should be preferred over <see cref="Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory"/>:
+		/// <list type="bullet">
+		/// <item>https://github.com/VsixCommunity/Community.VisualStudio.Toolkit/issues/24</item>
+		/// <item>https://microsoft.github.io/VSSDK-Analyzers/analyzers/VSSDK007.html</item>
+		/// </list>
+		/// According to Claude Code research, both factories are created from the same <see cref="JoinableTaskContext"/> — the one bound to the VS main thread.<br/>
+		/// So, they have identical participation in the JTF dependency graph that prevents deadlocks on the UI thread. Swapping one for the other changes nothing about deadlock behavior.<br/>
+		/// The difference is the <see cref="JoinableTaskCollection"/>. <see cref="AsyncPackage.JoinableTaskFactory"/> has its own collection, and package disposal drains it.<br/> 
+		/// The work you started can't still be running against torn-down state after the package unloads.<br/>
+		/// On the other hand, <see cref="Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory"/> is ambient and tracks nothing on your behalf. That's the reason behind VSSDK007 diagnostic.
+		/// </remarks>
+		public static JoinableTaskFactory JTF => Instance?.JoinableTaskFactory ?? ThreadHelper.JoinableTaskFactory;
+
 		private readonly Lazy<GeneralOptionsPage?> _generalOptionsPage =
 			new(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
 
