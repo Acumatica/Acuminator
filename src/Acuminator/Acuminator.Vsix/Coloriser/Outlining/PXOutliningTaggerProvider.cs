@@ -28,7 +28,7 @@ public class PXOutliningTaggerProvider : ITaggerProvider
 
 	public ITagger<T>? CreateTagger<T>(ITextBuffer buffer) where T : ITag
 	{
-		if (buffer == null || !ThreadHelper.CheckAccess())
+		if (buffer == null || !typeof(ITagger<T>).IsAssignableFrom(typeof(PXOutliningTagger)) || !ThreadHelper.CheckAccess())
 			return null;
 
 		PXOutliningTagger outliningTagger = buffer.Properties.GetOrCreateSingletonProperty(typeof(PXOutliningTagger), () =>
