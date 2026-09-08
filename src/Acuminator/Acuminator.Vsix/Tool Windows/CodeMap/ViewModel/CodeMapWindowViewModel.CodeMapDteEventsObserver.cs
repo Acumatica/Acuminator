@@ -137,14 +137,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!wasVisible && _codeMapViewModel.IsVisible)   //Handle the case when WindowShowing event happens after WindowActivated event
 					{
+						var cancellation = _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 						RefreshCodeMapAsync()
-							.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
+							.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}", cancellation);
 					}
 				}
 				else if (IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty())
-				{				
+				{
+					var cancellation = _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 					RefreshCodeMapAsync()
-						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");			
+						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}", cancellation);
 				}	
 
 				//-------------------------------------------Local Function----------------------------------------------------------------------------------------
@@ -164,7 +166,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
 				WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
-					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
+					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}",
+								   cancellation: _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default);
 
 			private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
 			{

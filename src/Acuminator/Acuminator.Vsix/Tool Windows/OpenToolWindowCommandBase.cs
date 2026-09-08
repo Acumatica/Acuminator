@@ -27,7 +27,8 @@ namespace Acuminator.Vsix.ToolWindows
 		/// <param name="e">The event args.</param>
 		protected override void CommandCallback(object sender, EventArgs e) => 
 			OpenToolWindowAsync()
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(OpenToolWindowAsync)}/{typeof(TWindow).Name}");
+				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(OpenToolWindowAsync)}/{typeof(TWindow).Name}",
+							   cancellation: AcuminatorVSPackage.Instance?.DisposalToken ?? default);
 
 		protected virtual async Task<TWindow?> OpenToolWindowAsync()
 		{
