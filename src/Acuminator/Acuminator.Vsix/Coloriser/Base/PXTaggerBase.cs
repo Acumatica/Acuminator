@@ -85,8 +85,8 @@ namespace Acuminator.Vsix.Coloriser
 
 				// See the VS cookbook for file and forget methods
 				// https://github.com/microsoft/vs-threading/blob/main/docfx/docs/cookbook_vs.md#task-returning-fire-and-forget-methods
-				RaiseTagsChangedAsync()
-					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{taggerName}/{calledFrom}");
+				var raiseTaggerChanged = () => RaiseTagsChangedAsync();
+				raiseTaggerChanged.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{taggerName}/{calledFrom}");
 			}
 		}
 

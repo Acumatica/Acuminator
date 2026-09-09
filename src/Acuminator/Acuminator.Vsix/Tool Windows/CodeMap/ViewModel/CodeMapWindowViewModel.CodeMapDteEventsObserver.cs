@@ -137,13 +137,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!wasVisible && _codeMapViewModel.IsVisible)   //Handle the case when WindowShowing event happens after WindowActivated event
 					{
-						RefreshCodeMapAsync()
+						var refreshCodeMapAction = () => RefreshCodeMapAsync();
+						refreshCodeMapAction
 							.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 					}
 				}
 				else if (IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty())
 				{
-					RefreshCodeMapAsync()
+					var refreshCodeMapAction = () => RefreshCodeMapAsync();
+					refreshCodeMapAction
 						.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 				}	
 
@@ -162,9 +164,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_codeMapViewModel.DocumentModel = null;
 			}
 
-			private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
-				WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
+			private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
+			{
+				var windowActivatedHandler = () => WindowEventsWindowActivatedAsync(gotFocus, lostFocus);
+				windowActivatedHandler
 					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
+			}
 
 			private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
 			{

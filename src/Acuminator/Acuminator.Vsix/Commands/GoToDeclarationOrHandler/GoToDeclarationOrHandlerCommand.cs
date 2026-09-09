@@ -80,10 +80,12 @@ namespace Acuminator.Vsix.GoToDeclaration
 		}
 #pragma warning restore CS8774
 
-		protected override void CommandCallback(object sender, EventArgs e) =>
-			CommandCallbackAsync()
-				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}");
-		
+		protected override void CommandCallback(object sender, EventArgs e)
+		{
+			var commandExecutor = () => CommandCallbackAsync();
+			commandExecutor.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}");
+		}
+
 		private async Task CommandCallbackAsync()
 		{
 			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();

@@ -67,9 +67,11 @@ namespace Acuminator.Vsix.Formatter
 		}
 #pragma warning restore CS8774
 
-		protected override void CommandCallback(object sender, EventArgs e) =>
-			CommandCallbackAsync()
-				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(FormatBqlCommand)}");
+		protected override void CommandCallback(object sender, EventArgs e)
+		{
+			var commandExecutor = () => CommandCallbackAsync();
+			commandExecutor.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(FormatBqlCommand)}");
+		}
 
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{

@@ -170,9 +170,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			FilterVM.FilterChanged += FilterVM_FilterChanged;
 
 			RefreshCodeMapCommand = 
-				new Command(p => RefreshCodeMapAsync()
-									.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
-																 $"{nameof(CodeMapWindowViewModel)}/{nameof(RefreshCodeMapAsync)}"));
+				new Command(p =>
+				{
+					var refreshCodeMapAction = () => RefreshCodeMapAsync();
+					refreshCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
+																	 $"{nameof(CodeMapWindowViewModel)}/{nameof(RefreshCodeMapAsync)}");
+				});
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
 
 			SortNodeChildrenByNameAscendingCommand =
@@ -213,9 +216,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (codeMapViewModel.DocumentModel != null)
 			{
-				codeMapViewModel.BuildCodeMapAsync()
-								.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
-															 $"{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
+				var buildCodeMapAction = () => codeMapViewModel.BuildCodeMapAsync();
+				buildCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
+															   $"{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
 			}
 
 			return codeMapViewModel;
@@ -380,8 +383,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
 			{
 				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
-				BuildCodeMapAsync()
-				 .FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
+				var buildCodeMapAction = () => BuildCodeMapAsync();
+				buildCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
 			}
 		}
 

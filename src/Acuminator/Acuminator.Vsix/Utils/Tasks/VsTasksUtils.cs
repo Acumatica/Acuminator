@@ -2,8 +2,6 @@
 
 using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 
@@ -19,40 +17,34 @@ namespace Acuminator.Vsix.Utilities;
 /// </summary>
 public static class VsTasksUtils
 {
-	/// <inheritdoc cref="FileAndForgetAcuminatorTask(System.Threading.Tasks.Task, string?, string?, bool, Func{Exception, bool}?)"/>
-	/// <param name="joinableTask">The <see cref="JoinableTask"/> to act on.</param>
-	public static void FileAndForgetAcuminatorTask(this JoinableTask joinableTask, string? faultEventName, string? faultDescription = null, 
-												   bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null) =>
-		FileAndForgetAcuminatorTask(joinableTask.CheckIfNull().Task, faultEventName, faultDescription, logCancellations, fileOnlyIf);
-
 	/// <summary>
-	/// A <see cref="System.Threading.Tasks.Task"/> extension method that file and forget.
+	/// A <see cref="Func{System.Threading.Tasks.Task}"/> extension method that runs async method <paramref name="asyncMethod"/> 
+	/// in a correct context of JTF, files exceptions and forgets.
 	/// </summary>
 	/// <remarks>
-	/// This code is written by example from <see cref="Microsoft.VisualStudio.Shell.VsTaskLibraryHelper"/>.FileAndForget method<br/>
+	/// The code is based on <see cref="Microsoft.VisualStudio.Shell.VsTaskLibraryHelper"/>.FileAndForget method<br/>
 	/// which provides an example of how to handle fire-and-forget async action inside void-returning event handlers<br/>
 	/// with the use of JTF and VS telemetry mechanisms.<br/>
 	/// <br/>
-	/// The main reason of having a separate method instead of using the <see cref="Microsoft.VisualStudio.Shell.VsTaskLibraryHelper"/>.FileAndForget method is to<br/>
-	/// be able to use <see cref="JoinableTaskFactory"/> from the <see cref="AcuminatorVSPackage"/> class instead of the default one from <see cref="Microsoft.VisualStudio.Shell.ThreadHelper"/>.
+	/// The reason of having a separate method instead of using the <see cref="Microsoft.VisualStudio.Shell.VsTaskLibraryHelper"/>.FileAndForget method is to<br/>
+	/// be able to use <see cref="JoinableTaskFactory"/> from the <see cref="AcuminatorVSPackage"/> class instead of the default one from <see cref="ThreadHelper"/> to run the async method.<br/>
+	/// This code also supports skipping of <see cref="OperationCanceledException"/>s.
 	/// </remarks>
-	/// <param name="task">The task to act on.</param>
+	/// <param name="asyncMethod">The async method to act on.</param>
 	/// <param name="faultEventName">Name of the fault event. Use the name of the component for this with the following convention:<br/>
 	/// <c>"vs/{AcuminatorVSPackage.PackageName}/{componentName}/{methodName}"</c>.</param>
 	/// <param name="faultDescription">(Optional) Information describing the fault.</param>
 	/// <param name="logCancellations">(Optional) True to log cancellation exceptions. False by default.</param>
 	/// <param name="fileOnlyIf">(Optional) The optional condition on exceptions to be logged. Takes precedence over the <paramref name="logCancellations"/> flag.</param>
-	public static void FileAndForgetAcuminatorTask(this System.Threading.Tasks.Task task, string? faultEventName, string? faultDescription = null, 
+	public static void FileAndForgetAcuminatorTask(this Func<System.Threading.Tasks.Task>? asyncMethod, string? faultEventName, string? faultDescription = null, 
 												   bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null)
 	{
-		task.ThrowOnNull();
+		asyncMethod.ThrowOnNull();
 		JoinableTask joinableTask = AcuminatorVSPackage.JTF.RunAsync(async delegate
 		{
 			try
 			{
-#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks - This is already in JTF.RunAsync method, so we can safely await the task here.
-				await task.ConfigureAwait(continueOnCapturedContext: false);
-#pragma warning restore VSTHRD003
+				await asyncMethod();
 			}
 			catch (Exception ex)
 			{

@@ -32,9 +32,11 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e) =>
-			CommandCallbackAsync()
-				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{this.GetType().Name}");
+		protected override void CommandCallback(object sender, EventArgs e)
+		{
+			var commandExecutor = () => CommandCallbackAsync();
+			commandExecutor.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{this.GetType().Name}");
+		}
 
 		protected virtual async Task CommandCallbackAsync()
 		{		

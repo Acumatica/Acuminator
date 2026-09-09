@@ -59,9 +59,11 @@ namespace Acuminator.Vsix.BqlFixer
 			}
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e) =>
-			CommandCallbackAsync()
-				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(FixBqlCommand)}");
+		protected override void CommandCallback(object sender, EventArgs e)
+		{
+			var commandExecutor = () => CommandCallbackAsync();
+			commandExecutor.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(FixBqlCommand)}");
+		}
 
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
