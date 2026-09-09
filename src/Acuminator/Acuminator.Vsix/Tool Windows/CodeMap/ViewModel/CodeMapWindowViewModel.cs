@@ -169,7 +169,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			FilterVM = new FilterViewModel();
 			FilterVM.FilterChanged += FilterVM_FilterChanged;
 
-			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
+			RefreshCodeMapCommand = 
+				new Command(p => RefreshCodeMapAsync()
+									.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
+																 $"{nameof(CodeMapWindowViewModel)}/{nameof(RefreshCodeMapAsync)}"));
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
 
 			SortNodeChildrenByNameAscendingCommand =
@@ -209,7 +212,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			if (codeMapViewModel.DocumentModel != null)
-				codeMapViewModel.BuildCodeMapAsync().Forget();
+			{
+				codeMapViewModel.BuildCodeMapAsync()
+								.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
+															 $"{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
+			}
 
 			return codeMapViewModel;
 		}
@@ -373,7 +380,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
 			{
 				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
-				BuildCodeMapAsync().Forget();
+				BuildCodeMapAsync()
+				 .FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
 			}
 		}
 

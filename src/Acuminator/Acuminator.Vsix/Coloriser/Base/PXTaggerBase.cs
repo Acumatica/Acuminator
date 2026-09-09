@@ -73,7 +73,7 @@ namespace Acuminator.Vsix.Coloriser
 		/// <remarks>
 		/// The method is intended to be called from void-returning event handlers.
 		/// </remarks>
-		/// <param name="reportedFrom">(Optional) The method raising the tag changed event.</param>
+		/// <param name="calledFrom">(Optional) The method raising the tag changed event.</param>
 		protected void RaiseTagsChangedAsyncAndForget([CallerMemberName] string? calledFrom = null)
 		{
 			if (ThreadHelper.CheckAccess())

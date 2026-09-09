@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			{
 				#pragma warning disable VSTHRD104 // Offer async methods 
 				// Justification: need to use sync API since consumer is code action operation which require synchronous execution
-				// and located in the Utilities, so it can't use JoinableTaskFactory from AcuminatorVSPackage.JTF
+				// and located in the Utilities, so the calling code can't use JoinableTaskFactory from AcuminatorVSPackage.JTF
 				return AcuminatorVSPackage.JTF.Run(() => SetBuildActionAsync(roslynSuppressionFilePath, buildActionToSet));
 				#pragma warning restore VSTHRD104 
 			}

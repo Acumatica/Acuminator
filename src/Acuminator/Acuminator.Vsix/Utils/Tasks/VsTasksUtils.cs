@@ -21,8 +21,8 @@ public static class VsTasksUtils
 {
 	/// <inheritdoc cref="FileAndForgetAcuminatorTask(System.Threading.Tasks.Task, string?, string?, bool, Func{Exception, bool}?)"/>
 	/// <param name="joinableTask">The <see cref="JoinableTask"/> to act on.</param>
-	public static void FileAndForget(this JoinableTask joinableTask, string? faultEventName, string? faultDescription = null, 
-									 bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null) =>
+	public static void FileAndForgetAcuminatorTask(this JoinableTask joinableTask, string? faultEventName, string? faultDescription = null, 
+												   bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null) =>
 		FileAndForgetAcuminatorTask(joinableTask.CheckIfNull().Task, faultEventName, faultDescription, logCancellations, fileOnlyIf);
 
 	/// <summary>
@@ -54,8 +54,11 @@ public static class VsTasksUtils
 				await task.ConfigureAwait(continueOnCapturedContext: false);
 #pragma warning restore VSTHRD003
 			}
-			catch (Exception ex) when (FilterExceptions(ex, fileOnlyIf, logCancellations))
+			catch (Exception ex)
 			{
+				if (!ShouldLogException(ex, fileOnlyIf, logCancellations))
+					return;
+
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 				FaultEvent telemetryEvent = new FaultEvent(faultEventName, faultDescription, ex)
@@ -75,10 +78,10 @@ public static class VsTasksUtils
 		});
 	}
 
-	private static bool FilterExceptions(Exception exception, Func<Exception, bool>? fileOnlyIf, bool logCancellations)
+	private static bool ShouldLogException(Exception exception, Func<Exception, bool>? fileOnlyIf, bool logCancellations)
 	{
-		if (fileOnlyIf?.Invoke(exception) == true)
-			return true;
+		if (fileOnlyIf != null)
+			return fileOnlyIf(exception);
 		else if (exception is OperationCanceledException)
 			return logCancellations;
 		else

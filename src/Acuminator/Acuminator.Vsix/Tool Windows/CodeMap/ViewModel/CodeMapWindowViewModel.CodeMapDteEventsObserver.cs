@@ -137,14 +137,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!wasVisible && _codeMapViewModel.IsVisible)   //Handle the case when WindowShowing event happens after WindowActivated event
 					{
-						var cancellation = _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 						RefreshCodeMapAsync()
 							.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 					}
 				}
 				else if (IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty())
 				{
-					var cancellation = _codeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 					RefreshCodeMapAsync()
 						.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 				}	
