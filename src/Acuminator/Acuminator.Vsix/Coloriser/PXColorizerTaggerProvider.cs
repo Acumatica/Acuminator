@@ -53,8 +53,11 @@ public class PXColorizerTaggerProvider : IViewTaggerProvider
 	public virtual ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
 	where T : ITag
 	{
-		if (textView == null || textBuffer == null || textView.TextBuffer != textBuffer || !ThreadHelper.CheckAccess())
+		if (textView == null || textBuffer == null || textView.TextBuffer != textBuffer || 
+			!typeof(ITagger<T>).IsAssignableFrom(typeof(PXRoslynColorizerTagger)) || !ThreadHelper.CheckAccess())
+		{
 			return null;
+		}
 
 		var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXRoslynColorizerTagger), () =>
 		{

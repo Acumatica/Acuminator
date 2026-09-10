@@ -5,7 +5,7 @@
     <AssemblyTitle>Acuminator.Tests</AssemblyTitle>
     <!-- Target framework must be net48 because net481 is not supported by our build system -->
     <TargetFramework>net48</TargetFramework>
-    <Version>4.0.1</Version>
+    <Version>4.1.0</Version>
     <LangVersion>13.0</LangVersion>
     <Nullable>enable</Nullable>
     <WarningLevel>9999</WarningLevel>
@@ -124,7 +124,7 @@
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageReference Include="System.Memory" Version="4.6.3" />
     <PackageReference Include="System.Reflection.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Handles" Version="4.0.1" />
+    <PackageReference Include="System.Runtime.Handles" Version="4.1.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
     <PackageReference Include="xunit.analyzers" Version="0.10.0" />

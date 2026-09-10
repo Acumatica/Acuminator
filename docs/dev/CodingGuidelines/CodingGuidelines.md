@@ -355,8 +355,10 @@ You should avoid the use of `Task.Result` and `Task.Wait()` because this can cau
 
 For details, see the following articles: 
 
+* [Most recent practices recorded in the AI agent skill](https://github.com/madskristensen/vs-agent-plugins/blob/master/skills/handling-async-threading/SKILL.md)
 * [How to: Manage multiple threads in managed code](https://docs.microsoft.com/en-us/visualstudio/extensibility/managing-multiple-threads-in-managed-code) 
 * [Asynchronous and multithreaded programming within VS using the JoinableTaskFactory](https://blogs.msdn.microsoft.com/andrewarnottms/2014/05/07/asynchronous-and-multithreaded-programming-within-vs-using-the-joinabletaskfactory/)
+  - [Another link to the same article](https://docs.microsoft.com/en-us/archive/blogs/andrewarnott/asynchronous-and-multithreaded-programming-within-vs-using-the-joinabletaskfactory)
 * [Cookbook for Visual Studio](https://github.com/Microsoft/vs-threading/blob/master/doc/cookbook_vs.md)
 * [Three Threading Rules](https://github.com/Microsoft/vs-threading/blob/master/doc/threading_rules.md)
 

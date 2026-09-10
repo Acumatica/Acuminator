@@ -51,7 +51,7 @@ namespace Acuminator.Vsix.Coloriser
 																	 _vsTaskScheduler);
 
 			// ContinueWith schedules the lambda on the VS UI thread scheduler. The lambda runs on the UI thread and calls AfterTaggingActionAsync(...).
-			// Inside AfterTaggingActionAsync, the important path calls ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task 
+			// Inside AfterTaggingActionAsync, the important path calls AcuminatorVSPackage.JTF.RunAsync(tagger.RaiseTagsChangedAsync).Task 
 			// this starts RaiseTagsChangedAsync and immediately returns the underlying Task representing it (still running).
 			// The lambda returns that inner Task immediately — it does not await it.
 			// The outer Task<Task> stored in TaggingTask is marked as Completed (RanToCompletion) at this point, because the lambda has returned. 
@@ -124,7 +124,7 @@ namespace Acuminator.Vsix.Coloriser
 			}
 
 			// We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed
-			return Shell.ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task;
+			return AcuminatorVSPackage.JTF.RunAsync(tagger.RaiseTagsChangedAsync).Task;
 		}
 	}
 }

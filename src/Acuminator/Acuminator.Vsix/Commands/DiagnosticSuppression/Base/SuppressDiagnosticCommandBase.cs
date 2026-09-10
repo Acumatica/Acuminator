@@ -32,9 +32,11 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e) =>
-			CommandCallbackAsync()
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{this.GetType().Name}");
+		protected override void CommandCallback(object sender, EventArgs e)
+		{
+			var commandExecutor = () => CommandCallbackAsync();
+			commandExecutor.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{this.GetType().Name}");
+		}
 
 		protected virtual async Task CommandCallbackAsync()
 		{		
@@ -104,7 +106,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		protected async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			IComponentModel? componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>(throwOnFailure: false);
 
 			if (componentModel == null)
@@ -141,14 +143,14 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				case 1:
 					return SuppressSingleDiagnosticOnNodeAsync(diagnosticData[0], document, syntaxRoot, semanticModel, nodeWithDiagnostic);
 				default:
-					return SupressMultipleDiagnosticOnNodeAsync(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
+					return SuppressMultipleDiagnosticOnNodeAsync(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
 			}
 		}
 
 		protected abstract Task SuppressSingleDiagnosticOnNodeAsync(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
 																	SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 
-		protected abstract Task SupressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
-																	 SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
+		protected abstract Task SuppressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
+																	  SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 	}
 }

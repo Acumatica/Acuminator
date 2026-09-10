@@ -75,7 +75,7 @@ namespace Acuminator.Vsix
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
-		public const string PackageVersion = "4.0.1";
+		public const string PackageVersion = "4.1.0";
 
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.
@@ -91,11 +91,37 @@ namespace Acuminator.Vsix
 
 		private const int INSTANCE_UNINITIALIZED = 0;
 		private const int INSTANCE_INITIALIZED = 1;
-		private static int _instanceInitialized;
+		private static int _instanceInitialized = INSTANCE_UNINITIALIZED;
+
+		private const int NOT_DISPOSED = 0;
+		private const int DISPOSED = 1;
+		private volatile int _isDisposed = NOT_DISPOSED;
 
 		private OutOfProcessSettingsUpdater? _outOfProcessSettingsUpdater;
 
 		public static AcuminatorVSPackage Instance { get; private set; } = null!;
+
+
+		/// <summary>
+		/// The <see cref="JoinableTaskFactory"/> instance initialized for the <see cref="AsyncPackage"/>.<br/>
+		/// If the package is not yet initialized or already disposed, <see cref="Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory"/> is returned instead.
+		/// </summary>
+		/// <remarks>
+		/// According to VS cookbook and VS team's discussion, the <see cref="AsyncPackage.JoinableTaskFactory"/> should be preferred over <see cref="Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory"/>:
+		/// <list type="bullet">
+		/// <item>https://github.com/VsixCommunity/Community.VisualStudio.Toolkit/issues/24</item>
+		/// <item>https://microsoft.github.io/VSSDK-Analyzers/analyzers/VSSDK007.html</item>
+		/// </list>
+		/// Both factories are created from the same <see cref="JoinableTaskContext"/> — the one bound to the VS main thread.<br/>
+		/// So, they have identical participation in the JTF dependency graph that prevents deadlocks on the UI thread. Swapping one for the other changes nothing about deadlock behavior.<br/>
+		/// The difference is the <see cref="JoinableTaskCollection"/>. <see cref="AsyncPackage.JoinableTaskFactory"/> has its own collection, and package disposal drains it.<br/> 
+		/// The work you started can't still be running against torn-down state after the package unloads.<br/>
+		/// On the other hand, <see cref="Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory"/> is ambient and tracks nothing on your behalf. That's the reason behind VSSDK007 diagnostic.
+		/// </remarks>
+		public static JoinableTaskFactory JTF =>
+			Instance?._isDisposed == NOT_DISPOSED
+				? Instance.JoinableTaskFactory
+				: ThreadHelper.JoinableTaskFactory;
 
 		private readonly Lazy<GeneralOptionsPage?> _generalOptionsPage =
 			new(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
@@ -345,6 +371,21 @@ namespace Acuminator.Vsix
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
+
+			// It is important to set flag after the base call to Dispose to avoid rare but possible VS hanging on package unload. 
+			// The _isDisposed flag check on JTF property prevents returning JTF from a disposed package. But if the code flips it before base.Dispose call, there will be a problem. 
+			// The base AsyncPackage.Dispose(bool) method does: disposeCancellationTokenSource.Cancel() -> ThreadHelper.JoinableTaskFactory.Run(JoinableTaskCollection.JoinTillEmptyAsync) — no token, no timeout —> Package.Dispose. 
+			// So the main thread blocks until every JoinableTask in the package collection finishes.
+			// During that drain, AcuminatorVSPackage.JTF already returns ThreadHelper's factory. A FileAndForgetAcuminatorTask wrapper started before shutdown is a member of the package collection (so the drain waits on it) 
+			// and awaits a foreign task. When that foreign task resumes and needs its main-thread hop via AcuminatorVSPackage.JTF.SwitchToMainThreadAsync(), RequestSwitchToMainThread (with a null ambient job) creates a transient 
+			// on ThreadHelper's factory — which has no collection, so the transient is not in the drained graph.A main thread blocked in Run pumps only joined work, 
+			// so that continuation never runs -> the foreign task never completes -> the wrapper never completes -> JoinTillEmptyAsync never returns -> indefinite hang on close.
+			//
+			// Had the flag been set after base.Dispose, the same hop would go through the package factory, land in the collection, and be pumped by the drain — no hang. 
+			// The "removed redundant cancellation tokens" commit compounds it: those switches no longer observe DisposalToken, so in-flight work can't self-cancel to escape the wait either.
+			if (Interlocked.Exchange(ref _isDisposed, DISPOSED) == DISPOSED)
+				return;
+
 			AcuminatorLogger?.Dispose();
 			_outOfProcessSettingsUpdater?.Dispose();
 

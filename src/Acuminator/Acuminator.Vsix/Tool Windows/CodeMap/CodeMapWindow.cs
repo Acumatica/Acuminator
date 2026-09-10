@@ -75,7 +75,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (workspace == null)
 				return;
 
-			IWpfTextView? textView = await ThreadHelper.JoinableTaskFactory.RunAsync(serviceProvider.GetWpfTextViewAsync);
+			IWpfTextView? textView = await AcuminatorVSPackage.JTF.RunAsync(serviceProvider.GetWpfTextViewAsync);
 			Document? document = textView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (CodeMapWPFControl.DataContext is CodeMapWindowViewModel codeMapViewModel)

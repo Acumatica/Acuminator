@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.Utilities
 			return serviceProvider?.GetService(typeof(TService)) as TService;
 		}
 
-		public static async Task<TService?> GetServiceAsync<TService>(this IAsyncServiceProvider serviceProvider)
+		public static async Task<TService?> GetServiceAsync<TService>(this IAsyncServiceProvider? serviceProvider)
 		where TService : class
 		{
 			if (serviceProvider == null)
@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.Utilities
 			return service as TService;
 		}
 
-		internal static async Task<VisualStudioWorkspace?> GetVSWorkspaceAsync(this IAsyncServiceProvider serviceProvider)
+		internal static async Task<VisualStudioWorkspace?> GetVSWorkspaceAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.Utilities
 			return componentModel?.GetService<VisualStudioWorkspace>();
 		}
 
-		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider serviceProvider)
+		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
@@ -67,7 +67,7 @@ namespace Acuminator.Vsix.Utilities
 			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
 		}
 
-		internal static async Task<IOutliningManager?> GetOutliningManagerAsync(this IAsyncServiceProvider serviceProvider, ITextView textView)
+		internal static async Task<IOutliningManager?> GetOutliningManagerAsync(this IAsyncServiceProvider? serviceProvider, ITextView? textView)
 		{
 			if (serviceProvider == null || textView == null)
 				return null;
@@ -81,7 +81,7 @@ namespace Acuminator.Vsix.Utilities
 			return outliningManagerService.GetOutliningManager(textView);
 		}
 
-		internal static async Task<IWpfTextView?> GetWpfTextViewAsync(this IAsyncServiceProvider serviceProvider)
+		internal static async Task<IWpfTextView?> GetWpfTextViewAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
@@ -109,7 +109,7 @@ namespace Acuminator.Vsix.Utilities
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			DTE2? dte2 = await serviceProvider.GetServiceAsync<SDTE, DTE2>(throwOnFailure: false);
@@ -149,7 +149,7 @@ namespace Acuminator.Vsix.Utilities
 			if (serviceProvider == null)
 				return null;
 
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			var errorService = await serviceProvider.GetServiceAsync<SVsErrorList, IVsTaskList>(throwOnFailure: false);
 
 			if (errorService == null)

@@ -137,14 +137,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!wasVisible && _codeMapViewModel.IsVisible)   //Handle the case when WindowShowing event happens after WindowActivated event
 					{
-						RefreshCodeMapAsync()
-							.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
+						var refreshCodeMapAction = () => RefreshCodeMapAsync();
+						refreshCodeMapAction
+							.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 					}
 				}
 				else if (IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty())
-				{				
-					RefreshCodeMapAsync()
-						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");			
+				{
+					var refreshCodeMapAction = () => RefreshCodeMapAsync();
+					refreshCodeMapAction
+						.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 				}	
 
 				//-------------------------------------------Local Function----------------------------------------------------------------------------------------
@@ -162,15 +164,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_codeMapViewModel.DocumentModel = null;
 			}
 
-			private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
-				WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
-					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
+			private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
+			{
+				var windowActivatedHandler = () => WindowEventsWindowActivatedAsync(gotFocus, lostFocus);
+				windowActivatedHandler
+					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
+			}
 
 			private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
 			{
 				if (!ThreadHelper.CheckAccess())
 				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 				}
 
 				if (!_codeMapViewModel.IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
@@ -197,7 +202,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				if (!ThreadHelper.CheckAccess())
 				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 				}
 
 				var activeWpfTextViewTask = activeWpfTextView != null

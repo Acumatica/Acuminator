@@ -42,7 +42,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			string filePath = location.SourceTree.FilePath;
 			TextSpan textSpanToNavigate = location.SourceSpan;
 
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 			cToken.ThrowIfCancellationRequested();
 
@@ -75,7 +75,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			reference.ThrowOnNull();
 			var filePath = reference.SyntaxTree?.FilePath;
 
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			var workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 			TextSpan textSpanToNavigate = await GetTextSpanToNavigateFromSymbolAsync(symbol, reference, cToken);
 
@@ -257,7 +257,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			if (!File.Exists(filePath) )
 				return null;
 
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			DTE? dte = await serviceProvider.GetServiceAsync<DTE>();
 
 			if (dte == null)

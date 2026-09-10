@@ -25,13 +25,15 @@ namespace Acuminator.Vsix.ToolWindows
 		/// </summary>
 		/// <param name="sender">The event sender.</param>
 		/// <param name="e">The event args.</param>
-		protected override void CommandCallback(object sender, EventArgs e) => 
-			OpenToolWindowAsync()
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(OpenToolWindowAsync)}/{typeof(TWindow).Name}");
+		protected override void CommandCallback(object sender, EventArgs e)
+		{
+			var openToolWindowAction = () => OpenToolWindowAsync();
+			openToolWindowAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(OpenToolWindowAsync)}/{typeof(TWindow).Name}");
+		}
 
 		protected virtual async Task<TWindow?> OpenToolWindowAsync()
 		{
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 			// Get the instance number 0 of this tool window. This window is single instance so this instance
 			// is actually the only one.

@@ -92,7 +92,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		private async Task<(TextDocument SuppressionFile, Project Project)> GetProjectAndSuppressionFileAsync(ProjectId projectId)
 		{
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			var workspace = await Package.GetVSWorkspaceAsync();
 			Project? project = workspace?.CurrentSolution?.GetProject(projectId);
 
@@ -123,7 +123,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			MessageBox.Show(errorMessage.ToString(), AcuminatorVSPackage.PackageName);
 		}
 
-		protected override Task SupressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
+		protected override Task SuppressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
 																	 SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
 			MessageBox.Show(VSIXResource.DiagnosticSuppression_MultipleDiagnosticFound, AcuminatorVSPackage.PackageName);

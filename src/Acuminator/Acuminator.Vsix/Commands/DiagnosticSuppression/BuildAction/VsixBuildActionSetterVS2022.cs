@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				#pragma warning disable VSTHRD104 // Offer async methods 
 				// Justification: need to use sync API since consumer is code action operation which require synchronous execution
 				// and located in the Utilities, so it can't use ThreadHelper.JoinableTaskFactory itself
-				return ThreadHelper.JoinableTaskFactory.Run(() => SetBuildActionAsync(roslynSuppressionFilePath, buildActionToSet));
+				return AcuminatorVSPackage.JTF.Run(() => SetBuildActionAsync(roslynSuppressionFilePath, buildActionToSet));
 				#pragma warning restore VSTHRD104 
 			}
 			catch (Exception ex)
@@ -51,7 +51,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 			try
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 				dynamic? dte = GetDTE();
 

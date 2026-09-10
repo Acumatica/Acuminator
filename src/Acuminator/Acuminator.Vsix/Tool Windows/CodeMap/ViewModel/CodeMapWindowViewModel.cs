@@ -169,7 +169,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			FilterVM = new FilterViewModel();
 			FilterVM.FilterChanged += FilterVM_FilterChanged;
 
-			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
+			RefreshCodeMapCommand = 
+				new Command(p =>
+				{
+					var refreshCodeMapAction = () => RefreshCodeMapAsync();
+					refreshCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
+																	 $"{nameof(CodeMapWindowViewModel)}/{nameof(RefreshCodeMapAsync)}");
+				});
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
 
 			SortNodeChildrenByNameAscendingCommand =
@@ -209,7 +215,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			if (codeMapViewModel.DocumentModel != null)
-				codeMapViewModel.BuildCodeMapAsync().Forget();
+			{
+				var buildCodeMapAction = () => codeMapViewModel.BuildCodeMapAsync();
+				buildCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/" +
+															   $"{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
+			}
 
 			return codeMapViewModel;
 		}
@@ -248,7 +258,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			IsCalculating = false;
@@ -263,7 +273,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			var activeWpfTextViewTask = activeWpfTextView != null
@@ -307,7 +317,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			if (!IsVisible || e.IsActiveDocumentCleared(Document))
@@ -373,7 +383,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
 			{
 				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
-				BuildCodeMapAsync().Forget();
+				var buildCodeMapAction = () => BuildCodeMapAsync();
+				buildCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
 			}
 		}
 
@@ -397,7 +408,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!ThreadHelper.CheckAccess())
 					{
-						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+						await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 					}
 
 					IsCalculating = true;
@@ -415,7 +426,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (newTreeVM == null)
 						return;
 
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 					Tree = newTreeVM;
 					AfterCodeMapTreeIsFiltered?.Invoke(this, new FilterEventArgs(filterOptions, oldFilterText: null));

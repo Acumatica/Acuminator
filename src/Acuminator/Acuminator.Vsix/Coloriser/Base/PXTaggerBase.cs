@@ -3,12 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Settings;
+using Acuminator.Vsix.Utilities;
 
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
@@ -55,6 +59,16 @@ namespace Acuminator.Vsix.Coloriser
 			_disposedNotification.CurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
 		}
 
+		protected static IEnumerable<ITagSpan<TTag>> GetIntersectionWithRequestedTags<TTag>(
+																				IReadOnlyCollection<ITagSpan<TTag>> tags,
+																				NormalizedSnapshotSpanCollection requestedSpans)
+		where TTag : ITag
+		{
+			return tags?.Count > 0
+				? tags.Where(tag => requestedSpans.IntersectsWith(tag.Span))
+				: [];
+		}
+
 		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
 		{
 			ColoringSettingsChanged = true;
@@ -64,11 +78,34 @@ namespace Acuminator.Vsix.Coloriser
 			RaiseTagsChanged();
 		}
 
+		/// <summary>
+		/// Raises the tags changed asynchronously and do not observe the raised task.
+		/// </summary>
+		/// <remarks>
+		/// The method is intended to be called from void-returning event handlers.
+		/// </remarks>
+		/// <param name="calledFrom">(Optional) The method raising the tag changed event.</param>
+		protected void RaiseTagsChangedAsyncAndForget([CallerMemberName] string? calledFrom = null)
+		{
+			if (ThreadHelper.CheckAccess())
+				RaiseTagsChanged();
+			else
+			{
+				string taggerName = this.GetType().Name;
+				calledFrom = calledFrom.NullIfWhiteSpace() ?? nameof(RaiseTagsChangedAsyncAndForget);
+
+				// See the VS cookbook for file and forget methods
+				// https://github.com/microsoft/vs-threading/blob/main/docfx/docs/cookbook_vs.md#task-returning-fire-and-forget-methods
+				var raiseTaggerChanged = () => RaiseTagsChangedAsync();
+				raiseTaggerChanged.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{taggerName}/{calledFrom}");
+			}
+		}
+
 		internal async Task RaiseTagsChangedAsync()
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 			}
 
 			RaiseTagsChangedImpl();

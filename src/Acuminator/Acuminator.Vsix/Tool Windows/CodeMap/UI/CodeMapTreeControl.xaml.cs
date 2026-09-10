@@ -39,8 +39,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (e.ClickCount >= 2)
 			{
-				NavigateOnClickAsync(treeNodeVM)
-					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}");
+				var navigationHandler = () => NavigateOnClickAsync(treeNodeVM);
+				navigationHandler.FileAndForgetAcuminatorTask(
+						$"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeNode_PreviewMouseLeftButtonDown)}");
 			}
 		}
 

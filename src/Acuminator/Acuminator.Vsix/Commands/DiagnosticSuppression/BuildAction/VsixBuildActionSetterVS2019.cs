@@ -14,7 +14,7 @@ using Acuminator.Vsix.Logger;
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
 	/// <summary>
-	/// A helper to set Build Action for newly added suppression file in VS 2019 or older that can use VS COM API directy.
+	/// A helper to set Build Action for newly added suppression file in VS 2019 or older that can use VS COM API directly.
 	/// </summary>
 	public class VsixBuildActionSetterVS2019 : ICustomBuildActionSetter
 	{
@@ -30,8 +30,8 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			{
 				#pragma warning disable VSTHRD104 // Offer async methods 
 				// Justification: need to use sync API since consumer is code action operation which require synchronous execution
-				// and located in the Utilities, so it can't use ThreadHelper.JoinableTaskFactory itself
-				return ThreadHelper.JoinableTaskFactory.Run(() => SetBuildActionAsync(roslynSuppressionFilePath, buildActionToSet));
+				// and located in the Utilities, so the calling code can't use JoinableTaskFactory from AcuminatorVSPackage.JTF
+				return AcuminatorVSPackage.JTF.Run(() => SetBuildActionAsync(roslynSuppressionFilePath, buildActionToSet));
 				#pragma warning restore VSTHRD104 
 			}
 			catch (Exception ex)
@@ -44,7 +44,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private async Task<bool> SetBuildActionAsync(string roslynSuppressionFilePath, string buildActionToSet)
 		{
 			var oldScheduler = TaskScheduler.Current;
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 			try
 			{
