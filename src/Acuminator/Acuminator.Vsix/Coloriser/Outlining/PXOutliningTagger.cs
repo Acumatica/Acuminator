@@ -31,9 +31,9 @@ namespace Acuminator.Vsix.Coloriser
 		{
 		}
 
-		public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+		public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
 		{
-			if (spans == null || spans.Count == 0 || AcuminatorVSPackage.Instance?.UseBqlOutlining != true)
+			if (requestedSpans?.Count is null or 0 || AcuminatorVSPackage.Instance?.UseBqlOutlining != true)
 				return [];
 
 			if (ColorizerTagger == null)
@@ -48,7 +48,8 @@ namespace Acuminator.Vsix.Coloriser
 			if (!HasReferenceToAcumaticaPlatform)
 				return [];
 
-			return ColorizerTagger.OutliningsTagsCache.ProcessedTags;
+			var processedTags = ColorizerTagger.OutliningsTagsCache.ProcessedTags;
+			return GetIntersectionWithRequestedTags(processedTags, requestedSpans);
 		}
 
 		private static bool TryGetColorizingTaggerFromBuffer(ITextBuffer textBuffer, out PXRoslynColorizerTagger colorizingTagger)

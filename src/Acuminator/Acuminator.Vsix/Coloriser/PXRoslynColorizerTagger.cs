@@ -136,13 +136,15 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	/// <summary>
 	/// Gets the tags asynchronously from the specified snapshot with Roslyn.
 	/// </summary>
-	/// <param name="spans">The spans for tagging. The current implementation doesn't take them into account and re-tags the entire document.</param>
+	/// <param name="requestedSpans">
+	/// The spans for tagging. The current implementation re-tags the entire document but returns the intersection with the requested spans.
+	/// </param>
 	/// <returns>
 	/// The current snapshot of the collected tags.
 	/// </returns>
-	public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+	public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
 	{
-		if (spans?.Count is null or 0 || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
+		if (requestedSpans?.Count is null or 0 || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
 			return [];
 
 		var workspace = _roslynWorkspaceProvider.Workspace; 
@@ -150,11 +152,12 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (workspace == null)
 			return [];
 
-		ITextSnapshot newSnapshotToTag = spans[0].Snapshot;
+		ITextSnapshot newSnapshotToTag = requestedSpans[0].Snapshot;
 
 		if (CheckIfParsingAndRetaggingIsNotNecessary(newSnapshotToTag))
 		{
-			return ClassificationTagsCache.ProcessedTags;
+			var cachedProcessedTags = ClassificationTagsCache.ProcessedTags;
+			return GetIntersectionWithRequestedTags(cachedProcessedTags, requestedSpans);
 		}
 
 		if (BackgroundTagging != null)
@@ -166,7 +169,8 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		ResetCacheAndFlags(newSnapshotToTag);
 		BackgroundTagging = BackgroundTagging.StartBackgroundTagging(this);
 
-		return ClassificationTagsCache.ProcessedTags;
+		var processedTags = ClassificationTagsCache.ProcessedTags;
+		return GetIntersectionWithRequestedTags(processedTags, requestedSpans);
 	}
 
 	protected virtual bool CheckIfParsingAndRetaggingIsNotNecessary(ITextSnapshot newSnapshotToTag) =>

@@ -12,6 +12,7 @@ using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Utilities;
 
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
@@ -56,6 +57,16 @@ namespace Acuminator.Vsix.Coloriser
 
 			_disposedNotification = new TextDocumentDisposedNotification(textDocumentFactory, Buffer);
 			_disposedNotification.CurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
+		}
+
+		protected static IEnumerable<ITagSpan<TTag>> GetIntersectionWithRequestedTags<TTag>(
+																				IReadOnlyCollection<ITagSpan<TTag>> tags,
+																				NormalizedSnapshotSpanCollection requestedSpans)
+		where TTag : ITag
+		{
+			return tags?.Count > 0
+				? tags.Where(tag => requestedSpans.IntersectsWith(tag.Span))
+				: [];
 		}
 
 		protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
