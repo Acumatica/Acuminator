@@ -36,7 +36,7 @@ public static class VsTasksUtils
 	/// <param name="faultDescription">(Optional) Information describing the fault.</param>
 	/// <param name="logCancellations">(Optional) True to log cancellation exceptions. False by default.</param>
 	/// <param name="fileOnlyIf">(Optional) The optional condition on exceptions to be logged. Takes precedence over the <paramref name="logCancellations"/> flag.</param>
-	public static void FileAndForgetAcuminatorTask(this Func<System.Threading.Tasks.Task>? asyncMethod, string? faultEventName, string? faultDescription = null, 
+	public static void FileAndForgetAcuminatorTask(this Func<System.Threading.Tasks.Task>? asyncMethod, string faultEventName, string? faultDescription = null, 
 												   bool logCancellations = false, Func<Exception, bool>? fileOnlyIf = null)
 	{
 		asyncMethod.ThrowOnNull();
@@ -53,7 +53,8 @@ public static class VsTasksUtils
 
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-				FaultEvent telemetryEvent = new FaultEvent(faultEventName, faultDescription, ex)
+				faultEventName = faultEventName.NullIfWhiteSpace()?.Trim() ?? $"vs/{AcuminatorVSPackage.PackageName}/UnknownComponent/UnknownMethod";
+				var telemetryEvent = new FaultEvent(faultEventName, faultDescription, ex)
 				{
 					IsIncludedInWatsonSample = false
 				};
