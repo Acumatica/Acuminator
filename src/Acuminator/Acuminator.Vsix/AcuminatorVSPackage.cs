@@ -95,7 +95,7 @@ namespace Acuminator.Vsix
 
 		private const int NOT_DISPOSED = 0;
 		private const int DISPOSED = 1;
-		private int _isDisposed = NOT_DISPOSED;
+		private volatile int _isDisposed = NOT_DISPOSED;
 
 		private OutOfProcessSettingsUpdater? _outOfProcessSettingsUpdater;
 
