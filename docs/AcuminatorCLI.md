@@ -4,7 +4,8 @@
 Acuminator Console Runner serves as a command-line interface (CLI) for Acuminator code analysis that allows to run it outside of IDE. Such tool is useful for CI/CD pipelines and other automated scenarios.
 The name of the executable file is `Acuminator.Runner.exe`.
 
-Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime to analyze projects targeting .Net Framework and .NET runtime to check project targeting .Net Core and .Net runtimes.
+Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires.NET Framework 4.8 runtime to run. The MSBuild should be installed on the machine running the analysis.
+The runner needs MSBuild from Visual Studio or Build Tools to analyze projects targeting .Net Framework. The .NET runtime is required to check project targeting .Net Core and .Net runtimes.
 
 ## Analysis
 
@@ -102,11 +103,5 @@ This command does not specify any grouping for diagnostics, so they will be outp
 
 ## Acuminator Console Runner and Different .Net Runtimes
 
-Currently, there is only one version of Acuminator Console Runner based on .NET Framework runtime. The runner is based on the older .NET Framework runtime due to differences in Roslyn and MSBuild behavior for console applications 
-based on different .NET runtimes. These differences can be observed on large complex code bases such as Acumatica ERP code. 
-
-In case of modern .NET runtimes, Roslyn (and MSBuild used by the tool to load solutions for analysis) fails to correctly load Acumatica  ERP solution for analysis. This results in the inability to correctly analyze Acumatica ERP projects. 
-On the other hand, when Roslyn and MSBuild are used with .Net Framework, they can correctly load Acumatica ERP solution and projects for analysis.
-
-It seems, the issue is related to the fact that Acumatica ERP solution is still based on .NET Framework, which causes compatibility problems with Roslyn and MSBuild DLLs that target different .NET runtimes. In the future, after Acumatica ERP 
-is fully migrated to .NET Core, a port of Acuminator Console Runner to .NET Core will probably appear.
+Currently, the Acuminator Console Runner is based on .NET Framework runtime. However, should be able to analyze projects targeting modern .Net runtimes thanks to the out-of-process load of the project information done by the `Microsoft.CodeAnalysis.Workspaces.MSBuild` library and `MSBuildWorkspace`.
+Starting from version 4.9 this library provides an internal our-of-process mechanism to load the project using a version of MSBuild corresponding to project's target framework. This should allow Acuminator Console Runner to analyze projects targeting both .NEt Framework and modern .Net runtimes.
