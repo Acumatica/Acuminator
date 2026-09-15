@@ -250,74 +250,11 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The MSBuild registration request was denied by the MSBuild locator..
-        /// </summary>
-        internal static string MSBuild_RegistrationDeniedWarning {
-            get {
-                return ResourceManager.GetString("MSBuild_RegistrationDeniedWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Found MSBuild instance with name &quot;{VisualStudioName}&quot;, version &quot;{VisualStudioVersion}&quot;..
-        /// </summary>
-        internal static string MSBuild_VisualStudioNameAndVersion_Info {
-            get {
-                return ResourceManager.GetString("MSBuild_VisualStudioNameAndVersion_Info", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to register MSBuild by using the provided path &quot;{MSBuildPath}&quot;. The path does not exist in the system..
-        /// </summary>
-        internal static string MSBuildDoesNotExistAtTheProvidedPathError {
-            get {
-                return ResourceManager.GetString("MSBuildDoesNotExistAtTheProvidedPathError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred during registration of the MSBuild instance..
-        /// </summary>
-        internal static string MSBuildInstanceRegistrationError {
-            get {
-                return ResourceManager.GetString("MSBuildInstanceRegistrationError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MSBuildPath: &quot;{MSBuildPath}&quot;..
-        /// </summary>
-        internal static string MSBuildPath_Info {
-            get {
-                return ResourceManager.GetString("MSBuildPath_Info", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path &quot;{MSBuildPath}&quot;..
-        /// </summary>
-        internal static string MSBuildRegistrationAtProvidedPathFailedError {
-            get {
-                return ResourceManager.GetString("MSBuildRegistrationAtProvidedPathFailedError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No file.
         /// </summary>
         internal static string NoFilePlaceholder {
             get {
                 return ResourceManager.GetString("NoFilePlaceholder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No installed MSBuild version has been found on the machine..
-        /// </summary>
-        internal static string NoInstalledMSBuildFoundError {
-            get {
-                return ResourceManager.GetString("NoInstalledMSBuildFoundError", resourceCulture);
             }
         }
         
@@ -376,29 +313,11 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Registering MSBuild instance at the provided path &quot;{MSBuildPath}&quot;..
-        /// </summary>
-        internal static string RegisteringMSBuildAtTheProvidedPathStatusMessage {
-            get {
-                return ResourceManager.GetString("RegisteringMSBuildAtTheProvidedPathStatusMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A runtime error has been encountered during the validation..
         /// </summary>
         internal static string RuntimeErrorHappenedDuringValidationMessage {
             get {
                 return ResourceManager.GetString("RuntimeErrorHappenedDuringValidationMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Searching for MSBuild instances installed on the current machine..
-        /// </summary>
-        internal static string SearchingForMSBuildInstancesStatusMessage {
-            get {
-                return ResourceManager.GetString("SearchingForMSBuildInstancesStatusMessage", resourceCulture);
             }
         }
         
@@ -457,29 +376,11 @@ namespace Acuminator.Runner.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The MSBuild instance at the provided path &quot;{MSBuildPath}&quot; has been registered successfully..
-        /// </summary>
-        internal static string SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage {
-            get {
-                return ResourceManager.GetString("SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Total Error Count.
         /// </summary>
         internal static string TotalErrorsCountReportTitlePart {
             get {
                 return ResourceManager.GetString("TotalErrorsCountReportTitlePart", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error has occurred on attempt to unregister MSBuild..
-        /// </summary>
-        internal static string UnregisterMSBuildInstanceError {
-            get {
-                return ResourceManager.GetString("UnregisterMSBuildInstanceError", resourceCulture);
             }
         }
         
