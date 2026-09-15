@@ -39,9 +39,8 @@ namespace Acuminator.Runner.Input
 			OutputFormat outputFormat   = GetOutputFormat(commandLineOptions.OutputFormat.NullIfWhiteSpace());
 			GroupingMode groupingMode   = GetGroupingMode(commandLineOptions.ReportGrouping);
 			AcuminatorWorkMode workMode = GetAcuminatorWorkMode(commandLineOptions.AcuminatorWorkMode);
-			var input = new AnalysisContext(codeSource, codeAnalysisSettings, bannedApiSettings, commandLineOptions.MSBuildPath, 
-											commandLineOptions.OutputFileName, commandLineOptions.OutputAbsolutePathsToUsages, outputFormat,
-											workMode, groupingMode);
+			var input = new AnalysisContext(codeSource, codeAnalysisSettings, bannedApiSettings, commandLineOptions.OutputFileName,
+											commandLineOptions.OutputAbsolutePathsToUsages, outputFormat, workMode, groupingMode);
 			return input;
 		}
 
@@ -99,10 +98,10 @@ namespace Acuminator.Runner.Input
 			const char FileGroupingChar = 'F';
 			const char DiagnosticGroupingChar = 'D';
 
-			string rawGroupingLocationUppered = rawGroupingLocation.ToUpperInvariant();
+			string rawGroupingLocationUpperCased = rawGroupingLocation.ToUpperInvariant();
 
-			bool groupByFiles = rawGroupingLocationUppered.Contains(FileGroupingChar);
-			bool groupByDiagnostic = rawGroupingLocationUppered.Contains(DiagnosticGroupingChar);
+			bool groupByFiles = rawGroupingLocationUpperCased.Contains(FileGroupingChar);
+			bool groupByDiagnostic = rawGroupingLocationUpperCased.Contains(DiagnosticGroupingChar);
 
 			GroupingMode grouping = groupByFiles
 				? GroupingMode.Files

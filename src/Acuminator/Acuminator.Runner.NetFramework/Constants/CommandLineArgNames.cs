@@ -12,8 +12,6 @@ namespace Acuminator.Runner.Constants
 		public const string VerbosityLong = "verbosity";
 
 		public const string DisableSuppressionMechanism = "disable-suppression";
-		public const string MSBuildPath = "msBuild-path";
-
 		public const char ReportGroupingShort = 'g';
 		public const string ReportGroupingLong = "grouping";
 

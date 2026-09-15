@@ -59,20 +59,6 @@ namespace Acuminator.Runner.Input
 		public bool DisableSuppressionMechanism { get; }
 
 		/// <summary>
-		/// This optional parameter allows you to provide explicitly a path to the MSBuild tool that will be used for analysis.
-		///	By default, MSBuild installations will be searched automatically on the current machine and the latest found version will be used.
-		/// </summary>
-		/// <value>
-		/// The optional explicitly specified path to MSBuild.
-		/// </value>
-		[Option(longName: CommandLineArgNames.MSBuildPath,
-				HelpText = """
-						   Optional. Provides an explicit path to the MSBuild tool that will be used for analysis. 
-						   By default, MSBuild installations are detected automatically on the current machine and the latest found version will be used.
-						   """)]
-		public string? MSBuildPath { get; }
-
-		/// <summary>
 		/// The path to the output file. If not specified then the report with analysis results will be outputted to the console window.
 		/// </summary>
 		[Option(shortName: CommandLineArgNames.OutputFileShort, longName: CommandLineArgNames.OutputFileLong,
@@ -327,7 +313,7 @@ namespace Acuminator.Runner.Input
 		/// </summary>
 		/// <remarks>
 		/// Reports grouping works like this:<br/>
-		/// - First, errors in the report are grouped by filepaths, if "<c>f</c>" or "<c>F</c>" is specified in the grouping.<br/>
+		/// - First, errors in the report are grouped by file paths, if "<c>f</c>" or "<c>F</c>" is specified in the grouping.<br/>
 		/// - Second, errors in the report are grouped by diagnostic IDs, if "<c>d</c>" or "<c>D</c>" is specified in the grouping.<br/>
 		/// </remarks>
 		[Option(shortName: CommandLineArgNames.ReportGroupingShort, longName: CommandLineArgNames.ReportGroupingLong,
@@ -339,7 +325,7 @@ namespace Acuminator.Runner.Input
 		Any combination of these characters specifies the report grouping. For example, specify "fd" to group errors in the report by files and diagnostic IDs.
 		
 		Report grouping works like as follows:
-		First, errors in the report are grouped by filepaths, if "f" or "F" is specified in the grouping.
+		First, errors in the report are grouped by file paths, if "f" or "F" is specified in the grouping.
 		Then errors in the report are grouped by diagnostic IDs, if "d" or "D" is specified in the grouping.
 		""")]
 		public string? ReportGrouping { get; }
@@ -374,7 +360,7 @@ namespace Acuminator.Runner.Input
 
 		// Constructor arguments order must be the same as the properties order. This allows command line parser to initialize immutable options object via constructor.
 		// See this for details: https://github.com/commandlineparser/commandline/wiki/Immutable-Options-Type
-		public CommandLineOptions(string codeSource, string verbosity, bool disableSuppressionMechanism, string? msBuildPath, string? outputFileName, 
+		public CommandLineOptions(string codeSource, string verbosity, bool disableSuppressionMechanism, string? outputFileName, 
 								  bool outputAbsolutePathsToUsages, string? outputFormat, bool isvSpecificAnalysisIsEnabled, 
 								  bool px1007DiagnosticIsEnabled, bool disablePX1099Diagnostic, string? bannedApiFilePath, string? allowedApisFilePath,
 								  string? acuminatorWorkMode, string? reportGrouping, bool enableInformationalDiagnostics, bool useNonInteractiveMode)
@@ -382,7 +368,6 @@ namespace Acuminator.Runner.Input
 			CodeSource 					   = codeSource;
 			Verbosity 					   = verbosity;
 			DisableSuppressionMechanism    = disableSuppressionMechanism;
-			MSBuildPath 				   = msBuildPath;
 			OutputFileName				   = outputFileName;
 			OutputAbsolutePathsToUsages    = outputAbsolutePathsToUsages;
 			OutputFormat				   = outputFormat;
