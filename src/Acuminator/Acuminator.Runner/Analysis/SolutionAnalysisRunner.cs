@@ -16,7 +16,7 @@ using Acuminator.Utilities.Common;
 namespace Acuminator.Runner.Analysis
 {
 	/// <summary>
-	/// A solution analysis runner that does preparatory work - register MSBuild, load solution for analysis and calls analyzer.
+	/// A solution analysis runner that does preparatory work - load solution for analysis and calls analyzer.
 	/// </summary>
 	[SuppressMessage("CodeQuality", "Serilog004:Constant MessageTemplate verifier", 
 					 Justification = "Resource strings are used to simplify review by Doc Team")]

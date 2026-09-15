@@ -37,7 +37,7 @@ The following table lists the exit codes returned by the Acuminator Console Runn
 
 When you integrate Acuminator Console Runner into your CI/CD pipeline, you can use these exit codes to determine the outcome of the code analysis and take appropriate actions based on the results.
 The exit codes `0` and `1` indicate that the analysis completed successfully, so you can use them ot judge whether the code passed or failed the validation. 
-The exit codes `2` and `3` indicate that the analysis was interrupted or failed due to an unexpected runtime error. You can use them to detect incidents in your automated testing.
+The exit codes `2` and `4` indicate that the analysis was interrupted or failed due to an unexpected runtime error. You can use them to detect incidents in your automated testing.
 
 
 ## Command Line Arguments
