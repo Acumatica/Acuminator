@@ -2,9 +2,9 @@
 
 **Acuminator Console Runner** is a standalone command-line tool that performs Acuminator static code analysis of .NET projects and solutions based on Acumatica Framework.
 Acuminator Console Runner serves as a command-line interface (CLI) for Acuminator code analysis that allows to run it outside of IDE. Such tool is useful for CI/CD pipelines and other automated scenarios.
-The name of the executable file is `Acuminator.Runner.NetFramework.exe`.
+The name of the executable file is `Acuminator.Runner.exe`.
 
-Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime.
+Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime to analyze projects targeting .Net Framework and .NET runtime to check project targeting .Net Core and .Net runtimes.
 
 ## Analysis
 
@@ -85,18 +85,18 @@ All command line arguments can be divided into the following three groups:
 
 Below are examples of how you can run Acuminator Console Runner from the command line.
 ```console
-Acuminator.Runner.NetFramework.exe <path to solution/project> --verbosity Debug --format json -f <path to output file> -g <grouping> --enable-PX1007 --disable-PX1099
+Acuminator.Runner.exe <path to solution/project> --verbosity Debug --format json -f <path to output file> -g <grouping> --enable-PX1007 --disable-PX1099
 ```
 The example with real values will look as follows.
 ```console
-Acuminator.Runner.NetFramework.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj" --verbosity Debug --format json -f report.json -g FD --enable-PX1007 --disable-PX1099
+Acuminator.Runner.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj" --verbosity Debug --format json -f report.json -g FD --enable-PX1007 --disable-PX1099
 ```
 The command above will analyze the `PX.Objects.HackathonDemo` project, output the report in the JSON format to the `report.json` file, group diagnostics by file and diagnostic ID, enable the **PX1007** diagnostic, and disable the **PX1099** diagnostic.
 The verbosity of the logger will be set to `Debug`.
 
 To run Acuminator analysis in a plain text format with default code analysis settings and output it to console, you can use the following command.
 ```console
-Acuminator.Runner.NetFramework.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj"
+Acuminator.Runner.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj"
 ```
 This command does not specify any grouping for diagnostics, so they will be outputted in a flat ordered list for each analyzed project. Note, that if you run the analysis for the C# solution, diagnostics will always be grouped by project. 
 

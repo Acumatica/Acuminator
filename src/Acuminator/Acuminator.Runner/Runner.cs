@@ -18,7 +18,7 @@ using Acuminator.Runner.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Runner.Resources;
 
-namespace Acuminator.Runner.NetFramework
+namespace Acuminator.Runner
 {
 	internal class Runner
 	{

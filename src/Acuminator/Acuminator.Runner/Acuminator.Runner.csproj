@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Title>Acuminator.Runner.NetFramework</Title>
-		<AssemblyTitle>Acuminator.Runner.NetFramework</AssemblyTitle>
-		<AssemblyName>Acuminator.Runner.NetFramework</AssemblyName>
+		<Title>Acuminator.Runner</Title>
+		<AssemblyTitle>Acuminator.Runner</AssemblyTitle>
+		<AssemblyName>Acuminator.Runner</AssemblyName>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net48</TargetFramework>
 		<Deterministic>True</Deterministic>
