@@ -5,7 +5,7 @@ Acuminator Console Runner serves as a command-line interface (CLI) for Acuminato
 The name of the executable file is `Acuminator.Runner.exe`.
 
 Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime to run. The MSBuild should be installed on the machine running the analysis.
-The runner needs MSBuild from Visual Studio or Build Tools to analyze projects targeting .Net Framework and using old style of project file. The .NET SDK is required to check project targeting .Net Framework, .Net Core, or .Net runtimes and using SDK-style project file format.
+The runner needs MSBuild from Visual Studio or Build Tools to analyze projects targeting .NET Framework and to use old style of project file. The .NET SDK is required to check project targeting .NET Framework, .NET Core, or .NET runtimes and using SDK-style project file format.
 
 ## Analysis
 
@@ -103,7 +103,8 @@ This command does not specify any grouping for diagnostics, so they will be outp
 
 ## Acuminator Console Runner and Different .Net Runtimes
 
-Currently, the Acuminator Console Runner is based on .NET Framework runtime. However, it should be able to analyze projects targeting modern .Net runtimes thanks to the out-of-process load of the project information done by the `Microsoft.CodeAnalysis.Workspaces.MSBuild` library and `MSBuildWorkspace`.
-Starting from version 4.9 this library provides an internal out-of-process mechanism to load the project using a version of MSBuild corresponding to project file format. For legacy C# project format it will use MSBuild targeting .Net Framework, for SDK style projects it will use MSBuild from .NET SDK.
-.NET SDK should be installed on the machine running the analysis to analyze projects in the SDK-style format. See more details about the SDK-style format here:
-https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview
+Currently, Acuminator Console Runner is based on .NET Framework runtime. However, the runner should be able to analyze projects targeting modern .NET runtimes thanks to the out-of-process load of the project information done by the `Microsoft.CodeAnalysis.Workspaces.MSBuild` library and `MSBuildWorkspace`.
+Starting from Acumatica Console Runner version 4.9, this library provides an internal out-of-process mechanism to load the project using a version of MSBuild corresponding to project file format:
+ - For the legacy C# project format, it uses MSBuild targeting .NET Framework.
+ - For SDK style projects, it uses MSBuild from .NET SDK.
+   .NET SDK should be installed on the machine running the analysis to analyze projects in the SDK-style format. For more details about the SDK-style format, see https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview.
