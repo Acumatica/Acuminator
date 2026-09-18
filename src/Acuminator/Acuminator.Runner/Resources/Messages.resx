@@ -180,29 +180,8 @@
   <data name="LoadedProjectsCount_Information" xml:space="preserve">
     <value>The number of loaded projects: {ProjectsCount}.</value>
   </data>
-  <data name="MSBuildDoesNotExistAtTheProvidedPathError" xml:space="preserve">
-    <value>Failed to register MSBuild by using the provided path "{MSBuildPath}". The path does not exist in the system.</value>
-  </data>
-  <data name="MSBuildInstanceRegistrationError" xml:space="preserve">
-    <value>An error occurred during registration of the MSBuild instance.</value>
-  </data>
-  <data name="MSBuildPath_Info" xml:space="preserve">
-    <value>MSBuildPath: "{MSBuildPath}".</value>
-  </data>
-  <data name="MSBuildRegistrationAtProvidedPathFailedError" xml:space="preserve">
-    <value>An error occurred during the registration of the MSBuild instance. Failed to register MSBuild by using the provided path "{MSBuildPath}".</value>
-  </data>
-  <data name="MSBuild_RegistrationDeniedWarning" xml:space="preserve">
-    <value>The MSBuild registration request was denied by the MSBuild locator.</value>
-  </data>
-  <data name="MSBuild_VisualStudioNameAndVersion_Info" xml:space="preserve">
-    <value>Found MSBuild instance with name "{VisualStudioName}", version "{VisualStudioVersion}".</value>
-  </data>
   <data name="NoFilePlaceholder" xml:space="preserve">
     <value>No file</value>
-  </data>
-  <data name="NoInstalledMSBuildFoundError" xml:space="preserve">
-    <value>No installed MSBuild version has been found on the machine.</value>
   </data>
   <data name="NoProjectInCodeSourceReferencesAcumaticaPlatformError" xml:space="preserve">
     <value>No project in the provided "{CodeSource}" references the Acumatica Framework.</value>
@@ -222,14 +201,8 @@
   <data name="ProjectDoesNotReferenceAcumaticaPlatformValidationError" xml:space="preserve">
     <value>The {ProjectName} project does not reference Acumatica Framework. Validation can not be performed</value>
   </data>
-  <data name="RegisteringMSBuildAtTheProvidedPathStatusMessage" xml:space="preserve">
-    <value>Registering MSBuild instance at the provided path "{MSBuildPath}".</value>
-  </data>
   <data name="RuntimeErrorHappenedDuringValidationMessage" xml:space="preserve">
     <value>A runtime error has been encountered during the validation.</value>
-  </data>
-  <data name="SearchingForMSBuildInstancesStatusMessage" xml:space="preserve">
-    <value>Searching for MSBuild instances installed on the current machine.</value>
   </data>
   <data name="StartAnalyzingTheCodeSourceStatusMessage" xml:space="preserve">
     <value>Analyzing the code source "{CodeSource}"...</value>
@@ -249,14 +222,8 @@
   <data name="SuccessfullyLoadedCodeSourceAtPathStatusMessage" xml:space="preserve">
     <value>The code source "{CodeSource}" has been loaded successfully.</value>
   </data>
-  <data name="SuccessfullyRegisteredMSBuildAtProvidedPathStatusMessage" xml:space="preserve">
-    <value>The MSBuild instance at the provided path "{MSBuildPath}" has been registered successfully.</value>
-  </data>
   <data name="TotalErrorsCountReportTitlePart" xml:space="preserve">
     <value>Total Error Count</value>
-  </data>
-  <data name="UnregisterMSBuildInstanceError" xml:space="preserve">
-    <value>An error has occurred on attempt to unregister MSBuild.</value>
   </data>
   <data name="ValidationPassedSuccessfullyMessage" xml:space="preserve">
     <value>The validation passed successfully!</value>

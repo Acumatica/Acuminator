@@ -24,9 +24,6 @@ namespace Acuminator.Runner.Input
 
 		public BannedApiSettings BannedApiSettings { get; }
 
-		/// <inheritdoc cref="CommandLineOptions.MSBuildPath"/>
-		public string? MSBuildPath { get; }
-
 		/// <inheritdoc cref="CommandLineOptions.OutputFileName"/>
 		public string? OutputFileName { get; }
 
@@ -47,18 +44,17 @@ namespace Acuminator.Runner.Input
 		public GroupingMode GroupingMode { get; }
 
 		/// <summary>
-		/// Are file paths on the unnderlying OS case sensitive or not.
+		/// Are file paths on the underlying OS case sensitive or not.
 		/// </summary>
 		public bool CaseSensitiveFilePaths { get; }
 
 		public AnalysisContext(ICodeSource codeSource, CodeAnalysisSettings codeAnalysisSettings, BannedApiSettings bannedApiSettings, 
-							   string? msBuildPath, string? outputFileName, bool outputAbsolutePathsToUsages, OutputFormat outputFormat,
+							   string? outputFileName, bool outputAbsolutePathsToUsages, OutputFormat outputFormat,
 							   AcuminatorWorkMode workMode, GroupingMode groupingMode)
 		{
 			CodeSource 					   = codeSource.CheckIfNull();
 			CodeAnalysisSettings		   = codeAnalysisSettings.CheckIfNull();
 			BannedApiSettings			   = bannedApiSettings.CheckIfNull();
-			MSBuildPath 				   = msBuildPath.NullIfWhiteSpace();
 			OutputFileName				   = outputFileName.NullIfWhiteSpace();
 			OutputAbsolutePathsToUsages    = outputAbsolutePathsToUsages;
 			OutputFormat				   = outputFormat;

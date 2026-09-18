@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Title>Acuminator.Runner.NetFramework</Title>
-		<AssemblyTitle>Acuminator.Runner.NetFramework</AssemblyTitle>
-		<AssemblyName>Acuminator.Runner.NetFramework</AssemblyName>
+		<Title>Acuminator.Runner</Title>
+		<AssemblyTitle>Acuminator.Runner</AssemblyTitle>
+		<AssemblyName>Acuminator.Runner</AssemblyName>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net48</TargetFramework>
 		<Deterministic>True</Deterministic>
@@ -45,13 +45,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="Microsoft.Build.Locator" Version="1.11.2" />
-		<!--Prevent MSBuild assemblies from being distributed with the app explicitly by excluding assets for "runtime"
-			See this for details: https://github.com/microsoft/MSBuildLocator/blob/55ff263d5a99f91a215c9ca5fbba8ccfa3371fe5/docs/diagnostics/MSBL001.md -->
-		<PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="18.0.2"/>
-		<PackageReference Include="Microsoft.Build.Framework" ExcludeAssets="runtime" Version="18.0.2"/>
-		<PackageReference Include="Microsoft.Build.Utilities.Core" ExcludeAssets="runtime" Version="18.0.2"/>
-		
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.9.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="5.9.0" />

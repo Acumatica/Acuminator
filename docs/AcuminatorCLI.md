@@ -2,9 +2,10 @@
 
 **Acuminator Console Runner** is a standalone command-line tool that performs Acuminator static code analysis of .NET projects and solutions based on Acumatica Framework.
 Acuminator Console Runner serves as a command-line interface (CLI) for Acuminator code analysis that allows to run it outside of IDE. Such tool is useful for CI/CD pipelines and other automated scenarios.
-The name of the executable file is `Acuminator.Runner.NetFramework.exe`.
+The name of the executable file is `Acuminator.Runner.exe`.
 
-Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime.
+Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime to run. The MSBuild should be installed on the machine running the analysis.
+The runner needs MSBuild from Visual Studio or Build Tools to analyze projects that target .NET Framework and use the old style of project file (.csproj files written in the old project file format). The .NET SDK is required to check project targeting .NET Framework, .NET Core, or .NET runtimes and using SDK-style project file format.
 
 ## Analysis
 
@@ -36,7 +37,7 @@ The following table lists the exit codes returned by the Acuminator Console Runn
 
 When you integrate Acuminator Console Runner into your CI/CD pipeline, you can use these exit codes to determine the outcome of the code analysis and take appropriate actions based on the results.
 The exit codes `0` and `1` indicate that the analysis completed successfully, so you can use them ot judge whether the code passed or failed the validation. 
-The exit codes `2` and `3` indicate that the analysis was interrupted or failed due to an unexpected runtime error. You can use them to detect incidents in your automated testing.
+The exit codes `2` and `4` indicate that the analysis was interrupted or failed due to an unexpected runtime error. You can use them to detect incidents in your automated testing.
 
 
 ## Command Line Arguments
@@ -77,7 +78,6 @@ All command line arguments can be divided into the following three groups:
 | Argument                               | Description                                                                                                                                                                                                                                                                                            |
 |--------------------------------------- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `-v`, `--verbosity`                    | Optional. Specifies logger verbosity. The available values are taken from the `Serilog.Events.LogEventLevel` enum. The following value are available: `Verbose`, `Debug`, `Information`, `Warning`, `Error`, `Fatal`. By default, the logger uses the `Information` verbosity. |
-| `--msBuild-path`                       | Optional. Provides an explicit path to the MSBuild tool that will be used for analysis. By default, MSBuild installations are detected automatically on the current machine and the latest found version will be used.                                                 |
 | `--non-interactive`                    | Optional. A flag that forces the Acuminator Console Runner to run in non-interactive mode. In this mode, some interactive features such as interactive cancellation of the analysis with "Ctrl + C" are disabled. This mode is useful when Acuminator is executed in automated environments like CI/CD pipelines where no user interaction is possible. Some automated environments such as Azure Pipelines may throw an error if the application attempts to use one of the interactive features. |
 | `--help`                               | Optional. A flag that allows you to see the description of all available command line arguments in the console. Use this flag without any other arguments.                                                                                                                                                                        |
 | `--version`                            | Optional. A flag that allows you to see the Acuminator Console Runner's version. Use this flag without any other arguments.                                                                                                                                                                                                              |
@@ -86,28 +86,25 @@ All command line arguments can be divided into the following three groups:
 
 Below are examples of how you can run Acuminator Console Runner from the command line.
 ```console
-Acuminator.Runner.NetFramework.exe <path to solution/project> --verbosity Debug --format json -f <path to output file> -g <grouping> --enable-PX1007 --disable-PX1099
+Acuminator.Runner.exe <path to solution/project> --verbosity Debug --format json -f <path to output file> -g <grouping> --enable-PX1007 --disable-PX1099
 ```
 The example with real values will look as follows.
 ```console
-Acuminator.Runner.NetFramework.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj" --verbosity Debug --format json -f report.json -g FD --enable-PX1007 --disable-PX1099
+Acuminator.Runner.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj" --verbosity Debug --format json -f report.json -g FD --enable-PX1007 --disable-PX1099
 ```
 The command above will analyze the `PX.Objects.HackathonDemo` project, output the report in the JSON format to the `report.json` file, group diagnostics by file and diagnostic ID, enable the **PX1007** diagnostic, and disable the **PX1099** diagnostic.
 The verbosity of the logger will be set to `Debug`.
 
 To run Acuminator analysis in a plain text format with default code analysis settings and output it to console, you can use the following command.
 ```console
-Acuminator.Runner.NetFramework.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj"
+Acuminator.Runner.exe "..\..\..\..\..\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo.csproj"
 ```
 This command does not specify any grouping for diagnostics, so they will be outputted in a flat ordered list for each analyzed project. Note, that if you run the analysis for the C# solution, diagnostics will always be grouped by project. 
 
 ## Acuminator Console Runner and Different .Net Runtimes
 
-Currently, there is only one version of Acuminator Console Runner based on .NET Framework runtime. The runner is based on the older .NET Framework runtime due to differences in Roslyn and MSBuild behavior for console applications 
-based on different .NET runtimes. These differences can be observed on large complex code bases such as Acumatica ERP code. 
-
-In case of modern .NET runtimes, Roslyn (and MSBuild used by the tool to load solutions for analysis) fails to correctly load Acumatica  ERP solution for analysis. This results in the inability to correctly analyze Acumatica ERP projects. 
-On the other hand, when Roslyn and MSBuild are used with .Net Framework, they can correctly load Acumatica ERP solution and projects for analysis.
-
-It seems, the issue is related to the fact that Acumatica ERP solution is still based on .NET Framework, which causes compatibility problems with Roslyn and MSBuild DLLs that target different .NET runtimes. In the future, after Acumatica ERP 
-is fully migrated to .NET Core, a port of Acuminator Console Runner to .NET Core will probably appear.
+Currently, Acuminator Console Runner is based on .NET Framework runtime. However, the runner should be able to analyze projects targeting modern .NET runtimes thanks to the out-of-process load of the project information done by the `Microsoft.CodeAnalysis.Workspaces.MSBuild` library via `MSBuildWorkspace` API.
+Starting from `Microsoft.CodeAnalysis.Workspaces.MSBuild` version 4.9, this library provides an internal out-of-process mechanism to load the project using a version of MSBuild corresponding to project file's format:
+ - For the legacy C# project format, it uses MSBuild targeting .NET Framework.
+ - For SDK style projects, it uses MSBuild from .NET SDK.
+   .NET SDK should be installed on the machine running the analysis to analyze projects in the SDK-style format. For more details about the SDK-style format, see https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview.
