@@ -103,8 +103,8 @@ This command does not specify any grouping for diagnostics, so they will be outp
 
 ## Acuminator Console Runner and Different .Net Runtimes
 
-Currently, Acuminator Console Runner is based on .NET Framework runtime. However, the runner should be able to analyze projects targeting modern .NET runtimes thanks to the out-of-process load of the project information done by the `Microsoft.CodeAnalysis.Workspaces.MSBuild` library and `MSBuildWorkspace`.
-Starting from `MSBuild` version 4.9, this library provides an internal out-of-process mechanism to load the project using a version of MSBuild corresponding to project file format:
+Currently, Acuminator Console Runner is based on .NET Framework runtime. However, the runner should be able to analyze projects targeting modern .NET runtimes thanks to the out-of-process load of the project information done by the `Microsoft.CodeAnalysis.Workspaces.MSBuild` library via `MSBuildWorkspace` API.
+Starting from `Microsoft.CodeAnalysis.Workspaces.MSBuild` version 4.9, this library provides an internal out-of-process mechanism to load the project using a version of MSBuild corresponding to project file's format:
  - For the legacy C# project format, it uses MSBuild targeting .NET Framework.
  - For SDK style projects, it uses MSBuild from .NET SDK.
    .NET SDK should be installed on the machine running the analysis to analyze projects in the SDK-style format. For more details about the SDK-style format, see https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview.
