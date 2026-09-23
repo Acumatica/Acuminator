@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
@@ -13,7 +14,6 @@ using Acuminator.Utilities.Roslyn.ProjectSystem;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
@@ -31,6 +31,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		private readonly FilesStore _fileByAssembly = new FilesStore();
+
+		private static readonly ConditionalWeakTable<Compilation, CompilationSuppressionInfo>
+			_suppressionInfoByCompilation = new();
 
 		internal ICustomBuildActionSetter? BuildActionSetter { get; }
 
@@ -327,6 +330,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return;
 			}
 
+			if (Instance == null &&
+				isSuppressionEnabled &&
+				IsSuppressedByCompilationSuppressionInfo(semanticModel, diagnostic, cancellation))
+			{
+				return;
+			}
+
 			reportDiagnostic(diagnostic);
 		}
 
@@ -411,6 +421,39 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				// If the suppression work mode does not include reporting errors, return true for all diagnostics to consider them suppressed and not report them.
 				return true;
 			}
+		}
+
+		private static bool IsSuppressedByCompilationSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
+			CancellationToken cancellation)
+		{
+			if (semanticModel is null
+				|| !_suppressionInfoByCompilation.TryGetValue(semanticModel.Compilation,
+					out CompilationSuppressionInfo suppressionInfo)
+				|| suppressionInfo.IsEmpty)
+			{
+				return false;
+			}
+
+			var (assembly, message) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnostic, cancellation);
+
+			return assembly is not null && suppressionInfo.IsSuppressed(assembly, message);
+		}
+
+		public static void RegisterSuppressionInfoForCompilation(CompilationStartAnalysisContext compilationStartContext)
+		{
+			compilationStartContext.ThrowOnNull();
+
+			RegisterSuppressionInfoForCompilation(compilationStartContext.Compilation,
+				() => CompilationSuppressionInfo.CreateFromAdditionalFiles(compilationStartContext));
+		}
+
+		private static void RegisterSuppressionInfoForCompilation(Compilation compilation,
+			Func<CompilationSuppressionInfo> suppressionInfoFactory)
+		{
+			compilation.ThrowOnNull();
+			suppressionInfoFactory.ThrowOnNull();
+
+			_suppressionInfoByCompilation.GetValue(compilation, _ => suppressionInfoFactory());
 		}
 	}
 }

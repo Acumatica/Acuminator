@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -155,5 +156,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path) =>
 			XmlUtils.LoadMessages(fileSystemService, path);
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ImmutableHashSet<SuppressMessage> LoadMessagesFromString(string suppressionFileContent) =>
+			XmlUtils.LoadMessagesFromString(suppressionFileContent);
 	}
 }

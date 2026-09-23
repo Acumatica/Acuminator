@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -72,6 +73,27 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					return [];
 				}
 
+				return LoadMessagesFromDocument(document);
+			}
+
+			public static ImmutableHashSet<SuppressMessage> LoadMessagesFromString(string suppressionFileContent)
+			{
+				XDocument document;
+
+				try
+				{
+					document = XDocument.Parse(suppressionFileContent);
+				}
+				catch (Exception e) when (e is System.Xml.XmlException or ArgumentNullException)
+				{
+					return [];
+				}
+
+				return LoadMessagesFromDocument(document).ToImmutableHashSet();
+			}
+
+			private static HashSet<SuppressMessage> LoadMessagesFromDocument(XDocument document)
+			{
 				var suppressionMessages = new HashSet<SuppressMessage>();
 
 				foreach (XElement suppressionMessageXml in document.Root.Elements(SuppressMessageElement))
