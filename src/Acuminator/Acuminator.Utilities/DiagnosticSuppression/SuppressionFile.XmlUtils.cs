@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
@@ -72,6 +71,27 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					return [];
 				}
 
+				return LoadMessagesFromDocument(document);
+			}
+
+			public static HashSet<SuppressMessage> LoadMessagesFromString(string suppressionFileContent)
+			{
+				XDocument document;
+
+				try
+				{
+					document = XDocument.Parse(suppressionFileContent);
+				}
+				catch (Exception e) when (e is System.Xml.XmlException or ArgumentNullException)
+				{
+					return [];
+				}
+
+				return LoadMessagesFromDocument(document);
+			}
+
+			private static HashSet<SuppressMessage> LoadMessagesFromDocument(XDocument document)
+			{
 				var suppressionMessages = new HashSet<SuppressMessage>();
 
 				foreach (XElement suppressionMessageXml in document.Root.Elements(SuppressMessageElement))

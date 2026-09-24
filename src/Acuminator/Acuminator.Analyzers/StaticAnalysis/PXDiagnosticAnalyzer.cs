@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 using Acuminator.Analyzers.Settings.OutOfProcess;
 using Acuminator.Analyzers.Utils;
 using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 
 using Microsoft.CodeAnalysis.Diagnostics;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -59,6 +60,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 				if (ShouldAnalyze(pxContext))
 				{
+					if (pxContext.CodeAnalysisSettings.SuppressionMechanismEnabled)
+					{
+						SuppressionManager.RegisterSuppressionInfoForCompilation(compilationStartContext);
+					}
+
 					AnalyzeCompilation(compilationStartContext, pxContext);
 				}
 			});
