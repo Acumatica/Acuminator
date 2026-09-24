@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using System.Collections.Generic;
 
 using Acuminator.Utilities.DiagnosticSuppression;
 
@@ -29,7 +29,7 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression
   </suppressMessage>
 </suppressions>";
 
-			ImmutableHashSet<SuppressMessage> messages = SuppressionFile.LoadMessagesFromString(content);
+			HashSet<SuppressMessage> messages = SuppressionFile.LoadMessagesFromString(content);
 
 			messages.Should().HaveCount(2);
 			messages.Should().Contain(new SuppressMessage("PX1001", "PX.Objects.Foo.Bar()", "new Baz()"));

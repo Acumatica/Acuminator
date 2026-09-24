@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
@@ -16,14 +15,14 @@ internal sealed class CompilationSuppressionInfo
 {
 	private static CompilationSuppressionInfo Empty { get; } = new(null);
 
-	private static readonly SourceTextValueProvider<ImmutableHashSet<SuppressMessage>> _suppressionMessagesProvider =
+	private static readonly SourceTextValueProvider<HashSet<SuppressMessage>> _suppressionMessagesProvider =
 		new(fileText => SuppressionFile.LoadMessagesFromString(fileText.ToString()));
 
-	private readonly IReadOnlyDictionary<string, ImmutableHashSet<SuppressMessage>>? _suppressionsByAssembly;
+	private readonly IReadOnlyDictionary<string, HashSet<SuppressMessage>>? _suppressionsByAssembly;
 
 	internal bool IsEmpty => _suppressionsByAssembly is null || _suppressionsByAssembly.Count == 0;
 
-	private CompilationSuppressionInfo(IReadOnlyDictionary<string, ImmutableHashSet<SuppressMessage>>? suppressionsByAssembly)
+	private CompilationSuppressionInfo(IReadOnlyDictionary<string, HashSet<SuppressMessage>>? suppressionsByAssembly)
 		=> _suppressionsByAssembly = suppressionsByAssembly;
 
 	[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1012:Start action has no registered actions",
@@ -34,7 +33,7 @@ internal sealed class CompilationSuppressionInfo
 
 		try
 		{
-			List<(string AssemblyName, ImmutableHashSet<SuppressMessage> Suppressions)>? suppressionsPerAssembly = null;
+			List<(string AssemblyName, HashSet<SuppressMessage> Suppressions)>? suppressionsPerAssembly = null;
 
 			foreach (AdditionalText additionalFile in compilationStartContext.Options.AdditionalFiles)
 			{
@@ -49,7 +48,7 @@ internal sealed class CompilationSuppressionInfo
 				if (assemblyName.IsNullOrWhiteSpace() || fileText == null)
 					continue;
 
-				if (!compilationStartContext.TryGetValue(fileText, _suppressionMessagesProvider, out ImmutableHashSet<SuppressMessage>? suppressions))
+				if (!compilationStartContext.TryGetValue(fileText, _suppressionMessagesProvider, out HashSet<SuppressMessage>? suppressions))
 				{
 					suppressions = SuppressionFile.LoadMessagesFromString(fileText.ToString());
 				}
@@ -75,15 +74,15 @@ internal sealed class CompilationSuppressionInfo
 			return false;
 		}
 
-		return _suppressionsByAssembly!.TryGetValue(assemblyName, out ImmutableHashSet<SuppressMessage>? suppressions)
+		return _suppressionsByAssembly!.TryGetValue(assemblyName, out HashSet<SuppressMessage>? suppressions)
 				&& suppressions.Contains(message);
 	}
 
-	private static CompilationSuppressionInfo Create(IEnumerable<(string AssemblyName, ImmutableHashSet<SuppressMessage> Suppressions)> suppressionsPerAssembly)
+	private static CompilationSuppressionInfo Create(IEnumerable<(string AssemblyName, HashSet<SuppressMessage> Suppressions)> suppressionsPerAssembly)
 	{
 		suppressionsPerAssembly.ThrowOnNull();
 
-		Dictionary<string, ImmutableHashSet<SuppressMessage>>? suppressionsByAssembly = null;
+		Dictionary<string, HashSet<SuppressMessage>>? suppressionsByAssembly = null;
 
 		foreach (var (assemblyName, suppressions) in suppressionsPerAssembly)
 		{
@@ -94,9 +93,10 @@ internal sealed class CompilationSuppressionInfo
 
 			suppressionsByAssembly ??= new(StringComparer.Ordinal);
 
-			if (suppressionsByAssembly.TryGetValue(assemblyName, out ImmutableHashSet<SuppressMessage> existingSuppressions))
+			if (suppressionsByAssembly.TryGetValue(assemblyName, out HashSet<SuppressMessage> existingSuppressions))
 			{
-				var mergedSuppressions = existingSuppressions.Union(suppressions);
+				var mergedSuppressions = new HashSet<SuppressMessage>(existingSuppressions);
+				mergedSuppressions.UnionWith(suppressions);
 
 				suppressionsByAssembly[assemblyName] = mergedSuppressions;
 			}

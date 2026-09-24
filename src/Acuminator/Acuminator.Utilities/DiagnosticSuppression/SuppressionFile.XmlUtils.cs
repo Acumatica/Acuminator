@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Xml.Linq;
 
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
@@ -76,7 +74,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return LoadMessagesFromDocument(document);
 			}
 
-			public static ImmutableHashSet<SuppressMessage> LoadMessagesFromString(string suppressionFileContent)
+			public static HashSet<SuppressMessage> LoadMessagesFromString(string suppressionFileContent)
 			{
 				XDocument document;
 
@@ -89,7 +87,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					return [];
 				}
 
-				return LoadMessagesFromDocument(document).ToImmutableHashSet();
+				return LoadMessagesFromDocument(document);
 			}
 
 			private static HashSet<SuppressMessage> LoadMessagesFromDocument(XDocument document)
