@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				{
 					if (pxContext.CodeAnalysisSettings.SuppressionMechanismEnabled)
 					{
-						SuppressionManager.RegisterSuppressionInfoForCompilation(compilationStartContext);
+						SuppressionManager.RegisterSuppressionsByAssembly(compilationStartContext);
 					}
 
 					AnalyzeCompilation(compilationStartContext, pxContext);

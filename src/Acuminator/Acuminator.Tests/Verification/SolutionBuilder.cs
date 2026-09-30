@@ -101,14 +101,14 @@ namespace Acuminator.Tests.Verification
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-		public static Document[] GetDocuments(string[] sources, string language)
+		public static Document[] GetDocuments(string[] sources, string language, string? assemblyName = null)
 		{
 			if (language != LanguageNames.CSharp && language != LanguageNames.VisualBasic)
 			{
 				throw new ArgumentException("Unsupported Language");
 			}
 
-			var project = CreateProject(sources, language);
+			var project = CreateProject(sources, language, assemblyName: assemblyName);
 			var documents = project.Documents.ToArray();
 
 			if (sources.Length != documents.Length)
@@ -144,8 +144,10 @@ namespace Acuminator.Tests.Verification
 		/// <param name="language">The language the source code is in</param>
 		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[]? externalCode = null)
+		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[]? externalCode = null,
+											 string? assemblyName = null)
 		{
+			assemblyName ??= GeneratedProjectName;
 			string fileNamePrefix = GeneratedFileNameSeed;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
@@ -160,7 +162,7 @@ namespace Acuminator.Tests.Verification
 			workspace.TryApplyChanges(workspace.CurrentSolution.WithOptions(workspaceOptions));
 
 			var solution = workspace.CurrentSolution
-									.AddProject(projectId, GeneratedProjectName, GeneratedProjectName, language)
+									.AddProject(projectId, assemblyName, assemblyName, language)
 									.AddMetadataReferences(projectId, MetadataReferences);
 									
 			if (externalCode != null && externalCode.Length > 0)

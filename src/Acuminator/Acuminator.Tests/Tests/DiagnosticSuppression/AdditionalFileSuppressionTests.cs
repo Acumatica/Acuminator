@@ -21,10 +21,14 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression
 	public class AdditionalFileSuppressionTests : DiagnosticVerifier
 	{
 		/// <summary>
-		/// The suppression file name must match the assembly name that <see cref="SolutionBuilder"/> uses for test compilations
-		/// (<c>GenProject</c>), because the suppression file is matched to the project by the assembly name.
+		/// Each test uses a distinct assembly name so its entry in the process-wide, assembly-name-keyed suppression cache
+		/// cannot collide with other tests running in parallel. The suppression file is matched to the project by the
+		/// assembly name, so each suppression file is named "&lt;assembly name&gt;.acuminator".
 		/// </summary>
-		private const string SuppressionFileName = "GenProject.acuminator";
+		private const string SuppressedAssemblyName = "AdditionalFileSuppression_Suppressed";
+		private const string AnotherAssemblyName    = "AdditionalFileSuppression_AnotherAssembly";
+		private const string NoFileAssemblyName     = "AdditionalFileSuppression_NoFile";
+		private const string DisabledAssemblyName   = "AdditionalFileSuppression_Disabled";
 
 		/// <summary>
 		/// Hardcoded suppression file content for the PX1001 diagnostic reported on <c>new MyGraph()</c> in <see cref="Source"/>.
@@ -64,21 +68,24 @@ namespace Acuminator.Tests.Sources
 
 		[Fact]
 		public Task WithoutSuppressionFile_DiagnosticIsReported() =>
-			VerifyCSharpDiagnosticAsync(Source, Descriptors.PX1001_PXGraphCreateInstance.CreateFor(line: 10, column: 16));
+			VerifyCSharpDiagnosticInAssemblyAsync(NoFileAssemblyName, Source, additionalFiles: null,
+												  Descriptors.PX1001_PXGraphCreateInstance.CreateFor(line: 10, column: 16));
 
 		[Fact]
 		public Task SuppressedInAdditionalFile_DiagnosticIsNotReported() =>
-			VerifyCSharpDiagnosticAsync(Source, new[] { new InMemoryAdditionalText(SuppressionFileName, SuppressionFileContent) });
+			VerifyCSharpDiagnosticInAssemblyAsync(SuppressedAssemblyName, Source,
+				new[] { new InMemoryAdditionalText($"{SuppressedAssemblyName}.acuminator", SuppressionFileContent) });
 
 		[Fact]
 		public Task SuppressionFileForAnotherAssembly_DiagnosticIsReported() =>
-			VerifyCSharpDiagnosticAsync(Source, new[] { new InMemoryAdditionalText("SomeOtherAssembly.acuminator", SuppressionFileContent) },
-										Descriptors.PX1001_PXGraphCreateInstance.CreateFor(line: 10, column: 16));
+			VerifyCSharpDiagnosticInAssemblyAsync(AnotherAssemblyName, Source,
+				new[] { new InMemoryAdditionalText("SomeOtherAssembly.acuminator", SuppressionFileContent) },
+				Descriptors.PX1001_PXGraphCreateInstance.CreateFor(line: 10, column: 16));
 
 		[Fact]
 		public async Task SuppressionMechanismDisabled_DiagnosticIsReported()
 		{
-			var suppressionFile = new InMemoryAdditionalText(SuppressionFileName, SuppressionFileContent);
+			var suppressionFile = new InMemoryAdditionalText($"{DisabledAssemblyName}.acuminator", SuppressionFileContent);
 			var analyzerWithDisabledSuppression =
 				new PXGraphCreateInstanceAnalyzer(CodeAnalysisSettings.Default
 																	  .WithStaticAnalysisEnabled()
@@ -86,7 +93,7 @@ namespace Acuminator.Tests.Sources
 
 			var diagnostics = await GetSortedDiagnosticsAsync(new[] { Source }, LanguageNames.CSharp,
 															  analyzerWithDisabledSuppression, checkOnlyFirstDocument: true,
-															  additionalFiles: new[] { suppressionFile });
+															  additionalFiles: new[] { suppressionFile }, assemblyName: DisabledAssemblyName);
 
 			Assert.Single(diagnostics);
 			Assert.Equal(Descriptors.PX1001_PXGraphCreateInstance.Id, diagnostics[0].Id);

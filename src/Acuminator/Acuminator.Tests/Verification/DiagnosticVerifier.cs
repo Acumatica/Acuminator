@@ -54,6 +54,20 @@ namespace Acuminator.Tests.Verification
 								   checkOnlyFirstDocument: true, additionalFiles);
 
 		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer on a single source compiled into an assembly with the given name and,
+		/// optionally, additional files. A distinct assembly name lets a test isolate its entries in the process-wide
+		/// suppression cache (which is keyed by assembly name) so parallel tests do not collide.
+		/// </summary>
+		/// <param name="assemblyName">The assembly name of the test compilation.</param>
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="additionalFiles">Additional files (analyzer additional texts) passed to the analysis. Can be null.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected Task VerifyCSharpDiagnosticInAssemblyAsync(string assemblyName, string source,
+															 IEnumerable<AdditionalText>? additionalFiles, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected,
+								   checkOnlyFirstDocument: true, additionalFiles, assemblyName);
+
+		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
@@ -176,11 +190,12 @@ namespace Acuminator.Tests.Verification
 		/// </returns>
 		private async Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer,
 												  DiagnosticResult[] expected, bool checkOnlyFirstDocument,
-												  IEnumerable<AdditionalText>? additionalFiles = null)
+												  IEnumerable<AdditionalText>? additionalFiles = null,
+												  string? assemblyName = null)
 		{
 			try
 			{
-				var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, checkOnlyFirstDocument, additionalFiles)
+				var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, checkOnlyFirstDocument, additionalFiles, assemblyName)
 											.ConfigureAwait(false);
 				VerifyDiagnosticResults(diagnostics, analyzer, expected);
 			}
@@ -458,9 +473,10 @@ namespace Acuminator.Tests.Verification
 		/// </returns>
 		protected static Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language,
 																	  DiagnosticAnalyzer analyzer, bool checkOnlyFirstDocument,
-																	  IEnumerable<AdditionalText>? additionalFiles = null)
+																	  IEnumerable<AdditionalText>? additionalFiles = null,
+																	  string? assemblyName = null)
 		{
-			return GetSortedDiagnosticsFromDocumentsAsync(analyzer, SolutionBuilder.GetDocuments(sources, language),
+			return GetSortedDiagnosticsFromDocumentsAsync(analyzer, SolutionBuilder.GetDocuments(sources, language, assemblyName),
 														  checkOnlyFirstDocument, additionalFiles);
 		}
 
