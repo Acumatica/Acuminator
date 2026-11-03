@@ -1,0 +1,31 @@
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
+root = true
+
+# C# files
+[*.cs]
+
+#### Core EditorConfig Options ####
+
+# Indentation and spacing
+indent_size = 4
+indent_style = tab
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+
+# Acuminator Settings
+
+## Change the severity of all Acuminator diagnostics
+# dotnet_analyzer_diagnostic.category-Acuminator.severity = none
+
+## Change the severity of a single diagnostic
+# dotnet_diagnostic.PX1000.severity = error
+# dotnet_diagnostic.PX1016.severity = suggestion
+
+## Disable a diagnostic
+# dotnet_diagnostic.PX1099.severity = none
+
+
+# The available severity values are `error`, `warning`, `suggestion`, `silent`, `none`, and `default`. The `default` value restores the severity that Acuminator assigns to the diagnostic by default.

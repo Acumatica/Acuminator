@@ -177,7 +177,9 @@
     <Compile Include="Suppression\Comment\SOOrderProcessing.cs" />
     <Compile Include="Suppression\SOOrderBalanced.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include=".editorconfig" />
+  </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="PX.Objects.HackathonDemo.acuminator">
       <SubType>Designer</SubType>
