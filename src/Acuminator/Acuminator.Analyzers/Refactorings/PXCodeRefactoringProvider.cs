@@ -36,8 +36,6 @@ namespace Acuminator.Analyzers.Refactorings
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			AcuminatorVsixPackageLoader.EnsurePackageLoaded();
-
 			if (!_settingsProvidedExternally)
 				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values after potential package load
 

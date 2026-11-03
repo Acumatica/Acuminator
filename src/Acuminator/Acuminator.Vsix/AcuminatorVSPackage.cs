@@ -166,36 +166,6 @@ namespace Acuminator.Vsix
 		}
 #pragma warning restore CS8618
 
-		/// <summary>
-		/// Force load package. 
-		/// A hack method which is called from analyzers to ensure that the package is loaded before diagnostics are executed.
-		/// </summary>
-		/// <returns/>
-		public static async System.Threading.Tasks.Task ForceLoadPackageAsync()
-		{
-			// In unit tests this can be null or throw NRE
-			try
-			{
-				if (ThreadHelper.JoinableTaskFactory == null)
-					return;
-			}
-			catch (Exception ex)
-			{
-				return;
-			}
-
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-			IVsShell? shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
-
-			if (shell == null)
-				return;
-
-			var packageToBeLoadedGuid = new Guid(PackageGuidString);
-			shell.LoadPackage(ref packageToBeLoadedGuid, out var _);
-			await System.Threading.Tasks.TaskScheduler.Default;
-		}
-
 #pragma warning disable CS8774 // Member must have a non-null value when exiting.
 		[MemberNotNull(nameof(Instance))]
 		private static void SetupSingleton(AcuminatorVSPackage package)
