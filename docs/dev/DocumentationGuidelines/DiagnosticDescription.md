@@ -81,6 +81,19 @@ The diagnostic description contains the following sections:
 -   Has the following title: _Example of Possible Code Fix_ 
 -   Shows how the issue shown in the code example of the issue can be fixed
 
+### Example of EditorConfig Configuration
+
+- Is required
+- Has the following title: _Example of EditorConfig Configuration_
+- Contains an example of how to configure the diagnostic in an `.editorconfig` file. The example should always look like the following:
+````
+Here is an example of how to configure the PX1nnn diagnostic in an `.editorconfig` file. Read more about `.editorconfig` files in the [Support of EditorConfig Files in Acuminator](../EditorConfigSupport.md) article.
+```ini
+[*.cs]
+dotnet_diagnostic.PX1nnn.severity = none
+```
+````
+
 ### Related Articles
 
 -   Is optional
