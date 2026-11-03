@@ -131,7 +131,11 @@ namespace Acuminator.Vsix
 		private readonly Lazy<CodeMapOptionsPage?> _codeMapOptionsPage =
 			new(() => Instance.GetDialogPage(typeof(CodeMapOptionsPage)) as CodeMapOptionsPage, isThreadSafe: true);
 
-		public CodeMapOptionsPage? CodeMapOptionsPage => _codeMapOptionsPage.Value;
+		public CodeMapOptionsPage? CodeMapOptionsPage 
+		{ 
+			get; 
+			private set; 
+		}
 
 		internal AcuminatorLogger AcuminatorLogger
 		{
@@ -204,10 +208,18 @@ namespace Acuminator.Vsix
 																				   IProgress<ServiceProgressData> progress)
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
+			int currentStep = 1;
+
+			#region Initialize Logger
+			cancellationToken.ThrowIfCancellationRequested();
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitLogger, currentStep++);
+
+			InitializeLogger();
+			#endregion
 
 			#region Initialize Banned API
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep: 1);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep++);
 
 			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
 			var (deployedBannedApisFile, deployedAllowedApisFile) = DeployBannedApiFiles(MyDocumentsStorage);
@@ -215,37 +227,30 @@ namespace Acuminator.Vsix
 
 			#region Initialize Settings
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeAnalysisSettings, currentStep: 2);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeAnalysisSettings, currentStep++);
 
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
 
 			await InitializePackageSettingsAsync(deployedBannedApisFile, deployedAllowedApisFile);
 			#endregion
 
-			#region Initialize Logger
-			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitLogger, currentStep: 3);
-
-			InitializeLogger();
-			#endregion
-
 			#region Initialize CodeSnippets
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeSnippets, currentStep: 4);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeSnippets, currentStep++);
 
 			DeployCodeSnippets(MyDocumentsStorage);
 			#endregion
 
 			#region Initialize Commands and SubscribeOnEvents	
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCommands, currentStep: 5);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCommands, currentStep++);
 
 			await InitializeCommandsAsync();
 			SubscribeOnEvents();
 			#endregion
 
 			#region Suppression Manager Load
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitSuppressionManager, currentStep: 6);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitSuppressionManager, currentStep++);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			bool isSolutionOpen = await IsSolutionLoadedAsync();
@@ -256,7 +261,7 @@ namespace Acuminator.Vsix
 			}
 			#endregion
 
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_Done, currentStep: 7);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_Done, currentStep++);
 		}
 
 		private async System.Threading.Tasks.Task ReportProgressAsync(IProgress<ServiceProgressData>? progress, string progressText, 
@@ -300,7 +305,7 @@ namespace Acuminator.Vsix
 					$"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
 				throw;
 			}
-		}
+		} 
 
 		private async System.Threading.Tasks.Task InitializeCommandsAsync()
 		{
