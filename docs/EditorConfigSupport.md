@@ -88,7 +88,7 @@ dotnet_diagnostic.PX1043.severity = warning
 dotnet_diagnostic.PX1043.severity = error
 
 # Disable rules for generated and legacy code
-[{**/Legacy/**,*.Designer.cs}]
+[{**/Legacy/**,**/*.Designer.cs}]
 dotnet_analyzer_diagnostic.category-Acuminator.severity = none
 
 # Need to explicitly disable a diagnostic for generated code, because the previous entry does not apply to it according to the precedence rules.
