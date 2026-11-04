@@ -245,9 +245,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			base.FreeResources();
 
-			var currentCancellationTokenSource = Interlocked.Exchange(ref _cancellationTokenSource, value: null);
-			currentCancellationTokenSource?.Cancel();
-			currentCancellationTokenSource?.Dispose();
+			var cancellationTokenSourceToDispose = Interlocked.Exchange(ref _cancellationTokenSource, value: null);
+			cancellationTokenSourceToDispose?.Cancel();
+			cancellationTokenSourceToDispose?.Dispose();
 			DocumentModel = null;
 
 			if (Workspace != null)
