@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
-
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Vsix.Formatter;
+using Acuminator.Vsix.Utilities;
 
 using Document = Microsoft.CodeAnalysis.Document;
-using Acuminator.Vsix.Formatter;
 
 namespace Acuminator.Vsix.BqlFixer
 {
@@ -67,7 +66,9 @@ namespace Acuminator.Vsix.BqlFixer
 
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
-			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+			if (!ThreadHelper.CheckAccess())
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+
 			IWpfTextView? textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null)
@@ -85,8 +86,18 @@ namespace Acuminator.Vsix.BqlFixer
 
 			await TaskScheduler.Default;    //Go to background thread
 
-			SyntaxNode? syntaxRoot = await document.GetSyntaxRootAsync();
-			SemanticModel? semanticModel = await document.GetSemanticModelAsync();
+			SyntaxNode? syntaxRoot;
+			SemanticModel? semanticModel;
+
+			try
+			{
+				(semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync(Package.DisposalToken)
+															.ConfigureAwait(false);
+			}
+			catch (OperationCanceledException)
+			{
+				return;
+			}
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;
@@ -124,8 +135,19 @@ namespace Acuminator.Vsix.BqlFixer
 			#endregion
 			fixedRoot = new AngleBracesBqlRewriter(semanticModel).Visit(syntaxRoot);
 			var newDocument = document.WithSyntaxRoot(fixedRoot);
-			SyntaxNode? newSyntaxRoot = await newDocument.GetSyntaxRootAsync();
-			SemanticModel? newSemanticModel = await newDocument.GetSemanticModelAsync();
+
+			SyntaxNode? newSyntaxRoot;
+			SemanticModel? newSemanticModel;
+
+			try
+			{
+				(newSemanticModel, newSyntaxRoot) = await newDocument.GetSemanticModelAndRootAsync(Package.DisposalToken)
+																	 .ConfigureAwait(false);
+			}
+			catch (OperationCanceledException)
+			{
+				return;
+			}
 
 			if (newSyntaxRoot == null || newSemanticModel == null)
 				return;
