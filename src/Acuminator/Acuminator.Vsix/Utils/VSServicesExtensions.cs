@@ -48,6 +48,15 @@ namespace Acuminator.Vsix.Utilities
 			return service as TService;
 		}
 
+		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider? serviceProvider)
+		{
+			if (serviceProvider == null)
+				return null;
+
+			VisualStudioWorkspace? workspace = await serviceProvider.GetVSWorkspaceAsync();
+			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
+		}
+
 		internal static async Task<VisualStudioWorkspace?> GetVSWorkspaceAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
@@ -58,19 +67,13 @@ namespace Acuminator.Vsix.Utilities
 			return componentModel?.GetService<VisualStudioWorkspace>();
 		}
 
-		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider? serviceProvider)
-		{
-			if (serviceProvider == null)
-				return null;
-
-			VisualStudioWorkspace? workspace = await serviceProvider.GetVSWorkspaceAsync();	
-			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
-		}
-
 		internal static async Task<IOutliningManager?> GetOutliningManagerAsync(this IAsyncServiceProvider? serviceProvider, ITextView? textView)
 		{
 			if (serviceProvider == null || textView == null)
 				return null;
+
+			if (!ThreadHelper.CheckAccess())
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 			IComponentModel? componentModel = await serviceProvider.GetServiceAsync<SComponentModel, IComponentModel>(throwOnFailure: false);
 			IOutliningManagerService? outliningManagerService = componentModel?.GetService<IOutliningManagerService>();
@@ -85,6 +88,9 @@ namespace Acuminator.Vsix.Utilities
 		{
 			if (serviceProvider == null)
 				return null;
+
+			if (!ThreadHelper.CheckAccess())
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 			IVsTextManager? textManager = await serviceProvider.GetServiceAsync<SVsTextManager, IVsTextManager>(throwOnFailure: false);
 			
@@ -149,7 +155,9 @@ namespace Acuminator.Vsix.Utilities
 			if (serviceProvider == null)
 				return null;
 
-			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+			if (!ThreadHelper.CheckAccess())
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+
 			var errorService = await serviceProvider.GetServiceAsync<SVsErrorList, IVsTaskList>(throwOnFailure: false);
 
 			if (errorService == null)
