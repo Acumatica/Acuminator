@@ -114,17 +114,12 @@ namespace Acuminator.Vsix.Logger
 				return;
 			}
 
-			IWpfTextView? activeTextView = GetActiveTextViewWithTimeout(timeoutSeconds: 20);
+			IWpfTextView? activeTextView = ThreadHelper.CheckAccess() 
+				? GetActiveTextViewWithTimeout(timeoutSeconds: 10)
+				: null;
+			Document? currentDocument = activeTextView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
 
-			if (activeTextView == null)
-				return;
-
-			Document? currentDocument = activeTextView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-
-			if (currentDocument == null)
-				return;
-
-			string logMessage = CreateLogMessageFromException(exception, currentDocument.FilePath, logMode, reportedFrom, addErrorPrefix: true);
+			string logMessage = CreateLogMessageFromException(exception, currentDocument?.FilePath, logMode, reportedFrom, addErrorPrefix: true);
 			LogMessageToActivityLog(logMessage, logMode);
 		}
 
@@ -207,7 +202,7 @@ namespace Acuminator.Vsix.Logger
 			TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
 		}
 
-		private bool IsExceptionFromAcuminatorAssembly(Exception exception) =>
+		private static bool IsExceptionFromAcuminatorAssembly(Exception exception) =>
 			exception.StackTrace.Contains(AcuminatorVSPackage.PackageName) || 
 			exception.Source == AnalyzersDll || exception.Source == UtilitiesDll || exception.Source == VsixDll;
 	}
