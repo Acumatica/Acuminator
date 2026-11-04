@@ -90,8 +90,17 @@ namespace Acuminator.Vsix.Formatter
 			await TaskScheduler.Default;    //Go to background thread
 
 			BqlFormatter formatter = BqlFormatter.FromTextView(textView);
+			SemanticModel? semanticModel;
+			SyntaxNode? syntaxRoot;
 
-			var (semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync(default).ConfigureAwait(false);
+			try
+			{
+				(semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync(Package.DisposalToken).ConfigureAwait(false);
+			}
+			catch (OperationCanceledException)
+			{
+				return;
+			}
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;
