@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -15,7 +14,6 @@ using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -29,9 +27,9 @@ namespace Acuminator.Vsix.Logger
 	/// </summary>
 	internal class AcuminatorLogger : IDisposable
 	{
-		private readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
-		private readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
-		private readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
+		private static readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
+		private static readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
+		private static readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
 
 		private readonly AcuminatorVSPackage _package;
 		private readonly bool _swallowUnobservedTaskExceptions;
@@ -65,10 +63,14 @@ namespace Acuminator.Vsix.Logger
 
 		private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
 		{
-			// Skip logging numerous VS timeout exceptions to decrease contention for UI thread
 			var innerExceptions = e.Exception.Flatten().InnerExceptions;
 
-			if (innerExceptions.All(exception => exception is TimeoutException))
+			if (innerExceptions.All(exception => exception is TimeoutException))    // Skip logging numerous VS timeout exceptions to decrease contention for UI thread
+				return;
+
+			var acuminatorExceptions = innerExceptions.Where(IsExceptionFromAcuminatorAssembly).ToList(innerExceptions.Count);
+
+			if (acuminatorExceptions.Count == 0)	// Do not observe exceptions not from Acuminator
 				return;
 
 			LogMode logMode = LogMode.Error;
@@ -79,7 +81,7 @@ namespace Acuminator.Vsix.Logger
 				logMode = LogMode.Warning;
 			}
 
-			foreach (Exception exception in innerExceptions)
+			foreach (Exception exception in acuminatorExceptions)
 			{
 				LogException(exception, logOnlyFromAcuminatorAssemblies: false, logMode);
 			} 
@@ -107,8 +109,7 @@ namespace Acuminator.Vsix.Logger
 			{
 				return;
 			}
-			else if (logOnlyFromAcuminatorAssemblies &&
-					exception.Source != AnalyzersDll && exception.Source != UtilitiesDll && exception.Source != VsixDll)
+			else if (logOnlyFromAcuminatorAssemblies && !IsExceptionFromAcuminatorAssembly(exception))
 			{
 				return;
 			}
@@ -205,5 +206,9 @@ namespace Acuminator.Vsix.Logger
 			AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
 			TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
 		}
+
+		private bool IsExceptionFromAcuminatorAssembly(Exception exception) =>
+			exception.StackTrace.Contains(AcuminatorVSPackage.PackageName) || 
+			exception.Source == AnalyzersDll || exception.Source == UtilitiesDll || exception.Source == VsixDll;
 	}
 }
