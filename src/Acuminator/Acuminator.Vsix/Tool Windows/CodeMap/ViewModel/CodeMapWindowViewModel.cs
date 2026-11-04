@@ -244,7 +244,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override void FreeResources()
 		{
 			base.FreeResources();
-			_cancellationTokenSource?.Dispose();
+
+			var currentCancellationTokenSource = Interlocked.Exchange(ref _cancellationTokenSource, value: null);
+			currentCancellationTokenSource?.Cancel();
+			currentCancellationTokenSource?.Dispose();
+			DocumentModel = null;
 
 			if (Workspace != null)
 			{
@@ -404,7 +408,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				using (_cancellationTokenSource = CancellationTokenSource.CreateTokenSourceLinkedToPackage())
 				{
-					CancellationToken cancellationToken = _cancellationTokenSource.Token;
+					CancellationToken cancellationToken = _cancellationTokenSource?.Token ?? default;
 
 					if (!ThreadHelper.CheckAccess())
 					{
