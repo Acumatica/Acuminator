@@ -4,7 +4,7 @@
     <AssemblyTitle>Acuminator.Analyzers</AssemblyTitle>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>4.1.0</Version>
-    <LangVersion>13.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <SignAssembly>False</SignAssembly>
     <Company>Acumatica, Inc.</Company>
     <Description>The static analyzers for Acumatica</Description>

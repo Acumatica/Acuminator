@@ -11,7 +11,7 @@
     <Copyright>Copyright © 2017-$([System.DateTime]::Now.Year) $(Company)</Copyright>
     
     <SignAssembly>False</SignAssembly>
-    <LangVersion>13.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <RestorePackagesPath>../../packages</RestorePackagesPath>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>

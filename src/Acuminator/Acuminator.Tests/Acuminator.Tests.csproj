@@ -6,7 +6,7 @@
     <!-- Target framework must be net48 because net481 is not supported by our build system -->
     <TargetFramework>net48</TargetFramework>
     <Version>4.1.0</Version>
-    <LangVersion>13.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <Nullable>enable</Nullable>
     <WarningLevel>9999</WarningLevel>
     <NeutralLanguage>en</NeutralLanguage>
