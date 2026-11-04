@@ -162,7 +162,9 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 		if (BackgroundTagging != null)
 		{
-			BackgroundTagging.CancelTagging();   //Cancel currently running task
+			//Cancel and dispose the currently running tagging task
+			BackgroundTagging.CancelTagging();
+			BackgroundTagging.Dispose();
 			BackgroundTagging = null;
 		}
 
@@ -248,7 +250,8 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 
 			_roslynWorkspaceProvider.Dispose();
 		}
-		
+
+		BackgroundTagging?.CancelTagging();
 		BackgroundTagging?.Dispose();
 		ClassificationTagsCache.Reset();
 		OutliningsTagsCache.Reset();
