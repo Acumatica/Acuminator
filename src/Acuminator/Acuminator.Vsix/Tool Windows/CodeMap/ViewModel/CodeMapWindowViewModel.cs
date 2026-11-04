@@ -402,7 +402,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			try
 			{
-				using (_cancellationTokenSource = new CancellationTokenSource())
+				using (_cancellationTokenSource = CancellationTokenSource.CreateTokenSourceLinkedToPackage())
 				{
 					CancellationToken cancellationToken = _cancellationTokenSource.Token;
 

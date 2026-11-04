@@ -7,15 +7,14 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Logger;
-
-using Shell = Microsoft.VisualStudio.Shell;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.Coloriser
 {
 	internal class BackgroundTagging : IDisposable
 	{
 		private static TaskScheduler? _vsTaskScheduler; 
-		private CancellationTokenSource _cancellationTokenSource = new();
+		private CancellationTokenSource _cancellationTokenSource = CancellationTokenSource.CreateTokenSourceLinkedToPackage();
 
 		public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 

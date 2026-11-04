@@ -141,10 +141,12 @@ namespace Acuminator.Vsix.Logger
 		{
 			try
 			{
-				using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+				using var ctsByTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+				using var ctsByTimeoutAndPackage = 
+					CancellationTokenSource.CreateLinkedTokenSource(ctsByTimeout.Token, AcuminatorVSPackage.Instance?.DisposalToken ?? default);
 
 				var joinableTask = AcuminatorVSPackage.JTF.RunAsync(() => _package.GetWpfTextViewAsync());
-				var activeTextView = joinableTask.Join(cts.Token);
+				var activeTextView = joinableTask.Join(ctsByTimeoutAndPackage.Token);
 				return activeTextView;
 			}
 			catch
