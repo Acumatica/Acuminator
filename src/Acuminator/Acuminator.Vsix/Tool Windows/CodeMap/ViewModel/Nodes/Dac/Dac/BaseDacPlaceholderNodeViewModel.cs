@@ -36,7 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#endregion
 
 		public BaseDacPlaceholderNodeViewModel(DacOrDacExtInfoBase dacOrDacExtInfo, DacNodeViewModel containingDacNode, 
-											   TreeNodeViewModel parent, Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+											   TreeNodeViewModel parent, ExpandCreatedNodesFunction isExpandedCalculator) : 
 										base(containingDacNode.CheckIfNull().Tree, parent, isExpandedCalculator)
 		{
 			DacOrDacExtInfo	  = dacOrDacExtInfo.CheckIfNull();

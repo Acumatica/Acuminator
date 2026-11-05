@@ -10,7 +10,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class DacFieldAttributeNodeViewModel : AttributeNodeViewModel<DacFieldAttributeInfo>
 	{
 		public DacFieldAttributeNodeViewModel(TreeNodeViewModel parent, DacFieldAttributeInfo attributeInfo, 
-											  Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+											  ExpandCreatedNodesFunction isExpandedCalculator) :
 										 base(parent, attributeInfo, isExpandedCalculator)
 		{
 			

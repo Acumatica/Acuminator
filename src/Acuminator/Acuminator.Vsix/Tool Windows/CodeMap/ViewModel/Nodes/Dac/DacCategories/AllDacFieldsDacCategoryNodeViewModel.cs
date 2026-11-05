@@ -17,7 +17,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override bool AllowNavigation => true;
 
 		public AllDacFieldsDacCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, 
-													Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+													ExpandCreatedNodesFunction isExpandedCalculator) : 
 												base(dacViewModel, parent, DacMemberCategory.AllDacFields, isExpandedCalculator)
 		{
 		}

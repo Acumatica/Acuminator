@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public AttributePlacement Placement => AttributeInfo.Placement;
 
-		protected AttributeNodeViewModel(TreeNodeViewModel parent, AttributeInfoBase attributeInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+		protected AttributeNodeViewModel(TreeNodeViewModel parent, AttributeInfoBase attributeInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 									base(parent?.Tree!, parent, isExpandedCalculator)
 		{
 			AttributeInfo = attributeInfo.CheckIfNull();

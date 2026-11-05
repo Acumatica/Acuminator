@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo,
-								 Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+								 ExpandCreatedNodesFunction isExpandedCalculator) :
 							base(viewCategoryVM, viewCategoryVM, viewInfo, isExpandedCalculator)
 		{
 			NodeIcon = GetIcon();

@@ -17,7 +17,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.BaseMemberOverrideGraphCategory;
 
 		public GraphBaseMemberOverridesCategoryNodeViewModel(GraphNodeViewModel graphViewModel, TreeNodeViewModel parent,
-															 Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+															 ExpandCreatedNodesFunction isExpandedCalculator) : 
 														base(graphViewModel, parent, GraphMemberCategory.BaseMemberOverride, isExpandedCalculator)
 		{		
 		}

@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
 		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, DacMemberCategory dacCategoryType,
-												 Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+												 ExpandCreatedNodesFunction isExpandedCalculator) : 
 											base(dacViewModel?.Tree!, parent, isExpandedCalculator)
 		{
 			DacViewModel = dacViewModel!;

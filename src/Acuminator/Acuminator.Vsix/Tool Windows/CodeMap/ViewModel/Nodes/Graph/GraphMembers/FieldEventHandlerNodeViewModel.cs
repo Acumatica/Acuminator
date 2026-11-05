@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public FieldEventHandlerNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventHandlerInfo eventHandlerInfo,
-											  Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+											  ExpandCreatedNodesFunction isExpandedCalculator) :
 										 base(dacFieldVM?.GraphEventHandlersCategoryVM!, dacFieldVM!, eventHandlerInfo, isExpandedCalculator)
 		{
 			DacFieldVM = dacFieldVM!;

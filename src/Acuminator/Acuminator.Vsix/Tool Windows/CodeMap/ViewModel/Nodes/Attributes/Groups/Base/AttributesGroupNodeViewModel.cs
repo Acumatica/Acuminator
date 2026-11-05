@@ -40,7 +40,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.DisplayedChildren => DisplayedChildren;
 
-		protected AttributesGroupNodeViewModel(TreeNodeViewModel parent, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+		protected AttributesGroupNodeViewModel(TreeNodeViewModel parent, ExpandCreatedNodesFunction isExpandedCalculator) :
 										  base(parent?.Tree!, parent, isExpandedCalculator)
 		{
 			

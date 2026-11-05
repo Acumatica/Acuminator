@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public IsActiveMethodInfo IsActiveMethodInfo => (IsActiveMethodInfo)MemberInfo;
 
 		public IsActiveGraphMethodNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
-												IsActiveMethodInfo isActiveMethodInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+												IsActiveMethodInfo isActiveMethodInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 										   base(graphInitializationAndActivationCategoryVM, isActiveMethodInfo, isExpandedCalculator)
 		{
 		}

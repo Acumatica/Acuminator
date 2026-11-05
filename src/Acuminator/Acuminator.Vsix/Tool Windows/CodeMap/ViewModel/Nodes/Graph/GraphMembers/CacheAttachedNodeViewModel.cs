@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public CacheAttachedNodeViewModel(DacGroupingNodeBaseViewModel dacVM, GraphCacheAttachedEventHandlerInfo eventInfo,
-										  Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+										  ExpandCreatedNodesFunction isExpandedCalculator) :
 									 base(dacVM?.GraphEventHandlersCategoryVM!, dacVM!, eventInfo, isExpandedCalculator)
 		{
 			DacVM = dacVM!;

@@ -15,7 +15,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public DacGroupingNodeForRowEventHandlerViewModel(GraphEventHandlerCategoryNodeViewModel graphEventHandlersCategoryVM, string dacName,
 														  IEnumerable<GraphRowEventHandlerInfo> rowEventHandlers,
-														  Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+														  ExpandCreatedNodesFunction isExpandedCalculator) :
 													 base(graphEventHandlersCategoryVM, dacName, isExpandedCalculator)
 		{
 			RowEventHandlers = rowEventHandlers?.ToImmutableArray() ?? ImmutableArray.Create<GraphRowEventHandlerInfo>(); 

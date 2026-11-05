@@ -8,7 +8,7 @@ using Acuminator.Utilities.Roslyn.Semantic.Dac;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class AuditDacFieldNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
-											DacFieldInfo fieldInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+											DacFieldInfo fieldInfo, ExpandCreatedNodesFunction isExpandedCalculator) : 
 						DacFieldNodeViewModelBase(dacMemberCategoryVM, parent, fieldInfo, isExpandedCalculator)
 	{
 		public override Icon NodeIcon => Icon.DacAuditField;

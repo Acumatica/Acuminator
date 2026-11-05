@@ -24,7 +24,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected IsActiveGraphMethodNodeViewModelBase(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
 													   NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol> isActiveMethodMemberInfo,
-													   Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+													   ExpandCreatedNodesFunction isExpandedCalculator) :
 												  base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM,
 													   isActiveMethodMemberInfo, isExpandedCalculator)
 		{

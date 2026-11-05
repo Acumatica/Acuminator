@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public ActionInfo ActionInfo => (MemberInfo as ActionInfo)!;
 
 		public ActionNodeViewModel(ActionCategoryNodeViewModel actionCategoryVM, ActionInfo actionInfo,
-								   Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+								   ExpandCreatedNodesFunction isExpandedCalculator) :
 							  base(actionCategoryVM, actionCategoryVM, actionInfo, isExpandedCalculator)
 		{
 		}

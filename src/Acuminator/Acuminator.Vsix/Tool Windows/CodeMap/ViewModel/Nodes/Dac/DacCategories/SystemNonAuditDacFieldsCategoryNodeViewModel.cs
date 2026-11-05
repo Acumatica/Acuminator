@@ -18,7 +18,7 @@ public class SystemNonAuditDacFieldsCategoryNodeViewModel : DacFieldCategoryNode
 	public override Icon NodeIcon => Icon.DacSystemNonAuditFieldsCategory;
 
 	public SystemNonAuditDacFieldsCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent,
-														Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+														ExpandCreatedNodesFunction isExpandedCalculator) : 
 												   base(dacViewModel, parent, DacMemberCategory.SystemNonAuditDacFields, isExpandedCalculator)
 	{
 	}

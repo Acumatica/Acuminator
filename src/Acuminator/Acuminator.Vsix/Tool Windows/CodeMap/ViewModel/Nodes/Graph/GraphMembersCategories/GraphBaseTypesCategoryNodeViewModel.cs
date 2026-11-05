@@ -22,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public IReadOnlyList<GraphExtensionInfo> BaseGraphExtensionInfos { get; }
 
 		public GraphBaseTypesCategoryNodeViewModel(GraphNodeViewModel graphNodeViewModel, TreeNodeViewModel parent,
-												   Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+												   ExpandCreatedNodesFunction isExpandedCalculator) : 
 											  base(graphNodeViewModel, parent, GraphMemberCategory.BaseTypes, isExpandedCalculator)
 		{
 			if (GraphViewModel.CodeMapGraphModel.GraphType == GraphType.PXGraph)

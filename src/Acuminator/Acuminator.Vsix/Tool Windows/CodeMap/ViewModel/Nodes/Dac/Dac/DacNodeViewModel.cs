@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override DacOrDacExtInfoBase DacOrDacExtInfo => DacModel.DacOrDacExtInfo;
 
 		public DacNodeViewModel(DacSemanticModelForCodeMap dacModel, TreeViewModel tree, TreeNodeViewModel? parent,
-								Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+								ExpandCreatedNodesFunction isExpandedCalculator) : 
 						   base(tree, parent, isExpandedCalculator)
 		{
 			DacModelForCodeMap = dacModel.CheckIfNull();

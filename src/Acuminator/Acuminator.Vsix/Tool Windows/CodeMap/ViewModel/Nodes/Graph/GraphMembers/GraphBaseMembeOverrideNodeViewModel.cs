@@ -32,7 +32,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public GraphBaseMembeOverrideNodeViewModel(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategoryVM, 
-												   BaseMemberOverrideInfo baseMemberOverrideInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+												   BaseMemberOverrideInfo baseMemberOverrideInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 											  base(graphBaseMemberOverridesCategoryVM, graphBaseMemberOverridesCategoryVM, baseMemberOverrideInfo, 
 												   isExpandedCalculator)
 		{

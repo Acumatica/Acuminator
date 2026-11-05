@@ -15,7 +15,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override bool AllowNavigation => true;
 
 		public ViewCategoryNodeViewModel(GraphNodeViewModel graphViewModel, TreeNodeViewModel parent, 
-										 Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+										 ExpandCreatedNodesFunction isExpandedCalculator) : 
 									base(graphViewModel, parent, GraphMemberCategory.View, isExpandedCalculator)
 		{			
 		}
