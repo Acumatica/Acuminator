@@ -117,7 +117,17 @@ namespace Acuminator.Vsix.Logger
 			IWpfTextView? activeTextView = ThreadHelper.CheckAccess() 
 				? GetActiveTextViewWithTimeout(timeoutSeconds: 10)
 				: null;
-			Document? currentDocument = activeTextView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+
+			Document? currentDocument;
+
+			try
+			{
+				currentDocument = activeTextView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+			}
+			catch
+			{
+				currentDocument = null;
+			}
 
 			string logMessage = CreateLogMessageFromException(exception, currentDocument?.FilePath, logMode, reportedFrom, addErrorPrefix: true);
 			LogMessageToActivityLog(logMessage, logMode);
