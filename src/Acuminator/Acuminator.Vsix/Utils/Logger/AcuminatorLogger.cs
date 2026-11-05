@@ -203,7 +203,7 @@ namespace Acuminator.Vsix.Logger
 		}
 
 		private static bool IsExceptionFromAcuminatorAssembly(Exception exception) =>
-			exception.StackTrace?.Contains(AcuminatorVSPackage.PackageName) == true || 
-			exception.Source == AnalyzersDll || exception.Source == UtilitiesDll || exception.Source == VsixDll;
+			exception.Source == AnalyzersDll || exception.Source == UtilitiesDll || exception.Source == VsixDll ||
+			exception.StackTrace?.Contains(AcuminatorVSPackage.PackageName) == true;
 	}
 }
