@@ -381,15 +381,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (onlyActiveDocumentWasChanged)
 			{
-				var newRoot = await changedDocument.GetSyntaxRootAsync(AcuminatorVSPackage.Instance?.DisposalToken ?? default).ConfigureAwait(false);
-				recalculateCodeMapMode = newRoot == null
-					? CodeMapRefreshMode.Clear
-					: CodeMapRefreshMode.Recalculate;
-
-				if (newRoot != null && Tree != null)
+				try
 				{
-					recalculateCodeMapMode = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot,
-																							  changedDocument, AcuminatorVSPackage.Instance?.DisposalToken ?? default);
+					var newRoot = await changedDocument.GetSyntaxRootAsync(AcuminatorVSPackage.Instance?.DisposalToken ?? default).ConfigureAwait(false);
+					recalculateCodeMapMode = newRoot == null
+						? CodeMapRefreshMode.Clear
+						: CodeMapRefreshMode.Recalculate;
+
+					if (newRoot != null && Tree != null)
+					{
+						recalculateCodeMapMode = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot,
+																								  changedDocument, AcuminatorVSPackage.Instance?.DisposalToken ?? default);
+					}
+				}
+				catch (OperationCanceledException)
+				{
+					// If the package disposal token is canceled, return unconditionally to avoid throwing an exception during VS shutdown
+					return;
 				}
 			}
 			else
