@@ -457,7 +457,8 @@ namespace Acuminator.Vsix
 
 		private async System.Threading.Tasks.Task InitializePackageSettingsAsync(string? deployedBannedApisFile, string? deployedAllowedApisFile)
 		{
-
+			// Force load Code Map settings page during the package initialization
+			_ = await GetCodeMapOptionsPageAsync();
 			var generalOptionsPage = await GetGeneralOptionsPageAsync();
 
 			CodeAnalysisSettings codeAnalysisSettings;
