@@ -381,7 +381,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (onlyActiveDocumentWasChanged)
 			{
-				var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
+				var newRoot = await changedDocument.GetSyntaxRootAsync(AcuminatorVSPackage.Instance?.DisposalToken ?? default).ConfigureAwait(false);
 				recalculateCodeMapMode = newRoot == null
 					? CodeMapRefreshMode.Clear
 					: CodeMapRefreshMode.Recalculate;
@@ -389,7 +389,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				if (newRoot != null && Tree != null)
 				{
 					recalculateCodeMapMode = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot,
-																							  changedDocument, CancellationToken ?? default);
+																							  changedDocument, AcuminatorVSPackage.Instance?.DisposalToken ?? default);
 				}
 			}
 			else
@@ -420,11 +420,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (DocumentModel == null)
 				return;
 
+			var currentCts = CancellationTokenSource.CreateTokenSourceLinkedToPackage();
+			var previousCts = Interlocked.Exchange(ref _cancellationTokenSource, currentCts);
+			previousCts?.CancelSafely();														// cancel only; its own using disposes it
+
 			try
 			{
-				using (_cancellationTokenSource = CancellationTokenSource.CreateTokenSourceLinkedToPackage())
+				using (currentCts)
 				{
-					CancellationToken cancellationToken = _cancellationTokenSource?.Token ?? default;
+					CancellationToken cancellationToken = currentCts.Token;
 
 					// Go to main UI thread
 					if (!ThreadHelper.CheckAccess())
@@ -477,8 +481,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			finally
 			{
-				IsCalculating = false;
-				_cancellationTokenSource = null;
+				Interlocked.CompareExchange(ref _cancellationTokenSource, value: null, comparand: currentCts);
+
+				if (_cancellationTokenSource == null)	// The final build operation clears the flag
+					IsCalculating = false;
 			}
 		}
 
