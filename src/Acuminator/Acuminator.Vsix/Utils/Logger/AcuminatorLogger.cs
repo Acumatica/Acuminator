@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
@@ -27,10 +25,6 @@ namespace Acuminator.Vsix.Logger
 	/// </summary>
 	internal class AcuminatorLogger : IDisposable
 	{
-		private static readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
-		private static readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
-		private static readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
-
 		private readonly AcuminatorVSPackage _package;
 		private readonly bool _swallowUnobservedTaskExceptions;
 
@@ -213,7 +207,6 @@ namespace Acuminator.Vsix.Logger
 		}
 
 		private static bool IsExceptionFromAcuminatorAssembly(Exception exception) =>
-			exception.Source == AnalyzersDll || exception.Source == UtilitiesDll || exception.Source == VsixDll ||
 			exception.StackTrace?.Contains(AcuminatorVSPackage.PackageName) == true;
 	}
 }
