@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Settings;
+using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-
-using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.Coloriser;
 
@@ -144,7 +143,9 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	/// </returns>
 	public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
 	{
-		if (requestedSpans?.Count is null or 0 || AcuminatorVSPackage.Instance?.ColoringEnabled != true || !HasReferenceToAcumaticaPlatform)
+		bool coloringEnabled = GeneralOptionsPage?.ColoringEnabled ?? Constants.Settings.Coloring.ColoringEnabledDefault;
+
+		if (requestedSpans?.Count is null or 0 || !coloringEnabled || !HasReferenceToAcumaticaPlatform)
 			return [];
 
 		var workspace = _roslynWorkspaceProvider.Workspace; 
