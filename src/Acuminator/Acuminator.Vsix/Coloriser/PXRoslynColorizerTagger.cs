@@ -145,7 +145,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	{
 		bool coloringEnabled = GeneralOptionsPage?.ColoringEnabled ?? Constants.Settings.Coloring.ColoringEnabledDefault;
 
-		if (requestedSpans?.Count is null or 0 || !coloringEnabled || !HasReferenceToAcumaticaPlatform)
+		if (requestedSpans?.Count is null or 0 || !coloringEnabled || !HasReferenceToAcumaticaPlatform || Disposed)
 			return [];
 
 		var workspace = _roslynWorkspaceProvider.Workspace; 

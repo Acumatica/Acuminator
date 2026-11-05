@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
 		{ 
-			if (requestedSpans?.Count is null or 0)
+			if (requestedSpans?.Count is null or 0 || Disposed)
 				return [];
 
 			bool useBqlOutlining = GeneralOptionsPage?.UseBqlOutlining ?? Constants.Settings.Outlining.UseBqlOutliningDefault;

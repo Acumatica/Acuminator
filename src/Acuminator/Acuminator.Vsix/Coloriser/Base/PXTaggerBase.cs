@@ -26,6 +26,8 @@ namespace Acuminator.Vsix.Coloriser
 		public event EventHandler<SnapshotSpanEventArgs>? TagsChanged;
 #pragma warning restore CS0067
 
+		protected bool Disposed { get; private set; }
+
 		protected ITextBuffer Buffer { get; }
 
 		protected internal ITextSnapshot? Snapshot { get; private set; }
@@ -63,7 +65,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		private async Task InitializeOptionsPageAsync()
 		{
-			if (GeneralOptionsPage != null || AcuminatorVSPackage.Instance == null)
+			if (GeneralOptionsPage != null || AcuminatorVSPackage.Instance == null || Disposed)
 				return;
 
 			GeneralOptionsPage = await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
@@ -73,7 +75,7 @@ namespace Acuminator.Vsix.Coloriser
 
 		private void SubscribeOnColoringSettingChangedEvent()
 		{
-			if (GeneralOptionsPage != null && SubscribedToSettingsChanges)
+			if (GeneralOptionsPage != null && SubscribedToSettingsChanges && !Disposed)
 			{
 				GeneralOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
 			}
@@ -107,6 +109,9 @@ namespace Acuminator.Vsix.Coloriser
 		/// <param name="calledFrom">(Optional) The method raising the tag changed event.</param>
 		protected void RaiseTagsChangedAsyncAndForget([CallerMemberName] string? calledFrom = null)
 		{
+			if (Disposed)
+				return;
+
 			if (ThreadHelper.CheckAccess())
 				RaiseTagsChanged();
 			else
@@ -123,6 +128,9 @@ namespace Acuminator.Vsix.Coloriser
 
 		internal async Task RaiseTagsChangedAsync()
 		{
+			if (Disposed)
+				return;
+
 			if (!ThreadHelper.CheckAccess())
 			{
 				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
@@ -133,6 +141,9 @@ namespace Acuminator.Vsix.Coloriser
 
 		internal void RaiseTagsChanged()
 		{
+			if (Disposed)
+				return;
+
 			if (!ThreadHelper.CheckAccess())
 			{
 				Debug.Fail("RaiseTagsChanged should be called from the UI thread. " + 
@@ -161,6 +172,7 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			Type taggerType = GetType();
 			Buffer.Properties.RemoveProperty(taggerType);
+			Disposed = true;
 			_disposedNotification.CurrentTextDocumentDisposed -= CleanupOnTextDocumentDisposed;
 
 			if (GeneralOptionsPage != null && SubscribedToSettingsChanges)
