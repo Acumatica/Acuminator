@@ -100,7 +100,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private TooltipInfo CalculateAttributeTooltip()
 		{
-			var cancellationToken = Tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken;
+			var cancellationToken = AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 			var attributeListNode = AttributeInfo.AttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
 			string? tooltip;
 

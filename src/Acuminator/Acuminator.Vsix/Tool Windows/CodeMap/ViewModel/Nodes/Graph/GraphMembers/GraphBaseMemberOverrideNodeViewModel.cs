@@ -62,7 +62,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private string? GetNameForOverriddenGraphEventHandler(IMethodSymbol graphEventHandler)
 		{
-			var methodNode = graphEventHandler.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default) as MethodDeclarationSyntax;
+			var methodNode = graphEventHandler.GetSyntax(AcuminatorVSPackage.Instance?.DisposalToken ?? default) as MethodDeclarationSyntax;
 
 			if (methodNode == null)
 				return null;

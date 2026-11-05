@@ -106,8 +106,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public FilterViewModel FilterVM { get; }
 
-		public CancellationToken? CancellationToken => _cancellationTokenSource?.Token;
-
 		private bool _isCalculating;
 
 		public bool IsCalculating

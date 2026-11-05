@@ -99,7 +99,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
-			SyntaxNode? viewSyntaxNode = ViewInfo.Symbol.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default);
+			SyntaxNode? viewSyntaxNode = ViewInfo.Symbol.GetSyntax(AcuminatorVSPackage.Instance?.DisposalToken ?? default);
 
 			switch (viewSyntaxNode)
 			{

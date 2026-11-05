@@ -187,7 +187,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected bool TryNavigateToItemWithVisualStudioWorkspace(ISymbol symbol)
 		{
-			CancellationToken cancellation = Tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken;
+			CancellationToken cancellation = AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 
 			if (Tree.CodeMapViewModel.Workspace is VisualStudioWorkspace workspace && Tree.CodeMapViewModel.Document?.Project is { } project)
 				return workspace.TryGoToDefinition(symbol, project, cancellation);
