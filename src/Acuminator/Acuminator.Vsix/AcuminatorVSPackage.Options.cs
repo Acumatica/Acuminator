@@ -37,7 +37,16 @@ namespace Acuminator.Vsix
 
 			// We are on main thread here, so we can safely call GetDialogPage to obtain the options page.
 			// Also there is no need of thread-safety concerns because only one thread can access this code at a time due to the main thread synchronization.
-			_generalOptionsPage = GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage;
+			try
+			{
+				_generalOptionsPage = GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage;
+			}
+			catch (Exception e)
+			{
+				_generalOptionsPage = null;
+				AcuminatorLogger?.LogException(e, logOnlyFromAcuminatorAssemblies: false, Logger.LogMode.Warning);
+			}
+
 			return _generalOptionsPage;
 		}
 
@@ -63,7 +72,16 @@ namespace Acuminator.Vsix
 
 			// We are on main thread here, so we can safely call GetDialogPage to obtain the options page.
 			// Also there is no need of thread-safety concerns because only one thread can access this code at a time due to the main thread synchronization.
-			_codeMapOptionsPage = GetDialogPage(typeof(CodeMapOptionsPage)) as CodeMapOptionsPage;
+			try
+			{
+				_codeMapOptionsPage = GetDialogPage(typeof(CodeMapOptionsPage)) as CodeMapOptionsPage;
+			}
+			catch (Exception e)
+			{
+				_codeMapOptionsPage = null;
+				AcuminatorLogger?.LogException(e, logOnlyFromAcuminatorAssemblies: false, Logger.LogMode.Warning);
+			}
+
 			return _codeMapOptionsPage;
 		}
 
