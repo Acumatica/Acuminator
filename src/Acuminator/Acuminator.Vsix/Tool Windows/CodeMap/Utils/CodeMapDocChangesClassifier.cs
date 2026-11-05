@@ -103,15 +103,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var changeScope = base.GetChangeScopeFromPropertyBaseSyntaxNode(propertyNodeBase, textChange, containingModeChange);
 
 			//We look for changes in DAC property attributes
+			var documentModelSnapshot = _codeMapViewModel.DocumentModel;
+
 			if (changeScope != ChangeInfluenceScope.Attributes || propertyNodeBase is not PropertyDeclarationSyntax changedProperty ||
-				_codeMapViewModel.DocumentModel?.CodeMapSemanticModels == null)
+				documentModelSnapshot?.CodeMapSemanticModels == null)
 			{
 				return changeScope;
 			}
 
-			for (int i = 0; i < _codeMapViewModel.DocumentModel.CodeMapSemanticModels.Count; i++)
+			for (int i = 0; i < documentModelSnapshot.CodeMapSemanticModels.Count; i++)
 			{
-				DacSemanticModel? dacSemanticModel = _codeMapViewModel.DocumentModel.CodeMapSemanticModels[i] switch
+				DacSemanticModel? dacSemanticModel = documentModelSnapshot.CodeMapSemanticModels[i] switch
 				{
 					DacSemanticModelForCodeMap dacModelForCodeMap => dacModelForCodeMap.DacModel,
 					DacSemanticModel dacModel					  => dacModel,

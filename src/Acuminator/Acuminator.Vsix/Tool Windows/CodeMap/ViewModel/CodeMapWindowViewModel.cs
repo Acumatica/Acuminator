@@ -349,22 +349,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, e.DocumentId, onlyActiveDocumentWasChanged: true)
 						.ConfigureAwait(false);
 			}
-			else if (Document?.Project != null &&
-					(Document.Project.Id == e.ProjectId || !Document.Project.IsFullyLoadedProject()) &&
+			else if (Document?.Project is { } project &&
+					(project.Id == e.ProjectId || !project.IsFullyLoadedProject()) &&
 					(e.IsProjectStatusInSolutionChanged() || e.IsProjectMetadataChanged()))
 			{
-				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, Document.Id, onlyActiveDocumentWasChanged: false)
+				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, Document?.Id, onlyActiveDocumentWasChanged: false)
 						.ConfigureAwait(false);
 			}
 		}
 
 		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, Microsoft.CodeAnalysis.Solution newSolution,
-													   DocumentId activeDocumentID, bool onlyActiveDocumentWasChanged)
+													   DocumentId? activeDocumentID, bool onlyActiveDocumentWasChanged)
 		{
+			if (activeDocumentID == null)
+			{
+				ClearCodeMap();
+				return;
+			}
+
 			Workspace = newWorkspace;
 			Document? changedDocument = newSolution.GetDocument(activeDocumentID);
-			Document? oldDocument = Document;
-			SyntaxNode? oldRoot = DocumentModel?.Root;
+			var documentModelSnapshot = DocumentModel;
+			Document? oldDocument = documentModelSnapshot?.Document;
+			SyntaxNode? oldRoot = documentModelSnapshot?.Root;
 
 			if (changedDocument == null || oldDocument == null || oldRoot == null)
 			{
@@ -395,9 +402,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			ClearCodeMap();
 
-			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
+			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView is { } documentWpfTextView)
 			{
-				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
+				DocumentModel = new DocumentModel(documentWpfTextView, changedDocument);
 				var buildCodeMapAction = () => BuildCodeMapAsync();
 				buildCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
 			}
@@ -439,12 +446,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					// Go to background thread to avoid blocking UI thread during code map calculation
 					IsCalculating = true;
 					await TaskScheduler.Default;
+					
+					var documentModelSnapshot = DocumentModel;
 
-					bool isSuccess = await DocumentModel.LoadCodeFileDataAsync(RootSymbolsRetriever, SemanticModelFactory, cancellationToken)
-														.ConfigureAwait(false);
-
-					if (!isSuccess || cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
+					if (documentModelSnapshot == null)
 						return;
+
+					bool isSuccess = await documentModelSnapshot.LoadCodeFileDataAsync(RootSymbolsRetriever, SemanticModelFactory, cancellationToken)
+																.ConfigureAwait(false);
+
+					if (!isSuccess || cancellationToken.IsCancellationRequested || !documentModelSnapshot.IsCodeFileDataLoaded || 
+						!ReferenceEquals(documentModelSnapshot, DocumentModel))
+					{
+						return;
+					}
 
 					FilterOptions filterOptions = FilterVM.CreateFilterOptionsFromCurrentFilter();
 					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, filterOptions, cancellationToken);
