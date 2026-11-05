@@ -38,25 +38,45 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected bool CacheCheckingEnabled { get; }
 
+		protected GeneralOptionsPage? GeneralOptionsPage { get; private set; }
+
 		protected PXTaggerBase(ITextBuffer buffer, ITextDocumentFactoryService textDocumentFactory, 
 							   bool subscribeToSettingsChanges, bool useCacheChecking)
 		{
 			Buffer = buffer.CheckIfNull();
 			SubscribedToSettingsChanges = subscribeToSettingsChanges;
 			CacheCheckingEnabled = useCacheChecking;
+			GeneralOptionsPage = AcuminatorVSPackage.Instance?.TryGetGeneralOptionsPage();
 
-			if (SubscribedToSettingsChanges)
+			if (GeneralOptionsPage == null)
 			{
-				var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
-
-				if (genOptionsPage != null)
-				{
-					genOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
-				}
+				var initializeOptionsAsync = () => InitializeOptionsPageAsync();
+				initializeOptionsAsync
+					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{GetType().Name}/{nameof(InitializeOptionsPageAsync)}");
 			}
+			else
+				SubscribeOnColoringSettingChangedEvent();
 
 			_disposedNotification = new TextDocumentDisposedNotification(textDocumentFactory, Buffer);
 			_disposedNotification.CurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
+		}
+
+		private async Task InitializeOptionsPageAsync()
+		{
+			if (GeneralOptionsPage != null || AcuminatorVSPackage.Instance == null)
+				return;
+
+			GeneralOptionsPage = await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+
+			SubscribeOnColoringSettingChangedEvent();
+		}
+
+		private void SubscribeOnColoringSettingChangedEvent()
+		{
+			if (GeneralOptionsPage != null && SubscribedToSettingsChanges)
+			{
+				GeneralOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
+			}
 		}
 
 		protected static IEnumerable<ITagSpan<TTag>> GetIntersectionWithRequestedTags<TTag>(
@@ -143,14 +163,9 @@ namespace Acuminator.Vsix.Coloriser
 			Buffer.Properties.RemoveProperty(taggerType);
 			_disposedNotification.CurrentTextDocumentDisposed -= CleanupOnTextDocumentDisposed;
 
-			if (!SubscribedToSettingsChanges)
-				return;
-
-			var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
-
-			if (genOptionsPage != null)
+			if (GeneralOptionsPage != null && SubscribedToSettingsChanges)
 			{
-				genOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
+				GeneralOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
 			}
 		}
 	}
