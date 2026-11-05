@@ -163,11 +163,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual bool AreDetailsVisible => ShouldShowDetails();
 
-		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel? parent, Func<TreeNodeViewModel, bool> isExpandedCalculator)
+		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel? parent, ExpandCreatedNodesFunction isExpandedCalculator)
 		{
-			Tree 		= tree.CheckIfNull();
-			Parent 		= parent;
-			_isExpanded = isExpandedCalculator?.Invoke(this) ?? false;
+			Tree   = tree.CheckIfNull();
+			Parent = parent;
+
+			bool expandAttributeNodes = tree.CodeMapViewModel.CodeMapOptions?.ExpandAttributeNodes ?? 
+										Constants.Settings.CodeMap.ExpandAttributeNodesDefault;
+			bool expandRegularNodes = tree.CodeMapViewModel.CodeMapOptions?.ExpandRegularNodes ?? 
+									  Constants.Settings.CodeMap.ExpandRegularNodesDefault;
+			bool expandRootNotes = tree.CodeMapViewModel.CodeMapOptions?.ExpandRootNodes ?? 
+								   Constants.Settings.CodeMap.ExpandRootNodesDefault;
+
+			_isExpanded = isExpandedCalculator?.Invoke(this, expandAttributeNodes: expandAttributeNodes,
+														expandRegularNodes: expandRegularNodes, 
+														expandRootNotes: expandRootNotes) ?? false;
 
 			AllChildren.CollectionChanged += AllChildren_CollectionChanged;
 			DisplayedChildren = new ReadOnlyObservableCollection<TreeNodeViewModel>(_mutableDisplayedChildren);

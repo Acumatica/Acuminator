@@ -147,7 +147,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public Command SortNodeDescendantsByDeclarationOrderDescendingCommand { get; }
 		#endregion
 
-		private CodeMapWindowViewModel(Workspace workspace, IWpfTextView wpfTextView, Document document) : this(workspace)
+		public GeneralOptionsPage? GeneralOptions { get; private set; }
+
+		public CodeMapOptionsPage? CodeMapOptions { get; private set; }
+
+		private CodeMapWindowViewModel(Workspace workspace, IWpfTextView wpfTextView, Document document, 
+									   GeneralOptionsPage? generalOptions, CodeMapOptionsPage? codeMapOptions) :
+								 this(workspace, generalOptions, codeMapOptions)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);
 		}
@@ -155,9 +161,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <summary>
 		/// Constructor to create an empty Code Map view model if no suitable active document is available, for example on solution opening
 		/// </summary>
-		private CodeMapWindowViewModel(Workspace workspace)
+		private CodeMapWindowViewModel(Workspace workspace, GeneralOptionsPage? generalOptions, CodeMapOptionsPage? codeMapOptions)
 		{
 			Workspace = workspace.CheckIfNull();
+			GeneralOptions = generalOptions;
+			CodeMapOptions = codeMapOptions;
 
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
@@ -201,11 +209,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_dteEventsObserver = new CodeMapDteEventsObserver(this);
 		}
 
-		public static CodeMapWindowViewModel InitCodeMap(Workspace workspace, IWpfTextView? wpfTextView, Document? document)
+		public static CodeMapWindowViewModel InitCodeMap(Workspace workspace, IWpfTextView? wpfTextView, Document? document, 
+														 GeneralOptionsPage? generalOptions, CodeMapOptionsPage? codeMapOptions)
 		{
 			var codeMapViewModel = wpfTextView != null && document != null
-				? new CodeMapWindowViewModel(workspace, wpfTextView, document)
-				: new CodeMapWindowViewModel(workspace);
+				? new CodeMapWindowViewModel(workspace, wpfTextView, document, generalOptions, codeMapOptions)
+				: new CodeMapWindowViewModel(workspace, generalOptions, codeMapOptions);
 
 			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
 			{
@@ -410,11 +419,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				{
 					CancellationToken cancellationToken = _cancellationTokenSource?.Token ?? default;
 
+					// Go to main UI thread
 					if (!ThreadHelper.CheckAccess())
 					{
 						await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 					}
 
+					if (AcuminatorVSPackage.Instance != null)
+					{
+						// Try to re-initialize options pages on the UI thread if they were not initialized before
+						GeneralOptions ??= AcuminatorVSPackage.Instance.TryGetGeneralOptionsPage() ??
+										   await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+						CodeMapOptions ??= AcuminatorVSPackage.Instance.TryGetCodeMapOptionsPage() ??
+										   await AcuminatorVSPackage.Instance.GetCodeMapOptionsPageAsync();
+					}
+
+					// Go to background thread to avoid blocking UI thread during code map calculation
 					IsCalculating = true;
 					await TaskScheduler.Default;
 
