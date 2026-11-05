@@ -14,7 +14,7 @@ using Acuminator.Vsix.ToolWindows.CodeMap.Graph;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphBaseMembeOverrideNodeViewModel : GraphMemberNodeViewModel
+	public class GraphBaseMemberOverrideNodeViewModel : GraphMemberNodeViewModel
 	{
 		public MemberOverrideKind OverrideKind => BaseMemberOverrideInfo.OverrideKind;
 
@@ -31,16 +31,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public GraphBaseMembeOverrideNodeViewModel(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategoryVM, 
-												   BaseMemberOverrideInfo baseMemberOverrideInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
-											  base(graphBaseMemberOverridesCategoryVM, graphBaseMemberOverridesCategoryVM, baseMemberOverrideInfo, 
-												   isExpandedCalculator)
+		public GraphBaseMemberOverrideNodeViewModel(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategoryVM, 
+												    BaseMemberOverrideInfo baseMemberOverrideInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
+											   base(graphBaseMemberOverridesCategoryVM, graphBaseMemberOverridesCategoryVM, baseMemberOverrideInfo, 
+												    isExpandedCalculator)
 		{
 			NodeIcon = GetNodeIcon();
 
 			if (MemberSymbol is IMethodSymbol method && method.Name == Events.Names.CommonEventHandlerWithGenericSignatureName)
 			{	
-				Name = GetNameForOverridenGraphEventHandler(method) ?? baseMemberOverrideInfo.Symbol.Name;
+				Name = GetNameForOverriddenGraphEventHandler(method) ?? baseMemberOverrideInfo.Symbol.Name;
 			}
 			else
 			{
@@ -60,7 +60,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_ 											=> Icon.None
 		};
 
-		private string? GetNameForOverridenGraphEventHandler(IMethodSymbol graphEventHandler)
+		private string? GetNameForOverriddenGraphEventHandler(IMethodSymbol graphEventHandler)
 		{
 			var methodNode = graphEventHandler.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default) as MethodDeclarationSyntax;
 
