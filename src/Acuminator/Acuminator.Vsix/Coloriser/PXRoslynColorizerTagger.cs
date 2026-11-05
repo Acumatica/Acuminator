@@ -143,15 +143,27 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 	/// </returns>
 	public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
 	{
-		bool coloringEnabled = GeneralOptionsPage?.ColoringEnabled ?? Constants.Settings.Coloring.ColoringEnabledDefault;
+		bool? coloringEnabled = GeneralOptionsPage?.ColoringEnabled;
 
-		if (requestedSpans?.Count is null or 0 || !coloringEnabled || !HasReferenceToAcumaticaPlatform || Disposed)
+		if (requestedSpans?.Count is null or 0 || (coloringEnabled.HasValue && !coloringEnabled.Value) || !HasReferenceToAcumaticaPlatform || Disposed)
 			return [];
 
 		var workspace = _roslynWorkspaceProvider.Workspace; 
 		
 		if (workspace == null)
 			return [];
+
+		if (coloringEnabled == null)
+		{
+			// If options were not yet initialized, we need to start the async initialization for now
+			StartAttemptToInitializeOptionsPageAsync();
+
+			// We will try to get coloring again with fallback to the default options
+			coloringEnabled = GeneralOptionsPage?.ColoringEnabled ?? Constants.Settings.Coloring.ColoringEnabledDefault;
+
+			if (!coloringEnabled.Value)
+				return [];
+		}
 
 		ITextSnapshot newSnapshotToTag = requestedSpans[0].Snapshot;
 

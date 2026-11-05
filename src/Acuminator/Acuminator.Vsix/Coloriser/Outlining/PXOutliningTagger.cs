@@ -38,10 +38,22 @@ namespace Acuminator.Vsix.Coloriser
 			if (requestedSpans?.Count is null or 0 || Disposed)
 				return [];
 
-			bool useBqlOutlining = GeneralOptionsPage?.UseBqlOutlining ?? Constants.Settings.Outlining.UseBqlOutliningDefault;
+			bool? useBqlOutlining = GeneralOptionsPage?.UseBqlOutlining;
 
-			if (!useBqlOutlining)
+			if (useBqlOutlining.HasValue && !useBqlOutlining.Value)
 				return [];
+			
+			if (useBqlOutlining == null)
+			{
+				// If options were not yet initialized, we need to start the async initialization for now
+				StartAttemptToInitializeOptionsPageAsync();
+
+				// We will try to get coloring again with fallback to the default options
+				useBqlOutlining = GeneralOptionsPage?.UseBqlOutlining ?? Constants.Settings.Outlining.UseBqlOutliningDefault;
+
+				if (!useBqlOutlining.Value)
+					return [];
+			}
 
 			if (ColorizerTagger == null)
 			{

@@ -20,6 +20,10 @@ namespace Acuminator.Vsix.Coloriser
 {
 	public abstract class PXTaggerBase
 	{
+		private const int MaxOptionsRetryCount = 10;
+
+		private int _optionsRetryCount = 0;
+
 		private readonly TextDocumentDisposedNotification _disposedNotification;
 
 #pragma warning disable CS0067
@@ -51,11 +55,7 @@ namespace Acuminator.Vsix.Coloriser
 			GeneralOptionsPage = AcuminatorVSPackage.Instance?.TryGetGeneralOptionsPage();
 
 			if (GeneralOptionsPage == null)
-			{
-				var initializeOptionsAsync = () => InitializeOptionsPageAsync();
-				initializeOptionsAsync
-					.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{GetType().Name}/{nameof(InitializeOptionsPageAsync)}");
-			}
+				StartAttemptToInitializeOptionsPageAsync();
 			else
 				SubscribeOnColoringSettingChangedEvent();
 
@@ -63,14 +63,29 @@ namespace Acuminator.Vsix.Coloriser
 			_disposedNotification.CurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
 		}
 
+		protected void StartAttemptToInitializeOptionsPageAsync()
+		{
+			var initializeOptionsAsync = () => InitializeOptionsPageAsync();
+			initializeOptionsAsync
+				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{GetType().Name}/{nameof(InitializeOptionsPageAsync)}");
+		}
+
 		private async Task InitializeOptionsPageAsync()
 		{
 			if (GeneralOptionsPage != null || AcuminatorVSPackage.Instance == null || Disposed)
 				return;
 
+			int currentRetryCount = Interlocked.Increment(ref _optionsRetryCount);
+
+			if (currentRetryCount > MaxOptionsRetryCount)
+				return;
+
 			GeneralOptionsPage = await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
 
 			SubscribeOnColoringSettingChangedEvent();
+			ColoringSettingsChanged = true;     // Set ColoringSettingsChanged flag to indicate that settings have changed and we need to re-evaluate the tags.
+
+			await RaiseTagsChangedAsync();      // and call RaiseTagsChangedAsync to ensure that the tags are updated after the options page is initialized.
 		}
 
 		private void SubscribeOnColoringSettingChangedEvent()
@@ -134,6 +149,10 @@ namespace Acuminator.Vsix.Coloriser
 			if (!ThreadHelper.CheckAccess())
 			{
 				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+
+				// check after switch to the main thread
+				if (Disposed)
+					return;
 			}
 
 			RaiseTagsChangedImpl();
