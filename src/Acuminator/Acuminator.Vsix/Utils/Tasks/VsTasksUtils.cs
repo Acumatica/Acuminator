@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.Utilities;
 /// </summary>
 public static class VsTasksUtils
 {
-	extension(CancellationTokenSource cancellationTokenSource)
+	extension(CancellationTokenSource? cancellationTokenSource)
 	{
 		/// <summary>
 		/// Creates <see cref="CancellationTokenSource"/> linked to VSIX package's <see cref="AsyncPackage.DisposalToken"/>.
@@ -28,6 +28,24 @@ public static class VsTasksUtils
 		/// </returns>
 		public static CancellationTokenSource CreateTokenSourceLinkedToPackage() =>
 			CancellationTokenSource.CreateLinkedTokenSource(AcuminatorVSPackage.Instance?.DisposalToken ?? CancellationToken.None);
+
+		/// <summary>
+		/// Cancel <paramref name="cancellationTokenSource"/> safely.
+		/// </summary>
+		public void CancelSafely()
+		{
+			if (cancellationTokenSource == null || cancellationTokenSource.IsCancellationRequested)
+				return;
+
+			try
+			{
+				cancellationTokenSource.Cancel();
+			}
+			catch (ObjectDisposedException)
+			{
+				// Ignore the exception if the token source has already been disposed.
+			}
+		}
 	}
 
 

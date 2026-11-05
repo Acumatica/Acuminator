@@ -255,8 +255,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			base.FreeResources();
 
 			var cancellationTokenSourceToDispose = Interlocked.Exchange(ref _cancellationTokenSource, value: null);
-			cancellationTokenSourceToDispose?.Cancel();
+
+			cancellationTokenSourceToDispose?.CancelSafely();
 			cancellationTokenSourceToDispose?.Dispose();
+
 			DocumentModel = null;
 
 			if (Workspace != null)
@@ -403,7 +405,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void ClearCodeMap()
 		{
-			_cancellationTokenSource?.Cancel();
+			_cancellationTokenSource?.CancelSafely();
 			Tree?.Clear();
 			Tree = null;
 		}
