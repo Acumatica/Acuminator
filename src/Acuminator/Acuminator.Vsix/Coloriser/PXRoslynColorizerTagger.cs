@@ -156,7 +156,7 @@ internal partial class PXRoslynColorizerTagger : PXTaggerBase, ITagger<IClassifi
 		if (coloringEnabled == null)
 		{
 			// If options were not yet initialized, we need to start the async initialization for now
-			StartAttemptToInitializeOptionsPageAsync();
+			StartAttemptToInitializeOptionsPageAsync(raiseTagsChanged: false);
 
 			// We will try to get coloring again with fallback to the default options
 			coloringEnabled = GeneralOptionsPage?.ColoringEnabled ?? Constants.Settings.Coloring.ColoringEnabledDefault;
