@@ -371,7 +371,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Document? oldDocument = documentModelSnapshot?.Document;
 			SyntaxNode? oldRoot = documentModelSnapshot?.Root;
 
-			if (changedDocument == null || oldDocument == null || oldRoot == null)
+			if (changedDocument == null || oldDocument == null)
 			{
 				ClearCodeMap();
 				return;
@@ -379,7 +379,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			CodeMapRefreshMode recalculateCodeMapMode;
 
-			if (onlyActiveDocumentWasChanged)
+			if (oldRoot == null)
+			{
+				// The previous build has not loaded the document yet (or failed). The document changed, so restart the build
+				// with the changed document instead of cancelling it and leaving the Code Map empty.
+				recalculateCodeMapMode = CodeMapRefreshMode.Recalculate;
+			}
+			else if (onlyActiveDocumentWasChanged)
 			{
 				try
 				{
