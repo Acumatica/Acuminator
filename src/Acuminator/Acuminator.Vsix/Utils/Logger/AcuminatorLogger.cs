@@ -62,7 +62,8 @@ namespace Acuminator.Vsix.Logger
 		{
 			var innerExceptions = e.Exception.Flatten().InnerExceptions;
 
-			if (innerExceptions.All(exception => exception is TimeoutException))    // Skip logging numerous VS timeout exceptions to decrease contention for UI thread
+			// Skip logging numerous VS timeout exceptions to decrease contention for UI thread
+			if (innerExceptions.All(exception => exception is TimeoutException))
 				return;
 
 			var acuminatorExceptions = innerExceptions.Where(IsExceptionFromAcuminatorAssembly).ToList(innerExceptions.Count);
@@ -72,7 +73,7 @@ namespace Acuminator.Vsix.Logger
 
 			LogMode logMode = LogMode.Error;
 
-			if (_swallowUnobservedTaskExceptions && !e.Observed)
+			if (_swallowUnobservedTaskExceptions && !e.Observed && acuminatorExceptions.Count == innerExceptions.Count)
 			{
 				e.SetObserved();
 				logMode = LogMode.Warning;
