@@ -55,7 +55,7 @@ namespace Acuminator.Vsix.Coloriser
 			GeneralOptionsPage = AcuminatorVSPackage.Instance?.TryGetGeneralOptionsPage();
 
 			if (GeneralOptionsPage == null)
-				StartAttemptToInitializeOptionsPageAsync(raiseTagsChanged: true);
+				StartAttemptToInitializeOptionsPageAsync(isCalledFromGetTags: false);
 			else
 				SubscribeOnColoringSettingChangedEvent();
 
@@ -63,20 +63,21 @@ namespace Acuminator.Vsix.Coloriser
 			_disposedNotification.CurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
 		}
 
-		protected void StartAttemptToInitializeOptionsPageAsync(bool raiseTagsChanged)
+		protected void StartAttemptToInitializeOptionsPageAsync(bool isCalledFromGetTags)
 		{
-			var initializeOptionsAsync = () => InitializeOptionsPageAsync(raiseTagsChanged);
+			var initializeOptionsAsync = () => InitializeOptionsPageAsync(isCalledFromGetTags);
 			initializeOptionsAsync
 				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{GetType().Name}/{nameof(InitializeOptionsPageAsync)}");
 		}
 
-		private async Task InitializeOptionsPageAsync(bool raiseTagsChanged)
+		private async Task InitializeOptionsPageAsync(bool isCalledFromGetTags)
 		{
 			if (GeneralOptionsPage != null || AcuminatorVSPackage.Instance == null || Disposed)
 				return;
 
 			// A cheap extra check to always do without using retry attempts
 			GeneralOptionsPage = AcuminatorVSPackage.Instance.TryGetGeneralOptionsPage();
+			bool isExecutedAsynchronously = false;
 
 			if (GeneralOptionsPage == null)
 			{
@@ -85,7 +86,9 @@ namespace Acuminator.Vsix.Coloriser
 				if (currentRetryCount > MaxOptionsRetryCount)
 					return;
 
-				GeneralOptionsPage = await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+				var pageTask = AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+				isExecutedAsynchronously = !pageTask.IsCompleted;
+				GeneralOptionsPage = await pageTask;
 			}
 
 			// If options were resolved, subscribe to the coloring setting changed event and raise tags changed if needed
@@ -95,8 +98,8 @@ namespace Acuminator.Vsix.Coloriser
 				ColoringSettingsChanged = true;     // Set ColoringSettingsChanged flag to indicate that settings have changed and we need to re-evaluate the tags.
 
 				// Call RaiseTagsChangedAsync to ensure that the tags are updated after the options page is initialized.
-				// But do it only if we are not already inside GetTags call.
-				if (raiseTagsChanged)
+				// But do it only if we either are not inside GetTags call or if the GetTags call wasn't executed entirely on the UI thread.
+				if (!isCalledFromGetTags || isExecutedAsynchronously)
 					await RaiseTagsChangedAsync();
 			}
 		}

@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.Coloriser
 			if (useBqlOutlining == null)
 			{
 				// If options were not yet initialized, we need to start the async initialization for now
-				StartAttemptToInitializeOptionsPageAsync(raiseTagsChanged: false);
+				StartAttemptToInitializeOptionsPageAsync(isCalledFromGetTags: true);
 
 				// We will try to get coloring again with fallback to the default options
 				useBqlOutlining = GeneralOptionsPage?.UseBqlOutlining ?? Constants.Settings.Outlining.UseBqlOutliningDefault;
