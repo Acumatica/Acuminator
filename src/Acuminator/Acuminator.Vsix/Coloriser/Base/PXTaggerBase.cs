@@ -38,6 +38,8 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected bool ColoringSettingsChanged { get; private set; }
 
+		private bool _subscribedToColoringSettingChanged;
+
 		protected bool SubscribedToSettingsChanges { get; private set; }
 
 		public abstract bool HasReferenceToAcumaticaPlatform { get; }
@@ -106,9 +108,10 @@ namespace Acuminator.Vsix.Coloriser
 
 		private void SubscribeOnColoringSettingChangedEvent()
 		{
-			if (GeneralOptionsPage != null && SubscribedToSettingsChanges && !Disposed)
+			if (GeneralOptionsPage != null && SubscribedToSettingsChanges && !Disposed && !_subscribedToColoringSettingChanged)
 			{
 				GeneralOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
+				_subscribedToColoringSettingChanged = true;
 			}
 		}
 
@@ -210,9 +213,10 @@ namespace Acuminator.Vsix.Coloriser
 			Disposed = true;
 			_disposedNotification.CurrentTextDocumentDisposed -= CleanupOnTextDocumentDisposed;
 
-			if (GeneralOptionsPage != null && SubscribedToSettingsChanges)
+			if (GeneralOptionsPage != null && _subscribedToColoringSettingChanged)
 			{
 				GeneralOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
+				_subscribedToColoringSettingChanged = false;
 			}
 		}
 	}
