@@ -409,7 +409,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			else
 				recalculateCodeMapMode = CodeMapRefreshMode.Recalculate;
 
-			if (recalculateCodeMapMode == CodeMapRefreshMode.NoRefresh)
+			if (recalculateCodeMapMode == CodeMapRefreshMode.NoRefresh || !ReferenceEquals(documentModelSnapshot, DocumentModel))	// discard stale document model
 				return;
 
 			ClearCodeMap();
