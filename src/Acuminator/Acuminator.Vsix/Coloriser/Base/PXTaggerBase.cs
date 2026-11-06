@@ -75,6 +75,12 @@ namespace Acuminator.Vsix.Coloriser
 			if (GeneralOptionsPage != null || AcuminatorVSPackage.Instance == null || Disposed)
 				return;
 
+			// A cheap extra check to always do without using retry attempts
+			GeneralOptionsPage = AcuminatorVSPackage.Instance.TryGetGeneralOptionsPage();
+
+			if (GeneralOptionsPage != null)
+				return;
+
 			int currentRetryCount = Interlocked.Increment(ref _optionsRetryCount);
 
 			if (currentRetryCount > MaxOptionsRetryCount)
