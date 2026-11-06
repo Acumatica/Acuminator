@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo,
-								 Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+								 ExpandCreatedNodesFunction isExpandedCalculator) :
 							base(viewCategoryVM, viewCategoryVM, viewInfo, isExpandedCalculator)
 		{
 			NodeIcon = GetIcon();
@@ -99,7 +99,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
-			SyntaxNode? viewSyntaxNode = ViewInfo.Symbol.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default);
+			SyntaxNode? viewSyntaxNode = ViewInfo.Symbol.GetSyntax(AcuminatorVSPackage.Instance?.DisposalToken ?? default);
 
 			switch (viewSyntaxNode)
 			{

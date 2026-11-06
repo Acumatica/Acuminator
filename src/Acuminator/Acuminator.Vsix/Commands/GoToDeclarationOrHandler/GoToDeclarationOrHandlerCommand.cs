@@ -103,14 +103,17 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (document == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
-			Task<SyntaxNode?> syntaxRootTask = document.GetSyntaxRootAsync();
-			Task<SemanticModel?> semanticModelTask = document.GetSemanticModelAsync();
-			await Task.WhenAll(syntaxRootTask, semanticModelTask);
+			SyntaxNode? syntaxRoot;
+			SemanticModel? semanticModel;
 
-			#pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
-			SyntaxNode? syntaxRoot = syntaxRootTask.Result;
-			SemanticModel? semanticModel = semanticModelTask.Result;
-			#pragma warning restore VSTHRD002, VSTHRD103
+			try
+			{
+				(semanticModel, syntaxRoot) = await document.GetSemanticModelAndRootAsync(Package.DisposalToken, continueOnCapturedContext: true);
+			}
+			catch (OperationCanceledException)
+			{
+				return;
+			}
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;

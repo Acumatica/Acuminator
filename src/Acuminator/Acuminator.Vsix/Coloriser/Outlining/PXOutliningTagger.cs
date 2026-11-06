@@ -5,6 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
+using Acuminator.Vsix.Utilities;
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
@@ -32,9 +34,26 @@ namespace Acuminator.Vsix.Coloriser
 		}
 
 		public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
-		{
-			if (requestedSpans?.Count is null or 0 || AcuminatorVSPackage.Instance?.UseBqlOutlining != true)
+		{ 
+			if (requestedSpans?.Count is null or 0 || Disposed)
 				return [];
+
+			bool? useBqlOutlining = GeneralOptionsPage?.UseBqlOutlining;
+
+			if (useBqlOutlining.HasValue && !useBqlOutlining.Value)
+				return [];
+			
+			if (useBqlOutlining == null)
+			{
+				// If options were not yet initialized, we need to start the async initialization for now
+				StartAttemptToInitializeOptionsPageAsync(isCalledFromGetTags: true);
+
+				// We will try to get coloring again with fallback to the default options
+				useBqlOutlining = GeneralOptionsPage?.UseBqlOutlining ?? Constants.Settings.Outlining.UseBqlOutliningDefault;
+
+				if (!useBqlOutlining.Value)
+					return [];
+			}
 
 			if (ColorizerTagger == null)
 			{

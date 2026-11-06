@@ -6,7 +6,7 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net48</TargetFramework>
 		<Deterministic>True</Deterministic>
-		<LangVersion>13.0</LangVersion>
+		<LangVersion>14.0</LangVersion>
 		<Version>4.1.0</Version>
 		<Nullable>enable</Nullable>
 		<WarningLevel>9999</WarningLevel>

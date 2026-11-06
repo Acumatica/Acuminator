@@ -70,7 +70,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked with CheckAccess()")]
 			private void DocumentEvents_DocumentClosing(EnvDTE.Document document)
 			{
-				if (!ThreadHelper.CheckAccess() || document == null || _codeMapViewModel.Document == null)
+				var documentSnapshot = _codeMapViewModel.Document;
+
+				if (!ThreadHelper.CheckAccess() || document == null || documentSnapshot == null)
 					return;
 
 				string documentPath, documentKind, documentLanguage;
@@ -90,7 +92,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				const string emptyObjectKind = "{00000000-0000-0000-0000-000000000000}";
 
 				if (documentKind == null || documentKind == emptyObjectKind || documentLanguage != Constants.CSharp.LegacyLanguageName ||
-					!string.Equals(documentPath, _codeMapViewModel.Document.FilePath, StringComparison.OrdinalIgnoreCase))
+					!string.Equals(documentPath, documentSnapshot.FilePath, StringComparison.OrdinalIgnoreCase))
 				{
 					return;
 				}
@@ -186,7 +188,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return;
 				}
 				else if (gotFocus.Document.FullName == lostFocus?.Document?.FullName ||
-						(lostFocus?.Document == null && _codeMapViewModel.Document != null && gotFocus.Document.FullName == _codeMapViewModel.Document.FilePath))
+						(lostFocus?.Document == null && _codeMapViewModel.Document is { } documentSnapshot && gotFocus.Document.FullName == documentSnapshot.FilePath))
 				{
 					return;
 				}

@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			try
 			{
 				tree.CodeMapViewModel.IsCalculating = true;
-				var cancellation = tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken;
+				var cancellation = AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 
 				BuildRealNode(placeholderNode, pxContext, cancellation);
 

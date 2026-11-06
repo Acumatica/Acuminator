@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public DacPropertyInfo PropertyInfo => (MemberInfo as DacPropertyInfo)!;
 
 		public NonBqlDacPropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
-											  DacPropertyInfo nonBqlPropertyInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+											  DacPropertyInfo nonBqlPropertyInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 										 base(dacMemberCategoryVM, parent, nonBqlPropertyInfo, isExpandedCalculator)
 		{
 		}

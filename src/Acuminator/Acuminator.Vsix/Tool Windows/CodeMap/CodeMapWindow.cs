@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 using Acuminator.Vsix.Utilities;
 
@@ -70,7 +71,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (serviceProvider == null)
 				return;
 
-			Workspace? workspace = await AcuminatorVSPackage.Instance!.GetVSWorkspaceAsync();
+			Workspace? workspace = await serviceProvider.GetVSWorkspaceAsync();
 
 			if (workspace == null)
 				return;
@@ -81,7 +82,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (CodeMapWPFControl.DataContext is CodeMapWindowViewModel codeMapViewModel)
 				await codeMapViewModel.RefreshCodeMapOnWindowOpeningAsync(textView, document);
 			else
-				CodeMapWPFControl.DataContext = CodeMapWindowViewModel.InitCodeMap(workspace, textView, document);
+			{
+				GeneralOptionsPage? generalOptions;
+				CodeMapOptionsPage? codeMapOptions;
+
+				if (AcuminatorVSPackage.Instance != null)
+				{
+					generalOptions = AcuminatorVSPackage.Instance.TryGetGeneralOptionsPage() ?? 
+									 await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+					codeMapOptions = AcuminatorVSPackage.Instance.TryGetCodeMapOptionsPage() ??
+									 await AcuminatorVSPackage.Instance.GetCodeMapOptionsPageAsync();
+				}	
+				else
+				{
+					generalOptions = null;
+					codeMapOptions = null;
+				}
+
+				CodeMapWPFControl.DataContext = CodeMapWindowViewModel.InitCodeMap(workspace, textView, document, generalOptions, codeMapOptions);
+			}
 		}
 
 		protected override void OnClose()

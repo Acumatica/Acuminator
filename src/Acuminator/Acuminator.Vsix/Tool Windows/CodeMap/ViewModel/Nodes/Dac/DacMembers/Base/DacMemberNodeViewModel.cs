@@ -36,7 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public DacMemberNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
-									  SymbolItem memberInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+									  SymbolItem memberInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 								 base(dacMemberCategoryVM?.Tree!, parent, isExpandedCalculator)
 		{
 			MemberInfo = memberInfo.CheckIfNull();

@@ -106,8 +106,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public FilterViewModel FilterVM { get; }
 
-		public CancellationToken? CancellationToken => _cancellationTokenSource?.Token;
-
 		private bool _isCalculating;
 
 		public bool IsCalculating
@@ -147,7 +145,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public Command SortNodeDescendantsByDeclarationOrderDescendingCommand { get; }
 		#endregion
 
-		private CodeMapWindowViewModel(Workspace workspace, IWpfTextView wpfTextView, Document document) : this(workspace)
+		public GeneralOptionsPage? GeneralOptions { get; private set; }
+
+		public CodeMapOptionsPage? CodeMapOptions { get; private set; }
+
+		private CodeMapWindowViewModel(Workspace workspace, IWpfTextView wpfTextView, Document document, 
+									   GeneralOptionsPage? generalOptions, CodeMapOptionsPage? codeMapOptions) :
+								 this(workspace, generalOptions, codeMapOptions)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);
 		}
@@ -155,9 +159,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <summary>
 		/// Constructor to create an empty Code Map view model if no suitable active document is available, for example on solution opening
 		/// </summary>
-		private CodeMapWindowViewModel(Workspace workspace)
+		private CodeMapWindowViewModel(Workspace workspace, GeneralOptionsPage? generalOptions, CodeMapOptionsPage? codeMapOptions)
 		{
 			Workspace = workspace.CheckIfNull();
+			GeneralOptions = generalOptions;
+			CodeMapOptions = codeMapOptions;
 
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
@@ -201,11 +207,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_dteEventsObserver = new CodeMapDteEventsObserver(this);
 		}
 
-		public static CodeMapWindowViewModel InitCodeMap(Workspace workspace, IWpfTextView? wpfTextView, Document? document)
+		public static CodeMapWindowViewModel InitCodeMap(Workspace workspace, IWpfTextView? wpfTextView, Document? document, 
+														 GeneralOptionsPage? generalOptions, CodeMapOptionsPage? codeMapOptions)
 		{
 			var codeMapViewModel = wpfTextView != null && document != null
-				? new CodeMapWindowViewModel(workspace, wpfTextView, document)
-				: new CodeMapWindowViewModel(workspace);
+				? new CodeMapWindowViewModel(workspace, wpfTextView, document, generalOptions, codeMapOptions)
+				: new CodeMapWindowViewModel(workspace, generalOptions, codeMapOptions);
 
 			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
 			{
@@ -244,7 +251,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override void FreeResources()
 		{
 			base.FreeResources();
-			_cancellationTokenSource?.Dispose();
+
+			var cancellationTokenSourceToDispose = Interlocked.Exchange(ref _cancellationTokenSource, value: null);
+
+			cancellationTokenSourceToDispose?.CancelSafely();
+			cancellationTokenSourceToDispose?.Dispose();
+
+			DocumentModel = null;
 
 			if (Workspace != null)
 			{
@@ -334,24 +347,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, e.DocumentId, onlyActiveDocumentWasChanged: true)
 						.ConfigureAwait(false);
 			}
-			else if (Document?.Project != null &&
-					(Document.Project.Id == e.ProjectId || !Document.Project.IsFullyLoadedProject()) &&
+			else if (Document?.Project is { } project &&
+					(project.Id == e.ProjectId || !project.IsFullyLoadedProject()) &&
 					(e.IsProjectStatusInSolutionChanged() || e.IsProjectMetadataChanged()))
 			{
-				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, Document.Id, onlyActiveDocumentWasChanged: false)
+				await HandleWorkspaceChangesAsync(newWorkspace, e.NewSolution, Document?.Id, onlyActiveDocumentWasChanged: false)
 						.ConfigureAwait(false);
 			}
 		}
 
 		private async Task HandleWorkspaceChangesAsync(Workspace newWorkspace, Microsoft.CodeAnalysis.Solution newSolution,
-													   DocumentId activeDocumentID, bool onlyActiveDocumentWasChanged)
+													   DocumentId? activeDocumentID, bool onlyActiveDocumentWasChanged)
 		{
+			if (activeDocumentID == null)
+			{
+				ClearCodeMap();
+				return;
+			}
+
 			Workspace = newWorkspace;
 			Document? changedDocument = newSolution.GetDocument(activeDocumentID);
-			Document? oldDocument = Document;
-			SyntaxNode? oldRoot = DocumentModel?.Root;
+			var documentModelSnapshot = DocumentModel;
+			Document? oldDocument = documentModelSnapshot?.Document;
+			SyntaxNode? oldRoot = documentModelSnapshot?.Root;
 
-			if (changedDocument == null || oldDocument == null || oldRoot == null)
+			if (changedDocument == null || oldDocument == null)
 			{
 				ClearCodeMap();
 				return;
@@ -359,30 +379,44 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			CodeMapRefreshMode recalculateCodeMapMode;
 
-			if (onlyActiveDocumentWasChanged)
+			if (oldRoot == null)
 			{
-				var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
-				recalculateCodeMapMode = newRoot == null
-					? CodeMapRefreshMode.Clear
-					: CodeMapRefreshMode.Recalculate;
-
-				if (newRoot != null && Tree != null)
+				// The previous build has not loaded the document yet (or failed). The document changed, so restart the build
+				// with the changed document instead of cancelling it and leaving the Code Map empty.
+				recalculateCodeMapMode = CodeMapRefreshMode.Recalculate;
+			}
+			else if (onlyActiveDocumentWasChanged)
+			{
+				try
 				{
-					recalculateCodeMapMode = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot,
-																							  changedDocument, CancellationToken ?? default);
+					var newRoot = await changedDocument.GetSyntaxRootAsync(AcuminatorVSPackage.Instance?.DisposalToken ?? default);
+					recalculateCodeMapMode = newRoot == null
+						? CodeMapRefreshMode.Clear
+						: CodeMapRefreshMode.Recalculate;
+
+					if (newRoot != null && Tree != null)
+					{
+						recalculateCodeMapMode = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot,
+																								  changedDocument, AcuminatorVSPackage.Instance?.DisposalToken ?? default);
+					}
+				}
+				catch (OperationCanceledException)
+				{
+					// If the package disposal token is canceled, return unconditionally to avoid throwing an exception during VS shutdown
+					return;
 				}
 			}
 			else
 				recalculateCodeMapMode = CodeMapRefreshMode.Recalculate;
 
-			if (recalculateCodeMapMode == CodeMapRefreshMode.NoRefresh)
+			if (recalculateCodeMapMode == CodeMapRefreshMode.NoRefresh || !ReferenceEquals(documentModelSnapshot, DocumentModel))	// discard stale document model
 				return;
 
 			ClearCodeMap();
 
-			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
+			if (recalculateCodeMapMode == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView is { } documentWpfTextView)
 			{
-				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
+				DocumentModel = new DocumentModel(documentWpfTextView, changedDocument);
 				var buildCodeMapAction = () => BuildCodeMapAsync();
 				buildCodeMapAction.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(BuildCodeMapAsync)}");
 			}
@@ -390,7 +424,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void ClearCodeMap()
 		{
-			_cancellationTokenSource?.Cancel();
+			_cancellationTokenSource?.CancelSafely();
 			Tree?.Clear();
 			Tree = null;
 		}
@@ -400,25 +434,48 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (DocumentModel == null)
 				return;
 
+			var currentCts = CancellationTokenSource.CreateTokenSourceLinkedToPackage();
+			var previousCts = Interlocked.Exchange(ref _cancellationTokenSource, currentCts);
+			previousCts?.CancelSafely();														// cancel only, the using in its own build will disposes it
+
 			try
 			{
-				using (_cancellationTokenSource = new CancellationTokenSource())
+				using (currentCts)
 				{
-					CancellationToken cancellationToken = _cancellationTokenSource.Token;
+					CancellationToken cancellationToken = currentCts.Token;
 
+					// Go to main UI thread
 					if (!ThreadHelper.CheckAccess())
 					{
 						await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 					}
 
+					if (AcuminatorVSPackage.Instance != null)
+					{
+						// Try to re-initialize options pages on the UI thread if they were not initialized before
+						GeneralOptions ??= AcuminatorVSPackage.Instance.TryGetGeneralOptionsPage() ??
+										   await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+						CodeMapOptions ??= AcuminatorVSPackage.Instance.TryGetCodeMapOptionsPage() ??
+										   await AcuminatorVSPackage.Instance.GetCodeMapOptionsPageAsync();
+					}
+
+					// Go to background thread to avoid blocking UI thread during code map calculation
 					IsCalculating = true;
 					await TaskScheduler.Default;
+					
+					var documentModelSnapshot = DocumentModel;
 
-					bool isSuccess = await DocumentModel.LoadCodeFileDataAsync(RootSymbolsRetriever, SemanticModelFactory, cancellationToken)
-														.ConfigureAwait(false);
-
-					if (!isSuccess || cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
+					if (documentModelSnapshot == null)
 						return;
+
+					bool isSuccess = await documentModelSnapshot.LoadCodeFileDataAsync(RootSymbolsRetriever, SemanticModelFactory, cancellationToken)
+																.ConfigureAwait(false);
+
+					if (!isSuccess || cancellationToken.IsCancellationRequested || !documentModelSnapshot.IsCodeFileDataLoaded || 
+						!ReferenceEquals(documentModelSnapshot, DocumentModel))
+					{
+						return;
+					}
 
 					FilterOptions filterOptions = FilterVM.CreateFilterOptionsFromCurrentFilter();
 					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, filterOptions, cancellationToken);
@@ -427,6 +484,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						return;
 
 					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+
+					// Check that the cancellation token source are still the same as when the build started. 
+					// If not, then another build has started and we should not update the tree with the old result.
+					if (cancellationToken.IsCancellationRequested || !ReferenceEquals(_cancellationTokenSource, currentCts))
+						return;
 
 					Tree = newTreeVM;
 					AfterCodeMapTreeIsFiltered?.Invoke(this, new FilterEventArgs(filterOptions, oldFilterText: null));
@@ -438,8 +500,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			finally
 			{
-				IsCalculating = false;
-				_cancellationTokenSource = null;
+				if (!ThreadHelper.CheckAccess())
+				{
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+				}
+
+				if (ReferenceEquals(_cancellationTokenSource, currentCts))
+					_cancellationTokenSource = null;
+
+				if (_cancellationTokenSource == null)	// The final build operation clears the flag
+					IsCalculating = false;
 			}
 		}
 

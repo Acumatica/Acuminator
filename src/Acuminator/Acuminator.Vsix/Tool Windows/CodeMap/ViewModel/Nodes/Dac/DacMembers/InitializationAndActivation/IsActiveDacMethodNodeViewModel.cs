@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public IsActiveMethodInfo IsActiveMethodInfo => (IsActiveMethodInfo)MemberInfo;
 
 		public IsActiveDacMethodNodeViewModel(DacInitializationAndActivationCategoryNodeViewModel dacInitializationAndActivationCategoryVM, 
-											  IsActiveMethodInfo isActiveMethodInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+											  IsActiveMethodInfo isActiveMethodInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 										 base(dacInitializationAndActivationCategoryVM, dacInitializationAndActivationCategoryVM, 
 											  isActiveMethodInfo, isExpandedCalculator)
 		{
@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
-			var isActiveMethodSyntaxNode = isActiveMethod.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default) as MethodDeclarationSyntax;
+			var isActiveMethodSyntaxNode = isActiveMethod.GetSyntax(AcuminatorVSPackage.Instance?.DisposalToken ?? default) as MethodDeclarationSyntax;
 
 			if (isActiveMethodSyntaxNode == null)
 				return null;

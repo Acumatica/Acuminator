@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -70,7 +71,7 @@ namespace Acuminator.Vsix
 					   categoryResourceID: 201, pageNameResourceID: 203, supportsAutomation: true, SupportsProfiles = true)]
 	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = false, Orientation = ToolWindowOrientation.Left,
 					   Style = VsDockStyle.Linked)]
-	public sealed class AcuminatorVSPackage : AsyncPackage
+	public sealed partial class AcuminatorVSPackage : AsyncPackage
 	{
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
@@ -123,16 +124,6 @@ namespace Acuminator.Vsix
 				? Instance.JoinableTaskFactory
 				: ThreadHelper.JoinableTaskFactory;
 
-		private readonly Lazy<GeneralOptionsPage?> _generalOptionsPage =
-			new(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
-
-		public GeneralOptionsPage? GeneralOptionsPage => _generalOptionsPage.Value;
-
-		private readonly Lazy<CodeMapOptionsPage?> _codeMapOptionsPage =
-			new(() => Instance.GetDialogPage(typeof(CodeMapOptionsPage)) as CodeMapOptionsPage, isThreadSafe: true);
-
-		public CodeMapOptionsPage? CodeMapOptionsPage => _codeMapOptionsPage.Value;
-
 		internal AcuminatorLogger AcuminatorLogger
 		{
 			get;
@@ -165,36 +156,6 @@ namespace Acuminator.Vsix
 			SetupSingleton(this);
 		}
 #pragma warning restore CS8618
-
-		/// <summary>
-		/// Force load package. 
-		/// A hack method which is called from analyzers to ensure that the package is loaded before diagnostics are executed.
-		/// </summary>
-		/// <returns/>
-		public static async System.Threading.Tasks.Task ForceLoadPackageAsync()
-		{
-			// In unit tests this can be null or throw NRE
-			try
-			{
-				if (ThreadHelper.JoinableTaskFactory == null)
-					return;
-			}
-			catch (Exception ex)
-			{
-				return;
-			}
-
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-			IVsShell? shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
-
-			if (shell == null)
-				return;
-
-			var packageToBeLoadedGuid = new Guid(PackageGuidString);
-			shell.LoadPackage(ref packageToBeLoadedGuid, out var _);
-			await System.Threading.Tasks.TaskScheduler.Default;
-		}
 
 #pragma warning disable CS8774 // Member must have a non-null value when exiting.
 		[MemberNotNull(nameof(Instance))]
@@ -234,10 +195,18 @@ namespace Acuminator.Vsix
 																				   IProgress<ServiceProgressData> progress)
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
+			int currentStep = 1;
+
+			#region Initialize Logger
+			cancellationToken.ThrowIfCancellationRequested();
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitLogger, currentStep++);
+
+			InitializeLogger();
+			#endregion
 
 			#region Initialize Banned API
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep: 1);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_DeployBannedApiFiles, currentStep++);
 
 			MyDocumentsStorage = AcuminatorMyDocumentsStorage.TryInitialize(PackageVersion);
 			var (deployedBannedApisFile, deployedAllowedApisFile) = DeployBannedApiFiles(MyDocumentsStorage);
@@ -245,37 +214,30 @@ namespace Acuminator.Vsix
 
 			#region Initialize Settings
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeAnalysisSettings, currentStep: 2);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeAnalysisSettings, currentStep++);
 
 			_vsWorkspace = await this.GetVSWorkspaceAsync();
 
 			await InitializePackageSettingsAsync(deployedBannedApisFile, deployedAllowedApisFile);
 			#endregion
 
-			#region Initialize Logger
-			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitLogger, currentStep: 3);
-
-			InitializeLogger();
-			#endregion
-
 			#region Initialize CodeSnippets
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeSnippets, currentStep: 4);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCodeSnippets, currentStep++);
 
 			DeployCodeSnippets(MyDocumentsStorage);
 			#endregion
 
 			#region Initialize Commands and SubscribeOnEvents	
 			cancellationToken.ThrowIfCancellationRequested();
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCommands, currentStep: 5);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitCommands, currentStep++);
 
 			await InitializeCommandsAsync();
 			SubscribeOnEvents();
 			#endregion
 
 			#region Suppression Manager Load
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitSuppressionManager, currentStep: 6);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_InitSuppressionManager, currentStep++);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			bool isSolutionOpen = await IsSolutionLoadedAsync();
@@ -286,7 +248,7 @@ namespace Acuminator.Vsix
 			}
 			#endregion
 
-			await ReportProgressAsync(progress, VSIXResource.PackageLoad_Done, currentStep: 7);
+			await ReportProgressAsync(progress, VSIXResource.PackageLoad_Done, currentStep++);
 		}
 
 		private async System.Threading.Tasks.Task ReportProgressAsync(IProgress<ServiceProgressData>? progress, string progressText, 
@@ -330,7 +292,7 @@ namespace Acuminator.Vsix
 					$"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
 				throw;
 			}
-		}
+		} 
 
 		private async System.Threading.Tasks.Task InitializeCommandsAsync()
 		{
@@ -410,7 +372,9 @@ namespace Acuminator.Vsix
 
 					_vsWorkspace = await this.GetVSWorkspaceAsync();
 					SubscribeOnWorkspaceEvents();
-					InitializeOutOfProcessSettingsSharing(GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings);
+
+					var generalOptionsPage = await GetGeneralOptionsPageAsync();
+					InitializeOutOfProcessSettingsSharing(GlobalSettings.AnalysisSettings, GlobalSettings.BannedApiSettings, generalOptionsPage);
 				});
 			}
 		}
@@ -493,15 +457,19 @@ namespace Acuminator.Vsix
 
 		private async System.Threading.Tasks.Task InitializePackageSettingsAsync(string? deployedBannedApisFile, string? deployedAllowedApisFile)
 		{
+			// Force load Code Map settings page during the package initialization
+			_ = await GetCodeMapOptionsPageAsync();
+			var generalOptionsPage = await GetGeneralOptionsPageAsync();
+
 			CodeAnalysisSettings codeAnalysisSettings;
 			BannedApiSettings bannedApiSettings;
 
-			if (GeneralOptionsPage != null)
+			if (generalOptionsPage != null)
 			{
-				GeneralOptionsPage.SetDeployedBannedApiSettings(deployedBannedApisFile, deployedAllowedApisFile);
+				generalOptionsPage.SetDeployedBannedApiSettings(deployedBannedApisFile, deployedAllowedApisFile);
 
-				codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
-				bannedApiSettings	 = new BannedApiSettingsFromOptionsPage(GeneralOptionsPage);
+				codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(generalOptionsPage);
+				bannedApiSettings	 = new BannedApiSettingsFromOptionsPage(generalOptionsPage);
 			}
 			else
 			{
@@ -514,16 +482,17 @@ namespace Acuminator.Vsix
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
 			SharedVsSettings.VSVersion = VSVersion;
 
-			InitializeOutOfProcessSettingsSharing(codeAnalysisSettings, bannedApiSettings);
+			InitializeOutOfProcessSettingsSharing(codeAnalysisSettings, bannedApiSettings, generalOptionsPage);
 		}
 
 		private void InitializeOutOfProcessSettingsSharing(CodeAnalysisSettings initialCodeAnalysisSettings,
-														   BannedApiSettings initialBannedApiSettings)
+														   BannedApiSettings initialBannedApiSettings,
+														   GeneralOptionsPage? generalOptionsPage)
 		{
-			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace) || GeneralOptionsPage == null)
+			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace) || generalOptionsPage == null)
 				return;
 
-			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, initialCodeAnalysisSettings, initialBannedApiSettings);
+			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(generalOptionsPage, initialCodeAnalysisSettings, initialBannedApiSettings);
 		}
 
 		private static void DeployCodeSnippets(AcuminatorMyDocumentsStorage? myDocumentsStorage)
@@ -541,33 +510,5 @@ namespace Acuminator.Vsix
 				AcuminatorLogger.LogMessage("Failed to initialize Code Snippets", LogMode.Warning);
 			}
 		}
-
-		#region Package Settings
-		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? AcuminatorConstants.Settings.Coloring.ColoringEnabledDefault;
-
-		public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? AcuminatorConstants.Settings.Outlining.UseBqlOutliningDefault;
-
-		public bool UseBqlDetailedOutlining => 
-			GeneralOptionsPage?.UseBqlDetailedOutlining ?? AcuminatorConstants.Settings.Outlining.UseBqlDetailedOutliningDefault;
-
-		public bool PXGraphColoringEnabled => 
-			GeneralOptionsPage?.PXGraphColoringEnabled ?? AcuminatorConstants.Settings.Coloring.PXGraphColoringEnabledDefault;
-
-		public bool PXActionColoringEnabled => 
-			GeneralOptionsPage?.PXActionColoringEnabled ?? AcuminatorConstants.Settings.Coloring.PXActionColoringEnabledDefault;
-
-		public bool ColorOnlyInsideBQL => 
-			GeneralOptionsPage?.ColorOnlyInsideBQL ?? AcuminatorConstants.Settings.Coloring.ColorOnlyInsideBQLDefault;
-
-		public string? BannedApiFilePath => GeneralOptionsPage?.BannedApiFilePath;
-
-		public string? AllowedApiFilePath => GeneralOptionsPage?.AllowedApiFilePath;
-
-		public bool ExpandRootNodes => CodeMapOptionsPage?.ExpandRootNodes ?? AcuminatorConstants.Settings.CodeMap.ExpandRootNodesDefault;
-
-		public bool ExpandRegularNodes => CodeMapOptionsPage?.ExpandRegularNodes ?? AcuminatorConstants.Settings.CodeMap.ExpandRegularNodesDefault;
-
-		public bool ExpandAttributeNodes => CodeMapOptionsPage?.ExpandAttributeNodes ?? AcuminatorConstants.Settings.CodeMap.ExpandAttributeNodesDefault;
-		#endregion
 	}
 }

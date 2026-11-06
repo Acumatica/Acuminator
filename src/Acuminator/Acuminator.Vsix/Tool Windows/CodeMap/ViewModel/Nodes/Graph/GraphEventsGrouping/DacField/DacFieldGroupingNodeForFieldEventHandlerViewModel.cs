@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public DacFieldGroupingNodeForFieldEventHandlerViewModel(DacGroupingNodeBaseViewModel dacVM, string dacFieldName, 
 																 IEnumerable<GraphFieldEventHandlerInfo> dacFieldEventHandlers, 
-																 Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+																 ExpandCreatedNodesFunction isExpandedCalculator) :
 															base(dacVM, dacFieldName, dacFieldEventHandlers, isExpandedCalculator)
 		{
 		}

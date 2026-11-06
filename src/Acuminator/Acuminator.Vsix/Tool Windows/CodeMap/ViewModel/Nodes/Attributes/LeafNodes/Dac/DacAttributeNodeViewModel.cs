@@ -22,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel>? ExtraInfos { get; }
 
-		public DacAttributeNodeViewModel(TreeNodeViewModel parent, DacAttributeInfo attributeInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+		public DacAttributeNodeViewModel(TreeNodeViewModel parent, DacAttributeInfo attributeInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 									base(parent, attributeInfo, isExpandedCalculator)
 		{
 			var dacFriendlyNameInfo = GetDacFriendlyNameForPXCacheNameAttribute();

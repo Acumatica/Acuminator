@@ -15,7 +15,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public ConfigureMethodInfo ConfigureMethod => (ConfigureMethodInfo)MemberInfo;
 
 		public GraphConfigureMethodNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
-												 ConfigureMethodInfo configureMethodInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+												 ConfigureMethodInfo configureMethodInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 											base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM,
 												 configureMethodInfo, isExpandedCalculator)
 		{

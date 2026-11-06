@@ -82,7 +82,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual TResult VisitNode(GraphStaticConstructorNodeViewModel graphInstanceConstructorNode) =>
 			DefaultVisit(graphInstanceConstructorNode);
 
-		public virtual TResult VisitNode(GraphBaseMembeOverrideNodeViewModel graphBaseMembeOverrideNode) =>
+		public virtual TResult VisitNode(GraphBaseMemberOverrideNodeViewModel graphBaseMembeOverrideNode) =>
 			DefaultVisit(graphBaseMembeOverrideNode);
 		#endregion
 

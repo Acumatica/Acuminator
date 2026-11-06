@@ -48,6 +48,15 @@ namespace Acuminator.Vsix.Utilities
 			return service as TService;
 		}
 
+		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider? serviceProvider)
+		{
+			if (serviceProvider == null)
+				return null;
+
+			VisualStudioWorkspace? workspace = await serviceProvider.GetVSWorkspaceAsync();
+			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
+		}
+
 		internal static async Task<VisualStudioWorkspace?> GetVSWorkspaceAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
@@ -58,19 +67,13 @@ namespace Acuminator.Vsix.Utilities
 			return componentModel?.GetService<VisualStudioWorkspace>();
 		}
 
-		internal static async Task<string?> GetSolutionPathAsync(this IAsyncServiceProvider? serviceProvider)
-		{
-			if (serviceProvider == null)
-				return null;
-
-			VisualStudioWorkspace? workspace = await serviceProvider.GetVSWorkspaceAsync();	
-			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
-		}
-
 		internal static async Task<IOutliningManager?> GetOutliningManagerAsync(this IAsyncServiceProvider? serviceProvider, ITextView? textView)
 		{
 			if (serviceProvider == null || textView == null)
 				return null;
+
+			if (!ThreadHelper.CheckAccess())
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 			IComponentModel? componentModel = await serviceProvider.GetServiceAsync<SComponentModel, IComponentModel>(throwOnFailure: false);
 			IOutliningManagerService? outliningManagerService = componentModel?.GetService<IOutliningManagerService>();
@@ -81,10 +84,28 @@ namespace Acuminator.Vsix.Utilities
 			return outliningManagerService.GetOutliningManager(textView);
 		}
 
+		internal static IWpfTextView? GetWpfTextView(this IServiceProvider? serviceProvider)
+		{
+			if (serviceProvider == null || !ThreadHelper.CheckAccess())
+				return null;
+
+			IVsTextManager? textManager = serviceProvider.GetService<SVsTextManager, IVsTextManager>(throwOnFailure: false);
+
+			if (textManager == null || textManager.GetActiveView(1, null, out IVsTextView textView) != VSConstants.S_OK || textView == null)
+				return null;
+
+			IComponentModel? componentModel = serviceProvider.GetService<SComponentModel, IComponentModel>(throwOnFailure: false);
+			IVsEditorAdaptersFactoryService? vsEditorAdaptersFactoryService = componentModel?.GetService<IVsEditorAdaptersFactoryService>();
+			return vsEditorAdaptersFactoryService?.GetWpfTextView(textView);
+		}
+
 		internal static async Task<IWpfTextView?> GetWpfTextViewAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)
 				return null;
+
+			if (!ThreadHelper.CheckAccess())
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
 
 			IVsTextManager? textManager = await serviceProvider.GetServiceAsync<SVsTextManager, IVsTextManager>(throwOnFailure: false);
 			
@@ -149,7 +170,9 @@ namespace Acuminator.Vsix.Utilities
 			if (serviceProvider == null)
 				return null;
 
-			await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+			if (!ThreadHelper.CheckAccess())
+				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+
 			var errorService = await serviceProvider.GetServiceAsync<SVsErrorList, IVsTaskList>(throwOnFailure: false);
 
 			if (errorService == null)

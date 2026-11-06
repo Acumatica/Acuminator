@@ -30,14 +30,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			CodeAnalysisSettings = codeAnalysisSettings;
 			SettingsProvidedExternally = codeAnalysisSettings != null;
-
-			try
-			{
-				AcuminatorVsixPackageLoader.EnsurePackageLoaded();
-			}
-			catch (Exception e)
-			{
-			}
 		}
 
 		[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1025:Configure generated code analysis", 

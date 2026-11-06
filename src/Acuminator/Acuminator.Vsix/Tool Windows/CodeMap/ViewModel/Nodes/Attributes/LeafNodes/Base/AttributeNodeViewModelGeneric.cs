@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public new TAttributeInfo AttributeInfo => (TAttributeInfo)base.AttributeInfo;
 
-		protected AttributeNodeViewModel(TreeNodeViewModel parent, TAttributeInfo attributeInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+		protected AttributeNodeViewModel(TreeNodeViewModel parent, TAttributeInfo attributeInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 									base(parent, attributeInfo, isExpandedCalculator)
 		{
 		}

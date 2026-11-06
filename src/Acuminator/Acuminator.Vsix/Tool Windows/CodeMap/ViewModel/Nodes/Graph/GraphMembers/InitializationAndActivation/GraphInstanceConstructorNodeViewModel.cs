@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public GraphInstanceConstructorNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
-													 InstanceConstructorInfo instanceConstructorInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+													 InstanceConstructorInfo instanceConstructorInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 												base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM,
 													 instanceConstructorInfo, isExpandedCalculator)
 		{		

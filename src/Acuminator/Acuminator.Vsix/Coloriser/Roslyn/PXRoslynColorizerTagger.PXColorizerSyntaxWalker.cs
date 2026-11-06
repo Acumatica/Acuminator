@@ -1,17 +1,15 @@
 ﻿#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,8 +17,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-
-using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -41,6 +37,18 @@ namespace Acuminator.Vsix.Coloriser
 
 			private bool IsInsideBqlCommand => _bqlDeepnessLevel > 0;
 
+			private GeneralOptionsPage? GeneralOptionsPage => _tagger.GeneralOptionsPage;
+
+			private bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? Constants.Settings.Coloring.ColorOnlyInsideBQLDefault;
+
+			private bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? Constants.Settings.Coloring.PXActionColoringEnabledDefault;
+
+			private bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? Constants.Settings.Coloring.PXGraphColoringEnabledDefault;
+
+			private bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? Constants.Settings.Outlining.UseBqlOutliningDefault;
+			
+			private bool UseBqlDetailedOutlining => GeneralOptionsPage?.UseBqlDetailedOutlining ?? Constants.Settings.Outlining.UseBqlDetailedOutliningDefault;
+
 			public PXColorizerSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
 									  base(SyntaxWalkerDepth.Node)
 			{
@@ -51,7 +59,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			public override void VisitIdentifierName(IdentifierNameSyntax node)
 			{
-				if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
+				if (ColorOnlyInsideBQL && !IsInsideBqlCommand)
 				{
 					if (!_cancellationToken.IsCancellationRequested)
 						base.VisitIdentifierName(node);
@@ -169,7 +177,7 @@ namespace Acuminator.Vsix.Coloriser
 			private void ColorAndOutlineBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol,
 															 IClassificationType classificationType, PXCodeType coloredCodeType)
 			{
-				if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
+				if (ColorOnlyInsideBQL && !IsInsideBqlCommand)
 				{
 					if (!_cancellationToken.IsCancellationRequested)
 						base.VisitGenericName(genericNode);
@@ -187,7 +195,7 @@ namespace Acuminator.Vsix.Coloriser
 						return;
 					case PXCodeType.PXAction:
 						{
-							if (AcuminatorVSPackage.Instance?.PXActionColoringEnabled == true)
+							if (PXActionColoringEnabled)
 								AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
 							if (!_cancellationToken.IsCancellationRequested)
@@ -208,7 +216,7 @@ namespace Acuminator.Vsix.Coloriser
 				{
 					_bqlDeepnessLevel++;
 
-					if (AcuminatorVSPackage.Instance?.UseBqlOutlining == true && AcuminatorVSPackage.Instance?.UseBqlDetailedOutlining == true)
+					if (UseBqlOutlining && UseBqlDetailedOutlining)
 					{
 						TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
 
@@ -251,7 +259,7 @@ namespace Acuminator.Vsix.Coloriser
 				if (_cancellationToken.IsCancellationRequested)
 					return;
 
-				if (AcuminatorVSPackage.Instance?.ColorOnlyInsideBQL == true && !IsInsideBqlCommand)
+				if (ColorOnlyInsideBQL && !IsInsideBqlCommand)
 				{
 					if (!_cancellationToken.IsCancellationRequested)
 						base.VisitQualifiedName(node);
@@ -402,9 +410,11 @@ namespace Acuminator.Vsix.Coloriser
 					: null;
 
 				if (classificationType == null ||
-				   (coloredCodeType!.Value == PXCodeType.PXGraph && AcuminatorVSPackage.Instance?.PXGraphColoringEnabled == false) ||
-				   (coloredCodeType.Value == PXCodeType.PXAction && AcuminatorVSPackage.Instance?.PXActionColoringEnabled == false))
+				   (coloredCodeType!.Value == PXCodeType.PXGraph && !PXGraphColoringEnabled) ||
+				   (coloredCodeType.Value == PXCodeType.PXAction && !PXActionColoringEnabled))
+				{
 					return;
+				}
 
 				AddClassificationTag(span, classificationType);
 			}
@@ -420,7 +430,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			private void AddOutliningTagToBQL(TextSpan span)
 			{
-				if (!AcuminatorVSPackage.Instance.UseBqlOutlining || _tagger.Snapshot == null)
+				if (!UseBqlOutlining || _tagger.Snapshot == null)
 					return;
 
 				ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(_tagger.Snapshot);
@@ -429,7 +439,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			private void AddOutliningTagToAttribute(AttributeListSyntax attributeListNode)
 			{
-				if (AcuminatorVSPackage.Instance?.UseBqlOutlining != true || attributeListNode.Attributes.Count > 1)
+				if (!UseBqlOutlining || attributeListNode.Attributes.Count > 1)
 					return;
 
 				AttributeSyntax attribute = attributeListNode.ChildNodes()

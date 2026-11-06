@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public AttributePlacement Placement => AttributeInfo.Placement;
 
-		protected AttributeNodeViewModel(TreeNodeViewModel parent, AttributeInfoBase attributeInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+		protected AttributeNodeViewModel(TreeNodeViewModel parent, AttributeInfoBase attributeInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 									base(parent?.Tree!, parent, isExpandedCalculator)
 		{
 			AttributeInfo = attributeInfo.CheckIfNull();
@@ -100,7 +100,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private TooltipInfo CalculateAttributeTooltip()
 		{
-			var cancellationToken = Tree.CodeMapViewModel.CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken;
+			var cancellationToken = AcuminatorVSPackage.Instance?.DisposalToken ?? default;
 			var attributeListNode = AttributeInfo.AttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
 			string? tooltip;
 

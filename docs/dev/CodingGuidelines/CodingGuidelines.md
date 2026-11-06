@@ -27,7 +27,6 @@
     * [Parametrized Diagnostic Messages](#parametrized-diagnostic-messages)
     * [Test Methods](#test-methods)
     * [Async Anonymous Delegates](#async-anonymous-delegates)
-    * [Value Tuples (Obsolete)](#value-tuples-obsolete)
     * [Debugging Hints](#debugging-hints)
         * [Out-Of-Process Analysis](#out-of-process-analysis)
         * [Parallel Execution of Diagnostics Under Debug](#parallel-execution-of-diagnostics-under-debug)
@@ -191,10 +190,10 @@ The local functions can be used in the following three cases:
 Acuminator actively uses [nullable reference types analysis](https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references) from C# 8. This feature is enabled by default in the Acuminator codebase except unit tests. 
 The nullable reference types analysis helps to avoid null reference exceptions and improve the overall code quality. Thus, it is mandatory to use it. 
 
-The nullability analysis will work by default in `Acuminator.Analyzers` and `Acuminator.Utilities` projects. New code added to these projects will be checked automaically. 
+The nullability analysis will work by default in `Acuminator.Analyzers` and `Acuminator.Utilities` projects. New code added to these projects will be checked automatically. 
 
 However, the analysis is disabled in the unit tests projects, and it works strange in the `Acuminator.Vsix` project probably because it is a special VS SDK project and it adds some unusual specifics. 
-Nullable analysis warnings are not displayed in the code editor in the `Acuminator.Vsix` project unless there is an explicit pragrma directive enabling nullability analysis. 
+Nullable analysis warnings are not displayed in the code editor in the `Acuminator.Vsix` project unless there is an explicit pragma directive enabling nullability analysis. 
 However, the analysis errors are still displayed in the *Output* tool window.
 
 Due to the reasons explained above, you must add nullable pragma directive as a first line to every new code file in these projects:
@@ -228,10 +227,10 @@ Overall Acuminator analyzers can be divided into two categories:
 
 #### Independent Analyzers
 
-Independent analyzers are analyzers which cannot be easily grouped together. This happens because the checks performed by independant analyzers are applied to code elements that have little in common. This feature makes any usefull code or data sharing impossible. 
+Independent analyzers are analyzers which cannot be easily grouped together. This happens because the checks performed by independent analyzers are applied to code elements that have little in common. This feature makes any useful code or data sharing impossible. 
 For example, one independent analyzer checks everywhere in code that the number of arguments passed to a BQL query corresponds to the number of parameters declared by the query. Another independent analyzer checks everywhere in code that graphs are not instantiated with a constructor. These two analyzers have nothing to share with each other.
 
-Independent analyzers should be derived from the `PXDiagnosticAnalyzer` class. This class provides base support for the Acuminator infrastructure, unit tests, and some general checks. It also intializes derived analyzers and supplies them with the following data:
+Independent analyzers should be derived from the `PXDiagnosticAnalyzer` class. This class provides base support for the Acuminator infrastructure, unit tests, and some general checks. It also initializes derived analyzers and supplies them with the following data:
 * Acuminator code analysis settings. It is a collection of flags which indicates such features as whether the code analysis is enabled, or whether the ISV mode is enabled. See the `CodeAnalysisSettings` class declaration for more details.
 * The `PXContext` object. It is a wrapper over Roslyn `Compilation` which contains the Roslyn `ISymbol` symbols specific to Acumatica ERP. If you need to add a new symbol you should add it to `PXContext` or to one of its collection of symbols.  
 
@@ -269,7 +268,7 @@ From the Roslyn point of view, aggregated analyzers are not different from a nor
 * `DacAnalyzersAggregator` for the analysis of DACs and DAC extensions. It tries to obtain a DAC semantic model (the `DacSemanticModel` object) for a DAC or DAC extension type. In case of success, all aggregated DAC analyzers are executed and each analyzer receives the calculated DAC semantic model.
 * `EventHandlerAnalyzer` for the analysis of event handlers. It works with methods and tries to obtain a type of graph event a method represents. If the method represents some graph event, then all aggregated event handler analyzers are executed on the method and each analyzer receives the calculated type of graph event.
 
-Aggregator analyzers can be considered to be independent analyzers. They are derived from `PXDiagnosticAnalyzer` and are normal Roslyn analyzers with a collection of aggregated analyzers responsible for independent subchecks.
+Aggregator analyzers can be considered to be independent analyzers. They are derived from `PXDiagnosticAnalyzer` and are normal Roslyn analyzers with a collection of aggregated analyzers responsible for independent sub checks.
 Their logic is very simple: An aggregator collects all information shared between aggregated analyzers from the code, performs some shared checks on the code, and then concurrently calls all aggregated analyzers passing them the collected data.
 Each aggregator stores a list of aggregated analyzers. All new aggregated analyzers must be added to the list of aggregated analyzers of the corresponding aggregator.
 
@@ -281,7 +280,7 @@ The aggregated analyzers should be either derived from one of the following base
 The base classes provide a default implementation for the corresponding interfaces. Usually this is enough but sometimes you may need to implement an analyzer which can be attributed to more than one group. In this case you can implement corresponding interfaces directly.
 
 Acuminator includes the following extensibility points for aggregated analyzers:
-* The `ShouldAnalyze` method which determines whether the analyzer shoud be executed on the input object. This method accepts shared information passed to the analyzer as parameter which allows it to make more specialized checks.
+* The `ShouldAnalyze` method which determines whether the analyzer should be executed on the input object. This method accepts shared information passed to the analyzer as parameter which allows it to make more specialized checks.
 * The `Analyze` method which accepts shared information passed to the analyzer. You should place your analyzer's logic in this method.
 
 Note that unlike independent analyzers, aggregated analyzers do not need any constructors to be declared.
@@ -321,7 +320,7 @@ cancellationToken.ThrowIfCancellationRequested();
 ```
 
 There is one exception to this rule. Do not pass cancellation token to the `ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync()` in the VSIX project. This method has overload that accepts cancellation.
-However, it doesn't cancel the operation. It just cancels the transition to the UI thread if it weren't already done scheduling the continuation on a threadpool. This is not expected by our code and should be avoided.
+However, it doesn't cancel the operation. It just cancels the transition to the UI thread if it weren't already done scheduling the continuation on a thread pool. This is not expected by our code and should be avoided.
 
 ### Demo Solution
 
@@ -456,27 +455,16 @@ https://docs.microsoft.com/ru-ru/dotnet/framework/configure-apps/file-schema/run
 
 Overall, the passing of asynchronous methods to `analyzer.RegisterXXX `is an unwanted scenario that should be avoided at all costs.
 
-### Value Tuples (Obsolete)
-
-There is an issue with value tuples in Visual Studio 2017. There is a dependency conflict between some packages depending on different versions of `System.ValueTuple` which proved to be impossible to fix.
-The issue appear as a `MissingMethod` exception being thrown on attempt to call public API method with signature containing value tuples if the caller and callee are declared in different assemblies.
-For example, consider a method `TryAwait` (see code below) declared in Acuminator.Utilities:
-
-```C#
-public Task<(bool IsSuccess, TResult Result)> TryAwait<TResult>(this Task<TResult> task);
-```
-
-If you call it from Acuminator.Vsix then in Visual Studio 2017 the `MissingMethod` exception will be thrown. However, everything will be ok in Visual Studio 2019.
-Therefore, until we drop the support for Visual Studio 2017, do not declare public API containing value tuples. Either declare it as internal API or create custom structs for it.
-
 ### Debugging Hints
 
 #### Out-Of-Process Analysis
 
-There is an unobvious issue with debugging observed on the latest versions of Visual Studio 2019 (starting from 16.8.0). The breakpoints set inside Roslyn analyzers are not hit for no obvious reason. The root cause of this problem lies in a new Visual Studio perfomance optimization which moves execution of all Roslyn analyzers out of the Visual Studio process into a separate 64-bit process. This action is regulated by the  following Visual Studio setting: *Tools -> Options -> Text Editor -> C# -> Advanced -> Use 64-bit process for code analysis*.
+There is an unobvious issue with debugging observed on the latest versions of Visual Studio 2019 (starting from 16.8.0). The breakpoints set inside Roslyn analyzers are not hit for no obvious reason. The root cause of this problem lies in a new Visual Studio performance optimization which moves execution of all Roslyn analyzers out of the Visual Studio process into a separate 64-bit process. This action is regulated by the  following Visual Studio setting: *Tools -> Options -> Text Editor -> C# -> Advanced -> Use 64-bit process for code analysis*.
 You need to do one of the following:
 * Disable this setting in an experimental instance of Visual Studio.
-* Perform a multiprocess debugging by attaching your debugger to a second process with loaded Roslyn analyzers. The name of the process should look like the following: *ServiceHub.RoslynCodeAnalysisService.exe*.
+* Perform a multi-process debugging by attaching your debugger to a second process with loaded Roslyn analyzers. The name of the process depends on the version of experimental Visual Studio you use:
+  - For VS 2022 and older versions the name of the code analysis process should look like *ServiceHub.RoslynCodeAnalysisService.exe*.
+  - For VS 2026 the name of the code analysis process should look like *DevHub.exe*.
 
 The first option is much simpler but you have to check that your diagnostic works correctly when the out of process analysis is enabled for Visual Studio.
 
@@ -494,7 +482,7 @@ The first option is much simpler but you have to check that your diagnostic work
 
 You can find flags indicating the version of analyzed Acumatica DLLs in the `Acuminator.Utilities.Roslyn.Semantic.PXContext` type.
 
-If you need to add a new flag indicating the version of Acumatica DLLs, you should add it to the `PXContext` class. The check for Acumatica version has to be based on the presense of some new API
+If you need to add a new flag indicating the version of Acumatica DLLs, you should add it to the `PXContext` class. The check for Acumatica version has to be based on the presence of some new API
 added in the specific version of Acumatica DLLs. We can't rely on standard .Net assembly version attributes because Acumatica assemblies don't have them or they are not updated properly.
 
 *Remember! Only public API can be used to check the version of Acumatica DLLs because Roslyn does not load private and internal metadata of the external dependencies of the analyzed code.*

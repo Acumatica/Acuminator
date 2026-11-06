@@ -7,15 +7,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -29,12 +25,11 @@ namespace Acuminator.Vsix.Logger
 	/// </summary>
 	internal class AcuminatorLogger : IDisposable
 	{
-		private readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
-		private readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
-		private readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
-
 		private readonly AcuminatorVSPackage _package;
 		private readonly bool _swallowUnobservedTaskExceptions;
+
+		[ThreadStatic]
+		private static bool _isLoggingOnThisThread;
 
 		public AcuminatorLogger(AcuminatorVSPackage acuminatorPackage, bool swallowUnobservedTaskExceptions)
 		{
@@ -65,21 +60,26 @@ namespace Acuminator.Vsix.Logger
 
 		private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
 		{
-			// Skip logging numerous VS timeout exceptions to decrease contention for UI thread
 			var innerExceptions = e.Exception.Flatten().InnerExceptions;
 
+			// Skip logging numerous VS timeout exceptions to decrease contention for UI thread
 			if (innerExceptions.All(exception => exception is TimeoutException))
+				return;
+
+			var acuminatorExceptions = innerExceptions.Where(IsExceptionFromAcuminatorAssembly).ToList(innerExceptions.Count);
+
+			if (acuminatorExceptions.Count == 0)	// Do not observe exceptions not from Acuminator
 				return;
 
 			LogMode logMode = LogMode.Error;
 
-			if (_swallowUnobservedTaskExceptions && !e.Observed)
+			if (_swallowUnobservedTaskExceptions && !e.Observed && acuminatorExceptions.Count == innerExceptions.Count)
 			{
 				e.SetObserved();
 				logMode = LogMode.Warning;
 			}
 
-			foreach (Exception exception in innerExceptions)
+			foreach (Exception exception in acuminatorExceptions)
 			{
 				LogException(exception, logOnlyFromAcuminatorAssemblies: false, logMode);
 			} 
@@ -103,28 +103,46 @@ namespace Acuminator.Vsix.Logger
 		public void LogException(Exception? exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode, 
 								 [CallerMemberName]string? reportedFrom = null)
 		{
-			if (exception == null || logMode == LogMode.None)
+			if (exception == null || logMode == LogMode.None || _isLoggingOnThisThread)
 			{
 				return;
 			}
-			else if (logOnlyFromAcuminatorAssemblies &&
-					exception.Source != AnalyzersDll && exception.Source != UtilitiesDll && exception.Source != VsixDll)
+			else if (logOnlyFromAcuminatorAssemblies && !IsExceptionFromAcuminatorAssembly(exception))
 			{
 				return;
 			}
 
-			IWpfTextView? activeTextView = GetActiveTextViewWithTimeout(timeoutSeconds: 20);
+			_isLoggingOnThisThread = true;
 
-			if (activeTextView == null)
-				return;
+			try
+			{
+				IWpfTextView? activeTextView = GetActiveTextViewIfOnUiThread();
+				var currentDocument = GetDocumentSafe(activeTextView);
+				string logMessage = CreateLogMessageFromException(exception, currentDocument?.FilePath, logMode, reportedFrom, addErrorPrefix: true);
 
-			Document? currentDocument = activeTextView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+				LogMessageToActivityLog(logMessage, logMode);
+			}
+			catch
+			{
+				// The logger must never throw
+			}
+			finally
+			{
+				_isLoggingOnThisThread = false;
+			}
 
-			if (currentDocument == null)
-				return;
-
-			string logMessage = CreateLogMessageFromException(exception, currentDocument.FilePath, logMode, reportedFrom, addErrorPrefix: true);
-			LogMessageToActivityLog(logMessage, logMode);
+			//-------------------------------------------------------------Local Function----------------------------------------------------------------
+			static Document? GetDocumentSafe(IWpfTextView? activeTextView)
+			{
+				try
+				{
+					return activeTextView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+				}
+				catch
+				{
+					return null;
+				}
+			}
 		}
 
 		public static void LogException(Exception? exception, LogMode logMode = LogMode.Error, bool addErrorPrefix = false,
@@ -137,14 +155,15 @@ namespace Acuminator.Vsix.Logger
 			LogMessageToActivityLog(logMessage, logMode);
 		}
 
-		private IWpfTextView? GetActiveTextViewWithTimeout(double timeoutSeconds)
+		private IWpfTextView? GetActiveTextViewIfOnUiThread()
 		{
+			// If we are not on the UI thread, just return null
+			if (!ThreadHelper.CheckAccess())
+				return null;
+
 			try
 			{
-				using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
-
-				var joinableTask = AcuminatorVSPackage.JTF.RunAsync(() => _package.GetWpfTextViewAsync());
-				var activeTextView = joinableTask.Join(cts.Token);
+				IWpfTextView? activeTextView = _package.GetWpfTextView();
 				return activeTextView;
 			}
 			catch
@@ -203,5 +222,8 @@ namespace Acuminator.Vsix.Logger
 			AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
 			TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
 		}
+
+		private static bool IsExceptionFromAcuminatorAssembly(Exception exception) =>
+			exception.StackTrace?.Contains(AcuminatorVSPackage.PackageName) == true;
 	}
 }

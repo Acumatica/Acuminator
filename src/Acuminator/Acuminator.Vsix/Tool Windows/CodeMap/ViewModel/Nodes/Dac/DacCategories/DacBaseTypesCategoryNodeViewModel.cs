@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public DacExtensionInfo? BaseDacExtensionInfo { get; }
 
 		public DacBaseTypesCategoryNodeViewModel(DacNodeViewModel dacViewModel, TreeNodeViewModel parent, 
-												 Func<TreeNodeViewModel, bool> isExpandedCalculator) : 
+												 ExpandCreatedNodesFunction isExpandedCalculator) : 
 											base(dacViewModel, parent, DacMemberCategory.BaseTypes, isExpandedCalculator)
 		{
 			if (DacViewModel.DacModel.DacType == DacType.Dac)

@@ -19,7 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public DacPropertyInfo PropertyInfo => (MemberInfo as DacPropertyInfo)!;
 
 		public DacFieldPropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, TreeNodeViewModel parent, 
-											 DacPropertyInfo propertyInfo, Func<TreeNodeViewModel, bool> isExpandedCalculator) :
+											 DacPropertyInfo propertyInfo, ExpandCreatedNodesFunction isExpandedCalculator) :
 										base(dacMemberCategoryVM, parent, propertyInfo, isExpandedCalculator)
 		{
 		}

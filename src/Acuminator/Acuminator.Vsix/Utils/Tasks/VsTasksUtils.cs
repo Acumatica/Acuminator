@@ -2,13 +2,14 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 
 using Acuminator.Utilities.Common;
 
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Threading;
-using Microsoft.VisualStudio.Telemetry;
 using Microsoft.Internal.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Telemetry;
+using Microsoft.VisualStudio.Threading;
 
 namespace Acuminator.Vsix.Utilities;
 
@@ -17,6 +18,37 @@ namespace Acuminator.Vsix.Utilities;
 /// </summary>
 public static class VsTasksUtils
 {
+	extension(CancellationTokenSource? cancellationTokenSource)
+	{
+		/// <summary>
+		/// Creates <see cref="CancellationTokenSource"/> linked to VSIX package's <see cref="AsyncPackage.DisposalToken"/>.
+		/// </summary>
+		/// <returns>
+		/// The new token source linked to VSIX package's <see cref="AsyncPackage.DisposalToken"/>.
+		/// </returns>
+		public static CancellationTokenSource CreateTokenSourceLinkedToPackage() =>
+			CancellationTokenSource.CreateLinkedTokenSource(AcuminatorVSPackage.Instance?.DisposalToken ?? CancellationToken.None);
+
+		/// <summary>
+		/// Cancel <paramref name="cancellationTokenSource"/> safely.
+		/// </summary>
+		public void CancelSafely()
+		{
+			if (cancellationTokenSource == null || cancellationTokenSource.IsCancellationRequested)
+				return;
+
+			try
+			{
+				cancellationTokenSource.Cancel();
+			}
+			catch (ObjectDisposedException)
+			{
+				// Ignore the exception if the token source has already been disposed.
+			}
+		}
+	}
+
+
 	/// <summary>
 	/// A <see cref="Func{System.Threading.Tasks.Task}"/> extension method that runs async method <paramref name="asyncMethod"/> 
 	/// in a correct context of JTF, files exceptions and forgets.

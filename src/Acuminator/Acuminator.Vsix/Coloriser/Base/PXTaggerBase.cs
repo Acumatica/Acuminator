@@ -20,11 +20,17 @@ namespace Acuminator.Vsix.Coloriser
 {
 	public abstract class PXTaggerBase
 	{
+		private const int MaxOptionsRetryCount = 10;
+
+		private int _optionsRetryCount = 0;
+
 		private readonly TextDocumentDisposedNotification _disposedNotification;
 
 #pragma warning disable CS0067
 		public event EventHandler<SnapshotSpanEventArgs>? TagsChanged;
 #pragma warning restore CS0067
+
+		protected bool Disposed { get; private set; }
 
 		protected ITextBuffer Buffer { get; }
 
@@ -32,11 +38,15 @@ namespace Acuminator.Vsix.Coloriser
 
 		protected bool ColoringSettingsChanged { get; private set; }
 
+		private bool _subscribedToColoringSettingChanged;
+
 		protected bool SubscribedToSettingsChanges { get; private set; }
 
 		public abstract bool HasReferenceToAcumaticaPlatform { get; }
 
 		protected bool CacheCheckingEnabled { get; }
+
+		protected GeneralOptionsPage? GeneralOptionsPage { get; private set; }
 
 		protected PXTaggerBase(ITextBuffer buffer, ITextDocumentFactoryService textDocumentFactory, 
 							   bool subscribeToSettingsChanges, bool useCacheChecking)
@@ -44,19 +54,65 @@ namespace Acuminator.Vsix.Coloriser
 			Buffer = buffer.CheckIfNull();
 			SubscribedToSettingsChanges = subscribeToSettingsChanges;
 			CacheCheckingEnabled = useCacheChecking;
+			GeneralOptionsPage = AcuminatorVSPackage.Instance?.TryGetGeneralOptionsPage();
 
-			if (SubscribedToSettingsChanges)
-			{
-				var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
-
-				if (genOptionsPage != null)
-				{
-					genOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
-				}
-			}
+			if (GeneralOptionsPage == null)
+				StartAttemptToInitializeOptionsPageAsync(isCalledFromGetTags: false);
+			else
+				SubscribeOnColoringSettingChangedEvent();
 
 			_disposedNotification = new TextDocumentDisposedNotification(textDocumentFactory, Buffer);
 			_disposedNotification.CurrentTextDocumentDisposed += CleanupOnTextDocumentDisposed;
+		}
+
+		protected void StartAttemptToInitializeOptionsPageAsync(bool isCalledFromGetTags)
+		{
+			var initializeOptionsAsync = () => InitializeOptionsPageAsync(isCalledFromGetTags);
+			initializeOptionsAsync
+				.FileAndForgetAcuminatorTask($"vs/{AcuminatorVSPackage.PackageName}/{GetType().Name}/{nameof(InitializeOptionsPageAsync)}");
+		}
+
+		private async Task InitializeOptionsPageAsync(bool isCalledFromGetTags)
+		{
+			if (GeneralOptionsPage != null || AcuminatorVSPackage.Instance == null || Disposed)
+				return;
+
+			// A cheap extra check to always do without using retry attempts
+			GeneralOptionsPage = AcuminatorVSPackage.Instance.TryGetGeneralOptionsPage();
+			bool isExecutedAsynchronously = false;
+
+			if (GeneralOptionsPage == null)
+			{
+				int currentRetryCount = Interlocked.Increment(ref _optionsRetryCount);
+
+				if (currentRetryCount > MaxOptionsRetryCount)
+					return;
+
+				var pageTask = AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+				isExecutedAsynchronously = !pageTask.IsCompleted;
+				GeneralOptionsPage = await pageTask;
+			}
+
+			// If options were resolved, subscribe to the coloring setting changed event and raise tags changed if needed
+			if (GeneralOptionsPage != null)
+			{
+				SubscribeOnColoringSettingChangedEvent();
+				ColoringSettingsChanged = true;     // Set ColoringSettingsChanged flag to indicate that settings have changed and we need to re-evaluate the tags.
+
+				// Call RaiseTagsChangedAsync to ensure that the tags are updated after the options page is initialized.
+				// But do it only if we either are not inside GetTags call or if the GetTags call wasn't executed entirely on the UI thread.
+				if (!isCalledFromGetTags || isExecutedAsynchronously)
+					await RaiseTagsChangedAsync();
+			}
+		}
+
+		private void SubscribeOnColoringSettingChangedEvent()
+		{
+			if (GeneralOptionsPage != null && SubscribedToSettingsChanges && !Disposed && !_subscribedToColoringSettingChanged)
+			{
+				GeneralOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
+				_subscribedToColoringSettingChanged = true;
+			}
 		}
 
 		protected static IEnumerable<ITagSpan<TTag>> GetIntersectionWithRequestedTags<TTag>(
@@ -87,6 +143,9 @@ namespace Acuminator.Vsix.Coloriser
 		/// <param name="calledFrom">(Optional) The method raising the tag changed event.</param>
 		protected void RaiseTagsChangedAsyncAndForget([CallerMemberName] string? calledFrom = null)
 		{
+			if (Disposed)
+				return;
+
 			if (ThreadHelper.CheckAccess())
 				RaiseTagsChanged();
 			else
@@ -103,9 +162,16 @@ namespace Acuminator.Vsix.Coloriser
 
 		internal async Task RaiseTagsChangedAsync()
 		{
+			if (Disposed)
+				return;
+
 			if (!ThreadHelper.CheckAccess())
 			{
 				await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+
+				// check after switch to the main thread
+				if (Disposed)
+					return;
 			}
 
 			RaiseTagsChangedImpl();
@@ -113,6 +179,9 @@ namespace Acuminator.Vsix.Coloriser
 
 		internal void RaiseTagsChanged()
 		{
+			if (Disposed)
+				return;
+
 			if (!ThreadHelper.CheckAccess())
 			{
 				Debug.Fail("RaiseTagsChanged should be called from the UI thread. " + 
@@ -141,16 +210,13 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			Type taggerType = GetType();
 			Buffer.Properties.RemoveProperty(taggerType);
+			Disposed = true;
 			_disposedNotification.CurrentTextDocumentDisposed -= CleanupOnTextDocumentDisposed;
 
-			if (!SubscribedToSettingsChanges)
-				return;
-
-			var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
-
-			if (genOptionsPage != null)
+			if (GeneralOptionsPage != null && _subscribedToColoringSettingChanged)
 			{
-				genOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
+				GeneralOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
+				_subscribedToColoringSettingChanged = false;
 			}
 		}
 	}

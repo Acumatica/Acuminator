@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Windows.Media;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -23,28 +22,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			private set;
 		} = CancellationToken.None;
 
-		protected Func<TreeNodeViewModel, bool> ExpandCreatedNodesCalculator { get; }
+		protected ExpandCreatedNodesFunction ExpandCreatedNodesCalculator { get; }
 
 		protected TreeBuilderBase() : base([])
 		{
 			ExpandCreatedNodesCalculator = ExpandCreatedNodeCalculation;
 		}
 
-		protected virtual bool ExpandCreatedNodeCalculation(TreeNodeViewModel treeNode) =>
+		protected virtual bool ExpandCreatedNodeCalculation(TreeNodeViewModel treeNode, bool expandAttributeNodes, bool expandRegularNodes, 
+															bool expandRootNotes) =>
 			treeNode switch
 			{
-				AttributesGroupNodeViewModel 	  => AcuminatorVSPackage.Instance.ExpandAttributeNodes,
-				AttributeNodeViewModel 			  => AcuminatorVSPackage.Instance.ExpandAttributeNodes,
-				CacheAttachedNodeViewModel		  => AcuminatorVSPackage.Instance.ExpandAttributeNodes,
-				NonBqlDacPropertyNodeViewModel	  => AcuminatorVSPackage.Instance.ExpandAttributeNodes,
-				DacFieldPropertyNodeViewModel	  => AcuminatorVSPackage.Instance.ExpandAttributeNodes,
+				AttributesGroupNodeViewModel 	  => expandAttributeNodes,
+				AttributeNodeViewModel 			  => expandAttributeNodes,
+				CacheAttachedNodeViewModel		  => expandAttributeNodes,
+				NonBqlDacPropertyNodeViewModel	  => expandAttributeNodes,
+				DacFieldPropertyNodeViewModel	  => expandAttributeNodes,
 
-				DacNodeViewModel 				  => AcuminatorVSPackage.Instance.ExpandRootNodes,
-				GraphNodeViewModel 				  => AcuminatorVSPackage.Instance.ExpandRootNodes,
+				DacNodeViewModel 				  => expandRootNotes,
+				GraphNodeViewModel 				  => expandRootNotes,
 
 				BaseDacPlaceholderNodeViewModel   => false,
 				BaseGraphPlaceholderNodeViewModel => false,
-				_ 								  => AcuminatorVSPackage.Instance.ExpandRegularNodes
+				_ 								  => expandRegularNodes
 			};
 
 		public virtual TreeViewModel CreateEmptyCodeMapTree(CodeMapWindowViewModel windowViewModel) => new TreeViewModel(windowViewModel);
@@ -57,7 +57,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			BuildCodeMapTree(windowViewModel, semanticModels: windowViewModel.DocumentModel?.CodeMapSemanticModels, filterOptions, cancellation);
 
 		private TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, IReadOnlyCollection<ISemanticModel>? semanticModels,
-												FilterOptions? filterOptions,  CancellationToken cancellation)
+												FilterOptions? filterOptions, CancellationToken cancellation)
 		{
 			windowViewModel.ThrowOnNull();
 			filterOptions ??= FilterOptions.NoFilter;
