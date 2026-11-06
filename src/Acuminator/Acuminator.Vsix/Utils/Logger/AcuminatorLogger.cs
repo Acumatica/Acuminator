@@ -28,6 +28,9 @@ namespace Acuminator.Vsix.Logger
 		private readonly AcuminatorVSPackage _package;
 		private readonly bool _swallowUnobservedTaskExceptions;
 
+		[ThreadStatic]
+		private static bool _isLoggingOnThisThread;
+
 		public AcuminatorLogger(AcuminatorVSPackage acuminatorPackage, bool swallowUnobservedTaskExceptions)
 		{
 			_package = acuminatorPackage.CheckIfNull();
@@ -99,7 +102,7 @@ namespace Acuminator.Vsix.Logger
 		public void LogException(Exception? exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode, 
 								 [CallerMemberName]string? reportedFrom = null)
 		{
-			if (exception == null || logMode == LogMode.None)
+			if (exception == null || logMode == LogMode.None || _isLoggingOnThisThread)
 			{
 				return;
 			}
@@ -108,23 +111,40 @@ namespace Acuminator.Vsix.Logger
 				return;
 			}
 
-			IWpfTextView? activeTextView = ThreadHelper.CheckAccess() 
-				? GetActiveTextViewWithTimeout(timeoutSeconds: 10)
-				: null;
-
-			Document? currentDocument;
+			_isLoggingOnThisThread = true;
 
 			try
 			{
-				currentDocument = activeTextView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+				IWpfTextView? activeTextView = ThreadHelper.CheckAccess()
+					? GetActiveTextViewWithTimeout(timeoutSeconds: 10)
+					: null;
+
+				var currentDocument = GetDocumentSafe(activeTextView);
+				string logMessage = CreateLogMessageFromException(exception, currentDocument?.FilePath, logMode, reportedFrom, addErrorPrefix: true);
+
+				LogMessageToActivityLog(logMessage, logMode);
 			}
 			catch
 			{
-				currentDocument = null;
+				// The logger must never throw
+			}
+			finally
+			{
+				_isLoggingOnThisThread = false;
 			}
 
-			string logMessage = CreateLogMessageFromException(exception, currentDocument?.FilePath, logMode, reportedFrom, addErrorPrefix: true);
-			LogMessageToActivityLog(logMessage, logMode);
+			//-------------------------------------------------------------Local Function----------------------------------------------------------------
+			static Document? GetDocumentSafe(IWpfTextView? activeTextView)
+			{
+				try
+				{
+					return activeTextView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+				}
+				catch
+				{
+					return null;
+				}
+			}
 		}
 
 		public static void LogException(Exception? exception, LogMode logMode = LogMode.Error, bool addErrorPrefix = false,
