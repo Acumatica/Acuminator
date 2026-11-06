@@ -9,7 +9,7 @@ You can suppress Acuminator diagnostics in one of the following ways (which are 
 ## Diagnostic Suppression by Adding a Code Comment
 You can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PXYYYY diagnostic with Acuminator > in a comment** (where PXYYYY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
-![Suppression in a Comment](../images/SuppressDiagnosticInComment.png)
+![Suppression in a Comment](./images/SuppressDiagnosticInComment.png)
 
 The code below shows an example of a suppression comment that has been added by the code fix. A suppression comment includes the following parts:
 
@@ -38,7 +38,7 @@ To stop the suppression of a diagnostic in the code fragment, you remove the com
 ## Diagnostic Suppression in the Acuminator Suppression File
 You can suppress a particular diagnostic in a specific place in your project in the Acuminator suppression file. To suppress a diagnostic in the Acuminator suppression file, you select **Suppress the PXYYYY diagnostic with Acuminator > in the Acuminator suppression file** (where PXYYYY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
-![Suppression in the Acuminator Suppression File](../images/SuppressDiagnosticInSuppressionFile.png)
+![Suppression in the Acuminator Suppression File](./images/SuppressDiagnosticInSuppressionFile.png)
 
 The suppressed diagnostic is saved in the Acuminator suppression file, which is located in the folder of your Visual Studio project. This file has the same name as the project file and the `acuminator` extension. If there is no Acuminator suppression file in the project folder, the file is created automatically.
 
