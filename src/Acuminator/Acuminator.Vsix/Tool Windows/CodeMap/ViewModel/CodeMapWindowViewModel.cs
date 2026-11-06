@@ -430,7 +430,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			var currentCts = CancellationTokenSource.CreateTokenSourceLinkedToPackage();
 			var previousCts = Interlocked.Exchange(ref _cancellationTokenSource, currentCts);
-			previousCts?.CancelSafely();														// cancel only; its own using disposes it
+			previousCts?.CancelSafely();														// cancel only, the using in its own build will disposes it
 
 			try
 			{
@@ -478,6 +478,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						return;
 
 					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+
+					// Check that the cancellation token source are still the same as when the build started. 
+					// If not, then another build has started and we should not update the tree with the old result.
+					if (cancellationToken.IsCancellationRequested || !ReferenceEquals(_cancellationTokenSource, currentCts))
+						return;
 
 					Tree = newTreeVM;
 					AfterCodeMapTreeIsFiltered?.Invoke(this, new FilterEventArgs(filterOptions, oldFilterText: null));
