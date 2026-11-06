@@ -78,23 +78,27 @@ namespace Acuminator.Vsix.Coloriser
 			// A cheap extra check to always do without using retry attempts
 			GeneralOptionsPage = AcuminatorVSPackage.Instance.TryGetGeneralOptionsPage();
 
+			if (GeneralOptionsPage == null)
+			{
+				int currentRetryCount = Interlocked.Increment(ref _optionsRetryCount);
+
+				if (currentRetryCount > MaxOptionsRetryCount)
+					return;
+
+				GeneralOptionsPage = await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
+			}
+
+			// If options were resolved, subscribe to the coloring setting changed event and raise tags changed if needed
 			if (GeneralOptionsPage != null)
-				return;
+			{
+				SubscribeOnColoringSettingChangedEvent();
+				ColoringSettingsChanged = true;     // Set ColoringSettingsChanged flag to indicate that settings have changed and we need to re-evaluate the tags.
 
-			int currentRetryCount = Interlocked.Increment(ref _optionsRetryCount);
-
-			if (currentRetryCount > MaxOptionsRetryCount)
-				return;
-
-			GeneralOptionsPage = await AcuminatorVSPackage.Instance.GetGeneralOptionsPageAsync();
-
-			SubscribeOnColoringSettingChangedEvent();
-			ColoringSettingsChanged = true;     // Set ColoringSettingsChanged flag to indicate that settings have changed and we need to re-evaluate the tags.
-
-			// Call RaiseTagsChangedAsync to ensure that the tags are updated after the options page is initialized.
-			// But do it only if we are not already inside GetTags call.
-			if (raiseTagsChanged)
-				await RaiseTagsChangedAsync();
+				// Call RaiseTagsChangedAsync to ensure that the tags are updated after the options page is initialized.
+				// But do it only if we are not already inside GetTags call.
+				if (raiseTagsChanged)
+					await RaiseTagsChangedAsync();
+			}
 		}
 
 		private void SubscribeOnColoringSettingChangedEvent()
