@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,6 @@ using Acuminator.Utilities.Roslyn.ProjectSystem;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
@@ -31,6 +31,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		private readonly FilesStore _fileByAssembly = new FilesStore();
+
+		private static readonly ConcurrentDictionary<string, HashSet<SuppressMessage>>
+			_suppressionsByAssembly = new(StringComparer.Ordinal);
 
 		internal ICustomBuildActionSetter? BuildActionSetter { get; }
 
@@ -327,6 +330,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return;
 			}
 
+			if (Instance == null &&
+				isSuppressionEnabled &&
+				IsSuppressedByAdditionalFileSuppressions(semanticModel, diagnostic, cancellation))
+			{
+				return;
+			}
+
 			reportDiagnostic(diagnostic);
 		}
 
@@ -410,6 +420,48 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			{
 				// If the suppression work mode does not include reporting errors, return true for all diagnostics to consider them suppressed and not report them.
 				return true;
+			}
+		}
+
+		private static bool IsSuppressedByAdditionalFileSuppressions(SemanticModel semanticModel, Diagnostic diagnostic,
+			CancellationToken cancellation)
+		{
+			if (semanticModel is null || _suppressionsByAssembly.IsEmpty)
+				return false;
+
+			var (assembly, message) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnostic, cancellation);
+
+			return assembly is not null && message.IsValid
+			                            && _suppressionsByAssembly.TryGetValue(assembly, out HashSet<SuppressMessage>? suppressions)
+			                            && suppressions.Contains(message);
+		}
+
+		public static void RegisterSuppressionsByAssembly(
+			CompilationStartAnalysisContext compilationStartContext)
+		{
+			compilationStartContext.ThrowOnNull();
+
+			string? assemblyName = compilationStartContext.Compilation.AssemblyName;
+			if (assemblyName.IsNullOrWhiteSpace())
+				return;
+
+			HashSet<SuppressMessage>? suppressions =
+				AdditionalFileSuppressionReader.ParseSuppressionsForAssembly(compilationStartContext, assemblyName);
+
+			// No (or empty) suppression file for this assembly -> drop any stale entry, e.g. the file was removed.
+			if (suppressions == null)
+			{
+				_suppressionsByAssembly.TryRemove(assemblyName, out _);
+				return;
+			}
+
+			// Write only when the parsed set actually changed. For an unchanged file AdditionalFileSuppressionReader
+			// returns the same cached HashSet instance (memoized per SourceText), so the reference check skips
+			// redundant concurrent writes from the many analyzers that hit this per compilation.
+			if (!_suppressionsByAssembly.TryGetValue(assemblyName, out HashSet<SuppressMessage>? stored)
+			    || !ReferenceEquals(stored, suppressions))
+			{
+				_suppressionsByAssembly[assemblyName] = suppressions;
 			}
 		}
 	}

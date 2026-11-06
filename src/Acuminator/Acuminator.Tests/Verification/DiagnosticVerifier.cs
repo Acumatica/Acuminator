@@ -39,8 +39,33 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected Task VerifyCSharpDiagnosticAsync(string source, params DiagnosticResult[] expected) => 
+		protected Task VerifyCSharpDiagnosticAsync(string source, params DiagnosticResult[] expected) =>
 			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument: true);
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer on a single source with additional files (analyzer additional texts) passed to the analysis,
+		/// such as Acuminator suppression files.
+		/// </summary>
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="additionalFiles">Additional files (analyzer additional texts) passed to the analysis.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected Task VerifyCSharpDiagnosticAsync(string source, IEnumerable<AdditionalText> additionalFiles, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected,
+								   checkOnlyFirstDocument: true, additionalFiles);
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer on a single source compiled into an assembly with the given name and,
+		/// optionally, additional files. A distinct assembly name lets a test isolate its entries in the process-wide
+		/// suppression cache (which is keyed by assembly name) so parallel tests do not collide.
+		/// </summary>
+		/// <param name="assemblyName">The assembly name of the test compilation.</param>
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="additionalFiles">Additional files (analyzer additional texts) passed to the analysis. Can be null.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected Task VerifyCSharpDiagnosticInAssemblyAsync(string assemblyName, string source,
+															 IEnumerable<AdditionalText>? additionalFiles, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected,
+								   checkOnlyFirstDocument: true, additionalFiles, assemblyName);
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source Note: input a DiagnosticResult for each Diagnostic expected.
@@ -163,12 +188,14 @@ namespace Acuminator.Tests.Verification
 		/// <returns>
 		/// An asynchronous result.
 		/// </returns>
-		private async Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, 
-												  DiagnosticResult[] expected, bool checkOnlyFirstDocument)
+		private async Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer,
+												  DiagnosticResult[] expected, bool checkOnlyFirstDocument,
+												  IEnumerable<AdditionalText>? additionalFiles = null,
+												  string? assemblyName = null)
 		{
 			try
 			{
-				var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, checkOnlyFirstDocument)
+				var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, checkOnlyFirstDocument, additionalFiles, assemblyName)
 											.ConfigureAwait(false);
 				VerifyDiagnosticResults(diagnostics, analyzer, expected);
 			}
@@ -440,13 +467,17 @@ namespace Acuminator.Tests.Verification
 		/// <param name="language">The language the source classes are in.</param>
 		/// <param name="analyzer">The analyzer to be run on the sources.</param>
 		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="additionalFiles">(Optional) Additional files (analyzer additional texts) passed to the analysis.</param>
 		/// <returns>
 		/// An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location.
 		/// </returns>
-		protected static Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, 
-																	  DiagnosticAnalyzer analyzer, bool checkOnlyFirstDocument)
+		protected static Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language,
+																	  DiagnosticAnalyzer analyzer, bool checkOnlyFirstDocument,
+																	  IEnumerable<AdditionalText>? additionalFiles = null,
+																	  string? assemblyName = null)
 		{
-			return GetSortedDiagnosticsFromDocumentsAsync(analyzer, SolutionBuilder.GetDocuments(sources, language), checkOnlyFirstDocument);
+			return GetSortedDiagnosticsFromDocumentsAsync(analyzer, SolutionBuilder.GetDocuments(sources, language, assemblyName),
+														  checkOnlyFirstDocument, additionalFiles);
 		}
 
 		/// <summary>
@@ -455,9 +486,12 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="analyzer">The analyzer to run on the documents</param>
 		/// <param name="documents">The Documents that the analyzer will be run on</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="additionalFiles">(Optional) Additional files (analyzer additional texts) passed to the analysis.</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		protected static async Task<Diagnostic[]> GetSortedDiagnosticsFromDocumentsAsync(DiagnosticAnalyzer analyzer, Document[] documents, 
-																						 bool checkOnlyFirstDocument)
+		protected static async Task<Diagnostic[]> GetSortedDiagnosticsFromDocumentsAsync(DiagnosticAnalyzer analyzer, Document[] documents,
+																						 bool checkOnlyFirstDocument,
+																						 IEnumerable<AdditionalText>? additionalFiles = null)
 		{
 			var projects = new HashSet<Project>();
 
@@ -467,7 +501,7 @@ namespace Acuminator.Tests.Verification
 			}
 
 			var allDiagnostics = new List<Diagnostic>();
-			var compilationWithAnalyzerOptions = CreateCompilationWithAnalyzersOptions();
+			var compilationWithAnalyzerOptions = CreateCompilationWithAnalyzersOptions(additionalFiles);
 			var analyzers = ImmutableArray.Create(analyzer);
 
 			foreach (var project in projects)
@@ -510,13 +544,18 @@ namespace Acuminator.Tests.Verification
 		/// <summary>
 		/// Creates compilation with analyzers options with default values + do not use concurrent analysis during the debugging of unit tests.
 		/// </summary>
+		/// <param name="additionalFiles">Additional files (analyzer additional texts) passed to the analysis. Can be null.</param>
 		/// <returns>
 		/// The new compilation with analyzers options with default values.
 		/// </returns>
-		private static CompilationWithAnalyzersOptions CreateCompilationWithAnalyzersOptions()
+		private static CompilationWithAnalyzersOptions CreateCompilationWithAnalyzersOptions(IEnumerable<AdditionalText>? additionalFiles)
 		{
 			bool isUnderDebug = Debugger.IsAttached;
-			return new CompilationWithAnalyzersOptions(options: null, onAnalyzerException: null,
+			AnalyzerOptions? analyzerOptions = additionalFiles != null
+				? new AnalyzerOptions(additionalFiles.ToImmutableArray())
+				: null;
+
+			return new CompilationWithAnalyzersOptions(options: analyzerOptions, onAnalyzerException: null,
 													   concurrentAnalysis: !isUnderDebug, logAnalyzerExecutionTime: true,
 													   reportSuppressedDiagnostics: false, analyzerExceptionFilter: null);
 		}

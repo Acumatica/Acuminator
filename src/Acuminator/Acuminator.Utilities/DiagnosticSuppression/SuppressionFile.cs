@@ -155,5 +155,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path) =>
 			XmlUtils.LoadMessages(fileSystemService, path);
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static HashSet<SuppressMessage> LoadMessagesFromString(string suppressionFileContent) =>
+			XmlUtils.LoadMessagesFromString(suppressionFileContent);
 	}
 }

@@ -26,7 +26,7 @@ For the detected errors, Acuminator suggests code fixes. For the full list of su
 
 Acuminator supports two approaches for the suppression of unwanted diagnostic alerts:
 * Suppress diagnostic with a special comment placed a line above the code
-* Suppress diagnostic with a specific suppression file. With this mechanism, a specific project file will store a list of diagnostics suppressed in the project. This approach is supported only if Acuminator is installed as a VSIX plugin. 
+* Suppress diagnostic with a specific suppression file. With this mechanism, a file named after the project assembly stores the list of diagnostics suppressed in the project. This approach is supported for Acuminator installed as a VSIX plugin or as a NuGet package. For details, see [Diagnostic Suppression](docs/diagnostics/DiagnosticSuppression.md).
 
 ## Code Coloring
 Acuminator adds code coloring to the following Acumatica-specific code elements:
