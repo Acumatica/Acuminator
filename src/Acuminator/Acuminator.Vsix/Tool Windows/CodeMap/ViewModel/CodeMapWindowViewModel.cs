@@ -383,7 +383,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				try
 				{
-					var newRoot = await changedDocument.GetSyntaxRootAsync(AcuminatorVSPackage.Instance?.DisposalToken ?? default).ConfigureAwait(false);
+					var newRoot = await changedDocument.GetSyntaxRootAsync(AcuminatorVSPackage.Instance?.DisposalToken ?? default);
 					recalculateCodeMapMode = newRoot == null
 						? CodeMapRefreshMode.Clear
 						: CodeMapRefreshMode.Recalculate;
