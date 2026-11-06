@@ -81,6 +81,18 @@ The diagnostic description contains the following sections:
 -   Has the following title: _Example of Possible Code Fix_ 
 -   Shows how the issue shown in the code example of the issue can be fixed
 
+### Acuminator Suppression Comment
+
+- Is Required
+- Has the following title: _Acuminator Suppression Comment_
+- Contains all possible versions of Acuminator suppression comments for the diagnostic. The example should look as follows:
+````
+Here is the Acuminator suppression comment for the PX1000 diagnostic. For more details, see [Acuminator Diagnostic Suppression](../DiagnosticSuppression.md).
+```cs
+// Acuminator disable once PX1000 InvalidPXActionHandlerSignature [Justification]
+```
+````
+
 ### Example of EditorConfig Configuration
 
 - Is required
