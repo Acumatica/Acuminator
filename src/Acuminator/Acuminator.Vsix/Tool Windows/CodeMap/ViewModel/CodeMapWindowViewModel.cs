@@ -489,7 +489,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			finally
 			{
-				Interlocked.CompareExchange(ref _cancellationTokenSource, value: null, comparand: currentCts);
+				if (!ThreadHelper.CheckAccess())
+				{
+					await AcuminatorVSPackage.JTF.SwitchToMainThreadAsync();
+				}
+
+				if (ReferenceEquals(_cancellationTokenSource, currentCts))
+					_cancellationTokenSource = null;
 
 				if (_cancellationTokenSource == null)	// The final build operation clears the flag
 					IsCalculating = false;
