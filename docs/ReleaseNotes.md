@@ -593,7 +593,7 @@ In this version of Acuminator, the following bugs have been fixed:
  #### Disabling of Locally Suppressed Diagnostics
  Acuminator provides two different suppression mechanisms to suppress diagnostic alerts in a particular place: a global suppression file and a local suppression with a special comment. The suppression mechanism can be disabled in the Acuminator settings in Visual Studio by specifying False for the following setting: **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics**. With this mechanism disabled, you can see all suppressed errors in the legacy code and perform refactoring.
  Previously, you could disable suppression of only globally suppressed diagnostic alerts. Alerts that have been suppressed locally via suppression comments could not be displayed even when the suppression mechanism was turned off. Now Acuminator diagnostics that have been suppressed locally can also be displayed when suppression is disabled. Thus, you can see all errors, including the ones that were suppressed with a comment in the code editor or in the **Error List** tool window. 
- For details on diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
+ For details on diagnostic suppression, see [Diagnostic Suppression](./DiagnosticSuppression.md).
  
 ### Other Changes 
  - The [PX1088](diagnostics/PX1088.md) diagnostic has been removed because its function is covered by the [PX1008](diagnostics/PX1008.md) diagnostic.
@@ -755,7 +755,7 @@ public abstract class PXBaseRedirectException : PXException
 
 You can also suppress an Acuminator diagnostic in the Acuminator suppression file. This option is now available as a code fix and has been removed from the menu commands. The suppression of a diagnostic in the Acuminator suppression file is available only if Acuminator is installed from the VSIX package.
 
-For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
+For details about the diagnostic suppression, see [Diagnostic Suppression](./DiagnosticSuppression.md).
 
 ### Enhancements and Bug Fixes in the Code Map
 In Acuminator 2.1, the code map is no longer an experimental feature and includes the following enhancements:

@@ -90,7 +90,7 @@ Acuminator code analysis settings may interact with the diagnostic settings spec
 - Some diagnostics are controlled by Acuminator options. Examples are **PX1007** (disabled by default), informational diagnostics, and diagnostics that run only with **Enable additional diagnostics for ISV Solution Certification**. 
   If you set a higher severity for them in `.editorconfig`, it would not turn them on. To turn on the diagnostic, first enable the corresponding option and then configure the severity if needed.
 - The ISV mode changes the default severity of some diagnostics from `Warning` to `Error`. An explicit `dotnet_diagnostic.PXnnnn.severity` entry in `.editorconfig` overrides this default.
-- The [Acuminator suppression mechanism](./diagnostics/DiagnosticSuppression.md) (suppression comments and `.acuminator` files) is independent of `.editorconfig`. A diagnostic can be hidden by either mechanism.
+- The [Acuminator suppression mechanism](./DiagnosticSuppression.md) (suppression comments and `.acuminator` files) is independent of `.editorconfig`. A diagnostic can be hidden by either mechanism.
 
 ### Apply Different Settings to Different Code
 
