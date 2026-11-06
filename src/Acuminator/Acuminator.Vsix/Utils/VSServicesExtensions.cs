@@ -84,6 +84,21 @@ namespace Acuminator.Vsix.Utilities
 			return outliningManagerService.GetOutliningManager(textView);
 		}
 
+		internal static IWpfTextView? GetWpfTextView(this IServiceProvider? serviceProvider)
+		{
+			if (serviceProvider == null || !ThreadHelper.CheckAccess())
+				return null;
+
+			IVsTextManager? textManager = serviceProvider.GetService<SVsTextManager, IVsTextManager>(throwOnFailure: false);
+
+			if (textManager == null || textManager.GetActiveView(1, null, out IVsTextView textView) != VSConstants.S_OK || textView == null)
+				return null;
+
+			IComponentModel? componentModel = serviceProvider.GetService<SComponentModel, IComponentModel>(throwOnFailure: false);
+			IVsEditorAdaptersFactoryService? vsEditorAdaptersFactoryService = componentModel?.GetService<IVsEditorAdaptersFactoryService>();
+			return vsEditorAdaptersFactoryService?.GetWpfTextView(textView);
+		}
+
 		internal static async Task<IWpfTextView?> GetWpfTextViewAsync(this IAsyncServiceProvider? serviceProvider)
 		{
 			if (serviceProvider == null)

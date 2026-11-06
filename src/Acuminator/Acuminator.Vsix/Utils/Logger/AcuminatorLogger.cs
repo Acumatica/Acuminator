@@ -116,10 +116,7 @@ namespace Acuminator.Vsix.Logger
 
 			try
 			{
-				IWpfTextView? activeTextView = ThreadHelper.CheckAccess()
-					? GetActiveTextViewWithTimeout(timeoutSeconds: 10)
-					: null;
-
+				IWpfTextView? activeTextView = GetActiveTextViewIfOnUiThread();
 				var currentDocument = GetDocumentSafe(activeTextView);
 				string logMessage = CreateLogMessageFromException(exception, currentDocument?.FilePath, logMode, reportedFrom, addErrorPrefix: true);
 
@@ -158,16 +155,15 @@ namespace Acuminator.Vsix.Logger
 			LogMessageToActivityLog(logMessage, logMode);
 		}
 
-		private IWpfTextView? GetActiveTextViewWithTimeout(double timeoutSeconds)
+		private IWpfTextView? GetActiveTextViewIfOnUiThread()
 		{
+			// If we are not on the UI thread, just return null
+			if (!ThreadHelper.CheckAccess())
+				return null;
+
 			try
 			{
-				using var ctsByTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
-				using var ctsByTimeoutAndPackage = 
-					CancellationTokenSource.CreateLinkedTokenSource(ctsByTimeout.Token, AcuminatorVSPackage.Instance?.DisposalToken ?? default);
-
-				var joinableTask = AcuminatorVSPackage.JTF.RunAsync(() => _package.GetWpfTextViewAsync());
-				var activeTextView = joinableTask.Join(ctsByTimeoutAndPackage.Token);
+				IWpfTextView? activeTextView = _package.GetWpfTextView();
 				return activeTextView;
 			}
 			catch
