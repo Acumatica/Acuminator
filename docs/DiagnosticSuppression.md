@@ -1,5 +1,18 @@
 # Acuminator Diagnostic Suppression
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Local Suppression with Acuminator Suppression Comment](#local-suppression-with-acuminator-suppression-comment)
+  - [Writing a Suppression Comment Manually](#writing-a-suppression-comment-manually)
+  - [Generating Suppression Comment In Visual Studio](#generating-suppression-comment-in-visual-studio)
+    - [Visual Studio 2022 and Older Versions](#visual-studio-2022-and-older-versions)
+    - [Visual Studio 2026](#visual-studio-2026)
+- [Global Suppression in Acuminator Suppression File](#global-suppression-in-acuminator-suppression-file)
+  - [Suppress a Diagnostic](#suppress-a-diagnostic)
+  - [Remove a Suppression](#remove-a-suppression)
+  - [Suppression Record Format](#suppression-record-format)
+
 ## Overview
 
 Sometimes you know better than an automatic code analyzer. You may have a good reason to ignore a diagnostic and want to let the analyzer know.
@@ -103,7 +116,7 @@ For Visual Studio 2022 and older versions, the path to the code fix option is sh
 
 #### Visual Studio 2026
 
-The path to the code fix in Visual Studio 2026 is shown in the screenshot below. Note that to use classic non-AI code fixes in Visual Studio, open the **Other Fixes** menu and select the suppression option. The rest of configuration is the same as in the older versions of Visual Studio.
+The path to the code fix in Visual Studio 2026 is shown in the screenshot below. To use classic non-AI code fixes in Visual Studio, open the **Other Fixes** menu and select the suppression option. The rest of configuration is the same as in the older versions of Visual Studio.
 
 ![Suppression with a Comment in VS 2026](./images/SuppressDiagnosticInCommentVS2026.png)
 
