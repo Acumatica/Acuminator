@@ -4,7 +4,7 @@
 Acuminator Console Runner serves as a command-line interface (CLI) for Acuminator code analysis that allows to run it outside of IDE. Such tool is useful for CI/CD pipelines and other automated scenarios.
 The name of the executable file is `Acuminator.Runner.exe`.
 
-You can find the latest version of Acuminator Console Runner executables in a .zip file attached to each release of Acuminator on GitHub: https://github.com/Acumatica/Acuminator/releases.
+You can find the latest version of Acuminator Console Runner executables in the ZIP file attached to each release of Acuminator on GitHub: https://github.com/Acumatica/Acuminator/releases.
 
 Acuminator Console Runner supports analysis of .NET solutions (*.sln*) and projects (*.csproj*). The tool requires .NET Framework 4.8 runtime to run. The MSBuild should be installed on the machine running the analysis.
 The runner needs MSBuild from Visual Studio or Build Tools to analyze projects that target .NET Framework and use the old style of project file (.csproj files written in the old project file format). The .NET SDK is required to check project targeting .NET Framework, .NET Core, or .NET runtimes and using SDK-style project file format.
