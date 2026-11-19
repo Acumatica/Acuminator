@@ -138,6 +138,10 @@ Include the suppression file as an additional file in the project's `.csproj` fi
 </ItemGroup>
 ```
 
+You can suppress a diagnostic for a specific member in code such as an method or a class. You don't need to specify the location of the member, it can be moved from one file to another. 
+
+> Note: You can't cancel suppression for a single code file via Acuminator suppression mechanisms while retaining all other suppressions.
+
 ### Suppress a Diagnostic
 
 Because suppression entries are difficult to create manually, we recommend adding them by using the Acuminator code fix in Visual Studio.
